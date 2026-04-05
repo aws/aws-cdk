@@ -9,6 +9,7 @@ import {
 } from '../../aws-iam';
 import type { RemovalPolicy } from '../../core';
 import { CfnJson, Names, RemovalPolicies, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Enum representing the different identity types that can be used for a Kubernetes service account.
@@ -149,7 +150,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
         return this._podIdentityRole as IRole;
       }
       throw new ValidationError(
-        'ServiceAccountRole',
+        lit`ServiceAccountRole`,
         'The provided role is not an instance of IRole. ' +
         'Cannot access role grants when using an L1 construct (e.g. CfnRole) as the role.',
         this,
@@ -202,7 +203,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
 
     if (props.role !== undefined && props.identityType !== IdentityType.POD_IDENTITY) {
       throw new ValidationError(
-        'ServiceAccountRoleOption',
+        lit`ServiceAccountRoleOption`,
         'The `role` option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.',
         this,
       );
