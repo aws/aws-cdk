@@ -141,6 +141,30 @@ describe('cluster new api', () => {
     });
 
     test.each([
+      [-1, /promotionTier must be between 0-15/],
+      [16, /promotionTier must be between 0-15/],
+    ])('when promotionTier is %s', (promotionTier, errorMessage) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.provisioned('writer'),
+          readers: [
+            ClusterInstance.provisioned('reader', {
+              promotionTier,
+            }),
+          ],
+        });
+        // THEN
+      }).toThrow(errorMessage);
+    });
+
+    test.each([
       [0.5, 300, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [0.5, 0, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [-1, 1, /serverlessV2MinCapacity must be >= 0 & <= 256/],
