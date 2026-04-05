@@ -1,6 +1,7 @@
 import { Construct } from 'constructs';
 import type { CfnJobDefinition } from './batch.generated';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The properties for defining Linux-specific options that are applied to the container.
@@ -101,7 +102,7 @@ export class LinuxParameters extends Construct {
       props.swappiness !== undefined &&
       (!Number.isInteger(props.swappiness) || props.swappiness < 0 || props.swappiness > 100)
     ) {
-      throw new cdk.ValidationError('InvalidSwappiness', `swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`, this);
+      throw new cdk.ValidationError(lit`InvalidSwappiness`, `swappiness: Must be an integer between 0 and 100; received ${props.swappiness}.`, this);
     }
   }
 

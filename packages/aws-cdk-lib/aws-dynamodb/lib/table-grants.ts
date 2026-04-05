@@ -3,6 +3,7 @@ import * as perms from './perms';
 import * as iam from '../../aws-iam';
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
 import { isUnsupportedServicePrincipal } from './private/principal-utils';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Construction properties for TableGrants
@@ -111,7 +112,7 @@ export class TableGrants {
   public actions(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
     if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
       throw new ValidationError(
-        '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
+        lit`ServicePrincipalGrantNotSupported`,
         'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
         'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
         'with required service principal, actions, and conditions',
@@ -216,13 +217,13 @@ export class TableGrants {
    */
   public multiAccountReplicationTo(destinationReplicaArn: string): void {
     if (!this.policyResource) {
-      throw new ValidationError('CannotGrantMultiAccountReplication', 'Cannot grant multi-account replication permissions without a resource policy', this.table);
+      throw new ValidationError(lit`CannotGrantMultiAccountReplication`, 'Cannot grant multi-account replication permissions without a resource policy', this.table);
     }
 
     const stack = Stack.of(this.table);
     const arnComponents = stack.splitArn(destinationReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!arnComponents.account) {
-      throw new ValidationError('InvalidTable', `Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
+      throw new ValidationError(lit`InvalidTable`, `Invalid table ARN: ${destinationReplicaArn}. ARN must include account ID.`, this.table);
     }
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({
@@ -258,13 +259,13 @@ export class TableGrants {
    */
   public multiAccountReplicationFrom(sourceReplicaArn: string): void {
     if (!this.policyResource) {
-      throw new ValidationError('CannotGrantMultiAccountReplication', 'Cannot grant multi-account replication permissions without a resource policy', this.table);
+      throw new ValidationError(lit`CannotGrantMultiAccountReplication`, 'Cannot grant multi-account replication permissions without a resource policy', this.table);
     }
 
     const stack = Stack.of(this.table);
     const arnComponents = stack.splitArn(sourceReplicaArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!arnComponents.account) {
-      throw new ValidationError('InvalidTable', `Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
+      throw new ValidationError(lit`InvalidTable`, `Invalid table ARN: ${sourceReplicaArn}. ARN must include account ID.`, this.table);
     }
 
     this.policyResource.addToResourcePolicy(new iam.PolicyStatement({

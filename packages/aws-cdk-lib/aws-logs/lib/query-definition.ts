@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import { CfnQueryDefinition } from '.';
 import { Annotations, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
@@ -241,7 +242,7 @@ export class QueryDefinition extends Resource {
     addConstructMetadata(this, props);
 
     if (props.queryString.statsStatementsLength && props.queryString.statsStatementsLength > 2) {
-      throw new ValidationError('CloudWatchLogsInsightsSupports', `CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
+      throw new ValidationError(lit`CloudWatchLogsInsightsSupports`, `CloudWatch Logs Insights only supports up to two stats commands in a single query, received ${props.queryString.statsStatementsLength}.`, this);
     }
 
     if (props.queryString.hasStatsAndStatsStatements) {

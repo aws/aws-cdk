@@ -3,6 +3,7 @@ import type * as events from '../../../aws-events';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -111,7 +112,7 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.entries.map(entry => entry.detail))) {
-        throw new cdk.ValidationError('TaskTokenRequired', 'Task Token is required in `entries`. Use JsonPath.taskToken to set the token.', this);
+        throw new cdk.ValidationError(lit`TaskTokenRequired`, 'Task Token is required in `entries`. Use JsonPath.taskToken to set the token.', this);
       }
     }
 
@@ -175,10 +176,10 @@ export class EventBridgePutEvents extends sfn.TaskStateBase {
 
   private validateEntries(): void {
     if (this.props.entries.length <= 0) {
-      throw new cdk.ValidationError('EntriesMustBeNonEmptyArray', 'Value for property `entries` must be a non-empty array.', this);
+      throw new cdk.ValidationError(lit`EntriesMustBeNonEmptyArray`, 'Value for property `entries` must be a non-empty array.', this);
     }
     if (this.props.entries.some(e => e.source.startsWith('aws.'))) {
-      throw new cdk.ValidationError('EventSourceCannotStartWithAws', 'Event source cannot start with "aws."', this);
+      throw new cdk.ValidationError(lit`EventSourceCannotStartWithAws`, 'Event source cannot start with "aws."', this);
     }
   }
 }
