@@ -405,6 +405,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     if (props.iamPrincipal !== undefined && props.principal !== undefined) {
       throw new ValidationError(
+        lit`OnlyOneOfIamPrincipalOrPrincipal`,
         'Only one of `iamPrincipal` or `principal` can be specified, not both.',
         this,
       );
@@ -417,6 +418,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
         this.principal = (props.iamPrincipal as IUser).userArn;
       } else {
         throw new ValidationError(
+          lit`CannotDetermineArnFromIamPrincipal`,
           'Cannot determine the ARN from the provided `iamPrincipal`. ' +
           'Only IAM roles and users are supported. ' +
           'Use the `principal` property with an explicit ARN string instead.',
@@ -427,6 +429,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
       this.principal = props.principal;
     } else {
       throw new ValidationError(
+        lit`EitherIamPrincipalOrPrincipalRequired`,
         'Either `iamPrincipal` or `principal` must be specified.',
         this,
       );
