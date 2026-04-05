@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new App({
   postCliContext: {
@@ -14,7 +15,7 @@ const stack = new Stack(app, 'integ-lambda-permission-consolidation');
 const httpApi = new HttpApi(stack, 'HttpApi');
 
 const lambdaHandler = new lambda.Function(stack, 'Handler', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: JSON.stringify({ message: \'Hello from \' + event.requestContext.http.path }) }; };'),
 });

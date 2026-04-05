@@ -16,7 +16,7 @@ jobs:
       CHECK_NAME_RESOLVED: 'Security Guardian Results with resolved templates'
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: security-guardian-reports
           path: test-results/
@@ -74,7 +74,7 @@ jobs:
             );
             
             if (botComment) {
-              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**Please try `merge from main` to avoid findings unrelated to the PR.**\n\n---\n\n';
+              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\n\n---\n\n';
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -126,7 +126,7 @@ jobs:
             );
             
             if (botComment) {
-              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**Please try `merge from main` to avoid findings unrelated to the PR.**\n\n---\n\n';
+              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\n\n---\n\n';
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

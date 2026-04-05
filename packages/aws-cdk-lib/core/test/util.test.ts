@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { CfnResource, Stack } from '../lib';
+import { assertNoPrototypePollution } from './prototype-pollution';
 import { capitalizePropertyNames, filterUndefined, findLastCommonElement, ignoreEmpty, pathToTopLevelStack } from '../lib/util';
 
 describe('util', () => {
@@ -24,6 +25,16 @@ describe('util', () => {
     expect(capitalizePropertyNames(c,
       { hello: { resolve: () => ({ foo: 'bar' }) }, world: new SomeToken() })).toEqual(
       { Hello: { Foo: 'bar' }, World: 100 });
+  });
+
+  test('capitalizePropertyNames is not vulnerable to prototype pollution', () => {
+    assertNoPrototypePollution(() => {
+      const c = new Stack();
+
+      expect(capitalizePropertyNames(c, {
+        __proto__: { evil: true },
+      }));
+    });
   });
 
   describe('ignoreEmpty', () => {

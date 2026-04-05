@@ -1,15 +1,16 @@
 {
-  "version": "38.0.1",
+  "version": "52.0.0",
   "files": {
-    "ba285c3d32df9eb5784aa37a7742b096033c91381c3f2ba7d10f22061c8468d7": {
+    "77bd81eac56f862f9c2e1ea2902483de94de5cd85b631484118d3fc2eec5410c": {
+      "displayName": "lambda-event-source-metrics-config-dynamodb Template",
       "source": {
         "path": "lambda-event-source-metrics-config-dynamodb.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-62c0ad5e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "ba285c3d32df9eb5784aa37a7742b096033c91381c3f2ba7d10f22061c8468d7.json",
+          "objectKey": "77bd81eac56f862f9c2e1ea2902483de94de5cd85b631484118d3fc2eec5410c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
