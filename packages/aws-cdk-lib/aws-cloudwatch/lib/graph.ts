@@ -882,6 +882,13 @@ export interface SingleValueWidgetProps extends MetricWidgetProps {
   readonly sparkline?: boolean;
 
   /**
+   * Whether the graph should show live data
+   *
+   * @default false
+   */
+  readonly liveData?: boolean;
+
+  /**
    * The start of the time range to use for each widget independently from those of the dashboard.
    * You can specify start without specifying end to specify a relative time range that ends with the current time.
    * In this case, the value of start must begin with -P, and you can use M, H, D, W and M as abbreviations for
