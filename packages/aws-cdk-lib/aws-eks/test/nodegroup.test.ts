@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
