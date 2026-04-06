@@ -227,7 +227,7 @@ lb.addListener('Listener', {
 });
 ```
 
-The JWKS endpoint must be publicly accessible. The ALB security group is automatically configured to allow outbound HTTPS (port 443) for JWKS endpoint access. If you manage security group rules yourself, you can disable this by setting `allowHttpsOutbound` to `false`:
+The JWKS endpoint must be publicly accessible. You can automatically configure the ALB security group to allow outbound HTTPS (port 443) for JWKS endpoint access by setting `allowHttpsOutbound` to `true`:
 
 ```ts
 declare const lb: elbv2.ApplicationLoadBalancer;
@@ -241,7 +241,7 @@ lb.addListener('Listener', {
   defaultAction: elbv2.ListenerAction.authenticateJwt({
     issuer: 'https://issuer.example.com',
     jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
-    allowHttpsOutbound: false,
+    allowHttpsOutbound: true,
     next: elbv2.ListenerAction.forward([myTargetGroup]),
   }),
 });

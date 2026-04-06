@@ -415,6 +415,34 @@ describe('tests', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
       SecurityGroupEgress: [
         {
+          CidrIp: '255.255.255.255/32',
+          Description: 'Disallow all traffic',
+          FromPort: 252,
+          IpProtocol: 'icmp',
+          ToPort: 86,
+        },
+      ],
+    });
+  });
+
+  test('JWT authentication action allows HTTPS outbound when allowHttpsOutbound is true', () => {
+    // WHEN
+    lb.addListener('Listener', {
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      port: 443,
+      certificates: [elbv2.ListenerCertificate.fromArn('arn:aws:acm:us-east-1:123456789012:certificate/test-cert')],
+      defaultAction: elbv2.ListenerAction.authenticateJwt({
+        issuer: 'https://issuer.example.com',
+        jwksEndpoint: 'https://issuer.example.com/.well-known/jwks.json',
+        allowHttpsOutbound: true,
+        next: elbv2.ListenerAction.forward([group1]),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
           CidrIp: '0.0.0.0/0',
           Description: 'Allow to JWKS endpoint',
           FromPort: 443,

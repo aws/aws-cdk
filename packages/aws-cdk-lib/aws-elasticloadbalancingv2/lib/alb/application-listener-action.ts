@@ -509,7 +509,7 @@ export interface AuthenticateJwtOptions {
    * and you want to control outbound traffic.
    * Then allow HTTPS outbound traffic to the JWKS endpoint's IP address using the listener's `connections` property.
    *
-   * @default true
+   * @default false
    * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
    */
   readonly allowHttpsOutbound?: boolean;
@@ -595,7 +595,7 @@ class AuthenticateJwtAction extends ListenerAction {
       },
     }, options.next);
 
-    this.allowHttpsOutbound = options.allowHttpsOutbound ?? true;
+    this.allowHttpsOutbound = options.allowHttpsOutbound ?? false;
   }
 
   public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct): void {
