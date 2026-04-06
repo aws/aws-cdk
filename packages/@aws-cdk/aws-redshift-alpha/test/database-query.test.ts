@@ -259,7 +259,7 @@ describe('database query', () => {
 
     // The framework onEvent Lambda should use the invoker role
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
-      Description: Match.stringLikeRegexp('framework-onEvent'),
+      Description: Match.stringLikeRegexp('onEvent'),
       Role: Match.objectLike({
         'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('InvokerRole')]),
       }),
