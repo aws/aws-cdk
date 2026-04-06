@@ -1,0 +1,166 @@
+{
+ "Resources": {
+  "MemoryEventStream982A05ED": {
+   "Type": "AWS::Kinesis::Stream",
+   "Properties": {
+    "RetentionPeriodHours": 24,
+    "ShardCount": 1,
+    "StreamEncryption": {
+     "Fn::If": [
+      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
+      {
+       "Ref": "AWS::NoValue"
+      },
+      {
+       "EncryptionType": "KMS",
+       "KeyId": "alias/aws/kinesis"
+      }
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MemoryWithStreamDeliveryServiceRole890B7A55": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MemoryWithStreamDeliveryServiceRoleDefaultPolicy0FFA2F76": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "kinesis:DescribeStream",
+        "kinesis:ListShards",
+        "kinesis:PutRecord",
+        "kinesis:PutRecords"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MemoryEventStream982A05ED",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MemoryWithStreamDeliveryServiceRoleDefaultPolicy0FFA2F76",
+    "Roles": [
+     {
+      "Ref": "MemoryWithStreamDeliveryServiceRole890B7A55"
+     }
+    ]
+   }
+  },
+  "MemoryWithStreamDeliveryMemoryE85ED633": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "Description": "A memory with Kinesis stream delivery",
+    "EventExpiryDuration": 60,
+    "MemoryExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MemoryWithStreamDeliveryServiceRole890B7A55",
+      "Arn"
+     ]
+    },
+    "Name": "memory_with_stream_delivery",
+    "StreamDeliveryResources": {
+     "Resources": [
+      {
+       "Kinesis": {
+        "ContentConfigurations": [
+         {
+          "Level": "FULL_CONTENT",
+          "Type": "MEMORY_RECORDS"
+         }
+        ],
+        "DataStreamArn": {
+         "Fn::GetAtt": [
+          "MemoryEventStream982A05ED",
+          "Arn"
+         ]
+        }
+       }
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "MemoryWithStreamDeliveryServiceRoleDefaultPolicy0FFA2F76"
+   ]
+  }
+ },
+ "Conditions": {
+  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
+   "Fn::Or": [
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-north-1"
+     ]
+    },
+    {
+     "Fn::Equals": [
+      {
+       "Ref": "AWS::Region"
+      },
+      "cn-northwest-1"
+     ]
+    }
+   ]
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

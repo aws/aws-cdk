@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "cc4d3782bb9c6084aef58d49e8315d30bfd48de91f85bb9830f959fd3d98a22d": {
+      "displayName": "aws-cdk-bedrock-agentcore-memory-stream-delivery Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-memory-stream-delivery.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-144df01d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cc4d3782bb9c6084aef58d49e8315d30bfd48de91f85bb9830f959fd3d98a22d.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
