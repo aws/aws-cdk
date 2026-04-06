@@ -10,6 +10,7 @@ import { JSII_RUNTIME_SYMBOL } from '../lib/constants';
 import { MetadataType } from '../lib/metadata-type';
 import { formatAnalytics, parseAnalytics } from '../lib/private/metadata-resource';
 import type { ConstructInfo } from '../lib/private/runtime-info';
+import type { ConstructAnalytics } from '../lib/private/stack-metadata';
 import { constructAnalyticsFromScope } from '../lib/private/stack-metadata';
 
 describe('MetadataResource', () => {
@@ -349,7 +350,7 @@ test('formatAnalytics appends cdk-migrate info when CDK_CONTEXT_JSON is set', ()
   const original = process.env.CDK_CONTEXT_JSON;
   try {
     process.env.CDK_CONTEXT_JSON = JSON.stringify({ 'cdk-migrate': true });
-    const constructInfo: ConstructAnalytics[] = [{ fqn: 'aws-cdk-lib.Stack', version: '0.0.0', count: 1 }];
+    const constructInfo: ConstructAnalytics[] = [{ fqn: 'aws-cdk-lib.Stack', version: '0.0.0' }];
     const result = formatAnalytics(constructInfo);
     // Should have 3 colon-separated parts: v2:deflate64:<constructs>:<migrate-info>
     expect(result.split(':').length).toBe(4);
