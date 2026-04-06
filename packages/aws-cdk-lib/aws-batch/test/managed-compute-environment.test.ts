@@ -925,6 +925,32 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
     });
   });
 
+  test('image types are correctly rendered as EC2ConfigurationObjects for AL2023_NVIDIA', () => {
+    // WHEN
+    new ManagedEc2EcsComputeEnvironment(stack, 'MyCE', {
+      ...defaultEcsProps,
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023_NVIDIA,
+        },
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...pascalCaseExpectedEcsProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        Ec2Configuration: [
+          {
+            ImageType: 'ECS_AL2023_NVIDIA',
+          },
+        ],
+      },
+    });
+  });
+
   test('Amazon Linux 2023 does not support A1 instances.', () => {
     expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023A1InstanceClass', {
       ...defaultEcsProps,
@@ -944,6 +970,28 @@ describe('ManagedEc2EcsComputeEnvironment', () => {
       images: [
         {
           imageType: EcsMachineImageType.ECS_AL2023,
+        },
+      ],
+    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+
+    expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023NvidiaA1InstanceClass', {
+      ...defaultEcsProps,
+      instanceClasses: [ec2.InstanceClass.A1],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023_NVIDIA,
+        },
+      ],
+    })).toThrow('Amazon Linux 2023 does not support A1 instances.');
+
+    expect(() => new ManagedEc2EcsComputeEnvironment(stack, 'Al2023NvidiaA1XlargeInstance', {
+      ...defaultEcsProps,
+      instanceTypes: [ec2.InstanceType.of(ec2.InstanceClass.A1, ec2.InstanceSize.XLARGE2)],
+      vpc,
+      images: [
+        {
+          imageType: EcsMachineImageType.ECS_AL2023_NVIDIA,
         },
       ],
     })).toThrow('Amazon Linux 2023 does not support A1 instances.');

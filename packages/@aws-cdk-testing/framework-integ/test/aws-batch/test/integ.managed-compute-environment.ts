@@ -88,6 +88,13 @@ new ManagedEc2EcsComputeEnvironment(stack, 'ECS_AL2023', {
   }],
 });
 
+new ManagedEc2EcsComputeEnvironment(stack, 'ECS_AL2023_NVIDIA', {
+  vpc,
+  images: [{
+    imageType: EcsMachineImageType.ECS_AL2023_NVIDIA,
+  }],
+});
+
 new ManagedEc2EcsComputeEnvironment(stack, 'ParamertizedManagedCE', {
   vpc,
   images: [{
