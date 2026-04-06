@@ -1185,7 +1185,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, remove default deployment alarm settings',
     detailsMd: `
-      When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+      When this feature flag is enabled, remove the default deployment alarm settings when creating an AWS ECS service.
     `,
     introducedIn: { v2: '2.143.0' },
     recommendedValue: true,
