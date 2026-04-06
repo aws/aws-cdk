@@ -4454,7 +4454,7 @@ test('can add GSI with both multi-attribute partition and sort keys', () => {
 });
 
 test('TableV2 does not trigger deprecated TableGrantsProps warnings', () => {
-  const stack = new cdk.Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-west-2', account: '123456789012' } });
 
   const table = new TableV2(stack, 'Table', {
     partitionKey: { name: 'pk', type: AttributeType.STRING },
