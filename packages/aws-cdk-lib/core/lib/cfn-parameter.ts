@@ -115,7 +115,7 @@ export class CfnParameter extends CfnElement {
 
   /**
    * Creates a parameter construct.
-   * Note that the name (logical ID) of the parameter will derive from it's `coname` and location
+   * Note that the name (logical ID) of the parameter will derive from its `name` and location
    * within the stack. Therefore, it is recommended that parameters are defined at the stack level.
    *
    * @param scope The parent construct.
