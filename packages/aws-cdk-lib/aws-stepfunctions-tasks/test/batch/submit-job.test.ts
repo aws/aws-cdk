@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { Template } from '../../../assertions';
+import { Match, Template } from '../../../assertions';
 import * as batch from '../../../aws-batch';
 import * as ec2 from '../../../aws-ec2';
 import * as ecs from '../../../aws-ecs';
