@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`can generate interface types into a separate module 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -84,7 +84,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -99,7 +99,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -108,9 +108,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
@@ -242,7 +256,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -257,7 +271,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -266,9 +280,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
@@ -878,7 +906,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The arn for the resource.
    */
-  public arn?: string;
+  private _arn?: string;
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -893,13 +921,27 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.arn = props.arn;
+    this._arn = props.arn;
   }
 
   public get resourceRef(): ResourceReference {
     return {
       resourceId: this.ref
     };
+  }
+
+  /**
+   * The arn for the resource.
+   */
+  public get arn(): string | undefined {
+    return this._arn;
+  }
+  /**
+   * The arn for the resource.
+   */
+  public set arn(value: string | undefined) {
+    cdk.traceProperty(this.node, "Arn");
+    this._arn = value;
   }
 
   /**
@@ -913,7 +955,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      arn: this.arn
+      arn: this._arn
     };
   }
 
@@ -1392,7 +1434,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1407,7 +1449,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -1416,9 +1458,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
@@ -1550,12 +1606,12 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * Another identifier of the resource.
    */
-  public anotherId?: string;
+  private _anotherId?: string;
 
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1570,8 +1626,8 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.anotherId = props.anotherId;
-    this.id = props.id;
+    this._anotherId = props.anotherId;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -1581,10 +1637,38 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * Another identifier of the resource.
+   */
+  public get anotherId(): string | undefined {
+    return this._anotherId;
+  }
+  /**
+   * Another identifier of the resource.
+   */
+  public set anotherId(value: string | undefined) {
+    cdk.traceProperty(this.node, "AnotherId");
+    this._anotherId = value;
+  }
+
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      anotherId: this.anotherId,
-      id: this.id
+      anotherId: this._anotherId,
+      id: this._id
     };
   }
 
@@ -1726,7 +1810,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   /**
    * The identifier of the resource.
    */
-  public id?: string;
+  private _id?: string;
 
   /**
    * Create a new \`AWS::Some::Resource\`.
@@ -1741,7 +1825,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.id = props.id;
+    this._id = props.id;
   }
 
   public get resourceRef(): ResourceReference {
@@ -1750,9 +1834,23 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     };
   }
 
+  /**
+   * The identifier of the resource.
+   */
+  public get id(): string | undefined {
+    return this._id;
+  }
+  /**
+   * The identifier of the resource.
+   */
+  public set id(value: string | undefined) {
+    cdk.traceProperty(this.node, "Id");
+    this._id = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      id: this.id
+      id: this._id
     };
   }
 
