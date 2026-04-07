@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediapackage-channel/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediapackagev2"
+      ],
+      "assertionStack": "cdk-integ-mediapackage-channel/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediapackagechannelDefaultTestDeployAssert00B1E5AB"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

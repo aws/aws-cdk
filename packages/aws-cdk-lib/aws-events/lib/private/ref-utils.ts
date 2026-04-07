@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IConnection } from '../connection';
 import type { IConnectionRef } from '../events.generated';
 
@@ -8,7 +9,7 @@ import type { IConnectionRef } from '../events.generated';
  */
 export function toIConnection(connection: IConnectionRef): IConnection {
   if (!('connectionArn' in connection) || !('connectionName' in connection)) {
-    throw new UnscopedValidationError('ConnectionInstanceMustImplementIConnection', `'connection' instance should implement IConnection, but doesn't: ${connection.constructor.name}`);
+    throw new UnscopedValidationError(lit`ConnectionInstanceMustImplementIConnection`, `'connection' instance should implement IConnection, but doesn't: ${connection.constructor.name}`);
   }
   return connection as IConnection;
 }
