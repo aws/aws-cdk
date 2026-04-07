@@ -2732,6 +2732,22 @@ describe('Memory stream delivery validation tests', () => {
     }).toThrow('Stream delivery resource currently supports at most one content configuration');
   });
 
+  test('Should throw error for empty content configurations array', () => {
+    const stream = new kinesis.Stream(stack, 'EmptyConfigStream');
+
+    expect(() => {
+      new Memory(stack, 'empty-config-memory', {
+        memoryName: 'empty_config_memory',
+        streamDeliveryResources: [
+          {
+            stream,
+            contentConfigurations: [],
+          },
+        ],
+      });
+    }).toThrow('Stream delivery resource contentConfigurations must not be an empty array');
+  });
+
   test('Should throw error when adding more than one stream delivery resource', () => {
     const stream1 = new kinesis.Stream(stack, 'Stream1');
     const stream2 = new kinesis.Stream(stack, 'Stream2');

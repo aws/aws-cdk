@@ -1015,6 +1015,10 @@ export class Memory extends MemoryBase {
   private _validateStreamDeliveryResource = (resource: StreamDeliveryResource): string[] => {
     const errors: string[] = [];
 
+    if (resource.contentConfigurations && resource.contentConfigurations.length === 0) {
+      errors.push('Stream delivery resource contentConfigurations must not be an empty array. Omit the property to use defaults, or provide at least one configuration');
+    }
+
     if (resource.contentConfigurations && resource.contentConfigurations.length > 1) {
       errors.push('Stream delivery resource currently supports at most one content configuration');
     }
