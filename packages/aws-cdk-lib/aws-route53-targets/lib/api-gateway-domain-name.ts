@@ -1,6 +1,7 @@
 import type * as apig from '../../aws-apigateway';
 import type * as route53 from '../../aws-route53';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Defines an API Gateway domain name as the alias target.
@@ -29,7 +30,7 @@ export class ApiGatewayDomain implements route53.IAliasRecordTarget {
 export class ApiGateway extends ApiGatewayDomain {
   constructor(api: apig.RestApiBase) {
     if (!api.domainName) {
-      throw new ValidationError('DefineDefaultDomainName', 'API does not define a default domain name', api);
+      throw new ValidationError(lit`DefineDefaultDomainName`, 'API does not define a default domain name', api);
     }
 
     super(api.domainName);
