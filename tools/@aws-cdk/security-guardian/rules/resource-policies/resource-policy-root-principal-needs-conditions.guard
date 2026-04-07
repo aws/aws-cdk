@@ -101,7 +101,7 @@ rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_polici
                         when Principal.AWS is_string {
                             when Principal.AWS == /(?i):root$/ {
                                 Condition exists
-                                <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                <<##ERROR:Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.##>>
                                 Condition.ArnEquals exists or
                                 Condition.StringEquals exists
                             }
@@ -111,7 +111,7 @@ rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_polici
                                 when this is_string {
                                     when this == /(?i):root$/ {
                                         Condition exists
-                                        <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                        <<##ERROR:Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.##>>
                                         Condition.ArnEquals exists or
                                         Condition.StringEquals exists
                                     }
@@ -139,7 +139,7 @@ rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_polici
                         when Principal.AWS is_string {
                             when Principal.AWS == /(?i):root$/ {
                                 Condition exists
-                                <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                <<##ERROR:Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.##>>
                                 Condition.ArnEquals exists or
                                 Condition.StringEquals exists
                             }
@@ -149,7 +149,7 @@ rule RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS when %resources_with_polici
                                 when this is_string {
                                     when this == /(?i):root$/ {
                                         Condition exists
-                                        <<Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.>>
+                                        <<##ERROR:Root principal in resource policy requires a strict condition (ArnEquals or StringEquals) to scope down access. Without conditions, ANY principal in the account can access this resource.##>>
                                         Condition.ArnEquals exists or
                                         Condition.StringEquals exists
                                     }
