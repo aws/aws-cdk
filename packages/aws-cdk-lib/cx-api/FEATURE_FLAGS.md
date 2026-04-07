@@ -1510,7 +1510,7 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 Flag type: New default behavior
 
-When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+When this feature flag is enabled, remove the default deployment alarm settings when creating an AWS ECS service.
 
 
 | Since | Unset behaves like | Recommended value |
