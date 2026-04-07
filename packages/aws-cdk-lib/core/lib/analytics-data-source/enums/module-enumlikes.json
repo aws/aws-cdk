@@ -153,6 +153,9 @@
       "TITAN_EMBED_TEXT_V2_256",
       "ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
+      "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_SONNET_4_6",
+      "ANTHROPIC_CLAUDE_OPUS_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_V1_0",
@@ -328,6 +331,11 @@
       "SQL_1_0"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
+    "HeadersCMSD": [
+      "MQCS"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster-version.ts": {
     "KafkaVersion": [
       "V1_1_1",
@@ -467,6 +475,15 @@
       "NEPTUNE_1_2",
       "NEPTUNE_1_3",
       "NEPTUNE_1_4"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-s3tables-alpha/lib/table.ts": {
+    "IcebergTransform": [
+      "IDENTITY",
+      "YEAR",
+      "MONTH",
+      "DAY",
+      "HOUR"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/accelerator-type.ts": {
@@ -787,6 +804,9 @@
       "META_LLAMA_3_3_70B_INSTRUCT_V1",
       "META_LLAMA_4_MAVERICK_17B_INSTRUCT_V1_0",
       "META_LLAMA_4_SCOUT_17B_INSTRUCT_V1_0",
+      "MINIMAX_MINIMAX_M2",
+      "MINIMAX_MINIMAX_M2_1",
+      "MINIMAX_MINIMAX_M2_5",
       "MISTRAL_MISTRAL_7B_INSTRUCT_V0_2",
       "MISTRAL_MIXTRAL_8X7B_INSTRUCT_V0_1",
       "MISTRAL_LARGE_V0_1",
@@ -811,7 +831,10 @@
       "WRITER_PALMYRA_X5_V1_0",
       "TWELVELABS_MARENGO_EMBED_2_7_V1_0",
       "TWELVELABS_PEGASUS_1_2_V1_0",
-      "TWELVELABS_MARENGO_EMBED_3_0_V1_0"
+      "TWELVELABS_MARENGO_EMBED_3_0_V1_0",
+      "ZAI_GLM_4_7",
+      "ZAI_GLM_4_7_FLASH",
+      "ZAI_GLM_5"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -1023,7 +1046,8 @@
     ],
     "MacBuildImage": [
       "BASE_14",
-      "BASE_15"
+      "BASE_15",
+      "BASE_26"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-codedeploy/lib/ecs/deployment-config.ts": {
@@ -3551,6 +3575,10 @@
     ],
     "ReplicationTimeValue": [
       "FIFTEEN_MINUTES"
+    ],
+    "BlockedEncryptionType": [
+      "NONE",
+      "SSE_C"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-s3/lib/rule.ts": {
@@ -3667,6 +3695,7 @@
       "SYNTHETICS_NODEJS_PLAYWRIGHT_4_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_5_0",
       "SYNTHETICS_NODEJS_3_0",
+      "SYNTHETICS_NODEJS_3_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_0",
       "SYNTHETICS_PYTHON_SELENIUM_1_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_2",
@@ -3680,6 +3709,14 @@
       "SYNTHETICS_PYTHON_SELENIUM_5_1",
       "SYNTHETICS_PYTHON_SELENIUM_6_0",
       "SYNTHETICS_PYTHON_SELENIUM_7_0"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/core/lib/bitrate.ts": {
+    "BitrateUnit": [
+      "Bps",
+      "Kbps",
+      "Mbps",
+      "Gbps"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/cfn-pseudo.ts": {
