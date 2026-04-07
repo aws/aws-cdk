@@ -37,7 +37,7 @@ export interface IApiKey extends IResourceBase, IApiKeyRef {
 export interface ApiKeyOptions extends ResourceOptions {
   /**
    * A name for the API key. If you don't specify a name, AWS CloudFormation generates a unique physical ID and uses that ID for the API key name.
-   * @link http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
+   * @link https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-apigateway-apikey.html#cfn-apigateway-apikey-name
    * @default automatically generated name
    */
   readonly apiKeyName?: string;
