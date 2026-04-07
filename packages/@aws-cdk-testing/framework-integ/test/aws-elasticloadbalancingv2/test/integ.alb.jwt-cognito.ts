@@ -136,6 +136,7 @@ class AlbJwtCognitoStack extends Stack {
           contentType: 'text/plain',
           messageBody: 'Authenticated',
         }),
+        allowHttpsOutbound: true,
       }),
     });
 

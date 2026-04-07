@@ -69,6 +69,7 @@ export class ListenerAction implements IListenerAction {
       issuer: baseUrl,
       jwksEndpoint: `${baseUrl}/.well-known/jwks.json`,
       next: options.next,
+      allowHttpsOutbound: options.allowHttpsOutbound,
     });
   }
 
@@ -531,6 +532,18 @@ export interface AuthenticateJwtWithCognitoOptions {
    * (weighted)forward, fixedResponse or redirect action.
    */
   readonly next: ListenerAction;
+
+  /**
+   * Allow HTTPS outbound traffic to communicate with the Cognito JWKS endpoint.
+   *
+   * Set this property to false if the IP address used for the Cognito JWKS endpoint is identifiable
+   * and you want to control outbound traffic.
+   * Then allow HTTPS outbound traffic to the endpoint's IP address using the listener's `connections` property.
+   *
+   * @default false
+   * @see https://repost.aws/knowledge-center/elb-configure-authentication-alb
+   */
+  readonly allowHttpsOutbound?: boolean;
 }
 
 /**

@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "AlbJwtCognitoStack.assets": {
+    "aws-ecs-service-connect-access-log-without-log-driver.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AlbJwtCognitoStack.assets.json",
+        "file": "aws-ecs-service-connect-access-log-without-log-driver.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AlbJwtCognitoStack": {
+    "aws-ecs-service-connect-access-log-without-log-driver": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AlbJwtCognitoStack.template.json",
+        "templateFile": "aws-ecs-service-connect-access-log-without-log-driver.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d282e8cbc768a07b9c5806ec4b0eedadfa534d3c4918ac3efdb1f8d916461c7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d4dc410382411c008be1549a40e05d2859e292a83fefaca64863455747ad6822.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AlbJwtCognitoStack.assets"
+          "aws-ecs-service-connect-access-log-without-log-driver.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,33 +31,33 @@
         }
       },
       "dependencies": [
-        "AlbJwtCognitoStack.assets"
+        "aws-ecs-service-connect-access-log-without-log-driver.assets"
       ],
-      "additionalMetadataFile": "AlbJwtCognitoStack.metadata.json",
-      "displayName": "AlbJwtCognitoStack"
+      "additionalMetadataFile": "aws-ecs-service-connect-access-log-without-log-driver.metadata.json",
+      "displayName": "aws-ecs-service-connect-access-log-without-log-driver"
     },
-    "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7.assets": {
+    "ServiceConnectAccessLogWithoutLogDriverDefaultTestDeployAssertB16F0D3A.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7.assets.json",
+        "file": "ServiceConnectAccessLogWithoutLogDriverDefaultTestDeployAssertB16F0D3A.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7": {
+    "ServiceConnectAccessLogWithoutLogDriverDefaultTestDeployAssertB16F0D3A": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7.template.json",
+        "templateFile": "ServiceConnectAccessLogWithoutLogDriverDefaultTestDeployAssertB16F0D3A.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1aa722c3d4067661a20d242573bf1f3dfaa6ac722e7e474aa3978b193645b532.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7.assets"
+          "ServiceConnectAccessLogWithoutLogDriverDefaultTestDeployAssertB16F0D3A.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,11 +66,10 @@
         }
       },
       "dependencies": [
-        "AlbJwtCognitoStack",
-        "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7.assets"
+        "ServiceConnectAccessLogWithoutLogDriverDefaultTestDeployAssertB16F0D3A.assets"
       ],
-      "additionalMetadataFile": "IntegTestAlbJwtCognitoDefaultTestDeployAssertA0A93AD7.metadata.json",
-      "displayName": "IntegTestAlbJwtCognito/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "ServiceConnectAccessLogWithoutLogDriverDefaultTestDeployAssertB16F0D3A.metadata.json",
+      "displayName": "ServiceConnectAccessLogWithoutLogDriver/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -380,7 +379,7 @@
             "explanation": "When enabled, the default volume type of the EBS volume will be GP3"
           },
           "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": {
-            "userValue": true,
+            "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, remove default deployment alarm settings"
           },

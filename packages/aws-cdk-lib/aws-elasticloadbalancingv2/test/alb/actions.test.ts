@@ -548,4 +548,32 @@ describe('tests', () => {
       ],
     });
   });
+
+  test('authenticateJwtWithCognito allows HTTPS outbound when allowHttpsOutbound is true', () => {
+    // GIVEN
+    const userPool = new cognito.UserPool(stack, 'UserPool');
+    lb.addListener('Listener', {
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      port: 443,
+      certificates: [elbv2.ListenerCertificate.fromArn('arn:aws:acm:us-east-1:123456789012:certificate/test-cert')],
+      defaultAction: elbv2.ListenerAction.authenticateJwtWithCognito({
+        userPool,
+        next: elbv2.ListenerAction.forward([group1]),
+        allowHttpsOutbound: true,
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupEgress: [
+        {
+          CidrIp: '0.0.0.0/0',
+          Description: 'Allow to JWKS endpoint',
+          FromPort: 443,
+          IpProtocol: 'tcp',
+          ToPort: 443,
+        },
+      ],
+    });
+  });
 });

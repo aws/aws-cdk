@@ -2,30 +2,19 @@
   "/AlbJwtCognitoStack/Certificate": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "domainName": "*",
-        "validation": "*",
-        "subjectAlternativeNames": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/UserPool": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "signInAliases": {
-          "email": true
-        },
-        "removalPolicy": "destroy"
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "maxAzs": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
@@ -47,36 +36,17 @@
   "/AlbJwtCognitoStack/ARecord": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "recordName": "*",
-        "target": "*",
-        "zone": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "recordName": "*",
-        "target": "*",
-        "zone": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/AWS679f53fac002430cb0da5b7982bd2287": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "memorySize": "*",
-        "timeout": "*",
-        "role": "*",
-        "logGroup": "*",
-        "functionName": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -98,60 +68,27 @@
   "/AlbJwtCognitoStack/JwtSignin": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "functionName": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*",
-        "environment": "*",
-        "memorySize": "*",
-        "timeout": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEnvironment": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/BootstrapVersion": [
@@ -181,12 +118,7 @@
   "/AlbJwtCognitoStack/UserPool/UserPoolClient": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "userPool": "*",
-        "authFlows": {
-          "adminUserPassword": true
-        }
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Vpc/Resource": [
@@ -198,129 +130,65 @@
   "/AlbJwtCognitoStack/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": true,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addNatGateway": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Vpc/PrivateSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Vpc/PrivateSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "availabilityZone": "*",
-        "vpcId": "*",
-        "cidrBlock": "*",
-        "mapPublicIpOnLaunch": false,
-        "ipv6CidrBlock": "*",
-        "assignIpv6AddressOnCreation": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {}
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Vpc/IGW": [
@@ -362,41 +230,15 @@
   "/AlbJwtCognitoStack/LoadBalancer/SecurityGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "vpc": "*",
-        "description": "*",
-        "allowAllOutbound": false
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEgressRule": [
-          {
-            "canInlineRule": true,
-            "connections": "*",
-            "uniqueId": "*"
-          },
-          {},
-          "*",
-          false
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addIngressRule": [
-          {
-            "canInlineRule": true,
-            "connections": "*",
-            "uniqueId": "*"
-          },
-          {},
-          "*",
-          false
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/LoadBalancer/Listener": [
@@ -418,33 +260,15 @@
   "/AlbJwtCognitoStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/AWS679f53fac002430cb0da5b7982bd2287/Resource": [
@@ -456,49 +280,25 @@
   "/AlbJwtCognitoStack/AWS679f53fac002430cb0da5b7982bd2287/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/JwtSignin/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        },
-        "managedPolicies": [
-          {
-            "managedPolicyArn": "*"
-          }
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/JwtSignin/Resource": [
@@ -510,9 +310,7 @@
   "/AlbJwtCognitoStack/JwtSignin/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "logGroupName": "*"
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/Exports/Output{\"Ref\":\"JwtSignin446A8EF9\"}": [
@@ -674,38 +472,15 @@
   "/AlbJwtCognitoStack/User/Resource/Provider": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "lambdaPurpose": "*",
-        "memorySize": "*",
-        "timeout": "*",
-        "role": "*",
-        "logGroup": "*",
-        "functionName": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/User/Resource/Resource": [
@@ -725,70 +500,33 @@
   "/AlbJwtCognitoStack/User/Resource/CustomResourcePolicy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/User/SetUserPassword/Provider": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "uuid": "*",
-        "lambdaPurpose": "*",
-        "memorySize": "*",
-        "timeout": "*",
-        "role": "*",
-        "logGroup": "*",
-        "functionName": "*",
-        "vpc": "*",
-        "vpcSubnets": "*",
-        "code": "*",
-        "handler": "*",
-        "runtime": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          true
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addMetadata": [
-          "*",
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/User/SetUserPassword/Resource": [
@@ -800,33 +538,19 @@
   "/AlbJwtCognitoStack/User/SetUserPassword/CustomResourcePolicy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": {
-        "statements": "*"
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource": [
@@ -860,27 +584,15 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
+      "data": "*"
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
+      "data": "*"
     }
   ],
   "/AlbJwtCognitoStack/JwtSignin/Code/AssetBucket": [
