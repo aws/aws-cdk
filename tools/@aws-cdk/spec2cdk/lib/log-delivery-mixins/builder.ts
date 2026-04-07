@@ -1,14 +1,14 @@
 import type { Resource, Service, SpecDatabase, VendedLogs } from '@aws-cdk/service-spec-types';
-import { naming, util } from '@aws-cdk/spec2cdk';
-import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '@aws-cdk/spec2cdk/lib/cdk/cdk';
 import type { Method } from '@cdklabs/typewriter';
 import { Module, ExternalModule, ClassType, Stability, Type, expr, stmt, ThingSymbol, $this, CallableProxy, NewExpression, $E, $T, EnumType, InterfaceType } from '@cdklabs/typewriter';
 import { MIXINS_LOGS_DELIVERY } from './helpers';
-import type { ServiceSubmoduleProps, LocatedModule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
-import { BaseServiceSubmodule } from '@aws-cdk/spec2cdk/lib/cdk/service-submodule';
-import type { AddServiceProps, LibraryBuilderProps } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import { LibraryBuilder } from '@aws-cdk/spec2cdk/lib/cdk/library-builder';
-import { ResourceReference } from '@aws-cdk/spec2cdk/lib/cdk/reference-props';
+import { CDK_CORE, CDK_INTERFACES, CONSTRUCTS } from '../cdk/cdk';
+import type { AddServiceProps, LibraryBuilderProps } from '../cdk/library-builder';
+import { LibraryBuilder } from '../cdk/library-builder';
+import { ResourceReference } from '../cdk/reference-props';
+import type { ServiceSubmoduleProps, LocatedModule } from '../cdk/service-submodule';
+import { BaseServiceSubmodule } from '../cdk/service-submodule';
+import { naming, util } from '../index';
 
 class LogsDeliveryBuilderServiceModule extends BaseServiceSubmodule {
   public readonly constructLibModule: ExternalModule;
