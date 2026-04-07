@@ -3,14 +3,9 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "encryption": "MANAGED",
         "removalPolicy": "destroy"
       }
-    }
-  ],
-  "/aws-cdk-bedrock-agentcore-memory-stream-delivery/AwsCdkKinesisEncryptedStreamsUnsupportedRegions": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "AwsCdkKinesisEncryptedStreamsUnsupportedRegions"
     }
   ],
   "/aws-cdk-bedrock-agentcore-memory-stream-delivery/MemoryWithStreamDelivery": [
