@@ -48,7 +48,7 @@ rule IAM_NO_WILDCARD_ACTIONS_INLINE when %iam_roles !empty {
                         }
                         when Action is_list {
                             Action[*] != "*"
-                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace '*'in Action with specific actions needed.##>>
+                                <<##ERROR:IAM role inline policy must not use wildcard actions. Replace '*' in Action with specific actions needed.##>>
                             Action[*] != /\w+:\*$/
                                 <<##ERROR:IAM role inline policy must not use wildcard actions. Replace 'service:*' in Action with specific actions needed.##>>
                         }

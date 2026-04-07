@@ -43,7 +43,7 @@ export function enhanceXmlWithFormattedFailures(xmlFilePath: string): void {
     xmlContent = xmlContent.replace(
       /<failure message="([^"]*)">([\s\S]*?)<\/failure>/g,
       (match, messageAttr, content) => {
-        // Extract and concatenate all custom messages from {{...}} in the body
+        // Extract custom error message from the failure body (one per failure element)
         const customMsgMatch = content.match(/##ERROR:([\s\S]*?)##/);
         const customMsg = customMsgMatch ? customMsgMatch[1] : messageAttr;
         let splitContent = content.replace(/##ERROR:([\s\S]*?)##/g, '');
