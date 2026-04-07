@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "8fcac4b2ff5dc797f588c28fc2fd390666d6191922b9d5ca5129dbeaeb4e75ee": {
+    "e6b479d88ba23e0f8b246fb19424e4bacae68ef3d86d49604f68f6facac1393c": {
       "displayName": "aws-cdk-bedrock-agentcore-memory-1 Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-memory-1.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-0a654903": {
+        "current_account-current_region-c988651d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "8fcac4b2ff5dc797f588c28fc2fd390666d6191922b9d5ca5129dbeaeb4e75ee.json",
+          "objectKey": "e6b479d88ba23e0f8b246fb19424e4bacae68ef3d86d49604f68f6facac1393c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
