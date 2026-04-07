@@ -3,7 +3,7 @@ import { ApplicationListener, type IApplicationListener } from './application-li
 import type { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import type { Duration, SecretValue } from '../../../core';
-import { Token, Tokenization } from '../../../core';
+import { Annotations, Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IUserPoolRef } from '../../../interfaces/generated/aws-cognito-interfaces.generated';
@@ -621,6 +621,9 @@ class AuthenticateJwtAction extends ListenerAction {
 
     if (this.allowHttpsOutbound) {
       listener.connections.allowToAnyIpv4(Port.tcp(443), 'Allow to JWKS endpoint');
+    } else {
+      Annotations.of(scope).addWarningV2('@aws-cdk/aws-elasticloadbalancingv2:jwtAllowHttpsOutboundDisabled',
+        'allowHttpsOutbound is false. Ensure that outbound HTTPS (port 443) traffic to the JWKS endpoint is allowed in the ALB\'s security group.');
     }
   }
 }
