@@ -11,6 +11,7 @@ import * as sns from '../../aws-sns';
 import * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 import * as s3deploy from '../lib';
 
@@ -1743,7 +1744,7 @@ function readDataFile(casm: cxapi.CloudAssembly, relativePath: string): string {
     }
   }
 
-  throw new UnscopedValidationError('FileFoundAssetsAssembly', `File ${relativePath} not found in any of the assets of the assembly`);
+  throw new UnscopedValidationError(lit`FileFoundAssetsAssembly`, `File ${relativePath} not found in any of the assets of the assembly`);
 }
 
 test('DeployTimeSubstitutedFile allows custom role to be supplied', () => {

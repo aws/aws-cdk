@@ -7,6 +7,7 @@ import { ParameterGroup } from './parameter-group';
 import type * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The extra options passed to the `IClusterEngine.bindToCluster` method.
@@ -1492,10 +1493,10 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
     // skip validation for unversioned as it might be supported/unsupported. we cannot reliably tell at compile-time
     if (this.engineVersion?.fullVersion) {
       if (options.s3ImportRole && !(config.features?.s3Import)) {
-        throw new ValidationError('S3ImportNotSupportedForPostgresVersion', `s3Import is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Import feature.`, scope);
+        throw new ValidationError(lit`S3ImportNotSupportedForPostgresVersion`, `s3Import is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Import feature.`, scope);
       }
       if (options.s3ExportRole && !(config.features?.s3Export)) {
-        throw new ValidationError('S3ExportNotSupportedForPostgresVersion', `s3Export is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Export feature.`, scope);
+        throw new ValidationError(lit`S3ExportNotSupportedForPostgresVersion`, `s3Export is not supported for Postgres version: ${this.engineVersion.fullVersion}. Use a version that supports the s3Export feature.`, scope);
       }
     }
     return config;
@@ -1503,7 +1504,7 @@ class AuroraPostgresClusterEngine extends ClusterEngineBase {
 
   protected defaultParameterGroup(scope: Construct): IParameterGroup | undefined {
     if (!this.parameterGroupFamily) {
-      throw new ValidationError('CannotCreateParameterGroupForUnversionedEngine', 'Could not create a new ParameterGroup for an unversioned aurora-postgresql cluster engine. ' +
+      throw new ValidationError(lit`CannotCreateParameterGroupForUnversionedEngine`, 'Could not create a new ParameterGroup for an unversioned aurora-postgresql cluster engine. ' +
         'Please either use a versioned engine, or pass an explicit ParameterGroup when creating the cluster', scope);
     }
     return ParameterGroup.fromParameterGroupName(scope, 'AuroraPostgreSqlDatabaseClusterEngineDefaultParameterGroup',

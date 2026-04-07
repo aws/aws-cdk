@@ -3,6 +3,7 @@ import type { IResolvable, IResolveContext } from '../resolvable';
 import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
+import { lit } from './literal-string';
 
 /**
  * Customization properties for an Intrinsic token
@@ -49,7 +50,7 @@ export class Intrinsic implements IResolvable {
 
   constructor(value: any, options: IntrinsicProps = {}) {
     if (isFunction(value)) {
-      throw new UnscopedValidationError('MustBeArgumentIntrinsicPlain', `Argument to Intrinsic must be a plain value object, got ${value}`);
+      throw new UnscopedValidationError(lit`MustBeArgumentIntrinsicPlain`, `Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
     this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];

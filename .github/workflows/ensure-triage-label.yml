@@ -1,0 +1,24 @@
+# Issues created outside GitHub issue templates (e.g., via API or CLI) receive
+# no labels, which causes them to be skipped by the triage pipeline in
+# issue-label-assign.yml. This workflow ensures they get 'needs-triage'.
+name: "Ensure triage label"
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  ensure-triage-label:
+    if: join(github.event.issue.labels.*.name, '') == ''
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@v8
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['needs-triage']
+            });

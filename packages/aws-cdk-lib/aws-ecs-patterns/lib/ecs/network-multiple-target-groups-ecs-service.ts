@@ -3,6 +3,7 @@ import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
 import type { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { NetworkMultipleTargetGroupsServiceBaseProps } from '../base/network-multiple-target-groups-service-base';
 import {
@@ -102,7 +103,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
     super(scope, id, props);
 
     if (props.taskDefinition && props.taskImageOptions) {
-      throw new ValidationError('SpecifyOneTaskDefinitionTask', 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionTask`, 'You must specify only one of TaskDefinition or TaskImageOptions.', this);
     } else if (props.taskDefinition) {
       this.taskDefinition = props.taskDefinition;
     } else if (props.taskImageOptions) {
@@ -131,11 +132,11 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
         }
       }
     } else {
-      throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify one of: taskDefinition or image', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
 
     if (!this.taskDefinition.defaultContainer) {
-      throw new ValidationError('LeastOneEssentialContainerSpecified', 'At least one essential container must be specified', this);
+      throw new ValidationError(lit`LeastOneEssentialContainerSpecified`, 'At least one essential container must be specified', this);
     }
     if (this.taskDefinition.defaultContainer.portMappings.length === 0) {
       this.taskDefinition.defaultContainer.addPortMappings({
@@ -151,7 +152,7 @@ export class NetworkMultipleTargetGroupsEc2Service extends NetworkMultipleTarget
       const containerPort = this.taskDefinition.defaultContainer.portMappings[0].containerPort;
 
       if (!containerPort) {
-        throw new ValidationError('FirstPortMappingAddedDefault', 'The first port mapping added to the default container must expose a single port', this);
+        throw new ValidationError(lit`FirstPortMappingAddedDefault`, 'The first port mapping added to the default container must expose a single port', this);
       }
 
       this.targetGroup = this.listener.addTargets('ECS', {

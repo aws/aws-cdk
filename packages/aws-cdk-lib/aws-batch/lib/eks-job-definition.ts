@@ -7,6 +7,7 @@ import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition
 import { ArnFormat, Lazy, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -225,7 +226,7 @@ export class EksJobDefinition extends JobDefinitionBase implements IEksJobDefini
                   };
                 }
 
-                throw new ValidationError('UnknownVolumeType', 'unknown volume type', this);
+                throw new ValidationError(lit`UnknownVolumeType`, 'unknown volume type', this);
               });
             },
           }),

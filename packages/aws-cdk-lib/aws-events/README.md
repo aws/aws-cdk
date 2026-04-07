@@ -366,7 +366,7 @@ For more information, see [KMS key options for event bus encryption](https://doc
 
 ## Configuring logging
 
-To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and wether to include details or not.
+To configure logging for an Event Bus, leverage the LogConfig property. It allows different level of logging (NONE, INFO, TRACE, ERROR) and whether to include details or not.
 
 ```ts
 import { EventBus, IncludeDetail, Level } from 'aws-cdk-lib/aws-events';

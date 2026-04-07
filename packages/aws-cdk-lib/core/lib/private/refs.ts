@@ -22,6 +22,7 @@ import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
 import { CfnResource } from '../cfn-resource';
+import { lit } from './literal-string';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -60,14 +61,14 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // unsupported: stacks from different apps
   if (producer.node.root !== consumer.node.root) {
-    throw new UnscopedValidationError('CannotReferenceAcrossApps', 'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
+    throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, 'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
     // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
     if (consumer.synthesizer.cloudFormationExecutionRole == null) {
-      throw new UnscopedValidationError('NoCfnExecutionRoleForCrossAccountRefs',
+      throw new UnscopedValidationError(lit`NoCfnExecutionRoleForCrossAccountRefs`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Could not find a CloudFormation execution role for the consumer stack. Use a different stack synthesizer, such as DefaultStackSynthesizer.',
       );
@@ -75,7 +76,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
     // and the environment is known
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
-      throw new UnscopedValidationError('CrossRegionReferencesRequireExplicitRegion',
+      throw new UnscopedValidationError(lit`CrossRegionReferencesRequireExplicitRegion`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
@@ -131,7 +132,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // Stacks are in the same account, but different regions
   if (producerRegion !== consumerRegion) {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
-      throw new UnscopedValidationError('CrossRegionReferencesRequireExplicitRegion',
+      throw new UnscopedValidationError(lit`CrossRegionReferencesRequireExplicitRegion`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
@@ -362,7 +363,7 @@ function createNestedStackParameter(nested: Stack, reference: CfnReference, valu
 
     // Ugly little hack until we move NestedStack to this module.
     if (!('setParameter' in nested)) {
-      throw new UnscopedValidationError('NestedStackMustHaveSetParameter', 'assertion failed: nested stack should have a "setParameter" method');
+      throw new UnscopedValidationError(lit`NestedStackMustHaveSetParameter`, 'assertion failed: nested stack should have a "setParameter" method');
     }
 
     (nested as any).setParameter(param.logicalId, Token.asString(value));
@@ -387,7 +388,7 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
   }
 
   if (!producer.nestedStackResource) {
-    throw new AssumptionError('AssertionFailed', 'assertion failed');
+    throw new AssumptionError(lit`AssertionFailed`, 'assertion failed');
   }
 
   return producer.nestedStackResource.getAtt(`Outputs.${output.logicalId}`) as CfnReference;
@@ -401,7 +402,7 @@ function createNestedStackOutput(producer: Stack, reference: Reference): CfnRefe
 export function referenceNestedStackValueInParent(reference: Reference, targetStack: Stack): Intrinsic {
   let currentStack = Stack.of(reference.target);
   if (currentStack !== targetStack && !isNested(currentStack, targetStack)) {
-    throw new UnscopedValidationError('ReferencedResourceMustBeInTargetStack', `Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
+    throw new UnscopedValidationError(lit`ReferencedResourceMustBeInTargetStack`, `Referenced resource must be in stack '${targetStack.node.path}', got '${reference.target.node.path}'`);
   }
 
   const isNestedListReference = currentStack !== targetStack && reference.typeHint === ResolutionTypeHint.STRING_LIST;

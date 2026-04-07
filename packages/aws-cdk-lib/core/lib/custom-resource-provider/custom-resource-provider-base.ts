@@ -12,6 +12,7 @@ import { ValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import { PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
 import { Lazy } from '../lazy';
+import { lit } from '../private/literal-string';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -45,7 +46,7 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public get codeHash(): string {
     if (!this._codeHash) {
-      throw new ValidationError('CustomResourceUsesInlineCode', 'This custom resource uses inlineCode: true and does not have a codeHash', this);
+      throw new ValidationError(lit`CustomResourceUsesInlineCode`, 'This custom resource uses inlineCode: true and does not have a codeHash', this);
     }
     return this._codeHash;
   }
@@ -72,7 +73,7 @@ export abstract class CustomResourceProviderBase extends Construct {
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
-      throw new ValidationError('CannotFind', `cannot find ${props.codeDirectory}/index.js`, this);
+      throw new ValidationError(lit`CannotFind`, `cannot find ${props.codeDirectory}/index.js`, this);
     }
 
     if (props.policyStatements) {

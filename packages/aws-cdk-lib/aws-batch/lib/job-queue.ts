@@ -6,6 +6,7 @@ import type { Duration, IResource } from '../../core';
 import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IComputeEnvironmentRef, IJobQueueRef, ISchedulingPolicyRef, JobQueueReference } from '../../interfaces/generated/aws-batch-interfaces.generated';
 
@@ -259,7 +260,7 @@ export class JobQueue extends Resource implements IJobQueue {
       }
 
       public addComputeEnvironment(_computeEnvironment: IComputeEnvironmentRef, _order: number): void {
-        throw new ValidationError('CannotAddComputeEnvironmentsImported', `cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
+        throw new ValidationError(lit`CannotAddComputeEnvironmentsImported`, `cannot add ComputeEnvironments to imported JobQueue '${id}'`, this);
       }
     }
 
@@ -355,7 +356,7 @@ export class JobQueue extends Resource implements IJobQueue {
       const maxTimeSeconds = jobStateTimeLimitAction.maxTime.toSeconds();
 
       if (maxTimeSeconds < 600 || maxTimeSeconds > 86400) {
-        throw new ValidationError('MaxTimeSeconds', `maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`, scope);
+        throw new ValidationError(lit`MaxTimeSeconds`, `maxTime must be between 600 and 86400 seconds, got ${maxTimeSeconds} seconds at jobStateTimeLimitActions[${index}]`, scope);
       }
 
       return {

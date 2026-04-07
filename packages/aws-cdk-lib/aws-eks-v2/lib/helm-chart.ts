@@ -4,6 +4,7 @@ import { KubectlProvider } from './kubectl-provider';
 import type { Asset } from '../../aws-s3-assets';
 import type { Duration, RemovalPolicy } from '../../core';
 import { CustomResource, Names, Stack, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Helm Chart options.
@@ -170,21 +171,21 @@ export class HelmChart extends Construct {
 
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new ValidationError('KubectlProviderDefinedClusterDefine', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
+      throw new ValidationError(lit`KubectlProviderDefinedClusterDefine`, 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     const timeout = props.timeout?.toSeconds();
     if (timeout && timeout > 900) {
-      throw new ValidationError('HelmChartTimeoutCannotHigher', 'Helm chart timeout cannot be higher than 15 minutes.', this);
+      throw new ValidationError(lit`HelmChartTimeoutCannotHigher`, 'Helm chart timeout cannot be higher than 15 minutes.', this);
     }
 
     if (!this.chart && !this.chartAsset) {
-      throw new ValidationError('MustBeEitherChartChartasset', "Either 'chart' or 'chartAsset' must be specified to install a helm chart", this);
+      throw new ValidationError(lit`MustBeEitherChartChartasset`, "Either 'chart' or 'chartAsset' must be specified to install a helm chart", this);
     }
 
     if (this.chartAsset && (this.repository || this.version)) {
       throw new ValidationError(
-        'ChartAssetRepositoryVersionConflict',
+        lit`ChartAssetRepositoryVersionConflict`,
         "Neither 'repository' nor 'version' can be used when configuring 'chartAsset'",
         this,
       );

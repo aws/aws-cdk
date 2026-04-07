@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../errors';
+import { lit } from '../private/literal-string';
 
 /**
  * A string with variables in the form `${name}`.
@@ -29,7 +30,7 @@ export class TemplateString {
         if (nextLiteral) {
           const endIndex = input.indexOf(nextLiteral, inputIndex);
           if (endIndex === -1) {
-            throw new UnscopedValidationError('InputDoesMatchTemplate', `Input ${input} does not match template ${this.template}`);
+            throw new UnscopedValidationError(lit`InputDoesMatchTemplate`, `Input ${input} does not match template ${this.template}`);
           }
           value = input.slice(inputIndex, endIndex);
           inputIndex = endIndex;
@@ -41,14 +42,14 @@ export class TemplateString {
         result[varName] = value;
       } else {
         if (input.slice(inputIndex, inputIndex + part.length) !== part) {
-          throw new UnscopedValidationError('InputDoesMatchTemplate', `Input ${input} does not match template ${this.template}`);
+          throw new UnscopedValidationError(lit`InputDoesMatchTemplate`, `Input ${input} does not match template ${this.template}`);
         }
         inputIndex += part.length;
       }
     }
 
     if (inputIndex !== input.length) {
-      throw new UnscopedValidationError('InputDoesMatchTemplate', `Input ${input} does not match template ${this.template}`);
+      throw new UnscopedValidationError(lit`InputDoesMatchTemplate`, `Input ${input} does not match template ${this.template}`);
     }
 
     return result;
@@ -63,7 +64,7 @@ export class TemplateString {
   public interpolate(variables: Record<string, string>): string {
     return this.template.replace(/\${([^{}]+)}/g, (_, varName) => {
       if (variables[varName] === undefined) {
-        throw new UnscopedValidationError('VariableProvidedTemplateInterpolation', `Variable ${varName} not provided for template interpolation`);
+        throw new UnscopedValidationError(lit`VariableProvidedTemplateInterpolation`, `Variable ${varName} not provided for template interpolation`);
       }
       return variables[varName];
     });

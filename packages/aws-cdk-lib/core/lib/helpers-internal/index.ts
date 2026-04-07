@@ -11,3 +11,4 @@ export * from './memoize';
 export * from './reflections';
 export * from './traits';
 export { CfnPropsMixin, type CfnPropsMixinOptions } from './cfn-props-mixin';
+export * from '../private/literal-string';

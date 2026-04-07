@@ -8,6 +8,7 @@ import { ArnFormat, Lazy, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
 import type { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
@@ -205,12 +206,12 @@ export class DomainName extends Resource implements IDomainName {
     addConstructMetadata(this, props);
 
     if (props.domainName === '') {
-      throw new ValidationError('EmptyStringDomainNameAllowed', 'empty string for domainName not allowed', scope);
+      throw new ValidationError(lit`EmptyStringDomainNameAllowed`, 'empty string for domainName not allowed', scope);
     }
 
     // validation for ownership certificate
     if (props.ownershipCertificate && !props.mtls) {
-      throw new ValidationError('OwnershipCertificateMtlsDomains', 'ownership certificate can only be used with mtls domains', scope);
+      throw new ValidationError(lit`OwnershipCertificateMtlsDomains`, 'ownership certificate can only be used with mtls domains', scope);
     }
 
     const mtlsConfig = this.configureMTLS(props.mtls);
@@ -258,7 +259,7 @@ export class DomainName extends Resource implements IDomainName {
   private validateEndpointType(endpointType: string | undefined) : void {
     for (let config of this.domainNameConfigurations) {
       if (endpointType && endpointType == config.endpointType) {
-        throw new ValidationError('EndpointType', `an endpoint with type ${endpointType} already exists`, this);
+        throw new ValidationError(lit`EndpointType`, `an endpoint with type ${endpointType} already exists`, this);
       }
     }
   }

@@ -728,6 +728,27 @@ new batch.EcsJobDefinition(this, 'JobDefn', {
 });
 ```
 
+### Job Definition Version Management
+
+By default, when you update a Job Definition, AWS Batch automatically deregisters the previous revision.
+This means any jobs that were submitted using the old revision may fail if they haven't started yet.
+
+You can preserve previous revisions by setting `skipDeregisterOnUpdate` to `true`:
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
+  skipDeregisterOnUpdate: true,  // Keep previous revisions active
+});
+```
+
+* This applies to all Job Definition types: ECS (EC2 and Fargate), EKS, and MultiNode
+* Default behavior (when not specified) follows AWS Batch defaults: previous revisions are deregistered
+
 ### Understanding Progressive Allocation Strategies
 
 AWS Batch uses an [allocation strategy](https://docs.aws.amazon.com/batch/latest/userguide/allocation-strategies.html) to determine what compute resource will efficiently handle incoming job requests. By default, **BEST_FIT** will pick an available compute instance based on vCPU requirements. If none exist, the job will wait until resources become available. However, with this strategy, you may have jobs waiting in the queue unnecessarily despite having more powerful instances available. Below is an example of how that situation might look like:

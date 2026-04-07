@@ -4,6 +4,7 @@ import type { CfnResource } from '../../core';
 import { FeatureFlags, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { md5hash } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
 import { LAMBDA_RECOGNIZE_LAYER_VERSION, LAMBDA_RECOGNIZE_VERSION_PROPS } from '../../cx-api';
 
 export function calculateFunctionHash(fn: LambdaFunction, additional: string = '') {
@@ -91,7 +92,7 @@ function filterUsefulKeys(properties: any, fn: LambdaFunction) {
     .filter(([k, v]) => v != null && !Object.keys(versionProps).includes(k))
     .map(([k, _]) => k);
   if (unclassified.length > 0) {
-    throw new ValidationError('UnrecognizedVersionProperties', `The following properties are not recognized as version properties: [${unclassified}].`
+    throw new ValidationError(lit`UnrecognizedVersionProperties`, `The following properties are not recognized as version properties: [${unclassified}].`
       + ' See the README of the aws-lambda module to learn more about this and to fix it.', fn);
   }
   const notLocked = Object.entries(versionProps).filter(([_, v]) => !v).map(([k, _]) => k);
@@ -209,7 +210,7 @@ function resolveSingleResourceProperties(stack: Stack, res: CfnResource): any {
   const resources = template.Resources;
   const resourceKeys = Object.keys(resources);
   if (resourceKeys.length !== 1) {
-    throw new ValidationError('ExpectedSingleCloudFormationResource', `Expected one rendered CloudFormation resource but found ${resourceKeys.length}`, res);
+    throw new ValidationError(lit`ExpectedSingleCloudFormationResource`, `Expected one rendered CloudFormation resource but found ${resourceKeys.length}`, res);
   }
   const logicalId = resourceKeys[0];
   return { properties: resources[logicalId].Properties, template, logicalId };

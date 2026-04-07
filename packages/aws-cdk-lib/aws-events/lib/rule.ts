@@ -14,6 +14,7 @@ import type { IResource } from '../../core';
 import { App, Lazy, Names, Resource, Stack, Token, TokenComparison, PhysicalName, ArnFormat, Annotations, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -144,7 +145,7 @@ export class Rule extends Resource implements IRule {
     addConstructMetadata(this, props);
 
     if (props.eventBus && props.schedule) {
-      throw new ValidationError('CannotAssociateRuleWithEventBusWhenUsingSchedule', 'Cannot associate rule with \'eventBus\' when using \'schedule\'', this);
+      throw new ValidationError(lit`CannotAssociateRuleWithEventBusWhenUsingSchedule`, 'Cannot associate rule with \'eventBus\' when using \'schedule\'', this);
     }
 
     this.description = props.description;
@@ -214,27 +215,27 @@ export class Rule extends Resource implements IRule {
 
         // for cross-account or cross-region events, we require a concrete target account and region
         if (!targetAccount || Token.isUnresolved(targetAccount)) {
-          throw new ValidationError('NeedConcreteAccountForTargetStack', 'You need to provide a concrete account for the target stack when using cross-account or cross-region events', this);
+          throw new ValidationError(lit`NeedConcreteAccountForTargetStack`, 'You need to provide a concrete account for the target stack when using cross-account or cross-region events', this);
         }
         if (!targetRegion || Token.isUnresolved(targetRegion)) {
-          throw new ValidationError('NeedConcreteRegionForTargetStack', 'You need to provide a concrete region for the target stack when using cross-account or cross-region events', this);
+          throw new ValidationError(lit`NeedConcreteRegionForTargetStack`, 'You need to provide a concrete region for the target stack when using cross-account or cross-region events', this);
         }
         if (Token.isUnresolved(sourceAccount)) {
-          throw new ValidationError('NeedConcreteAccountForSourceStack', 'You need to provide a concrete account for the source stack when using cross-account or cross-region events', this);
+          throw new ValidationError(lit`NeedConcreteAccountForSourceStack`, 'You need to provide a concrete account for the source stack when using cross-account or cross-region events', this);
         }
 
         // Don't exactly understand why this code was here (seems unlikely this rule would be violated), but
         // let's leave it in nonetheless.
         const sourceApp = this.node.root;
         if (!sourceApp || !App.isApp(sourceApp)) {
-          throw new ValidationError('EventStackMustBePartOfCdkApp', 'Event stack which uses cross-account or cross-region targets must be part of a CDK app', this);
+          throw new ValidationError(lit`EventStackMustBePartOfCdkApp`, 'Event stack which uses cross-account or cross-region targets must be part of a CDK app', this);
         }
         const targetApp = Node.of(targetProps.targetResource).root;
         if (!targetApp || !App.isApp(targetApp)) {
-          throw new ValidationError('TargetStackMustBePartOfCdkApp', 'Target stack which uses cross-account or cross-region event targets must be part of a CDK app', this);
+          throw new ValidationError(lit`TargetStackMustBePartOfCdkApp`, 'Target stack which uses cross-account or cross-region event targets must be part of a CDK app', this);
         }
         if (sourceApp !== targetApp) {
-          throw new ValidationError('StacksMustBelongToSameCdkApp', 'Event stack and target stack must belong to the same CDK app', this);
+          throw new ValidationError(lit`StacksMustBelongToSameCdkApp`, 'Event stack and target stack must belong to the same CDK app', this);
         }
 
         // The target of this Rule will be the default event bus of the target environment
@@ -462,7 +463,7 @@ export class Rule extends Resource implements IRule {
     }
 
     // For now, we don't do the work for the support stack yet
-    throw new ValidationError('CannotCreateCrossAccountRuleForImportedResource', 'Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)', this);
+    throw new ValidationError(lit`CannotCreateCrossAccountRuleForImportedResource`, 'Cannot create a cross-account or cross-region rule for an imported resource (create a stack with the right environment for the imported resource)', this);
   }
 
   /**

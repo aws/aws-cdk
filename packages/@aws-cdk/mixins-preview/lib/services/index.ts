@@ -1,3 +1,4 @@
+export * as aws_apigateway from './aws-apigateway';
 export * as aws_appmesh from './aws-appmesh';
 export * as aws_aps from './aws-aps';
 export * as aws_athena from './aws-athena';
@@ -62,6 +63,7 @@ export * as aws_pipes from './aws-pipes';
 export * as aws_qbusiness from './aws-qbusiness';
 export * as aws_qldb from './aws-qldb';
 export * as aws_rds from './aws-rds';
+export * as aws_route53globalresolver from './aws-route53globalresolver';
 export * as aws_route53profiles from './aws-route53profiles';
 export * as aws_route53recoveryreadiness from './aws-route53recoveryreadiness';
 export * as aws_route53resolver from './aws-route53resolver';
