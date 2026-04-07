@@ -6,16 +6,8 @@
     "RetentionPeriodHours": 24,
     "ShardCount": 1,
     "StreamEncryption": {
-     "Fn::If": [
-      "AwsCdkKinesisEncryptedStreamsUnsupportedRegions",
-      {
-       "Ref": "AWS::NoValue"
-      },
-      {
-       "EncryptionType": "KMS",
-       "KeyId": "alias/aws/kinesis"
-      }
-     ]
+     "EncryptionType": "KMS",
+     "KeyId": "alias/aws/kinesis"
     }
    },
    "UpdateReplacePolicy": "Delete",
@@ -104,28 +96,6 @@
    },
    "DependsOn": [
     "MemoryWithStreamDeliveryServiceRoleDefaultPolicy0FFA2F76"
-   ]
-  }
- },
- "Conditions": {
-  "AwsCdkKinesisEncryptedStreamsUnsupportedRegions": {
-   "Fn::Or": [
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-north-1"
-     ]
-    },
-    {
-     "Fn::Equals": [
-      {
-       "Ref": "AWS::Region"
-      },
-      "cn-northwest-1"
-     ]
-    }
    ]
   }
  },
