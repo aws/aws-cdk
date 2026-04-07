@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import * as s3_assets from '../../aws-s3-assets';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Result of binding `Code` into a `Function`.
@@ -68,7 +69,7 @@ export class AssetCode extends Code {
         ...this.options,
       });
     } else if (cdk.Stack.of(this.asset) !== cdk.Stack.of(scope)) {
-      throw new cdk.ValidationError('AssetAlreadyAssociated', `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
+      throw new cdk.ValidationError(lit`AssetAlreadyAssociated`, `Asset is already associated with another stack '${cdk.Stack.of(this.asset).stackName}'. ` +
         'Create a new Code instance for every stack.', scope);
     }
 
@@ -86,7 +87,7 @@ export class InlineCode extends Code {
     super();
 
     if (code.length === 0) {
-      throw new cdk.UnscopedValidationError('InlineCodeEmpty', 'AppSync Inline code cannot be empty');
+      throw new cdk.UnscopedValidationError(lit`InlineCodeEmpty`, 'AppSync Inline code cannot be empty');
     }
   }
 

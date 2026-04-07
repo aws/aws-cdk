@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Enum for representing all the days of the week
@@ -99,10 +100,10 @@ export class LustreMaintenanceTime {
    */
   private validate(hour: number, minute: number) {
     if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
-      throw new UnscopedValidationError('MaintenanceTimeHourMustBeInteger', 'Maintenance time hour must be an integer between 0 and 23');
+      throw new UnscopedValidationError(lit`MaintenanceTimeHourMustBeInteger`, 'Maintenance time hour must be an integer between 0 and 23');
     }
     if (!Number.isInteger(minute) || minute < 0 || minute > 59) {
-      throw new UnscopedValidationError('MaintenanceTimeMinuteMustBeInteger', 'Maintenance time minute must be an integer between 0 and 59');
+      throw new UnscopedValidationError(lit`MaintenanceTimeMinuteMustBeInteger`, 'Maintenance time minute must be an integer between 0 and 59');
     }
   }
 }

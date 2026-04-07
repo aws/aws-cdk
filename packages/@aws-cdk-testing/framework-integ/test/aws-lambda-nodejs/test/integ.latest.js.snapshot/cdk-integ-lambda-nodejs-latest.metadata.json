@@ -1,0 +1,106 @@
+{
+  "/cdk-integ-lambda-nodejs-latest": [
+    {
+      "type": "aws:cdk:warning",
+      "data": "Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible. [ack: aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage]",
+      "trace": [
+        "Annotations.addMessage (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:200:29)",
+        "Annotations.addWarningV2 (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
+        "new Bundling (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:102:41)",
+        "Bundling.bundle (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/bundling.js:30:23)",
+        "new NodejsFunction (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:59:45)",
+        "new TestStack (/Users/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:13:31)",
+        "Object.<anonymous> (/Users/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.latest.js:28:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1469:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1548:10)",
+        "Module.load (node:internal/modules/cjs/loader:1288:32)",
+        "Module._load (node:internal/modules/cjs/loader:1104:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:174:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "nodeModules": "*",
+          "forceDockerBundling": true
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "nodeModules": "*",
+          "forceDockerBundling": true
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "latestFE0D80B6"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/Exports/Output{\"Ref\":\"latestFE0D80B6\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflatestFE0D80B6C9B17E6B"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "latestServiceRole8A40241A"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-latest/latest/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}
