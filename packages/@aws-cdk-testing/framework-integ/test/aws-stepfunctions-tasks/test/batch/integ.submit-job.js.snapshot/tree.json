@@ -1170,24 +1170,7 @@
                                       ]
                                     },
                                     {
-                                      "Fn::Join": [
-                                        "",
-                                        [
-                                          "arn:",
-                                          {
-                                            "Ref": "AWS::Partition"
-                                          },
-                                          ":batch:",
-                                          {
-                                            "Ref": "AWS::Region"
-                                          },
-                                          ":",
-                                          {
-                                            "Ref": "AWS::AccountId"
-                                          },
-                                          ":job-definition/*"
-                                        ]
-                                      ]
+                                      "Ref": "JobDefinitionC0E28A87"
                                     }
                                   ]
                                 },
