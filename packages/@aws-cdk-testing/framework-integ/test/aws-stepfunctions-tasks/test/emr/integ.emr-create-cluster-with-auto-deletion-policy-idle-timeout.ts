@@ -35,7 +35,7 @@ const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
 });
 
 const stateMachine = new sfn.StateMachine(stack, 'SM', {
-  definition: step,
+  definitionBody: sfn.DefinitionBody.fromChainable(step),
 });
 
 const testCase = new IntegTest(app, 'EmrCreateClusterTestAutoDeletionPolicyIdleTimeout', {
