@@ -39,7 +39,7 @@ experience across the entire AWS surface area.
       - [Prefer Additions](#prefer-additions)
       - [Dropped Mutations](#dropped-mutations)
     - [Factories](#factories)
-    - [Imports](#imports)
+    - [Referenced Resources](#referenced-resources)
       - [“from” Methods](#from-methods)
       - [From-attributes](#from-attributes)
     - [Roles](#roles)
@@ -213,11 +213,19 @@ distinct role and can be used independently of an L2.
 
 ### Mixins
 
-Mixins are **inward-looking features** that modify a resource's own
-configuration. They are composable abstractions applied to constructs via the
-`.with()` method. Mixins usually operate on a single primary resource and can be
-applied to L1s, L2s, or custom constructs alike. They are not designed for
-integrations between two equally important resources — use a
+Mixins are **inward-looking features** that extend a resource's own behavior.
+They are composable abstractions applied to constructs via the `.with()` method.
+
+A Mixin is a feature *of* the target resource. The defining question is: "is
+this feature about the target resource?" If yes, it is a Mixin — regardless of
+whether it sets properties on the L1, creates auxiliary resources (e.g. custom
+resource handlers, delivery sources), or both. Mixins may accept other
+constructs as props (e.g. a destination log group), but the feature remains
+about the target resource.
+
+Mixins usually operate on a single primary resource and can be applied to L1s,
+L2s, or custom constructs alike. They are not designed for features that serve
+an external consumer rather than the target resource — use a
 [Facade](#facades) for that.
 
 Examples: `BucketVersioning`, `BucketAutoDeleteObjects`, `BucketBlockPublicAccess`.
@@ -235,10 +243,12 @@ new s3.Bucket(this, 'Bucket', { removalPolicy: RemovalPolicy.DESTROY })
 
 When to use a Mixin:
 
-- A feature can be expressed as a modification to an L1 resource.
+- The feature is *about* the target resource — it extends the resource's own
+  behavior or lifecycle.
+- The feature sets properties on the L1 resource (e.g. enabling versioning).
+- The feature creates auxiliary resources that serve the primary resource (e.g.
+  custom resource handlers, delivery sources, policy resources).
 - The same feature should be applicable to both L1 and L2 constructs.
-- A feature involves creating auxiliary resources (e.g., custom resources,
-  policies) that support the primary resource.
 - You want to allow users to compose features independently of the L2
   construct's props.
 
@@ -253,10 +263,16 @@ For detailed implementation guidelines, see the
 ### Facades
 
 Facades are **resource-specific simplified interfaces that provide
-integrations** for a resource with other things. They are standalone classes
-with a static factory method (e.g., `fromBucket()` or `of()`) that accepts a
-resource reference interface. Facades are exposed as properties on the construct
-interface.
+integrations** for a resource with external consumers. They are standalone
+classes with a static factory method (e.g., `fromBucket()` or `of()`) that
+accepts a resource reference interface. Facades are exposed as properties on the
+construct interface.
+
+The defining characteristic of a Facade is directionality: a Facade serves an
+*external consumer*, not the target resource. For example, `BucketGrants`
+exists to serve the grantee (a role that needs access), not the bucket. Compare
+this to a Mixin like `BucketAutoDeleteObjects`, which is a feature *of* the
+bucket regardless of any external consumer.
 
 Facades are always specific to a particular resource type — that is why it is
 `BucketGrants` and not just `Grants`. While Facades for different resources look
@@ -284,10 +300,10 @@ grants.read(role);
 
 When to use a Facade:
 
-- The feature provides an integration between a specific resource and something
-  external (e.g., IAM permissions, CloudWatch metrics, event patterns).
+- The feature serves an external consumer, not the target resource (e.g., IAM
+  permissions serve the grantee, CloudWatch metrics serve the operator).
 - The feature should work with both L1 and L2 constructs.
-- The feature does not modify the resource's own configuration.
+- The feature is not *about* the target resource's own behavior.
 
 The [Grants](#grants) section below describes the most common Facade in detail.
 
@@ -318,8 +334,8 @@ interact with directly.
 
 | Question                                         | Mixin                           | Facade           | Trait            |
 | ------------------------------------------------ | ------------------------------- | ---------------- | ---------------- |
-| Does it modify the resource itself?              | yes                             | no               |                  |
-| Does it integrate with external things?          | no                              | yes              | yes              |
+| Is the feature *about* the target resource?      | yes                             | no               |                  |
+| Does it serve an external consumer?              | no                              | yes              | yes              |
 | Does it advertise a service-agnostic capability? | cross-service Mixins            | no               | yes              |
 | Is it specific to one resource type?             | yes                             | yes              | no               |
 | Should it work with L1 constructs?               | yes                             | yes              | yes              |
@@ -1255,10 +1271,15 @@ export interface ILogGroup {
 }
 ```
 
-### Imports
+### Referenced resources
+
+> "Referenced resources" were formerly called "imported resources", but that may lead to confusion
+> because there is also a feature called "cdk import" that actually brings unowned
+> resources under CloudFormation's control. Therefore the current preferred terminology
+> here has changed to "referencing" instead.
 
 Construct classes should expose a set of static factory methods with a
-“**from**” prefix that will allow users to import *unowned* constructs into
+“**from**” prefix that will allow users to reference *unowned* constructs into
 their app.
 
 The signature of all “from” methods should adhere to the following rules
@@ -1266,14 +1287,14 @@ _[awslint:from-signature]_:
 
 * First argument must be **scope** of type **Construct**.
 * Second argument is a **string**. This string will be used to determine the
-  ID of the new construct. If the import method uses some value that is
+  ID of the new construct. If the referencing method uses some value that is
   promised to be unique within the stack scope (such as ARN, export name),
   this value can be reused as the construct ID.
 * Returns an object that implements the construct interface (**IFoo**).
 
 #### “from” Methods
 
-Resource constructs should export static “from” methods for importing unowned
+Resource constructs should export static “from” methods for referencing unowned
 resources given one or more of its physical attributes such as ARN, name, etc. All
 constructs should have at least one `fromXxx` method _[awslint:from-method]_:
 
@@ -1291,7 +1312,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   can use **Stack.parseArn** to achieve this purpose.
 
 If a resource has an ARN attribute, it should implement at least a **fromFooArn**
-import method [_awslint:from-arn_].
+referencing method [_awslint:from-arn_].
 
 To implement **fromAttribute** methods, use the abstract base class construct as
 follows:
@@ -1317,7 +1338,7 @@ If a resource has more than a single attribute (“ARN” and “name” are usu
 considered a single attribute since it's usually possible to convert one to the
 other), then the resource should provide a static **fromAttributes** method to
 allow users to explicitly supply values to all resource attributes when they
-import an external (unowned) resource [_awslint:from-attributes_].
+reference an external (unowned) resource [_awslint:from-attributes_].
 
 ```ts
 static fromFooAttributes(scope: Construct, id: string, attrs: FooAttributes): IFoo;
@@ -1332,29 +1353,33 @@ the user.
 Constructs that represent such resources should conform to the following
 guidelines.
 
-An optional prop called **role** of type **iam.IRole** should be exposed to allow
+An optional prop called **role** of type **iam.IRoleRef** should be exposed to allow
 users to "bring their own role", and use either an owned or unowned role
 _[awslint:role-config-prop]_.
+
+If the construct is going to grant permissions to the role, which is usually the case,
+the type should include **iam.IGrantable**, in a type intersection as follows:
 
 ```ts
 interface FooProps {
   /**
    * The role to associate with foo.
+   *
    * @default - a role will be automatically created
    */
-  role?: iam.IRole;
+  role?: iam.IRoleRef & iam.IGrantable;
 }
 ```
 
-The construct interface should expose a **role** property, and extends
+The construct interface should expose a **role** property, and extend
 **iam.IGrantable** _[awslint:role-property]_:
 
 ```ts
 interface IFoo extends iam.IGrantable {
   /**
-   * The role associated with foo. If foo is imported, no role will be available.
+   * The role associated with foo. If foo is an unowned resource, no role will be available.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRoleRef;
 }
 ```
 
@@ -1376,7 +1401,7 @@ this resource should have the specified permission.
 
 Implementing **IGrantable** brings an implementation burden of **grantPrincipal:
 IPrincipal**. This property must be set to the **role** if available, or to a
-new **iam.ImportedResourcePrincipal** if the resource is imported and the role
+new **iam.ImportedResourcePrincipal** if the resource is referenced and the role
 is not available.
 
 ### Resource Policies
@@ -1497,7 +1522,7 @@ To enable grant methods to work with L1 constructs, the CDK uses factory
 interfaces called [Traits](#traits) that wrap L1 resources into objects
 exposing higher-level interfaces:
 
-- `IResourcePolicyFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling resource policy 
+- `IResourcePolicyFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling resource policy
 manipulation.
 - `IEncryptedResourceFactory` wraps an L1 into an object implementing `IEncryptedResource`, enabling KMS key grants.
 
@@ -1526,7 +1551,7 @@ class MyFactory implements IResourcePolicyFactory {
   }
 }
 
-// After this, every time the Grants class encounters a CfnResource of type 'AWS::Some::Type', 
+// After this, every time the Grants class encounters a CfnResource of type 'AWS::Some::Type',
 // it will be able to use MyFactory to attempt to add statements to its resource policy.
 ResourceWithPolicies.register(scope, 'AWS::Some::Type', new MyFactory());
 ```
@@ -1541,6 +1566,7 @@ so on). The `grants.json` file has the following general structure:
 {
   "resources": {
     "Topic": {
+      "isEncrypted": true,
       "hasResourcePolicy": true,
       "grants": {
         "publish": {
@@ -1561,6 +1587,11 @@ so on). The `grants.json` file has the following general structure:
 where:
 
 * `Topic` - the class to generate grants for. This will lead to a class named TopicGrants.
+* `isEncrypted` - indicates whether the resource is encrypted with a KMS key. When true, the `actions()` method will
+have an `options` parameter of type `EncryptedPermissionOptions` that allows users to specify additional KMS permissions
+to be granted on the key. If left undefined, but at least one grant method includes `keyActions`, the CDK will assume
+that the resource is encrypted and the same behavior will apply. Note that if `isEncrypted` is explicitly set to false,
+it is an error to specify `keyActions` in any of the grants.
 * `hasResourcePolicy` - indicates whether the resource supports a resource policy. When true, all auto-generated methods in the Grants class will attempt to add statements to the resource policy when applicable. When false, the methods will only modify the principal's policy.
 * `publish` - the name of a grant.
 * `actions` - the actions to encompass in the grant.
@@ -1570,13 +1601,13 @@ where:
 
 Code generated from the `grants.json` file will have a very basic logic: it will try to add the given statement to the
 principal's policy. If `hasResourcePolicy` is true, it will also attempt to add the statement to the resource policy.
-This will only work if the resource implements the `iam.IResourceWithPolicyV2` interface or -- in case of L1s -- if 
+This will only work if the resource implements the `iam.IResourceWithPolicyV2` interface or -- in case of L1s -- if
 there is a `IResourcePolicyFactory` registered for its type (see previous section). If `keyActions` are specified in the
-JSON file, it will also attempt to grant the specified permissions on the associated KMS key, if the resource implements 
+JSON file, it will also attempt to grant the specified permissions on the associated KMS key, if the resource implements
 the `iam.IEncryptedResource` interface (or, similarly to resource policies, if there is a `IEncryptedResourceFactory`
 registered for it).
 
-If your permission use case requires additional logic, such as combining multiple `Grant` instances or handling 
+If your permission use case requires additional logic, such as combining multiple `Grant` instances or handling
 additional parameters, you will need to implement the Grants class manually.
 
 Historically, grant methods were implemented directly on the resource construct interface (e.g.

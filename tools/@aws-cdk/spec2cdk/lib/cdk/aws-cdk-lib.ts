@@ -175,7 +175,7 @@ export class AwsCdkLibBuilder extends LibraryBuilder<AwsCdkLibServiceSubmodule> 
     const filePath = this.pathsFor(moduleName, service).grants;
     const imports = this.resolveImportPaths(filePath);
     return {
-      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), imports.iam, grantsProps.isStable),
+      module: new GrantsModule(service, this.db, JSON.parse(grantsProps.config), imports.iam, grantsProps.isStable, imports.core),
       filePath,
     };
   }
