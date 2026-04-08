@@ -63,15 +63,19 @@ export interface ProvisionedPollerConfig {
   /**
    * The minimum number of pollers that should be provisioned.
    *
+   * Valid range: 1–200. Default: 1.
+   *
    * @default 1
    */
-  readonly minimumPollers: number;
+  readonly minimumPollers?: number;
   /**
    * The maximum number of pollers that can be provisioned.
    *
+   * Valid range: 1–2000. Default: 200.
+   *
    * @default 200
    */
-  readonly maximumPollers: number;
+  readonly maximumPollers?: number;
   /**
    * An optional identifier that groups multiple ESMs to share EPU capacity
    * and reduce costs. ESMs with the same PollerGroupName share compute
