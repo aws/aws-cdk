@@ -5,6 +5,7 @@ import type { IBucketRef } from '../../aws-s3';
 import type { IResource } from '../../core';
 import { Names, Resource, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -160,7 +161,7 @@ export class TrustStore extends Resource implements ITrustStore {
     }
 
     if (name.length < 1 || name.length > 64) {
-      throw new ValidationError('TrustStoreNameLength', `'trustStoreName' must be between 1 and 64 characters, got ${name.length} characters`, this);
+      throw new ValidationError(lit`TrustStoreNameLength`, `'trustStoreName' must be between 1 and 64 characters, got ${name.length} characters`, this);
     }
   }
 
@@ -170,7 +171,7 @@ export class TrustStore extends Resource implements ITrustStore {
     }
 
     if (key.length === 0) {
-      throw new ValidationError('CaCertificatesBundleS3KeyEmpty', "'caCertificatesBundleS3Location.key' cannot be an empty string", this);
+      throw new ValidationError(lit`CaCertificatesBundleS3KeyEmpty`, "'caCertificatesBundleS3Location.key' cannot be an empty string", this);
     }
   }
 
