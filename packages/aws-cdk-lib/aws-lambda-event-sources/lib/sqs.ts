@@ -119,13 +119,13 @@ export class SqsEventSource implements lambda.IEventSource {
       const { minimumPollers, maximumPollers } = this.props.provisionedPollerConfig;
       const hasMin = minimumPollers !== undefined && !Token.isUnresolved(minimumPollers);
       const hasMax = maximumPollers !== undefined && !Token.isUnresolved(maximumPollers);
-      if (hasMin && (minimumPollers! < 2 || minimumPollers! > 200)) {
+      if (hasMin && (minimumPollers < 2 || minimumPollers > 200)) {
         throw new ValidationError(lit`SqsMinimumProvisionedPollersInclusive`, `Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: ${minimumPollers}`, queue);
       }
-      if (hasMax && (maximumPollers! < 2 || maximumPollers! > 2000)) {
+      if (hasMax && (maximumPollers < 2 || maximumPollers > 2000)) {
         throw new ValidationError(lit`SqsMaximumProvisionedPollersInclusive`, `Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: ${maximumPollers}`, queue);
       }
-      if (hasMin && hasMax && minimumPollers! > maximumPollers!) {
+      if (hasMin && hasMax && minimumPollers > maximumPollers) {
         throw new ValidationError(lit`SqsMinimumProvisionedPollersLessEqual`, `Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=${minimumPollers}, max=${maximumPollers}`, queue);
       }
     }
