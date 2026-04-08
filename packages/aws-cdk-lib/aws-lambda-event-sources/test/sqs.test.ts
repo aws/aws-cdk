@@ -617,7 +617,13 @@ describe('SQSEventSource', () => {
     });
   });
 
-  test('fails if minimumPollers for SQS is less than 2', () => {
+  test.each([
+    [{ minimumPollers: 1 }, /Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: 1/],
+    [{ minimumPollers: 201 }, /Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: 201/],
+    [{ maximumPollers: 1 }, /Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: 1/],
+    [{ maximumPollers: 2001 }, /Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: 2001/],
+    [{ minimumPollers: 10, maximumPollers: 5 }, /Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=10, max=5/],
+  ] as const)('fails with invalid provisionedPollerConfig %j', (config, expectedError) => {
     // GIVEN
     const stack = new cdk.Stack();
     const fn = new TestFunction(stack, 'Fn');
@@ -625,66 +631,7 @@ describe('SQSEventSource', () => {
 
     // WHEN/THEN
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      provisionedPollerConfig: {
-        minimumPollers: 1,
-      },
-    }))).toThrow(/Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: 1/);
-  });
-
-  test('fails if minimumPollers for SQS exceeds 200', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
-    const q = new sqs.Queue(stack, 'Q');
-
-    // WHEN/THEN
-    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      provisionedPollerConfig: {
-        minimumPollers: 201,
-      },
-    }))).toThrow(/Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: 201/);
-  });
-
-  test('fails if maximumPollers for SQS is less than 2', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
-    const q = new sqs.Queue(stack, 'Q');
-
-    // WHEN/THEN
-    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      provisionedPollerConfig: {
-        maximumPollers: 1,
-      },
-    }))).toThrow(/Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: 1/);
-  });
-
-  test('fails if maximumPollers for SQS exceeds 2000', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
-    const q = new sqs.Queue(stack, 'Q');
-
-    // WHEN/THEN
-    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      provisionedPollerConfig: {
-        maximumPollers: 2001,
-      },
-    }))).toThrow(/Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: 2001/);
-  });
-
-  test('fails if minimumPollers exceeds maximumPollers for SQS', () => {
-    // GIVEN
-    const stack = new cdk.Stack();
-    const fn = new TestFunction(stack, 'Fn');
-    const q = new sqs.Queue(stack, 'Q');
-
-    // WHEN/THEN
-    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
-      provisionedPollerConfig: {
-        minimumPollers: 10,
-        maximumPollers: 5,
-      },
-    }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=10, max=5/);
+      provisionedPollerConfig: config,
+    }))).toThrow(expectedError);
   });
 });
