@@ -1158,7 +1158,7 @@ function checkAddActionProps(scope: Construct, props: AddApplicationActionProps)
     const hasValidRuleConfig = hasPriority && hasAnyConditions;
     if (!hasValidRuleConfig) {
       throw new ValidationError(
-        'PriorityRequiredWithConditions',
+        lit`PriorityRequiredWithConditions`,
         'Setting \'conditions\', \'pathPattern\' or \'hostHeader\' also requires \'priority\', and vice versa.',
         scope,
       );
@@ -1166,7 +1166,7 @@ function checkAddActionProps(scope: Construct, props: AddApplicationActionProps)
   }
   if (hasTransforms && (!hasPriority || !hasAnyConditions)) {
     throw new ValidationError(
-      'TransformRequiresPriorityAndConditions',
+      lit`TransformRequiresPriorityAndConditions`,
       'Setting \'transforms\' requires \'priority\' and at least one of \'conditions\', \'pathPattern\' or \'hostHeader\' to be set.',
       scope,
     );

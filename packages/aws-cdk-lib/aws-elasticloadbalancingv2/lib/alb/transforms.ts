@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -63,15 +64,15 @@ export class ListenerTransform {
 
   private validateRewrites(rewrites: RewriteRule[]): void {
     if (rewrites.length !== 1) {
-      throw new UnscopedValidationError('RewriteCount', `Exactly one rewrite rule must be specified, got ${rewrites.length}.`);
+      throw new UnscopedValidationError(lit`RewriteCount`, `Exactly one rewrite rule must be specified, got ${rewrites.length}.`);
     }
 
     rewrites.forEach((rewrite, index) => {
       if (!rewrite.regex) {
-        throw new UnscopedValidationError('EmptyRegex', `Rewrite rule at index ${index}: regex cannot be empty`);
+        throw new UnscopedValidationError(lit`EmptyRegex`, `Rewrite rule at index ${index}: regex cannot be empty`);
       }
       if (!rewrite.replace) {
-        throw new UnscopedValidationError('EmptyReplace', `Rewrite rule at index ${index}: replace cannot be empty`);
+        throw new UnscopedValidationError(lit`EmptyReplace`, `Rewrite rule at index ${index}: replace cannot be empty`);
       }
     });
   }
@@ -101,7 +102,7 @@ export class ListenerTransform {
           },
         };
       default:
-        throw new UnscopedValidationError('UnsupportedTransformType', `Unsupported transform type: ${this._type}`);
+        throw new UnscopedValidationError(lit`UnsupportedTransformType`, `Unsupported transform type: ${this._type}`);
     }
   }
 }
