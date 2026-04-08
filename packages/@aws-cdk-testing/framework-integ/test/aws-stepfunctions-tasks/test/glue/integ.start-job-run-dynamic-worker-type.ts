@@ -54,7 +54,7 @@ class GlueStartJobRunWorkerStack extends cdk.Stack {
     const endTask = new sfn.Pass(this, 'End Task');
 
     this.stateMachine = new sfn.StateMachine(this, 'State Machine', {
-      definition: sfn.Chain.start(startTask).next(jobTask).next(endTask),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(startTask).next(jobTask).next(endTask)),
     });
   }
 }
