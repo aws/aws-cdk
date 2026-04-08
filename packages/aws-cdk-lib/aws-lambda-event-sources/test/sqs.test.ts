@@ -626,7 +626,7 @@ describe('SQSEventSource', () => {
     // WHEN/THEN
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       provisionedPollerConfig: { minimumPollers },
-    }))).toThrow(/Minimum provisioned pollers for SQS must be between 2 and 200 inclusive/);
+    }))).toThrow(`Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: ${minimumPollers}`);
   });
 
   test.each([1, 2001])('fails if maximumPollers for SQS is out of range (%i)', (maximumPollers) => {
@@ -638,7 +638,7 @@ describe('SQSEventSource', () => {
     // WHEN/THEN
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       provisionedPollerConfig: { maximumPollers },
-    }))).toThrow(/Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive/);
+    }))).toThrow(`Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: ${maximumPollers}`);
   });
 
   test.each([
@@ -653,6 +653,6 @@ describe('SQSEventSource', () => {
     // WHEN/THEN
     expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
       provisionedPollerConfig: { minimumPollers, maximumPollers },
-    }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    }))).toThrow(`Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=${minimumPollers}, max=${maximumPollers}`);
   });
 });
