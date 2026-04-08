@@ -685,6 +685,6 @@ describe('SQSEventSource', () => {
         minimumPollers: 10,
         maximumPollers: 5,
       },
-    }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=10, max=5/);
   });
 });
