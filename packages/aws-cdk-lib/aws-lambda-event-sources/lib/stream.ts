@@ -190,6 +190,8 @@ export abstract class StreamEventSource implements lambda.IEventSource {
   protected constructor(protected readonly props: StreamEventSourceProps) {
     if (props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
+      // MSK/Kafka/MQ provisioned poller limits: min 1-200, max 1-2000
+      // https://docs.aws.amazon.com/lambda/latest/dg/kafka-scaling-modes.html
       if (minimumPollers != undefined) {
         if (minimumPollers < 1 || minimumPollers > 200) {
           throw new UnscopedValidationError(lit`MustBeMinimumProvisionedPollers`, 'Minimum provisioned pollers must be between 1 and 200 inclusive');
