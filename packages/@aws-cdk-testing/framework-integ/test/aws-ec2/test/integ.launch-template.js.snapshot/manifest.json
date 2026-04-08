@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-cdk-ec2-lt-metadata-1.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8b814480e52c2523679be4661a33eeaf50662fc50d309c5b6d5c9220567b4d4f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a36a5fd322133e4dacfdb198bfc6671c531306eb53d724a2f48da2ad6b24f009.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,173 +33,7 @@
       "dependencies": [
         "aws-cdk-ec2-lt-metadata-1.assets"
       ],
-      "metadata": {
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpcName": "*",
-              "subnetConfiguration": []
-            }
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcF9F0CA6F"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/MyVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/sg1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*"
-            }
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/sg1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "sg15CEFF4E3"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LT": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "versionDescription": "*",
-              "httpEndpoint": true,
-              "httpProtocolIpv6": true,
-              "httpPutResponseHopLimit": "*",
-              "httpTokens": "required",
-              "instanceMetadataTags": true,
-              "securityGroup": "*",
-              "blockDevices": [
-                {
-                  "deviceName": "*",
-                  "volume": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addSecurityGroup": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LT/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LTC4631592"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/sg2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*"
-            }
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/sg2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "sg2860DD91F"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LTWithMachineImage": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "machineImage": "*"
-            }
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LTWithMachineImage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LTWithMachineImageAAC227A5"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/pg": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/pg/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "pg749EE6ED"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "placementGroup": "*"
-            }
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/LTWithPlacementGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LTWithPlacementGroup4B40027C"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-ec2-lt-metadata-1/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-ec2-lt-metadata-1.metadata.json",
       "displayName": "aws-cdk-ec2-lt-metadata-1"
     },
     "LambdaTestDefaultTestDeployAssert1AF2B360.assets": {
@@ -234,20 +68,7 @@
       "dependencies": [
         "LambdaTestDefaultTestDeployAssert1AF2B360.assets"
       ],
-      "metadata": {
-        "/LambdaTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/LambdaTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "LambdaTestDefaultTestDeployAssert1AF2B360.metadata.json",
       "displayName": "LambdaTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -547,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -578,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -734,6 +550,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -745,12 +562,33 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1108.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "integ-cloudtrail.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cd95d9d11d0d7384319e38df4f85a8b44215d7e0afbcf168b3d65d8f8dc64026.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0f2e12eac63bd6df69bec6e7342e892f34fff37fbb2ac87c09135edf77a7ed31.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,219 +33,7 @@
       "dependencies": [
         "integ-cloudtrail.assets"
       ],
-      "metadata": {
-        "/integ-cloudtrail/Bucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
-          }
-        ],
-        "/integ-cloudtrail/Bucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Bucket83908E77"
-          }
-        ],
-        "/integ-cloudtrail/Bucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/integ-cloudtrail/Bucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketPolicyE9A3008A"
-          }
-        ],
-        "/integ-cloudtrail/Bucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-cloudtrail/Bucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
-          }
-        ],
-        "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/integ-cloudtrail/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/integ-cloudtrail/LambdaFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/integ-cloudtrail/LambdaFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-cloudtrail/LambdaFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaFunctionServiceRoleC555A460"
-          }
-        ],
-        "/integ-cloudtrail/LambdaFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaFunctionBF21E41F"
-          }
-        ],
-        "/integ-cloudtrail/S3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "encryption": "UNENCRYPTED",
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
-          }
-        ],
-        "/integ-cloudtrail/S3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3486F821D"
-          }
-        ],
-        "/integ-cloudtrail/S3/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/integ-cloudtrail/S3/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3Policy2E4AA1D6"
-          }
-        ],
-        "/integ-cloudtrail/S3/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-cloudtrail/S3/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3AutoDeleteObjectsCustomResource5A4102C9"
-          }
-        ],
-        "/integ-cloudtrail/Trail": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLambdaEventSelector": [
-                [
-                  "*"
-                ]
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventSelector": [
-                "AWS::Lambda::Function",
-                [
-                  "*"
-                ],
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addS3EventSelector": [
-                [
-                  {
-                    "bucket": "*"
-                  }
-                ]
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventSelector": [
-                "AWS::S3::Object",
-                [
-                  "*"
-                ],
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-cloudtrail/Trail/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Trail022F0CF2"
-          }
-        ],
-        "/integ-cloudtrail/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-cloudtrail/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-cloudtrail.metadata.json",
       "displayName": "integ-cloudtrail"
     },
     "Tree": {
@@ -546,6 +334,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -747,6 +536,14 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
@@ -758,5 +555,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }
