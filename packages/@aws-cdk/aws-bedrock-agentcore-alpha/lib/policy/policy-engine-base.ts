@@ -12,7 +12,7 @@
  */
 
 import type { IResource, ResourceProps } from 'aws-cdk-lib';
-import { Resource } from 'aws-cdk-lib';
+import { Resource, Stack, Token } from 'aws-cdk-lib';
 import type { IPolicyEngineRef, PolicyEngineReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
@@ -204,7 +204,6 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
       grantee,
       actions,
       resourceArns: [this.policyEngineArn],
-      scope: this,
     });
   }
 
@@ -256,14 +255,25 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    */
   public grantEvaluateForGateway(grantee: iam.IGrantable, gateway: IGateway): iam.Grant {
     const getPolicyEngineGrant = this.grant(grantee, 'bedrock-agentcore:GetPolicyEngine');
+
+    // using  gateway.name here to avoid a circular dependency between PolicyEngine and Gateway that
+    // arises if we try to reference gateway.gatewayArn.
+    // Additionally, BedrockAgentCore appends a random suffix to gateway names at creation time, so the exact ARN
+    // is unknowable at synthesis. Using `${gateway.name}-*` allows us to correctly match the actual ARN at runtime.
+    const gatewayResourceName = Token.isUnresolved(gateway.name) ? '*' : `${gateway.name}-*`;
+    const gatewayArn = Stack.of(this).formatArn({
+      service: 'bedrock-agentcore',
+      resource: 'gateway',
+      resourceName: gatewayResourceName,
+    });
+
     const authorizationGrant = iam.Grant.addToPrincipal({
       grantee,
       actions: [
         'bedrock-agentcore:AuthorizeAction',
         'bedrock-agentcore:PartiallyAuthorizeActions',
       ],
-      resourceArns: [this.policyEngineArn, gateway.gatewayArn],
-      scope: this,
+      resourceArns: [this.policyEngineArn, gatewayArn],
     });
 
     return getPolicyEngineGrant.combine(authorizationGrant);
