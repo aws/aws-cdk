@@ -99,8 +99,8 @@ export interface ProvisionedPollerConfig {
    * The minimum number of pollers that should be provisioned.
    *
    * Valid Range:
-   * * For Amazon SQS: minimum value of 2, maximum value of 200. Default: 2.
-   * * For Amazon MSK, self-managed Apache Kafka, and Amazon MQ: minimum value of 1, maximum value of 200. Default: 1.
+   * * For Amazon SQS: Minimum value of 2. Maximum value of 200. Default: 2.
+   * * For Amazon MSK, self-managed Apache Kafka, and Amazon MQ: Minimum value of 1. Maximum value of 200. Default: 1.
    *
    * @default - 2 for SQS, 1 for MSK/Kafka/MQ
    */
@@ -109,8 +109,8 @@ export interface ProvisionedPollerConfig {
    * The maximum number of pollers that can be provisioned.
    *
    * Valid Range:
-   * * For Amazon SQS: minimum value of 2, maximum value of 2000. Default: 200.
-   * * For Amazon MSK, self-managed Apache Kafka, and Amazon MQ: minimum value of 1, maximum value of 2000. Default: 200.
+   * * For Amazon SQS: Minimum value of 2. Maximum value of 2000. Default: 200.
+   * * For Amazon MSK, self-managed Apache Kafka, and Amazon MQ: Minimum value of 1. Maximum value of 2000. Default: 200.
    *
    * @default 200
    */

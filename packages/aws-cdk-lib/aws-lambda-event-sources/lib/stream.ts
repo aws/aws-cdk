@@ -63,7 +63,7 @@ export interface ProvisionedPollerConfig {
   /**
    * The minimum number of pollers that should be provisioned.
    *
-   * Valid range: 1–200. Default: 1.
+   * Valid Range: Minimum value of 1. Maximum value of 200.
    *
    * @default 1
    */
@@ -71,7 +71,7 @@ export interface ProvisionedPollerConfig {
   /**
    * The maximum number of pollers that can be provisioned.
    *
-   * Valid range: 1–2000. Default: 200.
+   * Valid Range: Minimum value of 1. Maximum value of 2000.
    *
    * @default 200
    */
