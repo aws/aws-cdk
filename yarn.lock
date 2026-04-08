@@ -11026,10 +11026,10 @@ jsii@~5.9.1:
     typescript "~5.9"
     yargs "^17.7.2"
 
-jsii@~5.9.31:
-  version "5.9.31"
-  resolved "https://registry.npmjs.org/jsii/-/jsii-5.9.31.tgz#9319b7c971e760fde0843a1fe173130883ea5c18"
-  integrity sha512-DJKqIOJTsRnAXjLlHmMfOCdT2qeRCwHTvWCvd3sdgAc0DZA3UIFJVEa9FlOZEds9U0R0y/AF7bD5TXQgwg/jIA==
+jsii@~5.9.37:
+  version "5.9.37"
+  resolved "https://registry.npmjs.org/jsii/-/jsii-5.9.37.tgz#f0dc4a323b483cc2b6b725cdf8242b30031ffa90"
+  integrity sha512-hNuxHrD/F6nm2oBUMS9Mejc4zI7+bQxt9/raljuIap4zFQzqOVn0ArAqhueeWZmPCwx3gfjqerKMqqLrExdFlA==
   dependencies:
     "@jsii/check-node" "1.127.0"
     "@jsii/spec" "1.127.0"
