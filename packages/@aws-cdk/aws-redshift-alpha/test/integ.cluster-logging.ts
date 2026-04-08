@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Stack, App, StackProps, RemovalPolicy, RemovalPolicies } from 'aws-cdk-lib';
+import { Stack, App, type StackProps, RemovalPolicy, RemovalPolicies } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as redshift from '../lib';
 
 class TestStack extends Stack {
