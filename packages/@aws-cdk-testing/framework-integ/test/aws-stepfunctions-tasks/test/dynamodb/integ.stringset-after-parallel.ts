@@ -36,7 +36,7 @@ const putItem = new tasks.DynamoPutItem(stack, 'PutItem', {
 const definition = sfn.Chain.start(parallel).next(putItem);
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition: definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 new integ.IntegTest(app, 'StringSetAfterParallel', {
