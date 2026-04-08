@@ -628,7 +628,7 @@ describe('SQSEventSource', () => {
       provisionedPollerConfig: {
         minimumPollers: 1,
       },
-    }))).toThrow(/Minimum provisioned pollers for SQS must be between 2 and 200 inclusive \(given 1\)/);
+    }))).toThrow(/Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: 1/);
   });
 
   test('fails if minimumPollers for SQS exceeds 200', () => {
@@ -642,7 +642,7 @@ describe('SQSEventSource', () => {
       provisionedPollerConfig: {
         minimumPollers: 201,
       },
-    }))).toThrow(/Minimum provisioned pollers for SQS must be between 2 and 200 inclusive \(given 201\)/);
+    }))).toThrow(/Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: 201/);
   });
 
   test('fails if maximumPollers for SQS is less than 2', () => {
@@ -656,7 +656,7 @@ describe('SQSEventSource', () => {
       provisionedPollerConfig: {
         maximumPollers: 1,
       },
-    }))).toThrow(/Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive \(given 1\)/);
+    }))).toThrow(/Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: 1/);
   });
 
   test('fails if maximumPollers for SQS exceeds 2000', () => {
@@ -670,7 +670,7 @@ describe('SQSEventSource', () => {
       provisionedPollerConfig: {
         maximumPollers: 2001,
       },
-    }))).toThrow(/Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive \(given 2001\)/);
+    }))).toThrow(/Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: 2001/);
   });
 
   test('fails if minimumPollers exceeds maximumPollers for SQS', () => {
