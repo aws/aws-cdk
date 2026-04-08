@@ -4,14 +4,13 @@ import type { IItemReader } from './distributed-map/item-reader';
 import type { ResultWriter, ResultWriterV2 } from './distributed-map/result-writer';
 import type { MapBaseJsonataOptions, MapBaseJsonPathOptions, MapBaseOptions, MapBaseProps } from './map-base';
 import { MapBase } from './map-base';
-import { Annotations, FeatureFlags } from '../../../core';
+import { Annotations } from '../../../core';
 import { FieldUtils } from '../fields';
 import { StateGraph } from '../state-graph';
 import { StateMachineType } from '../state-machine';
 import type { CatchProps, IChainable, INextable, ProcessorConfig, RetryProps } from '../types';
 import { ProcessorMode, QueryLanguage } from '../types';
 import type { StateBaseProps } from './state';
-import { STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2 } from '../../../cx-api';
 
 const DISTRIBUTED_MAP_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.DistributedMap');
 
@@ -66,7 +65,8 @@ interface DistributedMapBaseOptions extends MapBaseOptions {
   /**
    * Configuration for S3 location in which to save Map Run results
    *
-   * @deprecated Use {@link resultWriterV2}
+   * @deprecated This property has never functioned correctly and will be removed in a future release.
+   * Use {@link resultWriterV2} instead, which provides the correct implementation.
    * @default - No resultWriter
    */
   readonly resultWriter?: ResultWriter;
@@ -205,10 +205,14 @@ export class DistributedMap extends MapBase implements INextable {
     this.processorMode = ProcessorMode.DISTRIBUTED;
   }
 
+  /**
+   * Returns the appropriate ResultWriter configuration.
+   *
+   * Prefers resultWriterV2 if provided, otherwise falls back to the
+   * deprecated resultWriter property for backward compatibility.
+   */
   private getResultWriter(): ResultWriterV2 | ResultWriter | undefined {
-    return FeatureFlags.of(this).isEnabled(STEPFUNCTIONS_USE_DISTRIBUTED_MAP_RESULT_WRITER_V2)
-      ? this.resultWriterV2
-      : this.resultWriter;
+    return this.resultWriterV2 ?? this.resultWriter;
   }
 
   /**
@@ -243,6 +247,10 @@ export class DistributedMap extends MapBase implements INextable {
 
     if (this.itemReader) {
       errors.push(...this.itemReader.validateItemReader());
+    }
+
+    if (this.resultWriter) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-stepfunctions:deprecatedResultWriter', 'The `resultWriter` property is deprecated. Use `resultWriterV2` instead.');
     }
 
     if (this.resultWriterV2) {
