@@ -1,16 +1,4 @@
-/**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
- */
-
+import { Token } from 'aws-cdk-lib';
 import type { IConstruct } from 'constructs';
 import {
   validateStringFieldLength,
@@ -73,6 +61,11 @@ export function validatePolicyEngineName(name: string, scope?: IConstruct): stri
     return errors;
   }
 
+  // Skip validation for unresolved tokens (e.g. Lazy.string(), cross-stack refs)
+  if (Token.isUnresolved(name)) {
+    return errors;
+  }
+
   // Validate length
   errors.push(
     ...validateStringFieldLength(
@@ -116,6 +109,11 @@ export function validatePolicyName(name: string, scope?: IConstruct): string[] {
 
   // Handle null/undefined values
   if (name == null) {
+    return errors;
+  }
+
+  // Skip validation for unresolved tokens (e.g. Lazy.string(), cross-stack refs)
+  if (Token.isUnresolved(name)) {
     return errors;
   }
 
@@ -163,6 +161,11 @@ export function validatePolicyDefinition(definition: string, scope?: IConstruct)
     return errors;
   }
 
+  // Skip validation for unresolved tokens (e.g. Lazy.string(), cross-stack refs)
+  if (Token.isUnresolved(definition)) {
+    return errors;
+  }
+
   // Validate length
   errors.push(
     ...validateStringFieldLength(
@@ -192,6 +195,11 @@ export function validateDescription(description: string, scope?: IConstruct): st
 
   // Handle null/undefined values
   if (description == null) {
+    return errors;
+  }
+
+  // Skip validation for unresolved tokens (e.g. Lazy.string(), cross-stack refs)
+  if (Token.isUnresolved(description)) {
     return errors;
   }
 
@@ -294,36 +302,42 @@ export function validateTags(
 
   // Validate each tag
   for (const [key, value] of Object.entries(tags)) {
-    // Validate key length
-    if (key.length < TAG_KEY_MIN_LENGTH || key.length > TAG_KEY_MAX_LENGTH) {
-      errors.push(
-        `PolicyEngine '${resourceName}' tag key length must be between ${TAG_KEY_MIN_LENGTH} and ${TAG_KEY_MAX_LENGTH} characters. ` +
-          `Key: "${key}" has length ${key.length}`,
-      );
+    // Skip validation for unresolved token keys
+    if (!Token.isUnresolved(key)) {
+      // Validate key length
+      if (key.length < TAG_KEY_MIN_LENGTH || key.length > TAG_KEY_MAX_LENGTH) {
+        errors.push(
+          `PolicyEngine '${resourceName}' tag key length must be between ${TAG_KEY_MIN_LENGTH} and ${TAG_KEY_MAX_LENGTH} characters. ` +
+            `Key: "${key}" has length ${key.length}`,
+        );
+      }
+
+      // Validate key pattern
+      if (!TAG_KEY_PATTERN.test(key)) {
+        errors.push(
+          `PolicyEngine '${resourceName}' tag key contains invalid characters. ` +
+            `Key: "${key}". Valid characters: a-zA-Z0-9 and ._:/=+@-`,
+        );
+      }
     }
 
-    // Validate key pattern
-    if (!TAG_KEY_PATTERN.test(key)) {
-      errors.push(
-        `PolicyEngine '${resourceName}' tag key contains invalid characters. ` +
-          `Key: "${key}". Valid characters: a-zA-Z0-9 and ._:/=+@-`,
-      );
-    }
+    // Skip validation for unresolved token values
+    if (!Token.isUnresolved(value)) {
+      // Validate value length
+      if (value.length > TAG_VALUE_MAX_LENGTH) {
+        errors.push(
+          `PolicyEngine '${resourceName}' tag value length cannot exceed ${TAG_VALUE_MAX_LENGTH} characters. ` +
+            `Key: "${key}", value has length ${value.length}`,
+        );
+      }
 
-    // Validate value length
-    if (value.length > TAG_VALUE_MAX_LENGTH) {
-      errors.push(
-        `PolicyEngine '${resourceName}' tag value length cannot exceed ${TAG_VALUE_MAX_LENGTH} characters. ` +
-          `Key: "${key}", value has length ${value.length}`,
-      );
-    }
-
-    // Validate value pattern
-    if (!TAG_VALUE_PATTERN.test(value)) {
-      errors.push(
-        `PolicyEngine '${resourceName}' tag value contains invalid characters. ` +
-          `Key: "${key}", Value: "${value}". Valid characters: a-zA-Z0-9 and ._:/=+@-`,
-      );
+      // Validate value pattern
+      if (!TAG_VALUE_PATTERN.test(value)) {
+        errors.push(
+          `PolicyEngine '${resourceName}' tag value contains invalid characters. ` +
+            `Key: "${key}", Value: "${value}". Valid characters: a-zA-Z0-9 and ._:/=+@-`,
+        );
+      }
     }
   }
 

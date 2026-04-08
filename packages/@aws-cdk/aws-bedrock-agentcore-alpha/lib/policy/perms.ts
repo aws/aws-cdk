@@ -14,76 +14,65 @@
  */
 
 /**
- * IAM permissions for PolicyEngine runtime operations (data plane)
+ * Runtime evaluation permissions for PolicyEngine (data plane).
+ *
+ * These permissions are required for evaluating authorization policies at runtime.
+ * Grant these to Gateway execution roles that evaluate policies during agent requests.
+ *
+ * Usage: policyEngine.grantEvaluate(gatewayRole)
  */
-export namespace PolicyEnginePerms {
-  /**
-   * Runtime evaluation permissions (data plane).
-   *
-   * These permissions are required for evaluating authorization policies at runtime.
-   * Grant these to Gateway execution roles that evaluate policies during agent requests.
-   *
-   * Usage: policyEngine.grantEvaluate(gatewayRole)
-   */
-  export const EVALUATE_PERMS = [
-    'bedrock-agentcore:GetPolicyEngine',
-    'bedrock-agentcore:AuthorizeAction',
-    'bedrock-agentcore:PartiallyAuthorizeActions',
-  ];
-
-  /**
-   * Read permissions (data plane).
-   *
-   * These permissions allow reading policy engine configuration at runtime.
-   * Typically used for monitoring, observability, or read-only administrative tools.
-   *
-   */
-  export const READ_PERMS = [
-    'bedrock-agentcore:GetPolicyEngine',
-  ];
-
-  /**
-   * KMS permissions for encrypted policy engines.
-   *
-   * NOTE: These permissions are automatically managed by AWS KMS grants when you specify
-   * a KMS key for PolicyEngine encryption. You typically do NOT need to manually grant these.
-   *
-   * The BedrockAgentCore service automatically creates KMS grants with these permissions
-   * when the policy engine is created with a customer-managed KMS key.
-   *
-   * Actions:
-   * - `kms:CreateGrant` - Create KMS grants for service operations (automatically managed)
-   * - `kms:Decrypt` - Decrypt policy data (automatically managed)
-   * - `kms:GenerateDataKey` - Generate data keys for encryption (automatically managed)
-   * - `kms:DescribeKey` - Read key metadata (automatically managed)
-   *
-   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-encryption.html
-   */
-  export const KMS_PERMS = [
-    'kms:CreateGrant',
-    'kms:Decrypt',
-    'kms:GenerateDataKey',
-    'kms:DescribeKey',
-  ];
-}
+export const POLICY_ENGINE_EVALUATE_PERMS = [
+  'bedrock-agentcore:GetPolicyEngine',
+  'bedrock-agentcore:AuthorizeAction',
+  'bedrock-agentcore:PartiallyAuthorizeActions',
+];
 
 /**
- * IAM permissions for Policy runtime operations (data plane)
+ * Read permissions for PolicyEngine (data plane).
+ *
+ * These permissions allow reading policy engine configuration at runtime.
+ * Typically used for monitoring, observability, or read-only administrative tools.
  */
-export namespace PolicyPerms {
-  /**
-   * Read permissions (data plane).
-   *
-   * These permissions allow reading policy configuration at runtime.
-   * Grant these to monitoring or audit roles that need to inspect policy definitions.
-   *
-   * Actions:
-   * - `bedrock-agentcore:GetPolicy` - Retrieve specific policy configuration and Cedar statement
-   *
-   * Note: `ListPolicies` is intentionally excluded as it's an administrative operation.
-   * Applications should reference specific policies by ID/ARN, not list all policies.
-   */
-  export const READ_PERMS = [
-    'bedrock-agentcore:GetPolicy',
-  ];
-}
+export const POLICY_ENGINE_READ_PERMS = [
+  'bedrock-agentcore:GetPolicyEngine',
+];
+
+/**
+ * KMS permissions for encrypted policy engines.
+ *
+ * NOTE: These permissions are automatically managed by AWS KMS grants when you specify
+ * a KMS key for PolicyEngine encryption. You typically do NOT need to manually grant these.
+ *
+ * The BedrockAgentCore service automatically creates KMS grants with these permissions
+ * when the policy engine is created with a customer-managed KMS key.
+ *
+ * Actions:
+ * - `kms:CreateGrant` - Create KMS grants for service operations (automatically managed)
+ * - `kms:Decrypt` - Decrypt policy data (automatically managed)
+ * - `kms:GenerateDataKey` - Generate data keys for encryption (automatically managed)
+ * - `kms:DescribeKey` - Read key metadata (automatically managed)
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-encryption.html
+ */
+export const POLICY_ENGINE_KMS_PERMS = [
+  'kms:CreateGrant',
+  'kms:Decrypt',
+  'kms:GenerateDataKey',
+  'kms:DescribeKey',
+];
+
+/**
+ * Read permissions for Policy (data plane).
+ *
+ * These permissions allow reading policy configuration at runtime.
+ * Grant these to monitoring or audit roles that need to inspect policy definitions.
+ *
+ * Actions:
+ * - `bedrock-agentcore:GetPolicy` - Retrieve specific policy configuration and Cedar statement
+ *
+ * Note: `ListPolicies` is intentionally excluded as it's an administrative operation.
+ * Applications should reference specific policies by ID/ARN, not list all policies.
+ */
+export const POLICY_READ_PERMS = [
+  'bedrock-agentcore:GetPolicy',
+];

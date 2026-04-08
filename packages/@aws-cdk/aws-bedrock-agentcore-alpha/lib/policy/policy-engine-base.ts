@@ -12,14 +12,15 @@
  */
 
 import type { IResource, ResourceProps } from 'aws-cdk-lib';
-import { Resource, Stack, Token } from 'aws-cdk-lib';
+import { Resource } from 'aws-cdk-lib';
+import type { IPolicyEngineRef, PolicyEngineReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { Construct } from 'constructs';
 // Internal imports
-import { PolicyEnginePerms } from './perms';
+import { POLICY_ENGINE_EVALUATE_PERMS, POLICY_ENGINE_READ_PERMS } from './perms';
 import type { IGateway } from '../gateway/gateway-base';
 
 /******************************************************************************
@@ -27,9 +28,9 @@ import type { IGateway } from '../gateway/gateway-base';
  *****************************************************************************/
 
 /**
- * Used for resource identification and ARN construction.
+ * Contains all properties and methods for both created and imported policy engines.
  */
-export interface IPolicyEngineRef {
+export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantable {
   /**
    * The ARN of the policy engine resource
    * @attribute
@@ -41,12 +42,7 @@ export interface IPolicyEngineRef {
    * @attribute
    */
   readonly policyEngineId: string;
-}
 
-/**
- * Contains all properties and methods for both created and imported policy engines.
- */
-export interface IPolicyEngine extends IResource, IPolicyEngineRef, iam.IGrantable {
   /**
    * The name of the policy engine
    * @attribute
@@ -181,6 +177,15 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
 
+  /**
+   * A reference to this PolicyEngine resource.
+   */
+  public get policyEngineRef(): PolicyEngineReference {
+    return {
+      policyEngineArn: this.policyEngineArn,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
   }
@@ -216,7 +221,7 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...PolicyEnginePerms.READ_PERMS);
+    return this.grant(grantee, ...POLICY_ENGINE_READ_PERMS);
   }
 
   /**
@@ -232,7 +237,7 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantEvaluate(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...PolicyEnginePerms.EVALUATE_PERMS);
+    return this.grant(grantee, ...POLICY_ENGINE_EVALUATE_PERMS);
   }
 
   /**
@@ -251,19 +256,13 @@ export abstract class PolicyEngineBase extends Resource implements IPolicyEngine
    */
   public grantEvaluateForGateway(grantee: iam.IGrantable, gateway: IGateway): iam.Grant {
     const getPolicyEngineGrant = this.grant(grantee, 'bedrock-agentcore:GetPolicyEngine');
-    const gatewayResourceName = Token.isUnresolved(gateway.name) ? '*' : `${gateway.name}-*`;
-    const gatewayArn = Stack.of(this).formatArn({
-      service: 'bedrock-agentcore',
-      resource: 'gateway',
-      resourceName: gatewayResourceName,
-    });
     const authorizationGrant = iam.Grant.addToPrincipal({
       grantee,
       actions: [
         'bedrock-agentcore:AuthorizeAction',
         'bedrock-agentcore:PartiallyAuthorizeActions',
       ],
-      resourceArns: [this.policyEngineArn, gatewayArn],
+      resourceArns: [this.policyEngineArn, gateway.gatewayArn],
       scope: this,
     });
 

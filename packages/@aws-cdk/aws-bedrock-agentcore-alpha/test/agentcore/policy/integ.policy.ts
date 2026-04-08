@@ -15,8 +15,9 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import { Policy } from '../../../lib/policy/policy';
-import { PolicyEngine, PolicyValidationMode } from '../../../lib/policy/policy-engine';
+import { PolicyEngine } from '../../../lib/policy/policy-engine';
 import { PolicyStatement } from '../../../lib/policy/policy-statement';
+import { PolicyValidationMode } from '../../../lib/policy/policy-types';
 
 /**
  * Integration test for Policy and PolicyEngine constructs.

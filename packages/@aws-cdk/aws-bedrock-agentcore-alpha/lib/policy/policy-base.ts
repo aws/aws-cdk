@@ -13,14 +13,15 @@
 
 import type { IResource, ResourceProps } from 'aws-cdk-lib';
 import { Resource } from 'aws-cdk-lib';
+import type { IPolicyRef, PolicyReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type { DimensionsMap, MetricOptions, MetricProps } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Stats } from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
 // Internal imports
-import { PolicyPerms } from './perms';
-import type { PolicyValidationMode } from './policy-engine';
+import { POLICY_READ_PERMS } from './perms';
 import type { IPolicyEngine } from './policy-engine-base';
+import type { PolicyValidationMode } from './policy-types';
 
 /******************************************************************************
  *                                Interface
@@ -30,7 +31,7 @@ import type { IPolicyEngine } from './policy-engine-base';
  * Minimal reference interface for Policy resources.
  * Used for resource identification and ARN construction.
  */
-export interface IPolicyRef {
+export interface IPolicy extends IResource, IPolicyRef, iam.IGrantable {
   /**
    * The ARN of the policy resource
    * @attribute
@@ -42,12 +43,7 @@ export interface IPolicyRef {
    * @attribute
    */
   readonly policyId: string;
-}
 
-/**
- * Contains all properties and methods for both created and imported policies.
- */
-export interface IPolicy extends IResource, IPolicyRef, iam.IGrantable {
   /**
    * The name of the policy
    * @attribute
@@ -130,9 +126,10 @@ export interface PolicyAttributes {
   readonly policyArn: string;
 
   /**
-   * The policy engine ID this policy belongs to
+   * The policy engine this policy belongs to
+   * [disable-awslint:prefer-ref-interface]
    */
-  readonly policyEngineId: string;
+  readonly policyEngine: IPolicyEngine;
 }
 
 /******************************************************************************
@@ -155,6 +152,15 @@ export abstract class PolicyBase extends Resource implements IPolicy {
    * The principal to grant permissions to
    */
   public abstract readonly grantPrincipal: iam.IPrincipal;
+
+  /**
+   * A reference to this Policy resource.
+   */
+  public get policyRef(): PolicyReference {
+    return {
+      policyArn: this.policyArn,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
@@ -195,7 +201,7 @@ export abstract class PolicyBase extends Resource implements IPolicy {
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...PolicyPerms.READ_PERMS);
+    return this.grant(grantee, ...POLICY_READ_PERMS);
   }
 
   // ------------------------------------------------------

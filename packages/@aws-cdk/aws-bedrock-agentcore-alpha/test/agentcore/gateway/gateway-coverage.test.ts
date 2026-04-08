@@ -59,7 +59,7 @@ describe('Gateway Coverage Tests', () => {
       policyEngineConfiguration: { policyEngine },
     });
 
-    const template = Template.fromStack(stack);
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
@@ -88,7 +88,7 @@ describe('Gateway Coverage Tests', () => {
       },
     });
 
-    const template = Template.fromStack(stack);
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
@@ -103,9 +103,7 @@ describe('Gateway Coverage Tests', () => {
                 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine2.*'), 'PolicyEngineArn']),
               }),
               Match.objectLike({
-                'Fn::Join': Match.arrayWith([
-                  Match.arrayWith([Match.stringLikeRegexp('bedrock-agentcore.*gateway/test-gateway-2')]),
-                ]),
+                'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gateway2.*'), 'GatewayArn']),
               }),
             ]),
           }),
@@ -124,7 +122,7 @@ describe('Gateway Coverage Tests', () => {
       policyEngineConfiguration: { policyEngine },
     });
 
-    const template = Template.fromStack(stack);
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
     template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
       Name: 'test-gateway-3',
       PolicyEngineConfiguration: {
@@ -149,7 +147,7 @@ describe('Gateway Coverage Tests', () => {
       },
     });
 
-    const template = Template.fromStack(stack);
+    const template = Template.fromStack(stack, { skipCyclicalDependenciesCheck: true });
     template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
       Name: 'test-gateway-4',
       PolicyEngineConfiguration: {

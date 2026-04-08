@@ -478,9 +478,7 @@ describe('PolicyEngine grant methods tests', () => {
                 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('gatewayauthengine.*'), 'PolicyEngineArn']),
               }),
               Match.objectLike({
-                'Fn::Join': Match.arrayWith([
-                  Match.arrayWith([Match.stringLikeRegexp('bedrock-agentcore.*gateway/auth-gateway')]),
-                ]),
+                'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('gatewayauthgateway.*'), 'GatewayArn']),
               }),
             ]),
           }),

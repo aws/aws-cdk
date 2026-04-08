@@ -1,30 +1,18 @@
-/**
- *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
- *  with the License. A copy of the License is located at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
- *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
- *  and limitations under the License.
- */
-
-import { Arn, ArnFormat, Lazy, Names, Stack } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Lazy, Names } from 'aws-cdk-lib';
 import type { CfnPolicyProps } from 'aws-cdk-lib/aws-bedrockagentcore';
 import { CfnPolicy } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 // Internal imports
 import type { IPolicy, PolicyAttributes } from './policy-base';
 import { PolicyBase } from './policy-base';
-import { PolicyValidationMode } from './policy-engine';
 import type { IPolicyEngine } from './policy-engine-base';
 import type { PolicyStatement } from './policy-statement';
+import { PolicyValidationMode } from './policy-types';
 import { throwIfInvalidPolicyName, throwIfInvalidDescription, throwIfInvalidPolicyDefinition } from './validation-helpers';
 
 /**
@@ -117,34 +105,11 @@ export class Policy extends PolicyBase {
     class Import extends PolicyBase {
       public readonly policyArn = attrs.policyArn;
       public readonly policyId = Arn.split(attrs.policyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public readonly policyName = this.policyId; // Name equals ID for imports
+      public readonly policyName = this.policyId;
       public readonly description = undefined;
       public readonly validationMode = undefined;
+      public readonly policyEngine = attrs.policyEngine;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
-
-      // For imported policies, we need to reconstruct the policy engine reference
-      public readonly policyEngine: IPolicyEngine;
-
-      constructor(s: Construct, i: string) {
-        super(s, i);
-
-        // Import the policy engine using its ID
-        // eslint-disable-next-line @typescript-eslint/no-require-imports
-        const { PolicyEngine } = require('./policy-engine');
-        const policyEngineArn = Arn.format(
-          {
-            service: 'bedrock-agentcore',
-            resource: 'policy-engine',
-            resourceName: attrs.policyEngineId,
-            arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-          },
-          Stack.of(s),
-        );
-
-        this.policyEngine = PolicyEngine.fromPolicyEngineAttributes(s, `${i}PolicyEngine`, {
-          policyEngineArn,
-        });
-      }
     }
 
     return new Import(scope, id);
@@ -226,7 +191,7 @@ export class Policy extends PolicyBase {
     // ------------------------------------------------------
     if (!props.definition && !props.statement) {
       throw new ValidationError(
-        'PolicyDefinitionRequired',
+        lit`PolicyDefinitionRequired`,
         `Policy '${this.physicalName}' must specify either 'definition' (raw Cedar string) or 'statement' (PolicyStatement builder), but neither was provided.`,
         this,
       );
@@ -234,7 +199,7 @@ export class Policy extends PolicyBase {
 
     if (props.definition && props.statement) {
       throw new ValidationError(
-        'PolicyDefinitionConflict',
+        lit`PolicyDefinitionConflict`,
         `Policy '${this.physicalName}' must specify either 'definition' OR 'statement', but not both. ` +
         'Use definition for raw Cedar strings, or statement for the type-safe builder.',
         this,
@@ -291,4 +256,3 @@ export class Policy extends PolicyBase {
   }
 }
 
-export { PolicyValidationMode };

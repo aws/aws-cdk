@@ -15,7 +15,8 @@ import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Policy } from '../../../lib/policy/policy';
-import { PolicyEngine, PolicyValidationMode } from '../../../lib/policy/policy-engine';
+import { PolicyEngine } from '../../../lib/policy/policy-engine';
+import { PolicyValidationMode } from '../../../lib/policy/policy-types';
 
 describe('Policy default tests', () => {
   let template: Template;
@@ -324,25 +325,31 @@ describe('Policy static methods tests', () => {
   });
 
   test('fromPolicyAttributes should create a Policy reference', () => {
+    const importedEngine = PolicyEngine.fromPolicyEngineAttributes(stack, 'imported-engine-1', {
+      policyEngineArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy-engine/test-engine-id',
+    });
     const policy = Policy.fromPolicyAttributes(stack, 'imported-policy', {
       policyArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy/test-policy-id',
-      policyEngineId: 'test-engine-id',
+      policyEngine: importedEngine,
     });
 
     expect(policy.policyArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:policy/test-policy-id');
     expect(policy.policyId).toBe('test-policy-id');
-    expect(policy.policyEngine).toBeDefined();
+    expect(policy.policyEngine).toBe(importedEngine);
   });
 
   test('fromPolicyAttributes without optional attributes', () => {
+    const importedEngine = PolicyEngine.fromPolicyEngineAttributes(stack, 'imported-engine-2', {
+      policyEngineArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy-engine/test-engine-id',
+    });
     const policy = Policy.fromPolicyAttributes(stack, 'imported-policy-minimal', {
       policyArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy/test-policy-id',
-      policyEngineId: 'test-engine-id',
+      policyEngine: importedEngine,
     });
 
     expect(policy.policyArn).toBe('arn:aws:bedrock-agentcore:us-east-1:123456789012:policy/test-policy-id');
     expect(policy.policyId).toBe('test-policy-id');
-    expect(policy.policyEngine).toBeDefined();
+    expect(policy.policyEngine).toBe(importedEngine);
   });
 });
 

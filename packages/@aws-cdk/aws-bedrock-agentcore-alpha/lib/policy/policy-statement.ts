@@ -12,6 +12,7 @@
  */
 
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 /**
  * Effect of the policy statement - whether to permit or forbid the action.
@@ -730,7 +731,7 @@ export class PolicyStatement {
   public onActions(actions: string[]): this {
     this.validateNotRawCedar();
     if (actions.length === 0) {
-      throw new UnscopedValidationError('AtLeastOneAction', 'At least one action must be specified');
+      throw new UnscopedValidationError(lit`AtLeastOneAction`, 'At least one action must be specified');
     }
     this.actionConfig = {
       scope: ActionScope.SPECIFIC,
@@ -888,13 +889,13 @@ export class PolicyStatement {
 
     // Validate that all required parts are configured
     if (!this.principalConfig) {
-      throw new UnscopedValidationError('PrincipalRequired', 'Principal must be specified using forAllPrincipals() or forPrincipal()');
+      throw new UnscopedValidationError(lit`PrincipalRequired`, 'Principal must be specified using forAllPrincipals() or forPrincipal()');
     }
     if (!this.actionConfig) {
-      throw new UnscopedValidationError('ActionRequired', 'Action must be specified using onAllActions() or onActions()');
+      throw new UnscopedValidationError(lit`ActionRequired`, 'Action must be specified using onAllActions() or onActions()');
     }
     if (!this.resourceConfig) {
-      throw new UnscopedValidationError('ResourceRequired', 'Resource must be specified using onAllResources() or onResource()');
+      throw new UnscopedValidationError(lit`ResourceRequired`, 'Resource must be specified using onAllResources() or onResource()');
     }
 
     let cedar = `${this.effect}(\n`;
@@ -932,7 +933,7 @@ export class PolicyStatement {
 
   private principalToCedar(): string {
     if (!this.principalConfig) {
-      throw new UnscopedValidationError('PrincipalConfigRequired', 'Principal configuration is required');
+      throw new UnscopedValidationError(lit`PrincipalConfigRequired`, 'Principal configuration is required');
     }
 
     if (this.principalConfig.scope === PrincipalScope.ALL) {
@@ -956,7 +957,7 @@ export class PolicyStatement {
 
   private actionToCedar(): string {
     if (!this.actionConfig) {
-      throw new UnscopedValidationError('ActionConfigRequired', 'Action configuration is required');
+      throw new UnscopedValidationError(lit`ActionConfigRequired`, 'Action configuration is required');
     }
 
     if (this.actionConfig.scope === ActionScope.ALL) {
@@ -993,7 +994,7 @@ export class PolicyStatement {
 
   private resourceToCedar(): string {
     if (!this.resourceConfig) {
-      throw new UnscopedValidationError('ResourceConfigRequired', 'Resource configuration is required');
+      throw new UnscopedValidationError(lit`ResourceConfigRequired`, 'Resource configuration is required');
     }
 
     switch (this.resourceConfig.scope) {
@@ -1004,26 +1005,26 @@ export class PolicyStatement {
       case ResourceScope.TYPE:
         // Resource type constraint: "resource is EntityType"
         if (!this.resourceConfig.entityType) {
-          throw new UnscopedValidationError('EntityTypeRequired', 'Entity type is required for TYPE resource scope');
+          throw new UnscopedValidationError(lit`EntityTypeRequired`, 'Entity type is required for TYPE resource scope');
         }
         return `resource is ${this.resourceConfig.entityType}`;
 
       case ResourceScope.SPECIFIC:
         // Specific resource: "resource == EntityType::"arn""
         if (!this.resourceConfig.entityType || !this.resourceConfig.entityArn) {
-          throw new UnscopedValidationError('EntityTypeAndArnRequired', 'Entity type and ARN are required for SPECIFIC resource scope');
+          throw new UnscopedValidationError(lit`EntityTypeAndArnRequired`, 'Entity type and ARN are required for SPECIFIC resource scope');
         }
         return `resource == ${this.resourceConfig.entityType}::"${this.resourceConfig.entityArn}"`;
 
       default:
-        throw new UnscopedValidationError('UnknownResourceScope', `Unknown resource scope: ${this.resourceConfig.scope}`);
+        throw new UnscopedValidationError(lit`UnknownResourceScope`, `Unknown resource scope: ${this.resourceConfig.scope}`);
     }
   }
 
   private validateNotRawCedar(): void {
     if (this.rawCedar) {
       throw new UnscopedValidationError(
-        'RawCedarConflict',
+        lit`RawCedarConflict`,
         'Cannot use builder methods with raw Cedar. ' +
         'Either use PolicyStatement.fromCedar() or builder methods, not both.',
       );

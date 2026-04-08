@@ -71,6 +71,7 @@ export * from './gateway/targets/schema/tool-schema';
 // Policy
 // ===================================
 export * from './policy/perms';
+export * from './policy/policy-types';
 export * from './policy/policy-engine-base';
 export * from './policy/policy-engine';
 export * from './policy/policy-base';
