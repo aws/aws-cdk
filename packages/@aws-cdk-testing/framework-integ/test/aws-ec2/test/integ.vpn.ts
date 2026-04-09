@@ -1,4 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
+import { SecretValue } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
@@ -13,7 +14,7 @@ const vpc = new ec2.Vpc(stack, 'MyVpc', {
       ip: '52.85.255.164',
       tunnelOptions: [
         {
-          preSharedKey: 'secretkey1234',
+          preSharedKeySecret: SecretValue.unsafePlainText('secretkey1234'),
         },
       ],
     },
