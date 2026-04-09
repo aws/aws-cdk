@@ -8,7 +8,9 @@ const stack = new cdk.Stack(app, 'stack');
 
 const api = new appsync.GraphqlApi(stack, 'ApiLimitConfigs', {
   name: 'ApiLimitConfigs',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  },
   queryDepthLimit: 2,
   resolverCountLimit: 2,
 });
