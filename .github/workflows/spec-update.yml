@@ -59,7 +59,10 @@ jobs:
       - name: Build @aws-cdk/spec2cdk
         run: lerna run build --stream --no-progress --skip-nx-cache --scope @aws-cdk/spec2cdk
       - name: Generate code
-        run: lerna run gen --stream --no-progress --skip-nx-cache --scope aws-cdk-lib --scope @aws-cdk/mixins-preview
+        # All three scopes have gen scripts that update generated code and package.json exports
+        # from the service spec database. Missing any scope causes the PR build to fail with
+        # uncommitted changes detected by git diff-index.
+        run: lerna run gen --stream --no-progress --skip-nx-cache --scope aws-cdk-lib --scope @aws-cdk/mixins-preview --scope @aws-cdk/cfn-property-mixins
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.
