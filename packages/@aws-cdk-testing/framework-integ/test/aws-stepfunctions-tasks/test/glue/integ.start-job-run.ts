@@ -54,7 +54,7 @@ const startTask = new sfn.Pass(stack, 'Start Task');
 const endTask = new sfn.Pass(stack, 'End Task');
 
 const stateMachine = new sfn.StateMachine(stack, 'State Machine', {
-  definition: sfn.Chain.start(startTask).next(jobTask).next(endTask),
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(startTask).next(jobTask).next(endTask)),
 });
 
 new cdk.CfnOutput(stack, 'State Machine ARN Output', {
