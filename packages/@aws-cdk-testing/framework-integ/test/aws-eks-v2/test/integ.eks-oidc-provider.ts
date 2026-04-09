@@ -15,7 +15,7 @@ const stack = new Stack(app, 'aws-cdk-eks-v2-alpha-oidc-provider-test');
 // oidc.eks.us-east-1.amazonaws.com is a real AWS server with valid SSL certificates.
 // The Lambda doesn't validate OIDC configuration, only retrieves thumbprints when
 // the IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS flag is false.
-new eks.OpenIdConnectProvider(stack, 'NoClientsNoThumbprint', {
+new eks.OidcProviderNative(stack, 'NoClientsNoThumbprint', {
   url: `https://oidc.eks.${Stack.of(stack).region}.amazonaws.com/id/test2`,
 });
 
