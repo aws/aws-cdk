@@ -21,12 +21,17 @@ import { STANDARD_NODEJS_RUNTIME } from '../../config';
 class TestStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
+    // logRetention is deprecated, but this test specifically needs the LogRetention
+    // custom resource construct tree to test replaceDependency.
+    const prevDeprecated = process.env.JSII_DEPRECATED;
+    process.env.JSII_DEPRECATED = 'quiet';
     new lambda.Function(this, 'MyLambda', {
       code: new lambda.InlineCode('foo'),
       handler: 'index.handler',
       runtime: STANDARD_NODEJS_RUNTIME,
       logRetention: RetentionDays.ONE_DAY,
     });
+    if (prevDeprecated === undefined) { delete process.env.JSII_DEPRECATED; } else { process.env.JSII_DEPRECATED = prevDeprecated; }
     const logRetentionFunction = this.node.tryFindChild('LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a')!;
     const serviceRole = logRetentionFunction.node.tryFindChild('ServiceRole') as iam.Role;
     const defaultPolicy = serviceRole.node.tryFindChild('DefaultPolicy')!.node.defaultChild! as iam.CfnPolicy;
