@@ -1,8 +1,8 @@
-import type { IConstruct } from 'constructs';
 import type { CfnBucket, CfnBucketPolicy } from './s3.generated';
 import type { CfnKey } from '../../aws-kms';
+import { CfnKeyMatcher } from '../../aws-kms/lib/private/cfn-key-matcher';
 import { Fn, Reference, Tokenization, UnscopedValidationError } from '../../core';
-import { findClosestRelatedResource, findL1FromRef, memoizedGetter, resolvedEquals, resolvedExists, resolvedGet } from '../../core/lib/helpers-internal';
+import { ConstructReflection, memoizedGetter, PropertyReflection } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IBucketRef } from '../../interfaces/generated/aws-s3-interfaces.generated';
 
@@ -45,11 +45,10 @@ export class BucketReflection {
 
   private constructor(ref: IBucketRef) {
     this.ref = ref;
-    this._bucket = findL1FromRef<IBucketRef, CfnBucket>(
-      ref,
-      'AWS::S3::Bucket',
-      (cfn, bucketRef) => bucketRef.bucketRef == cfn.bucketRef,
-    );
+    this._bucket = ConstructReflection.of(ref).findCfnResource({
+      cfnResourceType: 'AWS::S3::Bucket',
+      matches: (cfn: CfnBucket) => ref.bucketRef == cfn.bucketRef,
+    }) as CfnBucket | undefined;
   }
 
   /**
@@ -66,14 +65,14 @@ export class BucketReflection {
    * Whether the bucket is configured for static website hosting.
    */
   get isWebsite(): boolean | undefined {
-    return resolvedExists(this._bucket, 'websiteConfiguration');
+    return PropertyReflection.of(this._bucket, 'websiteConfiguration').exists();
   }
 
   /**
    * Whether the bucket's public access block configuration blocks public bucket policies.
    */
   get disallowPublicAccess(): boolean | undefined {
-    return resolvedEquals(this._bucket, 'publicAccessBlockConfiguration.blockPublicPolicy', true);
+    return PropertyReflection.of(this._bucket, 'publicAccessBlockConfiguration.blockPublicPolicy').equals(true);
   }
 
   /**
@@ -84,24 +83,23 @@ export class BucketReflection {
   get policy(): CfnBucketPolicy | undefined {
     const resolved = this._bucket || this.ref;
 
-    return findClosestRelatedResource<IBucketRef | CfnBucket, CfnBucketPolicy>(
-      resolved,
-      'AWS::S3::BucketPolicy',
-      (bucket, policy) => {
+    return ConstructReflection.of(resolved).findRelatedCfnResource({
+      cfnResourceType: 'AWS::S3::BucketPolicy',
+      matches: (policy: CfnBucketPolicy) => {
         const reversed = Tokenization.reverse(policy.bucket) || policy.bucket;
         if (Reference.isReference(reversed)) {
-          return bucket === reversed.target;
+          return resolved === reversed.target;
         }
 
         const possibleRefs = new Set<any>([
-          (bucket as CfnBucket).ref,
-          bucket.bucketRef?.bucketName,
-          bucket.bucketRef?.bucketArn,
+          (resolved as CfnBucket).ref,
+          resolved.bucketRef?.bucketName,
+          resolved.bucketRef?.bucketArn,
         ].filter(Boolean));
 
-        return possibleRefs.has(reversed) || String(reversed).includes(bucket.node.id);
+        return possibleRefs.has(reversed) || String(reversed).includes(resolved.node.id);
       },
-    );
+    }) as CfnBucketPolicy | undefined;
   }
 
   /**
@@ -114,15 +112,11 @@ export class BucketReflection {
     if (!this._bucket) {
       return undefined;
     }
-    const kmsMasterKeyId = resolvedGet(this._bucket, 'bucketEncryption.serverSideEncryptionConfiguration.0.serverSideEncryptionByDefault.kmsMasterKeyId', undefined);
+    const kmsMasterKeyId = PropertyReflection.of(this._bucket, 'bucketEncryption.serverSideEncryptionConfiguration.0.serverSideEncryptionByDefault.kmsMasterKeyId').get();
     if (!kmsMasterKeyId) {
       return undefined;
     }
 
-    return findClosestRelatedResource<IConstruct, CfnKey>(
-      this._bucket,
-      'AWS::KMS::Key',
-      (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
-    );
+    return ConstructReflection.of(this._bucket).findRelatedCfnResource(new CfnKeyMatcher(kmsMasterKeyId)) as CfnKey | undefined;
   }
 }

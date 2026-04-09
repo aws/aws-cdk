@@ -16,7 +16,7 @@ class TestStack extends Stack {
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.onDemand(),
       encryption: TableEncryptionV2.awsManagedKey(),
-      contributorInsights: true,
+      contributorInsightsSpecification: { enabled: true },
       pointInTimeRecovery: true,
       tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
       timeToLiveAttribute: 'attr',
