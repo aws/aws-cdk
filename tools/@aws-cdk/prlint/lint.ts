@@ -233,14 +233,6 @@ export class PullRequestLinter extends PullRequestLinterBase {
 
     validationCollector.validateRuleSet({
       exemption: either(
-        exemptByLabel(Exemption.CLI_INTEG_TESTED),
-        exemptIfAutomationUser(),
-      ),
-      testRuleSet: [{ test: noCliChanges }],
-    });
-
-    validationCollector.validateRuleSet({
-      exemption: either(
         exemptByLabel(Exemption.ANALYTICS_METADATA_CHANGE),
         exemptIfAutomationUser(),
       ),
@@ -554,17 +546,6 @@ function assertStability(pr: GitHubPr, _files: GitHubFile[]): TestResult {
   const breakingStable = breakingModules(title, body ?? '').filter(mod => 'stable' === moduleStability(findModulePath(mod)));
   result.assessFailure(breakingStable.length > 0, `Breaking changes in stable modules [${breakingStable.join(', ')}] is disallowed.`);
   return result;
-}
-
-function noCliChanges(pr: GitHubPr, files: GitHubFile[]): TestResult {
-  const branch = `pull/${pr.number}/head`;
-
-  const cliCodeChanged = files.some(f => f.filename.toLowerCase().includes('packages/aws-cdk/lib/') && f.filename.endsWith('.ts'));
-
-  return TestResult.fromFailure(
-    cliCodeChanged,
-    `CLI code has changed. A maintainer must run the code through the testing pipeline (git fetch origin ${branch} && git push -f origin FETCH_HEAD:test-main-pipeline), then add the '${Exemption.CLI_INTEG_TESTED}' label when the pipeline succeeds.`,
-  );
 }
 
 function noMetadataChanges(_pr: GitHubPr, files: GitHubFile[]): TestResult {
