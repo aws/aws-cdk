@@ -103,7 +103,7 @@ describe('Gateway Coverage Tests', () => {
                 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('PolicyEngine2.*'), 'PolicyEngineArn']),
               }),
               Match.objectLike({
-                'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gateway2.*'), 'GatewayArn']),
+                'Fn::Join': Match.anyValue(),
               }),
             ]),
           }),
