@@ -23,6 +23,11 @@ export enum ProtocolType {
    * A2A protocol
    */
   A2A = 'A2A',
+
+  /**
+   * Agent User Interaction (AGUI) protocol
+   */
+  AGUI = 'AGUI',
 }
 
 /**
