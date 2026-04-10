@@ -573,13 +573,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "SvcLogGroupC37946A3",
+          "ServiceConnectProxyLogGroup8637D678",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "SvcTwoLogGroup32A610E3",
+          "SvcLogGroupC37946A3",
           "Arn"
          ]
         },
@@ -611,11 +611,6 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
-     "Alarms": {
-      "AlarmNames": [],
-      "Enable": false,
-      "Rollback": false
-     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -723,11 +718,6 @@
      "Ref": "EcsCluster97242B84"
     },
     "DeploymentConfiguration": {
-     "Alarms": {
-      "AlarmNames": [],
-      "Enable": false,
-      "Rollback": false
-     },
      "MaximumPercent": 200,
      "MinimumHealthyPercent": 50
     },
@@ -764,7 +754,7 @@
       "LogDriver": "awslogs",
       "Options": {
        "awslogs-group": {
-        "Ref": "SvcTwoLogGroup32A610E3"
+        "Ref": "ServiceConnectProxyLogGroup8637D678"
        },
        "awslogs-stream-prefix": "sc-svc2",
        "awslogs-region": {
@@ -827,14 +817,23 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "SvcTwoLogGroup32A610E3": {
+  "ServiceConnectProxyLogGroup8637D678": {
    "Type": "AWS::Logs::LogGroup",
-   "DependsOn": [
-    "Ns33A06F6E",
-    "TaskDefTaskRole1EDB4A67"
-   ],
+   "Properties": {
+    "RetentionInDays": 731
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefServiceConnectProxyLogGroup8637D678B2D651D1": {
+   "Value": {
+    "Ref": "ServiceConnectProxyLogGroup8637D678"
+   },
+   "Export": {
+    "Name": "aws-ecs-service-connect:ExportsOutputRefServiceConnectProxyLogGroup8637D678B2D651D1"
+   }
   }
  },
  "Parameters": {

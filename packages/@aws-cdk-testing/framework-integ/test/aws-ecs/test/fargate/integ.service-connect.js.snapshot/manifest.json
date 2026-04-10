@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-ecs-service-connect.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e3869bdcd8fbd00941a236ca04c8f68df3967a55ad74570a93777ae8854e76ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a39c6ad906ccd6a07d916a722df55acc979108f273d6d7c6569f477098fca6c4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,496 +33,7 @@
       "dependencies": [
         "aws-ecs-service-connect.assets"
       ],
-      "metadata": {
-        "/aws-ecs-service-connect/EcsCluster": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsCluster97242B84"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpc779914AB"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet1Subnet4AC37B0F"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet1RouteTable4AE3113D"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet1RouteTableAssociation49C4CDBB"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet1DefaultRoute8C7EFC96"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet1EIP2D3759A3"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet1NATGateway2F1E7764"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet2Subnet4A959A4C"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet2RouteTable89A2F6C5"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet2RouteTableAssociationE4D42FC1"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet2DefaultRoute048730F7"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet2EIP26E3EEEF"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPublicSubnet2NATGatewayBD015416"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet1SubnetFAB0E487"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet1RouteTable2EA148EE"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet1RouteTableAssociationF4E8ACD7"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet1DefaultRoute0239F5D0"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet2SubnetC2B7B1BA"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet2RouteTable1D430E45"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet2RouteTableAssociation329A2412"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcPrivateSubnet2DefaultRoute27221D27"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcIGW3663B083"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterVpcVPCGW944296C0"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/DefaultServiceDiscoveryNamespace": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/EcsCluster/DefaultServiceDiscoveryNamespace/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EcsClusterDefaultServiceDiscoveryNamespaceB0971B2F"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/TaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/TaskRole/ImportTaskRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/TaskRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskDefTaskRole1EDB4A67"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskDef54694570"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/Container/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/Container/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskDefContainerLogGroupB60E6F44"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/ExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/ExecutionRole/ImportExecutionRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/ExecutionRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskDefExecutionRoleB4775C97"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/ExecutionRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/TaskDef/ExecutionRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TaskDefExecutionRoleDefaultPolicy0DBB737A"
-          }
-        ],
-        "/aws-ecs-service-connect/Svc": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/Svc/Service": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SvcServiceE0738BDC"
-          }
-        ],
-        "/aws-ecs-service-connect/Svc/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/Svc/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SvcLogGroupC37946A3"
-          }
-        ],
-        "/aws-ecs-service-connect/Svc/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/Svc/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SvcSecurityGroup210F6F1C"
-          }
-        ],
-        "/aws-ecs-service-connect/Ns": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/Ns/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Ns33A06F6E"
-          }
-        ],
-        "/aws-ecs-service-connect/SvcTwo": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/SvcTwo/Service": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SvcTwoServiceB062AEA3"
-          }
-        ],
-        "/aws-ecs-service-connect/SvcTwo/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/SvcTwo/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SvcTwoSecurityGroup47BD6E0D"
-          }
-        ],
-        "/aws-ecs-service-connect/SvcTwo/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-ecs-service-connect/SvcTwo/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SvcTwoLogGroup32A610E3"
-          }
-        ],
-        "/aws-ecs-service-connect/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-ecs-service-connect/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-ecs-service-connect.metadata.json",
       "displayName": "aws-ecs-service-connect"
     },
     "ServiceConnectDefaultTestDeployAssert88F6A66F.assets": {
@@ -542,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3efb366c5713154ee3bbd120e80e4f0b346ca671161b42711c3d3e0906580c64.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/353087fac8c8beb086ef874bfd338acc44b2a444215b15cd22c4da37d6dc05d4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -555,60 +66,10 @@
         }
       },
       "dependencies": [
+        "aws-ecs-service-connect",
         "ServiceConnectDefaultTestDeployAssert88F6A66F.assets"
       ],
-      "metadata": {
-        "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallServiceDiscoverylistNamespaces"
-          }
-        ],
-        "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallServiceDiscoverylistNamespaces"
-          }
-        ],
-        "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/ServiceConnect/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ServiceConnect/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "ServiceConnectDefaultTestDeployAssert88F6A66F.metadata.json",
       "displayName": "ServiceConnect/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -908,13 +369,18 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, the default volume type of the EBS volume will be GP3"
           },
           "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": {
-            "userValue": false,
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, remove default deployment alarm settings"
           },
@@ -939,16 +405,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1095,6 +551,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1106,12 +563,33 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1031.2"
+  "minimumCliVersion": "2.1108.0"
 }

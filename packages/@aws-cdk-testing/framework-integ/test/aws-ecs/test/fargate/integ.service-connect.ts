@@ -3,11 +3,13 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class ServiceConnect extends cdk.Stack {
   public readonly clusterName: string;
   public readonly serviceNameWithAccessLog: string;
+  public readonly serviceConnectProxyLogGroupName: string;
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -69,6 +71,12 @@ class ServiceConnect extends cdk.Stack {
 
     svc2.node.addDependency(ns);
 
+    // Explicit log group so the log group name is referenceable in assertions
+    const scProxyLogGroup = new logs.LogGroup(this, 'ServiceConnectProxyLogGroup', {
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+    });
+    this.serviceConnectProxyLogGroupName = scProxyLogGroup.logGroupName;
+
     svc2.enableServiceConnect({
       services: [
         {
@@ -82,6 +90,7 @@ class ServiceConnect extends cdk.Stack {
       namespace: ns.namespaceArn,
       logDriver: ecs.LogDrivers.awsLogs({
         streamPrefix: 'sc-svc2',
+        logGroup: scProxyLogGroup,
       }),
       accessLogConfiguration: {
         format: ecs.ServiceConnectAccessLogFormat.JSON,
@@ -93,11 +102,7 @@ class ServiceConnect extends cdk.Stack {
   }
 }
 
-const app = new cdk.App({
-  postCliContext: {
-    '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm': false,
-  },
-});
+const app = new cdk.App();
 const stack = new ServiceConnect(app, 'aws-ecs-service-connect');
 
 cdk.RemovalPolicies.of(stack).apply(cdk.RemovalPolicy.DESTROY);
@@ -127,3 +132,25 @@ listNamespaceCall.expect(integ.ExpectedResult.objectLike({
     }),
   ]),
 }));
+
+// Verify that the service connect proxy (Envoy) emits logs to CloudWatch when
+// both accessLogConfiguration and logDriver (logConfiguration) are configured.
+// The Envoy proxy writes startup and operational logs to the configured log group
+// even without HTTP traffic, confirming that logConfiguration is required to
+// capture any logs from the proxy.
+const filterLogEventsCall = test.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
+  logGroupName: stack.serviceConnectProxyLogGroupName,
+  limit: 1,
+});
+filterLogEventsCall.provider.addToRolePolicy({
+  Effect: 'Allow',
+  Action: ['logs:FilterLogEvents'],
+  Resource: ['*'],
+});
+filterLogEventsCall.assertAtPath(
+  'events.0.message',
+  integ.ExpectedResult.stringLikeRegexp('.+'),
+).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(5),
+  interval: cdk.Duration.seconds(30),
+});
