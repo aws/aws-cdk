@@ -61,7 +61,7 @@ rules/
 │   ├── sns-no-world-accessible.guard
 │   └── sns-no-world-accessible-inline.guard
 └── sqs/
-    ├── sqs-encryption-enabled.guard
+    ├── sqs-encryption-not-disabled.guard
     ├── sqs-no-world-accessible.guard
     └── sqs-no-world-accessible-inline.guard
 ```
@@ -308,7 +308,6 @@ let security_groups = Resources.*[
 - `EBS_ENCRYPTION_ENABLED`
 - `DOCUMENTDB_ENCRYPTION_ENABLED`
 - `SNS_ENCRYPTION_ENABLED`
-- `SQS_ENCRYPTION_ENABLED`
 - And others (see individual `.guard` files in service subdirectories)
 
 ---
