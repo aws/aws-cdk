@@ -113,6 +113,12 @@ test('Channel.fromChannelArn throws on invalid ARN', () => {
   }).toThrow(/Could not parse channel ARN/);
 });
 
+test('Channel.fromChannelArn throws on token ARN', () => {
+  expect(() => {
+    mediapackagev2.Channel.fromChannelArn(stack, 'TokenArn', Lazy.string({ produce: () => 'arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/G/channel/C' }));
+  }).toThrow(/Cannot parse a token ARN/);
+});
+
 test('Channel has accessible ingest URLs - Tokens returned in Array', () => {
   const group = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup', {
     channelGroupName: 'test',

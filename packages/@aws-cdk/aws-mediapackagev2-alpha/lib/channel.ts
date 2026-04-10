@@ -378,6 +378,13 @@ abstract class ChannelBase extends Resource implements IChannel {
    * `arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>`
    */
   public static fromChannelArn(scope: Construct, id: string, channelArn: string): IChannel {
+    if (Token.isUnresolved(channelArn)) {
+      throw new ValidationError(
+        lit`TokenArnNotSupported`,
+        'Cannot parse a token ARN. Use Channel.fromChannelAttributes() with explicit channelName, channelGroupName, and region values instead.',
+        scope,
+      );
+    }
     const parsedArn = Stack.of(scope).splitArn(channelArn, ArnFormat.SLASH_RESOURCE_NAME);
     // resourceName is "<groupName>/channel/<channelName>"
     const [channelGroupName, , channelName] = parsedArn.resourceName?.split('/') ?? [];
@@ -420,7 +427,7 @@ abstract class ChannelBase extends Resource implements IChannel {
         resource: `channelGroup/${attrs.channelGroupName}/channel`,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: this.channelName,
-        region: attrs.region,
+        region: this.region,
       });
     }
 

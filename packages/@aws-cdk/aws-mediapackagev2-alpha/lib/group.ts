@@ -181,6 +181,13 @@ abstract class ChannelGroupBase extends Resource implements IChannelGroup {
    * Creates a Channel Group construct that represents an external (imported) Channel Group from its ARN.
    */
   public static fromChannelGroupArn(scope: Construct, id: string, channelGroupArn: string): IChannelGroup {
+    if (Token.isUnresolved(channelGroupArn)) {
+      throw new ValidationError(
+        lit`TokenArnNotSupported`,
+        'Cannot parse a token ARN. Use ChannelGroup.fromChannelGroupAttributes() with explicit channelGroupName and region values instead.',
+        scope,
+      );
+    }
     const parsedArn = Stack.of(scope).splitArn(channelGroupArn, ArnFormat.SLASH_RESOURCE_NAME);
     const channelGroupName = parsedArn.resourceName;
     if (!channelGroupName) {

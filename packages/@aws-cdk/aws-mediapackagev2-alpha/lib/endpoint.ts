@@ -2553,6 +2553,13 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
    * `arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>/originEndpoint/<endpointName>`
    */
   public static fromOriginEndpointArn(scope: Construct, id: string, originEndpointArn: string): IOriginEndpoint {
+    if (Token.isUnresolved(originEndpointArn)) {
+      throw new ValidationError(
+        lit`TokenArnNotSupported`,
+        'Cannot parse a token ARN. Use OriginEndpoint.fromOriginEndpointAttributes() with explicit channelGroupName, channelName, originEndpointName, and region values instead.',
+        scope,
+      );
+    }
     const parsedArn = Stack.of(scope).splitArn(originEndpointArn, ArnFormat.SLASH_RESOURCE_NAME);
     // resourceName is "<groupName>/channel/<channelName>/originEndpoint/<endpointName>"
     const [channelGroupName, , channelName, , originEndpointName] = parsedArn.resourceName?.split('/') ?? [];

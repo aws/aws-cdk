@@ -63,6 +63,12 @@ test('Channel Group can be imported from ARN', () => {
   expect(imported.channelGroupArn).toMatch(/mediapackagev2:eu-west-1:123456789012/);
 });
 
+test('ChannelGroup.fromChannelGroupArn throws on token ARN', () => {
+  expect(() => {
+    mediapackagev2.ChannelGroup.fromChannelGroupArn(stack, 'TokenArn', Lazy.string({ produce: () => 'arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/G' }));
+  }).toThrow(/Cannot parse a token ARN/);
+});
+
 test('existing Channel Group can be imported and used by a Channel', () => {
   const importedChannelGroup = mediapackagev2.ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedChannelGroup', {
     channelGroupName: 'MyChannelGroup',

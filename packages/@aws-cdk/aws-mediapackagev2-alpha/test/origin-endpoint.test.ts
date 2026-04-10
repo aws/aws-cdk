@@ -119,6 +119,12 @@ test('OriginEndpoint.fromOriginEndpointArn throws on invalid ARN', () => {
   }).toThrow(/Could not parse origin endpoint ARN/);
 });
 
+test('OriginEndpoint.fromOriginEndpointArn throws on token ARN', () => {
+  expect(() => {
+    mediapackagev2.OriginEndpoint.fromOriginEndpointArn(stack, 'TokenArn', Lazy.string({ produce: () => 'arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/G/channel/C/originEndpoint/E' }));
+  }).toThrow(/Cannot parse a token ARN/);
+});
+
 test('MediaPackagev2 Channel Configuration - encryption configuration', () => {
   const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
   const channel = new mediapackagev2.Channel(stack, 'mychannel', {
