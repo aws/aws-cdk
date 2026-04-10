@@ -380,34 +380,15 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
-      targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
-      targetType: cdk.Lazy.string({ produce: () => this.targetType }),
-      targets: cdk.Lazy.any({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
-      vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
-
-      // HEALTH CHECK
-      healthCheckEnabled: cdk.Lazy.any({ produce: () => this.healthCheck?.enabled }),
-      healthCheckIntervalSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck?.interval?.toSeconds(),
-      }),
-      healthCheckPath: cdk.Lazy.string({ produce: () => this.healthCheck?.path }),
-      healthCheckPort: cdk.Lazy.string({ produce: () => this.healthCheck?.port }),
-      healthCheckProtocol: cdk.Lazy.string({ produce: () => this.healthCheck?.protocol }),
-      healthCheckTimeoutSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck?.timeout?.toSeconds(),
-      }),
-      healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
-      unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
-      matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
-          grpcCode: this.healthCheck.healthyGrpcCodes,
-          httpCode: this.healthCheck.healthyHttpCodes,
-        } : undefined,
-      }),
+      targetGroupAttributes: this.renderAttributesOrUndefined(),
+      targetType: this.targetType,
+      targets: this.targetsJson.length > 0 ? this.targetsJson : undefined,
+      vpcId: this.computeVpcId(),
       ipAddressType: baseProps.ipAddressType,
-
       ...additionalProps,
     });
+
+    this.updateResourceHealthCheck();
 
     this.targetGroupLoadBalancerArns = this.resource.attrLoadBalancerArns;
     this.targetGroupArn = this.resource.ref;
@@ -432,6 +413,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    */
   public configureHealthCheck(healthCheck: HealthCheck) {
     this.healthCheck = healthCheck;
+    this.updateResourceHealthCheck();
   }
 
   /**
@@ -464,6 +446,9 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     }
 
     this.attributes[key] = value;
+    if (this.resource) {
+      this.resource.targetGroupAttributes = this.renderAttributesOrUndefined();
+    }
   }
 
   /**
@@ -474,6 +459,8 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       throw new ValidationError(lit`AlreadyType`, `Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
     }
     this.targetType = props.targetType;
+    this.resource.targetType = this.targetType;
+    this.resource.vpcId = this.computeVpcId();
 
     if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
       throw new ValidationError(lit`TargetGroupContainOneTarget`, 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
@@ -481,7 +468,32 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
 
     if (props.targetJson) {
       this.targetsJson.push(props.targetJson);
+      this.resource.targets = this.targetsJson;
     }
+  }
+
+  private computeVpcId(): string | undefined {
+    return this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined;
+  }
+
+  private renderAttributesOrUndefined(): CfnTargetGroup.TargetGroupAttributeProperty[] | undefined {
+    const rendered = renderAttributes(this.attributes);
+    return rendered.length > 0 ? rendered : undefined;
+  }
+
+  private updateResourceHealthCheck() {
+    this.resource.healthCheckEnabled = this.healthCheck?.enabled;
+    this.resource.healthCheckIntervalSeconds = this.healthCheck?.interval?.toSeconds();
+    this.resource.healthCheckPath = this.healthCheck?.path;
+    this.resource.healthCheckPort = this.healthCheck?.port;
+    this.resource.healthCheckProtocol = this.healthCheck?.protocol;
+    this.resource.healthCheckTimeoutSeconds = this.healthCheck?.timeout?.toSeconds();
+    this.resource.healthyThresholdCount = this.healthCheck?.healthyThresholdCount;
+    this.resource.unhealthyThresholdCount = this.healthCheck?.unhealthyThresholdCount;
+    this.resource.matcher = this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
+      grpcCode: this.healthCheck.healthyGrpcCodes,
+      httpCode: this.healthCheck.healthyHttpCodes,
+    } : undefined;
   }
 
   protected validateTargetGroup(): string[] {
