@@ -1243,6 +1243,16 @@ export abstract class BaseService extends Resource
       return;
     }
 
+    // accessLogConfiguration controls the format of Envoy proxy access logs, but the actual
+    // log delivery is handled by logDriver (logConfiguration). Without logDriver, the Envoy
+    // sidecar has no log driver and its stdout is dropped, access logs never reach any destination.
+    if (config.accessLogConfiguration && !config.logDriver) {
+      throw new ValidationError(lit`AccessLogConfigurationRequiresLogDriver`,
+        'accessLogConfiguration requires logDriver to be set. Without logDriver, access logs are not delivered to any destination.',
+        this,
+      );
+    }
+
     if (!config.services) {
       return;
     }

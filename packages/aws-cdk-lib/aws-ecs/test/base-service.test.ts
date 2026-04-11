@@ -189,6 +189,35 @@ describe('When import an ECS Service', () => {
     });
   });
 
+  test('throws an error when accessLogConfiguration is set without logDriver', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          name: 'api',
+          containerPort: 80,
+        },
+      ],
+    });
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN / THEN
+    expect(() => service.enableServiceConnect({
+      services: [{ portMappingName: 'api' }],
+      namespace: 'test namespace',
+      accessLogConfiguration: {
+        format: ecs.ServiceConnectAccessLogFormat.JSON,
+      },
+    })).toThrow('accessLogConfiguration requires logDriver to be set. Without logDriver, access logs are not delivered to any destination.');
+  });
+
   test('throws an error when awsPcaAuthorityArn is not an ARN', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
