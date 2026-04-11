@@ -153,6 +153,7 @@ export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cd
 export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0';
 export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
+export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1814,6 +1815,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: true },
     compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BATCH_DEFAULT_AL2023]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2',
+    detailsMd: `
+      When enabled, EC2 Batch compute environments (both ECS and EKS) that do not specify an \`imageType\`
+      will default to \`ECS_AL2023\` or \`EKS_AL2023\` instead of the deprecated \`ECS_AL2\` or \`EKS_AL2\`
+      (Amazon Linux 2, reaching EOL June 2026 for ECS; already EOL for EKS).
+
+      For EKS compute environments with a launch template, \`userdataType\` will automatically be set
+      to \`EKS_NODEADM\` when an AL2023 image type is used, as required by the AWS Batch API.
+
+      When disabled, the default \`imageType\` remains \`ECS_AL2\` / \`EKS_AL2\` for backward compatibility.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: `Explicitly set \`imageType\` to \`ECS_AL2\` or \`EKS_AL2\` in your compute environment images configuration.
+
+**Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.`,
   },
 };
 
