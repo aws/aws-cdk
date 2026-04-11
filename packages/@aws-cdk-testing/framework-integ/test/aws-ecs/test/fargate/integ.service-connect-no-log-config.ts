@@ -16,6 +16,7 @@
  * confirming that logConfiguration is required for log delivery.
  */
 import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
@@ -100,6 +101,34 @@ class ServiceConnectNoLogConfig extends cdk.Stack {
     });
 
     this.serviceName = svc.serviceName;
+
+    // Traffic generator: a client-only service connect service that continuously
+    // sends HTTP requests to Svc via the no-log-cfg.whistler.com namespace.
+    // This would normally generate access logs through the Svc service connect proxy,
+    // but since no logDriver is configured, we can check whether any JSON access
+    // log entries appear anywhere (e.g., in the container log group).
+    const generatorTd = new ecs.FargateTaskDefinition(this, 'GeneratorTaskDef', {
+      cpu: 256,
+      memoryLimitMiB: 512,
+    });
+    generatorTd.addContainer('Generator', {
+      containerName: 'generator',
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/docker/library/alpine:latest'),
+      command: ['sh', '-c', 'while true; do wget -qO /dev/null http://api:80 2>&1 || true; sleep 5; done'],
+      essential: true,
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'gen' }),
+    });
+    const generatorSvc = new ecs.FargateService(this, 'GeneratorSvc', {
+      taskDefinition: generatorTd,
+      cluster,
+      serviceConnectConfiguration: {
+        namespace: ns.namespaceArn,
+      },
+    });
+    // Service connect proxy ingress ports are dynamically allocated (TCP only).
+    // addDependency(svc) is intentionally omitted to avoid circular CloudFormation
+    // dependencies with the allowTo security group rule.
+    generatorSvc.connections.allowTo(svc, ec2.Port.allTcp());
   }
 }
 
@@ -132,14 +161,16 @@ describeServicesCall.expect(integ.ExpectedResult.objectLike({
   ]),
 }));
 
-// 2. Check whether the Envoy proxy routes its logs to the app container's log group
-//    when no service connect logDriver is configured.
-//    If this assertion PASSES  → proxy logs appear in the container log group without logDriver.
-//    If this assertion FAILS   → proxy logs are dropped, confirming logDriver is required.
+// 2. Check whether JSON access logs (response_code field) appear anywhere when
+//    no logDriver is configured for service connect.
+//    The GeneratorSvc is generating HTTP traffic through the Svc proxy, so if
+//    access logs are being emitted, they would appear as JSON events with
+//    response_code in the container log group.
+//    If this assertion PASSES  → access logs appear without logDriver (surprising).
+//    If this assertion FAILS   → access logs are dropped, confirming logDriver is required.
 const filterLogEventsCall = test.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
   logGroupName: stack.containerLogGroupName,
-  // The service connect proxy stream prefix would be 'sc-' or 'envoy' if routed here
-  logStreamNamePrefix: 'sc-',
+  filterPattern: '{ $.response_code >= 200 }',
   limit: 1,
 });
 filterLogEventsCall.provider.addToRolePolicy({
@@ -148,9 +179,9 @@ filterLogEventsCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 filterLogEventsCall.assertAtPath(
-  'events.0.message',
+  'events.0.message.user_agent',
   integ.ExpectedResult.stringLikeRegexp('.+'),
 ).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(5),
+  totalTimeout: cdk.Duration.minutes(2),
   interval: cdk.Duration.seconds(30),
 });

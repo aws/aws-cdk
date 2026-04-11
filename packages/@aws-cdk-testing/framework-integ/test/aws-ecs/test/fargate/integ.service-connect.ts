@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import * as cloudmap from 'aws-cdk-lib/aws-servicediscovery';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as logs from 'aws-cdk-lib/aws-logs';
-import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
 class ServiceConnect extends cdk.Stack {
   public readonly clusterName: string;
@@ -13,7 +13,6 @@ class ServiceConnect extends cdk.Stack {
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
-    this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
     const cluster = new ecs.Cluster(this, 'EcsCluster', {
       defaultCloudMapNamespace: {
         name: 'scorekeep.com',
@@ -99,6 +98,38 @@ class ServiceConnect extends cdk.Stack {
     });
 
     this.serviceNameWithAccessLog = svc2.serviceName;
+
+    // Traffic generator: a client-only service connect service that continuously
+    // sends HTTP requests to SvcTwo via the whistler.com namespace.
+    // This generates access logs through the SvcTwo service connect proxy,
+    // which are captured in scProxyLogGroup.
+    const generatorTd = new ecs.FargateTaskDefinition(this, 'GeneratorTaskDef', {
+      cpu: 256,
+      memoryLimitMiB: 512,
+    });
+    generatorTd.addContainer('Generator', {
+      containerName: 'generator',
+      image: ecs.ContainerImage.fromRegistry('public.ecr.aws/docker/library/alpine:latest'),
+      command: ['sh', '-c', 'while true; do wget -qO /dev/null http://api:80 2>&1 || true; sleep 5; done'],
+      essential: true,
+      logging: ecs.LogDrivers.awsLogs({ streamPrefix: 'gen' }),
+    });
+    const generatorSvc = new ecs.FargateService(this, 'GeneratorSvc', {
+      taskDefinition: generatorTd,
+      cluster,
+      serviceConnectConfiguration: {
+        namespace: ns.namespaceArn,
+      },
+    });
+    // Allow the generator's service connect proxy to reach SvcTwo's proxy.
+    // Without this, the TCP connection to SvcTwo's inbound port is blocked by
+    // the default security group rules, causing 504 timeouts on the generator side
+    // and no traffic (and no access logs) reaching SvcTwo.
+    // Service connect proxy ingress ports are dynamically allocated (TCP only).
+    // Note: addDependency(svc2) is intentionally omitted here — combining it with
+    // allowTo would create a circular CloudFormation dependency between the services'
+    // security groups. The generator's wget loop handles any startup ordering naturally.
+    generatorSvc.connections.allowTo(svc2, ec2.Port.allTcp());
   }
 }
 
@@ -133,13 +164,15 @@ listNamespaceCall.expect(integ.ExpectedResult.objectLike({
   ]),
 }));
 
-// Verify that the service connect proxy (Envoy) emits logs to CloudWatch when
-// both accessLogConfiguration and logDriver (logConfiguration) are configured.
-// The Envoy proxy writes startup and operational logs to the configured log group
-// even without HTTP traffic, confirming that logConfiguration is required to
-// capture any logs from the proxy.
+// Verify that JSON access logs are emitted to CloudWatch when both
+// accessLogConfiguration and logDriver (logConfiguration) are configured.
+// The GeneratorSvc continuously hits SvcTwo via service connect, causing the
+// Envoy proxy to write JSON access log entries (containing response_code) to
+// scProxyLogGroup. This confirms that logConfiguration is required for
+// access log delivery.
 const filterLogEventsCall = test.assertions.awsApiCall('CloudWatchLogs', 'filterLogEvents', {
   logGroupName: stack.serviceConnectProxyLogGroupName,
+  filterPattern: '{ $.response_code >= 200 }',
   limit: 1,
 });
 filterLogEventsCall.provider.addToRolePolicy({
@@ -148,9 +181,9 @@ filterLogEventsCall.provider.addToRolePolicy({
   Resource: ['*'],
 });
 filterLogEventsCall.assertAtPath(
-  'events.0.message',
+  'events.0.message.user_agent',
   integ.ExpectedResult.stringLikeRegexp('.+'),
 ).waitForAssertions({
-  totalTimeout: cdk.Duration.minutes(5),
+  totalTimeout: cdk.Duration.minutes(10),
   interval: cdk.Duration.seconds(30),
 });
