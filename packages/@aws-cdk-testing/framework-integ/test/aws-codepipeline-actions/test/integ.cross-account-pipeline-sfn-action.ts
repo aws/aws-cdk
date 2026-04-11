@@ -25,9 +25,9 @@ class StepFunctionStack extends Stack {
 
     // Create a simple Step Function
     this.stateMachine = new sfn.StateMachine(this, 'CrossAccountStateMachine', {
-      definition: new sfn.Pass(this, 'PassState', {
+      definitionBody: sfn.DefinitionBody.fromChainable(new sfn.Pass(this, 'PassState', {
         result: sfn.Result.fromObject({ message: 'Hello from cross-account Step Function!' }),
-      }),
+      })),
       stateMachineName: 'CrossAccountStateMachine',
     });
 

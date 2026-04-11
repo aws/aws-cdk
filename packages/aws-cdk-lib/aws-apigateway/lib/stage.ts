@@ -15,6 +15,7 @@ import type { Duration, IResource } from '../../core';
 import { ArnFormat, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -249,7 +250,7 @@ export abstract class StageBase extends Resource implements IStage {
    */
   public urlForPath(path: string = '/') {
     if (!path.startsWith('/')) {
-      throw new ValidationError('MustBePathBegin', `Path must begin with "/": ${path}`, this);
+      throw new ValidationError(lit`MustBePathBegin`, `Path must begin with "/": ${path}`, this);
     }
     return `https://${this.restApi.restApiId}.execute-api.${Stack.of(this).region}.${Stack.of(this).urlSuffix}/${this.stageName}${path}`;
   }
@@ -413,10 +414,10 @@ export class Stage extends StageBase {
       if (accessLogFormat !== undefined &&
         !Token.isUnresolved(accessLogFormat.toString()) &&
         !/.*\$context.(requestId|extendedRequestId)\b.*/.test(accessLogFormat.toString())) {
-        throw new ValidationError('AccessIncludeEither', 'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
+        throw new ValidationError(lit`AccessIncludeEither`, 'Access log must include either `AccessLogFormat.contextRequestId()` or `AccessLogFormat.contextExtendedRequestId()`', this);
       }
       if (accessLogFormat !== undefined && accessLogDestination === undefined) {
-        throw new ValidationError('AccessLogFormatSpecifiedWithout', 'Access log format is specified without a destination', this);
+        throw new ValidationError(lit`AccessLogFormatSpecifiedWithout`, 'Access log format is specified without a destination', this);
       }
 
       accessLogSetting = {
@@ -430,7 +431,7 @@ export class Stage extends StageBase {
       if (this.enableCacheCluster === undefined) {
         this.enableCacheCluster = true;
       } else if (this.enableCacheCluster === false) {
-        throw new ValidationError('CannotSetCacheClusterSize', `Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`, this);
+        throw new ValidationError(lit`CannotSetCacheClusterSize`, `Cannot set "cacheClusterSize" to ${props.cacheClusterSize} and "cacheClusterEnabled" to "false"`, this);
       }
     }
 
@@ -493,7 +494,7 @@ export class Stage extends StageBase {
         if (self.enableCacheCluster === undefined) {
           self.enableCacheCluster = true;
         } else if (self.enableCacheCluster === false) {
-          throw new ValidationError('CannotEnableCachingMethod', `Cannot enable caching for method ${path} since cache cluster is disabled on stage`, self);
+          throw new ValidationError(lit`CannotEnableCachingMethod`, `Cannot enable caching for method ${path} since cache cluster is disabled on stage`, self);
         }
       }
 

@@ -20,6 +20,7 @@ import {
 } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -180,12 +181,12 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
    */
   public static fromVpcOriginAttributes(scope: Construct, id: string, attrs: VpcOriginAttributes): IVpcOrigin {
     if (!attrs.vpcOriginArn && !attrs.vpcOriginId) {
-      throw new ValidationError('EitherVpcOriginIdOrVpcOriginArnRequired', 'Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes', scope);
+      throw new ValidationError(lit`EitherVpcOriginIdOrVpcOriginArnRequired`, 'Either vpcOriginId or vpcOriginArn must be provided in VpcOriginAttributes', scope);
     }
     const vpcOriginId = attrs.vpcOriginId
       ?? Stack.of(scope).splitArn(attrs.vpcOriginArn!, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
     if (!vpcOriginId) {
-      throw new ValidationError('NoVpcOriginIdFoundInArn', `No VPC origin ID found in ARN: '${attrs.vpcOriginArn}'`, scope);
+      throw new ValidationError(lit`NoVpcOriginIdFoundInArn`, `No VPC origin ID found in ARN: '${attrs.vpcOriginArn}'`, scope);
     }
 
     const vpcOriginArn = attrs.vpcOriginArn ?? Stack.of(scope).formatArn({
@@ -264,7 +265,7 @@ export class VpcOrigin extends Resource implements IVpcOrigin, ITaggableV2 {
 
   private validatePortNumber(port: number | undefined, attrName: string) {
     if (port && !Token.isUnresolved(port) && !([80, 443].includes(port) || (port >= 1024 && port <= 65535))) {
-      throw new ValidationError('InvalidPortValue', `'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
+      throw new ValidationError(lit`InvalidPortValue`, `'${attrName}' must be 80, 443, or a value between 1024 and 65535, got ${port}`, this);
     }
   }
 }
