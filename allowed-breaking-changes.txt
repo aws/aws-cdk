@@ -4164,3 +4164,8 @@ removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS
 # Never intended to be mutable, not usefully mutable
 removed-mutability:aws-cdk-lib.aws_s3.Bucket.grants
 removed-mutability:aws-cdk-lib.aws_s3.BucketBase.grants
+
+# Making minimumPollers/maximumPollers optional in ProvisionedPollerConfig is backwards compatible
+# for consumers (they can still provide the values). This aligns with the existing
+# ProvisionedPollerConfig in aws-lambda/event-source-mapping.ts which already has them as optional.
+weakened:aws-cdk-lib.aws_lambda_event_sources.ProvisionedPollerConfig
