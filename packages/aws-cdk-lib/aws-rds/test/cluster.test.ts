@@ -141,9 +141,8 @@ describe('cluster new api', () => {
     });
 
     test.each([
-      [-1, /promotionTier must be between 0-15/],
-      [16, /promotionTier must be between 0-15/],
-    ])('when promotionTier is %s', (promotionTier, errorMessage) => {
+      -1, 16,
+    ])('when promotionTier is %s', (promotionTier) => {
       // GIVEN
       const stack = testStack();
       const vpc = new ec2.Vpc(stack, 'VPC');
@@ -161,7 +160,7 @@ describe('cluster new api', () => {
           ],
         });
         // THEN
-      }).toThrow(errorMessage);
+      }).toThrow(/promotionTier must be between 0-15/);
     });
 
     test.each([
