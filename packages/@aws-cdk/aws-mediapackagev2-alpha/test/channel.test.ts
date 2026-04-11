@@ -88,6 +88,37 @@ test('existing Channel can be imported', () => {
   expect(importedChannel.channelArn).toMatch(/^arn:.*:mediapackagev2:us-east-1:123456789012:channelGroup\/MyChannelGroup\/channel\/test$/);
 });
 
+test('imported Channel with cross-region override', () => {
+  const importedChannel = mediapackagev2.Channel.fromChannelAttributes(stack, 'ImportedChannel', {
+    channelName: 'test',
+    channelGroupName: 'MyChannelGroup',
+    region: 'eu-west-1',
+  });
+
+  expect(importedChannel.channelArn).toMatch(/^arn:.*:mediapackagev2:eu-west-1:123456789012:channelGroup\/MyChannelGroup\/channel\/test$/);
+});
+
+test('Channel can be imported from ARN', () => {
+  const importedChannel = mediapackagev2.Channel.fromChannelArn(stack, 'ImportedChannel', 'arn:aws:mediapackagev2:eu-west-1:123456789012:channelGroup/MyGroup/channel/MyChannel');
+
+  expect(importedChannel.channelGroupName).toBe('MyGroup');
+  expect(importedChannel.channelName).toBe('MyChannel');
+  expect(importedChannel.channelArn).toMatch(/mediapackagev2:eu-west-1:123456789012/);
+  expect(importedChannel.region).toBe('eu-west-1');
+});
+
+test('Channel.fromChannelArn throws on invalid ARN', () => {
+  expect(() => {
+    mediapackagev2.Channel.fromChannelArn(stack, 'Bad', 'arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/MyGroup');
+  }).toThrow(/Could not parse channel ARN/);
+});
+
+test('Channel.fromChannelArn throws on token ARN', () => {
+  expect(() => {
+    mediapackagev2.Channel.fromChannelArn(stack, 'TokenArn', Lazy.string({ produce: () => 'arn:aws:mediapackagev2:us-east-1:123456789012:channelGroup/G/channel/C' }));
+  }).toThrow(/Cannot parse a token ARN/);
+});
+
 test('Channel has accessible ingest URLs - Tokens returned in Array', () => {
   const group = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup', {
     channelGroupName: 'test',
@@ -360,4 +391,33 @@ test('imported channel has undefined for createdAt and modifiedAt, throws for in
   expect(imported.createdAt).toBeUndefined();
   expect(imported.modifiedAt).toBeUndefined();
   expect(() => imported.ingestEndpointUrls).toThrow(/ingestEndpointUrls.*is not available/);
+});
+
+test('Channel exposes region from Stack', () => {
+  const group = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'myChannel', {
+    channelGroup: group,
+    input: mediapackagev2.InputConfiguration.cmaf(),
+  });
+
+  expect(channel.region).toBe('us-east-1');
+});
+
+test('imported channel region falls back to importing stack region', () => {
+  const imported = mediapackagev2.Channel.fromChannelAttributes(stack, 'ImportedChannel3', {
+    channelName: 'test',
+    channelGroupName: 'MyChannelGroup',
+  });
+
+  expect(imported.region).toBe('us-east-1');
+});
+
+test('imported channel uses explicit region from attributes', () => {
+  const imported = mediapackagev2.Channel.fromChannelAttributes(stack, 'ImportedChannel4', {
+    channelName: 'test',
+    channelGroupName: 'MyChannelGroup',
+    region: 'eu-west-1',
+  });
+
+  expect(imported.region).toBe('eu-west-1');
 });
