@@ -48,7 +48,7 @@ const definition = new sfn.Pass(stack, 'Start', {
 );
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 new IntegTest(app, 'SfnTasksEcsEc2RunTaskTest', {

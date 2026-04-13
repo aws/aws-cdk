@@ -932,6 +932,13 @@
       }
     ]
   },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
+      }
+    ]
+  },
   "aws-internetmonitor": {
     "scopes": [
       {
@@ -1334,6 +1341,13 @@
       }
     ]
   },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
+      }
+    ]
+  },
   "aws-oam": {
     "scopes": [
       {
@@ -1717,6 +1731,13 @@
       }
     ]
   },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
+      }
+    ]
+  },
   "aws-securityhub": {
     "scopes": [
       {
@@ -1892,6 +1913,13 @@
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },
