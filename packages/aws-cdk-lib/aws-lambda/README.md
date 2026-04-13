@@ -1561,9 +1561,6 @@ const fn = new lambda.Function(this, 'MyLambda', {
 
 ## S3 Files Filesystem
 
-<!-- TODO: Replace with public docs link when the feature launches -->
-<!-- https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-files.html -->
-
 [Amazon S3 Files](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-files.html) provides a fully managed NFS file system backed by an S3 bucket.
 Lambda functions can mount an S3 Files file system to read and write files using standard filesystem operations,
 which is useful for workloads that need POSIX-compatible file access to S3 data — such as ML inference, media processing, or legacy applications that expect a local mount path.
