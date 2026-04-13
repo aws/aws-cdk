@@ -1881,6 +1881,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly STANDARD_6_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:6.0');
   /** The `aws/codebuild/standard:7.0` build image. */
   public static readonly STANDARD_7_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:7.0');
+  /** The `aws/codebuild/standard:8.0` build image. */
+  public static readonly STANDARD_8_0 = LinuxBuildImage.codeBuildImage('aws/codebuild/standard:8.0');
 
   /** @deprecated Use {@link LinuxBuildImage.AMAZON_LINUX_2_5} instead. */
   public static readonly AMAZON_LINUX_2 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:1.0');
@@ -1900,6 +1902,8 @@ export class LinuxBuildImage implements IBuildImage {
   public static readonly AMAZON_LINUX_2023_4 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:4.0');
   /** The Amazon Linux 2023 x86_64 standard image, version `5.0`. */
   public static readonly AMAZON_LINUX_2023_5 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:5.0');
+  /** The Amazon Linux 2023 x86_64 standard image, version `6.0`. */
+  public static readonly AMAZON_LINUX_2023_6 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux-x86_64-standard:6.0');
 
   /** The Amazon Coretto 8 image x86_64, based on Amazon Linux 2. */
   public static readonly AMAZON_LINUX_2_CORETTO_8 = LinuxBuildImage.codeBuildImage('aws/codebuild/amazonlinux2-x86_64-standard:corretto8');
