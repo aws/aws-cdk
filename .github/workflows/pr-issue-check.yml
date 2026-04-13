@@ -1,7 +1,7 @@
 name: PR Issue Reference Check
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, edited, reopened]
 
 jobs:
   check-issue-reference:
@@ -32,22 +32,26 @@ jobs:
 
               let message;
               if (issueElsewhere) {
-                message = `👋 It looks like your PR description references an issue, but not in the expected location.\n\nThe issue number must appear in the first section of the description (the first two lines), following the template format:\n\`\`\`\n### Issue # (if applicable)\n\nCloses #123.\n\`\`\`\nPlease move your issue reference to the top of the description.`;
+                message = `👋 It looks like your PR description references an issue, but not in the expected location.\n\nThe issue number must appear in the first section of the description (the first two lines), following the template format:\n\`\`\`\n### Issue # (if applicable)\n\nCloses #123.\n\`\`\`\nPlease move your issue reference to the top of the description.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
               } else {
                 const hasIssueHeading = firstTwo.toLowerCase().includes('issue');
                 if (hasIssueHeading) {
-                  message = `👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.\n\nPlease update the description to include a reference like \`Closes #123\` so the linked issue is closed automatically when this PR is merged.`;
+                  message = `👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.\n\nPlease update the description to include a reference like \`Closes #123\` so the linked issue is closed automatically when this PR is merged.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
                 } else {
-                  message = `⚠️ This pull request does not reference a linked issue.\n\nPull requests that do not close an assigned issue will not be accepted. Please update the description to follow the [PR template](/.github/PULL_REQUEST_TEMPLATE.md) and include a line like \`Closes #123\` at the top.`;
+                  message = `⚠️ This pull request does not reference a linked issue.\n\nPull requests that do not close an assigned issue will not be accepted. Please update the description to follow the [PR template](/.github/PULL_REQUEST_TEMPLATE.md) and include a line like \`Closes #123\` at the top.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
                 }
               }
 
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: message
-              });
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  body: message
+                });
+              } catch (commentError) {
+                core.warning(`Failed to post comment: ${commentError.message}`);
+              }
               core.setFailed('PR description is missing a valid issue reference.');
               return;
             }
@@ -63,13 +67,11 @@ jobs:
                   repo: context.repo.repo,
                   issue_number: num
                 });
-                if (issue.state !== 'open') {
-                  invalid.push(`#${num} (exists but is ${issue.state})`);
-                } else if (issue.pull_request) {
+                if (issue.pull_request) {
                   invalid.push(`#${num} (is a pull request, not an issue)`);
                 }
               } catch (e) {
-                if (e.status === 404) {
+                if (e.status === 404 || e.status === 410) {
                   invalid.push(`#${num} (does not exist)`);
                 } else {
                   throw e;
@@ -79,14 +81,18 @@ jobs:
 
             if (invalid.length > 0) {
               const list = invalid.join('\n- ');
-              const message = `⚠️ The following issue reference(s) in your PR description are not valid open issues:\n\n- ${list}\n\nPlease make sure your PR references an existing, open issue using the format \`Closes #123\`.`;
+              const message = `⚠️ The following issue reference(s) in your PR description are not valid open issues:\n\n- ${list}\n\nPlease make sure your PR references an existing issue using the format \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
 
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.payload.pull_request.number,
-                body: message
-              });
+              try {
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: context.payload.pull_request.number,
+                  body: message
+                });
+              } catch (commentError) {
+                core.warning(`Failed to post comment: ${commentError.message}`);
+              }
               core.setFailed('PR references invalid or closed issues.');
               return;
             }
