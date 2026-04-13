@@ -41,7 +41,7 @@ export interface LambdaFunctionProviderProps {
  */
 class LambdaFunctionProvider extends Construct {
   /**
-   * A Reference to the provider lambda exeuction role ARN
+   * A Reference to the provider lambda execution role ARN
    */
   public readonly roleArn: Reference;
 

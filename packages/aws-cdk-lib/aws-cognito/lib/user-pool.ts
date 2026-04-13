@@ -479,7 +479,7 @@ export interface PasswordPolicy {
   /**
    * The number of previous passwords that you want Amazon Cognito to restrict each user from reusing.
    *
-   * `passwordHistorySize` can not be set when `featurePlan` is `FeaturePlan.LITE`.
+   * `passwordHistorySize` cannot be set when `featurePlan` is `FeaturePlan.LITE`.
    *
    * @default undefined - Cognito default setting is no restriction
    */
