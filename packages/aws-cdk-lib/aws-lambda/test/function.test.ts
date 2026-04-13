@@ -3448,7 +3448,7 @@ describe('function', () => {
         FileSystemConfigs: [
           {
             Arn: {
-              'Fn::GetAtt': ['AccessPoint', 'Arn'],
+              'Fn::GetAtt': ['AccessPoint', 'AccessPointArn'],
             },
             LocalMountPath: '/mnt/data',
           },
@@ -3462,7 +3462,7 @@ describe('function', () => {
             Match.objectLike({
               Action: 's3files:ClientMount',
               Resource: {
-                'Fn::GetAtt': ['AccessPoint', 'Arn'],
+                'Fn::GetAtt': ['AccessPoint', 'AccessPointArn'],
               },
             }),
             Match.objectLike({

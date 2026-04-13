@@ -574,7 +574,7 @@
      "Uid": "1001"
     },
     "RootDirectory": {
-     "CreationInfo": {
+     "CreationPermissions": {
       "OwnerGid": "1001",
       "OwnerUid": "1001",
       "Permissions": "750"
@@ -666,7 +666,7 @@
        "Resource": {
         "Fn::GetAtt": [
          "AccessPoint",
-         "Arn"
+         "AccessPointArn"
         ]
        }
       },
@@ -737,7 +737,7 @@
       "Arn": {
        "Fn::GetAtt": [
         "AccessPoint",
-        "Arn"
+        "AccessPointArn"
        ]
       },
       "LocalMountPath": "/mnt/data"

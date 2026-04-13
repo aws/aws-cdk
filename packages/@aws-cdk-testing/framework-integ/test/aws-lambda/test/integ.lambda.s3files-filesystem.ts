@@ -67,7 +67,7 @@ const accessPoint = new s3files.CfnAccessPoint(stack, 'AccessPoint', {
   fileSystemId: fileSystem.attrFileSystemId,
   rootDirectory: {
     path: '/export/lambda',
-    creationInfo: { ownerGid: '1001', ownerUid: '1001', permissions: '750' },
+    creationPermissions: { ownerGid: '1001', ownerUid: '1001', permissions: '750' },
   },
   posixUser: { gid: '1001', uid: '1001' },
 });
