@@ -165,7 +165,7 @@ export enum FlowLogFileFormat {
 }
 
 /**
- * Options for writing logs to a S3 destination
+ * Options for writing logs to an S3 destination
  */
 export interface S3DestinationOptions {
   /**

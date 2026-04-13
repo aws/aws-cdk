@@ -341,7 +341,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
   }
 
   /**
-   * Adds a SNS topic that deliver notifications to AWS Chatbot.
+   * Adds an SNS topic that deliver notifications to AWS Chatbot.
    */
   @MethodMetadata()
   public addNotificationTopic(notificationTopic: sns.ITopic): void {

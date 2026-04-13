@@ -52,7 +52,7 @@ export abstract class MutualTlsCertificate extends TlsCertificate {
 }
 
 /**
- * Represents a ACM provided TLS certificate
+ * Represents an ACM provided TLS certificate
  */
 class AcmTlsCertificate extends TlsCertificate {
   /**
