@@ -2014,7 +2014,7 @@ Step Functions supports [AWS Step Functions](https://docs.aws.amazon.com/step-fu
 
 You can manage [AWS Step Functions](https://docs.aws.amazon.com/step-functions/latest/dg/connect-stepfunctions.html) executions.
 
-AWS Step Functions supports it's own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
+AWS Step Functions supports its own [`StartExecution`](https://docs.aws.amazon.com/step-functions/latest/apireference/API_StartExecution.html) API as a service integration.
 
 ```ts
 // Define a state machine with one Pass state
