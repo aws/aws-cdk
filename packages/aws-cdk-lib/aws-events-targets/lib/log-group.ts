@@ -46,7 +46,7 @@ export abstract class LogGroupTargetInput extends RuleTargetInput {
    *
    * @deprecated use fromObjectV2
    */
-  public static fromObject(options: any): RuleTargetInput {
+  public static fromObject(options: any = {}): RuleTargetInput {
     return RuleTargetInput.fromObject({
       timestamp: options?.timestamp ?? EventField.time,
       message: options?.message ?? EventField.detailType,
