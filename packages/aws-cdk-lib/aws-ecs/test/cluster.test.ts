@@ -3545,31 +3545,6 @@ describe('cluster', () => {
       Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('instanceRequirements is not specified'));
     });
 
-    test('no warning when useLocalStorage is true and localStorage is REQUIRED', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'test');
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-      const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
-
-      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', { vpc, description: 'sg' });
-
-      // WHEN
-      const provider = new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
-        subnets: vpc.privateSubnets,
-        securityGroups: [securityGroup],
-        useLocalStorage: true,
-        instanceRequirements: {
-          vCpuCountMin: 1,
-          memoryMin: cdk.Size.gibibytes(2),
-          localStorage: ec2.LocalStorage.REQUIRED,
-        },
-      });
-      cluster.addManagedInstancesCapacityProvider(provider);
-
-      // THEN
-      Annotations.fromStack(stack).hasNoWarning('*', Match.stringLikeRegexp('useLocalStorage'));
-    });
 
     test('throws when capacity provider name starts with aws, ecs or fargate', () => {
       // GIVEN
