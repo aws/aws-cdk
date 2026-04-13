@@ -456,7 +456,14 @@ export class TaskDefinition extends TaskDefinitionBase {
 
   private _passRoleStatement?: iam.PolicyStatement;
 
-  private runtimePlatform?: RuntimePlatform;
+  /**
+   * The operating system that your task definitions are running on.
+   */
+  public get runtimePlatform(): RuntimePlatform | undefined {
+    return this._runtimePlatform;
+  }
+
+  private _runtimePlatform?: RuntimePlatform;
 
   private readonly _cpu?: string;
 
@@ -563,7 +570,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       this.checkFargateWindowsBasedTasksSize(props.cpu!, props.memoryMiB!, props.runtimePlatform!);
     }
 
-    this.runtimePlatform = props.runtimePlatform;
+    this._runtimePlatform = props.runtimePlatform;
     this._cpu = props.cpu;
     this._memory = props.memoryMiB;
 
@@ -592,9 +599,9 @@ export class TaskDefinition extends TaskDefinitionBase {
       ephemeralStorage: this.ephemeralStorageGiB ? {
         sizeInGiB: this.ephemeralStorageGiB,
       } : undefined,
-      runtimePlatform: (this.isFargateCompatible || this.isManagedInstancesCompatible) && this.runtimePlatform ? {
-        cpuArchitecture: this.runtimePlatform?.cpuArchitecture?._cpuArchitecture,
-        operatingSystemFamily: this.runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
+      runtimePlatform: (this.isFargateCompatible || this.isManagedInstancesCompatible) && this._runtimePlatform ? {
+        cpuArchitecture: this._runtimePlatform?.cpuArchitecture?._cpuArchitecture,
+        operatingSystemFamily: this._runtimePlatform?.operatingSystemFamily?._operatingSystemFamily,
       } : undefined,
       enableFaultInjection: props.enableFaultInjection,
     };

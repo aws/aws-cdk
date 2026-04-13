@@ -966,6 +966,32 @@ describe('fargate service', () => {
       }).toThrow(/The ephemeralStorageGiB feature requires platform version/);
     });
 
+    test('does not error for ephemeralStorageGiB on Windows with platform version 1.0.0', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef', {
+        runtimePlatform: {
+          operatingSystemFamily: ecs.OperatingSystemFamily.WINDOWS_SERVER_2019_FULL,
+          cpuArchitecture: ecs.CpuArchitecture.X86_64,
+        },
+        memoryLimitMiB: 4096,
+        cpu: 2048,
+        ephemeralStorageGiB: 100,
+      });
+      taskDefinition.addContainer('main', {
+        image: ecs.ContainerImage.fromRegistry('somecontainer'),
+      });
+
+      // WHEN / THEN - should not throw
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        platformVersion: ecs.FargatePlatformVersion.VERSION1_0,
+      });
+    });
+
     test('errors when platform version does not support pidMode', () => {
       // GIVEN
       const stack = new cdk.Stack();
