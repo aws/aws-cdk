@@ -1,6 +1,8 @@
 import type * as ec2 from '../../../aws-ec2';
 import { UnscopedValidationError } from '../../../core';
-import { findClosestRelatedResource, findL1FromRef, memoizedGetter } from '../../../core/lib/helpers-internal';
+import { CfnResource } from '../../../core/lib/cfn-resource';
+import { ConstructReflection, memoizedGetter } from '../../../core/lib/helpers-internal';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IAccessPointRef } from '../../../interfaces/generated/aws-s3files-interfaces.generated';
 import { CfnMountTarget } from '../s3files.generated';
 import type { CfnAccessPoint, CfnFileSystem } from '../s3files.generated';
@@ -25,11 +27,11 @@ export class AccessPointReflection {
 
   private constructor(accessPointRef: IAccessPointRef) {
     this.ref = accessPointRef;
-    this._accessPoint = findL1FromRef<IAccessPointRef, CfnAccessPoint>(
-      accessPointRef,
-      'AWS::S3Files::AccessPoint',
-      (cfnAccessPoint, ref) => cfnAccessPoint.accessPointRef.accessPointId === ref.accessPointRef.accessPointId,
-    );
+    this._accessPoint = ConstructReflection.of(accessPointRef).findCfnResource({
+      cfnResourceType: 'AWS::S3Files::AccessPoint',
+      matches: (candidate: CfnResource) =>
+        (candidate as unknown as CfnAccessPoint).accessPointRef?.accessPointId === accessPointRef.accessPointRef.accessPointId,
+    }) as CfnAccessPoint | undefined;
   }
 
   /**
@@ -39,7 +41,7 @@ export class AccessPointReflection {
   public get accessPoint(): CfnAccessPoint {
     if (!this._accessPoint) {
       throw new UnscopedValidationError(
-        'CfnAccessPointNotFound',
+        lit`CfnAccessPointNotFound`,
         `Unable to find underlying CfnAccessPoint for ${this.ref.node.path}.`,
       );
     }
@@ -52,15 +54,18 @@ export class AccessPointReflection {
    */
   @memoizedGetter
   public get fileSystem(): CfnFileSystem {
-    const fs = findClosestRelatedResource<CfnAccessPoint, CfnFileSystem>(
-      this.accessPoint,
-      'AWS::S3Files::FileSystem',
-      (accessPoint, fileSystem) => accessPoint.fileSystemId === fileSystem.ref || accessPoint.fileSystemId === fileSystem.attrFileSystemId,
-    );
+    const ap = this.accessPoint;
+    const fs = ConstructReflection.of(ap).findRelatedCfnResource({
+      cfnResourceType: 'AWS::S3Files::FileSystem',
+      matches: (candidate: CfnResource) => {
+        const cfnFs = candidate as unknown as CfnFileSystem;
+        return ap.fileSystemId === cfnFs.ref || ap.fileSystemId === cfnFs.attrFileSystemId;
+      },
+    }) as CfnFileSystem | undefined;
     if (!fs) {
       throw new UnscopedValidationError(
-        'CfnFileSystemNotFound',
-        `Unable to find the CfnFileSystem for access point at ${this.accessPoint.node.path}. ` +
+        lit`CfnFileSystemNotFound`,
+        `Unable to find the CfnFileSystem for access point at ${ap.node.path}. ` +
         'Ensure the file system is defined in the same CDK app and linked to the access point.',
       );
     }
@@ -81,7 +86,7 @@ export class AccessPointReflection {
     }
     if (result.length === 0) {
       throw new UnscopedValidationError(
-        'MountTargetsNotFound',
+        lit`MountTargetsNotFound`,
         `No mount targets found for file system at ${fs.node.path}. Create at least one CfnMountTarget for the file system.`,
       );
     }
@@ -98,17 +103,18 @@ export class AccessPointReflection {
     for (const mountTarget of this.mountTargets) {
       if (!mountTarget.securityGroups || mountTarget.securityGroups.length === 0) {
         throw new UnscopedValidationError(
-          'MountTargetMissingSecurityGroups',
+          lit`MountTargetMissingSecurityGroups`,
           `Mount target ${mountTarget.node.path} does not have security groups. Add security groups to the mount target.`,
         );
       }
       for (const securityGroupId of mountTarget.securityGroups) {
         if (seen.has(securityGroupId)) continue;
         seen.add(securityGroupId);
-        const cfnSecurityGroup = findClosestRelatedResource<CfnMountTarget, ec2.CfnSecurityGroup>(
-          mountTarget, 'AWS::EC2::SecurityGroup',
-          (_, candidate) => candidate.ref === securityGroupId || candidate.attrGroupId === securityGroupId,
-        );
+        const cfnSecurityGroup = ConstructReflection.of(mountTarget).findRelatedCfnResource({
+          cfnResourceType: 'AWS::EC2::SecurityGroup',
+          matches: (candidate: CfnResource) =>
+            candidate.ref === securityGroupId || (candidate as unknown as ec2.CfnSecurityGroup).attrGroupId === securityGroupId,
+        }) as ec2.CfnSecurityGroup | undefined;
         if (cfnSecurityGroup) {
           securityGroups.push(cfnSecurityGroup);
         }
