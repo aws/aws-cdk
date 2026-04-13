@@ -938,9 +938,12 @@ describe('Environment', () => {
 
   test.each([
     ['Standard 7.0', codebuild.LinuxBuildImage.STANDARD_7_0, 'aws/codebuild/standard:7.0'],
+    ['Standard 8.0', codebuild.LinuxBuildImage.STANDARD_8_0, 'aws/codebuild/standard:8.0'],
     ['Standard 6.0', codebuild.LinuxBuildImage.STANDARD_6_0, 'aws/codebuild/standard:6.0'],
     ['Amazon Linux 4.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_4, 'aws/codebuild/amazonlinux2-x86_64-standard:4.0'],
     ['Amazon Linux 5.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2_5, 'aws/codebuild/amazonlinux2-x86_64-standard:5.0'],
+    ['Amazon Linux 2023 6.0', codebuild.LinuxBuildImage.AMAZON_LINUX_2023_6, 'aws/codebuild/amazonlinux-x86_64-standard:6.0'],
+    ['Amazon Linux 2023 ARM 4.0', codebuild.LinuxArmBuildImage.AMAZON_LINUX_2023_STANDARD_4_0, 'aws/codebuild/amazonlinux-aarch64-standard:4.0'],
     ['Windows Server Core 2019 1.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE, 'aws/codebuild/windows-base:2019-1.0'],
     ['Windows Server Core 2019 2.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_2_0, 'aws/codebuild/windows-base:2019-2.0'],
     ['Windows Server Core 2019 3.0', codebuild.WindowsBuildImage.WIN_SERVER_CORE_2019_BASE_3_0, 'aws/codebuild/windows-base:2019-3.0'],
