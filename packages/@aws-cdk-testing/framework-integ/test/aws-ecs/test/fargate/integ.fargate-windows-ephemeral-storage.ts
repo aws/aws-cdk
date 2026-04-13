@@ -20,13 +20,17 @@ const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef', {
 });
 
 taskDefinition.addContainer('web', {
-  image: ecs.ContainerImage.fromRegistry('mcr.microsoft.com/dotnet/framework/samples:aspnetapp'),
+  // Use an explicit ltsc2019 tag to match WINDOWS_SERVER_2019 (10.0.17763)
+  image: ecs.ContainerImage.fromRegistry('mcr.microsoft.com/windows/servercore/iis:ltsc2019'),
 });
 
 new ecs.FargateService(stack, 'FargateService', {
   cluster,
   taskDefinition,
   platformVersion: ecs.FargatePlatformVersion.VERSION1_0,
+  // Keep integ runs stable even if the runner deploys:
+  // no need to actually start tasks to validate synth/snapshot content.
+  desiredCount: 0,
 });
 
 new IntegTest(app, 'FargateWindowsEphemeralStorage', {
