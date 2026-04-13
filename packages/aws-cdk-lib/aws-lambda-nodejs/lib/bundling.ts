@@ -10,7 +10,7 @@ import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isS
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
-import { ValidationError } from '../../core';
+import { AssumptionError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
@@ -558,7 +558,7 @@ function stepsToShellCommand(steps: BundlingStep[]): string {
         commands.push(preparePosixShellCommand(step.command));
         break;
       case 'callback':
-        throw new Error('callback steps cannot be rendered to a shell command');
+        throw new AssumptionError(lit`CallbackNotRenderable`, 'callback steps cannot be rendered to a shell command');
     }
   }
   return chain(commands);
