@@ -735,7 +735,7 @@ taskDefinition.addContainer('windowsservercore', {
 
 Amazon ECS supports Active Directory authentication for Linux containers through a special kind of service account called a group Managed Service Account (gMSA). For more details, please see the [product documentation on how to implement on Windows containers](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/windows-gmsa.html), or this [blog post on how to implement on  Linux containers](https://aws.amazon.com/blogs/containers/using-windows-authentication-with-gmsa-on-linux-containers-on-amazon-ecs/).
 
-There are two types of CredentialSpecs, domained-join or domainless. Both types support creation from a S3 bucket, a SSM parameter, or by directly specifying a location for the file in the constructor.
+There are two types of CredentialSpecs, domained-join or domainless. Both types support creation from an S3 bucket, an SSM parameter, or by directly specifying a location for the file in the constructor.
 
 A domian-joined gMSA container looks like:
 
@@ -744,7 +744,7 @@ A domian-joined gMSA container looks like:
 declare const parameter: ssm.IParameter;
 declare const taskDefinition: ecs.TaskDefinition;
 
-// Domain-joined gMSA container from a SSM parameter
+// Domain-joined gMSA container from an SSM parameter
 taskDefinition.addContainer('gmsa-domain-joined-container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   cpu: 128,
@@ -760,7 +760,7 @@ A domianless gMSA container looks like:
 declare const bucket: s3.Bucket;
 declare const taskDefinition: ecs.TaskDefinition;
 
-// Domainless gMSA container from a S3 bucket object.
+// Domainless gMSA container from an S3 bucket object.
 taskDefinition.addContainer('gmsa-domainless-container', {
   image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
   cpu: 128,

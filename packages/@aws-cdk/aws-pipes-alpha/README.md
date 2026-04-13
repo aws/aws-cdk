@@ -51,12 +51,12 @@ const pipe = new pipes.Pipe(this, 'Pipe', {
 });
 ```
 
-This minimal example creates a pipe with a SQS queue as source and a SQS queue as target.
+This minimal example creates a pipe with an SQS queue as source and an SQS queue as target.
 Messages from the source are put into the body of the target message.
 
 ## Source
 
-A source is a AWS Service that is polled. The following sources are possible:
+A source is an AWS Service that is polled. The following sources are possible:
 
 - [Amazon DynamoDB stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-dynamodb.html)
 - [Amazon Kinesis stream](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-kinesis.html)

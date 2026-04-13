@@ -1440,7 +1440,7 @@ const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
   kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
 });
 
-new tasks.EksCall(this, 'Call a EKS Endpoint', {
+new tasks.EksCall(this, 'Call an EKS Endpoint', {
   cluster: myEksCluster,
   httpMethod: tasks.HttpMethods.GET,
   httpPath: '/api/v1/namespaces/default/pods',

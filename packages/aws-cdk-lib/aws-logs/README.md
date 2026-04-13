@@ -85,7 +85,7 @@ Account ID strings. Non-ARN principals, like Service principals or Any principal
 ## Encrypting Log Groups
 
 By default, log group data is always encrypted in CloudWatch Logs. You have the
-option to encrypt log group data using a AWS KMS customer master key (CMK) should
+option to encrypt log group data using an AWS KMS customer master key (CMK) should
 you not wish to use the default AWS encryption. Keep in mind that if you decide to
 encrypt a log group, any service or IAM identity that needs to read the encrypted
 log streams in the future will require the same CMK to decrypt the data.

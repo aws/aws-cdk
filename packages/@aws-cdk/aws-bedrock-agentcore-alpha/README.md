@@ -1460,7 +1460,7 @@ specifications for defining API targets. It connects to REST APIs using OpenAPI 
 
 - Supports OAUTH and API_KEY credential providers (Do not support IAM, you must provide `credentialProviderConfigurations`)
 - Ideal for integrating with external REST services
-- Need API schema. The construct provide [3 ways to upload a API schema to OpenAPI target](#api-schema-for-openapi-and-smithy-target)
+- Need API schema. The construct provide [3 ways to upload an API schema to OpenAPI target](#api-schema-for-openapi-and-smithy-target)
 
 **Smithy Model Target** : Smithy is a language for defining services and software development kits (SDKs). Smithy models provide
 a more structured approach to defining APIs compared to OpenAPI, and are particularly useful for connecting to AWS services.
@@ -1468,7 +1468,7 @@ AgentCore Gateway supports built-in AWS service models only. It connects to serv
 
 - Supports OAUTH and API_KEY credential providers
 - Ideal for AWS service integrations
-- Need API schema. The construct provide 3 ways to upload a API schema to Smity target
+- Need API schema. The construct provide 3 ways to upload an API schema to Smity target
 - When using the default IAM authentication (no `credentialProviderConfigurations` specified), The construct only
   grants permission to read the Smithy schema file from S3. You MUST manually grant permissions for the gateway
   role to invoke the actual Smithy API endpoints
