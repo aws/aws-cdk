@@ -1,6 +1,6 @@
 import type * as ec2 from '../../../aws-ec2';
 import { UnscopedValidationError } from '../../../core';
-import { CfnResource } from '../../../core/lib/cfn-resource';
+import type { CfnResource } from '../../../core/lib/cfn-resource';
 import { ConstructReflection, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IAccessPointRef } from '../../../interfaces/generated/aws-s3files-interfaces.generated';
