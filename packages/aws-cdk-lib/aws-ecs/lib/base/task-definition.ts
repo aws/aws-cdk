@@ -240,7 +240,8 @@ export interface TaskDefinitionProps extends CommonTaskDefinitionProps {
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
    *
-   * Only supported in Fargate platform version 1.4.0 or later.
+   * Only supported in Fargate platform version 1.4.0 or later for Linux tasks,
+   * and platform version 1.0.0 or later for Windows tasks.
    *
    * @default - Undefined, in which case, the task will receive 20GiB ephemeral storage.
    */
@@ -417,7 +418,8 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * The amount (in GiB) of ephemeral storage to be allocated to the task.
    *
-   * Only supported in Fargate platform version 1.4.0 or later.
+   * Only supported in Fargate platform version 1.4.0 or later for Linux tasks,
+   * and platform version 1.0.0 or later for Windows tasks.
    */
   public readonly ephemeralStorageGiB?: number;
 
