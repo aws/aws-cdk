@@ -13,6 +13,7 @@ import type { SecretValue } from '../../core';
 import { Arn, ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -231,7 +232,7 @@ export class User extends Resource implements IIdentity, IUser {
       }
 
       public addManagedPolicy(_policy: IManagedPolicy): void {
-        throw new ValidationError('CannotAddManagedPolicyImported', 'Cannot add managed policy to imported User', this);
+        throw new ValidationError(lit`CannotAddManagedPolicyImported`, 'Cannot add managed policy to imported User', this);
       }
 
       public get userRef(): UserReference {
@@ -382,7 +383,7 @@ export class User extends Resource implements IIdentity, IUser {
     }
 
     if (props.passwordResetRequired) {
-      throw new ValidationError('CannotSetPasswordResetRequired', 'Cannot set "passwordResetRequired" without specifying "initialPassword"', this);
+      throw new ValidationError(lit`CannotSetPasswordResetRequired`, 'Cannot set "passwordResetRequired" without specifying "initialPassword"', this);
     }
 
     return undefined; // no console access
