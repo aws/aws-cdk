@@ -7592,4 +7592,3 @@ Fixes: https://github.com/aws/aws-cdk/issues/12990
 ## 2.0.0-alpha.0 (2020-12-11)
 
 This is the first alpha release of CDK 2.0. 🎉
-
