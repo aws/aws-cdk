@@ -324,6 +324,337 @@
    "DependsOn": [
     "AutoNamedEngine3770C869"
    ]
+  },
+  "GatewayPolicyEngine8518A258": {
+   "Type": "AWS::BedrockAgentCore::PolicyEngine",
+   "Properties": {
+    "Description": "PolicyEngine governing tool access for an agent gateway",
+    "Name": "gateway_policy_engine"
+   }
+  },
+  "GatewayPolicyEngineAllowToolAccessEAED6CD0": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "permit(\n  principal,\n  action,\n  resource is AgentCore::Gateway\n);"
+     }
+    },
+    "Description": "Permit all principals to invoke tools via the gateway",
+    "Name": "allow_tool_access",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "GatewayPolicyEngine8518A258",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "GatewayPolicyEngine8518A258"
+   ]
+  },
+  "GatewayPolicyEngineDenyDeleteActions54A18F9A": {
+   "Type": "AWS::BedrockAgentCore::Policy",
+   "Properties": {
+    "Definition": {
+     "Cedar": {
+      "Statement": "forbid(\n  principal,\n  action == AgentCore::Action::\"DeleteData\",\n  resource is AgentCore::Gateway\n);"
+     }
+    },
+    "Description": "Forbid delete actions for all principals",
+    "Name": "deny_delete_actions",
+    "PolicyEngineId": {
+     "Fn::GetAtt": [
+      "GatewayPolicyEngine8518A258",
+      "PolicyEngineId"
+     ]
+    },
+    "ValidationMode": "FAIL_ON_ANY_FINDINGS"
+   },
+   "DependsOn": [
+    "GatewayPolicyEngineAllowToolAccessEAED6CD0",
+    "GatewayPolicyEngine8518A258"
+   ]
+  },
+  "PolicyGatewayServiceRole3EA38E17": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/policy-integ-gateway*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway policy-integ-gateway"
+   }
+  },
+  "PolicyGatewayServiceRoleDefaultPolicy5CE49125": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "bedrock-agentcore:GetPolicyEngine",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "GatewayPolicyEngine8518A258",
+         "PolicyEngineArn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:AuthorizeAction",
+        "bedrock-agentcore:PartiallyAuthorizeActions"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "GatewayPolicyEngine8518A258",
+          "PolicyEngineArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock-agentcore:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":gateway/policy-integ-gateway-*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PolicyGatewayServiceRoleDefaultPolicy5CE49125",
+    "Roles": [
+     {
+      "Ref": "PolicyGatewayServiceRole3EA38E17"
+     }
+    ]
+   }
+  },
+  "PolicyGatewayUserPool1F7F632A": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_phone_number",
+       "Priority": 1
+      },
+      {
+       "Name": "verified_email",
+       "Priority": 2
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UsernameConfiguration": {
+     "CaseSensitive": false
+    },
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "PolicyGatewayUserPoolResourceServerCE14D0E7": {
+   "Type": "AWS::Cognito::UserPoolResourceServer",
+   "Properties": {
+    "Identifier": "PolicyIntegTestStack-PolicyGateway-9BD0F6D1",
+    "Name": "PolicyIntegTestStack-PolicyGateway-9BD0F6D1",
+    "Scopes": [
+     {
+      "ScopeDescription": "Read access to gateway tools",
+      "ScopeName": "read"
+     },
+     {
+      "ScopeDescription": "Write access to gateway tools",
+      "ScopeName": "write"
+     }
+    ],
+    "UserPoolId": {
+     "Ref": "PolicyGatewayUserPool1F7F632A"
+    }
+   }
+  },
+  "PolicyGatewayUserPoolDefaultClientDB3FD216": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "client_credentials"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "PolicyGatewayUserPoolResourceServerCE14D0E7"
+        },
+        "/read"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "PolicyGatewayUserPoolResourceServerCE14D0E7"
+        },
+        "/write"
+       ]
+      ]
+     }
+    ],
+    "GenerateSecret": true,
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "PolicyGatewayUserPool1F7F632A"
+    }
+   }
+  },
+  "PolicyGatewayUserPoolDomainA7E0A6E2": {
+   "Type": "AWS::Cognito::UserPoolDomain",
+   "Properties": {
+    "Domain": "policyintegteststack-policygateway-9bd0f6d1",
+    "UserPoolId": {
+     "Ref": "PolicyGatewayUserPool1F7F632A"
+    }
+   }
+  },
+  "PolicyGatewayBC68FA61": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerConfiguration": {
+     "CustomJWTAuthorizer": {
+      "AllowedClients": [
+       {
+        "Ref": "PolicyGatewayUserPoolDefaultClientDB3FD216"
+       }
+      ],
+      "DiscoveryUrl": {
+       "Fn::Join": [
+        "",
+        [
+         "https://cognito-idp.",
+         {
+          "Ref": "AWS::Region"
+         },
+         ".amazonaws.com/",
+         {
+          "Ref": "PolicyGatewayUserPool1F7F632A"
+         },
+         "/.well-known/openid-configuration"
+        ]
+       ]
+      }
+     }
+    },
+    "AuthorizerType": "CUSTOM_JWT",
+    "Name": "policy-integ-gateway",
+    "PolicyEngineConfiguration": {
+     "Arn": {
+      "Fn::GetAtt": [
+       "GatewayPolicyEngine8518A258",
+       "PolicyEngineArn"
+      ]
+     },
+     "Mode": "LOG_ONLY"
+    },
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Default gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "PolicyGatewayServiceRole3EA38E17",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "PolicyGatewayServiceRoleDefaultPolicy5CE49125",
+    "PolicyGatewayServiceRole3EA38E17"
+   ]
   }
  },
  "Outputs": {

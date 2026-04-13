@@ -11,6 +11,13 @@
  * permissions in their IAM policies, but these should NOT be granted through CDK construct grant methods.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-permissions.html
+ *
+ * TODO: When this package graduates from alpha and is moved into aws-cdk-lib (and renamed from
+ * `aws-bedrock-agentcore-alpha` to `aws-bedrockagentcore` to align with the L1 module name),
+ * replace this file with an auto-generated grants class following the CDK Design Guidelines:
+ * @see https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md#grants
+ * This requires creating a `grants.json` file at the package root, after which the tooling
+ * will auto-generate the `*Grants` class on every `yarn build`.
  */
 
 /**
@@ -35,30 +42,6 @@ export const POLICY_ENGINE_EVALUATE_PERMS = [
  */
 export const POLICY_ENGINE_READ_PERMS = [
   'bedrock-agentcore:GetPolicyEngine',
-];
-
-/**
- * KMS permissions for encrypted policy engines.
- *
- * NOTE: These permissions are automatically managed by AWS KMS grants when you specify
- * a KMS key for PolicyEngine encryption. You typically do NOT need to manually grant these.
- *
- * The BedrockAgentCore service automatically creates KMS grants with these permissions
- * when the policy engine is created with a customer-managed KMS key.
- *
- * Actions:
- * - `kms:CreateGrant` - Create KMS grants for service operations (automatically managed)
- * - `kms:Decrypt` - Decrypt policy data (automatically managed)
- * - `kms:GenerateDataKey` - Generate data keys for encryption (automatically managed)
- * - `kms:DescribeKey` - Read key metadata (automatically managed)
- *
- * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy-encryption.html
- */
-export const POLICY_ENGINE_KMS_PERMS = [
-  'kms:CreateGrant',
-  'kms:Decrypt',
-  'kms:GenerateDataKey',
-  'kms:DescribeKey',
 ];
 
 /**

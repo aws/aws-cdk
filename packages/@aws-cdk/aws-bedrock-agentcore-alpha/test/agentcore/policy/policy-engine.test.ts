@@ -444,6 +444,46 @@ describe('PolicyEngine grant methods tests', () => {
     });
   });
 
+  test('grantEvaluateForGateway with token gateway name should use wildcard ARN', () => {
+    const newApp = new cdk.App();
+    const newStack = new cdk.Stack(newApp, 'token-gateway-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const newEngine = new PolicyEngine(newStack, 'token-engine', {
+      policyEngineName: 'token_engine',
+    });
+    const newRole = new iam.Role(newStack, 'token-role', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+    // No gatewayName provided → name is a Lazy token → Token.isUnresolved() returns true → wildcard fallback
+    const gateway = new Gateway(newStack, 'token-gateway', {
+      role: newRole,
+    });
+
+    newEngine.grantEvaluateForGateway(newRole, gateway);
+
+    const template = Template.fromStack(newStack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:AuthorizeAction',
+              'bedrock-agentcore:PartiallyAuthorizeActions',
+            ]),
+            Effect: 'Allow',
+            Resource: Match.arrayWith([
+              // Gateway ARN uses Fn::Join with wildcard suffix when name is a token
+              Match.objectLike({
+                'Fn::Join': ['', Match.arrayWith([Match.stringLikeRegexp('.*gateway/\\*')])],
+              }),
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+
   test('grantEvaluateForGateway should scope AuthorizeAction and PartiallyAuthorizeActions to both ARNs', () => {
     const newApp = new cdk.App();
     const newStack = new cdk.Stack(newApp, 'gateway-auth-stack', {

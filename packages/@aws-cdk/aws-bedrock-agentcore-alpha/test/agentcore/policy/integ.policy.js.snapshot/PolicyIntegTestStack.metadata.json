@@ -1,98 +1,4 @@
 {
-  "/PolicyIntegTestStack/BasicPolicyEngine": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/BasicPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/PolicyEngineKey": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "enableKeyRotation": true,
-        "removalPolicy": "destroy"
-      }
-    }
-  ],
-  "/PolicyIntegTestStack/EncryptedPolicyEngine": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/RawCedarPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/BuilderSimplePolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/BuilderSpecificPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/BuilderConditionsPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/BuilderComplexPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/BuilderForbidPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/EngineWithAddedPolicies": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/AutoNamedEngine": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/AutoNamedPolicy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
   "/PolicyIntegTestStack/BasicEngineArn": [
     {
       "type": "aws:cdk:logicalId",
@@ -201,24 +107,6 @@
       "data": "EngineWithAddedPoliciesDE8D5253"
     }
   ],
-  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy1": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy2": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy3": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
   "/PolicyIntegTestStack/AutoNamedEngine/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -229,6 +117,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AutoNamedPolicy6F9030FE"
+    }
+  ],
+  "/PolicyIntegTestStack/GatewayPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayPolicyEngine8518A258"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayBC68FA61"
     }
   ],
   "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy1/Resource": [
@@ -247,6 +147,54 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "EngineWithAddedPoliciesAddedPolicy3ACD13EB4"
+    }
+  ],
+  "/PolicyIntegTestStack/GatewayPolicyEngine/AllowToolAccess/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayPolicyEngineAllowToolAccessEAED6CD0"
+    }
+  ],
+  "/PolicyIntegTestStack/GatewayPolicyEngine/DenyDeleteActions/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayPolicyEngineDenyDeleteActions54A18F9A"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayServiceRole3EA38E17"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPool1F7F632A"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayServiceRoleDefaultPolicy5CE49125"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPoolResourceServerCE14D0E7"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/DefaultClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPoolDefaultClientDB3FD216"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPoolDomainA7E0A6E2"
     }
   ]
 }

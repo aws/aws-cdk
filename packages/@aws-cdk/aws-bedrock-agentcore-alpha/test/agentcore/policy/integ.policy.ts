@@ -14,6 +14,7 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as kms from 'aws-cdk-lib/aws-kms';
+import { Gateway, PolicyEngineMode } from '../../../lib/gateway/gateway';
 import { Policy } from '../../../lib/policy/policy';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
 import { PolicyStatement } from '../../../lib/policy/policy-statement';
@@ -205,6 +206,38 @@ new Policy(stack, 'AutoNamedPolicy', {
     .onAllActions()
     .onAllResources(),
   description: 'Policy with auto-generated name',
+});
+
+// A gateway with attached policy engine and policies — the core authorization scenario
+const gatewayEngine = new PolicyEngine(stack, 'GatewayPolicyEngine', {
+  policyEngineName: 'gateway_policy_engine',
+  description: 'PolicyEngine governing tool access for an agent gateway',
+});
+
+gatewayEngine.addPolicy('AllowToolAccess', {
+  policyName: 'allow_tool_access',
+  statement: PolicyStatement.permit()
+    .forAllPrincipals()
+    .onAllActions()
+    .onAllResources(),
+  description: 'Permit all principals to invoke tools via the gateway',
+});
+
+gatewayEngine.addPolicy('DenyDeleteActions', {
+  policyName: 'deny_delete_actions',
+  statement: PolicyStatement.forbid()
+    .forAllPrincipals()
+    .onAction('AgentCore::Action::DeleteData')
+    .onAllResources(),
+  description: 'Forbid delete actions for all principals',
+});
+
+new Gateway(stack, 'PolicyGateway', {
+  gatewayName: 'policy-integ-gateway',
+  policyEngineConfiguration: {
+    policyEngine: gatewayEngine,
+    mode: PolicyEngineMode.LOG_ONLY,
+  },
 });
 
 // Add outputs for verification
