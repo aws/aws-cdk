@@ -1477,7 +1477,7 @@ any prefix.
 
 Flag type: New default behavior
 
-When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
+When this feature flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`.
 
 
 | Since | Unset behaves like | Recommended value |
