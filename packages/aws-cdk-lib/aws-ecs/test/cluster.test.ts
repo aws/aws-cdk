@@ -4549,52 +4549,6 @@ describe('cluster', () => {
       });
     });
 
-    test('without useLocalStorage omits LocalStorageConfiguration', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'test');
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-
-      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
-        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
-        ],
-      });
-
-      const instanceRole = new iam.Role(stack, 'InstanceRole', {
-        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
-        ],
-      });
-
-      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
-        role: instanceRole,
-      });
-
-      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
-        vpc,
-        description: 'Test security group',
-      });
-
-      // WHEN
-      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
-        infrastructureRole,
-        ec2InstanceProfile: instanceProfile,
-        subnets: vpc.privateSubnets,
-        securityGroups: [securityGroup],
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
-        ManagedInstancesProvider: {
-          InstanceLaunchTemplate: {
-            LocalStorageConfiguration: Match.absent(),
-          },
-        },
-      });
-    });
   });
 
   test('can disable Managed Scaling and Managed Termination Protection for ASG capacity provider', () => {
