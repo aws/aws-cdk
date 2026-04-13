@@ -1,15 +1,16 @@
 {
-  "version": "32.0.0",
+  "version": "53.0.0",
   "files": {
-    "172ad225ebadc8dc372534ae917ac11f3878521f5660d84861b5c45a924e7e11": {
+    "719f9ebb0db2953d14508e170978b17f4b3eb32c9a16c793363a195e8125d202": {
+      "displayName": "codebuild-project-amazonlinux-2-5 Template",
       "source": {
         "path": "codebuild-project-amazonlinux-2-5.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-10cf5780": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "172ad225ebadc8dc372534ae917ac11f3878521f5660d84861b5c45a924e7e11.json",
+          "objectKey": "719f9ebb0db2953d14508e170978b17f4b3eb32c9a16c793363a195e8125d202.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
