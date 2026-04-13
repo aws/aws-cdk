@@ -93,6 +93,25 @@ const channelGroup = ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedCha
 });
 ```
 
+You can also import from an ARN, which automatically extracts the name and region:
+
+```ts
+declare const stack: Stack;
+const channelGroup = ChannelGroup.fromChannelGroupArn(stack, 'ImportedChannelGroup',
+    'arn:aws:mediapackagev2:us-west-2:123456789012:channelGroup/MyChannelGroup',
+);
+```
+
+For cross-region imports, pass the `region` parameter to ensure the correct ARN is constructed:
+
+```ts
+declare const stack: Stack;
+const channelGroup = ChannelGroup.fromChannelGroupAttributes(stack, 'ImportedChannelGroup', {
+    channelGroupName: 'MyChannelGroup',
+    region: 'us-west-2',
+});
+```
+
 ## Channel
 
 A channel is part of a channel group and represents the entry point for a content stream into MediaPackage.
@@ -140,6 +159,17 @@ const channel = Channel.fromChannelAttributes(stack, 'ImportedChannel', {
 });
 ```
 
+You can also import from an ARN:
+
+```ts
+declare const stack: Stack;
+const channel = Channel.fromChannelArn(stack, 'ImportedChannel',
+    'arn:aws:mediapackagev2:us-west-2:123456789012:channelGroup/MyGroup/channel/MyChannel',
+);
+```
+
+Imported channels expose a `region` property, which is parsed from the ARN or falls back to the importing stack's region.
+
 ### Channel Resource Policy
 
 The following code creates a resource policy directly on the channel. This 
@@ -182,6 +212,15 @@ const originEndpoint = OriginEndpoint.fromOriginEndpointAttributes(stack, 'Impor
     channelName: 'MyChannel',
     originEndpointName: 'MyExampleOriginEndpoint',
 });
+```
+
+You can also import from an ARN:
+
+```ts
+declare const stack: Stack;
+const originEndpoint = OriginEndpoint.fromOriginEndpointArn(stack, 'ImportedOriginEndpoint',
+    'arn:aws:mediapackagev2:us-west-2:123456789012:channelGroup/MyGroup/channel/MyChannel/originEndpoint/MyEndpoint',
+);
 ```
 
 The following code creates a resource policy on the origin endpoint. This 
