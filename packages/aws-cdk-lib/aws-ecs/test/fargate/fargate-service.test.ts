@@ -966,7 +966,7 @@ describe('fargate service', () => {
       }).toThrow(/The ephemeralStorageGiB feature requires platform version/);
     });
 
-    test('does not error for ephemeralStorageGiB on Windows with platform version 1.0.0', () => {
+    test('does not error for ephemeralStorageGiB on Windows with platform version 1.0.0 during synth', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});
