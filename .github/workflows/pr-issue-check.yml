@@ -81,7 +81,7 @@ jobs:
 
             if (invalid.length > 0) {
               const list = invalid.join('\n- ');
-              const message = `⚠️ The following issue reference(s) in your PR description are not valid open issues:\n\n- ${list}\n\nPlease make sure your PR references an existing issue using the format \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
+              const message = `⚠️ The following issue reference(s) in your PR description are not valid issues:\n\n- ${list}\n\nPlease make sure your PR references an existing issue using the format \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
 
               try {
                 await github.rest.issues.createComment({
@@ -93,7 +93,7 @@ jobs:
               } catch (commentError) {
                 core.warning(`Failed to post comment: ${commentError.message}`);
               }
-              core.setFailed('PR references invalid or closed issues.');
+              core.setFailed('PR references invalid issues.');
               return;
             }
 
