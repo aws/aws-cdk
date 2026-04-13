@@ -82,5 +82,6 @@
   "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
   "@aws-cdk/aws-route53-patterns:useDistribution": true,
   "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
-  "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true
+  "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
+  "@aws-cdk/aws-batch:defaultToAL2023": true
 }

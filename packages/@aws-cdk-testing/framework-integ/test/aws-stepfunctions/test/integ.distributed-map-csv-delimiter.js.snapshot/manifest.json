@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-stepfunctions-csv-delimiter-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6ad759c789232a499e14a0fe59575ec021801c9061de0f5300914710fabe3cd7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3b9dabb2e300f9e68dc8e0648da11728815dc1afb211d075f5ea22e16d2557e4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,264 +33,7 @@
       "dependencies": [
         "aws-stepfunctions-csv-delimiter-integ.assets"
       ],
-      "metadata": {
-        "/aws-stepfunctions-csv-delimiter-integ/Bucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "autoDeleteObjects": true,
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Bucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Bucket83908E77"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Bucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Bucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketPolicyE9A3008A"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Bucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Bucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "definition": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleB840431D"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleDefaultPolicyDF1E6607"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachine2E01A3A5"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/DistributedMapPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/StateMachine/DistributedMapPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineDistributedMapPolicy57C9D8C2"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefBucket83908E7781C90AC0"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-stepfunctions-csv-delimiter-integ/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-stepfunctions-csv-delimiter-integ.metadata.json",
       "displayName": "aws-stepfunctions-csv-delimiter-integ"
     },
     "DistributedMapCsvDelimiterDefaultTestDeployAssert47A59939.assets": {
@@ -310,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/50535c623cbe21c382e393ef04090982b7b13c930e5c7dad9351122dd9f41619.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33b34a2defc14b1a3de582bd27f051bcf75da59062747b0bbff8b88a65f689aa.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -326,188 +69,7 @@
         "aws-stepfunctions-csv-delimiter-integ",
         "DistributedMapCsvDelimiterDefaultTestDeployAssert47A59939.assets"
       ],
-      "metadata": {
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitForIsCompleteProviderInvokeC58BE721"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitForTimeoutProviderInvokeBFD2B7A7"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitForRoleECFF6E83"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aaWaitFor46B10905"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeStateMachinec5cc0786542148808c24d8ebf111c7aa"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallS3putObjectbc473607605d0afcd585355c51af4b06/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallS3putObjectbc473607605d0afcd585355c51af4b06/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3putObjectbc473607605d0afcd585355c51af4b06"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsstartExecutionc5cc0786542148808c24d8ebf111c7aa"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForIsCompleteProviderInvoke398F3536"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForTimeoutProviderInvoke9FF1C2FA"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForRoleAF7F8FCE"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868WaitForF882F860"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecution7e7cfa5e3c60aef760b5fbff9448d868"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/DistributedMapCsvDelimiter/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "DistributedMapCsvDelimiterDefaultTestDeployAssert47A59939.metadata.json",
       "displayName": "DistributedMapCsvDelimiter/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -522,6 +84,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -540,6 +103,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -651,7 +215,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -805,6 +369,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -836,16 +405,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -990,10 +549,47 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }

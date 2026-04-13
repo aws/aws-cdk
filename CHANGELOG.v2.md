@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.249.0](https://github.com/aws/aws-cdk/compare/v2.248.0...v2.249.0) (2026-04-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* L1 resources are automatically generated from
+public CloudFormation Resource Schemas. They are built to closely
+reflect the real state of CloudFormation. Sometimes these updates can
+contain changes that are incompatible with previous types, but more
+accurately reflect reality. In this release we have changed:
+
+aws-appstream: AWS::AppStream::Stack: Id attribute removed.
+aws-appsync: AWS::AppSync::GraphQLApi: LogConfig.CloudWatchLogsRoleArn
+property is now required.
+aws-appsync: AWS::AppSync::GraphQLApi: LogConfig.FieldLogLevel property
+is now required.
+aws-kafkaconnect: AWS::KafkaConnect::Connector:
+ProvisionedCapacity.McuCount property is now required.
+
+### Features
+
+* **batch:** add AL2023 image types and default to AL2023 (under feature flag) ([#37539](https://github.com/aws/aws-cdk/issues/37539)) ([6c1251c](https://github.com/aws/aws-cdk/commit/6c1251c5b18b99a31b6973d3877907f93b5130f0)), closes [#35839](https://github.com/aws/aws-cdk/issues/35839) [#37205](https://github.com/aws/aws-cdk/issues/37205)
+* update L1 CloudFormation resource definitions ([f28bb0e](https://github.com/aws/aws-cdk/commit/f28bb0ea65e6cd777299e14c364d33f8cd4a7af9))
+* update L1 CloudFormation resource definitions ([#37530](https://github.com/aws/aws-cdk/issues/37530)) ([117562c](https://github.com/aws/aws-cdk/commit/117562c3545720a5ed5127ecadae02787241b483))
+* **core:** add source tracing for L1 construct property mutations ([#37543](https://github.com/aws/aws-cdk/issues/37543)) ([8f38378](https://github.com/aws/aws-cdk/commit/8f3837807ef5d06d249c59cf9a567a71a4d4cc8d))
+
+
+### Bug Fixes
+
+* ensure issues created outside templates receive needs-triage label ([#37505](https://github.com/aws/aws-cdk/issues/37505)) ([58cb92a](https://github.com/aws/aws-cdk/commit/58cb92a30fb3c3984f9360a39cce3dbdf46999e9)), closes [#37454](https://github.com/aws/aws-cdk/issues/37454) [Abogical/aws-cdk#24](https://github.com/Abogical/aws-cdk/issues/24)
+* include cfn-property-mixins in spec-update workflow gen step ([e847c52](https://github.com/aws/aws-cdk/commit/e847c52d750089aa0213f620fc55de70fc06b3cd)), closes [#36300](https://github.com/aws/aws-cdk/issues/36300)
+
 ## [2.248.0](https://github.com/aws/aws-cdk/compare/v2.247.0...v2.248.0) (2026-04-02)
 
 

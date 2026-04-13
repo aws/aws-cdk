@@ -43,7 +43,7 @@ class LambdaStack extends Stack {
       },
     });
     customRule.addTarget(new CloudWatchLogGroup(logGroup, {
-      logEvent: LogGroupTargetInput.fromObject({
+      logEvent: LogGroupTargetInput.fromObjectV2({
         message: 'Howdy Ho!',
       }),
     }));

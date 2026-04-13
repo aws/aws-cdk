@@ -58,8 +58,13 @@ jobs:
       # Build @aws-cdk/spec2cdk and run L1 gen script to generate base files for new modules
       - name: Build @aws-cdk/spec2cdk
         run: lerna run build --stream --no-progress --skip-nx-cache --scope @aws-cdk/spec2cdk
-      - name: Generate code
-        run: lerna run gen --stream --no-progress --skip-nx-cache --scope aws-cdk-lib --scope @aws-cdk/mixins-preview
+      # Generate L1 code for aws-cdk-lib first — this updates scope-map.json with new services.
+      # mixins-preview and cfn-property-mixins read scope-map.json during their gen, so they
+      # must run after aws-cdk-lib to see the new service entries.
+      - name: Generate L1 code
+        run: lerna run gen --stream --no-progress --skip-nx-cache --scope aws-cdk-lib
+      - name: Generate mixins
+        run: lerna run gen --stream --no-progress --skip-nx-cache --scope @aws-cdk/mixins-preview --scope @aws-cdk/cfn-property-mixins
 
       # Next, create and upload the changes as a patch file. This will later be downloaded to create a pull request
       # Creating a pull request requires write permissions and it's best to keep write privileges isolated.

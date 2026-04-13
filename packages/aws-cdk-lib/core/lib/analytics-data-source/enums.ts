@@ -1435,7 +1435,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "EcsMachineImageType": [
     "ECS_AL2",
     "ECS_AL2023",
-    "ECS_AL2_NVIDIA"
+    "ECS_AL2_NVIDIA",
+    "ECS_AL2023_NVIDIA"
   ],
   "Effect": [
     "Allow",
@@ -1443,7 +1444,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "EksMachineImageType": [
     "EKS_AL2",
-    "EKS_AL2_NVIDIA"
+    "EKS_AL2_NVIDIA",
+    "EKS_AL2023",
+    "EKS_AL2023_NVIDIA"
   ],
   "EmailEncoding": [
     "Base64",

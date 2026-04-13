@@ -87,12 +87,35 @@
     "MyVpcVPCGW488ACE0D"
    ]
   },
+  "MyVpcPublicSubnet1NatInstanceInstanceRole394B648D": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-vpc-nat-instance-credit/MyVpc/PublicSubnet1/NatInstance"
+     }
+    ]
+   }
+  },
   "MyVpcPublicSubnet1NatInstanceInstanceProfile2FD934CB": {
    "Type": "AWS::IAM::InstanceProfile",
    "Properties": {
     "Roles": [
      {
-      "Ref": "MyVpcNatRoleF1616EE9"
+      "Ref": "MyVpcPublicSubnet1NatInstanceInstanceRole394B648D"
      }
     ]
    }
@@ -137,11 +160,11 @@
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash"
+     "Fn::Base64": "#!/bin/bash\nyum install iptables-services -y\nsystemctl enable iptables\nsystemctl start iptables\necho \"net.ipv4.ip_forward=1\" > /etc/sysctl.d/custom-ip-forwarding.conf\nsudo sysctl -p /etc/sysctl.d/custom-ip-forwarding.conf\nsudo /sbin/iptables -t nat -A POSTROUTING -o $(route | awk '/^default/{print $NF}') -j MASQUERADE\nsudo /sbin/iptables -F FORWARD\nsudo service iptables save"
     }
    },
    "DependsOn": [
-    "MyVpcNatRoleF1616EE9"
+    "MyVpcPublicSubnet1NatInstanceInstanceRole394B648D"
    ]
   },
   "MyVpcPublicSubnet2Subnet492B6BFB": {
@@ -405,29 +428,6 @@
     }
    }
   },
-  "MyVpcNatRoleF1616EE9": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "ec2.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "aws-cdk-vpc-nat-instance-credit/MyVpc"
-     }
-    ]
-   }
-  },
   "MyVpcRestrictDefaultSecurityGroupCustomResourceA4FCCD62": {
    "Type": "Custom::VpcRestrictDefaultSG",
    "Properties": {
@@ -526,7 +526,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
