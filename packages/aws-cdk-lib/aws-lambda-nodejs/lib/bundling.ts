@@ -289,8 +289,6 @@ export class Bundling implements cdk.BundlingOptions {
     ];
     const esbuildCommand = preparePosixShellCommand(esbuildArgv);
 
-    process.stderr.write(`***ESBUILD*** ${esbuildCommand}\n`);
-
     let depsCommand = '';
     if (this.props.nodeModules) {
       // Find 'package.json' closest to entry folder, we are going to extract the
