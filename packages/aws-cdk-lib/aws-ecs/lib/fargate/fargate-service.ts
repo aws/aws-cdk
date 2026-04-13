@@ -178,7 +178,7 @@ export class FargateService extends BaseService implements IFargateService {
     ];
     const isUnsupportedPlatformVersion = props.platformVersion && unsupportedPlatformVersions.includes(props.platformVersion);
 
-    const isWindows = props.taskDefinition.runtimePlatform?.operatingSystemFamily?.isWindows();
+    const isWindows = props.taskDefinition.runtimePlatform?.operatingSystemFamily?.isWindows() ?? false;
     if (props.taskDefinition.ephemeralStorageGiB && isUnsupportedPlatformVersion && !isWindows) {
       throw new ValidationError(lit`EphemeralStorageGibFeatureRequires`, `The ephemeralStorageGiB feature requires platform version ${FargatePlatformVersion.VERSION1_4} or later, got ${props.platformVersion}.`, scope);
     }

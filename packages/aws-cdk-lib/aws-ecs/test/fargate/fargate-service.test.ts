@@ -990,6 +990,8 @@ describe('fargate service', () => {
         taskDefinition,
         platformVersion: ecs.FargatePlatformVersion.VERSION1_0,
       });
+
+      Template.fromStack(stack);
     });
 
     test('errors when platform version does not support pidMode', () => {

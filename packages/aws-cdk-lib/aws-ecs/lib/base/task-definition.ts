@@ -457,7 +457,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   private _passRoleStatement?: iam.PolicyStatement;
 
   /**
-   * The operating system that your task definitions are running on.
+   * The runtime platform (operating system family and CPU architecture) for the task definition.
    */
   public get runtimePlatform(): RuntimePlatform | undefined {
     return this._runtimePlatform;
