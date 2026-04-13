@@ -4449,7 +4449,7 @@ describe('cluster', () => {
       });
     });
 
-    test('with useLocalStorage enabled', () => {
+    test.each([true, false])('with useLocalStorage enabled', (useLocalStorage) => {
       // GIVEN
       const app = new cdk.App();
       const stack = new cdk.Stack(app, 'test');
@@ -4484,7 +4484,7 @@ describe('cluster', () => {
         ec2InstanceProfile: instanceProfile,
         subnets: vpc.privateSubnets,
         securityGroups: [securityGroup],
-        useLocalStorage: true,
+        useLocalStorage,
       });
 
       // THEN
@@ -4492,63 +4492,12 @@ describe('cluster', () => {
         ManagedInstancesProvider: {
           InstanceLaunchTemplate: {
             LocalStorageConfiguration: {
-              UseLocalStorage: true,
+              UseLocalStorage: useLocalStorage,
             },
           },
         },
       });
     });
-
-    test('with useLocalStorage explicitly disabled', () => {
-      // GIVEN
-      const app = new cdk.App();
-      const stack = new cdk.Stack(app, 'test');
-      const vpc = new ec2.Vpc(stack, 'Vpc');
-
-      const infrastructureRole = new iam.Role(stack, 'InfrastructureRole', {
-        assumedBy: new iam.ServicePrincipal('ecs.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
-        ],
-      });
-
-      const instanceRole = new iam.Role(stack, 'InstanceRole', {
-        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-        managedPolicies: [
-          iam.ManagedPolicy.fromAwsManagedPolicyName('AdministratorAccess'),
-        ],
-      });
-
-      const instanceProfile = new iam.InstanceProfile(stack, 'InstanceProfile', {
-        role: instanceRole,
-      });
-
-      const securityGroup = new ec2.SecurityGroup(stack, 'SecurityGroup', {
-        vpc,
-        description: 'Test security group',
-      });
-
-      // WHEN
-      new ecs.ManagedInstancesCapacityProvider(stack, 'provider', {
-        infrastructureRole,
-        ec2InstanceProfile: instanceProfile,
-        subnets: vpc.privateSubnets,
-        securityGroups: [securityGroup],
-        useLocalStorage: false,
-      });
-
-      // THEN
-      Template.fromStack(stack).hasResourceProperties('AWS::ECS::CapacityProvider', {
-        ManagedInstancesProvider: {
-          InstanceLaunchTemplate: {
-            LocalStorageConfiguration: {
-              UseLocalStorage: false,
-            },
-          },
-        },
-      });
-    });
-
   });
 
   test('can disable Managed Scaling and Managed Termination Protection for ASG capacity provider', () => {
