@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from './errors';
+import { lit } from './private/literal-string';
 import { Token } from './token';
 
 /**
@@ -58,7 +59,7 @@ export class Bitrate {
 
   private constructor(amount: number, unit: BitrateUnit) {
     if (!Token.isUnresolved(amount) && amount < 0) {
-      throw new UnscopedValidationError('BitrateAmountsCannotBeNegative', `Bitrate amounts cannot be negative. Received: ${amount}`);
+      throw new UnscopedValidationError(lit`BitrateAmountsCannotBeNegative`, `Bitrate amounts cannot be negative. Received: ${amount}`);
     }
 
     this.amount = amount;
@@ -119,7 +120,7 @@ function convert(amount: number, fromUnit: BitrateUnit, toUnit: BitrateUnit): nu
     return amount;
   }
   if (Token.isUnresolved(amount)) {
-    throw new UnscopedValidationError('MustBeBitrateSpecifiedBitrate', `Bitrate must be specified as 'Bitrate.${toUnit}()' here since its value comes from a token and cannot be converted (got Bitrate.${fromUnit})`);
+    throw new UnscopedValidationError(lit`MustBeBitrateSpecifiedBitrate`, `Bitrate must be specified as 'Bitrate.${toUnit}()' here since its value comes from a token and cannot be converted (got Bitrate.${fromUnit})`);
   }
   return (amount * fromUnit.inBps) / toUnit.inBps;
 }

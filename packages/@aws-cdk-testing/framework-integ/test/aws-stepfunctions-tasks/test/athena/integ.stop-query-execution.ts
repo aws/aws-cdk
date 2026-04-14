@@ -32,7 +32,7 @@ const stopQueryExecutionJob = new AthenaStopQueryExecution(stack, 'Stop Query Ex
 const chain = sfn.Chain.start(startQueryExecutionJob).next(stopQueryExecutionJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 

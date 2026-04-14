@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import type { PlacementConstraint, PlacementStrategy } from '../../../aws-ecs';
 import { Ec2Service, Ec2TaskDefinition } from '../../../aws-ecs';
 import { FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { QueueProcessingServiceBaseProps } from '../base/queue-processing-service-base';
 import { QueueProcessingServiceBase } from '../base/queue-processing-service-base';
@@ -108,7 +109,7 @@ export class QueueProcessingEc2Service extends QueueProcessingServiceBase {
     super(scope, id, props);
 
     if (!props.image) {
-      throw new ValidationError('ImageSpecifiedQueueProcessingService', 'image must be specified for EC2 queue processing service', this);
+      throw new ValidationError(lit`ImageSpecifiedQueueProcessingService`, 'image must be specified for EC2 queue processing service', this);
     }
 
     const containerName = props.containerName ?? 'QueueProcessingContainer';
