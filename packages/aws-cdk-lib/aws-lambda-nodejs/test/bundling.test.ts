@@ -583,10 +583,10 @@ test('Detects yarn.lock', () => {
 });
 
 test('Detects pnpm-lock.yaml', () => {
-  const pnpmLock = '/project/pnpm-lock.yaml';
+  const pnpmLock = path.join(__dirname, '..', 'pnpm-lock.yaml');
   Bundling.bundle(stack, {
     entry: __filename,
-    projectRoot,
+    projectRoot: path.dirname(pnpmLock),
     depsLockFilePath: pnpmLock,
     runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
