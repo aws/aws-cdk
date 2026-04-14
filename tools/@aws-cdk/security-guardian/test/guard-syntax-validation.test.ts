@@ -46,4 +46,36 @@ describe('Guard Rule Syntax Validation', () => {
       }
     }
   }, 60000);
+
+  test('all custom messages in guard files follow the correct pattern', () => {
+    const guardFiles = findGuardFiles(rulesDir);
+
+    const errors: string[] = [];
+
+    for (const filePath of guardFiles) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      const relativePath = path.relative(path.join(__dirname, '..'), filePath);
+
+      // Find all custom message blocks: <<...>>
+      const matches = [...content.matchAll(/<<([\s\S]*?)>>/g)];
+
+      if (matches.length == 0) {
+        errors.push(`${relativePath} - No custom error message found in the file`);
+      } else {
+        for (const match of matches) {
+          const messageBody = match[1].trim();
+          if (!/^##ERROR:.+##$/.test(messageBody)) {
+            errors.push(`${relativePath} - Found: <<${messageBody}>>`);
+          }
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      throw new Error(
+        `Found ${errors.length} custom message(s) not following the ##ERROR:message## pattern:\n\n` +
+        errors.join('\n\n')
+      );
+    }
+  });
 });
