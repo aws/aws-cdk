@@ -1274,6 +1274,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_14_19 = AuroraPostgresEngineVersion.of('14.19', '14', { s3Import: true, s3Export: true });
   /** Version "14.20". */
   public static readonly VER_14_20 = AuroraPostgresEngineVersion.of('14.20', '14', { s3Import: true, s3Export: true });
+  /** Version "14.22". */
+  public static readonly VER_14_22 = AuroraPostgresEngineVersion.of('14.22', '14', { s3Import: true, s3Export: true });
 
   /**
    * Version "15.2".
@@ -1322,6 +1324,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_15_14 = AuroraPostgresEngineVersion.of('15.14', '15', { s3Import: true, s3Export: true });
   /** Version "15.15". */
   public static readonly VER_15_15 = AuroraPostgresEngineVersion.of('15.15', '15', { s3Import: true, s3Export: true });
+  /** Version "15.17". */
+  public static readonly VER_15_17 = AuroraPostgresEngineVersion.of('15.17', '15', { s3Import: true, s3Export: true });
 
   /**
    * Version "16.0"
@@ -1393,6 +1397,8 @@ export class AuroraPostgresEngineVersion {
   public static readonly VER_17_6 = AuroraPostgresEngineVersion.of('17.6', '17', { s3Import: true, s3Export: true });
   /** Version "17.7". */
   public static readonly VER_17_7 = AuroraPostgresEngineVersion.of('17.7', '17', { s3Import: true, s3Export: true });
+  /** Version "17.9". */
+  public static readonly VER_17_9 = AuroraPostgresEngineVersion.of('17.9', '17', { s3Import: true, s3Export: true });
 
   /**
    * Create a new AuroraPostgresEngineVersion with an arbitrary version.
