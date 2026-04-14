@@ -180,8 +180,9 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
   grantInvokeRuntimeForUser(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Permits an IAM principal to invoke this runtime both directly and on behalf of users
-   * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions
+   * Permits an IAM principal to invoke this runtime both directly and on behalf of users.
+   * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions.
+   * This does not include WebSocket stream permissions.
    * @param grantee The principal to grant access to
    */
   grantInvoke(grantee: iam.IGrantable): iam.Grant;
@@ -315,8 +316,9 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
   }
 
   /**
-   * Permits an IAM principal to invoke this runtime both directly and on behalf of users
-   * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions
+   * Permits an IAM principal to invoke this runtime both directly and on behalf of users.
+   * Grants both bedrock-agentcore:InvokeAgentRuntime and bedrock-agentcore:InvokeAgentRuntimeForUser permissions.
+   * This does not include WebSocket stream permissions.
    *
    * [disable-awslint:no-grants]
    *
