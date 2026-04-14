@@ -1,0 +1,68 @@
+# Unprivileged workflow that runs in the context of the PR when a review is submitted.
+# Saves PR metadata and snapshot check result as artifacts for the privileged
+# integration-test-deployment-auto.yml workflow (triggered via workflow_run).
+#
+# This two-stage pattern is required because pull_request_review has no access to
+# repository secrets for fork PRs. See pr-linter-review-trigger.yml for precedent.
+name: Integration Test Auto Trigger
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  contents: read
+
+jobs:
+  save-pr-info:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build deployment-integ
+        run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
+
+      - name: Check for snapshot changes
+        id: check_snapshots
+        env:
+          TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
+          SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if yarn --cwd tools/@aws-cdk/integration-test-deployment check-snapshots; then
+            echo "has_snapshots=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_snapshots=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Save PR info
+        if: steps.check_snapshots.outputs.has_snapshots == 'true'
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          REVIEWER: ${{ github.event.review.user.login }}
+        run: |
+          mkdir -p ./trigger-context
+          echo "$PR_NUMBER" > ./trigger-context/pr_number
+          echo "$HEAD_SHA" > ./trigger-context/head_sha
+          echo "$BASE_SHA" > ./trigger-context/base_sha
+          echo "$REVIEWER" > ./trigger-context/reviewer
+
+      - uses: actions/upload-artifact@v7
+        if: steps.check_snapshots.outputs.has_snapshots == 'true'
+        with:
+          name: integ-test-trigger-context
+          path: trigger-context/
