@@ -2803,8 +2803,8 @@ const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
   this,
   "ImportedEngine",
   {
-    policyEngineArn: "arn:aws:bedrock-agentcore:us-east-1:123456789012:policy-engine/my-engine-id",
-    kmsKeyArn: "arn:aws:kms:us-east-1:123456789012:key/my-key-id",
+    policyEngineArn: "policy-engine-arn",
+    kmsKeyArn: "kms-arn",
   }
 );
 
@@ -2820,12 +2820,20 @@ const policy = new agentcore.Policy(this, "PolicyForImportedEngine", {
 Import an existing policy from its ARN:
 
 ```typescript fixture=default
+const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
+  this,
+  "ImportedEngine",
+  {
+    policyEngineArn: "policy-engine/my-engine-id",
+  }
+);
+
 const importedPolicy = agentcore.Policy.fromPolicyAttributes(
   this,
   "ImportedPolicy",
   {
-    policyArn: "arn:aws:bedrock-agentcore:us-east-1:123456789012:policy/my-policy-id",
-    policyEngineId: "my-engine-id",
+    policyArn: "my-policy-arn",
+    policyEngine: importedEngine,
   }
 );
 
