@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.250.0](https://github.com/aws/aws-cdk/compare/v2.249.0...v2.250.0) (2026-04-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-emr: AWS::EMR::Cluster: MonitoringConfiguration property removed.
+aws-emr: AWS::EMR::Cluster: CloudWatchLogConfiguration type removed.
+aws-emr: AWS::EMR::Cluster: EMRConfiguration type removed.
+aws-emr: AWS::EMR::Cluster: MonitoringConfiguration type removed.
+
+### Features
+
+* **s3files:** s3Files Lambda L1 integration ([#37547](https://github.com/aws/aws-cdk/issues/37547)) ([af41262](https://github.com/aws/aws-cdk/commit/af41262a657e9533abcf07c98d0d2c4fad5e35f0))
+* update L1 CloudFormation resource definitions ([#37582](https://github.com/aws/aws-cdk/issues/37582)) ([c99ce64](https://github.com/aws/aws-cdk/commit/c99ce64b7715f7bd40b09e08ecf5b05666a5f525))
+* **mediapackagev2:** add region attribute on mediapackagev2 resources and extra naming validation ([#37526](https://github.com/aws/aws-cdk/issues/37526)) ([112ed67](https://github.com/aws/aws-cdk/commit/112ed67da18a43019a17f330ec6db399cd7d64d0))
+
+
+### Bug Fixes
+
+* **eks-v2:** respect securityGroup(s) in KubectlProviderOptions ([#37247](https://github.com/aws/aws-cdk/issues/37247)) ([4c530fa](https://github.com/aws/aws-cdk/commit/4c530fa49bbf4b1956f7ebf92b7b517ff668dfdb)), closes [#36653](https://github.com/aws/aws-cdk/issues/36653)
+* **lambda-nodejs:** if entry path is not under project root, bundling in Docker fails in an unclear way ([#37572](https://github.com/aws/aws-cdk/issues/37572)) ([73662df](https://github.com/aws/aws-cdk/commit/73662dfdece2e9bacf0afcd8f40ae07b48ed7891))
+
 ## [2.249.0](https://github.com/aws/aws-cdk/compare/v2.248.0...v2.249.0) (2026-04-10)
 
 
