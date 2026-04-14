@@ -20,10 +20,10 @@ export abstract class ContainerImage {
   /**
    * Reference an image in an ECR repository
    *
-   * @param tag If you don't specify this parameter, `latest` is used as default.
+   * @param tagOrDigest Image tag or digest (default `latest`). Digests must start with `sha256:`.
    */
-  public static fromEcrRepository(repository: ecr.IRepository, tag: string = 'latest') {
-    return new EcrImage(repository, tag);
+  public static fromEcrRepository(repository: ecr.IRepository, tagOrDigest: string = 'latest') {
+    return new EcrImage(repository, tagOrDigest);
   }
 
   /**

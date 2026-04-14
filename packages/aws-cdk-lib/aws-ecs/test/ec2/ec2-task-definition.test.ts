@@ -660,6 +660,30 @@ describe('ec2 task definition', () => {
       });
     });
 
+    test('fromEcrRepository tagOrDigest parameter accepts both tags and digests', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const repo = new Repository(stack, 'Repo');
+
+      // WHEN - tag
+      const tagImage = ecs.ContainerImage.fromEcrRepository(repo, 'my-tag');
+      // WHEN - digest
+      const digestImage = ecs.ContainerImage.fromEcrRepository(repo, 'sha256:94afd1f2e64d908bc90dbca0035a5b567EXAMPLE');
+
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+      taskDefinition.addContainer('tag', { image: tagImage, memoryLimitMiB: 512 });
+      taskDefinition.addContainer('digest', { image: digestImage, memoryLimitMiB: 512 });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: Match.arrayWith([
+          Match.objectLike({ Name: 'tag' }),
+          Match.objectLike({ Name: 'digest' }),
+        ]),
+      });
+    });
+
     test('correctly sets containers from ECR repository using default props', () => {
       // GIVEN
       const stack = new cdk.Stack();
