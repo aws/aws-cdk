@@ -7,7 +7,8 @@ import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import type { RemovalPolicy, Size } from '../../core';
-import { Duration, CfnCondition, Fn, Aws, RemovalPolicies } from '../../core';
+import { Duration, CfnCondition, Fn, Aws, RemovalPolicies, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cr from '../../custom-resources';
 import { AwsCliLayer } from '../../lambda-layer-awscli';
 
@@ -47,8 +48,17 @@ export interface KubectlProviderOptions {
    *
    * @default - If not specified, the k8s endpoint is expected to be accessible
    * publicly.
+   * @deprecated Use `securityGroups` instead.
    */
   readonly securityGroup?: ec2.ISecurityGroup;
+
+  /**
+   * Security groups to use for `kubectl` execution.
+   *
+   * @default - If not specified, the k8s endpoint is expected to be accessible
+   * publicly.
+   */
+  readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
    * The amount of memory allocated to the kubectl provider's lambda function.
@@ -178,10 +188,28 @@ export class KubectlProvider extends Construct implements IKubectlProvider {
     super(scope, id);
 
     const vpc = props.privateSubnets ? props.cluster.vpc : undefined;
-    let securityGroups;
-    if (props.privateSubnets && props.cluster.clusterSecurityGroup) {
-      securityGroups = [props.cluster.clusterSecurityGroup];
+    let securityGroups: ec2.ISecurityGroup[] | undefined;
+
+    if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
+      throw new ValidationError(
+        lit`SecurityGroupConflict`,
+        'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
+        this,
+      );
     }
+
+    if (props.privateSubnets) {
+      if (props.securityGroups && props.securityGroups.length > 0) {
+        securityGroups = props.securityGroups;
+      } else if (props.securityGroup) {
+        // Convert single security group to array
+        securityGroups = [props.securityGroup];
+      } else if (props.cluster.clusterSecurityGroup) {
+        // Default: use cluster security group (backwards compatibility)
+        securityGroups = [props.cluster.clusterSecurityGroup];
+      }
+    }
+
     const privateSubnets = props.privateSubnets ? { subnets: props.privateSubnets } : undefined;
 
     const handler = new lambda.Function(this, 'Handler', {
