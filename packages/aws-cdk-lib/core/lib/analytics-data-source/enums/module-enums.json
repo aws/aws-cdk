@@ -2143,11 +2143,14 @@
     "EcsMachineImageType": [
       "ECS_AL2",
       "ECS_AL2023",
-      "ECS_AL2_NVIDIA"
+      "ECS_AL2_NVIDIA",
+      "ECS_AL2023_NVIDIA"
     ],
     "EksMachineImageType": [
       "EKS_AL2",
-      "EKS_AL2_NVIDIA"
+      "EKS_AL2_NVIDIA",
+      "EKS_AL2023",
+      "EKS_AL2023_NVIDIA"
     ],
     "AllocationStrategy": [
       "BEST_FIT",
