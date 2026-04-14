@@ -8,7 +8,9 @@ const stack = new cdk.Stack(app, 'AppSyncEnvironmentVariables');
 
 const api = new appsync.GraphqlApi(stack, 'Api', {
   name: 'Api',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.js-resolver.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.js-resolver.graphql')),
+  },
   environmentVariables: {
     EnvKey1: 'non-empty-1',
   },

@@ -33,6 +33,7 @@ import {
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
 import type { AutoScalingGroupReference, IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
@@ -1319,19 +1320,19 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
    */
   public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
     if (this.albTargetGroup === undefined) {
-      throw new ValidationError('AttachAutoScalingGroupNon', 'Attach the AutoScalingGroup to a non-imported Application Load Balancer before calling scaleOnRequestCount()', this);
+      throw new ValidationError(lit`AttachAutoScalingGroupNon`, 'Attach the AutoScalingGroup to a non-imported Application Load Balancer before calling scaleOnRequestCount()', this);
     }
 
     const resourceLabel = `${this.albTargetGroup.firstLoadBalancerFullName}/${this.albTargetGroup.targetGroupFullName}`;
 
     if ((props.targetRequestsPerMinute === undefined) === (props.targetRequestsPerSecond === undefined)) {
-      throw new ValidationError('SpecifyExactlyOneTargetRequests', 'Specify exactly one of \'targetRequestsPerMinute\' or \'targetRequestsPerSecond\'', this);
+      throw new ValidationError(lit`SpecifyExactlyOneTargetRequests`, 'Specify exactly one of \'targetRequestsPerMinute\' or \'targetRequestsPerSecond\'', this);
     }
 
     let rpm: number;
     if (props.targetRequestsPerSecond !== undefined) {
       if (Token.isUnresolved(props.targetRequestsPerSecond)) {
-        throw new ValidationError('TargetRequestsPerSecondCannot', '\'targetRequestsPerSecond\' cannot be an unresolved value; use \'targetRequestsPerMinute\' instead.', this);
+        throw new ValidationError(lit`TargetRequestsPerSecondCannot`, '\'targetRequestsPerSecond\' cannot be an unresolved value; use \'targetRequestsPerMinute\' instead.', this);
       }
       rpm = props.targetRequestsPerSecond * 60;
     } else {
@@ -1476,7 +1477,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
 
     if (props.initOptions && !props.init) {
-      throw new ValidationError('RequiresSettingInitoptionsRequires', 'Setting \'initOptions\' requires that \'init\' is also set', this);
+      throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
     }
 
     if (props.groupMetrics) {
@@ -1492,16 +1493,16 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       const mixedInstancesPolicy = props.mixedInstancesPolicy;
 
       if (bareLaunchTemplate && mixedInstancesPolicy) {
-        throw new ValidationError('SettingMixedInstancesPolicySet', 'Setting \'mixedInstancesPolicy\' must not be set when \'launchTemplate\' is set', this);
+        throw new ValidationError(lit`SettingMixedInstancesPolicySet`, 'Setting \'mixedInstancesPolicy\' must not be set when \'launchTemplate\' is set', this);
       }
 
       if (bareLaunchTemplate && bareLaunchTemplate instanceof ec2.LaunchTemplate) {
         if (!bareLaunchTemplate.instanceType) {
-          throw new ValidationError('RequiresSettingLaunchtemplateRequires', 'Setting \'launchTemplate\' requires its \'instanceType\' to be set', this);
+          throw new ValidationError(lit`RequiresSettingLaunchtemplateRequires`, 'Setting \'launchTemplate\' requires its \'instanceType\' to be set', this);
         }
 
         if (!bareLaunchTemplate.imageId) {
-          throw new ValidationError('RequiresSettingLaunchtemplateRequires', 'Setting \'launchTemplate\' requires its \'machineImage\' to be set', this);
+          throw new ValidationError(lit`RequiresSettingLaunchtemplateRequires`, 'Setting \'launchTemplate\' requires its \'machineImage\' to be set', this);
         }
 
         this.launchTemplate = bareLaunchTemplate;
@@ -1509,7 +1510,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
       if (mixedInstancesPolicy && mixedInstancesPolicy.launchTemplate instanceof ec2.LaunchTemplate) {
         if (!mixedInstancesPolicy.launchTemplate.imageId) {
-          throw new ValidationError('SettingMixedInstancesPolicyLaunch', 'Setting \'mixedInstancesPolicy.launchTemplate\' requires its \'machineImage\' to be set', this);
+          throw new ValidationError(lit`SettingMixedInstancesPolicyLaunch`, 'Setting \'mixedInstancesPolicy.launchTemplate\' requires its \'machineImage\' to be set', this);
         }
 
         this.launchTemplate = mixedInstancesPolicy.launchTemplate;
@@ -1521,14 +1522,14 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       this.osType = this.launchTemplate?.osType ?? ec2.OperatingSystemType.UNKNOWN;
     } else {
       if (!props.machineImage) {
-        throw new ValidationError('IsRequiredSettingMachineimageRequired', 'Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set', this);
+        throw new ValidationError(lit`IsRequiredSettingMachineimageRequired`, 'Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set', this);
       }
       if (!props.instanceType) {
-        throw new ValidationError('IsRequiredSettingInstancetypeRequired', 'Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set', this);
+        throw new ValidationError(lit`IsRequiredSettingInstancetypeRequired`, 'Setting \'instanceType\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set', this);
       }
 
       if (props.keyName && props.keyPair) {
-        throw new ValidationError('CannotSpecifyKeyNameKey', 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
+        throw new ValidationError(lit`CannotSpecifyKeyNameKey`, 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
       }
 
       Tags.of(this).add(NAME_TAG, this.node.path);
@@ -1576,7 +1577,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         this.securityGroups = [this.securityGroup];
 
         if (props.keyPair) {
-          throw new ValidationError('OnlyKeypairFeatureFlag', 'Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set', this);
+          throw new ValidationError(lit`OnlyKeypairFeatureFlag`, 'Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set', this);
         }
 
         // use delayed evaluation
@@ -1617,19 +1618,19 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
-        throw new ValidationError('MinCapacity', `minCapacity (${min}) should be <= maxCapacity (${max})`, this);
+        throw new ValidationError(lit`MinCapacity`, `minCapacity (${min}) should be <= maxCapacity (${max})`, this);
       }
     });
     withResolved(desiredCapacity, minCapacity, (desired, min) => {
       if (desired === undefined) { return; }
       if (desired < min) {
-        throw new ValidationError('MinCapacity', `Should have minCapacity (${min}) <= desiredCapacity (${desired})`, this);
+        throw new ValidationError(lit`MinCapacity`, `Should have minCapacity (${min}) <= desiredCapacity (${desired})`, this);
       }
     });
     withResolved(desiredCapacity, maxCapacity, (desired, max) => {
       if (desired === undefined) { return; }
       if (max < desired) {
-        throw new ValidationError('DesiredCapacity', `Should have desiredCapacity (${desired}) <= maxCapacity (${max})`, this);
+        throw new ValidationError(lit`DesiredCapacity`, `Should have desiredCapacity (${desired}) <= maxCapacity (${max})`, this);
       }
     });
 
@@ -1642,11 +1643,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (this.maxInstanceLifetime && !this.maxInstanceLifetime.isUnresolved() &&
       (this.maxInstanceLifetime.toSeconds() !== 0) &&
       (this.maxInstanceLifetime.toSeconds() < 86400 || this.maxInstanceLifetime.toSeconds() > 31536000)) {
-      throw new ValidationError('MaxInstanceLifetimeDaysInclusive', 'maxInstanceLifetime must be between 1 and 365 days (inclusive)', this);
+      throw new ValidationError(lit`MaxInstanceLifetimeDaysInclusive`, 'maxInstanceLifetime must be between 1 and 365 days (inclusive)', this);
     }
 
     if (props.notificationsTopic && props.notifications) {
-      throw new ValidationError('CannotSetNotificationsTopicNotifications', 'Cannot set \'notificationsTopic\' and \'notifications\', \'notificationsTopic\' is deprecated use \'notifications\' instead', this);
+      throw new ValidationError(lit`CannotSetNotificationsTopicNotifications`, 'Cannot set \'notificationsTopic\' and \'notifications\', \'notificationsTopic\' is deprecated use \'notifications\' instead', this);
     }
 
     if (props.notificationsTopic) {
@@ -1669,11 +1670,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       props.terminationPolicies.forEach((terminationPolicy, index) => {
         if (terminationPolicy === TerminationPolicy.CUSTOM_LAMBDA_FUNCTION) {
           if (index !== 0) {
-            throw new ValidationError('TerminationPolicySpecifiedFirstTerminat', 'TerminationPolicy.CUSTOM_LAMBDA_FUNCTION must be specified first in the termination policies', this);
+            throw new ValidationError(lit`TerminationPolicySpecifiedFirstTerminat`, 'TerminationPolicy.CUSTOM_LAMBDA_FUNCTION must be specified first in the termination policies', this);
           }
 
           if (!props.terminationPolicyCustomLambdaFunctionArn) {
-            throw new ValidationError('TerminationPolicyCustomLambdaFunction', 'terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used', this);
+            throw new ValidationError(lit`TerminationPolicyCustomLambdaFunction`, 'terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used', this);
           }
 
           terminationPolicies.push(props.terminationPolicyCustomLambdaFunctionArn);
@@ -1718,7 +1719,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     };
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new ValidationError('SetAssociatePublicIpAddress', "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
+      throw new ValidationError(lit`SetAssociatePublicIpAddress`, "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
     }
 
     this.autoScalingGroup = new CfnAutoScalingGroup(this, 'ASG', asgProps);
@@ -1752,7 +1753,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       this.launchTemplate?.addSecurityGroup(securityGroup);
     } else {
       if (!this.securityGroups) {
-        throw new ValidationError('CannotAddSecurityGroupsAuto', 'You cannot add security groups when the Auto Scaling Group is created from a Launch Template.', this);
+        throw new ValidationError(lit`CannotAddSecurityGroupsAuto`, 'You cannot add security groups when the Auto Scaling Group is created from a Launch Template.', this);
       }
       this.securityGroups.push(securityGroup);
     }
@@ -1817,7 +1818,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   @MethodMetadata()
   public applyCloudFormationInit(init: ec2.CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
     if (!this.autoScalingGroup.cfnOptions.creationPolicy?.resourceSignal) {
-      throw new ValidationError('ApplyingCloudFormationInitConfigure', 'When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.', this);
+      throw new ValidationError(lit`ApplyingCloudFormationInitConfigure`, 'When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.', this);
     }
 
     init.attach(this.autoScalingGroup, {
@@ -1861,7 +1862,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       return this.launchTemplate.connections;
     }
 
-    throw new ValidationError('AutoScalingGroupConnectableCreated', 'AutoScalingGroup can only be used as IConnectable if it is not created from an imported Launch Template.', this);
+    throw new ValidationError(lit`AutoScalingGroupConnectableCreated`, 'AutoScalingGroup can only be used as IConnectable if it is not created from an imported Launch Template.', this);
   }
 
   /**
@@ -1878,7 +1879,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       return this.launchTemplate.userData;
     }
 
-    throw new ValidationError('ProvidedLaunchTemplateExposeUser', 'The provided launch template does not expose its user data.', this);
+    throw new ValidationError(lit`ProvidedLaunchTemplateExposeUser`, 'The provided launch template does not expose its user data.', this);
   }
 
   /**
@@ -1891,45 +1892,45 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       return this._role;
     }
 
-    throw new ValidationError('ProvidedLaunchTemplateExposeDefine', 'The provided launch template does not expose or does not define its role.', this);
+    throw new ValidationError(lit`ProvidedLaunchTemplateExposeDefine`, 'The provided launch template does not expose or does not define its role.', this);
   }
 
   private verifyNoLaunchConfigPropIsGiven(props: AutoScalingGroupProps) {
     if (props.machineImage) {
-      throw new ValidationError('SettingMachineImageSetLaunch', 'Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingMachineImageSetLaunch`, 'Setting \'machineImage\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.instanceType) {
-      throw new ValidationError('SettingInstanceTypeSetLaunch', 'Setting \'instanceType\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingInstanceTypeSetLaunch`, 'Setting \'instanceType\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.role) {
-      throw new ValidationError('SettingRoleSetLaunchTemplate', 'Setting \'role\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingRoleSetLaunchTemplate`, 'Setting \'role\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.userData) {
-      throw new ValidationError('SettingUserDataSetLaunch', 'Setting \'userData\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingUserDataSetLaunch`, 'Setting \'userData\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.securityGroup) {
-      throw new ValidationError('SettingSecurityGroupSetLaunch', 'Setting \'securityGroup\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingSecurityGroupSetLaunch`, 'Setting \'securityGroup\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.keyName) {
-      throw new ValidationError('SettingKeyNameSetLaunch', 'Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingKeyNameSetLaunch`, 'Setting \'keyName\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.keyPair) {
-      throw new ValidationError('SettingKeyPairSetLaunch', 'Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingKeyPairSetLaunch`, 'Setting \'keyPair\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.instanceMonitoring) {
-      throw new ValidationError('SettingInstanceMonitoringSetLaunch', 'Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingInstanceMonitoringSetLaunch`, 'Setting \'instanceMonitoring\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.associatePublicIpAddress !== undefined) {
-      throw new ValidationError('SettingAssociatePublicIpAddress', 'Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingAssociatePublicIpAddress`, 'Setting \'associatePublicIpAddress\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.spotPrice) {
-      throw new ValidationError('SettingSpotPriceSetLaunch', 'Setting \'spotPrice\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingSpotPriceSetLaunch`, 'Setting \'spotPrice\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.blockDevices) {
-      throw new ValidationError('SettingBlockDevicesSetLaunch', 'Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`SettingBlockDevicesSetLaunch`, 'Setting \'blockDevices\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
     if (props.requireImdsv2) {
-      throw new ValidationError('RequireImdsv2ConflictsWithLaunchTemplate', 'Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
+      throw new ValidationError(lit`RequireImdsv2ConflictsWithLaunchTemplate`, 'Setting \'requireImdsv2\' must not be set when \'launchTemplate\' or \'mixedInstancesPolicy\' is set', this);
     }
   }
 
@@ -1947,7 +1948,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     ];
     for (const prop of oldProps) {
       if ((props.signals || props.updatePolicy) && props[prop] !== undefined) {
-        throw new ValidationError('CannotSetSignalsUpdatePolicy', `Cannot set 'signals'/'updatePolicy' and '${prop}' together. Prefer 'signals'/'updatePolicy'`, this);
+        throw new ValidationError(lit`CannotSetSignalsUpdatePolicy`, `Cannot set 'signals'/'updatePolicy' and '${prop}' together. Prefer 'signals'/'updatePolicy'`, this);
       }
     }
 
@@ -1977,7 +1978,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       const updatePolicy = this.autoScalingGroup.cfnOptions.updatePolicy;
       if (!updatePolicy || !updatePolicy!.autoScalingRollingUpdate) {
         throw new ValidationError(
-          'MigrateToLaunchTemplateRequiresRollingUpdate',
+          lit`MigrateToLaunchTemplateRequiresRollingUpdate`,
           'When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate ' +
           'to ensure instances are properly replaced during migration. ' +
           'This prevents instances from referencing a deleted IAM instance profile.',
@@ -2109,13 +2110,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
             ...(mixedInstancesPolicy.launchTemplateOverrides ? {
               overrides: mixedInstancesPolicy.launchTemplateOverrides.map(override => {
                 if (override.weightedCapacity && Math.floor(override.weightedCapacity) !== override.weightedCapacity) {
-                  throw new ValidationError('WeightInteger', 'Weight must be an integer', this);
+                  throw new ValidationError(lit`WeightInteger`, 'Weight must be an integer', this);
                 }
                 if (!override.instanceType && !override.instanceRequirements) {
-                  throw new ValidationError('SpecifyInstanceRequirementsInstanceType', 'You must specify either \'instanceRequirements\' or \'instanceType\'.', this);
+                  throw new ValidationError(lit`SpecifyInstanceRequirementsInstanceType`, 'You must specify either \'instanceRequirements\' or \'instanceType\'.', this);
                 }
                 if (override.instanceType && override.instanceRequirements) {
-                  throw new ValidationError('SpecifyInstanceRequirementsInstanceType', 'You can specify either \'instanceRequirements\' or \'instanceType\', not both.', this);
+                  throw new ValidationError(lit`SpecifyInstanceRequirementsInstanceType`, 'You can specify either \'instanceRequirements\' or \'instanceType\', not both.', this);
                 }
                 return {
                   instanceType: override.instanceType?.toString(),
@@ -2132,7 +2133,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       };
     }
 
-    throw new ValidationError('LaunchConfigLaunchTemplateMixed', 'Either launchConfig, launchTemplate or mixedInstancesPolicy needs to be specified.', this);
+    throw new ValidationError(lit`LaunchConfigLaunchTemplateMixed`, 'Either launchConfig, launchTemplate or mixedInstancesPolicy needs to be specified.', this);
   }
 
   private convertILaunchTemplateToSpecification(launchTemplate: ec2.ILaunchTemplate): CfnAutoScalingGroup.LaunchTemplateSpecificationProperty {
@@ -2164,19 +2165,19 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   ): CfnAutoScalingGroup.InstanceMaintenancePolicyProperty | undefined {
     if (minHealthyPercentage === undefined && maxHealthyPercentage === undefined) return;
     if (minHealthyPercentage === undefined || maxHealthyPercentage === undefined) {
-      throw new ValidationError('MinHealthyPercentageMaxHealthy', `Both or neither of minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`, this);
+      throw new ValidationError(lit`MinHealthyPercentageMaxHealthy`, `Both or neither of minHealthyPercentage and maxHealthyPercentage must be specified, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`, this);
     }
     if ((minHealthyPercentage === -1 || maxHealthyPercentage === -1) && minHealthyPercentage !== maxHealthyPercentage) {
-      throw new ValidationError('MinHealthyPercentageMaxHealthy', `Both minHealthyPercentage and maxHealthyPercentage must be -1 to clear the previously set value, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`, this);
+      throw new ValidationError(lit`MinHealthyPercentageMaxHealthy`, `Both minHealthyPercentage and maxHealthyPercentage must be -1 to clear the previously set value, got minHealthyPercentage: ${minHealthyPercentage} and maxHealthyPercentage: ${maxHealthyPercentage}`, this);
     }
     if (minHealthyPercentage !== -1 && (minHealthyPercentage < 0 || minHealthyPercentage > 100)) {
-      throw new ValidationError('MinHealthyPercentageClearPreviously', `minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`, this);
+      throw new ValidationError(lit`MinHealthyPercentageClearPreviously`, `minHealthyPercentage must be between 0 and 100, or -1 to clear the previously set value, got ${minHealthyPercentage}`, this);
     }
     if (maxHealthyPercentage !== -1 && (maxHealthyPercentage < 100 || maxHealthyPercentage > 200)) {
-      throw new ValidationError('MaxHealthyPercentageClearPreviously', `maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`, this);
+      throw new ValidationError(lit`MaxHealthyPercentageClearPreviously`, `maxHealthyPercentage must be between 100 and 200, or -1 to clear the previously set value, got ${maxHealthyPercentage}`, this);
     }
     if (maxHealthyPercentage - minHealthyPercentage > 100) {
-      throw new ValidationError('DifferenceMinHealthyPercentageMax', `The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`, this);
+      throw new ValidationError(lit`DifferenceMinHealthyPercentageMax`, `The difference between minHealthyPercentage and maxHealthyPercentage cannot be greater than 100, got ${maxHealthyPercentage - minHealthyPercentage}`, this);
     }
     return {
       minHealthyPercentage,
@@ -2186,7 +2187,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   private renderHealthChecks(healthChecks?: HealthChecks, healthCheck?: HealthCheck): { healthCheckType?: string; healthCheckGracePeriod?: number } {
     if (healthCheck && healthChecks) {
-      throw new ValidationError('CannotSpecifyHealthCheckHealth', 'Cannot specify both \'healthCheck\' and \'healthChecks\'. Please use \'healthChecks\' only.', this);
+      throw new ValidationError(lit`CannotSpecifyHealthCheckHealth`, 'Cannot specify both \'healthCheck\' and \'healthChecks\'. Please use \'healthChecks\' only.', this);
     }
 
     let healthCheckType: string | undefined;
@@ -2519,7 +2520,7 @@ export class HealthChecks {
 
   private constructor(public readonly types: string[], public readonly gracePeriod?: Duration) {
     if (types.length === 0) {
-      throw new UnscopedValidationError('MustBeLeastHealthCheck', 'At least one health check type must be specified in \'additionalTypes\' for \'healthChecks\'');
+      throw new UnscopedValidationError(lit`MustBeLeastHealthCheck`, 'At least one health check type must be specified in \'additionalTypes\' for \'healthChecks\'');
     }
   }
 }
@@ -2569,7 +2570,7 @@ function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): Cfn
 
 function validatePercentage(x?: number): number | undefined {
   if (x === undefined || (0 <= x && x <= 100)) { return x; }
-  throw new UnscopedValidationError('ExpectedPercentage', `Expected: a percentage 0..100, got: ${x}`);
+  throw new UnscopedValidationError(lit`ExpectedPercentage`, `Expected: a percentage 0..100, got: ${x}`);
 }
 
 /**
@@ -2725,12 +2726,12 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
         const { Min, Max } = throughputRange;
 
         if (volumeType != EbsDeviceVolumeType.GP3) {
-          throw new ValidationError('ThroughputPropertyRequiresVolumeType', 'throughput property requires volumeType: EbsDeviceVolumeType.GP3', construct);
+          throw new ValidationError(lit`ThroughputPropertyRequiresVolumeType`, 'throughput property requires volumeType: EbsDeviceVolumeType.GP3', construct);
         }
 
         if (throughput < Min || throughput > Max) {
           throw new ValidationError(
-            'ThroughputOutOfRange',
+            lit`ThroughputOutOfRange`,
             `throughput property takes a minimum of ${Min} and a maximum of ${Max}`, construct,
           );
         }
@@ -2739,14 +2740,14 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
         if (iops) {
           const iopsRatio = (throughput / iops);
           if (iopsRatio > maximumThroughputRatio) {
-            throw new ValidationError('ThroughputMiBpsIopsRatio', `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, construct);
+            throw new ValidationError(lit`ThroughputMiBpsIopsRatio`, `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, construct);
           }
         }
       }
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
-          throw new ValidationError('IopsPropertyRequiredVolumeType', 'iops property is required with volumeType: EbsDeviceVolumeType.IO1', construct);
+          throw new ValidationError(lit`IopsPropertyRequiredVolumeType`, 'iops property is required with volumeType: EbsDeviceVolumeType.IO1', construct);
         }
       } else if (volumeType !== EbsDeviceVolumeType.IO1) {
         Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling:iopsIgnored', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
