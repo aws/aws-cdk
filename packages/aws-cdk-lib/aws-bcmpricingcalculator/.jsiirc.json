@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.services.bcmpricingcalculator"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.AWS.BcmPricingCalculator"
+    },
+    "python": {
+      "module": "aws_cdk.aws_bcmpricingcalculator"
+    }
+  }
+}
