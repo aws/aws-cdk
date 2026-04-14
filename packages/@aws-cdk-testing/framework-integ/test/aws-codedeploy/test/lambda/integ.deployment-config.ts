@@ -16,10 +16,11 @@ new codedeploy.LambdaDeploymentConfig(stack, 'LinearConfig', {
   }),
 });
 
-new codedeploy.CustomLambdaDeploymentConfig(stack, 'CustomConfig', {
-  interval: cdk.Duration.minutes(1),
-  percentage: 5,
-  type: cdk.aws_codedeploy.CustomLambdaDeploymentConfigType.LINEAR,
+new codedeploy.LambdaDeploymentConfig(stack, 'CustomConfig', {
+  trafficRouting: codedeploy.TrafficRouting.timeBasedLinear({
+    interval: cdk.Duration.minutes(1),
+    percentage: 5,
+  }),
   deploymentConfigName: 'hello',
 });
 
