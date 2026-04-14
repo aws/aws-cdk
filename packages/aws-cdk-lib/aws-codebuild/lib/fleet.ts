@@ -596,11 +596,18 @@ export class Fleet extends Resource implements IFleet {
       scalingConfiguration: props.scalingConfiguration ? {
         maxCapacity: props.scalingConfiguration.maxCapacity,
         scalingType: props.scalingConfiguration.scalingType,
-        targetTrackingScalingConfigs: props.scalingConfiguration.targetTrackingScalingConfigs,
+        targetTrackingScalingConfigs: props.scalingConfiguration.targetTrackingScalingConfigs?.map(config => ({
+          metricType: config.metricType,
+          targetValue: config.targetValue,
+        })),
       } : undefined,
       fleetProxyConfiguration: props.proxyConfiguration ? {
         defaultBehavior: props.proxyConfiguration.defaultBehavior,
-        orderedProxyRules: props.proxyConfiguration.orderedProxyRules,
+        orderedProxyRules: props.proxyConfiguration.orderedProxyRules?.map(rule => ({
+          effect: rule.effect,
+          entities: rule.entities,
+          type: rule.type,
+        })),
       } : undefined,
     });
 
