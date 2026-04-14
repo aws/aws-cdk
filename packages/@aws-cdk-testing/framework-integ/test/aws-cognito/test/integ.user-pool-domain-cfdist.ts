@@ -27,10 +27,6 @@ new CfnOutput(stack, 'Domain', {
   value: domain.domainName,
 });
 
-new CfnOutput(stack, 'CloudFrontDomainName', {
-  value: domain.cloudFrontDomainName,
-});
-
 new CfnOutput(stack, 'CloudFrontEndpoint', {
   value: domain.cloudFrontEndpoint,
 });
