@@ -745,6 +745,10 @@ describe('scalingConfiguration', () => {
         scalingConfiguration: {
           maxCapacity: 0,
           scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [{
+            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+            targetValue: 80,
+          }],
         },
       });
     }).toThrow(/scalingConfiguration.maxCapacity must be greater than or equal to 1/);
@@ -763,9 +767,72 @@ describe('scalingConfiguration', () => {
         scalingConfiguration: {
           maxCapacity: 3,
           scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [{
+            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+            targetValue: 80,
+          }],
         },
       });
     }).toThrow(/scalingConfiguration.maxCapacity must be greater than or equal to baseCapacity/);
+  });
+
+  test('throws if targetTrackingScalingConfigs is empty with TARGET_TRACKING_SCALING', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 5,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [],
+        },
+      });
+    }).toThrow(/At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING/);
+  });
+
+  test('throws if targetTrackingScalingConfigs is omitted with TARGET_TRACKING_SCALING', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 5,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+        },
+      });
+    }).toThrow(/At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING/);
+  });
+
+  test.each([0, -1, 101])('throws if targetValue is out of range: %s', (targetValue) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        scalingConfiguration: {
+          maxCapacity: 5,
+          scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+          targetTrackingScalingConfigs: [{
+            metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+            targetValue,
+          }],
+        },
+      });
+    }).toThrow(/targetValue must be between 0 \(exclusive\) and 100 \(inclusive\)/);
   });
 });
 
@@ -836,6 +903,30 @@ describe('proxyConfiguration', () => {
         },
       });
     }).toThrow(/Cannot configure proxyConfiguration without configuring a VPC/);
+  });
+
+  test('throws if proxy rule has empty entities', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+
+    // THEN
+    expect(() => {
+      new codebuild.Fleet(stack, 'Fleet', {
+        baseCapacity: 1,
+        computeType: codebuild.FleetComputeType.SMALL,
+        environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+        vpc,
+        proxyConfiguration: {
+          defaultBehavior: codebuild.FleetProxyRuleBehavior.DENY,
+          orderedProxyRules: [{
+            effect: codebuild.FleetProxyRuleEffect.ALLOW,
+            entities: [],
+            type: codebuild.FleetProxyRuleType.DOMAIN,
+          }],
+        },
+      });
+    }).toThrow(/Each proxy rule must have at least one entity/);
   });
 });
 

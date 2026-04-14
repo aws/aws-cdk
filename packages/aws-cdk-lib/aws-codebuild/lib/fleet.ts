@@ -115,7 +115,10 @@ export interface FleetProps {
   readonly securityGroups?: ec2.ISecurityGroup[];
 
   /**
-   * The Amazon Machine Image (AMI) of the compute fleet.
+   * The image identifier for the compute fleet.
+   *
+   * This can be a CodeBuild-managed image identifier
+   * (e.g., 'aws/codebuild/macos-arm-base:26') or a custom AMI ID.
    *
    * @default - no specific image, CodeBuild uses the default for the environment type
    */
@@ -576,10 +579,27 @@ export class Fleet extends Resource implements IFleet {
         && props.scalingConfiguration.maxCapacity < props.baseCapacity) {
         throw new ValidationError(lit`ScalingMaxCapacityGreaterEqualBase`, 'scalingConfiguration.maxCapacity must be greater than or equal to baseCapacity', this);
       }
+      if (props.scalingConfiguration.scalingType === FleetScalingType.TARGET_TRACKING_SCALING
+        && (!props.scalingConfiguration.targetTrackingScalingConfigs
+          || props.scalingConfiguration.targetTrackingScalingConfigs.length === 0)) {
+        throw new ValidationError(lit`TargetTrackingScalingConfigsRequired`, 'At least one targetTrackingScalingConfigs entry is required when scalingType is TARGET_TRACKING_SCALING', this);
+      }
+      for (const config of props.scalingConfiguration.targetTrackingScalingConfigs ?? []) {
+        if (!Token.isUnresolved(config.targetValue) && (config.targetValue <= 0 || config.targetValue > 100)) {
+          throw new ValidationError(lit`TargetValueOutOfRange`, `targetValue must be between 0 (exclusive) and 100 (inclusive), got: ${config.targetValue}`, this);
+        }
+      }
     }
 
-    if (props.proxyConfiguration && !props.vpc) {
-      throw new ValidationError(lit`CannotConfigureProxyWithoutVpc`, 'Cannot configure proxyConfiguration without configuring a VPC', this);
+    if (props.proxyConfiguration) {
+      if (!props.vpc) {
+        throw new ValidationError(lit`CannotConfigureProxyWithoutVpc`, 'Cannot configure proxyConfiguration without configuring a VPC', this);
+      }
+      for (const rule of props.proxyConfiguration.orderedProxyRules ?? []) {
+        if (rule.entities.length === 0) {
+          throw new ValidationError(lit`ProxyRuleEntitiesRequired`, 'Each proxy rule must have at least one entity', this);
+        }
+      }
     }
 
     const vpcConfiguration = this.configureVpc(props);

@@ -52,6 +52,13 @@ listFleets.expect(integ.ExpectedResult.objectLike({
   fleets: integ.Match.arrayWith([fleet.fleetArn]),
 }));
 
+test.assertions.awsApiCall('CodeBuild', 'batchGetFleets', {
+  names: [fleet.fleetArn],
+}).assertAtPath(
+  'fleets.0.imageId',
+  integ.ExpectedResult.stringLikeRegexp('aws/codebuild/amazonlinux-x86_64-standard:2024'),
+);
+
 const startBuild = test.assertions.awsApiCall('Codebuild', 'startBuild', { projectName: project.projectName });
 
 test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
