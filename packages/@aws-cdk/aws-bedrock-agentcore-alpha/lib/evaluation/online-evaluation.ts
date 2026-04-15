@@ -236,7 +236,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     throwIfInvalid(validateSessionTimeout, props.sessionTimeoutMinutes, this);
 
     this.onlineEvaluationConfigName = props.configName;
-    this.executionRole = props.executionRole ?? this.createExecutionRole();
+    this.executionRole = props.executionRole ?? this.createExecutionRole(props.dataSource);
     this.grantPrincipal = this.executionRole;
 
     // Convert tags from Record<string,string> to Array<CfnTag>
@@ -268,7 +268,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     this.updatedAt = resource.attrUpdatedAt;
   }
 
-  private createExecutionRole(): iam.IRole {
+  private createExecutionRole(dataSource: DataSourceConfig): iam.IRole {
     const stack = Stack.of(this);
 
     const role = new iam.Role(this, 'ExecutionRole', {
@@ -303,11 +303,34 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       description: 'Execution role for Bedrock AgentCore Online Evaluation',
     });
 
+    const logGroupArns = dataSource.cloudWatchLogsConfig.logGroupNames.flatMap(
+      (name) => [
+        Arn.format(
+          {
+            service: 'logs',
+            resource: 'log-group',
+            resourceName: name,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          },
+          stack,
+        ),
+        Arn.format(
+          {
+            service: 'logs',
+            resource: 'log-group',
+            resourceName: `${name}:*`,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          },
+          stack,
+        ),
+      ],
+    );
+
     role.addToPolicy(
       new iam.PolicyStatement({
         sid: 'CloudWatchLogReadStatement',
         actions: EvaluationPerms.CLOUDWATCH_LOGS_READ_PERMS,
-        resources: ['*'],
+        resources: logGroupArns,
       }),
     );
 

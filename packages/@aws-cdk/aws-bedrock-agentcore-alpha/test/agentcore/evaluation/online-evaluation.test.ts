@@ -560,6 +560,22 @@ describe('OnlineEvaluationConfig', () => {
                 'logs:GetQueryResults',
                 'logs:StartQuery',
               ]),
+              Resource: Match.arrayWith([
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/my-agent',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/my-agent:*',
+                  ]],
+                },
+              ]),
               Sid: 'CloudWatchLogReadStatement',
             }),
           ]),
