@@ -1,3 +1,5 @@
+import { TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS } from '../identity/perms';
+
 /******************************************************************************
    * Data Plane Permissions
    *****************************************************************************/
@@ -61,12 +63,9 @@ export const GATEWAY_API_KEY_PERMS = [
 
 /**
  * Secrets Manager permissions
- * Required for storing and retrieving API keys and OAuth credentials
+ * Required for reading API key / OAuth client secrets backing Token Vault providers (same as identity `grantUse`).
  */
-export const GATEWAY_SECRETS_PERMS = [
-  'secretsmanager:GetSecretValue',
-  'secretsmanager:DescribeSecret',
-];
+export const GATEWAY_SECRETS_PERMS = [...TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS];
 
 /******************************************************************************
    * Control Plane Permissions

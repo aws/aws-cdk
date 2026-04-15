@@ -1,0 +1,176 @@
+{
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/ApiKeyIdentity": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/OAuthIdentity": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Gateway43CB3636"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/OpenApiApiKeyTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/OpenApiOauthTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/ApiKeyIdentity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiKeyIdentity3BBCFBED"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/OAuthIdentity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OAuthIdentityB927DA55"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayServiceRole162DEA77"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/OpenApiApiKeyTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayOpenApiApiKeyTarget9DBCD754"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/OpenApiOauthTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayOpenApiOauthTarget25D57589"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayServiceRoleDefaultPolicy5A851A93"
+    }
+  ]
+}

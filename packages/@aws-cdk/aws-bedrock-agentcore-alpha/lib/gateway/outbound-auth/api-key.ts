@@ -95,7 +95,9 @@ export class ApiKeyCredentialLocation {
 }
 
 /**
- * API Key configuration
+ * API key credential provider ARNs for gateway outbound auth (Token Vault identity).
+ *
+ * Pass this to {@link GatewayCredentialProvider.fromApiKeyIdentityArn} or to {@link ApiKeyCredentialProviderConfiguration}.
  */
 export interface ApiKeyCredentialProviderProps {
   /**
@@ -120,6 +122,11 @@ export interface ApiKeyCredentialProviderProps {
    */
   readonly credentialLocation?: ApiKeyCredentialLocation;
 }
+
+/**
+ * @deprecated Use {@link ApiKeyCredentialProviderProps}. Kept for compatibility with the interim `GatewayApiKeyIdentityProps` name.
+ */
+export type GatewayApiKeyIdentityProps = ApiKeyCredentialProviderProps;
 
 /**
  * API Key credential provider configuration implementation

@@ -1,0 +1,74 @@
+{
+  "/aws-cdk-bedrock-agentcore-identity-1/ApiKeyProvider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/GithubOAuth": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/YandexOAuth": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/CustomOAuth": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/OktaOAuth": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/ApiKeyProvider/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiKeyProvider7AFC53BE"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/GithubOAuth/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GithubOAuth5958D16B"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/YandexOAuth/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "YandexOAuth515CCC8D"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/CustomOAuth/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomOAuthD038AAB9"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/OktaOAuth/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OktaOAuth26B0DEBF"
+    }
+  ]
+}

@@ -2,6 +2,13 @@ export * from './memory/memory';
 export * from './memory/strategies/managed-strategy';
 export * from './memory/strategies/self-managed-strategy';
 export * from './memory/memory-strategy';
+
+// ===================================
+// Identity (Token Vault credential providers)
+// ===================================
+export * from './identity/perms';
+export * from './identity/api-key-credential-provider';
+export * from './identity/oauth2-credential-provider';
 // ===================================
 // Network Configuration
 // ===================================

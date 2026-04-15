@@ -1,0 +1,284 @@
+{
+ "Resources": {
+  "GatewayServiceRole162DEA77": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      },
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:aws:bedrock-agentcore:us-east-1:",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":gateway/integ-gateway-identity-outbound*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Service role for Bedrock AgentCore Gateway integ-gateway-identity-outbound"
+   }
+  },
+  "GatewayServiceRoleDefaultPolicy5A851A93": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "bedrock-agentcore:GetResourceApiKey",
+        "bedrock-agentcore:GetWorkloadAccessToken",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ApiKeyIdentity3BBCFBED",
+          "ApiKeySecretArn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ApiKeyIdentity3BBCFBED",
+          "CredentialProviderArn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "bedrock-agentcore:GetResourceOauth2Token",
+        "bedrock-agentcore:GetWorkloadAccessToken",
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OAuthIdentityB927DA55",
+          "ClientSecretArn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "OAuthIdentityB927DA55",
+          "CredentialProviderArn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "GatewayServiceRoleDefaultPolicy5A851A93",
+    "Roles": [
+     {
+      "Ref": "GatewayServiceRole162DEA77"
+     }
+    ]
+   }
+  },
+  "Gateway43CB3636": {
+   "Type": "AWS::BedrockAgentCore::Gateway",
+   "Properties": {
+    "AuthorizerType": "AWS_IAM",
+    "Description": "Gateway with OpenAPI targets wired to Token Vault L2 identities",
+    "Name": "integ-gateway-identity-outbound",
+    "ProtocolConfiguration": {
+     "Mcp": {
+      "Instructions": "Default gateway to connect to external MCP tools",
+      "SearchType": "SEMANTIC",
+      "SupportedVersions": [
+       "2025-03-26"
+      ]
+     }
+    },
+    "ProtocolType": "MCP",
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "GatewayServiceRole162DEA77",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "GatewayOpenApiApiKeyTarget9DBCD754": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProvider": {
+       "ApiKeyCredentialProvider": {
+        "CredentialLocation": "HEADER",
+        "CredentialParameterName": "Authorization",
+        "CredentialPrefix": "Bearer ",
+        "ProviderArn": {
+         "Fn::GetAtt": [
+          "ApiKeyIdentity3BBCFBED",
+          "CredentialProviderArn"
+         ]
+        }
+       }
+      },
+      "CredentialProviderType": "API_KEY"
+     }
+    ],
+    "Description": "OpenAPI target with API key Token Vault identity",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "integ-openapi-api-key",
+    "TargetConfiguration": {
+     "Mcp": {
+      "OpenApiSchema": {
+       "InlinePayload": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"GatewayIdentityOutboundInteg\",\"version\":\"1.0.0\"},\"servers\":[{\"url\":\"https://example.com\"}],\"paths\":{\"/ping\":{\"get\":{\"operationId\":\"ping\",\"responses\":{\"200\":{\"description\":\"ok\"}}}}}}"
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "GatewayServiceRoleDefaultPolicy5A851A93"
+   ]
+  },
+  "GatewayOpenApiOauthTarget25D57589": {
+   "Type": "AWS::BedrockAgentCore::GatewayTarget",
+   "Properties": {
+    "CredentialProviderConfigurations": [
+     {
+      "CredentialProvider": {
+       "OauthCredentialProvider": {
+        "ProviderArn": {
+         "Fn::GetAtt": [
+          "OAuthIdentityB927DA55",
+          "CredentialProviderArn"
+         ]
+        },
+        "Scopes": [
+         "read:user"
+        ]
+       }
+      },
+      "CredentialProviderType": "OAUTH"
+     }
+    ],
+    "Description": "OpenAPI target with OAuth Token Vault identity",
+    "GatewayIdentifier": {
+     "Fn::GetAtt": [
+      "Gateway43CB3636",
+      "GatewayIdentifier"
+     ]
+    },
+    "Name": "integ-openapi-oauth",
+    "TargetConfiguration": {
+     "Mcp": {
+      "OpenApiSchema": {
+       "InlinePayload": "{\"openapi\":\"3.0.0\",\"info\":{\"title\":\"GatewayIdentityOutboundInteg\",\"version\":\"1.0.0\"},\"servers\":[{\"url\":\"https://example.com\"}],\"paths\":{\"/ping\":{\"get\":{\"operationId\":\"ping\",\"responses\":{\"200\":{\"description\":\"ok\"}}}}}}"
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "GatewayServiceRoleDefaultPolicy5A851A93"
+   ]
+  },
+  "ApiKeyIdentity3BBCFBED": {
+   "Type": "AWS::BedrockAgentCore::ApiKeyCredentialProvider",
+   "Properties": {
+    "ApiKey": "integ-placeholder-api-key",
+    "Name": "integ-gw-outbound-apikey",
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "gateway-identity-outbound"
+     }
+    ]
+   }
+  },
+  "OAuthIdentityB927DA55": {
+   "Type": "AWS::BedrockAgentCore::OAuth2CredentialProvider",
+   "Properties": {
+    "CredentialProviderVendor": "GithubOauth2",
+    "Name": "integ-gw-outbound-oauth",
+    "Oauth2ProviderConfigInput": {
+     "GithubOauth2ProviderConfig": {
+      "ClientId": "integ-github-client-id",
+      "ClientSecret": "integ-github-client-secret"
+     }
+    },
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "gateway-identity-outbound"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
