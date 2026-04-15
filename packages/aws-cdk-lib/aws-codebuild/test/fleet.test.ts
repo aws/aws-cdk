@@ -679,7 +679,6 @@ describe('imageId', () => {
       ImageId: Match.absent(),
     });
   });
-
 });
 
 describe('scalingConfiguration', () => {
