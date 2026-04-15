@@ -4,9 +4,9 @@ import * as path from 'node:path';
 import type { GeneratorResult, ModuleMap, ModuleMapEntry, SubmoduleContribution } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { mergeModuleMaps } from '@aws-cdk/spec2cdk/lib/module-topology';
 import { ensureFileContains, jsiiRcPathFor, writeJsiiRc } from '@aws-cdk/spec2cdk/lib/util/submodule-files';
-import { generateAll as generateCfnPropsMixins } from './spec2mixins';
 import { generateAll as generateEvents } from './spec2eventbridge';
-import { generateAll as generateLogsDeliveryMixins } from './spec2logs';
+import { generateAll as generateLogsDeliveryMixins } from '@aws-cdk/spec2cdk/lib/log-delivery-mixins';
+import { MIXINS_PREVIEW_BASE_NAMES } from './config';
 
 const GO_PREFIX = 'preview';
 
@@ -20,9 +20,8 @@ async function main() {
   const outputPath = path.join(pkgPath, 'lib', 'services');
 
   const results: GeneratorResult[] = [
-    await generateCfnPropsMixins({ outputPath }),
-    await generateLogsDeliveryMixins({ outputPath }),
     await generateEvents({ outputPath }),
+    await generateLogsDeliveryMixins({ outputPath, packageBases: MIXINS_PREVIEW_BASE_NAMES }),
   ];
 
   const moduleMap = mergeModuleMaps(...results.map(r => r.moduleMap));

@@ -1,6 +1,7 @@
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
 import type { SecretValue } from 'aws-cdk-lib/core';
 import { ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -94,7 +95,7 @@ export class PasswordUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (props.passwords.length < 1 || props.passwords.length > 2) {
-      throw new ValidationError('Password authentication requires 1-2 passwords.', this);
+      throw new ValidationError(lit`InvalidPasswordCount`, 'Password authentication requires 1-2 passwords.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

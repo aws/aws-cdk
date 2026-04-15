@@ -30,8 +30,8 @@ const submitJobLambda = new Function(stack, 'submitJobLambda', {
   handler: 'index.handler',
 });
 
-const submitJob = new sfn.Task(stack, 'Invoke Handler', {
-  task: new tasks.RunLambdaTask(submitJobLambda),
+const submitJob = new tasks.LambdaInvoke(stack, 'Invoke Handler', {
+  lambdaFunction: submitJobLambda,
   outputPath: '$.Payload',
 });
 
@@ -45,8 +45,8 @@ const checkJobStateLambda = new Function(stack, 'checkJobStateLambda', {
   handler: 'index.handler',
 });
 
-const checkJobState = new sfn.Task(stack, 'Check the job state', {
-  task: new tasks.RunLambdaTask(checkJobStateLambda),
+const checkJobState = new tasks.LambdaInvoke(stack, 'Check the job state', {
+  lambdaFunction: checkJobStateLambda,
   outputPath: '$.Payload',
 });
 
@@ -66,7 +66,7 @@ const chain = sfn.Chain.start(submitJob)
   );
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(30),
 });
 
