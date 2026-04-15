@@ -5,10 +5,12 @@ import { Compatibility } from './ecs-job-definition';
 import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
 import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
-import { ArnFormat, Lazy, Stack } from '../../core';
+import { ArnFormat, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { Signal } from '../../core/lib/signals';
+import { Signals } from '../../core/lib/signals';
 
 /**
  * Not a real instance type! Indicates that Batch will choose one it determines to be optimal
@@ -147,11 +149,15 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     return new Import(scope, id);
   }
 
-  public readonly containers: MultiNodeContainer[];
   public readonly mainNode?: number;
   public readonly propagateTags?: boolean;
 
   private readonly resource: CfnJobDefinition;
+  private _containers: Signal<Array<MultiNodeContainer>>;
+
+  public get containers(): MultiNodeContainer[] {
+    return this._containers.get();
+  }
 
   @memoizedGetter
   public get jobDefinitionArn(): string {
@@ -174,7 +180,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.containers = props?.containers ?? [];
+    this._containers = Signals.state(props?.containers ?? []);
     this.mainNode = props?.mainNode;
     this._instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;
@@ -186,23 +192,20 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
       propagateTags: this.propagateTags,
       nodeProperties: {
         mainNode: this.mainNode ?? 0,
-        nodeRangeProperties: Lazy.any({
-          produce: () => this.containers.map((container) => ({
+        nodeRangeProperties: this._containers.map(containers =>
+          containers.map((container) => ({
             targetNodes: container.startNode + ':' + container.endNode,
             container: {
               ...container.container._renderContainerDefinition(),
               instanceType: this._instanceType?.toString(),
             },
-          })),
-        }),
-        numNodes: Lazy.number({
-          produce: () => computeNumNodes(this.containers),
-        }),
+          }))),
+        numNodes: this._containers.map(computeNumNodes).asNumber(),
       },
       platformCapabilities: [Compatibility.EC2],
     });
 
-    this.node.addValidation({ validate: () => validateContainers(this.containers) });
+    this.node.addValidation({ validate: () => validateContainers(this._containers.get()) });
   }
 
   /**
@@ -219,7 +222,9 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
 
   @MethodMetadata()
   public addContainer(container: MultiNodeContainer) {
-    this.containers.push(container);
+    const containers = this._containers.get();
+    containers.push(container);
+    this._containers.set(containers);
   }
 }
 
