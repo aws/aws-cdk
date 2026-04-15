@@ -239,11 +239,6 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     this.executionRole = props.executionRole ?? this.createExecutionRole(props.dataSource);
     this.grantPrincipal = this.executionRole;
 
-    // Convert tags from Record<string,string> to Array<CfnTag>
-    const cfnTags = props.tags
-      ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
-      : undefined;
-
     const resource = new bedrockagentcore.CfnOnlineEvaluationConfig(this, 'Resource', {
       onlineEvaluationConfigName: props.configName,
       evaluators: props.evaluators.map((e) => e.bind()),
@@ -251,7 +246,6 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       evaluationExecutionRoleArn: this.executionRole!.roleArn,
       rule: this.buildRuleConfig(props),
       description: props.description,
-      tags: cfnTags,
     });
 
     // Ensure the execution role's policies are created before the L1 resource,

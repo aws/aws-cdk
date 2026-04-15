@@ -123,9 +123,6 @@ describe('OnlineEvaluationConfig', () => {
           },
         ],
         sessionTimeoutMinutes: 30,
-        tags: {
-          Environment: 'test',
-        },
       });
 
       const template = Template.fromStack(stack);
@@ -155,36 +152,12 @@ describe('OnlineEvaluationConfig', () => {
           ],
         },
         Description: 'Test evaluation configuration',
-        Tags: [{ Key: 'Environment', Value: 'test' }],
       });
     });
   });
 
   describe('tag handling', () => {
-    test('converts Record<string,string> tags to Array<CfnTag> format', () => {
-      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'tag_test',
-        evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
-        dataSource: DataSourceConfig.fromCloudWatchLogs({
-          logGroupNames: ['/aws/log-group'],
-          serviceNames: ['service'],
-        }),
-        tags: {
-          Environment: 'test',
-          Team: 'ml',
-        },
-      });
-
-      const template = Template.fromStack(stack);
-      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
-        Tags: Match.arrayWith([
-          { Key: 'Environment', Value: 'test' },
-          { Key: 'Team', Value: 'ml' },
-        ]),
-      });
-    });
-
-    test('Tags.of() API propagates tags via ITaggableV2', () => {
+    test('Tags.of() API propagates tags', () => {
       const evaluation = new OnlineEvaluationConfig(stack, 'TestEvaluation', {
         configName: 'taggable_test',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],

@@ -238,12 +238,6 @@ export interface OnlineEvaluationBaseProps {
    */
   readonly sessionTimeoutMinutes?: number;
 
-  /**
-   * Tags for the online evaluation configuration.
-   *
-   * @default - No tags
-   */
-  readonly tags?: { [key: string]: string };
 }
 
 /**
