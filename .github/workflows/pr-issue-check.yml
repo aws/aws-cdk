@@ -38,7 +38,7 @@ jobs:
                 if (hasIssueHeading) {
                   message = `👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.\n\nPlease update the description to include a reference like \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
                 } else {
-                  message = `⚠️ This pull request description does not follow the correct template structure.\n\nPlease update the description to follow the [PR template](.github/PULL_REQUEST_TEMPLATE.md) and include a line like \`Closes #123\` in the Issue section.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
+                  message = `⚠️ This pull request description does not follow the correct template structure.\n\nPlease update the description to follow the [PR template](https://github.com/aws/aws-cdk/blob/main/.github/PULL_REQUEST_TEMPLATE.md) and include a line like \`Closes #123\` in the Issue section.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
                 }
               }
 
