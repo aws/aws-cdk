@@ -36,9 +36,9 @@ jobs:
               } else {
                 const hasIssueHeading = firstTwo.toLowerCase().includes('issue');
                 if (hasIssueHeading) {
-                  message = `👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.\n\nPlease update the description to include a reference like \`Closes #123\` so the linked issue is closed automatically when this PR is merged.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
+                  message = `👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.\n\nPlease update the description to include a reference like \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
                 } else {
-                  message = `⚠️ This pull request does not reference a linked issue.\n\nPull requests that do not close an assigned issue will not be accepted. Please update the description to follow the [PR template](/.github/PULL_REQUEST_TEMPLATE.md) and include a line like \`Closes #123\` at the top.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
+                  message = `⚠️ This pull request description does not follow the correct template structure.\n\nPlease update the description to follow the [PR template](.github/PULL_REQUEST_TEMPLATE.md) and include a line like \`Closes #123\` in the Issue section.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
                 }
               }
 
