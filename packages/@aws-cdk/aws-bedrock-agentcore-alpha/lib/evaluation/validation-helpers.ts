@@ -15,7 +15,7 @@ import { Token } from 'aws-cdk-lib';
 import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct } from 'constructs';
-import type { FilterConfig } from './types';
+import type { CategoricalRatingOption, FilterConfig, NumericalRatingOption } from './types';
 
 /**
  * Interface for evaluator references used in validation.
@@ -40,6 +40,9 @@ const SESSION_TIMEOUT_MIN = 1;
 const SESSION_TIMEOUT_MAX = 1440;
 const LOG_GROUPS_MIN_COUNT = 1;
 const LOG_GROUPS_MAX_COUNT = 5;
+const EVALUATOR_NAME_MIN_LENGTH = 1;
+const EVALUATOR_NAME_MAX_LENGTH = 48;
+const RATING_SCALE_MIN_OPTIONS = 1;
 
 /******************************************************************************
  *                              TYPES
@@ -264,6 +267,148 @@ export function validateServiceNames(names: string[], _scope?: IConstruct): stri
 
   if (names == null || names.length < 1) {
     errors.push(`At least 1 service name is required, got ${names?.length ?? 0}`);
+  }
+
+  return errors;
+}
+
+/**
+ * Validates the evaluator name.
+ * Must start with a letter and contain only alphanumeric characters and underscores.
+ * @param name - The evaluator name to validate
+ * @param _scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
+ */
+export function validateEvaluatorName(name: string, _scope?: IConstruct): string[] {
+  const errors: string[] = [];
+
+  if (name == null) {
+    return errors;
+  }
+
+  if (Token.isUnresolved(name)) {
+    return errors;
+  }
+
+  if (name.length < EVALUATOR_NAME_MIN_LENGTH) {
+    errors.push(
+      `Evaluator name must be at least ${EVALUATOR_NAME_MIN_LENGTH} character(s), got ${name.length}`,
+    );
+  }
+
+  if (name.length > EVALUATOR_NAME_MAX_LENGTH) {
+    errors.push(
+      `Evaluator name must be at most ${EVALUATOR_NAME_MAX_LENGTH} characters, got ${name.length}`,
+    );
+  }
+
+  // Pattern: ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
+  const validNamePattern = /^[a-zA-Z][a-zA-Z0-9_]{0,47}$/;
+  if (!validNamePattern.test(name)) {
+    errors.push(
+      `Evaluator name "${name}" does not match required pattern. Must start with a letter and contain only alphanumeric characters and underscores.`,
+    );
+  }
+
+  return errors;
+}
+
+/**
+ * Validates that instructions are provided and non-empty.
+ * @param instructions - The instructions to validate
+ * @param _scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
+ */
+export function validateInstructions(instructions: string, _scope?: IConstruct): string[] {
+  const errors: string[] = [];
+
+  if (instructions == null) {
+    errors.push('Instructions are required for LLM-as-a-Judge evaluators');
+    return errors;
+  }
+
+  if (Token.isUnresolved(instructions)) {
+    return errors;
+  }
+
+  if (instructions.trim().length === 0) {
+    errors.push('Instructions must not be empty');
+  }
+
+  return errors;
+}
+
+/**
+ * Validates a categorical rating scale.
+ * @param options - The categorical rating options to validate
+ * @param _scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
+ */
+export function validateCategoricalRatingScale(options: CategoricalRatingOption[], _scope?: IConstruct): string[] {
+  const errors: string[] = [];
+
+  if (options == null || options.length < RATING_SCALE_MIN_OPTIONS) {
+    errors.push(`At least ${RATING_SCALE_MIN_OPTIONS} categorical rating option is required, got ${options?.length ?? 0}`);
+    return errors;
+  }
+
+  for (let i = 0; i < options.length; i++) {
+    if (!options[i].label || options[i].label.trim().length === 0) {
+      errors.push(`Categorical rating option at index ${i} must have a non-empty label`);
+    }
+    if (!options[i].definition || options[i].definition.trim().length === 0) {
+      errors.push(`Categorical rating option at index ${i} must have a non-empty definition`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates a numerical rating scale.
+ * @param options - The numerical rating options to validate
+ * @param _scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
+ */
+export function validateNumericalRatingScale(options: NumericalRatingOption[], _scope?: IConstruct): string[] {
+  const errors: string[] = [];
+
+  if (options == null || options.length < RATING_SCALE_MIN_OPTIONS) {
+    errors.push(`At least ${RATING_SCALE_MIN_OPTIONS} numerical rating option is required, got ${options?.length ?? 0}`);
+    return errors;
+  }
+
+  for (let i = 0; i < options.length; i++) {
+    if (!options[i].label || options[i].label.trim().length === 0) {
+      errors.push(`Numerical rating option at index ${i} must have a non-empty label`);
+    }
+    if (!options[i].definition || options[i].definition.trim().length === 0) {
+      errors.push(`Numerical rating option at index ${i} must have a non-empty definition`);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates the Lambda timeout in seconds.
+ * @param seconds - The timeout in seconds to validate
+ * @param _scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
+ */
+export function validateLambdaTimeout(seconds: number | undefined, _scope?: IConstruct): string[] {
+  const errors: string[] = [];
+
+  if (seconds == null) {
+    return errors;
+  }
+
+  if (Token.isUnresolved(seconds)) {
+    return errors;
+  }
+
+  if (seconds <= 0) {
+    errors.push(`Lambda timeout must be a positive number, got ${seconds}`);
   }
 
   return errors;

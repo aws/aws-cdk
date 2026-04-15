@@ -284,6 +284,131 @@ export interface DataSourceConfigBindResult {
 }
 
 /**
+ * The level at which a custom evaluator assesses agent performance.
+ *
+ * Determines what granularity of data the evaluator operates on.
+ */
+export enum EvaluationLevel {
+  /**
+   * Evaluates individual tool call invocations within a trace.
+   */
+  TOOL_CALL = 'TOOL_CALL',
+
+  /**
+   * Evaluates a complete agent trace (a single request-response cycle).
+   */
+  TRACE = 'TRACE',
+
+  /**
+   * Evaluates an entire agent session (multiple traces across a conversation).
+   */
+  SESSION = 'SESSION',
+}
+
+/**
+ * A categorical rating scale option for custom evaluators.
+ *
+ * Categorical scales define discrete labels for scoring agent performance.
+ */
+export interface CategoricalRatingOption {
+  /**
+   * The label for this rating option.
+   *
+   * @example 'Good'
+   */
+  readonly label: string;
+
+  /**
+   * The description that explains what this rating represents.
+   *
+   * @example 'The response fully addresses the user query with accurate information.'
+   */
+  readonly definition: string;
+}
+
+/**
+ * A numerical rating scale option for custom evaluators.
+ *
+ * Numerical scales define labeled numeric values for scoring agent performance.
+ */
+export interface NumericalRatingOption {
+  /**
+   * The label for this rating option.
+   *
+   * @example 'Excellent'
+   */
+  readonly label: string;
+
+  /**
+   * The description that explains what this numerical rating represents.
+   *
+   * @example 'The response is comprehensive, accurate, and well-structured.'
+   */
+  readonly definition: string;
+
+  /**
+   * The numerical value for this rating scale option.
+   *
+   * @example 5
+   */
+  readonly value: number;
+}
+
+/**
+ * Inference configuration for a custom LLM-as-a-Judge evaluator.
+ *
+ * Controls how the foundation model generates evaluation responses.
+ */
+export interface EvaluatorInferenceConfig {
+  /**
+   * The maximum number of tokens to generate in the model response.
+   *
+   * @default - Service default
+   */
+  readonly maxTokens?: number;
+
+  /**
+   * The temperature value that controls randomness in the model's responses.
+   *
+   * Higher values produce more diverse outputs. Range: 0.0 to 1.0.
+   *
+   * @default - Service default
+   */
+  readonly temperature?: number;
+
+  /**
+   * The top-p sampling parameter that controls the diversity of the model's responses.
+   *
+   * Range: 0.0 to 1.0.
+   *
+   * @default - Service default
+   */
+  readonly topP?: number;
+}
+
+/**
+ * Attributes for importing an existing Evaluator.
+ */
+export interface EvaluatorAttributes {
+  /**
+   * The ARN of the evaluator.
+   */
+  readonly evaluatorArn: string;
+
+  /**
+   * The ID of the evaluator.
+   */
+  readonly evaluatorId: string;
+
+  /**
+   * The name of the evaluator.
+   *
+   * @default - No name available
+   */
+  readonly evaluatorName?: string;
+}
+
+/**
  * Attributes for importing an existing OnlineEvaluationConfig.
  */
 export interface OnlineEvaluationConfigAttributes {

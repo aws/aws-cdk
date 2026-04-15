@@ -9,6 +9,12 @@
       }
     }
   ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/CustomEvaluator": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -31,6 +37,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AgentLogGroupFDA72973"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/CustomEvaluator/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEvaluator9FEA397A"
     }
   ],
   "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation/ExecutionRole": [

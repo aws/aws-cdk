@@ -9,6 +9,36 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "CustomEvaluator9FEA397A": {
+   "Type": "AWS::BedrockAgentCore::Evaluator",
+   "Properties": {
+    "Description": "Custom evaluator for integration testing",
+    "EvaluatorConfig": {
+     "LlmAsAJudge": {
+      "Instructions": "Evaluate whether the agent response is helpful, accurate, and well-structured. Context: {context}. Available tools: {available_tools}.",
+      "ModelConfig": {
+       "BedrockEvaluatorModelConfig": {
+        "ModelId": "us.anthropic.claude-sonnet-4-6"
+       }
+      },
+      "RatingScale": {
+       "Categorical": [
+        {
+         "Definition": "The response fully addresses the user query with accurate information.",
+         "Label": "Good"
+        },
+        {
+         "Definition": "The response fails to address the query or contains inaccurate information.",
+         "Label": "Bad"
+        }
+       ]
+      }
+     }
+    },
+    "EvaluatorName": "integ_test_custom_eval",
+    "Level": "SESSION"
+   }
+  },
   "BasicEvaluationExecutionRoleFB7E4913": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -332,7 +362,7 @@
       ]
      }
     },
-    "Description": "Basic integration test evaluation with CloudWatch Logs",
+    "Description": "Integration test evaluation with built-in and custom evaluators",
     "EvaluationExecutionRoleArn": {
      "Fn::GetAtt": [
       "BasicEvaluationExecutionRoleFB7E4913",
@@ -345,6 +375,14 @@
      },
      {
       "EvaluatorId": "Builtin.Correctness"
+     },
+     {
+      "EvaluatorId": {
+       "Fn::GetAtt": [
+        "CustomEvaluator9FEA397A",
+        "EvaluatorId"
+       ]
+      }
      }
     ],
     "ExecutionStatus": "ENABLED",
