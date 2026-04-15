@@ -15,6 +15,48 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const body = context.payload.pull_request.body || '';
+            const prNumber = context.payload.pull_request.number;
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const BOT_MARKER = '<!-- pr-issue-check-bot -->';
+
+            async function findBotComment() {
+              const { data: comments } = await github.rest.issues.listComments({
+                owner, repo, issue_number: prNumber
+              });
+              return comments.find(c => c.user.type === 'Bot' && c.body.includes(BOT_MARKER));
+            }
+
+            async function upsertComment(message) {
+              const markedMessage = `${BOT_MARKER}\n${message}`;
+              try {
+                const existing = await findBotComment();
+                if (existing) {
+                  await github.rest.issues.updateComment({
+                    owner, repo, comment_id: existing.id, body: markedMessage
+                  });
+                } else {
+                  await github.rest.issues.createComment({
+                    owner, repo, issue_number: prNumber, body: markedMessage
+                  });
+                }
+              } catch (commentError) {
+                core.warning(`Failed to post comment: ${commentError.message}`);
+              }
+            }
+
+            async function deleteBotComment() {
+              try {
+                const existing = await findBotComment();
+                if (existing) {
+                  await github.rest.issues.deleteComment({
+                    owner, repo, comment_id: existing.id
+                  });
+                }
+              } catch (e) {
+                core.warning(`Failed to delete comment: ${e.message}`);
+              }
+            }
             const lines = body.split('\n').map(l => l.trim()).filter(l => l.length > 0);
 
             // Expected format from template:
@@ -42,16 +84,7 @@ jobs:
                 }
               }
 
-              try {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.pull_request.number,
-                  body: message
-                });
-              } catch (commentError) {
-                core.warning(`Failed to post comment: ${commentError.message}`);
-              }
+              await upsertComment(message);
               core.setFailed('PR description is missing a valid issue reference.');
               return;
             }
@@ -63,9 +96,7 @@ jobs:
             for (const num of issueNumbers) {
               try {
                 const { data: issue } = await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: num
+                  owner, repo, issue_number: num
                 });
                 if (issue.pull_request) {
                   invalid.push(`#${num} (is a pull request, not an issue)`);
@@ -83,18 +114,10 @@ jobs:
               const list = invalid.join('\n- ');
               const message = `⚠️ The following issue reference(s) in your PR description are not valid issues:\n\n- ${list}\n\nPlease make sure your PR references an existing issue using the format \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
 
-              try {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.pull_request.number,
-                  body: message
-                });
-              } catch (commentError) {
-                core.warning(`Failed to post comment: ${commentError.message}`);
-              }
+              await upsertComment(message);
               core.setFailed('PR references invalid issues.');
               return;
             }
 
-            console.log(`Valid open issue(s) found: ${issueNumbers.map(n => '#' + n).join(', ')}`);
+            await deleteBotComment();
+            console.log(`Valid issue(s) found: ${issueNumbers.map(n => '#' + n).join(', ')}`);
