@@ -87,6 +87,21 @@ export enum BuiltinEvaluator {
 }
 
 /**
+ * The execution status of an online evaluation configuration.
+ */
+export enum ExecutionStatus {
+  /**
+   * The evaluation is enabled and actively processing agent traces.
+   */
+  ENABLED = 'ENABLED',
+
+  /**
+   * The evaluation is disabled and not processing agent traces.
+   */
+  DISABLED = 'DISABLED',
+}
+
+/**
  * Filter operators for online evaluation filtering.
  */
 export enum FilterOperator {
@@ -238,6 +253,14 @@ export interface OnlineEvaluationBaseProps {
    */
   readonly sessionTimeoutMinutes?: number;
 
+  /**
+   * The execution status of the online evaluation configuration.
+   *
+   * Controls whether the evaluation actively processes agent traces.
+   *
+   * @default ExecutionStatus.ENABLED
+   */
+  readonly executionStatus?: ExecutionStatus;
 }
 
 /**

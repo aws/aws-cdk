@@ -27,10 +27,18 @@ export namespace EvaluationPerms {
   ];
 
   /**
-   * Permissions for the execution role to read CloudWatch Logs.
+   * Permissions to describe CloudWatch Log Groups.
+   * This is a list operation that does not support resource-level permissions.
    */
-  export const CLOUDWATCH_LOGS_READ_PERMS = [
+  export const CLOUDWATCH_LOGS_DESCRIBE_PERMS = [
     'logs:DescribeLogGroups',
+  ];
+
+  /**
+   * Permissions for the execution role to query CloudWatch Logs.
+   * These actions support resource-level permissions scoped to specific log groups.
+   */
+  export const CLOUDWATCH_LOGS_QUERY_PERMS = [
     'logs:GetQueryResults',
     'logs:StartQuery',
   ];

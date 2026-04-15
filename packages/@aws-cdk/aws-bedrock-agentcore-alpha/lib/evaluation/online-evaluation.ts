@@ -201,8 +201,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
   public readonly status?: string;
 
   /**
-   * The execution status of the evaluation.
-   * @attribute
+   * The execution status of the evaluation (ENABLED or DISABLED).
    */
   public readonly executionStatus?: string;
 
@@ -246,6 +245,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       evaluationExecutionRoleArn: this.executionRole!.roleArn,
       rule: this.buildRuleConfig(props),
       description: props.description,
+      executionStatus: props.executionStatus,
     });
 
     // Ensure the execution role's policies are created before the L1 resource,
@@ -297,7 +297,12 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       description: 'Execution role for Bedrock AgentCore Online Evaluation',
     });
 
-    const logGroupArns = dataSource.cloudWatchLogsConfig.logGroupNames.flatMap(
+    // The service requires query access to user-specified log groups AND the
+    // implicit aws/spans log group it uses internally for trace data.
+    const logGroupArns = [
+      ...dataSource.cloudWatchLogsConfig.logGroupNames,
+      'aws/spans',
+    ].flatMap(
       (name) => [
         Arn.format(
           {
@@ -322,8 +327,16 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
 
     role.addToPolicy(
       new iam.PolicyStatement({
-        sid: 'CloudWatchLogReadStatement',
-        actions: EvaluationPerms.CLOUDWATCH_LOGS_READ_PERMS,
+        sid: 'CloudWatchLogDescribeStatement',
+        actions: EvaluationPerms.CLOUDWATCH_LOGS_DESCRIBE_PERMS,
+        resources: ['*'],
+      }),
+    );
+
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        sid: 'CloudWatchLogQueryStatement',
+        actions: EvaluationPerms.CLOUDWATCH_LOGS_QUERY_PERMS,
         resources: logGroupArns,
       }),
     );

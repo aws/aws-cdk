@@ -19,6 +19,7 @@ import {
   EvaluatorReference,
   DataSourceConfig,
   BuiltinEvaluator,
+  ExecutionStatus,
   FilterOperator,
   Runtime,
   AgentRuntimeArtifact,
@@ -152,6 +153,58 @@ describe('OnlineEvaluationConfig', () => {
           ],
         },
         Description: 'Test evaluation configuration',
+      });
+    });
+  });
+
+  describe('execution status', () => {
+    test('creates OnlineEvaluationConfig with executionStatus DISABLED', () => {
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        configName: 'disabled_evaluation',
+        evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+        executionStatus: ExecutionStatus.DISABLED,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        ExecutionStatus: 'DISABLED',
+      });
+    });
+
+    test('creates OnlineEvaluationConfig with executionStatus ENABLED', () => {
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        configName: 'enabled_evaluation',
+        evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+        executionStatus: ExecutionStatus.ENABLED,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        ExecutionStatus: 'ENABLED',
+      });
+    });
+
+    test('does not include ExecutionStatus when not specified', () => {
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        configName: 'no_status_evaluation',
+        evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        ExecutionStatus: Match.absent(),
       });
     });
   });
@@ -528,8 +581,12 @@ describe('OnlineEvaluationConfig', () => {
         PolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
+              Action: 'logs:DescribeLogGroups',
+              Resource: '*',
+              Sid: 'CloudWatchLogDescribeStatement',
+            }),
+            Match.objectLike({
               Action: Match.arrayWith([
-                'logs:DescribeLogGroups',
                 'logs:GetQueryResults',
                 'logs:StartQuery',
               ]),
@@ -548,8 +605,22 @@ describe('OnlineEvaluationConfig', () => {
                     ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/my-agent:*',
                   ]],
                 },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':logs:us-east-1:123456789012:log-group:aws/spans',
+                  ]],
+                },
+                {
+                  'Fn::Join': ['', [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    ':logs:us-east-1:123456789012:log-group:aws/spans:*',
+                  ]],
+                },
               ]),
-              Sid: 'CloudWatchLogReadStatement',
+              Sid: 'CloudWatchLogQueryStatement',
             }),
           ]),
         },

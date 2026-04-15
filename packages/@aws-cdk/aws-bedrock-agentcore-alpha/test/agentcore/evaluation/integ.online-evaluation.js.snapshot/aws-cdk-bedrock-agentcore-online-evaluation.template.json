@@ -87,8 +87,13 @@
     "PolicyDocument": {
      "Statement": [
       {
+       "Action": "logs:DescribeLogGroups",
+       "Effect": "Allow",
+       "Resource": "*",
+       "Sid": "CloudWatchLogDescribeStatement"
+      },
+      {
        "Action": [
-        "logs:DescribeLogGroups",
         "logs:GetQueryResults",
         "logs:StartQuery"
        ],
@@ -140,9 +145,49 @@
            }
           ]
          ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:aws/spans"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":logs:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":log-group:aws/spans:*"
+          ]
+         ]
         }
        ],
-       "Sid": "CloudWatchLogReadStatement"
+       "Sid": "CloudWatchLogQueryStatement"
       },
       {
        "Action": [
@@ -302,6 +347,7 @@
       "EvaluatorId": "Builtin.Correctness"
      }
     ],
+    "ExecutionStatus": "ENABLED",
     "OnlineEvaluationConfigName": "integ_test_basic_eval",
     "Rule": {
      "SamplingConfig": {

@@ -32,6 +32,7 @@ new agentcore.OnlineEvaluationConfig(stack, 'BasicEvaluation', {
     serviceNames: ['integ-test-agent.default'],
   }),
   description: 'Basic integration test evaluation with CloudWatch Logs',
+  executionStatus: agentcore.ExecutionStatus.ENABLED,
 });
 
 new integ.IntegTest(app, 'BedrockAgentCoreOnlineEvaluation', {

@@ -50,8 +50,7 @@ export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable {
   readonly status?: string;
 
   /**
-   * The execution status of the evaluation (ENABLED, DISABLED).
-   * @attribute
+   * The execution status of the evaluation (ENABLED or DISABLED).
    */
   readonly executionStatus?: string;
 
