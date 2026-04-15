@@ -14,18 +14,23 @@ import * as codebuild from 'aws-cdk-lib/aws-codebuild';
  */
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-project-fleet-imageId');
+const stack = new cdk.Stack(app, 'aws-cdk-project-fleet-scaling');
 
-// Use imageId to explicitly pin the macOS version on the fleet.
-// This is the primary use case from issue #37538.
-const fleet = new codebuild.Fleet(stack, 'MacOsFleet', {
+const fleet = new codebuild.Fleet(stack, 'MyFleet', {
   baseCapacity: 1,
-  computeType: codebuild.FleetComputeType.MEDIUM,
-  environmentType: codebuild.EnvironmentType.MAC_ARM,
-  imageId: 'aws/codebuild/macos-arm-base:26',
+  computeType: codebuild.FleetComputeType.SMALL,
+  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  scalingConfiguration: {
+    maxCapacity: 2,
+    scalingType: codebuild.FleetScalingType.TARGET_TRACKING_SCALING,
+    targetTrackingScalingConfigs: [{
+      metricType: codebuild.FleetScalingMetricType.FLEET_UTILIZATION_RATE,
+      targetValue: 80,
+    }],
+  },
 });
 
-new codebuild.Project(stack, 'MacOsProject', {
+const project = new codebuild.Project(stack, 'MyProject', {
   buildSpec: codebuild.BuildSpec.fromObject({
     version: '0.2',
     phases: {
@@ -34,13 +39,13 @@ new codebuild.Project(stack, 'MacOsProject', {
   }),
   environment: {
     fleet,
-    buildImage: codebuild.MacBuildImage.BASE_26,
-    computeType: codebuild.ComputeType.MEDIUM,
+    buildImage: codebuild.LinuxBuildImage.STANDARD_7_0,
   },
 });
 
-const test = new integ.IntegTest(app, 'FleetImageIdIntegTest', {
+const test = new integ.IntegTest(app, 'FleetScalingIntegTest', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-2', 'ap-southeast-2', 'eu-central-1'],
   cdkCommandOptions: {
     destroy: {
       // CodeBuild fleet instances have a 1-hour minimum runtime before deletion completes.
@@ -49,20 +54,21 @@ const test = new integ.IntegTest(app, 'FleetImageIdIntegTest', {
   },
 });
 
-// Verify the fleet was created with the correct imageId.
-// startBuild/batchGetBuilds assertions are omitted because
-// macOS dedicated hosts take 1+ hour to provision, which exceeds session
-// and assertion timeout limits. Build execution on fleets is validated by the Linux fleet tests.
 const listFleets = test.assertions.awsApiCall('Codebuild', 'listFleets');
 listFleets.expect(integ.ExpectedResult.objectLike({
   fleets: integ.Match.arrayWith([fleet.fleetArn]),
 }));
 
-test.assertions.awsApiCall('CodeBuild', 'batchGetFleets', {
-  names: [fleet.fleetArn],
+const startBuild = test.assertions.awsApiCall('Codebuild', 'startBuild', { projectName: project.projectName });
+
+test.assertions.awsApiCall('CodeBuild', 'batchGetBuilds', {
+  ids: [startBuild.getAttString('build.id')],
 }).assertAtPath(
-  'fleets.0.imageId',
-  integ.ExpectedResult.stringLikeRegexp('aws/codebuild/macos-arm-base:26'),
-);
+  'builds.0.buildStatus',
+  integ.ExpectedResult.stringLikeRegexp('SUCCEEDED'),
+).waitForAssertions({
+  totalTimeout: cdk.Duration.minutes(15),
+  interval: cdk.Duration.seconds(30),
+});
 
 app.synth();
