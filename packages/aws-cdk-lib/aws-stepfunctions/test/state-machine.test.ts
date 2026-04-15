@@ -1,3 +1,4 @@
+import * as path from 'path';
 import { FakeTask } from './private/fake-task';
 import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
@@ -1529,6 +1530,64 @@ describe('State Machine', () => {
       EncryptionConfiguration: Match.objectLike({
         Type: 'AWS_OWNED_KEY',
       }),
+    });
+  });
+
+  test('timeout is applied to StringDefinitionBody', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(JSON.stringify({
+        StartAt: 'PassState',
+        States: { PassState: { Type: 'Pass', End: true } },
+      })),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: Match.serializedJson(Match.objectLike({
+        TimeoutSeconds: 3600,
+      })),
+    });
+  });
+
+  test('timeout is applied to FileDefinitionBody', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromFile(path.join(__dirname, 'definition.asl.json')),
+      timeout: cdk.Duration.hours(1),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: Match.serializedJson(Match.objectLike({
+        TimeoutSeconds: 3600,
+        StartAt: 'PassState',
+      })),
+    });
+  });
+
+  test('StringDefinitionBody without timeout does not inject TimeoutSeconds', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new sfn.StateMachine(stack, 'MyStateMachine', {
+      definitionBody: sfn.DefinitionBody.fromString(JSON.stringify({
+        StartAt: 'PassState',
+        States: { PassState: { Type: 'Pass', End: true } },
+      })),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::StepFunctions::StateMachine', {
+      DefinitionString: '{"StartAt":"PassState","States":{"PassState":{"Type":"Pass","End":true}}}',
     });
   });
 });

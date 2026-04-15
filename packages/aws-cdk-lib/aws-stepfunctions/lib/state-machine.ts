@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import type { Construct } from 'constructs';
 import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
 import type { EncryptionConfiguration } from './encryption-configuration';
@@ -795,7 +796,16 @@ export class FileDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout) {
+      const fileContent = fs.readFileSync(this.path, 'utf-8');
+      const definition = JSON.parse(fileContent);
+      definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
+      return {
+        definitionString: Stack.of(scope).toJsonString(definition),
+      };
+    }
+
     const asset = new s3_assets.Asset(scope, 'DefinitionBody', {
       path: this.path,
       ...this.options,
@@ -814,7 +824,15 @@ export class StringDefinitionBody extends DefinitionBody {
     super();
   }
 
-  public bind(_scope: Construct, _sfnPrincipal: iam.IPrincipal, _sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+  public bind(scope: Construct, _sfnPrincipal: iam.IPrincipal, sfnProps: StateMachineProps, _graph?: StateGraph): DefinitionConfig {
+    if (sfnProps.timeout) {
+      const definition = JSON.parse(this.body);
+      definition.TimeoutSeconds = sfnProps.timeout.toSeconds();
+      return {
+        definitionString: Stack.of(scope).toJsonString(definition),
+      };
+    }
+
     return {
       definitionString: this.body,
     };
