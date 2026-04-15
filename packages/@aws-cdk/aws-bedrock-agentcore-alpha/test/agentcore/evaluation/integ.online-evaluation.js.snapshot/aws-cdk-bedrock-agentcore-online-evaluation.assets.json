@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "6aed9f7ec8ee6e78857de700769766b441636591a10a3140130797aec47f1492": {
       "displayName": "aws-cdk-bedrock-agentcore-online-evaluation Template",

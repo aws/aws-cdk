@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import type { CloudWatchLogsDataSourceConfig } from './types';
+import type { CloudWatchLogsDataSourceConfig, DataSourceConfigBindResult } from './types';
 import { throwIfInvalid, validateLogGroupNames, validateServiceNames } from './validation-helpers';
 import type { IBedrockAgentRuntime } from '../runtime/runtime-base';
 import type { IRuntimeEndpoint } from '../runtime/runtime-endpoint-base';
@@ -127,10 +127,9 @@ export class DataSourceConfig {
   }
 
   /**
-   * Renders the data source configuration for API calls.
-   * @internal
+   * Binds the data source configuration to produce the L1 property.
    */
-  public _render(): any {
+  public bind(): DataSourceConfigBindResult {
     return {
       cloudWatchLogs: {
         logGroupNames: this.cloudWatchLogsConfig.logGroupNames,

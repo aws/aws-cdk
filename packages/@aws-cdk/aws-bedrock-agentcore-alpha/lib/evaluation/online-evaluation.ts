@@ -246,8 +246,8 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
 
     const resource = new bedrockagentcore.CfnOnlineEvaluationConfig(this, 'Resource', {
       onlineEvaluationConfigName: props.configName,
-      evaluators: props.evaluators.map((e) => e._render()),
-      dataSourceConfig: props.dataSource._render(),
+      evaluators: props.evaluators.map((e) => e.bind()),
+      dataSourceConfig: props.dataSource.bind(),
       evaluationExecutionRoleArn: this.executionRole!.roleArn,
       rule: this.buildRuleConfig(props),
       description: props.description,
@@ -263,7 +263,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     this.onlineEvaluationConfigArn = resource.attrOnlineEvaluationConfigArn;
     this.onlineEvaluationConfigId = resource.attrOnlineEvaluationConfigId;
     this.status = resource.attrStatus;
-    this.executionStatus = resource.attrExecutionStatus;
+    this.executionStatus = resource.executionStatus;
     this.createdAt = resource.attrCreatedAt;
     this.updatedAt = resource.attrUpdatedAt;
   }

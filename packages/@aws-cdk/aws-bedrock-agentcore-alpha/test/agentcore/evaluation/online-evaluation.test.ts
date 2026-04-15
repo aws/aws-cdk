@@ -210,7 +210,7 @@ describe('OnlineEvaluationConfig', () => {
       const evaluator = EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS);
 
       expect(evaluator.evaluatorId).toBe('Builtin.Helpfulness');
-      expect(evaluator._render()).toEqual({ evaluatorId: 'Builtin.Helpfulness' });
+      expect(evaluator.bind()).toEqual({ evaluatorId: 'Builtin.Helpfulness' });
     });
 
     test('supports all built-in evaluators', () => {
@@ -237,7 +237,7 @@ describe('OnlineEvaluationConfig', () => {
         serviceNames: ['service-1', 'service-2'],
       });
 
-      expect(dataSource._render()).toEqual({
+      expect(dataSource.bind()).toEqual({
         cloudWatchLogs: {
           logGroupNames: ['/aws/log-group-1', '/aws/log-group-2'],
           serviceNames: ['service-1', 'service-2'],
@@ -254,7 +254,7 @@ describe('OnlineEvaluationConfig', () => {
 
       const dataSource = DataSourceConfig.fromAgentRuntimeEndpoint(runtime, endpoint);
 
-      const rendered = dataSource._render();
+      const rendered = dataSource.bind();
       expect(rendered.cloudWatchLogs).toBeDefined();
       expect(rendered.cloudWatchLogs.logGroupNames).toHaveLength(1);
       expect(rendered.cloudWatchLogs.logGroupNames[0]).toContain('/aws/bedrock-agentcore/runtimes/');
@@ -271,7 +271,7 @@ describe('OnlineEvaluationConfig', () => {
 
       const dataSource = DataSourceConfig.fromAgentRuntimeEndpoint(runtime, endpoint);
 
-      const rendered = dataSource._render();
+      const rendered = dataSource.bind();
       expect(rendered.cloudWatchLogs.serviceNames).toEqual(['test_agent.DEFAULT']);
     });
 
@@ -283,7 +283,7 @@ describe('OnlineEvaluationConfig', () => {
 
       const dataSource = DataSourceConfig.fromAgentRuntimeEndpoint(runtime);
 
-      const rendered = dataSource._render();
+      const rendered = dataSource.bind();
       expect(rendered.cloudWatchLogs.serviceNames).toEqual(['test_agent.DEFAULT']);
       expect(rendered.cloudWatchLogs.logGroupNames[0]).toContain('-DEFAULT');
     });
@@ -296,7 +296,7 @@ describe('OnlineEvaluationConfig', () => {
 
       const dataSource = DataSourceConfig.fromAgentRuntimeEndpoint(runtime, 'PROD');
 
-      const rendered = dataSource._render();
+      const rendered = dataSource.bind();
       expect(rendered.cloudWatchLogs.serviceNames).toEqual(['test_agent.PROD']);
       expect(rendered.cloudWatchLogs.logGroupNames[0]).toContain('-PROD');
     });

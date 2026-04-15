@@ -247,6 +247,26 @@ export interface OnlineEvaluationBaseProps {
 }
 
 /**
+ * The result of binding an EvaluatorReference.
+ */
+export interface EvaluatorReferenceBindResult {
+  /**
+   * The evaluator identifier.
+   */
+  readonly evaluatorId: string;
+}
+
+/**
+ * The result of binding a DataSourceConfig.
+ */
+export interface DataSourceConfigBindResult {
+  /**
+   * The CloudWatch Logs data source configuration.
+   */
+  readonly cloudWatchLogs: CloudWatchLogsDataSourceConfig;
+}
+
+/**
  * Attributes for importing an existing OnlineEvaluationConfig.
  */
 export interface OnlineEvaluationConfigAttributes {

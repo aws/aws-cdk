@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import type { BuiltinEvaluator } from './types';
+import type { BuiltinEvaluator, EvaluatorReferenceBindResult } from './types';
 
 /**
  * Represents a reference to a built-in evaluator for online evaluation.
@@ -52,10 +52,9 @@ export class EvaluatorReference {
   }
 
   /**
-   * Renders the evaluator reference for API calls.
-   * @internal
+   * Binds the evaluator reference to produce the L1 property.
    */
-  public _render(): { evaluatorId: string } {
+  public bind(): EvaluatorReferenceBindResult {
     return {
       evaluatorId: this.evaluatorId,
     };
