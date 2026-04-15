@@ -9,6 +9,7 @@ import type { Duration } from '../../../core';
 import { Aws, Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { IIntegration } from '../common';
 import type { ParameterMapping } from '../parameter-mapping';
@@ -265,11 +266,11 @@ export class HttpIntegration extends Resource implements IHttpIntegration {
     addConstructMetadata(this, props);
 
     if (!props.integrationSubtype && !props.integrationUri) {
-      throw new ValidationError('MustBeEitherSpecified', 'Either `integrationSubtype` or `integrationUri` must be specified.', scope);
+      throw new ValidationError(lit`MustBeEitherSpecified`, 'Either `integrationSubtype` or `integrationUri` must be specified.', scope);
     }
 
     if (props.timeout && !props.timeout.isUnresolved() && (props.timeout.toMilliseconds() < 50 || props.timeout.toMilliseconds() > 29000)) {
-      throw new ValidationError('IntegrationTimeoutMillisecondsSeconds', 'Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
+      throw new ValidationError(lit`IntegrationTimeoutMillisecondsSeconds`, 'Integration timeout must be between 50 milliseconds and 29 seconds.', scope);
     }
 
     const integ = new CfnIntegration(this, 'Resource', {
@@ -343,7 +344,7 @@ export abstract class HttpRouteIntegration {
    */
   public _bindToRoute(options: HttpRouteIntegrationBindOptions): { readonly integrationId: string } {
     if (this.integration && this.integration.httpApi.node.addr !== options.route.httpApi.node.addr) {
-      throw new ValidationError('SingleIntegrationCannotAssociatedMultiple', 'A single integration cannot be associated with multiple APIs.', options.scope);
+      throw new ValidationError(lit`SingleIntegrationCannotAssociatedMultiple`, 'A single integration cannot be associated with multiple APIs.', options.scope);
     }
 
     if (!this.integration) {

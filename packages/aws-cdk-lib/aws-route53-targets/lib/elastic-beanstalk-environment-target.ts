@@ -2,6 +2,7 @@ import type { IAliasRecordTargetProps } from './shared';
 import type * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import { RegionInfo } from '../../region-info';
 
 /**
@@ -32,7 +33,7 @@ export class ElasticBeanstalkEnvironmentEndpointTarget implements route53.IAlias
     }
 
     if (!this.hostedZoneId) {
-      throw new ValidationError('CannotFindBeanstalkHostedZone', 'Cannot find Beanstalk `hostedZoneId`. You must specify either `hostedZoneId` using `RegionInfo.get(yourRegion).ebsEnvEndpointHostedZoneId` or Stack region or find correct EBS environment endpoint via AWS console. See Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html', record);
+      throw new ValidationError(lit`CannotFindBeanstalkHostedZone`, 'Cannot find Beanstalk `hostedZoneId`. You must specify either `hostedZoneId` using `RegionInfo.get(yourRegion).ebsEnvEndpointHostedZoneId` or Stack region or find correct EBS environment endpoint via AWS console. See Elastic Beanstalk developer guide: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customdomains.html', record);
     }
 
     return {

@@ -5,6 +5,7 @@ import type { IApplicationTargetGroup } from './application-target-group';
 import type { ListenerCondition } from './conditions';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import type { IListenerAction } from '../shared/listener-action';
 
@@ -217,17 +218,17 @@ export class ApplicationListenerRule extends Construct {
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
-      throw new ValidationError('LeastConditions', 'At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.', this);
+      throw new ValidationError(lit`LeastConditions`, 'At least one of \'conditions\', \'hostHeader\', \'pathPattern\' or \'pathPatterns\' is required when defining a load balancing rule.', this);
     }
 
     const possibleActions: Array<keyof ApplicationListenerRuleProps> = ['action', 'targetGroups', 'fixedResponse', 'redirectResponse'];
     const providedActions = possibleActions.filter(action => props[action] !== undefined);
     if (providedActions.length > 1) {
-      throw new ValidationError('SpecifiedTogether', `'${providedActions}' specified together, specify only one`, this);
+      throw new ValidationError(lit`SpecifiedTogether`, `'${providedActions}' specified together, specify only one`, this);
     }
 
     if (!cdk.Token.isUnresolved(props.priority) && props.priority <= 0) {
-      throw new ValidationError('PriorityValueGreaterEqual', 'Priority must have value greater than or equal to 1', this);
+      throw new ValidationError(lit`PriorityValueGreaterEqual`, 'Priority must have value greater than or equal to 1', this);
     }
 
     this.listener = props.listener;
@@ -245,7 +246,7 @@ export class ApplicationListenerRule extends Construct {
 
     if (hasPathPatterns) {
       if (props.pathPattern && props.pathPatterns) {
-        throw new ValidationError('BothSpecified', 'Both `pathPatterns` and `pathPattern` are specified, specify only one', this);
+        throw new ValidationError(lit`BothSpecified`, 'Both `pathPatterns` and `pathPattern` are specified, specify only one', this);
       }
       const pathPattern = props.pathPattern ? [props.pathPattern] : props.pathPatterns;
       this.setCondition('path-pattern', pathPattern);
@@ -394,11 +395,11 @@ export class ApplicationListenerRule extends Construct {
  */
 function validateFixedResponse(fixedResponse: FixedResponse) {
   if (fixedResponse.statusCode && !/^(2|4|5)\d\d$/.test(fixedResponse.statusCode)) {
-    throw new UnscopedValidationError('MustBe', '`statusCode` must be 2XX, 4XX or 5XX.');
+    throw new UnscopedValidationError(lit`MustBe`, '`statusCode` must be 2XX, 4XX or 5XX.');
   }
 
   if (fixedResponse.messageBody && fixedResponse.messageBody.length > 1024) {
-    throw new UnscopedValidationError('MessageBodyCannotCharacters', '`messageBody` cannot have more than 1024 characters.');
+    throw new UnscopedValidationError(lit`MessageBodyCannotCharacters`, '`messageBody` cannot have more than 1024 characters.');
   }
 }
 
@@ -409,10 +410,10 @@ function validateFixedResponse(fixedResponse: FixedResponse) {
  */
 function validateRedirectResponse(redirectResponse: RedirectResponse) {
   if (redirectResponse.protocol && !/^(HTTPS?|#\{protocol\})$/i.test(redirectResponse.protocol)) {
-    throw new UnscopedValidationError('MustBeHttp', '`protocol` must be HTTP, HTTPS, or #{protocol}.');
+    throw new UnscopedValidationError(lit`MustBeHttp`, '`protocol` must be HTTP, HTTPS, or #{protocol}.');
   }
 
   if (!redirectResponse.statusCode || !/^HTTP_30[12]$/.test(redirectResponse.statusCode)) {
-    throw new UnscopedValidationError('StatusCode', '`statusCode` must be HTTP_301 or HTTP_302.');
+    throw new UnscopedValidationError(lit`StatusCode`, '`statusCode` must be HTTP_301 or HTTP_302.');
   }
 }
