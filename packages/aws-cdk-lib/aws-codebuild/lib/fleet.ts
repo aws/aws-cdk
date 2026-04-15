@@ -120,6 +120,9 @@ export interface FleetProps {
    * This can be a CodeBuild-managed image identifier
    * (e.g., 'aws/codebuild/macos-arm-base:26') or a custom AMI ID.
    *
+   * Only supported for EC2-based environment types
+   * (LINUX_EC2, ARM_EC2, WINDOWS_EC2, MAC_ARM).
+   *
    * @default - no specific image, CodeBuild uses the default for the environment type
    */
   readonly imageId?: string;

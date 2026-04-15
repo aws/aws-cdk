@@ -19,7 +19,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-project-fleet-imageId');
 const fleet = new codebuild.Fleet(stack, 'MyFleet', {
   baseCapacity: 1,
   computeType: codebuild.FleetComputeType.SMALL,
-  environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+  environmentType: codebuild.EnvironmentType.LINUX_EC2,
   imageId: 'aws/codebuild/amazonlinux-x86_64-standard:2024',
 });
 

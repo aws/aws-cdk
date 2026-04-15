@@ -671,7 +671,7 @@ describe('imageId', () => {
     new codebuild.Fleet(stack, 'Fleet', {
       baseCapacity: 1,
       computeType: codebuild.FleetComputeType.SMALL,
-      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
     });
 
     // THEN
@@ -679,6 +679,7 @@ describe('imageId', () => {
       ImageId: Match.absent(),
     });
   });
+
 });
 
 describe('scalingConfiguration', () => {
@@ -940,7 +941,7 @@ describe('combined properties', () => {
     new codebuild.Fleet(stack, 'Fleet', {
       baseCapacity: 1,
       computeType: codebuild.FleetComputeType.MEDIUM,
-      environmentType: codebuild.EnvironmentType.LINUX_CONTAINER,
+      environmentType: codebuild.EnvironmentType.LINUX_EC2,
       vpc,
       imageId: 'ami-12345678',
       scalingConfiguration: {
@@ -972,7 +973,7 @@ describe('combined properties', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Fleet', {
       BaseCapacity: 1,
       ComputeType: 'BUILD_GENERAL1_MEDIUM',
-      EnvironmentType: 'LINUX_CONTAINER',
+      EnvironmentType: 'LINUX_EC2',
       ImageId: 'ami-12345678',
       ScalingConfiguration: {
         MaxCapacity: 3,
