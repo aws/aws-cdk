@@ -2762,12 +2762,9 @@ Grant IAM permissions to manage or read evaluation configurations:
 declare const evaluation: agentcore.OnlineEvaluationConfig;
 declare const role: iam.IRole;
 
-// Grant full admin permissions (create, read, update, delete)
-evaluation.grantAdmin(role);
-
 // Grant specific permissions
 evaluation.grant(role,
-  'bedrock-agentcore:GetOnlineEvaluation',
-  'bedrock-agentcore:UpdateOnlineEvaluation',
+  'bedrock-agentcore:GetOnlineEvaluationConfig',
+  'bedrock-agentcore:UpdateOnlineEvaluationConfig',
 );
 ```

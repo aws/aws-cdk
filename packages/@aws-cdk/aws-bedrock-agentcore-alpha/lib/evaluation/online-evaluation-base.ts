@@ -12,14 +12,14 @@
  */
 
 import { Resource, type IResource, type ResourceProps } from 'aws-cdk-lib';
+import type { IOnlineEvaluationConfigRef, OnlineEvaluationConfigReference } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { Construct } from 'constructs';
-import { EvaluationPerms } from './perms';
 
 /**
  * Interface for OnlineEvaluationConfig resources.
  */
-export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable {
+export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable, IOnlineEvaluationConfigRef {
   /**
    * The ARN of the online evaluation configuration.
    * @attribute
@@ -70,11 +70,6 @@ export interface IOnlineEvaluationConfig extends IResource, iam.IGrantable {
    * Grant the given principal identity permissions to perform actions on this configuration.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
-
-  /**
-   * Grant the given principal identity permissions to manage this configuration.
-   */
-  grantAdmin(grantee: iam.IGrantable): iam.Grant;
 }
 
 /**
@@ -101,6 +96,15 @@ export abstract class OnlineEvaluationBase extends Resource implements IOnlineEv
   }
 
   /**
+   * A reference to this OnlineEvaluationConfig resource.
+   */
+  public get onlineEvaluationConfigRef(): OnlineEvaluationConfigReference {
+    return {
+      onlineEvaluationConfigArn: this.onlineEvaluationConfigArn,
+    };
+  }
+
+  /**
    * Grants IAM actions to the IAM Principal.
    *
    * [disable-awslint:no-grants]
@@ -116,17 +120,5 @@ export abstract class OnlineEvaluationBase extends Resource implements IOnlineEv
       resourceArns: [this.onlineEvaluationConfigArn],
       scope: this,
     });
-  }
-
-  /**
-   * Grant the given principal identity permissions to manage this configuration.
-   *
-   * [disable-awslint:no-grants]
-   *
-   * @param grantee - The IAM principal to grant admin permissions to
-   * @returns An IAM Grant object representing the granted permissions
-   */
-  public grantAdmin(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...EvaluationPerms.ADMIN_PERMS);
   }
 }

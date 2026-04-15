@@ -20,7 +20,13 @@ import type { Construct } from 'constructs';
 import type { DataSourceConfig } from './data-source';
 import type { EvaluatorReference } from './evaluator';
 import { type IOnlineEvaluationConfig, OnlineEvaluationBase } from './online-evaluation-base';
-import { EvaluationPerms } from './perms';
+import {
+  EVALUATION_BEDROCK_MODEL_PERMS,
+  EVALUATION_CLOUDWATCH_INDEX_POLICY_PERMS,
+  EVALUATION_CLOUDWATCH_LOGS_DESCRIBE_PERMS,
+  EVALUATION_CLOUDWATCH_LOGS_QUERY_PERMS,
+  EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS,
+} from './perms';
 import {
   type OnlineEvaluationBaseProps,
   type OnlineEvaluationConfigAttributes,
@@ -328,7 +334,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     role.addToPolicy(
       new iam.PolicyStatement({
         sid: 'CloudWatchLogDescribeStatement',
-        actions: EvaluationPerms.CLOUDWATCH_LOGS_DESCRIBE_PERMS,
+        actions: EVALUATION_CLOUDWATCH_LOGS_DESCRIBE_PERMS,
         resources: ['*'],
       }),
     );
@@ -336,7 +342,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     role.addToPolicy(
       new iam.PolicyStatement({
         sid: 'CloudWatchLogQueryStatement',
-        actions: EvaluationPerms.CLOUDWATCH_LOGS_QUERY_PERMS,
+        actions: EVALUATION_CLOUDWATCH_LOGS_QUERY_PERMS,
         resources: logGroupArns,
       }),
     );
@@ -344,7 +350,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     role.addToPolicy(
       new iam.PolicyStatement({
         sid: 'CloudWatchLogWriteStatement',
-        actions: EvaluationPerms.CLOUDWATCH_LOGS_WRITE_PERMS,
+        actions: EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS,
         resources: [
           Arn.format(
             {
@@ -362,7 +368,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     role.addToPolicy(
       new iam.PolicyStatement({
         sid: 'CloudWatchIndexPolicyStatement',
-        actions: EvaluationPerms.CLOUDWATCH_INDEX_POLICY_PERMS,
+        actions: EVALUATION_CLOUDWATCH_INDEX_POLICY_PERMS,
         resources: [
           Arn.format(
             {
@@ -389,7 +395,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     role.addToPolicy(
       new iam.PolicyStatement({
         sid: 'BedrockInvokeStatement',
-        actions: EvaluationPerms.BEDROCK_MODEL_PERMS,
+        actions: EVALUATION_BEDROCK_MODEL_PERMS,
         resources: [
           `arn:${Aws.PARTITION}:bedrock:*::foundation-model/*`,
           Arn.format(

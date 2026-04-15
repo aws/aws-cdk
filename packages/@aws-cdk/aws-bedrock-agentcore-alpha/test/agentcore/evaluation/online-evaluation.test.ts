@@ -648,7 +648,7 @@ describe('OnlineEvaluationConfig', () => {
   });
 
   describe('grant methods', () => {
-    test('grantAdmin grants control plane permissions', () => {
+    test('grant grants specified permissions', () => {
       const evaluation = new OnlineEvaluationConfig(stack, 'TestEvaluation', {
         configName: 'test_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
@@ -662,20 +662,14 @@ describe('OnlineEvaluationConfig', () => {
         assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
       });
 
-      evaluation.grantAdmin(grantee);
+      evaluation.grant(grantee, 'bedrock-agentcore:GetOnlineEvaluationConfig');
 
       const template = Template.fromStack(stack);
       template.hasResourceProperties('AWS::IAM::Policy', {
         PolicyDocument: {
           Statement: Match.arrayWith([
             Match.objectLike({
-              Action: Match.arrayWith([
-                'bedrock-agentcore:CreateOnlineEvaluationConfig',
-                'bedrock-agentcore:GetOnlineEvaluationConfig',
-                'bedrock-agentcore:UpdateOnlineEvaluationConfig',
-                'bedrock-agentcore:DeleteOnlineEvaluationConfig',
-                'bedrock-agentcore:ListOnlineEvaluationConfigs',
-              ]),
+              Action: 'bedrock-agentcore:GetOnlineEvaluationConfig',
             }),
           ]),
         },
