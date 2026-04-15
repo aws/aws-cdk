@@ -7,10 +7,9 @@ import * as core from '../../lib';
 import type { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
-let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
