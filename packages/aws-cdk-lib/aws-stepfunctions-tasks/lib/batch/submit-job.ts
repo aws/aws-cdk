@@ -308,17 +308,13 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
   }
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
+    const isDynamic = isJsonPathOrJsonataExpression(this.props.jobQueueArn)
+      || isJsonPathOrJsonataExpression(this.props.jobDefinitionArn);
+
     return [
-      // Resource level access control for job-definition requires revision which batch does not support yet
-      // Using the alternative permissions as mentioned here:
-      // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
-        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
-          Stack.of(this).formatArn({
-            service: 'batch',
-            resource: 'job-definition',
-            resourceName: '*',
-          }),
+        resources: isDynamic ? ['*'] : [
+          this.props.jobDefinitionArn,
           this.props.jobQueueArn,
         ],
         actions: ['batch:SubmitJob'],

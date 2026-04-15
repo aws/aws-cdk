@@ -590,3 +590,109 @@ test('supports passing jobQueueArn as JsonPath or JSONata', () => {
     },
   });
 });
+
+test('scopes IAM policy to specific job definition and job queue', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+    jobName: 'JobName',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: [
+            { Ref: 'JobDefinition24FFE3ED' },
+            {
+              'Fn::GetAtt': [
+                'JobQueueEE3AD499',
+                'JobQueueArn',
+              ],
+            },
+          ],
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForBatchJobsRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+test('uses wildcard resource when jobDefinitionArn is a JsonPath expression', () => {
+  // WHEN
+  const task = new BatchSubmitJob(stack, 'Task', {
+    jobDefinitionArn: sfn.JsonPath.stringAt('$.jobDefinitionArn'),
+    jobName: 'JobName',
+    jobQueueArn: batchJobQueue.jobQueueArn,
+  });
+
+  new sfn.StateMachine(stack, 'StateMachine', {
+    definitionBody: sfn.DefinitionBody.fromChainable(task),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: [
+        {
+          Action: 'batch:SubmitJob',
+          Effect: 'Allow',
+          Resource: '*',
+        },
+        {
+          Action: [
+            'events:PutTargets',
+            'events:PutRule',
+            'events:DescribeRule',
+          ],
+          Effect: 'Allow',
+          Resource: {
+            'Fn::Join': [
+              '',
+              [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':events:',
+                { Ref: 'AWS::Region' },
+                ':',
+                { Ref: 'AWS::AccountId' },
+                ':rule/StepFunctionsGetEventsForBatchJobsRule',
+              ],
+            ],
+          },
+        },
+      ],
+      Version: '2012-10-17',
+    },
+  });
+});
