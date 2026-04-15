@@ -34,7 +34,7 @@ jobs:
               if (issueElsewhere) {
                 message = `👋 It looks like your PR description references an issue, but not in the expected location.\n\nThe issue number must appear in the first section of the description (the first two lines), following the template format:\n\`\`\`\n### Issue # (if applicable)\n\nCloses #123.\n\`\`\`\nPlease move your issue reference to the top of the description.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
               } else {
-                const hasIssueHeading = firstTwo.toLowerCase().includes('issue');
+                const hasIssueHeading = /^#{1,4}\s*issue/i.test(lines[0] || '');
                 if (hasIssueHeading) {
                   message = `👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.\n\nPlease update the description to include a reference like \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
                 } else {
