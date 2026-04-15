@@ -2,6 +2,7 @@ import * as path from 'path';
 import { AssetType } from './asset-type';
 import type { Step } from './step';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import { AssetManifestReader, DockerImageManifestEntry, FileManifestEntry } from '../private/asset-manifest';
 import { isAssetManifest } from '../private/cloud-assembly-internals';
@@ -316,7 +317,7 @@ function extractStackAssets(stackArtifact: cxapi.CloudFormationStackArtifact): S
         isTemplate = entry.source.packaging === 'file' && entry.source.path === stackArtifact.templateFile;
         assetType = AssetType.FILE;
       } else {
-        throw new UnscopedValidationError('UnrecognizedAssetType', `Unrecognized asset type: ${entry.type}`);
+        throw new UnscopedValidationError(lit`UnrecognizedAssetType`, `Unrecognized asset type: ${entry.type}`);
       }
 
       ret.push({

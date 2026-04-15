@@ -3,6 +3,7 @@ import type { IClientVpnEndpointRef } from './ec2.generated';
 import { CfnClientVpnAuthorizationRule } from './ec2.generated';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -60,14 +61,14 @@ export class ClientVpnAuthorizationRule extends Resource {
   constructor(scope: Construct, id: string, props: ClientVpnAuthorizationRuleProps) {
     if (!props.clientVpnEndoint && !props.clientVpnEndpoint) {
       throw new ValidationError(
-        'ClientVpnEndpointRequired',
+        lit`ClientVpnEndpointRequired`,
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified',
         scope,
       );
     }
     if (props.clientVpnEndoint && props.clientVpnEndpoint) {
       throw new ValidationError(
-        'ClientVpnEndpointMutuallyExclusive',
+        lit`ClientVpnEndpointMutuallyExclusive`,
         'ClientVpnAuthorizationRule: either clientVpnEndpoint or clientVpnEndoint (deprecated) must be specified' +
           ', but not both',
         scope,

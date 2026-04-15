@@ -1,7 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Function, InlineCode, Runtime, LogFormat, LoggingFormat, SystemLogLevel, ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
+import { Function, InlineCode, Runtime, LoggingFormat, SystemLogLevel, ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
 
 const app = new App({
   postCliContext: {
@@ -33,35 +33,35 @@ new Function(stack, 'LambdaWithTextFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
   runtime: Runtime.NODEJS_20_X,
-  logFormat: LogFormat.TEXT,
+  loggingFormat: LoggingFormat.TEXT,
 });
 
 new Function(stack, 'LambdaWithJSONFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
   runtime: Runtime.NODEJS_20_X,
-  logFormat: LogFormat.JSON,
+  loggingFormat: LoggingFormat.JSON,
 });
 
 new Function(stack, 'LambdaWithTextLoggingFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
   runtime: Runtime.NODEJS_20_X,
-  logFormat: LoggingFormat.TEXT,
+  loggingFormat: LoggingFormat.TEXT,
 });
 
 new Function(stack, 'LambdaWithJSONLoggingFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
   runtime: Runtime.NODEJS_20_X,
-  logFormat: LoggingFormat.JSON,
+  loggingFormat: LoggingFormat.JSON,
 });
 
 new Function(stack, 'LambdaWithLogLevel', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
   runtime: Runtime.NODEJS_20_X,
-  logFormat: LogFormat.JSON,
+  loggingFormat: LoggingFormat.JSON,
   systemLogLevel: SystemLogLevel.INFO,
   applicationLogLevel: ApplicationLogLevel.INFO,
 });
