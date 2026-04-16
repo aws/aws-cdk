@@ -70,6 +70,20 @@ describe('Aurora DSQL Cluster', () => {
     });
   });
 
+  test('cluster exposes endpoint attribute', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    const cluster = new Cluster(stack as any, 'Cluster');
+
+    // THEN
+    Template.fromStack(stack).hasResource('AWS::DSQL::Cluster', {});
+    expect(stack.resolve(cluster.clusterEndpoint)).toEqual({
+      'Fn::GetAtt': ['ClusterEB0386A7', 'Endpoint'],
+    });
+  });
+
   test('cluster deletionProtection defaults to true when removalPolicy is retain', () => {
     // GIVEN
     const stack = testStack();
@@ -99,17 +113,61 @@ describe('Aurora DSQL Cluster - Imports', () => {
     // WHEN
     const cluster = Cluster.fromClusterAttributes(stack, 'Database', {
       clusterIdentifier: 'identifier',
+      clusterEndpoint: 'identifier.dsql.us-test-1.amazonaws.com',
       vpcEndpointServiceName: 'vpce',
     });
 
     // THEN
     expect(cluster.clusterIdentifier).toEqual('identifier');
+    expect(cluster.clusterEndpoint).toEqual('identifier.dsql.us-test-1.amazonaws.com');
     expect(cluster.vpcEndpointServiceName).toEqual('vpce');
     expect(cluster.clusterArn).toEqual(stack.formatArn({
       service: 'dsql',
       resource: 'cluster',
       resourceName: 'identifier',
     }));
+  });
+
+  test('fails when clusterIdentifier is empty', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // THEN
+    expect(() => {
+      Cluster.fromClusterAttributes(stack as any, 'Database', {
+        clusterIdentifier: '',
+        clusterEndpoint: 'endpoint',
+        vpcEndpointServiceName: 'vpce',
+      });
+    }).toThrow('clusterIdentifier cannot be empty');
+  });
+
+  test('fails when clusterIdentifier is whitespace only', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // THEN
+    expect(() => {
+      Cluster.fromClusterAttributes(stack as any, 'Database', {
+        clusterIdentifier: '   ',
+        clusterEndpoint: 'endpoint',
+        vpcEndpointServiceName: 'vpce',
+      });
+    }).toThrow('clusterIdentifier cannot be empty');
+  });
+
+  test('allows token as clusterIdentifier', () => {
+    // GIVEN
+    const stack = testStack();
+
+    // THEN - tokens are not validated at synth time
+    expect(() => {
+      Cluster.fromClusterAttributes(stack as any, 'Database', {
+        clusterIdentifier: cdk.Lazy.string({ produce: () => 'resolved-at-deploy-time' }),
+        clusterEndpoint: 'endpoint',
+        vpcEndpointServiceName: 'vpce',
+      });
+    }).not.toThrow();
   });
 });
 

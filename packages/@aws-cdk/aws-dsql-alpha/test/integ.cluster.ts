@@ -9,7 +9,7 @@ class TestStack extends cdk.Stack {
     super(scope, id, props);
 
     const func = new lambda.Function(this, 'Function', {
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_LATEST,
       handler: 'index.handler',
       code: lambda.Code.fromInline('exports.handler = async (event) => { return "hello"; }'),
     });

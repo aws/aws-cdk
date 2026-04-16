@@ -1,8 +1,9 @@
 import { CfnCluster } from 'aws-cdk-lib/aws-dsql';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib/core';
-import { RemovalPolicy, Resource, Tags } from 'aws-cdk-lib/core';
+import { RemovalPolicy, Resource, Tags, ValidationError } from 'aws-cdk-lib/core';
 import type { IResource } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import type { Construct } from 'constructs';
 
@@ -32,7 +33,7 @@ export interface ClusterProps {
    * deletionProtection is disabled. deletionProtection protects clusters from
    * being accidentally deleted.
    *
-   * @default - true if `removalPolicy` is RETAIN, false otherwise.
+   * @default - true if `removalPolicy` is RETAIN, undefined otherwise.
    */
   readonly deletionProtection?: boolean;
 }
@@ -52,6 +53,12 @@ export interface ICluster extends IResource {
    * @attribute ResourceArn
    */
   readonly clusterArn: string;
+
+  /**
+   * Connection endpoint for the cluster.
+   * @attribute Endpoint
+   */
+  readonly clusterEndpoint: string;
 
   /**
    * VPC endpoint service name for the cluster
@@ -95,6 +102,11 @@ export interface ClusterAttributes {
   readonly clusterIdentifier: string;
 
   /**
+   * Connection endpoint for the cluster
+   */
+  readonly clusterEndpoint: string;
+
+  /**
    * VPC endpoint service name for the cluster
    */
   readonly vpcEndpointServiceName: string;
@@ -113,6 +125,11 @@ abstract class ClusterBase extends Resource implements ICluster {
    * Arn of the cluster
    */
   public abstract readonly clusterArn: string;
+
+  /**
+   * Connection endpoint for the cluster
+   */
+  public abstract readonly clusterEndpoint: string;
 
   /**
    * VPC endpoint service name for the cluster
@@ -145,8 +162,13 @@ export class Cluster extends ClusterBase {
    * Import an existing Cluster from attributes
    */
   public static fromClusterAttributes(scope: Construct, id: string, attrs: ClusterAttributes): ICluster {
+    if (!cdk.Token.isUnresolved(attrs.clusterIdentifier) && !attrs.clusterIdentifier.trim()) {
+      throw new ValidationError(lit`ClusterIdentifierRequired`, 'clusterIdentifier cannot be empty', scope as any);
+    }
+
     class Import extends ClusterBase implements ICluster {
       public readonly clusterIdentifier = attrs.clusterIdentifier;
+      public readonly clusterEndpoint = attrs.clusterEndpoint;
       public readonly vpcEndpointServiceName = attrs.vpcEndpointServiceName;
       public readonly clusterArn = cdk.Stack.of(this).formatArn({
         service: 'dsql',
@@ -171,6 +193,11 @@ export class Cluster extends ClusterBase {
   public readonly clusterArn: string;
 
   /**
+   * Connection endpoint for the cluster
+   */
+  public readonly clusterEndpoint: string;
+
+  /**
    * VPC endpoint service name for the cluster
    */
   public readonly vpcEndpointServiceName: string;
@@ -188,6 +215,7 @@ export class Cluster extends ClusterBase {
 
     this.clusterIdentifier = this.cluster.ref;
     this.clusterArn = this.cluster.attrResourceArn;
+    this.clusterEndpoint = this.cluster.attrEndpoint;
     this.vpcEndpointServiceName = this.cluster.attrVpcEndpointServiceName;
 
     if (props?.clusterName) {
