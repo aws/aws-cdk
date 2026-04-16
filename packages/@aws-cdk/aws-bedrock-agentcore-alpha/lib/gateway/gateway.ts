@@ -44,6 +44,9 @@ export class PolicyEngineMode {
    */
   public static readonly ENFORCE = new PolicyEngineMode('ENFORCE');
 
+  /**
+   * The string value of the policy engine mode.
+   */
   public constructor(public readonly value: string) {}
 }
 

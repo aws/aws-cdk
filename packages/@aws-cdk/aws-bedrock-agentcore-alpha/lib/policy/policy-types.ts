@@ -17,6 +17,9 @@ export class PolicyValidationMode {
    */
   public static readonly IGNORE_ALL_FINDINGS = new PolicyValidationMode('IGNORE_ALL_FINDINGS');
 
+  /**
+   * The string value of the validation mode.
+   */
   public constructor(public readonly value: string) {}
 }
 
