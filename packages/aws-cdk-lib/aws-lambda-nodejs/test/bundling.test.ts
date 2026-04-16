@@ -583,10 +583,10 @@ test('Detects yarn.lock', () => {
 });
 
 test('Detects pnpm-lock.yaml', () => {
-  const pnpmLock = '/project/pnpm-lock.yaml';
+  const pnpmLock = path.join(__dirname, '..', 'pnpm-lock.yaml');
   Bundling.bundle(stack, {
     entry: __filename,
-    projectRoot,
+    projectRoot: path.dirname(pnpmLock),
     depsLockFilePath: pnpmLock,
     runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
@@ -1497,6 +1497,81 @@ test('Local bundling with shell metacharacters in externalModules does not cause
   );
 
   spawnSyncMock.mockRestore();
+});
+
+test('Local bundling on Windows uses powershell for spawn steps', () => {
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // Esbuild is invoked via powershell with single-quoted args
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'powershell.exe',
+    ['-NoProfile', '-Command', expect.stringContaining('--bundle')],
+    expect.objectContaining({ cwd: '/project' }),
+  );
+
+  // Args are single-quoted (posixShellEscape)
+  const psCall = spawnSyncMock.mock.calls.find(c => c[0] === 'powershell.exe' && (c[1] as string[])[2]?.includes('--bundle'));
+  expect(psCall).toBeDefined();
+  const cmdString = (psCall![1] as string[])[2];
+  expect(cmdString).toContain("'--bundle'");
+  expect(cmdString).toContain("'--platform=node'");
+
+  spawnSyncMock.mockRestore();
+  osPlatformMock.mockRestore();
+});
+
+test('Local bundling on Windows uses cmd for shell steps', () => {
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+
+  const bundler = new Bundling(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    commandHooks: {
+      beforeBundling(_inputDir: string, _outputDir: string): string[] {
+        return ['echo hello'];
+      },
+      afterBundling(): string[] {
+        return [];
+      },
+      beforeInstall(): string[] {
+        return [];
+      },
+    },
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // Shell hooks still use cmd on Windows
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'cmd',
+    ['/c', 'echo hello'],
+    expect.objectContaining({ windowsVerbatimArguments: true }),
+  );
+
+  // But esbuild spawn step uses powershell
+  expect(spawnSyncMock).toHaveBeenCalledWith(
+    'powershell.exe',
+    ['-NoProfile', '-Command', expect.stringContaining('--bundle')],
+    expect.anything(),
+  );
+
+  spawnSyncMock.mockRestore();
+  osPlatformMock.mockRestore();
 });
 
 test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {

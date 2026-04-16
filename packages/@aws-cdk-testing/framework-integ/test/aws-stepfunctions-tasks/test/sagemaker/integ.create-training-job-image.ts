@@ -2,7 +2,7 @@
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 import { S3Location, SageMakerCreateTrainingJob, InputMode, DockerImage } from 'aws-cdk-lib/aws-stepfunctions-tasks';
-import { StateMachine, IntegrationPattern } from 'aws-cdk-lib/aws-stepfunctions';
+import { DefinitionBody, StateMachine, IntegrationPattern } from 'aws-cdk-lib/aws-stepfunctions';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { BucketDeployment, Source } from 'aws-cdk-lib/aws-s3-deployment';
 import * as path from 'path';
@@ -25,7 +25,7 @@ new BucketDeployment(stack, 'TrainSet', {
 });
 
 const sm = new StateMachine(stack, 'StateMachine', {
-  definition: new SageMakerCreateTrainingJob(stack, 'TrainTask', {
+  definitionBody: DefinitionBody.fromChainable(new SageMakerCreateTrainingJob(stack, 'TrainTask', {
     trainingJobName: 'MyBlazingTextTrainingJob',
     integrationPattern: IntegrationPattern.RUN_JOB,
     inputDataConfig: [{
@@ -47,7 +47,7 @@ const sm = new StateMachine(stack, 'StateMachine', {
     outputDataConfig: {
       s3OutputLocation: S3Location.fromBucket(bucket, 'result/'),
     },
-  }),
+  })),
 });
 
 const integTest = new integ.IntegTest(app, 'SfnSMTrainingJobImage', {

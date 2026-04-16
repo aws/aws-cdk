@@ -1,0 +1,175 @@
+{
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Group": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Channel": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/CdnSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "secretName": "*",
+        "generateSecretString": {
+          "secretStringTemplate": "*",
+          "generateStringKey": "*",
+          "excludePunctuation": true
+        }
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Group/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GroupC77FDACD"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Channel/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Channel4048F119"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/CdnSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdnSecret32008E6A"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointEEF1FD8F"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointPolicyA1BBD448"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointPolicyCdnAuthRole803DA187"
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-mediapackagev2-endpoint-cdn-auth/Endpoint/Policy/CdnAuthRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EndpointPolicyCdnAuthRoleDefaultPolicyEF103B96"
+    }
+  ]
+}
