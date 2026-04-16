@@ -3306,10 +3306,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ALLOW",
     "REQUIRE"
   ],
-  "PolicyValidationReportStatus": [
-    "success",
-    "failure"
-  ],
   "PolicyValidationReportStatusBeta1": [
     "success",
     "failure"
