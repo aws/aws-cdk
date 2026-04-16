@@ -183,8 +183,8 @@ export class Stage extends Construct {
    *
    * @default - no validation plugins are used
    */
-  public get policyValidationBeta1(): readonly IPolicyValidationPluginBeta1[] {
-    return this._policyValidationBeta1;
+  public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
+    return [...this._policyValidationBeta1];
   }
 
   private readonly _policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
