@@ -51,7 +51,7 @@ jobs:
           include_empty_in_summary: false
 
       - name: Add disclaimer to static results comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: steps.junit_static.outcome == 'success'
         env:
           PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
@@ -74,7 +74,7 @@ jobs:
             );
             
             if (botComment) {
-              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\n\n---\n\n';
+              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\nTo suppress a specific rule, see [Suppressing Rules](https://github.com/aws/aws-cdk/blob/main/tools/%40aws-cdk/security-guardian/README.md#suppressing-rules).\n\n---\n\n';
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -104,7 +104,7 @@ jobs:
           include_empty_in_summary: false
 
       - name: Add disclaimer to resolved results comment
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: steps.junit_resolved.outcome == 'success'
         env:
           PR_NUMBER: ${{ steps.pr_info.outputs.pr_number }}
@@ -126,7 +126,7 @@ jobs:
             );
             
             if (botComment) {
-              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\n\n---\n\n';
+              const disclaimer = '⚠️ **Experimental Feature**: This security report is currently in experimental phase. Results may include false positives and the rules are being actively refined. \n**This security report is NOT a review blocker.** Please try `merge from main` to avoid findings unrelated to the PR.\nTo suppress a specific rule, see [Suppressing Rules](https://github.com/aws/aws-cdk/blob/main/tools/%40aws-cdk/security-guardian/README.md#suppressing-rules).\n\n---\n\n';
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,

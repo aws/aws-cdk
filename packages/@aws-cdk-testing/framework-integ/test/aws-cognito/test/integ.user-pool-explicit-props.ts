@@ -1,7 +1,7 @@
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
 import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { AdvancedSecurityMode, BooleanAttribute, DateTimeAttribute, FeaturePlan, Mfa, NumberAttribute, StringAttribute, UserPool } from 'aws-cdk-lib/aws-cognito';
+import { BooleanAttribute, DateTimeAttribute, FeaturePlan, Mfa, NumberAttribute, StandardThreatProtectionMode, StringAttribute, UserPool } from 'aws-cdk-lib/aws-cognito';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new App({
@@ -79,7 +79,7 @@ const userpool = new UserPool(stack, 'myuserpool', {
     userMigration: dummyTrigger('userMigration'),
     verifyAuthChallengeResponse: dummyTrigger('verifyAuthChallengeResponse'),
   },
-  advancedSecurityMode: AdvancedSecurityMode.ENFORCED,
+  standardThreatProtectionMode: StandardThreatProtectionMode.FULL_FUNCTION,
   featurePlan: FeaturePlan.PLUS,
   snsRegion: Stack.of(stack).region,
 });
