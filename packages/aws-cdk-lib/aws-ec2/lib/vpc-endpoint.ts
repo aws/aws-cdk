@@ -866,7 +866,7 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
       'us-isob-west-1': ['ecr.api', 'ecr.dkr', 'elasticfilesystem-fips', 'execute-api'],
       'us-isof-south-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
       'us-isof-east-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
-      'eu-isoe-west-1': ['ecr.api', 'ecr.dkr', 'execute-api'],
+      'eu-isoe-west-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
       switch (region) {

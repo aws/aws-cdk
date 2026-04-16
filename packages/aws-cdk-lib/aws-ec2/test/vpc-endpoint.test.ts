@@ -1006,6 +1006,7 @@ describe('vpc endpoint', () => {
     });
 
     test.each([
+      ['ebs', InterfaceVpcEndpointAwsService.EBS_DIRECT],
       ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
       ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
       ['execute-api', InterfaceVpcEndpointAwsService.APIGATEWAY],
