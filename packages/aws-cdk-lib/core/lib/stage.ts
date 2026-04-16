@@ -220,13 +220,6 @@ export class Stage extends Construct {
   }
 
   /**
-   * @internal
-   */
-  public _addValidationPlugin(plugin: IPolicyValidationPluginBeta1): void {
-    this._policyValidationBeta1.push(plugin);
-  }
-
-  /**
    * The cloud assembly output directory.
    */
   public get outdir() {
