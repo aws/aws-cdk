@@ -88,21 +88,25 @@ export function validateCredentialProviderTags(tags?: { [key: string]: string },
   const validValuePattern = /^[a-zA-Z0-9\s._:/=+@-]*$/;
 
   for (const [key, value] of Object.entries(tags)) {
-    errors.push(...validateStringFieldLength({
-      value: key,
-      fieldName: 'Tag key',
-      minLength: CREDENTIAL_PROVIDER_TAG_MIN,
-      maxLength: CREDENTIAL_PROVIDER_TAG_MAX,
-    }, scope));
-    errors.push(...validateFieldPattern(key, 'Tag key', validKeyPattern, undefined, scope));
+    if (!Token.isUnresolved(key)) {
+      errors.push(...validateStringFieldLength({
+        value: key,
+        fieldName: 'Tag key',
+        minLength: CREDENTIAL_PROVIDER_TAG_MIN,
+        maxLength: CREDENTIAL_PROVIDER_TAG_MAX,
+      }, scope));
+      errors.push(...validateFieldPattern(key, 'Tag key', validKeyPattern, undefined, scope));
+    }
 
-    errors.push(...validateStringFieldLength({
-      value,
-      fieldName: 'Tag value',
-      minLength: CREDENTIAL_PROVIDER_TAG_MIN,
-      maxLength: CREDENTIAL_PROVIDER_TAG_MAX,
-    }, scope));
-    errors.push(...validateFieldPattern(value, 'Tag value', validValuePattern, undefined, scope));
+    if (!Token.isUnresolved(value)) {
+      errors.push(...validateStringFieldLength({
+        value,
+        fieldName: 'Tag value',
+        minLength: CREDENTIAL_PROVIDER_TAG_MIN,
+        maxLength: CREDENTIAL_PROVIDER_TAG_MAX,
+      }, scope));
+      errors.push(...validateFieldPattern(value, 'Tag value', validValuePattern, undefined, scope));
+    }
   }
 
   return errors;

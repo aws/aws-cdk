@@ -126,7 +126,7 @@ export interface ApiKeyCredentialProviderProps {
 /**
  * @deprecated Use {@link ApiKeyCredentialProviderProps}. Kept for compatibility with the interim `GatewayApiKeyIdentityProps` name.
  */
-export type GatewayApiKeyIdentityProps = ApiKeyCredentialProviderProps;
+export interface GatewayApiKeyIdentityProps extends ApiKeyCredentialProviderProps {}
 
 /**
  * API Key credential provider configuration implementation

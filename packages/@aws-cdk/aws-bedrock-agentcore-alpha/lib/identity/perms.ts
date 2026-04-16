@@ -59,7 +59,7 @@ export namespace ApiKeyCredentialProviderIdentityPerms {
   /**
    * All API key credential provider actions used by the L2 grant helpers.
    */
-  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...ADMIN_PERMS, ...USE_PERMS])];
+  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...LIST_PERMS, ...ADMIN_PERMS, ...USE_PERMS])];
 }
 
 /**
@@ -99,5 +99,5 @@ export namespace OAuth2CredentialProviderIdentityPerms {
   /**
    * All OAuth2 credential provider actions used by the L2 grant helpers.
    */
-  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...ADMIN_PERMS, ...USE_PERMS])];
+  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...LIST_PERMS, ...ADMIN_PERMS, ...USE_PERMS])];
 }

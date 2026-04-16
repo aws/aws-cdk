@@ -361,16 +361,11 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
    * ARNs for {@link GatewayCredentialProvider.fromApiKeyIdentity} / {@link GatewayCredentialProvider.fromApiKeyIdentityArn}.
    */
   public bindForGatewayApiKeyTarget(): GatewayApiKeyIdentityBinding {
-    if (this.apiKeySecretArn == null || this.apiKeySecretArn === '') {
-      throw new ValidationError(
-        lit`MissingApiKeySecretArn`,
-        'apiKeySecretArn is not available on this ApiKeyCredentialProvider (imported providers must pass apiKeySecretArn in fromApiKeyCredentialProviderAttributes).',
-        this,
-      );
-    }
+    // apiKeySecretArn is always a CloudFormation GetAtt Token on concrete constructs.
+    // The missing-ARN guard lives in the Import class returned by fromApiKeyCredentialProviderAttributes.
     return {
       providerArn: this.credentialProviderArn,
-      secretArn: this.apiKeySecretArn,
+      secretArn: this.apiKeySecretArn!,
     };
   }
 }

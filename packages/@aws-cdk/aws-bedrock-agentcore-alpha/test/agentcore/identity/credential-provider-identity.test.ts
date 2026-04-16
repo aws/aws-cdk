@@ -1,6 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
-import type { CfnOAuth2CredentialProvider } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import {
   ApiKeyCredentialProvider,
@@ -8,8 +7,10 @@ import {
   GatewayCredentialProvider,
   OAuth2CredentialProvider,
   OAuth2CredentialProviderIdentityPerms,
+  ApiKeyCredentialProviderIdentityPerms,
   TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS,
 } from '../../../lib';
+import type { OAuth2AuthorizationServerMetadata } from '../../../lib';
 
 describe('ApiKeyCredentialProvider', () => {
   test('synthesizes expected CloudFormation resource', () => {
@@ -259,7 +260,7 @@ describe('OAuth2CredentialProvider', () => {
       env: { account: '123456789012', region: 'us-east-1' },
     });
 
-    const metadata: CfnOAuth2CredentialProvider.Oauth2AuthorizationServerMetadataProperty = {
+    const metadata: OAuth2AuthorizationServerMetadata = {
       issuer: 'https://idp.example.com',
       authorizationEndpoint: 'https://idp.example.com/oauth2/authorize',
       tokenEndpoint: 'https://idp.example.com/oauth2/token',
@@ -390,5 +391,206 @@ describe('GatewayCredentialProvider from Token Vault constructs', () => {
       customParameters: binding.customParameters,
     });
     expect(viaConstruct._render()).toEqual(viaArn._render());
+  });
+});
+
+describe('grantFullAccess includes list permissions', () => {
+  test('ApiKeyCredentialProvider grantFullAccess includes List action', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const provider = new ApiKeyCredentialProvider(stack, 'Provider', {
+      apiKeyCredentialProviderName: 'keyprov',
+      apiKey: 'k',
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    provider.grantFullAccess(role);
+
+    const serialized = JSON.stringify(Template.fromStack(stack).findResources('AWS::IAM::Policy'));
+    for (const action of ApiKeyCredentialProviderIdentityPerms.FULL_ACCESS_PERMS) {
+      expect(serialized).toContain(action);
+    }
+    expect(serialized).toContain('bedrock-agentcore:ListApiKeyCredentialProviders');
+  });
+
+  test('OAuth2CredentialProvider grantFullAccess includes List action', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const provider = OAuth2CredentialProvider.usingGithub(stack, 'Provider', {
+      oAuth2CredentialProviderName: 'oauthprov',
+      clientId: 'cid',
+      clientSecret: 'csec',
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    provider.grantFullAccess(role);
+
+    const serialized = JSON.stringify(Template.fromStack(stack).findResources('AWS::IAM::Policy'));
+    for (const action of OAuth2CredentialProviderIdentityPerms.FULL_ACCESS_PERMS) {
+      expect(serialized).toContain(action);
+    }
+    expect(serialized).toContain('bedrock-agentcore:ListOauth2CredentialProviders');
+  });
+});
+
+describe('Custom OAuth2 token safety', () => {
+  test('usingCustom accepts tokenized discoveryUrl and metadata without throwing', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const discoveryUrl = cdk.Lazy.string({ produce: () => 'https://idp.example.com/.well-known/openid-configuration' });
+    const metadata: OAuth2AuthorizationServerMetadata = {
+      issuer: cdk.Lazy.string({ produce: () => 'https://idp.example.com' }),
+      authorizationEndpoint: 'https://idp.example.com/oauth2/authorize',
+      tokenEndpoint: 'https://idp.example.com/oauth2/token',
+    };
+
+    // Both are tokens — should NOT throw the mutual-exclusion error
+    expect(() =>
+      OAuth2CredentialProvider.usingCustom(stack, 'TokenBoth', {
+        clientId: 'cid',
+        clientSecret: 'csec',
+        discoveryUrl,
+        authorizationServerMetadata: metadata,
+      }),
+    ).not.toThrow();
+  });
+
+  test('usingCustom with only discoveryUrl synthesizes correctly', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    OAuth2CredentialProvider.usingCustom(stack, 'CustomDisc', {
+      oAuth2CredentialProviderName: 'custom_disc',
+      clientId: 'cid',
+      clientSecret: 'csec',
+      discoveryUrl: 'https://idp.example.com/.well-known/openid-configuration',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::OAuth2CredentialProvider', {
+      Name: 'custom_disc',
+      Oauth2ProviderConfigInput: {
+        CustomOauth2ProviderConfig: {
+          OauthDiscovery: {
+            DiscoveryUrl: 'https://idp.example.com/.well-known/openid-configuration',
+          },
+        },
+      },
+    });
+  });
+});
+
+describe('Validation edge cases', () => {
+  test('fails for invalid credential provider name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    expect(() =>
+      new ApiKeyCredentialProvider(stack, 'Bad', {
+        apiKeyCredentialProviderName: 'has spaces!',
+        apiKey: 'k',
+      }),
+    ).toThrow(/Credential provider name/);
+  });
+
+  test('tokenized tags skip validation', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const tokenKey = cdk.Lazy.string({ produce: () => 'resolved-key' });
+
+    // Should not throw even though the key is a token (cannot be validated at synth time)
+    expect(() =>
+      new ApiKeyCredentialProvider(stack, 'TokenTag', {
+        apiKeyCredentialProviderName: 'provider_with_token_tags',
+        tags: { [tokenKey]: 'value' },
+      }),
+    ).not.toThrow();
+  });
+
+  test('grantAdmin grants control plane permissions', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const provider = new ApiKeyCredentialProvider(stack, 'Provider', {
+      apiKeyCredentialProviderName: 'keyprov',
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    provider.grantAdmin(role);
+
+    const serialized = JSON.stringify(Template.fromStack(stack).findResources('AWS::IAM::Policy'));
+    for (const action of ApiKeyCredentialProviderIdentityPerms.ADMIN_PERMS) {
+      expect(serialized).toContain(action);
+    }
+  });
+
+  test('auto-generates physical name when not specified', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    new ApiKeyCredentialProvider(stack, 'Provider', {
+      apiKey: 'k',
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::ApiKeyCredentialProvider', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::ApiKeyCredentialProvider', {
+      Name: Match.anyValue(),
+    });
+  });
+
+  test('fromOAuth2CredentialProviderAttributes exposes vendor and ARN', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const imported = OAuth2CredentialProvider.fromOAuth2CredentialProviderAttributes(stack, 'Imp', {
+      credentialProviderArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/oauth2credentialprovider/existing',
+      credentialProviderVendor: 'GithubOauth2',
+      clientSecretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:oauth',
+    });
+
+    expect(imported.credentialProviderArn).toContain('oauth2credentialprovider/existing');
+    expect(imported.credentialProviderVendor).toBe('GithubOauth2');
+    const binding = imported.bindForGatewayOAuthTarget(['read:user']);
+    expect(binding.secretArn).toContain('secretsmanager');
+    expect(binding.scopes).toEqual(['read:user']);
+  });
+
+  test('bindForGatewayOAuthTarget throws when secret ARN is missing on import', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const imported = OAuth2CredentialProvider.fromOAuth2CredentialProviderAttributes(stack, 'Imp', {
+      credentialProviderArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/oauth2credentialprovider/existing',
+      credentialProviderVendor: 'GithubOauth2',
+    });
+
+    expect(() => imported.bindForGatewayOAuthTarget(['read:user'])).toThrow(/clientSecretArn/);
   });
 });

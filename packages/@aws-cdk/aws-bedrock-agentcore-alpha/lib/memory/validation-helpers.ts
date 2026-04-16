@@ -42,7 +42,7 @@ export function validateStringFieldLength(params: StringLengthValidation, _scope
   const currentLength = params.value.length;
 
   // Evaluate only if it is not an unresolved Token
-  if (!Token.isUnresolved(params.fieldName)) {
+  if (!Token.isUnresolved(params.value)) {
     if (params.value.length > params.maxLength) {
       errors.push(
         `The field ${params.fieldName} is ${currentLength} characters long but must be less than or equal to ${params.maxLength} characters`,

@@ -395,6 +395,35 @@ export interface IncludedOauth2TenantCredentialProviderProps extends OAuth2Crede
 }
 
 /**
+ * Static OAuth2 authorization server metadata for custom credential providers.
+ *
+ * @see https://www.rfc-editor.org/rfc/rfc8414
+ */
+export interface OAuth2AuthorizationServerMetadata {
+  /**
+   * The authorization endpoint URL.
+   */
+  readonly authorizationEndpoint: string;
+
+  /**
+   * The issuer URL for the OAuth2 authorization server.
+   */
+  readonly issuer: string;
+
+  /**
+   * The token endpoint URL.
+   */
+  readonly tokenEndpoint: string;
+
+  /**
+   * The supported response types.
+   *
+   * @default - not specified
+   */
+  readonly responseTypes?: string[];
+}
+
+/**
  * Props for {@link OAuth2CredentialProvider.usingCustom}.
  *
  * Set exactly one of {@link discoveryUrl} (OIDC discovery document) or {@link authorizationServerMetadata}
@@ -412,7 +441,7 @@ export interface CustomOAuth2CredentialProviderProps extends OAuth2CredentialPro
    *
    * @default - not used when {@link discoveryUrl} is set
    */
-  readonly authorizationServerMetadata?: CfnOAuth2CredentialProvider.Oauth2AuthorizationServerMetadataProperty;
+  readonly authorizationServerMetadata?: OAuth2AuthorizationServerMetadata;
 }
 
 /**
@@ -429,7 +458,7 @@ export interface OAuth2CredentialProviderProps {
   /**
    * OAuth2 vendor string for CloudFormation `CredentialProviderVendor`.
    */
-  readonly credentialProviderVendor: OAuth2CredentialProviderVendor | string;
+  readonly credentialProviderVendor: string;
 
   /**
    * OAuth2 provider configuration passed through to `Oauth2ProviderConfigInput`.
@@ -491,7 +520,7 @@ export interface OAuth2CredentialProviderAttributes {
  * @internal
  */
 function oauth2AuthorizationServerMetadataContainsUnresolved(
-  meta: CfnOAuth2CredentialProvider.Oauth2AuthorizationServerMetadataProperty,
+  meta: OAuth2AuthorizationServerMetadata,
 ): boolean {
   for (const value of Object.values(meta)) {
     if (typeof value === 'string' && Token.isUnresolved(value)) {
@@ -518,19 +547,20 @@ function assertCustomOAuth2DiscoveryXor(scope: Construct, props: CustomOAuth2Cre
   const hasDiscoveryUrl = discoveryUrl !== undefined && discoveryUrl !== '';
   const hasMetadata = metadata !== undefined;
 
+  // Bail out early when either value is a Token — we cannot validate at synth time.
+  const discoveryUnresolved = discoveryUrl !== undefined && Token.isUnresolved(discoveryUrl);
+  const metadataUnresolved = metadata !== undefined && oauth2AuthorizationServerMetadataContainsUnresolved(metadata);
+
+  if (discoveryUnresolved || metadataUnresolved) {
+    return;
+  }
+
   if (hasDiscoveryUrl && hasMetadata) {
     throw new ValidationError(
       lit`CustomOAuth2DiscoveryExclusive`,
       'Provide either discoveryUrl or authorizationServerMetadata for a custom OAuth2 credential provider, not both.',
       scope,
     );
-  }
-
-  const discoveryUnresolved = discoveryUrl !== undefined && Token.isUnresolved(discoveryUrl);
-  const metadataUnresolved = metadata !== undefined && oauth2AuthorizationServerMetadataContainsUnresolved(metadata);
-
-  if (discoveryUnresolved || metadataUnresolved) {
-    return;
   }
 
   if (!hasDiscoveryUrl && !hasMetadata) {
@@ -1070,16 +1100,11 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
     scopes: string[],
     customParameters?: { [key: string]: string },
   ): GatewayOAuth2IdentityBinding {
-    if (this.clientSecretArn == null || this.clientSecretArn === '') {
-      throw new ValidationError(
-        lit`MissingOAuth2ClientSecretArn`,
-        'clientSecretArn is not available on this OAuth2CredentialProvider (imported providers must pass clientSecretArn in fromOAuth2CredentialProviderAttributes).',
-        this,
-      );
-    }
+    // clientSecretArn is always a CloudFormation GetAtt Token on concrete constructs.
+    // The missing-ARN guard lives in the Import class returned by fromOAuth2CredentialProviderAttributes.
     return {
       providerArn: this.credentialProviderArn,
-      secretArn: this.clientSecretArn,
+      secretArn: this.clientSecretArn!,
       scopes,
       customParameters,
     };
