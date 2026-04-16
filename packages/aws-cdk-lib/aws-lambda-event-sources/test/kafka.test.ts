@@ -577,6 +577,27 @@ describe('KafkaEventSource', () => {
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
     });
 
+    test('provisioned pollers with unresolved tokens should not throw', () => {
+      const stack = new cdk.Stack();
+      const testLambdaFunction = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+      const bucket = Bucket.fromBucketName(stack, 'BucketByName', 'my-bucket');
+      const s3OnFailureDestination = new sources.S3OnFailureDestination(bucket);
+
+      expect(() => testLambdaFunction.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          onFailure: s3OnFailureDestination,
+          provisionedPollerConfig: {
+            minimumPollers: cdk.Lazy.number({ produce: () => 1 }),
+            maximumPollers: cdk.Lazy.number({ produce: () => 3 }),
+          },
+        }))).not.toThrow();
+    });
+
     test('MetricsConfig validation - empty metrics array', () => {
       // GIVEN
       const stack = new cdk.Stack();
@@ -1437,6 +1458,25 @@ describe('KafkaEventSource', () => {
             maximumPollers: 1,
           },
         }))).toThrow(/Minimum provisioned pollers must be less than or equal to maximum provisioned pollers/);
+    });
+
+    test('provisioned pollers with unresolved tokens should not throw', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const fn = new TestFunction(stack, 'Fn');
+      const clusterArn = 'some-arn';
+      const kafkaTopic = 'some-topic';
+
+      expect(() => fn.addEventSource(new sources.ManagedKafkaEventSource(
+        {
+          clusterArn,
+          topic: kafkaTopic,
+          startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+          provisionedPollerConfig: {
+            minimumPollers: cdk.Lazy.number({ produce: () => 1 }),
+            maximumPollers: cdk.Lazy.number({ produce: () => 3 }),
+          },
+        }))).not.toThrow();
     });
 
     test('MetricsConfig validation - empty metrics array', () => {
