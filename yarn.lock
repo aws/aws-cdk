@@ -58,12 +58,12 @@
     "@aws-cdk/service-spec-types" "^0.0.221"
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/aws-service-spec@^0.1.167":
-  version "0.1.167"
-  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.167.tgz#e8aa7e070276b16d07f484e85184115b7360eef1"
-  integrity sha512-vkj9mDlZxT5l6sWdDhyQ+1tH1VZZtvSa6fIhbrDYEAl3zm+7Sm728RHduje2x8IR/bqOkXw4IgvKr8EIZ2hS1A==
+"@aws-cdk/aws-service-spec@^0.1.172":
+  version "0.1.172"
+  resolved "https://registry.npmjs.org/@aws-cdk/aws-service-spec/-/aws-service-spec-0.1.172.tgz#9c51b35b801a06671e646b6930a9327d11f5f9f7"
+  integrity sha512-Jij9Lin7EbKyStPGwn9gHgCkDa2Qf6eJCG8L3m8O6HqQI6+qQln880U/S+9UJAmin+cS0sVL5iH63WrK+UM7Cg==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.233"
+    "@aws-cdk/service-spec-types" "^0.0.238"
     "@cdklabs/tskb" "^0.0.4"
 
 "@aws-cdk/cloud-assembly-api@^2.2.0":
@@ -130,12 +130,12 @@
   resolved "https://registry.npmjs.org/@aws-cdk/lambda-layer-kubectl-v35/-/lambda-layer-kubectl-v35-2.0.0.tgz#6f2b1dcfd668f9abc08d0d841af28cd6a3b6ebc7"
   integrity sha512-yO2uQKE4xhRfURhT0YQ344i/ZbZ8TA915YmtFjgWaZHbt5kpyceKRQESf9kTWlVDVzQJAIB8d7Pwpoy5P5sEtw==
 
-"@aws-cdk/service-spec-importers@^0.0.117":
-  version "0.0.117"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.117.tgz#fa723ba881b08327b71f96a87ec35d02d7e9f881"
-  integrity sha512-QOY3MnJKCVBa2rBHdivxW8tAGhMDGr0sWVSgvjVtn0OFA5e5fvjqIOz0hV6b8N7cPQ8r5STi9HCcwt4TU6WYGg==
+"@aws-cdk/service-spec-importers@^0.0.121":
+  version "0.0.121"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-importers/-/service-spec-importers-0.0.121.tgz#9b80c8fab0ae9c9c6b339890fa6c6ebba16754ff"
+  integrity sha512-ROfEYeO8BeVbToaURcuOSHn43u71IWEkvgzVXZ0Qp9h+qHU2eeyXmkKx0N0Tc8l5+tjV8edCUqpj5q+SVe48wQ==
   dependencies:
-    "@aws-cdk/service-spec-types" "^0.0.231"
+    "@aws-cdk/service-spec-types" "^0.0.238"
     "@cdklabs/tskb" "^0.0.4"
     ajv "^6"
     canonicalize "^2.1.0"
@@ -153,17 +153,10 @@
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
-"@aws-cdk/service-spec-types@^0.0.231":
-  version "0.0.231"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.231.tgz#cd173c33a99a712503c2314ebef7946d60ac3ca4"
-  integrity sha512-vPnG3XDIAf0HwMEkNzepkUJcrbHaEEwekztCVwsu3FPhf8T7TMRTXC5DOYM0v6y/pOjnt8KHi5EeTrEpfAj9vw==
-  dependencies:
-    "@cdklabs/tskb" "^0.0.4"
-
-"@aws-cdk/service-spec-types@^0.0.233":
-  version "0.0.233"
-  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.233.tgz#0b11d79bc6426d002699b56a751a21f04384e7c5"
-  integrity sha512-ETtXnWvVUtGL9W7VrdPL/RDuEwCBgtWpohi+/XY7YLmugAfkRVAJvCW2VEiHgZarenK0Z9thc2jk7DIvKawEyQ==
+"@aws-cdk/service-spec-types@^0.0.238":
+  version "0.0.238"
+  resolved "https://registry.npmjs.org/@aws-cdk/service-spec-types/-/service-spec-types-0.0.238.tgz#94d3787bd49e7c4dc2256fbd74b39305f9894771"
+  integrity sha512-/o3Kdy0TPVfsamB2ElM1/uZzFlcGtWN29BcbRApIWKN6sVzKs9Ics7YKFJk6m3UvASKyMN2K7uc5l7Nuj7LVzw==
   dependencies:
     "@cdklabs/tskb" "^0.0.4"
 
@@ -6989,9 +6982,9 @@ axios@^0.27.2:
     form-data "^4.0.0"
 
 axios@^1.13.5, axios@^1.8.3:
-  version "1.14.0"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.14.0.tgz#7c29f4cf2ea91ef05018d5aa5399bf23ed3120eb"
-  integrity sha512-3Y8yrqLSwjuzpXuZ0oIYZ/XGgLwUIBU3uLvbcpb0pidD9ctpShJd43KSlEEkVQg6DS0G9NKyzOvBfUtDKEyHvQ==
+  version "1.15.0"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.15.0.tgz#0fcee91ef03d386514474904b27863b2c683bf4f"
+  integrity sha512-wWyJDlAatxk30ZJer+GeCWS209sA42X+N5jU2jy6oHTp7ufw8uzUTVFBX9+wTfAlhiJXGS0Bq7X6efruWjuK9Q==
   dependencies:
     follow-redirects "^1.15.11"
     form-data "^4.0.5"
@@ -7106,9 +7099,9 @@ baseline-browser-mapping@^2.9.0:
   integrity sha512-lIyg0szRfYbiy67j9KN8IyeD7q7hcmqnJ1ddWmNt19ItGpNN64mnllmxUNFIOdOm6by97jlL6wfpTTJrmnjWAA==
 
 basic-ftp@^5.0.2:
-  version "5.2.0"
-  resolved "https://registry.npmjs.org/basic-ftp/-/basic-ftp-5.2.0.tgz#7c2dff63c918bde60e6bad1f2ff93dcf5137a40a"
-  integrity sha512-VoMINM2rqJwJgfdHq6RiUudKt2BV+FY5ZFezP/ypmwayk68+NzzAQy4XXLlqsGD4MCzq3DrmNFD/uUmBJuGoXw==
+  version "5.2.2"
+  resolved "https://registry.npmjs.org/basic-ftp/-/basic-ftp-5.2.2.tgz#4cb2422deddf432896bdb3c9b8f13b944ad4842c"
+  integrity sha512-1tDrzKsdCg70WGvbFss/ulVAxupNauGnOlgpyjKzeQxzyllBLS0CGLV7tjIXTK3ZQA9/FBEm9qyFFN1bciA6pw==
 
 before-after-hook@^2.2.0:
   version "2.2.3"
@@ -9228,9 +9221,9 @@ fn.name@1.x.x:
   integrity sha512-GRnmB5gPyJpAhTQdSZTSp9uaPSvl09KoYcMQtsB9rQoOmzs9dH6ffeccH+Z+cv6P68Hu5bC6JjRh4Ah/mHSNRw==
 
 follow-redirects@^1.14.9, follow-redirects@^1.15.11:
-  version "1.15.11"
-  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.15.11.tgz#777d73d72a92f8ec4d2e410eb47352a56b8e8340"
-  integrity sha512-deG2P0JfjrTxl50XGCDyfI97ZGVCxIpfKYmfyrQ54n5FO/0gfIES8C/Psl6kWVDolizcaaxZJnTS0QSMxvnsBQ==
+  version "1.16.0"
+  resolved "https://registry.npmjs.org/follow-redirects/-/follow-redirects-1.16.0.tgz#28474a159d3b9d11ef62050a14ed60e4df6d61bc"
+  integrity sha512-y5rN/uOsadFT/JfYwhxRS5R7Qce+g3zG97+JrtFZlC9klX/W5hD7iiLzScI4nZqUS7DNUdhPgw4xI8W2LuXlUw==
 
 for-each@^0.3.3, for-each@^0.3.5:
   version "0.3.5"
