@@ -30,18 +30,21 @@ import { validateStringField, validateFieldPattern } from './validation-helpers'
 
 /**
  * The enforcement mode for a policy engine associated with a gateway.
+ *
  */
-export enum PolicyEngineMode {
+export class PolicyEngineMode {
   /**
    * Evaluates actions and adds traces but does not enforce decisions.
    * Use this mode for testing and validation before enabling enforcement.
    */
-  LOG_ONLY = 'LOG_ONLY',
+  public static readonly LOG_ONLY = new PolicyEngineMode('LOG_ONLY');
 
   /**
    * Enforces decisions by allowing or denying agent operations based on Cedar policies.
    */
-  ENFORCE = 'ENFORCE',
+  public static readonly ENFORCE = new PolicyEngineMode('ENFORCE');
+
+  public constructor(public readonly value: string) {}
 }
 
 /**
@@ -627,7 +630,7 @@ export class Gateway extends GatewayBase {
       policyEngineConfiguration: this.policyEngineConfiguration
         ? {
           arn: this.policyEngineConfiguration.policyEngine.policyEngineArn,
-          mode: this.policyEngineConfiguration.mode ?? PolicyEngineMode.LOG_ONLY,
+          mode: (this.policyEngineConfiguration.mode ?? PolicyEngineMode.LOG_ONLY).value,
         }
         : undefined,
       protocolConfiguration: this.protocolConfiguration._render(),

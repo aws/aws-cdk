@@ -2,19 +2,22 @@ import type { PolicyStatement } from './policy-statement';
 
 /**
  * Validation mode for Cedar policy definitions.
+ *
  */
-export enum PolicyValidationMode {
+export class PolicyValidationMode {
   /**
    * Fail policy creation if any validation findings are detected.
    * This is the safer default - catches policy errors early.
    */
-  FAIL_ON_ANY_FINDINGS = 'FAIL_ON_ANY_FINDINGS',
+  public static readonly FAIL_ON_ANY_FINDINGS = new PolicyValidationMode('FAIL_ON_ANY_FINDINGS');
 
   /**
    * Ignore all validation findings and create the policy anyway.
    * Use with caution - may result in runtime authorization errors.
    */
-  IGNORE_ALL_FINDINGS = 'IGNORE_ALL_FINDINGS',
+  public static readonly IGNORE_ALL_FINDINGS = new PolicyValidationMode('IGNORE_ALL_FINDINGS');
+
+  public constructor(public readonly value: string) {}
 }
 
 /**

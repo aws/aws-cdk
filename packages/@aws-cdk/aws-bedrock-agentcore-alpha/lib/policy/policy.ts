@@ -243,7 +243,7 @@ export class Policy extends PolicyBase {
         },
       },
       description: this.description,
-      validationMode: this.validationMode,
+      validationMode: this.validationMode?.value,
     };
 
     this.__resource = new CfnPolicy(this, 'Resource', cfnProps);
