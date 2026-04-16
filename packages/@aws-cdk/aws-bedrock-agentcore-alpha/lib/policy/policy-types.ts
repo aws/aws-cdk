@@ -20,7 +20,11 @@ export class PolicyValidationMode {
   /**
    * The string value of the validation mode.
    */
-  public constructor(public readonly value: string) {}
+  public readonly value: string;
+
+  public constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**

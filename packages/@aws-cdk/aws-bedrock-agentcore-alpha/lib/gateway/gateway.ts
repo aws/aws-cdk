@@ -47,7 +47,11 @@ export class PolicyEngineMode {
   /**
    * The string value of the policy engine mode.
    */
-  public constructor(public readonly value: string) {}
+  public readonly value: string;
+
+  public constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
