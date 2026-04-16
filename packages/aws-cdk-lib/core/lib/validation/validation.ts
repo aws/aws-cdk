@@ -3,6 +3,8 @@ import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1 } 
 /**
  * Represents a validation plugin that will be executed during synthesis
  *
+ * @deprecated Use `IPolicyValidationPlugin` instead.
+ *
  * @example
  * /// fixture=validation-plugin
  * class MyPlugin implements IPolicyValidationPluginBeta1 {
@@ -33,8 +35,6 @@ export interface IPolicyValidationPluginBeta1 {
   /**
    * The name of the plugin that will be displayed in the validation
    * report
-   *
-   * @deprecated Use `IPolicyValidationPlugin` instead.
    */
   readonly name: string;
 
@@ -45,8 +45,6 @@ export interface IPolicyValidationPluginBeta1 {
    * this property should be kept in sync with the actual version of the
    * software package. If the version is not provided or is not a valid semantic
    * version, it will be reported as `0.0.0`.
-   *
-   * @deprecated Use `IPolicyValidationPlugin` instead.
    */
   readonly version?: string;
 
@@ -55,7 +53,6 @@ export interface IPolicyValidationPluginBeta1 {
    * purposes.
    *
    * @default - No rule is reported
-   * @deprecated Use `IPolicyValidationPlugin` instead.
    */
   readonly ruleIds?: string[];
 
@@ -63,8 +60,6 @@ export interface IPolicyValidationPluginBeta1 {
    * The method that will be called by the CDK framework to perform
    * validations. This is where the plugin will evaluate the CloudFormation
    * templates for compliance and report and violations
-   *
-   * @deprecated Use `IPolicyValidationPlugin` instead.
    */
   validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1;
 }
