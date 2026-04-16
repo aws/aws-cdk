@@ -329,7 +329,7 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * This feature is only available for public hosted zones.
    *
    * @default - no accelerated recovery
-   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/hosted-zone-accelerated-recovery.html
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/accelerated-recovery.html
    */
   readonly acceleratedRecoveryEnabled?: boolean;
 
