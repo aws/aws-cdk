@@ -22,6 +22,7 @@ class TestStack extends cdk.Stack {
 
     const importedCluster = Cluster.fromClusterAttributes(this, 'ImportedCluster', {
       clusterIdentifier: cluster.clusterIdentifier,
+      clusterEndpoint: cluster.clusterEndpoint,
       vpcEndpointServiceName: cluster.vpcEndpointServiceName,
     });
 
