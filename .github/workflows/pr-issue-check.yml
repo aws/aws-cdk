@@ -7,7 +7,7 @@ jobs:
   check-issue-reference:
     runs-on: ubuntu-latest
     permissions:
-      issues: write
+      pull-requests: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
