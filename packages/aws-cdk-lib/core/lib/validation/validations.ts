@@ -5,7 +5,7 @@ import { lit } from '../private/literal-string';
 import { Stage } from '../stage';
 
 /**
- * Manages validation plugins for a Stage.
+ * Manages validations for CDK constructs.
  *
  * @example
  * import { CfnGuardValidator } from '@cdklabs/cdk-validator-cfnguard';
@@ -15,29 +15,30 @@ import { Stage } from '../stage';
  */
 export class Validations {
   /**
-   * Returns the Validations for the Stage that encloses the given construct.
+   * Returns the Validations for the given construct scope.
    *
-   * @param scope any construct within a Stage
+   * @param scope any construct
    */
   public static of(scope: IConstruct): Validations {
-    const stage = Stage.isStage(scope) ? scope : Stage.of(scope);
-    if (!stage) {
-      throw new UnscopedValidationError(lit`NoStageForValidations`, 'Cannot add validation plugins on a construct without an enclosing Stage');
-    }
-    return new Validations(stage);
+    return new Validations(scope);
   }
 
-  private constructor(private readonly stage: Stage) {}
+  private constructor(private readonly scope: IConstruct) {}
 
   /**
    * Register a validation plugin that will be executed during synthesis.
    *
+   * Plugins can only be registered within a Stage or App scope.
    * If any plugin reports a violation, synthesis will be interrupted and the
    * report displayed to the user.
    *
    * @param plugin the validation plugin to add
    */
   public addPlugin(plugin: IPolicyValidationPlugin): void {
-    this.stage.policyValidationBeta1.push(plugin);
+    const stage = Stage.isStage(this.scope) ? this.scope : Stage.of(this.scope);
+    if (!stage) {
+      throw new UnscopedValidationError(lit`NoStageForValidationPlugins`, 'Cannot add validation plugins on a construct without an enclosing Stage');
+    }
+    stage._addValidationPlugin(plugin);
   }
 }

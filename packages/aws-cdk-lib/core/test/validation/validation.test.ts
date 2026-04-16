@@ -814,33 +814,52 @@ Policy Validation Report Summary
   });
 
   test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
+    // GIVEN
     const beta1Plugin: core.IPolicyValidationPluginBeta1 = new FakePlugin('beta1-plugin', []);
+
+    // WHEN
     const plugin: core.IPolicyValidationPlugin = beta1Plugin;
+
+    // THEN
     expect(plugin.name).toEqual('beta1-plugin');
   });
 
   describe('Validations.of()', () => {
     test('addPlugin adds plugin to enclosing stage', () => {
+      // GIVEN
       const app = new core.App();
       const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
       core.Validations.of(app).addPlugin(plugin);
+
+      // THEN
       expect(app.policyValidationBeta1).toContain(plugin);
     });
 
     test('addPlugin from nested construct resolves to enclosing stage', () => {
+      // GIVEN
       const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
       core.Validations.of(stack).addPlugin(plugin);
+
+      // THEN - plugin is registered on the app (enclosing stage), not the stack
       expect(app.policyValidationBeta1).toContain(plugin);
     });
 
-    test('throws when no enclosing stage', () => {
+    test('throws when addPlugin called without enclosing stage', () => {
+      // GIVEN
       const construct = new Construct(undefined as any, '');
-      expect(() => core.Validations.of(construct)).toThrow(/without an enclosing Stage/);
+
+      // THEN
+      expect(() => core.Validations.of(construct).addPlugin(new FakePlugin('test', []))).toThrow(/without an enclosing Stage/);
     });
 
     test('plugin added via addPlugin runs during synth', () => {
+      // GIVEN
       const app = new core.App();
       const stack = new core.Stack(app);
       new core.CfnResource(stack, 'Fake', {
@@ -848,6 +867,7 @@ Policy Validation Report Summary
         properties: { result: 'success' },
       });
 
+      // WHEN
       core.Validations.of(app).addPlugin(new FakePlugin('added-plugin', [{
         description: 'test recommendation',
         ruleName: 'test-rule',
@@ -857,8 +877,9 @@ Policy Validation Report Summary
           templatePath: '/path/to/Default.template.json',
         }],
       }]));
-
       app.synth();
+
+      // THEN - exitCode 1 means the plugin ran and reported violations
       expect(process.exitCode).toEqual(1);
     });
   });
