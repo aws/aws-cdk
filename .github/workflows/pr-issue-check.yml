@@ -7,14 +7,16 @@ jobs:
   check-issue-reference:
     runs-on: ubuntu-latest
     permissions:
-      pull-requests: write
+      issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+      - name: Compile TypeScript
+        run: npx tsc --esModuleInterop --target es2020 --skipLibCheck --outDir scripts scripts/pr-issue-check.ts
       - name: Check PR description for issue reference
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const script = require('./scripts/pr-issue-check.js');
+            const script = require('./scripts/pr-issue-check.js').default;
             await script({ github, context, core });

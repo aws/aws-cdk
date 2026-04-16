@@ -7,16 +7,55 @@
  * Called from the pr-issue-check.yml workflow via actions/github-script.
  */
 
+interface GitHubIssueComment {
+  id: number;
+  user: { type: string } | null;
+  body?: string;
+}
+
+interface GitHubClient {
+  rest: {
+    issues: {
+      listComments: (params: { owner: string; repo: string; issue_number: number }) => Promise<{ data: GitHubIssueComment[] }>;
+      createComment: (params: { owner: string; repo: string; issue_number: number; body: string }) => Promise<unknown>;
+      updateComment: (params: { owner: string; repo: string; comment_id: number; body: string }) => Promise<unknown>;
+      deleteComment: (params: { owner: string; repo: string; comment_id: number }) => Promise<unknown>;
+      get: (params: { owner: string; repo: string; issue_number: number }) => Promise<{ data: { pull_request?: unknown; state: string } }>;
+    };
+  };
+}
+
+interface ActionCore {
+  setFailed: (message: string) => void;
+  warning: (message: string) => void;
+}
+
+interface ActionContext {
+  payload: {
+    pull_request: {
+      body: string | null;
+      number: number;
+    };
+  };
+  repo: { owner: string; repo: string };
+}
+
+interface ScriptArgs {
+  github: GitHubClient;
+  context: ActionContext;
+  core: ActionCore;
+}
+
 const BOT_MARKER = '<!-- pr-issue-check-bot -->';
 
-async function findBotComment(github, owner, repo, prNumber) {
+async function findBotComment(github: GitHubClient, owner: string, repo: string, prNumber: number): Promise<GitHubIssueComment | undefined> {
   const { data: comments } = await github.rest.issues.listComments({
     owner, repo, issue_number: prNumber,
   });
-  return comments.find(c => c.user.type === 'Bot' && c.body.includes(BOT_MARKER));
+  return comments.find(c => c.user?.type === 'Bot' && c.body?.includes(BOT_MARKER));
 }
 
-async function upsertComment(github, core, owner, repo, prNumber, message) {
+async function upsertComment(github: GitHubClient, core: ActionCore, owner: string, repo: string, prNumber: number, message: string): Promise<void> {
   const markedMessage = `${BOT_MARKER}\n${message}`;
   try {
     const existing = await findBotComment(github, owner, repo, prNumber);
@@ -29,12 +68,13 @@ async function upsertComment(github, core, owner, repo, prNumber, message) {
         owner, repo, issue_number: prNumber, body: markedMessage,
       });
     }
-  } catch (commentError) {
-    core.warning(`Failed to post comment: ${commentError.message}`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    core.warning(`Failed to post comment: ${message}`);
   }
 }
 
-async function deleteBotComment(github, core, owner, repo, prNumber) {
+async function deleteBotComment(github: GitHubClient, core: ActionCore, owner: string, repo: string, prNumber: number): Promise<void> {
   try {
     const existing = await findBotComment(github, owner, repo, prNumber);
     if (existing) {
@@ -42,12 +82,13 @@ async function deleteBotComment(github, core, owner, repo, prNumber) {
         owner, repo, comment_id: existing.id,
       });
     }
-  } catch (e) {
-    core.warning(`Failed to delete comment: ${e.message}`);
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    core.warning(`Failed to delete comment: ${message}`);
   }
 }
 
-function buildMissingReferenceMessage(lines) {
+export function buildMissingReferenceMessage(lines: string[]): string {
   const restOfBody = lines.slice(2).join('\n');
   const issueElsewhere = /#(\d+)/.test(restOfBody);
 
@@ -74,6 +115,8 @@ function buildMissingReferenceMessage(lines) {
       '',
       'Please update the description to include a reference like `Closes #123`.',
       '',
+      'If no existing issue matches your change, please [create one](https://github.com/aws/aws-cdk/issues/new/choose) first and then reference it here.',
+      '',
       'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
     ].join('\n');
   }
@@ -83,12 +126,18 @@ function buildMissingReferenceMessage(lines) {
     '',
     'Please update the description to follow the [PR template](https://github.com/aws/aws-cdk/blob/main/.github/PULL_REQUEST_TEMPLATE.md) and include a line like `Closes #123` in the Issue section.',
     '',
+    'If no existing issue matches your change, please [create one](https://github.com/aws/aws-cdk/issues/new/choose) first and then reference it here.',
+    '',
     'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
   ].join('\n');
 }
 
-async function validateIssueReferences(github, owner, repo, issueNumbers) {
-  const invalid = [];
+interface GitHubApiError extends Error {
+  status?: number;
+}
+
+export async function validateIssueReferences(github: GitHubClient, owner: string, repo: string, issueNumbers: number[]): Promise<string[]> {
+  const invalid: string[] = [];
   for (const num of issueNumbers) {
     try {
       const { data: issue } = await github.rest.issues.get({
@@ -97,8 +146,9 @@ async function validateIssueReferences(github, owner, repo, issueNumbers) {
       if (issue.pull_request) {
         invalid.push(`#${num} (is a pull request, not an issue)`);
       }
-    } catch (e) {
-      if (e.status === 404 || e.status === 410) {
+    } catch (e: unknown) {
+      const err = e as GitHubApiError;
+      if (err.status === 404 || err.status === 410) {
         invalid.push(`#${num} (does not exist)`);
       } else {
         throw e;
@@ -108,7 +158,7 @@ async function validateIssueReferences(github, owner, repo, issueNumbers) {
   return invalid;
 }
 
-module.exports = async ({ github, context, core }) => {
+export default async function prIssueCheck({ github, context, core }: ScriptArgs): Promise<void> {
   const body = context.payload.pull_request.body || '';
   const prNumber = context.payload.pull_request.number;
   const owner = context.repo.owner;
@@ -148,4 +198,4 @@ module.exports = async ({ github, context, core }) => {
 
   await deleteBotComment(github, core, owner, repo, prNumber);
   console.log(`Valid issue(s) found: ${issueNumbers.map(n => '#' + n).join(', ')}`);
-};
+}

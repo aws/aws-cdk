@@ -12,6 +12,16 @@
     "build+extract": "npm run build"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.6",
+    "@types/jest": "^29.5.14"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        { "tsconfig": { "esModuleInterop": true } }
+      ]
+    }
   }
 }
