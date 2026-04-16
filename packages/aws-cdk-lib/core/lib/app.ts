@@ -127,6 +127,7 @@ export interface AppProps {
    * Validation plugins to run after synthesis
    *
    * @default - no validation plugins
+   * @deprecated Use `Validations.of(app).addPlugin()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 

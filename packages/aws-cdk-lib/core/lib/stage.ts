@@ -96,6 +96,7 @@ export interface StageProps {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
+   * @deprecated Use `Validations.of(stage).addPlugin()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 

@@ -818,6 +818,50 @@ Policy Validation Report Summary
     const plugin: core.IPolicyValidationPlugin = beta1Plugin;
     expect(plugin.name).toEqual('beta1-plugin');
   });
+
+  describe('Validations.of()', () => {
+    test('addPlugin adds plugin to enclosing stage', () => {
+      const app = new core.App();
+      const plugin = new FakePlugin('test-plugin', []);
+      core.Validations.of(app).addPlugin(plugin);
+      expect(app.policyValidationBeta1).toContain(plugin);
+    });
+
+    test('addPlugin from nested construct resolves to enclosing stage', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const plugin = new FakePlugin('test-plugin', []);
+      core.Validations.of(stack).addPlugin(plugin);
+      expect(app.policyValidationBeta1).toContain(plugin);
+    });
+
+    test('throws when no enclosing stage', () => {
+      const construct = new Construct(undefined as any, '');
+      expect(() => core.Validations.of(construct)).toThrow(/without an enclosing Stage/);
+    });
+
+    test('plugin added via addPlugin runs during synth', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: { result: 'success' },
+      });
+
+      core.Validations.of(app).addPlugin(new FakePlugin('added-plugin', [{
+        description: 'test recommendation',
+        ruleName: 'test-rule',
+        violatingResources: [{
+          locations: ['test-location'],
+          resourceLogicalId: 'Fake',
+          templatePath: '/path/to/Default.template.json',
+        }],
+      }]));
+
+      app.synth();
+      expect(process.exitCode).toEqual(1);
+    });
+  });
 });
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
