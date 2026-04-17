@@ -413,6 +413,15 @@ export interface DatabaseInstanceProps {
    * @default undefined
    */
   readonly autoMinorVersionUpgrade?: boolean;
+
+  /**
+   * Indicates whether the DB instance is publicly accessible.
+   *
+   * Note that iamAuthentication must be enabled on the cluster.
+   *
+   * @default - false
+   */
+  readonly publiclyAccessible?: boolean;
 }
 
 /**
@@ -514,6 +523,7 @@ export class DatabaseInstance extends DatabaseInstanceBase implements IDatabaseI
       availabilityZone: props.availabilityZone,
       dbInstanceIdentifier: props.dbInstanceName,
       dbParameterGroupName: props.parameterGroup?.parameterGroupName,
+      publiclyAccessible: props.publiclyAccessible,
     });
 
     this.cluster = props.cluster;

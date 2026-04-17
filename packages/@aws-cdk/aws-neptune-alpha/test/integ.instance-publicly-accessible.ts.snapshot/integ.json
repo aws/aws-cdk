@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "PubliclyAccessibleInstanceInteg/DefaultTest": {
+      "stacks": [
+        "PubliclyAccessibleInstanceStack"
+      ],
+      "assertionStack": "PubliclyAccessibleInstanceInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "PubliclyAccessibleInstanceIntegDefaultTestDeployAssert16E6A402"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}
