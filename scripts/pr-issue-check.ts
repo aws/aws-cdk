@@ -103,8 +103,6 @@ export function buildMissingReferenceMessage(lines: string[]): string {
       'Closes #123.',
       '```',
       'Please move your issue reference to the top of the description.',
-      '',
-      'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
     ].join('\n');
   }
 
@@ -113,26 +111,14 @@ export function buildMissingReferenceMessage(lines: string[]): string {
     return [
       '👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.',
       '',
-      'Please update the description to include a reference like `Closes #123`.',
-      '',
-      'If no existing issue matches your change, please [create one](https://github.com/aws/aws-cdk/issues/new/choose) first and then reference it here.',
-      '',
-      'PRs without a linked issue will receive lower priority for review and merging.',
-      '',
-      'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
+      'PRs without a linked issue will receive lower priority for review and merging. Please update the description to include a reference like `Closes #123`. If no existing issue matches your change, [create one](https://github.com/aws/aws-cdk/issues/new/choose) first.',
     ].join('\n');
   }
 
   return [
     '⚠️ This pull request description does not follow the correct template structure.',
     '',
-    'Please update the description to follow the [PR template](https://github.com/aws/aws-cdk/blob/main/.github/PULL_REQUEST_TEMPLATE.md) and include a line like `Closes #123` in the Issue section.',
-    '',
-    'If no existing issue matches your change, please [create one](https://github.com/aws/aws-cdk/issues/new/choose) first and then reference it here.',
-    '',
-    'PRs without a linked issue will receive lower priority for review and merging.',
-    '',
-    'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
+    'PRs without a linked issue will receive lower priority for review and merging. Please update the description to follow the [PR template](https://github.com/aws/aws-cdk/blob/main/.github/PULL_REQUEST_TEMPLATE.md) and include a line like `Closes #123` in the Issue section. If no existing issue matches your change, [create one](https://github.com/aws/aws-cdk/issues/new/choose) first.',
   ].join('\n');
 }
 
@@ -191,8 +177,6 @@ export default async function prIssueCheck({ github, context, core }: ScriptArgs
       `- ${list}`,
       '',
       'Please make sure your PR references an existing issue using the format `Closes #123`.',
-      '',
-      'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
     ].join('\n');
 
     await upsertComment(github, core, owner, repo, prNumber, message);
