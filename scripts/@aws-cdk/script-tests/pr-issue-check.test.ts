@@ -146,7 +146,7 @@ describe('should pass', () => {
 
 // --- SHOULD FAIL — wrong location ---
 
-describe('should fail - issue in wrong location', () => {
+describe('should comment - issue in wrong location', () => {
   test('issue ref in Reason section instead of Issue section', async () => {
     const body = [
       '### Issue # (if applicable)',
@@ -158,7 +158,7 @@ describe('should fail - issue in wrong location', () => {
       'This fixes #2.',
     ].join('\n');
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('not in the expected location'),
@@ -177,7 +177,7 @@ describe('should fail - issue in wrong location', () => {
       'Related to #3.',
     ].join('\n');
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('not in the expected location'),
@@ -186,9 +186,9 @@ describe('should fail - issue in wrong location', () => {
   });
 });
 
-// --- SHOULD FAIL — has heading but missing issue number ---
+// --- SHOULD COMMENT — has heading but missing issue number ---
 
-describe('should fail - template present but no issue number', () => {
+describe('should comment - template present but no issue number', () => {
   test('heading present with no issue number text', async () => {
     const body = [
       '### Issue # (if applicable)',
@@ -199,7 +199,7 @@ describe('should fail - template present but no issue number', () => {
       'Test',
     ].join('\n');
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('missing a valid issue number'),
@@ -217,7 +217,7 @@ describe('should fail - template present but no issue number', () => {
       'Test',
     ].join('\n');
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('missing a valid issue number'),
@@ -226,12 +226,12 @@ describe('should fail - template present but no issue number', () => {
   });
 });
 
-// --- SHOULD FAIL — no template at all ---
+// --- SHOULD COMMENT — no template at all ---
 
-describe('should fail - no template structure', () => {
+describe('should comment - no template structure', () => {
   test('completely empty body', async () => {
     const { core, github } = await run('');
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -242,7 +242,7 @@ describe('should fail - no template structure', () => {
   test('random freeform text without template', async () => {
     const body = "Hey, here's my change. I updated the README.";
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -256,7 +256,7 @@ describe('should fail - no template structure', () => {
       '- [ ] Added tests',
     ].join('\n');
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -265,9 +265,9 @@ describe('should fail - no template structure', () => {
   });
 });
 
-// --- SHOULD FAIL — invalid issue references ---
+// --- SHOULD COMMENT — invalid issue references ---
 
-describe('should fail - invalid issue references', () => {
+describe('should comment - invalid issue references', () => {
   test('non-existent issue', async () => {
     const body = [
       '### Issue # (if applicable)',
@@ -275,7 +275,7 @@ describe('should fail - invalid issue references', () => {
       'Closes #999999.',
     ].join('\n');
     const { core, github } = await run(body, { issues: {} });
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#999999 (does not exist)'),
@@ -292,7 +292,7 @@ describe('should fail - invalid issue references', () => {
     const { core, github } = await run(body, {
       issues: { 1: { state: 'open', pull_request: {} } },
     });
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#1 (is a pull request, not an issue)'),
@@ -309,7 +309,7 @@ describe('should fail - invalid issue references', () => {
     const { core, github } = await run(body, {
       issues: { 2: { state: 'open' } },
     });
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#999999 (does not exist)'),
@@ -328,7 +328,7 @@ describe('should fail - invalid issue references', () => {
     const core = createMockCore();
     const context = createMockContext(body);
     await prIssueCheck({ github, context, core });
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#50 (does not exist)'),
@@ -352,7 +352,7 @@ describe('edge cases', () => {
       'Test',
     ].join('\n');
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('not in the expected location'),
@@ -367,7 +367,7 @@ describe('edge cases', () => {
       'Closes #0.',
     ].join('\n');
     const { core } = await run(body, { issues: {} });
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
   });
 
   test('very large issue number', async () => {
@@ -377,7 +377,7 @@ describe('edge cases', () => {
       'Closes #2147483647.',
     ].join('\n');
     const { core } = await run(body, { issues: {} });
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
   });
 
   test('leading zeros parsed as valid issue number', async () => {
@@ -397,7 +397,7 @@ describe('edge cases', () => {
       'See https://github.com/org/repo/blob/main/file.ts#123',
     ].join('\n');
     const { core } = await run(body, { issues: {} });
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
   });
 
   test('freeform text with GitHub-appended template below', async () => {
@@ -411,7 +411,7 @@ describe('edge cases', () => {
       '### Description of changes',
     ].join('\n');
     const { core, github } = await run(body);
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -472,6 +472,6 @@ describe('comment management', () => {
     github.rest.issues.createComment.mockRejectedValue(new Error('rate limited'));
     await prIssueCheck({ github, context, core });
     expect(core.warning).toHaveBeenCalledWith(expect.stringContaining('rate limited'));
-    expect(core.setFailed).toHaveBeenCalled();
+    expect(core.setFailed).not.toHaveBeenCalled();
   });
 });

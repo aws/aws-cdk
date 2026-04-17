@@ -162,7 +162,6 @@ export default async function prIssueCheck({ github, context, core }: ScriptArgs
   if (matches.length === 0) {
     const message = buildMissingReferenceMessage(lines);
     await upsertComment(github, core, owner, repo, prNumber, message);
-    core.setFailed('PR description is missing a valid issue reference.');
     return;
   }
 
@@ -180,7 +179,6 @@ export default async function prIssueCheck({ github, context, core }: ScriptArgs
     ].join('\n');
 
     await upsertComment(github, core, owner, repo, prNumber, message);
-    core.setFailed('PR references invalid issues.');
     return;
   }
 
