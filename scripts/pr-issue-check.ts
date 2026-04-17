@@ -117,6 +117,8 @@ export function buildMissingReferenceMessage(lines: string[]): string {
       '',
       'If no existing issue matches your change, please [create one](https://github.com/aws/aws-cdk/issues/new/choose) first and then reference it here.',
       '',
+      'PRs without a linked issue will receive lower priority for review and merging.',
+      '',
       'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
     ].join('\n');
   }
@@ -127,6 +129,8 @@ export function buildMissingReferenceMessage(lines: string[]): string {
     'Please update the description to follow the [PR template](https://github.com/aws/aws-cdk/blob/main/.github/PULL_REQUEST_TEMPLATE.md) and include a line like `Closes #123` in the Issue section.',
     '',
     'If no existing issue matches your change, please [create one](https://github.com/aws/aws-cdk/issues/new/choose) first and then reference it here.',
+    '',
+    'PRs without a linked issue will receive lower priority for review and merging.',
     '',
     'GitHub keywords like `Closes`, `Fixes`, or `Resolves` are all supported.',
   ].join('\n');
