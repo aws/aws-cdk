@@ -396,6 +396,21 @@ export class BedrockFoundationModel implements IBedrockInvokable {
   );
 
   /**
+   * Anthropic's Claude Opus 4.7 model, Anthropic's most capable generally available model,
+   * advancing performance across coding, enterprise workflows, and long-running agentic tasks.
+   * Features a 1M token context window, 128K max output tokens, and supports reasoning.
+   *
+   * Features:
+   * - Supports vision (Image input modality)
+   * - Cross-region support
+   * - Supports Bedrock Agents
+   */
+  public static readonly ANTHROPIC_CLAUDE_OPUS_4_7 = new BedrockFoundationModel(
+    'anthropic.claude-opus-4-7',
+    { supportsAgents: true, supportsCrossRegion: true },
+  );
+
+  /**
    * Anthropic's Claude Sonnet 4.6 model.
    * Improved performance for coding, agentic workflows, and browser-based automation.
    *

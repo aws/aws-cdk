@@ -2,6 +2,94 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.250.0](https://github.com/aws/aws-cdk/compare/v2.249.0...v2.250.0) (2026-04-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-emr: AWS::EMR::Cluster: MonitoringConfiguration property removed.
+aws-emr: AWS::EMR::Cluster: CloudWatchLogConfiguration type removed.
+aws-emr: AWS::EMR::Cluster: EMRConfiguration type removed.
+aws-emr: AWS::EMR::Cluster: MonitoringConfiguration type removed.
+
+### Features
+
+* **s3files:** s3Files Lambda L1 integration ([#37547](https://github.com/aws/aws-cdk/issues/37547)) ([af41262](https://github.com/aws/aws-cdk/commit/af41262a657e9533abcf07c98d0d2c4fad5e35f0))
+* update L1 CloudFormation resource definitions ([#37582](https://github.com/aws/aws-cdk/issues/37582)) ([c99ce64](https://github.com/aws/aws-cdk/commit/c99ce64b7715f7bd40b09e08ecf5b05666a5f525))
+* **mediapackagev2:** add region attribute on mediapackagev2 resources and extra naming validation ([#37526](https://github.com/aws/aws-cdk/issues/37526)) ([112ed67](https://github.com/aws/aws-cdk/commit/112ed67da18a43019a17f330ec6db399cd7d64d0))
+
+
+### Bug Fixes
+
+* **eks-v2:** respect securityGroup(s) in KubectlProviderOptions ([#37247](https://github.com/aws/aws-cdk/issues/37247)) ([4c530fa](https://github.com/aws/aws-cdk/commit/4c530fa49bbf4b1956f7ebf92b7b517ff668dfdb)), closes [#36653](https://github.com/aws/aws-cdk/issues/36653)
+* **lambda-nodejs:** if entry path is not under project root, bundling in Docker fails in an unclear way ([#37572](https://github.com/aws/aws-cdk/issues/37572)) ([73662df](https://github.com/aws/aws-cdk/commit/73662dfdece2e9bacf0afcd8f40ae07b48ed7891))
+
+## [2.249.0](https://github.com/aws/aws-cdk/compare/v2.248.0...v2.249.0) (2026-04-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* L1 resources are automatically generated from
+public CloudFormation Resource Schemas. They are built to closely
+reflect the real state of CloudFormation. Sometimes these updates can
+contain changes that are incompatible with previous types, but more
+accurately reflect reality. In this release we have changed:
+
+aws-appstream: AWS::AppStream::Stack: Id attribute removed.
+aws-appsync: AWS::AppSync::GraphQLApi: LogConfig.CloudWatchLogsRoleArn
+property is now required.
+aws-appsync: AWS::AppSync::GraphQLApi: LogConfig.FieldLogLevel property
+is now required.
+aws-kafkaconnect: AWS::KafkaConnect::Connector:
+ProvisionedCapacity.McuCount property is now required.
+
+### Features
+
+* **batch:** add AL2023 image types and default to AL2023 (under feature flag) ([#37539](https://github.com/aws/aws-cdk/issues/37539)) ([6c1251c](https://github.com/aws/aws-cdk/commit/6c1251c5b18b99a31b6973d3877907f93b5130f0)), closes [#35839](https://github.com/aws/aws-cdk/issues/35839) [#37205](https://github.com/aws/aws-cdk/issues/37205)
+* update L1 CloudFormation resource definitions ([f28bb0e](https://github.com/aws/aws-cdk/commit/f28bb0ea65e6cd777299e14c364d33f8cd4a7af9))
+* update L1 CloudFormation resource definitions ([#37530](https://github.com/aws/aws-cdk/issues/37530)) ([117562c](https://github.com/aws/aws-cdk/commit/117562c3545720a5ed5127ecadae02787241b483))
+* **core:** add source tracing for L1 construct property mutations ([#37543](https://github.com/aws/aws-cdk/issues/37543)) ([8f38378](https://github.com/aws/aws-cdk/commit/8f3837807ef5d06d249c59cf9a567a71a4d4cc8d))
+
+
+### Bug Fixes
+
+* ensure issues created outside templates receive needs-triage label ([#37505](https://github.com/aws/aws-cdk/issues/37505)) ([58cb92a](https://github.com/aws/aws-cdk/commit/58cb92a30fb3c3984f9360a39cce3dbdf46999e9)), closes [#37454](https://github.com/aws/aws-cdk/issues/37454) [Abogical/aws-cdk#24](https://github.com/Abogical/aws-cdk/issues/24)
+* include cfn-property-mixins in spec-update workflow gen step ([e847c52](https://github.com/aws/aws-cdk/commit/e847c52d750089aa0213f620fc55de70fc06b3cd)), closes [#36300](https://github.com/aws/aws-cdk/issues/36300)
+
+## [2.248.0](https://github.com/aws/aws-cdk/compare/v2.247.0...v2.248.0) (2026-04-02)
+
+
+### Bug Fixes
+
+* **eks:** downgrade isolated subnet validation from error to warning ([#37500](https://github.com/aws/aws-cdk/issues/37500)) ([470856c](https://github.com/aws/aws-cdk/commit/470856cadcee34b2ec5e0620fab63838c223fd97)), closes [#37491](https://github.com/aws/aws-cdk/issues/37491)
+
+## [2.247.0](https://github.com/aws/aws-cdk/compare/v2.246.0...v2.247.0) (2026-04-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-bedrockagentcore: AWS::BedrockAgentCore::OnlineEvaluationConfig: ExecutionStatus attribute removed.
+aws-appstream: AWS::AppStream::ImageBuilder: Name property is now immutable.
+aws-eks: AWS::EKS::Capability: EKS_CAPABILITY_ACK_S3_LOGS vended log type removed.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37410](https://github.com/aws/aws-cdk/issues/37410)) ([bd2c318](https://github.com/aws/aws-cdk/commit/bd2c3187323c7bcf8a19943f86682c14c601d1a9))
+* **apigatewayv2:** add role support for lambda authorizers ([#35706](https://github.com/aws/aws-cdk/issues/35706)) ([2fb2f16](https://github.com/aws/aws-cdk/commit/2fb2f1650e957979e5ebf8292df3a95d41baa4ff)), closes [#35696](https://github.com/aws/aws-cdk/issues/35696)
+* **batch:** skip unregister job definition on update ([#36011](https://github.com/aws/aws-cdk/issues/36011)) ([2fb2240](https://github.com/aws/aws-cdk/commit/2fb2240d2b2ca922e0603c3e341bb61ce9131155))
+* **elasticloadbalancingv2:** jwt verification for application load balancer ([#36099](https://github.com/aws/aws-cdk/issues/36099)) ([aacd28a](https://github.com/aws/aws-cdk/commit/aacd28aac59dbf42973302e3165140d944356b32)), closes [#36096](https://github.com/aws/aws-cdk/issues/36096)
+
+
+### Bug Fixes
+
+* bump brace-expansion from 5.0.3 to 5.0.5 to address CVE-2026-33750 ([#37379](https://github.com/aws/aws-cdk/issues/37379)) ([69cf4c9](https://github.com/aws/aws-cdk/commit/69cf4c9c44c610eb029d92e355efcf6e7f931ed2))
+* prevent prototype pollution in 2 APIs ([#37453](https://github.com/aws/aws-cdk/issues/37453)) ([1016537](https://github.com/aws/aws-cdk/commit/101653766cab8a8112608e170f5e07f5b962ba49))
+* **aws-cdk-lib:** condensed stack trace hides namespaced package name ([#37413](https://github.com/aws/aws-cdk/issues/37413)) ([cb8e7fb](https://github.com/aws/aws-cdk/commit/cb8e7fbc9fc10682d505b2cdba1a7ce173b0dfd3))
+
 ## [2.246.0](https://github.com/aws/aws-cdk/compare/v2.245.0...v2.246.0) (2026-03-31)
 
 

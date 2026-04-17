@@ -1397,13 +1397,11 @@ export class Cluster extends ClusterBase {
         const isolatedSubnetIds = new Set(this.vpc.isolatedSubnets.map(s => s.subnetId));
         const hasIsolatedSubnets = privateSubnets.some(s => isolatedSubnetIds.has(s.subnetId));
         if (hasIsolatedSubnets) {
-          throw new ValidationError(
-            lit`IsolatedKubectlSubnet`,
-            'Isolated subnets cannot be used for kubectl private subnets. Isolated subnets have no internet access, '
-            + 'which is required for the kubectl Lambda to reach the EKS API, STS, and other AWS service endpoints. '
-            + 'Use PRIVATE_WITH_EGRESS subnets with a NAT Gateway instead, or configure VPC endpoints for STS, EKS, ECR, S3 '
-            + 'and other AWS services detailed here https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
-            this,
+          Annotations.of(this).addWarningV2(
+            '@aws-cdk/aws-eks:isolatedSubnetsForKubectlPrivateSubnets',
+            'Isolated subnets are being used for kubectl private subnets. Isolated subnets have no internet access. '
+            + 'Ensure that VPC endpoints are configured for STS, EKS, ECR, S3 and other AWS services detailed here '
+            + 'https://docs.aws.amazon.com/eks/latest/userguide/private-clusters.html',
           );
         }
       }
@@ -1445,6 +1443,14 @@ export class Cluster extends ClusterBase {
     const commonCommandOptions = [`--region ${stack.region}`];
 
     if (props.kubectlProviderOptions) {
+      if (this._kubectlProviderOptions?.securityGroup !== undefined &&
+          this._kubectlProviderOptions?.securityGroups !== undefined) {
+        throw new ValidationError(
+          lit`SecurityGroupConflict`,
+          'Cannot specify both "securityGroup" and "securityGroups". Use "securityGroups" only.',
+          this,
+        );
+      }
       this._kubectlProvider = new KubectlProvider(this, 'KubectlProvider', {
         cluster: this,
         role: this._kubectlProviderOptions?.role,
@@ -1453,6 +1459,10 @@ export class Cluster extends ClusterBase {
         environment: this._kubectlProviderOptions?.environment,
         memory: this._kubectlProviderOptions?.memory,
         privateSubnets: kubectlSubnets,
+        securityGroups: this._kubectlProviderOptions?.securityGroups
+          ?? (this._kubectlProviderOptions?.securityGroup
+            ? [this._kubectlProviderOptions.securityGroup]
+            : undefined),
       });
 
       // give the handler role admin access to the cluster

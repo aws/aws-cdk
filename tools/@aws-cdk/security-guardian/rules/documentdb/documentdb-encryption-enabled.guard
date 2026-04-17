@@ -17,5 +17,6 @@ rule DOCUMENTDB_ENCRYPTION_ENABLED when %documentdb_clusters !empty {
     %documentdb_clusters {
         Properties.StorageEncrypted exists
         Properties.StorageEncrypted == true
+            <<##ERROR:DocumentDB cluster must have encryption enabled. Set 'StorageEncrypted' to true.##>>
     }
 }
