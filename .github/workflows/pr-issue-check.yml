@@ -15,4 +15,8 @@ jobs:
         run: npx tsc --esModuleInterop --target es2020 --skipLibCheck --outDir scripts scripts/pr-issue-check.ts
       - name: Check PR description for issue reference
         uses: actions/github-script@v8
-        run: node ./scripts/pr-issue-check.js
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const script = require('./scripts/pr-issue-check.js').default;
+            await script({ github, context, core });
