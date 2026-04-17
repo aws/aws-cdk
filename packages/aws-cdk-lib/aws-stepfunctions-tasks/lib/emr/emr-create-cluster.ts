@@ -765,11 +765,12 @@ export namespace EmrCreateCluster {
     readonly instanceType: string;
 
     /**
-     * The priority at which Amazon EMR launches the EC2 instance with this instance type.
-     * Priority starts at 0, which is the highest priority. Amazon EMR considers the highest priority first.
-     *
-     * @default - None
-     */
+      * The priority at which Amazon EMR launches the EC2 instance with this instance type.
+      * Priority starts at 0, which is the highest priority. Amazon EMR considers the highest priority first.
+      *
+      * @see https://docs.aws.amazon.com/emr/latest/APIReference/API_InstanceTypeConfig.html
+      * @default - No priority is assigned
+      */
     readonly priority?: number;
 
     /**
