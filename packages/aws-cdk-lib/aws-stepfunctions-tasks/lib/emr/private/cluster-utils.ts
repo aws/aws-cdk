@@ -96,6 +96,15 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
     throw new UnscopedValidationError('Cannot specify both bidPrice and bidPriceAsPercentageOfOnDemandPrice');
   }
 
+  if (property.priority !== undefined && !cdk.Token.isUnresolved(property.priority)) {
+    if (property.priority < 0) {
+      throw new UnscopedValidationError(
+        `priority must be a non-negative number, got ${property.priority}. ` +
+        'Priority values start at 0 (highest priority) and are used with OnDemandAllocationStrategy.PRIORITIZED.',
+      );
+    }
+  }
+
   return {
     BidPrice: cdk.stringToCloudFormation(property.bidPrice),
     BidPriceAsPercentageOfOnDemandPrice: cdk.numberToCloudFormation(property.bidPriceAsPercentageOfOnDemandPrice),
@@ -171,6 +180,22 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
       throw new UnscopedValidationError(`For a master instance fleet, targetOnDemandCapacity cannot be a number other than 1, got ${property.targetOnDemandCapacity}`);
     }
   }
+
+  const hasPriority = property.instanceTypeConfigs?.some(
+    config => config.priority !== undefined && !cdk.Token.isUnresolved(config.priority),
+  );
+  const onDemandStrategy = property.launchSpecifications?.onDemandSpecification?.allocationStrategy;
+
+  if (hasPriority && onDemandStrategy !== undefined
+    && !cdk.Token.isUnresolved(onDemandStrategy)
+    && onDemandStrategy !== EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED) {
+    throw new UnscopedValidationError(
+      'Priority values are set on instance type configs, but the OnDemand allocation strategy is ' +
+      `'${onDemandStrategy}' instead of 'PRIORITIZED'. Priority values only take effect with ` +
+      'OnDemandAllocationStrategy.PRIORITIZED. Either remove the priority values or change the allocation strategy.',
+    );
+  }
+
   return {
     InstanceFleetType: cdk.stringToCloudFormation(property.instanceFleetType?.valueOf()),
     InstanceTypeConfigs: cdk.listMapper(InstanceTypeConfigPropertyToJson)(property.instanceTypeConfigs),

@@ -797,6 +797,7 @@ export namespace EmrCreateCluster {
     LOWEST_PRICE = 'lowest-price',
     /**
      * Prioritized, which launches instances based on the priority that you assign to each instance type configuration.
+     * When using this strategy, you must configure the priority for at least one instance type in the fleet.
      */
     PRIORITIZED = 'prioritized',
   }
