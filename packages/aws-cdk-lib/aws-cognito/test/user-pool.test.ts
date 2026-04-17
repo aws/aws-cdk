@@ -1036,6 +1036,99 @@ describe('User Pool', () => {
     });
   });
 
+  test('throws error when custom attribute conflicts with standard attribute name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN / THEN
+    expect(() => new UserPool(stack, 'Pool', {
+      customAttributes: {
+        name: new StringAttribute(),
+      },
+    })).toThrow(/Custom attribute 'name' conflicts with a standard attribute name/);
+  });
+
+  test('throws error for multiple standard attribute name collisions', () => {
+    // GIVEN
+    const stack = new Stack();
+    const standardNames = ['address', 'email', 'family_name', 'phone_number', 'given_name'];
+
+    // WHEN / THEN
+    standardNames.forEach(name => {
+      expect(() => new UserPool(stack, `Pool-${name}`, {
+        customAttributes: {
+          [name]: new StringAttribute(),
+        },
+      })).toThrow(/conflicts with a standard attribute name/);
+    });
+  });
+
+  test('allows custom attributes with non-conflicting names', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN
+    new UserPool(stack, 'Pool', {
+      customAttributes: {
+        customField: new StringAttribute(),
+        myAttribute: new NumberAttribute(),
+        user_custom_data: new StringAttribute(),
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Cognito::UserPool', {
+      Schema: [
+        {
+          Name: 'customField',
+          AttributeDataType: 'String',
+        },
+        {
+          Name: 'myAttribute',
+          AttributeDataType: 'Number',
+        },
+        {
+          Name: 'user_custom_data',
+          AttributeDataType: 'String',
+        },
+      ],
+    });
+  });
+
+  test('allows custom attribute names from CloudFormation parameters', () => {
+    // GIVEN
+    const stack = new Stack();
+    const parameter = new CfnParameter(stack, 'AttrName', { type: 'String' });
+
+    // WHEN / THEN
+    expect(() => new UserPool(stack, 'Pool', {
+      customAttributes: {
+        [parameter.valueAsString]: new StringAttribute(),
+      },
+    })).not.toThrow();
+  });
+
+  test('error message lists all standard attribute names', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN / THEN
+    try {
+      new UserPool(stack, 'Pool', {
+        customAttributes: {
+          email: new StringAttribute(),
+        },
+      });
+      throw new Error('Expected validation error to be thrown');
+    } catch (error: any) {
+      expect(error.message).toContain('email');
+      expect(error.message).toContain('Standard attribute names:');
+      expect(error.message).toContain('address');
+      expect(error.message).toContain('name');
+      expect(error.message).toContain('family_name');
+    }
+  });
+
   test('mfaTypes is ignored when mfaEnforcement is undefined or set to OFF', () => {
     // GIVEN
     const stack = new Stack();
