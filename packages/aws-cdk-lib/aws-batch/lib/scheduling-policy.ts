@@ -60,6 +60,16 @@ export abstract class SchedulingPolicyBase extends Resource implements IScheduli
 }
 
 /**
+ * The strategy for assigning idle resources when using a Quota Share scheduling policy.
+ */
+export enum IdleResourceAssignmentStrategy {
+  /**
+   * Idle resources are assigned to jobs in the order they were submitted (first in, first out).
+   */
+  FIFO = 'FIFO',
+}
+
+/**
  * Represents a group of Job Definitions. All Job Definitions that
  * declare a share identifier will be considered members of the Share
  * defined by that share identifier.
@@ -266,5 +276,91 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
   @MethodMetadata()
   public addShare(share: Share) {
     this.shares.push(share);
+  }
+}
+
+/**
+ * Represents a Quota Share Scheduling Policy.
+ */
+export interface IQuotaShareSchedulingPolicy extends ISchedulingPolicy {
+  /**
+   * The strategy for assigning idle resources.
+   *
+   * @default - no idle resource assignment strategy
+   */
+  readonly idleResourceAssignmentStrategy?: IdleResourceAssignmentStrategy;
+}
+
+/**
+ * Props for a QuotaShareSchedulingPolicy
+ */
+export interface QuotaShareSchedulingPolicyProps extends SchedulingPolicyProps {
+  /**
+   * The strategy for assigning idle resources.
+   *
+   * When set to FIFO, idle resources are assigned to jobs in the order they were submitted.
+   *
+   * @default - no idle resource assignment strategy
+   */
+  readonly idleResourceAssignmentStrategy?: IdleResourceAssignmentStrategy;
+}
+
+/**
+ * Represents a Quota Share Scheduling Policy. A Quota Share Scheduling Policy
+ * controls how idle resources are assigned to jobs in the queue.
+ *
+ * Unlike a Fairshare Scheduling Policy which distributes resources based on share weights,
+ * a Quota Share Scheduling Policy uses a simpler idle resource assignment strategy.
+ *
+ * Note: A scheduling policy can use either a Fairshare Policy or a Quota Share Policy, but not both.
+ *
+ * @resource AWS::Batch::SchedulingPolicy
+ */
+@propertyInjectable
+export class QuotaShareSchedulingPolicy extends SchedulingPolicyBase implements IQuotaShareSchedulingPolicy {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-batch.QuotaShareSchedulingPolicy';
+
+  /**
+   * Reference an existing Quota Share Scheduling Policy by its ARN
+   */
+  public static fromQuotaShareSchedulingPolicyArn(scope: Construct, id: string, quotaShareSchedulingPolicyArn: string): IQuotaShareSchedulingPolicy {
+    const stack = Stack.of(scope);
+    class Import extends SchedulingPolicyBase implements IQuotaShareSchedulingPolicy {
+      public readonly schedulingPolicyArn = quotaShareSchedulingPolicyArn;
+      public readonly schedulingPolicyName = stack.splitArn(quotaShareSchedulingPolicyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    }
+
+    return new Import(scope, id);
+  }
+
+  public readonly idleResourceAssignmentStrategy?: IdleResourceAssignmentStrategy;
+
+  private readonly resource: CfnSchedulingPolicy;
+
+  @memoizedGetter
+  public get schedulingPolicyArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
+      service: 'batch',
+      resource: 'scheduling-policy',
+      resourceName: this.physicalName,
+    });
+  }
+
+  @memoizedGetter
+  public get schedulingPolicyName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  constructor(scope: Construct, id: string, props?: QuotaShareSchedulingPolicyProps) {
+    super(scope, id, props);
+    addConstructMetadata(this, props);
+    this.idleResourceAssignmentStrategy = props?.idleResourceAssignmentStrategy;
+    this.resource = new CfnSchedulingPolicy(this, 'Resource', {
+      quotaSharePolicy: {
+        idleResourceAssignmentStrategy: this.idleResourceAssignmentStrategy,
+      },
+      name: props?.schedulingPolicyName,
+    });
   }
 }
