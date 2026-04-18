@@ -107,6 +107,15 @@ export interface HandlerFrameworkClassProps {
    * @default MemberVisibility.Public
    */
   readonly constructorVisibility?: MemberVisibility;
+
+  /**
+   * Deterministic content hash of the bundled handler code. When supplied,
+   * the generated class emits this hash as the asset hash so the S3 object
+   * key for the Lambda code remains stable unless the code actually changes.
+   *
+   * @default - asset hash is computed at synth time from the bundled directory
+   */
+  readonly sourceHash?: string;
 }
 
 interface BuildRuntimePropertyOptions {
@@ -134,11 +143,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
           scope.registerImport(LAMBDA_MODULE);
         }
 
+        const fromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          fromAssetArgs.push(expr.directCode(`{ assetHash: '${props.sourceHash}' }`));
+        }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...fromAssetArgs)],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime })],
         ]);
@@ -226,11 +239,15 @@ export abstract class HandlerFrameworkClass extends ClassType {
           },
         });
 
+        const singletonFromAssetArgs: Expression[] = [
+          PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
+        ];
+        if (props.sourceHash) {
+          singletonFromAssetArgs.push(expr.directCode(`{ assetHash: '${props.sourceHash}' }`));
+        }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
-          ['code', $T(LAMBDA_MODULE.Code).fromAsset(
-            PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
-          )],
+          ['code', $T(LAMBDA_MODULE.Code).fromAsset(...singletonFromAssetArgs)],
           ['handler', expr.lit(props.handler)],
           ['runtime', this.buildRuntimeProperty(scope, { runtime: props.runtime, isEvalNodejsProvider })],
         ]);
