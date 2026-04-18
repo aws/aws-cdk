@@ -68,9 +68,10 @@ new ecs.FargateService(stack, 'ManagedInstancesService', {
     },
   ],
   desiredCount: 1,
+  circuitBreaker: { rollback: true },
 });
 
-new integ.IntegTest(app, 'ManagedInstancesCapacityProviderDefaultSg', {
+const integTest = new integ.IntegTest(app, 'ManagedInstancesCapacityProviderDefaultSg', {
   testCases: [stack],
   cdkCommandOptions: {
     destroy: {
@@ -80,4 +81,25 @@ new integ.IntegTest(app, 'ManagedInstancesCapacityProviderDefaultSg', {
   },
 });
 
-app.synth();
+const [defaultSg] = miCapacityProvider.connections.securityGroups;
+
+const describeSg = integTest.assertions.awsApiCall('EC2', 'describeSecurityGroups', {
+  GroupIds: [defaultSg.securityGroupId],
+});
+
+describeSg.expect(integ.ExpectedResult.objectLike({
+  SecurityGroups: [
+    {
+      GroupId: defaultSg.securityGroupId,
+      IpPermissions: [
+        {
+          IpProtocol: 'tcp',
+          FromPort: 80,
+          ToPort: 80,
+          IpRanges: [{ CidrIp: vpc.vpcCidrBlock }],
+        },
+      ],
+    },
+  ],
+}));
+
