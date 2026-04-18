@@ -1814,6 +1814,28 @@ new ecs.FargateService(this, 'FargateService', {
 });
 ```
 
+#### Security Groups
+
+`securityGroups` is optional. If you omit it, a default security group is created automatically in the VPC you pass via the `vpc` prop. The auto-created security group has no ingress rules; use the `connections` API to add rules as needed.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  vpc,
+  subnets: vpc.privateSubnets,
+  instanceRequirements: {
+    vCpuCountMin: 1,
+    memoryMin: Size.gibibytes(2),
+  },
+});
+
+// Add ingress rules against the auto-created security group
+miCapacityProvider.connections.allowFrom(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(80));
+```
+
+Either `securityGroups` or `vpc` must be provided. Passing neither, or passing an empty `securityGroups` array, results in a synth-time validation error.
+
 You can specify detailed instance requirements to control which types of instances are used:
 
 ```ts
