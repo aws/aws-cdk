@@ -9,12 +9,12 @@ import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 /**
  * Integration test for AccessEntry with different access entry types.
  *
- * Tests the new AccessEntryType enum values (EC2, HYBRID_LINUX, HYPERPOD_LINUX)
+ * Tests the new AccessEntryType enum values (HYBRID_LINUX, HYPERPOD_LINUX)
  * and the optional accessEntryType parameter in grantAccess method.
  *
  * Important AWS EKS API Constraint:
- * - Access entries with type EC2, HYBRID_LINUX, or HYPERPOD_LINUX cannot have access policies attached
- * - Only STANDARD type access entries support access policies
+ * - Access entries with type HYBRID_LINUX, or HYPERPOD_LINUX cannot have access policies attached
+ * - STANDARD and EC2 type access entries support access policies
  * - Use AccessEntry construct directly for non-STANDARD types
  * - Use grantAccess method for STANDARD types with policies
  */
@@ -36,17 +36,20 @@ class EksGrantAccessWithType extends Stack {
     });
 
     // Test 1: AccessEntry with EC2 type (for EKS Auto Mode)
-    // Note: EC2 type access entries cannot have access policies attached per AWS EKS API
     const ec2Role = new iam.Role(this, 'EC2Role', {
       assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
     });
 
-    new eks.AccessEntry(this, 'EC2Access', {
-      cluster,
-      principal: ec2Role.roleArn,
-      accessPolicies: [], // Empty array - EC2 type cannot have policies
-      accessEntryType: eks.AccessEntryType.EC2,
-    });
+    cluster.grantAccess(
+      'EC2Access',
+      ec2Role.roleArn,
+      [
+        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', {
+          accessScopeType: eks.AccessScopeType.CLUSTER,
+        }),
+      ],
+      { accessEntryType: eks.AccessEntryType.EC2 },
+    );
 
     // Test 2: AccessEntry with HYBRID_LINUX type
     // Note: HYBRID_LINUX type access entries cannot have access policies attached per AWS EKS API
