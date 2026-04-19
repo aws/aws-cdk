@@ -440,7 +440,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     const canaryName = arnParts.resourceName;
 
     if (!canaryName) {
-      throw new ValidationError('CanaryArnMissingName', 'Canary ARN must contain a canary name', scope);
+      throw new ValidationError(lit`CanaryArnMissingName`, 'Canary ARN must contain a canary name', scope);
     }
 
     return Canary.fromCanaryName(scope, id, canaryName);

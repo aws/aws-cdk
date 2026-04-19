@@ -6,6 +6,7 @@ import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -84,7 +85,7 @@ export class Group extends cdk.Resource implements IGroup {
     const groupName = arnParts.resourceName;
 
     if (!groupName) {
-      throw new ValidationError('GroupArnMissingName', 'Group ARN must contain a group name', scope);
+      throw new ValidationError(lit`GroupArnMissingName`, 'Group ARN must contain a group name', scope);
     }
 
     return Group.fromGroupName(scope, id, groupName);
@@ -108,7 +109,7 @@ export class Group extends cdk.Resource implements IGroup {
       }
 
       public addCanary(_canary: ICanary): void {
-        throw new ValidationError('CannotAddCanaryToImportedGroup', 'Cannot add canaries to an imported group', this);
+        throw new ValidationError(lit`CannotAddCanaryToImportedGroup`, 'Cannot add canaries to an imported group', this);
       }
     }
 
@@ -158,15 +159,15 @@ export class Group extends cdk.Resource implements IGroup {
 
     if (props.groupName && !cdk.Token.isUnresolved(props.groupName)) {
       if (props.groupName.length < 1 || props.groupName.length > 64) {
-        throw new ValidationError('InvalidGroupName', `Group name must be between 1 and 64 characters, got: ${props.groupName.length}`, this);
+        throw new ValidationError(lit`InvalidGroupName`, `Group name must be between 1 and 64 characters, got: ${props.groupName.length}`, this);
       }
       if (!/^[0-9a-z_\-]+$/.test(props.groupName)) {
-        throw new ValidationError('InvalidGroupName', `Group name must match the pattern ^[0-9a-z_\\-]+$, got: ${props.groupName}`, this);
+        throw new ValidationError(lit`InvalidGroupName`, `Group name must match the pattern ^[0-9a-z_\\-]+$, got: ${props.groupName}`, this);
       }
     }
 
     if (props.canaries && props.canaries.length > 10) {
-      throw new ValidationError('TooManyCanaries', `A group can contain at most 10 canaries, got: ${props.canaries.length}`, this);
+      throw new ValidationError(lit`TooManyCanaries`, `A group can contain at most 10 canaries, got: ${props.canaries.length}`, this);
     }
 
     props.canaries?.forEach(canary => this._canaries.add(canary));
@@ -194,7 +195,7 @@ export class Group extends cdk.Resource implements IGroup {
    */
   public addCanary(canary: ICanary): void {
     if (this._canaries.size >= 10) {
-      throw new ValidationError('TooManyCanaries', 'A group can contain at most 10 canaries', this);
+      throw new ValidationError(lit`TooManyCanaries`, 'A group can contain at most 10 canaries', this);
     }
 
     this._canaries.add(canary);
