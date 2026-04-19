@@ -43,7 +43,8 @@ export interface IGroup extends cdk.IResource, IGroupRef {
  */
 export interface GroupProps {
   /**
-   * A name for the group. It can include any Unicode characters.
+   * A name for the group. Must contain only lowercase alphanumeric characters,
+   * hyphens, or underscores, and be at most 64 characters.
    *
    * The names for all groups in your account, across all Regions, must be unique.
    *
