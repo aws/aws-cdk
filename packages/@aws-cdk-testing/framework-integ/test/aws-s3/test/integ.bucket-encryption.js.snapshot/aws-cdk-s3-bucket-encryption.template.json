@@ -107,6 +107,9 @@
         "EncryptionType": [
          "SSE-C"
         ]
+       },
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
        }
       }
      ]

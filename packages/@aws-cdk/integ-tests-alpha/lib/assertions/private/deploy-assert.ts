@@ -1,4 +1,5 @@
 import { Stack, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { IConstruct } from 'constructs';
 import { Construct, Node } from 'constructs';
 import type { IApiCall } from '../api-call-base';
@@ -45,7 +46,7 @@ export class DeployAssert extends Construct implements IDeployAssert {
     const scopes = Node.of(Node.of(construct).root).findAll();
     const deployAssert = scopes.find(s => DeployAssert.isDeployAssert(s));
     if (!deployAssert) {
-      throw new UnscopedValidationError('DeployAssertNotFound', 'No DeployAssert construct found in scopes');
+      throw new UnscopedValidationError(lit`DeployAssertNotFound`, 'No DeployAssert construct found in scopes');
     }
     return deployAssert as DeployAssert;
   }

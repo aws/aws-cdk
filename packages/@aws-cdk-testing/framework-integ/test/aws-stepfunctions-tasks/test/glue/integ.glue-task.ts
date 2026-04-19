@@ -41,12 +41,11 @@ const job = new glue.CfnJob(stack, 'Glue Job', {
   role: jobRole.roleArn,
 });
 
-const jobTask = new sfn.Task(stack, 'Glue Job Task', {
-  task: new tasks.RunGlueJobTask(job.name!, {
-    integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-    arguments: {
-      '--enable-metrics': 'true',
-    },
+const jobTask = new tasks.GlueStartJobRun(stack, 'Glue Job Task', {
+  glueJobName: job.name!,
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+  arguments: sfn.TaskInput.fromObject({
+    '--enable-metrics': 'true',
   }),
 });
 
@@ -54,7 +53,7 @@ const startTask = new sfn.Pass(stack, 'Start Task');
 const endTask = new sfn.Pass(stack, 'End Task');
 
 const stateMachine = new sfn.StateMachine(stack, 'State Machine', {
-  definition: sfn.Chain.start(startTask).next(jobTask).next(endTask),
+  definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(startTask).next(jobTask).next(endTask)),
 });
 
 new cdk.CfnOutput(stack, 'State Machine ARN Output', {

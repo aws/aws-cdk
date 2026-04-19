@@ -16,6 +16,7 @@ import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteUnderlyingResourcesProvider } from '../../custom-resource-handlers/dist/aws-synthetics/auto-delete-underlying-resources-provider.generated';
 
@@ -543,7 +544,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     addConstructMetadata(this, props);
 
     if (props.cleanup === Cleanup.LAMBDA && props.provisionedResourceCleanup) {
-      throw new ValidationError('CannotSpecifyBothCleanupOptions', 'Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.', this);
+      throw new ValidationError(lit`CannotSpecifyBothCleanupOptions`, 'Cannot specify `provisionedResourceCleanup` when `cleanup` is set to `Cleanup.LAMBDA`. Use only `provisionedResourceCleanup`.', this);
     }
 
     this.artifactsBucket = props.artifactsBucketLocation?.bucket ?? new s3.Bucket(this, 'ArtifactsBucket', {
@@ -616,7 +617,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     const match = runtimeName.match(RUNTIME_REGEX);
 
     if (!match || match.length < 3 || MIN_SUPPORTED_VERSIONS[match[1]] === undefined || parseFloat(match[2]) < MIN_SUPPORTED_VERSIONS[match[1]]) {
-      throw new ValidationError('DryRunAndUpdateNotSupported', `dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtimeName}`, this);
+      throw new ValidationError(lit`DryRunAndUpdateNotSupported`, `dryRunAndUpdate is only supported for canary runtime versions 'syn-nodejs-puppeteer-10.0+', 'syn-nodejs-playwright-2.0+', or 'syn-python-selenium-5.1+', got: ${runtimeName}`, this);
     }
   }
 
@@ -626,11 +627,11 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     }
 
     if (browserConfigs.length > 2) {
-      throw new ValidationError('TooManyBrowserConfigurations', `You can specify up to 2 browser configurations, got: ${browserConfigs.length}.`, this);
+      throw new ValidationError(lit`TooManyBrowserConfigurations`, `You can specify up to 2 browser configurations, got: ${browserConfigs.length}.`, this);
     }
 
     if (browserConfigs.length === 0) {
-      throw new ValidationError('EmptyBrowserConfigurations', 'browserConfigs must contain at least one browser type if specified.', this);
+      throw new ValidationError(lit`EmptyBrowserConfigurations`, 'browserConfigs must contain at least one browser type if specified.', this);
     }
 
     // Firefox support validation
@@ -641,7 +642,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
         runtimeName.includes('python-selenium');
 
       if (isSeleniumRuntime) {
-        throw new ValidationError('FirefoxNotSupportedWithPythonSelenium', 'Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.', this);
+        throw new ValidationError(lit`FirefoxNotSupportedWithPythonSelenium`, 'Firefox browser is not supported with Python Selenium runtimes. Use Chrome instead or switch to a Node.js runtime with Puppeteer or Playwright.', this);
       }
     }
   }
@@ -684,7 +685,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('VpcRequiredForSecurityGroups', 'Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.', this);
+      throw new ValidationError(lit`VpcRequiredForSecurityGroups`, 'Only VPC-associated Canaries have security groups to manage. Supply the "vpc" parameter when creating the Canary.', this);
     }
     return this._connections;
   }
@@ -828,15 +829,15 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     ];
     if (oldRuntimes.includes(runtime)) {
       if (!handler.match(/^[0-9A-Za-z_\\-]+\.handler*$/)) {
-        throw new ValidationError('MustBeCanaryHandlerSpecified', `Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`, this);
+        throw new ValidationError(lit`MustBeCanaryHandlerSpecified`, `Canary Handler must be specified as \'fileName.handler\' for legacy runtimes, received ${handler}`, this);
       }
     } else {
       if (!handler.match(/^([0-9a-zA-Z_-]+\/)*[0-9A-Za-z_\\-]+\.[A-Za-z_][A-Za-z0-9_]*$/)) {
-        throw new ValidationError('MustBeCanaryHandlerSpecified', `Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`, this);
+        throw new ValidationError(lit`MustBeCanaryHandlerSpecified`, `Canary Handler must be specified either as \'fileName.handler\', \'fileName.functionName\', or \'folder/fileName.functionName\', received ${handler}`, this);
       }
     }
     if (handler.length < 1 || handler.length > 128) {
-      throw new ValidationError('HandlerLengthOutOfRange', `Canary Handler length must be between 1 and 128, received ${handler.length}`, this);
+      throw new ValidationError(lit`HandlerLengthOutOfRange`, `Canary Handler length must be between 1 and 128, received ${handler.length}`, this);
     }
   }
 
@@ -856,17 +857,17 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
         (!cdk.Token.isUnresolved(props.runtime.name) && props.runtime.name.includes('playwright'))
       )
     ) {
-      throw new ValidationError('ActiveTracingNotSupported', `You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${props.runtime.name}.`, this);
+      throw new ValidationError(lit`ActiveTracingNotSupported`, `You can only enable active tracing for canaries that use canary runtime version 'syn-nodejs-2.0' or later and are not using the Playwright runtime, got ${props.runtime.name}.`, this);
     }
 
     let memoryInMb: number | undefined;
     if (!cdk.Token.isUnresolved(props.memory) && props.memory !== undefined) {
       memoryInMb = props.memory.toMebibytes();
       if (memoryInMb % 64 !== 0) {
-        throw new ValidationError('MemoryMustBeMultipleOf64', `\`memory\` must be a multiple of 64 MiB, got ${memoryInMb} MiB.`, this);
+        throw new ValidationError(lit`MemoryMustBeMultipleOf64`, `\`memory\` must be a multiple of 64 MiB, got ${memoryInMb} MiB.`, this);
       }
       if (memoryInMb < 960 || memoryInMb > 3008) {
-        throw new ValidationError('MemoryOutOfRange', `\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`, this);
+        throw new ValidationError(lit`MemoryOutOfRange`, `\`memory\` must be between 960 MiB and 3008 MiB, got ${memoryInMb} MiB.`, this);
       }
     }
 
@@ -874,12 +875,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
     if (!cdk.Token.isUnresolved(props.timeout) && props.timeout !== undefined) {
       const timeoutInMillis = props.timeout.toMilliseconds();
       if (timeoutInMillis % 1000 !== 0) {
-        throw new ValidationError('TimeoutMustBeInSeconds', `\`timeout\` must be set as an integer representing seconds, got ${timeoutInMillis} milliseconds.`, this);
+        throw new ValidationError(lit`TimeoutMustBeInSeconds`, `\`timeout\` must be set as an integer representing seconds, got ${timeoutInMillis} milliseconds.`, this);
       }
 
       timeoutInSeconds = props.timeout.toSeconds();
       if (timeoutInSeconds < 3 || timeoutInSeconds > 840) {
-        throw new ValidationError('TimeoutOutOfRange', `\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`, this);
+        throw new ValidationError(lit`TimeoutOutOfRange`, `\`timeout\` must be between 3 seconds and 840 seconds, got ${timeoutInSeconds} seconds.`, this);
       }
     }
 
@@ -907,7 +908,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
   private createVpcConfig(props: CanaryProps): CfnCanary.VPCConfigProperty | undefined {
     if (!props.vpc) {
       if (props.vpcSubnets != null || props.securityGroups != null) {
-        throw new ValidationError('VpcRequiredForVpcProperties', "You must provide the 'vpc' prop when using VPC-related properties.", this);
+        throw new ValidationError(lit`VpcRequiredForVpcProperties`, "You must provide the 'vpc' prop when using VPC-related properties.", this);
       }
 
       return undefined;
@@ -915,7 +916,7 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     if (subnetIds.length < 1) {
-      throw new ValidationError('NoMatchingSubnetsFound', 'No matching subnets found in the VPC.', this);
+      throw new ValidationError(lit`NoMatchingSubnetsFound`, 'No matching subnets found in the VPC.', this);
     }
 
     let securityGroups: ec2.ISecurityGroup[];
@@ -948,12 +949,12 @@ export class Canary extends cdk.Resource implements ec2.IConnectable, ICanary {
       props.artifactS3EncryptionMode === ArtifactsEncryptionMode.S3_MANAGED &&
       props.artifactS3KmsKey
     ) {
-      throw new ValidationError('KmsKeyWithoutKmsEncryption', `A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`, this);
+      throw new ValidationError(lit`KmsKeyWithoutKmsEncryption`, `A customer-managed KMS key was provided, but the encryption mode is not set to SSE-KMS, got: ${props.artifactS3EncryptionMode}.`, this);
     }
 
     // Only check runtime family is Node.js because versions prior to `syn-nodejs-puppeteer-3.3` are deprecated and can no longer be configured.
     if (!isNodeRuntime && props.artifactS3EncryptionMode) {
-      throw new ValidationError('ArtifactEncryptionNotSupported', `Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got ${props.runtime.name}.`, this);
+      throw new ValidationError(lit`ArtifactEncryptionNotSupported`, `Artifact encryption is only supported for canaries that use Synthetics runtime version \`syn-nodejs-puppeteer-3.3\` or later and the Playwright runtime, got ${props.runtime.name}.`, this);
     }
 
     const encryptionMode = props.artifactS3EncryptionMode ? props.artifactS3EncryptionMode :
@@ -1015,9 +1016,9 @@ const nameRegex: RegExp = /^[0-9a-z_\-]+$/;
  */
 function validateName(name: string) {
   if (name.length > 255) {
-    throw new UnscopedValidationError('CanaryNameLarge', `Canary name is too large, must be between 1 and 255 characters, but is ${name.length} (got "${name}")`);
+    throw new UnscopedValidationError(lit`CanaryNameLarge`, `Canary name is too large, must be between 1 and 255 characters, but is ${name.length} (got "${name}")`);
   }
   if (!nameRegex.test(name)) {
-    throw new UnscopedValidationError('MustBeCanaryNameLowercase', `Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
+    throw new UnscopedValidationError(lit`MustBeCanaryNameLowercase`, `Canary name must be lowercase, numbers, hyphens, or underscores (got "${name}")`);
   }
 }

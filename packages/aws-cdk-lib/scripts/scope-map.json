@@ -241,6 +241,13 @@
       }
     ]
   },
+  "aws-bcmpricingcalculator": {
+    "scopes": [
+      {
+        "namespace": "AWS::BcmPricingCalculator"
+      }
+    ]
+  },
   "aws-bedrock": {
     "scopes": [
       {
@@ -273,6 +280,13 @@
     "scopes": [
       {
         "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-braket": {
+    "scopes": [
+      {
+        "namespace": "AWS::Braket"
       }
     ]
   },
@@ -932,6 +946,13 @@
       }
     ]
   },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
+      }
+    ]
+  },
   "aws-internetmonitor": {
     "scopes": [
       {
@@ -1334,6 +1355,13 @@
       }
     ]
   },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
+      }
+    ]
+  },
   "aws-oam": {
     "scopes": [
       {
@@ -1649,6 +1677,13 @@
       }
     ]
   },
+  "aws-s3files": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Files"
+      }
+    ]
+  },
   "aws-s3objectlambda": {
     "scopes": [
       {
@@ -1714,6 +1749,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecretsManager"
+      }
+    ]
+  },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
       }
     ]
   },
@@ -1892,6 +1934,13 @@
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },
