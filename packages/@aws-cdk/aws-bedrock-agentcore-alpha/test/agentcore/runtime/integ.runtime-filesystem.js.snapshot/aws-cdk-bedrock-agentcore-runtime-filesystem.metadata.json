@@ -1,0 +1,258 @@
+{
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time.",
+      "trace": [
+        "Annotations.addMessage (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:200:29)",
+        "Annotations.addInfo (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:137:14)",
+        "WrappedClass.validateContainerUri (/Users/ykmatsud/Documents/git/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime.js:654:52)",
+        "WrappedClass.renderAgentRuntimeArtifact (/Users/ykmatsud/Documents/git/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime.js:403:26)",
+        "Object.produce (/Users/ykmatsud/Documents/git/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime.js:273:41)",
+        "LazyAny.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:287:66)",
+        "LazyAny.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:330:32)",
+        "RememberingTokenResolver.resolveToken (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "findTokens (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:185:5)",
+        "findAllReferences (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:139:55)",
+        "resolveReferences (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:32:19)",
+        "prepareApp (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:162:96)",
+        "process.<anonymous> (/Users/ykmatsud/Documents/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:91:51)",
+        "Object.onceWrapper (node:events:633:26)",
+        "process.emit (node:events:518:28)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*",
+        "maxSessionDuration": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntime65042BB5"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntimeExecutionRoleF819113E"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntimeExecutionRoleDefaultPolicyC7A978D3"
+    }
+  ]
+}
