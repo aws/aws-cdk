@@ -267,7 +267,7 @@ export enum AccessEntryType {
   /**
    * Represents an EC2 access entry for EKS Auto Mode.
    * Use this type for node roles in EKS Auto Mode clusters where AWS automatically manages
-   * the compute infrastructure. This type cannot have access policies attached.
+   * the compute infrastructure.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-auto-mode.html
    */
