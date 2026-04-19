@@ -450,7 +450,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * @private
    */
   private validateAccessPoliciesForRestrictedTypes(accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType): void {
-    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+    const restrictedTypes = [AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
     if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
         !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
       throw new ValidationError(lit`AccessEntryTypeCannot`, `Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);

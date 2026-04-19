@@ -154,7 +154,7 @@ describe('AccessEntry', () => {
   });
 
   describe('validation', () => {
-    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+    test.each([AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
       'throws error when %s type has access policies',
       (accessEntryType) => {
         // WHEN & THEN
@@ -169,7 +169,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+    test.each([AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
       'allows %s type with empty access policies',
       (accessEntryType) => {
         // WHEN
@@ -190,7 +190,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS, AccessEntryType.EC2])(
       'allows %s type with access policies',
       (accessEntryType) => {
         // WHEN
@@ -210,7 +210,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
+    test.each([AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX])(
       'throws error when adding policies to %s type via addAccessPolicies()',
       (accessEntryType) => {
         // GIVEN
@@ -232,7 +232,7 @@ describe('AccessEntry', () => {
       },
     );
 
-    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS])(
+    test.each([AccessEntryType.STANDARD, AccessEntryType.FARGATE_LINUX, AccessEntryType.EC2_LINUX, AccessEntryType.EC2_WINDOWS, AccessEntryType.EC2])(
       'allows adding policies to %s type via addAccessPolicies()',
       (accessEntryType) => {
         // GIVEN
