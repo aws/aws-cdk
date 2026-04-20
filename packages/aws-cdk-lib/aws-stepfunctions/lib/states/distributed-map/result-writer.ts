@@ -208,7 +208,7 @@ export class ResultWriter {
   }
 
   /**
-   * Compile policy statements to provide relevent permissions to the state machine
+   * Compile policy statements to provide relevant permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
     return this.bucket?.bucketRef.bucketName ? buildS3PutObjectPolicyStatements(this.bucket.bucketRef.bucketName) : [];
@@ -281,7 +281,7 @@ export class ResultWriterV2 {
   }
 
   /**
-   * Compile policy statements to provide relevent permissions to the state machine
+   * Compile policy statements to provide relevant permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
     if (!this.bucket?.bucketName && !this.bucketNamePath) {

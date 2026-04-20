@@ -37,7 +37,7 @@ export interface IItemReader {
   render(queryLanguage?: QueryLanguage): any;
 
   /**
-   * Compile policy statements to provide relevent permissions to the state machine
+   * Compile policy statements to provide relevant permissions to the state machine
    */
   providePolicyStatements(): iam.PolicyStatement[];
 
@@ -164,7 +164,7 @@ export class S3ObjectsItemReader implements IItemReader {
   }
 
   /**
-   * Compile policy statements to provide relevent permissions to the state machine
+   * Compile policy statements to provide relevant permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
     return [
@@ -284,7 +284,7 @@ abstract class S3FileItemReader implements IItemReader {
   }
 
   /**
-   * Compile policy statements to provide relevent permissions to the state machine
+   * Compile policy statements to provide relevant permissions to the state machine
    */
   public providePolicyStatements(): iam.PolicyStatement[] {
     if (!this._bucket) return [];
