@@ -271,6 +271,16 @@ export function santitizeFieldName(name: string): string {
   return RESERVED_FIELD_NAMES_LIST.has(name) ? `${name}Property` : name;
 }
 
+/**
+ * Derive a TypeScript property name from a CloudWatch dimension name.
+ *
+ * Replaces non-alphanumeric characters (e.g. `:`, `/`) with `-` before passing
+ * to `propertyNameFromCloudFormation` so camelCasing produces a clean identifier.
+ */
+export function dimensionPropertyName(dimName: string): string {
+  return propertyNameFromCloudFormation(dimName.replace(/[^a-zA-Z0-9]/g, '-'));
+}
+
 const RESERVED_TYPE_NAMES_LIST = new Set(['Object', 'Tag', 'Math']);
 
 const RESERVED_FIELD_NAMES_LIST = new Set(['build']);

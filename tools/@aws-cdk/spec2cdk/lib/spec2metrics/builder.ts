@@ -128,17 +128,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
 
         const gen = new DimensionSetClassGenerator(metricsClass, merged, context.cloudwatchModule);
         dimSetClasses.set(className, gen.dimensionSetClass);
-
-        const usedMethodNames = new Set<string>();
-        for (const metric of merged.metrics) {
-          const methodName = metricMethodName(metric.name);
-          if (usedMethodNames.has(methodName)) {
-            log.debug(`Skipping duplicate metric method '${methodName}' in ${nsClassName}.${className} (metric: ${metric.name}, namespace: ${namespace}, statistic: ${metric.statistic})`);
-            continue;
-          }
-          usedMethodNames.add(methodName);
-          gen.addMetricMethod(metric);
-        }
+        gen.addMetricMethods(nsClassName, className, namespace);
       }
 
       submodule.namespaceMetrics.set(namespace, { metricsClass, dimSetClasses, namespace });
@@ -161,7 +151,6 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
 
     const factoryGen = new ResourceFactoryGenerator(context, submodule, resource);
     for (const dimSet of resourceDimSets) {
-      log.info(JSON.stringify(dimSet));
       factoryGen.tryAddFactory(dimSet);
     }
 
@@ -220,7 +209,7 @@ class DimensionSetClassGenerator {
       docs: { summary: `Dimensions for ${className}`, stability: Stability.External },
     });
     for (const dim of dimensions) {
-      const propName = naming.propertyNameFromCloudFormation(dim.name.replace(/[^a-zA-Z0-9]/g, '-'));
+      const propName = naming.dimensionPropertyName(dim.name);
       let propType: Type = Type.STRING;
 
       if (dim.knownValues.length > 0) {
@@ -244,12 +233,40 @@ class DimensionSetClassGenerator {
     return propsStruct;
   }
 
-  public addMetricMethod(metric: Metric) {
-    const methodName = metricMethodName(metric.name);
+  /**
+   * Generate a method for each metric, including `V2`/`V3`/... methods for each
+   * entry in `previousStatistics` (oldest first). Older-statistic methods keep
+   * their original name for backwards compatibility and are marked `@deprecated`.
+   */
+  public addMetricMethods(nsClassName: string, className: string, namespace: string) {
+    const usedMethodNames = new Set<string>();
+    for (const metric of this.merged.metrics) {
+      const baseName = metricMethodName(metric.name);
+      if (usedMethodNames.has(baseName)) {
+        log.debug(`Skipping duplicate metric method '${baseName}' in ${nsClassName}.${className} (metric: ${metric.name}, namespace: ${namespace}, statistic: ${metric.statistic})`);
+        continue;
+      }
+      usedMethodNames.add(baseName);
+
+      const stats = [...metric.previousStatistics, metric.statistic];
+      const latestName = stats.length > 1 ? `${baseName}V${stats.length}` : baseName;
+      stats.forEach((statistic, i) => {
+        this.addMetricMethod(metric, {
+          methodName: i === 0 ? baseName : `${baseName}V${i + 1}`,
+          statistic,
+          deprecated: i < stats.length - 1
+            ? `Use ${latestName}() instead; the default statistic changed to ${metric.statistic}.`
+            : undefined,
+        });
+      });
+    }
+  }
+
+  private addMetricMethod(metric: Metric, { methodName, statistic, deprecated }: { methodName: string; statistic: string; deprecated?: string }) {
     const method = this.dimensionSetClass.addMethod({
       name: methodName,
       returnType: Type.fromName(this.cloudwatchModule, 'IMetric'),
-      docs: { summary: metric.description ?? `The ${metric.name} metric`, default: `${metric.statistic} over 5 minutes` },
+      docs: { summary: metric.description ?? `The ${metric.name} metric`, default: `${statistic} over 5 minutes`, deprecated },
     });
     const optionsParam = method.addParameter({
       name: 'options',
@@ -263,7 +280,7 @@ class DimensionSetClassGenerator {
           namespace: expr.lit(metric.namespace),
           metricName: expr.lit(metric.name),
           dimensionsMap: expr.this_().prop('dimensions'),
-          statistic: expr.lit(metric.statistic),
+          statistic: expr.lit(statistic),
         }, new Splat(optionsParam)),
       )),
     );
@@ -275,7 +292,7 @@ class DimensionSetClassGenerator {
     if (propsStruct) {
       const propsParam = ctor.addParameter({ name: 'props', type: propsStruct.type });
       const dimEntries = this.merged.dimensions.map(dim => {
-        const propName = naming.propertyNameFromCloudFormation(dim.name.replace(/[^a-zA-Z0-9]/g, '-'));
+        const propName = naming.dimensionPropertyName(dim.name);
         return [dim.name, propsParam.prop(propName)] as const;
       });
       ctor.addBody(stmt.assign(expr.this_().prop('dimensions'), expr.object(dimEntries)));
@@ -291,7 +308,6 @@ class DimensionSetClassGenerator {
  */
 class ResourceFactoryGenerator {
   private readonly refProps: Set<string>;
-  private readonly generatedFactories = new Set<string>();
 
   constructor(
     private readonly context: MetricsGenerationContext,
@@ -314,8 +330,6 @@ class ResourceFactoryGenerator {
       throw new Error(`Could not find dimension set class '${className}' for resource ${this.resource.name}.`);
     }
     const { nsMetrics, dimensionSetClass } = found;
-
-    if (this.generatedFactories.has(dimSet.dedupKey)) return;
     // Skip if the dim-set contains an enum value
     if (dimSet.dimensions.some(d => d.value)) return;
 
@@ -347,15 +361,13 @@ class ResourceFactoryGenerator {
     const refParam = factory.addParameter({ name: 'ref', type: refInterface });
 
     const propEntries = dimMappings.map(m => [
-      naming.propertyNameFromCloudFormation(m.dimName.replace(/[^a-zA-Z0-9]/g, '-')),
+      naming.dimensionPropertyName(m.dimName),
       refParam.prop(refAttrName).prop(m.refPropName),
     ] as const);
 
     factory.addBody(
       stmt.ret(dimensionSetClass.newInstance(expr.object(propEntries))),
     );
-
-    this.generatedFactories.add(dimSet.dedupKey);
   }
 
   /**

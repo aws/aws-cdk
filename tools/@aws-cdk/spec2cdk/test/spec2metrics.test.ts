@@ -35,6 +35,7 @@ test('throws when DimensionSets with the same name have divergent dimension list
     name: 'Invocations',
     statistic: 'Sum',
     dedupKey: 'm1',
+    previousStatistics: [],
   });
 
   db.link('serviceHasMetric', service, metric1);
@@ -56,6 +57,7 @@ test('generates metrics class with correct method names', () => {
     name: 'Invocations',
     statistic: 'Sum',
     dedupKey: 'm-inv',
+    previousStatistics: [],
   });
   db.link('serviceHasMetric', service, metric);
   db.link('usesDimensionSet', metric, ds);
@@ -80,6 +82,7 @@ test('account-wide metrics with empty dimensions', () => {
     name: 'ConcurrentExecutions',
     statistic: 'Maximum',
     dedupKey: 'm-ce',
+    previousStatistics: [],
   });
   db.link('serviceHasMetric', service, metric);
   db.link('usesDimensionSet', metric, ds);
@@ -112,6 +115,7 @@ test('factory method generation from resource', () => {
     name: 'Invocations',
     statistic: 'Sum',
     dedupKey: 'm-inv',
+    previousStatistics: [],
   });
   db.link('serviceHasMetric', service, metric);
   db.link('usesDimensionSet', metric, ds);
@@ -153,12 +157,14 @@ test('throws when a resource has dim-sets across namespaces that both produce a 
     name: 'Invocations',
     statistic: 'Sum',
     dedupKey: 'm-inv',
+    previousStatistics: [],
   });
   const metric2 = db.allocate('metric', {
     namespace: 'AWS/Lambda',
     name: 'Duration',
     statistic: 'Average',
     dedupKey: 'm-dur',
+    previousStatistics: [],
   });
 
   db.link('serviceHasMetric', service, metric1);
@@ -177,4 +183,50 @@ test('service with no metrics produces empty submodule', () => {
   const submodule = builder.addService(service);
 
   expect(submodule.metricsModule).toBeUndefined();
+});
+
+test('generates V2/V3 methods for previousStatistics, keeping the original name deprecated', () => {
+  const ds = db.allocate('dimensionSet', {
+    dedupKey: 'ds-fn',
+    name: 'FunctionName',
+    dimensions: [{ name: 'FunctionName' }],
+  });
+  const metric = db.allocate('metric', {
+    namespace: 'AWS/Lambda',
+    name: 'Invocations',
+    statistic: 'Maximum',
+    previousStatistics: ['Average', 'Sum'],
+    dedupKey: 'm-inv',
+  });
+  db.link('serviceHasMetric', service, metric);
+  db.link('usesDimensionSet', metric, ds);
+
+  const builder = new MetricsBuilder({ db });
+  const submodule = builder.addService(service);
+  const rendered = renderer.render(submodule.metricsModule!);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+test('no V2 method when previousStatistics is empty', () => {
+  const ds = db.allocate('dimensionSet', {
+    dedupKey: 'ds-fn',
+    name: 'FunctionName',
+    dimensions: [{ name: 'FunctionName' }],
+  });
+  const metric = db.allocate('metric', {
+    namespace: 'AWS/Lambda',
+    name: 'Invocations',
+    statistic: 'Sum',
+    previousStatistics: [],
+    dedupKey: 'm-inv',
+  });
+  db.link('serviceHasMetric', service, metric);
+  db.link('usesDimensionSet', metric, ds);
+
+  const builder = new MetricsBuilder({ db });
+  const submodule = builder.addService(service);
+  const rendered = renderer.render(submodule.metricsModule!);
+
+  expect(rendered).toMatchSnapshot();
 });
