@@ -184,15 +184,14 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
   const hasPriority = property.instanceTypeConfigs?.some(
     config => config.priority !== undefined && !cdk.Token.isUnresolved(config.priority),
   );
-  const onDemandStrategy = property.launchSpecifications?.onDemandSpecification?.allocationStrategy;
+  const onDemandStrategy = property.launchSpecifications?.onDemandSpecification?.allocationStrategy
+    ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE;
 
-  if (hasPriority && onDemandStrategy !== undefined
-    && !cdk.Token.isUnresolved(onDemandStrategy)
+  if (hasPriority && !cdk.Token.isUnresolved(onDemandStrategy)
     && onDemandStrategy !== EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED) {
     throw new UnscopedValidationError(
-      'Priority values are set on instance type configs, but the OnDemand allocation strategy is ' +
-      `'${onDemandStrategy}' instead of 'PRIORITIZED'. Priority values only take effect with ` +
-      'OnDemandAllocationStrategy.PRIORITIZED. Either remove the priority values or change the allocation strategy.',
+      `Priority values are set on instance type configs, but allocation strategy is '${onDemandStrategy}'. ` +
+      'Priority values only take effect with OnDemandAllocationStrategy.PRIORITIZED.',
     );
   }
 

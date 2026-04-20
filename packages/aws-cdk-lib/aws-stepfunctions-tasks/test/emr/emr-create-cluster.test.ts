@@ -2189,4 +2189,74 @@ describe('EMR Instance Fleet Priority Feature', () => {
     expect(EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE).toEqual('lowest-price');
     expect(EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED).toEqual('prioritized');
   });
+
+  test('throws when priority is negative', () => {
+    const task = new EmrCreateCluster(stack, 'TaskNeg', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: -1,
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/priority must be a non-negative number/);
+  });
+
+  test('throws when priority is set with LOWEST_PRICE strategy', () => {
+    const task = new EmrCreateCluster(stack, 'TaskMismatch', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: 0,
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/Priority values are set on instance type configs, but allocation strategy is/);
+  });
+
+  test('throws when priority is set with no allocation strategy (defaults to LOWEST_PRICE)', () => {
+    const task = new EmrCreateCluster(stack, 'TaskNoStrategy', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+            priority: 0,
+          }],
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/Priority values are set on instance type configs, but allocation strategy is/);
+  });
 });
