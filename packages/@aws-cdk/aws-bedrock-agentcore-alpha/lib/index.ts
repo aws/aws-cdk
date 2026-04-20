@@ -66,3 +66,9 @@ export * from './gateway/targets/target-configuration';
 export * from './gateway/targets/schema/base-schema';
 export * from './gateway/targets/schema/api-schema';
 export * from './gateway/targets/schema/tool-schema';
+
+// ===================================
+// Workload Identity
+// ===================================
+export * from './workload-identity/workload-identity';
+export * from './workload-identity/perms';
