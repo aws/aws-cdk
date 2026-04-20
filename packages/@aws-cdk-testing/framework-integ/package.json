@@ -9,7 +9,7 @@
     "lint": "cdk-lint",
     "pkglint": "pkglint -f",
     "test": "cdk-test",
-    "integ": "integ-runner --unstable=toolkit-lib-engine --language javascript",
+    "integ": "env JSII_DEPRECATED=fail integ-runner --unstable=toolkit-lib-engine --language javascript",
     "package": "cdk-package",
     "build+test": "yarn build && yarn test",
     "build+extract": "yarn build",
@@ -30,7 +30,7 @@
   "license": "Apache-2.0",
   "devDependencies": {
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.196.1",
+    "@aws-cdk/integ-runner": "^2.197.1",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-sdk/client-acm": "3.632.0",
     "@aws-sdk/client-ec2": "3.632.0",
@@ -67,7 +67,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",

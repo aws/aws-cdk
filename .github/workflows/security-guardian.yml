@@ -4,6 +4,9 @@ on:
     paths:
       - '**.js.snapshot**'
 
+permissions:
+  contents: read
+
 jobs:
   log-skip:
     if: |

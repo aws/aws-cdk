@@ -3,6 +3,10 @@ on:
   schedule:
     - cron: "0 0 1 * *"
   workflow_dispatch:
+
+permissions:
+  contents: read
+
 jobs:
   main:
     # this workflow will always fail in forks; bail if this isn't running in the upstream

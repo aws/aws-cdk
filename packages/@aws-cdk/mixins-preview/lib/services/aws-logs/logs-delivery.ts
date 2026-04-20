@@ -3,7 +3,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import type * as s3 from 'aws-cdk-lib/aws-s3';
 import { Construct, type IConstruct } from 'constructs';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import { tryFindDeliverySourceForResource } from '../../mixins/private/reflections';
+import { tryFindDeliverySourceForResource } from './reflections';
 import type { IKeyRef } from 'aws-cdk-lib/aws-kms';
 import { S3DeliveryDestination, CloudwatchDeliveryDestination, FirehoseDeliveryDestination, XRayDeliveryDestination } from './logs-destination';
 

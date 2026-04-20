@@ -4,6 +4,9 @@ on:
     types:
       - labeled
 
+permissions:
+  contents: read
+
 jobs:
   prioritize:
     if: github.repository == 'aws/aws-cdk' && contains(github.event.issue.labels.*.name, 'bug') && contains(github.event.issue.labels.*.name, 'p1')
@@ -12,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Add P1 Bug to project
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |

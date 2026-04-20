@@ -1,6 +1,10 @@
+import * as fs from 'fs';
 import type { IConstruct } from 'constructs';
+import type { LiteralString } from './private/literal-string';
 import { constructInfoFromConstruct } from './private/runtime-info';
+import { captureCallStack, renderCallStackJustMyCode } from './stack-trace';
 import type { AssertionError } from '../../assertions/lib/private/error';
+import { ERRORFILE_ENV } from '../../cx-api';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
 
 const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
@@ -118,63 +122,35 @@ abstract class ConstructError extends Error {
     return this.#constructInfo;
   }
 
-  constructor(msg: string, scope?: IConstruct, name?: string) {
+  constructor(msg: string, scope?: IConstruct, name?: LiteralString) {
     super(msg);
+
+    const ctr = this.constructor;
+
     Object.setPrototypeOf(this, ConstructError.prototype);
     Object.defineProperty(this, CONSTRUCT_ERROR_SYMBOL, { value: true });
 
-    this.name = name ?? new.target.name;
+    this.name = name ?? ctr.name;
     this.#time = new Date().toISOString();
     this.#constructPath = scope?.node.path;
 
     if (scope) {
-      Error.captureStackTrace(this, scope.constructor);
       try {
-        this.#constructInfo = scope ? constructInfoFromConstruct(scope) : undefined;
+        this.#constructInfo = constructInfoFromConstruct(scope);
       } catch (_) {
         // we don't want to fail if construct info is not available
       }
     }
 
-    const stack = [
-      `${this.name}: ${this.message}`,
-    ];
+    // The "stack" field in Node.js includes the error description. If it doesn't, Node will fall back to an
+    // ugly way of rendering the error.
+    this.stack = `«${this.name}» ${msg}\n${renderCallStackJustMyCode(captureCallStack(ctr)).join('\n')}`;
 
-    if (this.constructInfo) {
-      stack.push(`in ${this.constructInfo?.fqn} at [${this.constructPath}]`);
-    } else {
-      stack.push(`in [${this.constructPath}]`);
+    if (scope) {
+      this.stack += `\nRelates to construct:\n${renderConstructRootPath(scope)}`;
     }
 
-    if (this.stack) {
-      stack.push(this.stack);
-    }
-
-    this.stack = this.constructStack(this.stack);
-  }
-
-  /**
-   * Helper message to clean-up the stack and amend with construct information.
-   */
-  private constructStack(prev?: string) {
-    const indent = ' '.repeat(4);
-
-    const stack = [
-      `${this.name}: ${this.message}`,
-    ];
-
-    if (this.constructInfo) {
-      stack.push(`${indent}at path [${this.constructPath}] in ${this.constructInfo?.fqn}`);
-    } else {
-      stack.push(`${indent}at path [${this.constructPath}]`);
-    }
-
-    if (prev) {
-      stack.push('');
-      stack.push(...prev.split('\n').slice(1));
-    }
-
-    return stack.join('\n');
+    maybeWriteErrorCode(this.name);
   }
 }
 
@@ -193,8 +169,8 @@ export class ValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(msg: string, scope: IConstruct) {
-    super(msg, scope);
+  constructor(name: LiteralString, msg: string, scope: IConstruct) {
+    super(msg, scope, name);
     Object.setPrototypeOf(this, ValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }
@@ -215,8 +191,8 @@ export class UnscopedValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(msg: string) {
-    super(msg, undefined, ValidationError.name);
+  constructor(name: LiteralString, msg: string) {
+    super(msg, undefined, name);
     Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
   }
@@ -234,8 +210,8 @@ export class AssumptionError extends ConstructError {
     return 'assumption';
   }
 
-  constructor(msg: string) {
-    super(msg, undefined, AssumptionError.name);
+  constructor(name: LiteralString, msg: string) {
+    super(msg, undefined, name);
     Object.setPrototypeOf(this, AssumptionError.prototype);
     Object.defineProperty(this, ASSUMPTION_ERROR_SYMBOL, { value: true });
   }
@@ -252,9 +228,66 @@ export class ExecutionError extends ConstructError {
     return 'exec';
   }
 
-  constructor(msg: string) {
-    super(msg, undefined, ExecutionError.name);
+  constructor(name: LiteralString, msg: string) {
+    super(msg, undefined, name);
     Object.setPrototypeOf(this, ExecutionError.prototype);
     Object.defineProperty(this, EXECUTION_ERROR_SYMBOL, { value: true });
   }
+}
+
+export function renderConstructRootPath(construct: IConstruct) {
+  const rootPath = [];
+
+  let cur: IConstruct | undefined = construct;
+  while (cur !== undefined) {
+    rootPath.push(cur);
+    cur = cur.node.scope;
+  }
+  rootPath.reverse();
+
+  const ret = new Array<string>();
+  for (let i = 0; i < rootPath.length; i++) {
+    const constructId = rootPath[i].node.id || '<.>';
+
+    let suffix = '';
+    try {
+      const constructInfo = constructInfoFromConstruct(rootPath[i]);
+      suffix = ` (${constructInfo?.fqn})`;
+    } catch (_) {
+      // we don't want to fail if construct info is not available
+    }
+
+    const branch = ' └─ ';
+    const indent = i > 0 ? ' '.repeat(branch.length * (i - 1)) + branch : '';
+
+    ret.push(`    ${indent}${constructId}${suffix}`);
+  }
+
+  return ret.join('\n');
+}
+
+/**
+ * If the appropriate environment variable is set, write this error code the given file.
+ *
+ * The reason we do this is so that the CLI can see the error code that led to the
+ * termination of the CDK application.
+ *
+ * This is not a guarantee: this exception could be caught and a different one
+ * thrown in its stead, in which case we would pick up the wrong error code.
+ * We will take that risk, and assume such cases are rare. The CLI only looks
+ * at the error file if the subprocess terminates with an error, and the most
+ * likely culprit in that case is the most recently thrown error regardless.
+ *
+ * Why not use `process.onUncaughtException()`? That will work for pure Node
+ * programs, but in a jsii language no exception is uncaught (the kernel
+ * is always the outermost loop) so that event handler would never fire.
+ */
+function maybeWriteErrorCode(errorCode: string) {
+  const file = process.env[ERRORFILE_ENV];
+  if (!file) {
+    return;
+  }
+
+  // Update the indicated file
+  fs.writeFileSync(file, errorCode, 'utf-8');
 }

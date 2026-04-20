@@ -66,7 +66,7 @@ export abstract class CfnElement extends Construct {
 
     this.stack = Stack.of(this);
 
-    this.logicalId = Lazy.uncachedString({ produce: () => this.synthesizeLogicalId() }, {
+    this.logicalId = Lazy.uncachedString({ produce: () => this._synthesizeLogicalId() }, {
       displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
     });
 
@@ -88,7 +88,7 @@ export abstract class CfnElement extends Construct {
    */
   public overrideLogicalId(newLogicalId: string) {
     if (this._logicalIdLocked) {
-      throw new ValidationError(`The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
+      throw new ValidationError(lit`LogicalIdLocked`, `The logicalId for resource at path ${Node.of(this).path} has been locked and cannot be overridden\n` +
         'Make sure you are calling "overrideLogicalId" before Stack.exportValue', this);
     } else {
       this._logicalIdOverride = newLogicalId;
@@ -170,8 +170,10 @@ export abstract class CfnElement extends Construct {
    * Called during synthesize to render the logical ID of this element. If
    * `overrideLogicalId` was it will be used, otherwise, we will allocate the
    * logical ID through the stack.
+   *
+   * @internal
    */
-  private synthesizeLogicalId() {
+  protected _synthesizeLogicalId() {
     if (this._logicalIdOverride) {
       return this._logicalIdOverride;
     } else {
@@ -213,4 +215,5 @@ import { Stack } from './stack';
 import { Token } from './token';import { ValidationError } from './errors';
 import type { IConstruct, IMixin } from 'constructs';
 import { withMixins } from './mixins/private/mixin-metadata';
+import { lit } from './private/literal-string';
 

@@ -1,0 +1,33 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff": {
+      "source": {
+        "path": "asset.3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-b47a7931": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "3c1a88b76a71a46d4ce11a1351848c7dca61a2e2d8bc9933d0a619c1fce17bff.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "7f439c219aa0cb69290d4416a1a31b9af42d04e197b13f2e1a24aa6b6be284f3": {
+      "displayName": "OpenSearchS3VectorEngineIntegDefaultTestDeployAssertE844BBEE Template",
+      "source": {
+        "path": "OpenSearchS3VectorEngineIntegDefaultTestDeployAssertE844BBEE.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-99bea48e": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "7f439c219aa0cb69290d4416a1a31b9af42d04e197b13f2e1a24aa6b6be284f3.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

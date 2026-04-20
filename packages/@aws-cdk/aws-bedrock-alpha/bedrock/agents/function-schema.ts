@@ -1,4 +1,6 @@
 import type { CfnAgent } from 'aws-cdk-lib/aws-bedrock';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { ActionGroupSchema } from './schema-base';
 import * as validation from './validation-helpers';
 
@@ -142,7 +144,7 @@ export class FunctionParameter {
       });
 
       if (descErrors.length > 0) {
-        throw new validation.ValidationError(descErrors.join('\n'));
+        throw new UnscopedValidationError(lit`InvalidParameterDescription`, descErrors.join('\n'));
       }
     }
 
@@ -198,7 +200,7 @@ export class Function {
     });
 
     if (nameErrors.length > 0) {
-      throw new validation.ValidationError(nameErrors.join('\n'));
+      throw new UnscopedValidationError(lit`InvalidFunctionName`, nameErrors.join('\n'));
     }
 
     // Validate function description
@@ -210,7 +212,7 @@ export class Function {
     });
 
     if (descErrors.length > 0) {
-      throw new validation.ValidationError(descErrors.join('\n'));
+      throw new UnscopedValidationError(lit`InvalidFunctionDescription`, descErrors.join('\n'));
     }
 
     this.name = props.name;
@@ -229,7 +231,7 @@ export class Function {
         });
 
         if (paramNameErrors.length > 0) {
-          throw new validation.ValidationError(paramNameErrors.join('\n'));
+          throw new UnscopedValidationError(lit`InvalidParameterName`, paramNameErrors.join('\n'));
         }
 
         this.parameters[name] = new FunctionParameter(paramProps);
@@ -271,7 +273,7 @@ export class FunctionSchema extends ActionGroupSchema {
     super();
 
     if (!props.functions || props.functions.length === 0) {
-      throw new validation.ValidationError('At least one function must be defined in the function schema');
+      throw new UnscopedValidationError(lit`EmptyFunctionSchema`, 'At least one function must be defined in the function schema');
     }
 
     this.functions = props.functions.map(f => new Function(f));

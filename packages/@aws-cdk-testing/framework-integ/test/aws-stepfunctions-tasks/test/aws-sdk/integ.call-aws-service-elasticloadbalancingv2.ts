@@ -14,7 +14,7 @@ const task = new CallAwsService(stack, 'DescribeELBV2TargetGroups', {
 });
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: task,
+  definitionBody: sfn.DefinitionBody.fromChainable(task),
 });
 
 // THEN
