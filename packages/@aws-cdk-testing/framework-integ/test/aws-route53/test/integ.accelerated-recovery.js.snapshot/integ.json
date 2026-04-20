@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "route53-accelerated-recovery-integ/DefaultTest": {
+      "stacks": [
+        "route53-accelerated-recovery"
+      ],
+      "assertionStack": "route53-accelerated-recovery-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "route53acceleratedrecoveryintegDefaultTestDeployAssertD4D6B420"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
