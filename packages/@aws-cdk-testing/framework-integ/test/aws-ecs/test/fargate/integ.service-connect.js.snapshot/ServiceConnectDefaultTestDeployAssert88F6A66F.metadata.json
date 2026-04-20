@@ -1,0 +1,126 @@
+{
+  "/ServiceConnect/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallServiceDiscoverylistNamespaces"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallServiceDiscoverylistNamespaces/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallServiceDiscoverylistNamespaces"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111WaitForRole48DC4444"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111WaitFor6F48F04E"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111WaitForIsCompleteProviderInvoke2F04D93B"
+    }
+  ],
+  "/ServiceConnect/DefaultTest/DeployAssert/AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudWatchLogsfilterLogEvents08a8aa3c68ed30daa832f05ec24aa111WaitForTimeoutProviderInvokeFEDB1479"
+    }
+  ]
+}
