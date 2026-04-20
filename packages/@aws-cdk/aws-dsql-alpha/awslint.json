@@ -1,0 +1,8 @@
+{
+  "exclude": [
+    "no-grants:@aws-cdk/aws-dsql-alpha.Cluster.grant",
+    "no-grants:@aws-cdk/aws-dsql-alpha.Cluster.grantConnect",
+    "no-grants:@aws-cdk/aws-dsql-alpha.Cluster.grantConnectAdmin",
+    "interface-extends-ref:@aws-cdk/aws-dsql-alpha.ICluster"
+  ]
+}
