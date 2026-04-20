@@ -859,7 +859,7 @@ export interface AutoScalingGroupProps extends CommonAutoScalingGroupProps {
  * invoke `cfn-signal` somewhere in their UserData to signal that they have
  * started up (either successfully or unsuccessfully).
  *
- * Signals are used both during intial creation and subsequent updates.
+ * Signals are used both during initial creation and subsequent updates.
  */
 export abstract class Signals {
   /**
