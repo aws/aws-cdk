@@ -5,6 +5,7 @@ import { constructInfoFromConstruct } from './private/runtime-info';
 import { captureCallStack, renderCallStackJustMyCode } from './stack-trace';
 import type { AssertionError } from '../../assertions/lib/private/error';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
+import { ERRORFILE_ENV } from '../../cx-api';
 
 const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
 const VALIDATION_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.ValidationError');
@@ -282,7 +283,7 @@ export function renderConstructRootPath(construct: IConstruct) {
  * is always the outermost loop) so that event handler would never fire.
  */
 function maybeWriteErrorCode(errorCode: string) {
-  const file = process.env.CDK_ERROR_FILE;
+  const file = process.env[ERRORFILE_ENV];
   if (!file) {
     return;
   }
