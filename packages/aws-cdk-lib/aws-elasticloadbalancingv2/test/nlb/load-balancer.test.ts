@@ -1620,4 +1620,129 @@ describe('tests', () => {
       }).toThrow('\'ipAddressType\' DUAL_STACK_WITHOUT_PUBLIC_IPV4 can only be used with Application Load Balancer, got network');
     });
   });
+
+  describe('imported NLB lookup patterns', () => {
+    test('imported NLB with hardcoded ARN and security groups can create alarms and allow connections', () => {
+      const stack = new cdk.Stack();
+      const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
+        loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/network/my-load-balancer/50dc6c495c0c9188',
+        loadBalancerSecurityGroups: ['sg-12345678'],
+      });
+
+      nlb.metrics.activeFlowCount().createAlarm(stack, 'AlarmFlowCount', {
+        evaluationPeriods: 1,
+        threshold: 0,
+      });
+      nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Namespace: 'AWS/NetworkELB',
+        MetricName: 'ActiveFlowCount',
+      });
+      template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: 'tcp',
+        FromPort: 443,
+        ToPort: 443,
+        GroupId: 'sg-12345678',
+      });
+    });
+
+    test('imported NLB via Fn::importValue can create alarms and allow connections', () => {
+      const stack = new cdk.Stack();
+      const nlb = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'NLB', {
+        loadBalancerArn: cdk.Fn.importValue('NlbArn'),
+        loadBalancerSecurityGroups: [cdk.Fn.importValue('SgId')],
+      });
+
+      nlb.metrics.activeFlowCount().createAlarm(stack, 'AlarmFlowCount', {
+        evaluationPeriods: 1,
+        threshold: 0,
+      });
+      nlb.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Namespace: 'AWS/NetworkELB',
+        MetricName: 'ActiveFlowCount',
+      });
+      template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: 'tcp',
+        FromPort: 443,
+        ToPort: 443,
+        GroupId: { 'Fn::ImportValue': 'SgId' },
+      });
+    });
+
+    test('imported NLB via cross-stack reference can create alarms and allow connections', () => {
+      const app = new cdk.App();
+      const stack1 = new cdk.Stack(app, 'Stack1', { env: { account: '123456789012', region: 'us-west-2' } });
+      const vpc = new ec2.Vpc(stack1, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
+      const sg = new ec2.SecurityGroup(stack1, 'SG', { vpc });
+      const lb = new elbv2.NetworkLoadBalancer(stack1, 'LB', {
+        vpc,
+        internetFacing: true,
+        securityGroups: [sg],
+      });
+
+      const stack2 = new cdk.Stack(app, 'Stack2', { env: { account: '123456789012', region: 'us-west-2' } });
+      const imported = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack2, 'NLB', {
+        loadBalancerArn: lb.loadBalancerArn,
+        loadBalancerSecurityGroups: lb.securityGroups,
+      });
+
+      imported.metrics.activeFlowCount().createAlarm(stack2, 'AlarmFlowCount', {
+        evaluationPeriods: 1,
+        threshold: 0,
+      });
+      imported.connections.allowFromAnyIpv4(ec2.Port.tcp(443));
+
+      const template = Template.fromStack(stack2);
+      template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Namespace: 'AWS/NetworkELB',
+        MetricName: 'ActiveFlowCount',
+      });
+      template.hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        IpProtocol: 'tcp',
+        FromPort: 443,
+        ToPort: 443,
+      });
+    });
+
+    test('imported target group with loadBalancerArns can create healthyHostCount alarm', () => {
+      const stack = new cdk.Stack();
+      const tg = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
+        targetGroupArn: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:targetgroup/my-target-group/50dc6c495c0c9188',
+        loadBalancerArns: 'arn:aws:elasticloadbalancing:us-west-2:123456789012:loadbalancer/net/my-load-balancer/50dc6c495c0c9188',
+      });
+
+      tg.metrics.healthyHostCount().createAlarm(stack, 'HealthyHostCount', {
+        evaluationPeriods: 1,
+        threshold: 0,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Namespace: 'AWS/NetworkELB',
+        MetricName: 'HealthyHostCount',
+      });
+    });
+
+    test('imported target group via Fn::importValue can create healthyHostCount alarm', () => {
+      const stack = new cdk.Stack();
+      const tg = elbv2.NetworkTargetGroup.fromTargetGroupAttributes(stack, 'TG', {
+        targetGroupArn: cdk.Fn.importValue('TgArn'),
+        loadBalancerArns: cdk.Fn.importValue('NlbArn'),
+      });
+
+      tg.metrics.healthyHostCount().createAlarm(stack, 'HealthyHostCount', {
+        evaluationPeriods: 1,
+        threshold: 0,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        Namespace: 'AWS/NetworkELB',
+        MetricName: 'HealthyHostCount',
+      });
+    });
+  });
 });

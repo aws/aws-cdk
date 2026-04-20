@@ -116,7 +116,19 @@
       "OPENAPI_SCHEMA",
       "SMITHY_MODEL",
       "LAMBDA",
-      "MCP_SERVER"
+      "MCP_SERVER",
+      "API_GATEWAY"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target-configuration.ts": {
+    "ApiGatewayHttpMethod": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "HEAD",
+      "OPTIONS"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
@@ -316,114 +328,6 @@
     "TransitGatewayFeatureStatus": [
       "enable",
       "disable"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/access-entry.ts": {
-    "AccessScopeType": [
-      "namespace",
-      "cluster"
-    ],
-    "AccessEntryType": [
-      "STANDARD",
-      "FARGATE_LINUX",
-      "EC2_LINUX",
-      "EC2_WINDOWS",
-      "EC2",
-      "HYBRID_LINUX",
-      "HYPERPOD_LINUX"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/alb-controller.ts": {
-    "AlbScheme": [
-      "internal",
-      "internet-facing"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/cluster.ts": {
-    "ClusterLoggingTypes": [
-      "api",
-      "audit",
-      "authenticator",
-      "controllerManager",
-      "scheduler"
-    ],
-    "IpFamily": [
-      "ipv4",
-      "ipv6"
-    ],
-    "NodeType": [
-      "Standard",
-      "GPU",
-      "INFERENTIA",
-      "TRAINIUM"
-    ],
-    "CpuArch": [
-      "arm64",
-      "x86_64"
-    ],
-    "CoreDnsComputeType": [
-      "ec2",
-      "fargate"
-    ],
-    "DefaultCapacityType": [
-      0,
-      1,
-      2
-    ],
-    "MachineImageType": [
-      0,
-      1
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/k8s-patch.ts": {
-    "PatchType": [
-      "json",
-      "merge",
-      "strategic"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/managed-nodegroup.ts": {
-    "NodegroupAmiType": [
-      "AL2_x86_64",
-      "AL2_x86_64_GPU",
-      "AL2_ARM_64",
-      "BOTTLEROCKET_ARM_64",
-      "BOTTLEROCKET_x86_64",
-      "BOTTLEROCKET_ARM_64_NVIDIA",
-      "BOTTLEROCKET_x86_64_NVIDIA",
-      "BOTTLEROCKET_ARM_64_FIPS",
-      "BOTTLEROCKET_x86_64_FIPS",
-      "WINDOWS_CORE_2019_x86_64",
-      "WINDOWS_CORE_2022_x86_64",
-      "WINDOWS_FULL_2019_x86_64",
-      "WINDOWS_FULL_2022_x86_64",
-      "AL2023_x86_64_STANDARD",
-      "AL2023_x86_64_NEURON",
-      "AL2023_x86_64_NVIDIA",
-      "AL2023_ARM_64_NVIDIA",
-      "AL2023_ARM_64_STANDARD"
-    ],
-    "CapacityType": [
-      "SPOT",
-      "ON_DEMAND",
-      "CAPACITY_BLOCK"
-    ],
-    "TaintEffect": [
-      "NO_SCHEDULE",
-      "PREFER_NO_SCHEDULE",
-      "NO_EXECUTE"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/service-account.ts": {
-    "IdentityType": [
-      "IRSA",
-      "POD_IDENTITY"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-eks-v2-alpha/lib/user-data.ts": {
-    "LifecycleLabel": [
-      "OnDemand",
-      "Ec2Spot"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
@@ -1037,6 +941,164 @@
       "Here"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
+    "InputType": [
+      "CMAF",
+      "HLS"
+    ],
+    "IngestEndpoint": [
+      1,
+      2
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.ts": {
+    "AudioCodec": [
+      "AACL",
+      "AACH",
+      "AC-3",
+      "EC-3"
+    ],
+    "VideoCodec": [
+      "H264",
+      "H265",
+      "AV1"
+    ],
+    "VideoDynamicRange": [
+      "dv",
+      "hdr10",
+      "hlg",
+      "sdr"
+    ],
+    "TrickplayType": [
+      "iframe",
+      "image",
+      "none"
+    ],
+    "NumericFilterKey": [
+      "audio_channels",
+      "audio_sample_rate",
+      "trickplay_height",
+      "video_framerate",
+      "video_height"
+    ],
+    "TextFilterKey": [
+      "audio_language",
+      "subtitle_language"
+    ],
+    "BitrateFilterKey": [
+      "audio_bitrate",
+      "video_bitrate"
+    ],
+    "ContainerType": [
+      "TS",
+      "CMAF",
+      "ISM"
+    ],
+    "CmafEncryptionMethod": [
+      "CENC",
+      "CBCS"
+    ],
+    "TsEncryptionMethod": [
+      "AES_128",
+      "SAMPLE_AES"
+    ],
+    "PresetSpeke20Audio": [
+      "PRESET_AUDIO_1",
+      "PRESET_AUDIO_2",
+      "PRESET_AUDIO_3",
+      "SHARED",
+      "UNENCRYPTED"
+    ],
+    "PresetSpeke20Video": [
+      "PRESET_VIDEO_1",
+      "PRESET_VIDEO_2",
+      "PRESET_VIDEO_3",
+      "PRESET_VIDEO_4",
+      "PRESET_VIDEO_5",
+      "PRESET_VIDEO_6",
+      "PRESET_VIDEO_7",
+      "PRESET_VIDEO_8",
+      "SHARED",
+      "UNENCRYPTED"
+    ],
+    "EndpointErrorConfiguration": [
+      "STALE_MANIFEST",
+      "INCOMPLETE_MANIFEST",
+      "MISSING_DRM_KEY",
+      "SLATE_INPUT"
+    ],
+    "ScteMessageType": [
+      "SPLICE_INSERT",
+      "BREAK",
+      "PROVIDER_ADVERTISEMENT",
+      "DISTRIBUTOR_ADVERTISEMENT",
+      "PROVIDER_PLACEMENT_OPPORTUNITY",
+      "DISTRIBUTOR_PLACEMENT_OPPORTUNITY",
+      "PROVIDER_OVERLAY_PLACEMENT_OPPORTUNITY",
+      "DISTRIBUTOR_OVERLAY_PLACEMENT_OPPORTUNITY",
+      "PROGRAM"
+    ],
+    "ScteInSegments": [
+      "NONE",
+      "ALL"
+    ],
+    "DrmSettingsKey": [
+      "exclude_session_keys"
+    ],
+    "AdMarkerDash": [
+      "BINARY",
+      "XML"
+    ],
+    "AdMarkerHls": [
+      "DATERANGE",
+      "SCTE35_ENHANCED"
+    ],
+    "SegmentTemplateFormat": [
+      "NUMBER_WITH_TIMELINE"
+    ],
+    "DashUtcTimingMode": [
+      "HTTP_HEAD",
+      "HTTP_ISO",
+      "HTTP_XSDATE",
+      "UTC_DIRECT"
+    ],
+    "DashPeriodTriggers": [
+      "AVAILS",
+      "DRM_KEY_ROTATION",
+      "SOURCE_CHANGES",
+      "SOURCE_DISRUPTIONS",
+      "NONE"
+    ],
+    "DrmSignalling": [
+      "INDIVIDUAL",
+      "REFERENCED"
+    ],
+    "DashManifestCompactness": [
+      "STANDARD",
+      "NONE"
+    ],
+    "TtmlProfile": [
+      "IMSC_1",
+      "EBU_TT_D_101"
+    ],
+    "MssManifestLayout": [
+      "FULL",
+      "COMPACT"
+    ],
+    "CmafDrmSystem": [
+      "FAIRPLAY",
+      "PLAYREADY",
+      "WIDEVINE",
+      "IRDETO"
+    ],
+    "TsDrmSystem": [
+      "FAIRPLAY",
+      "CLEAR_KEY_AES_128"
+    ],
+    "IsmDrmSystem": [
+      "PLAYREADY"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts": {
     "StorageMode": [
       "LOCAL",
@@ -1208,6 +1270,10 @@
       "Enabled",
       "Disabled"
     ],
+    "RequestMetricsStatus": [
+      "Enabled",
+      "Disabled"
+    ],
     "TableBucketEncryption": [
       "aws:kms",
       "AES256"
@@ -1220,6 +1286,14 @@
     "Status": [
       "enabled",
       "disabled"
+    ],
+    "SortDirection": [
+      "asc",
+      "desc"
+    ],
+    "NullOrder": [
+      "nulls-first",
+      "nulls-last"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -1278,12 +1352,6 @@
       "DryRun"
     ]
   },
-  "aws-cdk/packages/@aws-cdk/mixins-preview/lib/mixins/property-mixins.ts": {
-    "PropertyMergeStrategy": [
-      "override",
-      "merge"
-    ]
-  },
   "aws-cdk/packages/@aws-cdk/mixins-preview/lib/services/aws-logs/logs-delivery.ts": {
     "S3LogsDeliveryPermissionsVersion": [
       "V1",
@@ -1301,7 +1369,18 @@
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.ts": {
     "SecurityPolicy": [
       "TLS_1_0",
-      "TLS_1_2"
+      "TLS_1_2",
+      "SecurityPolicy_TLS13_1_3_2025_09",
+      "SecurityPolicy_TLS13_1_3_FIPS_2025_09",
+      "SecurityPolicy_TLS13_1_2_PQ_2025_09",
+      "SecurityPolicy_TLS13_1_2_PFS_PQ_2025_09",
+      "SecurityPolicy_TLS13_2025_EDGE",
+      "SecurityPolicy_TLS12_PFS_2025_EDGE",
+      "SecurityPolicy_TLS12_2018_EDGE"
+    ],
+    "EndpointAccessMode": [
+      "STRICT",
+      "BASIC"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integration.ts": {
@@ -1737,6 +1816,12 @@
       "REQUEST_RESPONSE"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source.ts": {
+    "DataSourceMetricsConfig": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/graphqlapi-base.ts": {
     "Visibility": [
       "GLOBAL",
@@ -1762,7 +1847,25 @@
       "DEBUG",
       "ALL"
     ],
+    "DataSourceLevelMetricsBehavior": [
+      "FULL_REQUEST_DATA_SOURCE_METRICS",
+      "PER_DATA_SOURCE_METRICS"
+    ],
+    "OperationLevelMetricsConfig": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "ResolverLevelMetricsBehavior": [
+      "FULL_REQUEST_RESOLVER_METRICS",
+      "PER_RESOLVER_METRICS"
+    ],
     "IntrospectionConfig": [
+      "ENABLED",
+      "DISABLED"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/resolver.ts": {
+    "ResolverMetricsConfig": [
       "ENABLED",
       "DISABLED"
     ]
@@ -1783,6 +1886,11 @@
       0,
       1
     ],
+    "DeletionProtection": [
+      "none",
+      "prevent-force-deletion",
+      "prevent-all-deletion"
+    ],
     "OnDemandAllocationStrategy": [
       "prioritized",
       "lowest-price"
@@ -1796,6 +1904,10 @@
     "CapacityDistributionStrategy": [
       "balanced-only",
       "balanced-best-effort"
+    ],
+    "TerminateHookAbandonAction": [
+      "retain",
+      "terminate"
     ],
     "UpdateType": [
       "None",
@@ -2031,11 +2143,14 @@
     "EcsMachineImageType": [
       "ECS_AL2",
       "ECS_AL2023",
-      "ECS_AL2_NVIDIA"
+      "ECS_AL2_NVIDIA",
+      "ECS_AL2023_NVIDIA"
     ],
     "EksMachineImageType": [
       "EKS_AL2",
-      "EKS_AL2_NVIDIA"
+      "EKS_AL2_NVIDIA",
+      "EKS_AL2023",
+      "EKS_AL2023_NVIDIA"
     ],
     "AllocationStrategy": [
       "BEST_FIT",
@@ -2830,6 +2945,9 @@
     "ContributorInsightsMode": [
       "ACCESSED_AND_THROTTLED_KEYS",
       "THROTTLED_KEYS"
+    ],
+    "GlobalTableSettingsReplicationMode": [
+      "ENABLED"
     ],
     "ProjectionType": [
       "KEYS_ONLY",
@@ -4461,6 +4579,114 @@
       "elasticfilesystem:ClientRootAccess"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/access-entry.ts": {
+    "AccessScopeType": [
+      "namespace",
+      "cluster"
+    ],
+    "AccessEntryType": [
+      "STANDARD",
+      "FARGATE_LINUX",
+      "EC2_LINUX",
+      "EC2_WINDOWS",
+      "EC2",
+      "HYBRID_LINUX",
+      "HYPERPOD_LINUX"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/alb-controller.ts": {
+    "AlbScheme": [
+      "internal",
+      "internet-facing"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
+    "ClusterLoggingTypes": [
+      "api",
+      "audit",
+      "authenticator",
+      "controllerManager",
+      "scheduler"
+    ],
+    "IpFamily": [
+      "ipv4",
+      "ipv6"
+    ],
+    "NodeType": [
+      "Standard",
+      "GPU",
+      "INFERENTIA",
+      "TRAINIUM"
+    ],
+    "CpuArch": [
+      "arm64",
+      "x86_64"
+    ],
+    "CoreDnsComputeType": [
+      "ec2",
+      "fargate"
+    ],
+    "DefaultCapacityType": [
+      0,
+      1,
+      2
+    ],
+    "MachineImageType": [
+      0,
+      1
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/k8s-patch.ts": {
+    "PatchType": [
+      "json",
+      "merge",
+      "strategic"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/managed-nodegroup.ts": {
+    "NodegroupAmiType": [
+      "AL2_x86_64",
+      "AL2_x86_64_GPU",
+      "AL2_ARM_64",
+      "BOTTLEROCKET_ARM_64",
+      "BOTTLEROCKET_x86_64",
+      "BOTTLEROCKET_ARM_64_NVIDIA",
+      "BOTTLEROCKET_x86_64_NVIDIA",
+      "BOTTLEROCKET_ARM_64_FIPS",
+      "BOTTLEROCKET_x86_64_FIPS",
+      "WINDOWS_CORE_2019_x86_64",
+      "WINDOWS_CORE_2022_x86_64",
+      "WINDOWS_FULL_2019_x86_64",
+      "WINDOWS_FULL_2022_x86_64",
+      "AL2023_x86_64_STANDARD",
+      "AL2023_x86_64_NEURON",
+      "AL2023_x86_64_NVIDIA",
+      "AL2023_ARM_64_NVIDIA",
+      "AL2023_ARM_64_STANDARD"
+    ],
+    "CapacityType": [
+      "SPOT",
+      "ON_DEMAND",
+      "CAPACITY_BLOCK"
+    ],
+    "TaintEffect": [
+      "NO_SCHEDULE",
+      "PREFER_NO_SCHEDULE",
+      "NO_EXECUTE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/service-account.ts": {
+    "IdentityType": [
+      "IRSA",
+      "POD_IDENTITY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/user-data.ts": {
+    "LifecycleLabel": [
+      "OnDemand",
+      "Ec2Spot"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/access-entry.ts": {
     "AccessScopeType": [
       "namespace",
@@ -4669,6 +4895,7 @@
     ],
     "SslPolicy": [
       "ELBSecurityPolicy-TLS13-1-2-2021-06",
+      "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09",
       "ELBSecurityPolicy-2016-08",
       "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
       "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
@@ -4676,6 +4903,11 @@
       "ELBSecurityPolicy-TLS13-1-0-2021-06",
       "ELBSecurityPolicy-TLS13-1-1-2021-06",
       "ELBSecurityPolicy-TLS13-1-3-2021-06",
+      "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-PQ-2025-09",
       "ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04",
@@ -4684,6 +4916,13 @@
       "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04",
+      "ELBSecurityPolicy-TLS13-1-3-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-FIPS-PQ-2025-09",
       "ELBSecurityPolicy-FS-1-2-Res-2020-10",
       "ELBSecurityPolicy-FS-1-2-Res-2019-08",
       "ELBSecurityPolicy-FS-1-2-2019-08",
@@ -4872,6 +5111,12 @@
       0,
       1,
       2
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/processors/record-deaggregation-processor.ts": {
+    "SubRecordType": [
+      "JSON",
+      "DELIMITED"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-kinesisfirehose/lib/record-format/output.ts": {

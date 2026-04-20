@@ -164,6 +164,21 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
+If your image needs GPU resources, specify `ECS_AL2023_NVIDIA`:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myGpuComputeEnv', {
+  vpc,
+  images: [
+    {
+      imageType: batch.EcsMachineImageType.ECS_AL2023_NVIDIA,
+    },
+  ],
+});
+```
+
 #### Allocation Strategies
 
 | Allocation Strategy           | Optimized for              | Downsides                     |
@@ -727,6 +742,27 @@ new batch.EcsJobDefinition(this, 'JobDefn', {
   }),
 });
 ```
+
+### Job Definition Version Management
+
+By default, when you update a Job Definition, AWS Batch automatically deregisters the previous revision.
+This means any jobs that were submitted using the old revision may fail if they haven't started yet.
+
+You can preserve previous revisions by setting `skipDeregisterOnUpdate` to `true`:
+
+```ts
+const jobDefn = new batch.EcsJobDefinition(this, 'JobDefn', {
+  container: new batch.EcsEc2ContainerDefinition(this, 'containerDefn', {
+    image: ecs.ContainerImage.fromRegistry('public.ecr.aws/amazonlinux/amazonlinux:latest'),
+    memory: cdk.Size.mebibytes(2048),
+    cpu: 256,
+  }),
+  skipDeregisterOnUpdate: true,  // Keep previous revisions active
+});
+```
+
+* This applies to all Job Definition types: ECS (EC2 and Fargate), EKS, and MultiNode
+* Default behavior (when not specified) follows AWS Batch defaults: previous revisions are deregistered
 
 ### Understanding Progressive Allocation Strategies
 

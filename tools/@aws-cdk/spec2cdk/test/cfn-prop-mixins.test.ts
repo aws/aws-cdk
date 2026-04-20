@@ -1,0 +1,151 @@
+import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { emptyDatabase } from '@aws-cdk/service-spec-types';
+import { ref } from '@cdklabs/tskb';
+import { TypeScriptRenderer } from '@cdklabs/typewriter';
+import type { MixinsBuilderProps } from '../lib/cfn-prop-mixins';
+import { MixinsBuilder } from '../lib/cfn-prop-mixins';
+
+const renderer = new TypeScriptRenderer();
+let db: SpecDatabase;
+let service: Service;
+
+beforeEach(async () => {
+  db = emptyDatabase();
+
+  service = db.allocate('service', {
+    name: 'aws-some',
+    shortName: 'some',
+    capitalized: 'Some',
+    cloudFormationNamespace: 'AWS::Some',
+  });
+});
+
+test('L1 property mixin for a standard-issue resource', () => {
+  // GIVEN
+  const type = db.allocate('typeDefinition', {
+    name: 'ResourceConfig',
+    properties: {
+      Foo: {
+        type: { type: 'string' },
+        required: true,
+      },
+      Bar: {
+        type: { type: 'boolean' },
+      },
+    },
+  });
+  const resource = db.allocate('resource', {
+    name: 'Thing',
+    primaryIdentifier: ['Id'],
+    properties: {
+      Id: {
+        type: { type: 'string' },
+        documentation: 'The identifier of the resource',
+      },
+      ExternalId: {
+        type: { type: 'string' },
+        documentation: 'An external Id',
+      },
+      Config: {
+        type: { type: 'ref', reference: ref(type) },
+        required: true,
+      },
+    },
+    attributes: {
+      SomethingArn: {
+        type: { type: 'string' },
+        documentation: 'The arn for something',
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+    arnTemplate: 'arn:${Partition}:some:${Region}:${Account}:resource/${ResourceId}',
+  });
+  db.link('hasResource', service, resource);
+  db.link('usesType', resource, type);
+
+  // THEN
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+
+  const module = moduleForResource(foundResource, { db });
+
+  const rendered = renderer.render(module);
+
+  expect(rendered).toMatchSnapshot();
+});
+
+function moduleForResource(resource: Resource, props: MixinsBuilderProps) {
+  const ast = new MixinsBuilder(props);
+  const info = ast.addResource(resource);
+  return info.locatedModules[0].module;
+}
+
+test('L1 property mixin with deeply nested relationship properties', () => {
+  // Target resource for the relationship
+  const targetService = db.allocate('service', {
+    name: 'aws-other',
+    shortName: 'other',
+    capitalized: 'Other',
+    cloudFormationNamespace: 'AWS::Other',
+  });
+  const targetResource = db.allocate('resource', {
+    name: 'Key',
+    primaryIdentifier: ['KeyId'],
+    properties: {
+      KeyId: {
+        type: { type: 'string' },
+      },
+    },
+    attributes: {
+      KeyArn: {
+        type: { type: 'string' },
+      },
+    },
+    cloudFormationType: 'AWS::Other::Key',
+  });
+  db.link('hasResource', targetService, targetResource);
+
+  // Nested type with a relationship ref
+  const nestedType = db.allocate('typeDefinition', {
+    name: 'EncryptionConfig',
+    properties: {
+      KeyId: {
+        type: { type: 'string' },
+        relationshipRefs: [{
+          cloudFormationType: 'AWS::Other::Key',
+          propertyName: 'KeyId',
+        }],
+      },
+      Algorithm: {
+        type: { type: 'string' },
+      },
+    },
+  });
+
+  const resource = db.allocate('resource', {
+    name: 'Thing',
+    primaryIdentifier: ['Id'],
+    properties: {
+      Id: {
+        type: { type: 'string' },
+      },
+      Encryption: {
+        type: { type: 'ref', reference: ref(nestedType) },
+      },
+    },
+    cloudFormationType: 'AWS::Some::Resource',
+    attributes: {},
+  });
+  db.link('hasResource', service, resource);
+  db.link('usesType', resource, nestedType);
+
+  const foundResource = db.lookup('resource', 'cloudFormationType', 'equals', 'AWS::Some::Resource').only();
+  const module = moduleForResource(foundResource, { db });
+  const rendered = renderer.render(module);
+
+  expect(rendered).toMatchSnapshot();
+
+  // Non-relationship props (id) should pass through without flatten wrapping
+  expect(rendered).not.toContain('ret.id');
+  // Relationship props (encryption) should be in the flatten function
+  expect(rendered).toContain('ret.encryption');
+});

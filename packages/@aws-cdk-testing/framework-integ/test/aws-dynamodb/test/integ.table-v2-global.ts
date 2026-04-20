@@ -12,7 +12,6 @@ class TestStack extends Stack {
     const stream = new Stream(this, 'Stream');
 
     const globalTable = new TableV2(this, 'GlobalTable', {
-      tableName: 'my-global-table',
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.NUMBER },
       billing: Billing.provisioned({
@@ -23,7 +22,7 @@ class TestStack extends Stack {
       contributorInsightsSpecification: {
         enabled: true,
       },
-      pointInTimeRecovery: true,
+      pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
       tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
       timeToLiveAttribute: 'attr',
       removalPolicy: RemovalPolicy.DESTROY,
@@ -83,6 +82,7 @@ class TestStack extends Stack {
 const app = new App();
 Tags.of(app).add('stage', 'IntegTest');
 new IntegTest(app, 'aws-cdk-global-table-integ', {
+  // Global tables with replicas require a region-aware stack
   testCases: [new TestStack(app, 'aws-cdk-global-table', { env: { region: 'us-east-1' } })],
   regions: ['us-east-1'],
   stackUpdateWorkflow: false,

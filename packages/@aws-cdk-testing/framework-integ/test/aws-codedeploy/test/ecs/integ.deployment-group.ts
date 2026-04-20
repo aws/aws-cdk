@@ -81,7 +81,7 @@ const cluster = new ecs.Cluster(stack, 'EcsCluster', {
 });
 const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
 taskDefinition.addContainer('Container', {
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest'),
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:stable-alpine'),
   portMappings: [{ containerPort: 80 }],
 });
 const service = new ecs.FargateService(stack, 'FargateService', {
@@ -95,7 +95,7 @@ const service = new ecs.FargateService(stack, 'FargateService', {
 // A second task definition for testing a CodeDeploy deployment of the ECS service to a new task definition
 const taskDefinition2 = new ecs.FargateTaskDefinition(stack, 'TaskDef2');
 taskDefinition2.addContainer('Container', {
-  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/ecs-sample-image/amazon-ecs-sample:latest'),
+  image: ecs.ContainerImage.fromRegistry('public.ecr.aws/nginx/nginx:stable-alpine'),
   portMappings: [{ containerPort: 80 }],
 });
 service.node.addDependency(taskDefinition2);
@@ -163,7 +163,7 @@ service.node.addDependency(greenTG);
 // Alarms: monitor 500s and unhealthy hosts on target groups
 const blueUnhealthyHosts = new cloudwatch.Alarm(stack, 'BlueUnhealthyHosts', {
   alarmName: stack.stackName + '-Unhealthy-Hosts-Blue',
-  metric: blueTG.metricUnhealthyHostCount(),
+  metric: blueTG.metrics.unhealthyHostCount(),
   threshold: 1,
   evaluationPeriods: 2,
 });
@@ -180,7 +180,7 @@ const blueApiFailure = new cloudwatch.Alarm(stack, 'Blue5xx', {
 
 const greenUnhealthyHosts = new cloudwatch.Alarm(stack, 'GreenUnhealthyHosts', {
   alarmName: stack.stackName + '-Unhealthy-Hosts-Green',
-  metric: greenTG.metricUnhealthyHostCount(),
+  metric: greenTG.metrics.unhealthyHostCount(),
   threshold: 1,
   evaluationPeriods: 2,
 });

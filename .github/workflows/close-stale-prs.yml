@@ -10,6 +10,7 @@ jobs:
     permissions:
       pull-requests: write
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - uses: cdklabs/close-stale-prs@main
         with:

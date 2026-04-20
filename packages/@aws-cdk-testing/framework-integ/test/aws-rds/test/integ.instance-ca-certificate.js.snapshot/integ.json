@@ -1,12 +1,13 @@
 {
-  "version": "33.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "InstanceCACertificateTest/DefaultTest": {
+    "instance-ca-certificate-integ-test/DefaultTest": {
       "stacks": [
-        "cdk-integ-rds-instance-ca-certificate"
+        "aws-cdk-rds-instance-ca-certificate"
       ],
-      "assertionStack": "InstanceCACertificateTest/DefaultTest/DeployAssert",
-      "assertionStackName": "InstanceCACertificateTestDefaultTestDeployAssert948327B8"
+      "assertionStack": "instance-ca-certificate-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "instancecacertificateintegtestDefaultTestDeployAssertF5C9B561"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

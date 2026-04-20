@@ -4,6 +4,9 @@ on:
     paths:
       - '**.js.snapshot**'
 
+permissions:
+  contents: read
+
 jobs:
   log-skip:
     if: |
@@ -50,7 +53,7 @@ jobs:
           echo "${{ github.event.pull_request.head.sha }}" > ./test-results/pr_sha
       
       - name: Upload Security Guardian XML Reports
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: security-guardian-reports

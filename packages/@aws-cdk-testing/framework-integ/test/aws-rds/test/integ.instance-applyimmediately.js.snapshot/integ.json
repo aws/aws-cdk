@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "50.0.0",
   "testCases": {
     "test-instance-applyimmediately-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "test-instance-applyimmediately-integ/DefaultTest/DeployAssert",
       "assertionStackName": "testinstanceapplyimmediatelyintegDefaultTestDeployAssert27BFFA14"
     }
-  }
+  },
+  "minimumCliVersion": "2.1105.0"
 }

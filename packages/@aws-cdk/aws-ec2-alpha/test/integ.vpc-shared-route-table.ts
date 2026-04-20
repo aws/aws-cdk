@@ -36,7 +36,7 @@ const sharedRouteTable = new RouteTable(stack, 'SharedRouteTable', {
 // Create two public subnets that share the same route table
 new SubnetV2(stack, 'PublicSubnet1', {
   vpc,
-  availabilityZone: 'us-west-2a',
+  availabilityZone: stack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.1.1.0/24'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'PublicSubnet1',
@@ -45,7 +45,7 @@ new SubnetV2(stack, 'PublicSubnet1', {
 
 new SubnetV2(stack, 'PublicSubnet2', {
   vpc,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: stack.availabilityZones[1],
   ipv4CidrBlock: new IpCidr('10.1.2.0/24'),
   subnetType: SubnetType.PUBLIC,
   subnetName: 'PublicSubnet2',

@@ -28,49 +28,6 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
 
 ## Table of contents
 
-- [AgentCore Runtime](#agentcore-runtime)
-  - [Runtime Versioning](#runtime-versioning)
-  - [Runtime Endpoints](#runtime-endpoints)
-  - [AgentCore Runtime Properties](#agentcore-runtime-properties)
-  - [Runtime Endpoint Properties](#runtime-endpoint-properties)
-  - [Creating a Runtime](#creating-a-runtime)
-    - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
-    - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
-    - [Option 2: Use a local asset](#option-2-use-a-local-asset)
-- [Browser Custom tool](#browser)
-  - [Browser properties](#browser-properties)
-  - [Browser Network modes](#browser-network-modes)
-  - [Basic Browser Creation](#basic-browser-creation)
-  - [Browser IAM permissions](#browser-iam-permissions)
-- [Code Interpreter Custom tool](#code-interpreter)
-  - [Code Interpreter properties](#code-interpreter-properties)
-  - [Code Interpreter Network Modes](#code-interpreter-network-modes)
-  - [Basic Code Interpreter Creation](#basic-code-interpreter-creation)
-  - [Code Interpreter IAM permissions](#code-interpreter-iam-permissions)
-- [Gateway](#gateway)
-  - [Gateway Properties](#gateway-properties)
-  - [Basic Gateway Creation](#basic-gateway-creation)
-  - [Protocol configuration](#protocol-configuration)
-  - [Inbound authorization](#inbound-authorization)
-  - [Gateway with KMS Encryption](#gateway-with-kms-encryption)
-  - [Gateway with Custom Execution Role](#gateway-with-custom-execution-role)
-  - [Gateway IAM Permissions](#gateway-iam-permissions)
-- [Gateway Target](#gateway-target)
-  - [Gateway Target Properties](#gateway-target-properties)
-  - [Targets types](#targets-types)
-  - [Outbound auth](#outbound-auth)
-  - [Api schema](#api-schema-for-openapi-and-smithy-target)
-  - [Basic Gateway Target Creation](#basic-gateway-target-creation)
-    - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
-    - [Using static factory methods](#using-static-factory-methods)
-  - [Lambda Target with Tool Schema](#tools-schema-for-lambda-target)
-  - [Smithy Model Target with OAuth](#api-schema-for-openapi-and-smithy-target)
-  - [Gateway Target IAM Permissions](#gateway-target-iam-permissions)
-- [Memory](#memory)
-  - [Memory properties](#memory-properties)
-  - [Basic Memory Creation](#basic-memory-creation)
-  - [LTM Memory Extraction Stategies](#ltm-memory-extraction-stategies)
-  - [Memory Strategy Methods](#memory-strategy-methods)
 - [Amazon Bedrock AgentCore Construct Library](#amazon-bedrock-agentcore-construct-library)
   - [Table of contents](#table-of-contents)
   - [AgentCore Runtime](#agentcore-runtime)
@@ -81,6 +38,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
       - [Option 2: Use a local asset](#option-2-use-a-local-asset)
       - [Option 3: Use direct code deployment](#option-3-use-direct-code-deployment)
+      - [Option 4: Use an ECR container image URI](#option-4-use-an-ecr-container-image-uri)
     - [Granting Permissions to Invoke Bedrock Models or Inference Profiles](#granting-permissions-to-invoke-bedrock-models-or-inference-profiles)
     - [Runtime Versioning](#runtime-versioning)
       - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
@@ -101,6 +59,10 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Public Network Mode (Default)](#public-network-mode-default)
       - [VPC Network Mode](#vpc-network-mode)
       - [Managing Security Groups with VPC Configuration](#managing-security-groups-with-vpc-configuration)
+    - [Runtime IAM Permissions](#runtime-iam-permissions)
+    - [Other configuration](#other-configuration)
+      - [Lifecycle configuration](#lifecycle-configuration)
+      - [Request header configuration](#request-header-configuration)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -110,6 +72,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Browser with Recording Configuration](#browser-with-recording-configuration)
     - [Browser with Custom Execution Role](#browser-with-custom-execution-role)
     - [Browser with S3 Recording and Permissions](#browser-with-s3-recording-and-permissions)
+    - [Browser with Browser signing](#browser-with-browser-signing)
     - [Browser IAM Permissions](#browser-iam-permissions)
   - [Code Interpreter](#code-interpreter)
     - [Code Interpreter Network Modes](#code-interpreter-network-modes)
@@ -120,6 +83,28 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Code Interpreter with Custom Execution Role](#code-interpreter-with-custom-execution-role)
     - [Code Interpreter IAM Permissions](#code-interpreter-iam-permissions)
     - [Code interpreter with tags](#code-interpreter-with-tags)
+  - [Gateway](#gateway)
+    - [Gateway Properties](#gateway-properties)
+    - [Basic Gateway Creation](#basic-gateway-creation)
+    - [Protocol configuration](#protocol-configuration)
+    - [Inbound authorization](#inbound-authorization)
+    - [Gateway with KMS Encryption](#gateway-with-kms-encryption)
+    - [Gateway with Custom Execution Role](#gateway-with-custom-execution-role)
+    - [Gateway IAM Permissions](#gateway-iam-permissions)
+  - [Gateway Target](#gateway-target)
+    - [Gateway Target Properties](#gateway-target-properties)
+    - [Targets types](#targets-types)
+    - [Understanding Tool Naming](#understanding-tool-naming)
+    - [Tools schema For Lambda target](#tools-schema-for-lambda-target)
+    - [Api schema For OpenAPI and Smithy target](#api-schema-for-openapi-and-smithy-target)
+    - [Outbound auth](#outbound-auth)
+    - [Basic Gateway Target Creation](#basic-gateway-target-creation)
+      - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
+      - [Using static factory methods](#using-static-factory-methods)
+    - [Advanced Usage: Direct Configuration for gateway target](#advanced-usage-direct-configuration-for-gateway-target)
+      - [Configuration Factory Methods](#configuration-factory-methods)
+      - [Example: Lambda Target with Custom Configuration](#example-lambda-target-with-custom-configuration)
+    - [Gateway Target IAM Permissions](#gateway-target-iam-permissions)
   - [Memory](#memory)
     - [Memory Properties](#memory-properties)
     - [Basic Memory Creation](#basic-memory-creation)
@@ -242,6 +227,21 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromS3(
   agentcore.AgentCoreRuntime.PYTHON_3_12, 
   ['opentelemetry-instrument', 'main.py']
 );
+
+const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+Alternatively, you can use local code assets that will be automatically packaged and uploaded to a CDK-managed S3 bucket:
+
+```typescript fixture=default
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromCodeAsset({
+  path: path.join(__dirname, 'path/to/agent/code'),
+  runtime: agentcore.AgentCoreRuntime.PYTHON_3_12,
+  entrypoint: ['opentelemetry-instrument', 'main.py'],
+});
 
 const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",

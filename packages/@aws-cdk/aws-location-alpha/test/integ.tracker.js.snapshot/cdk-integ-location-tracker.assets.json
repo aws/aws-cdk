@@ -1,13 +1,14 @@
 {
-  "version": "38.0.1",
+  "version": "48.0.0",
   "files": {
     "3579bb2ed6eb011bbf73d554c0934bdf3fc22da9300cd7b45f8779bf72667670": {
+      "displayName": "cdk-integ-location-tracker Template",
       "source": {
         "path": "cdk-integ-location-tracker.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-f251a5a5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "3579bb2ed6eb011bbf73d554c0934bdf3fc22da9300cd7b45f8779bf72667670.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

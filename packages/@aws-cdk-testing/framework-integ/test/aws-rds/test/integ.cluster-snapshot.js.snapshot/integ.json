@@ -1,14 +1,13 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "testCases": {
-    "ClusterSnapshotInteg/DefaultTest": {
+    "cluster-snapshot-integ-test/DefaultTest": {
       "stacks": [
-        "cdk-integ-cluster-snapshot"
+        "aws-cdk-rds-cluster-snapshot"
       ],
-      "diffAssets": true,
-      "assertionStack": "ClusterSnapshotInteg/DefaultTest/DeployAssert",
-      "assertionStackName": "ClusterSnapshotIntegDefaultTestDeployAssert647D4685"
+      "assertionStack": "cluster-snapshot-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clustersnapshotintegtestDefaultTestDeployAssert4A65AE6C"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1107.0"
 }

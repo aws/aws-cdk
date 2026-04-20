@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "LimitlessClusterStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c75ae97c5e91615e7c2b2d9cdea340095ef73978d033bb898ab9fbc67c9b343b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/94d4967b0136d8c339c0dff7378c0da0f3c0c70c6cbe2e4deb2c8e1416f58569.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -336,18 +336,18 @@
             "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "engine": {
                 "engineType": "*",
-                "singleUserRotationApplication": "*",
                 "engineVersion": {
                   "fullVersion": "*",
                   "majorVersion": "*"
                 },
                 "parameterGroupFamily": "*",
+                "singleUserRotationApplication": "*",
                 "engineFamily": "*",
                 "defaultUsername": "*",
                 "supportedLogTypes": "*"
@@ -359,12 +359,11 @@
               "monitoringInterval": "*",
               "enableClusterLevelEnhancedMonitoring": true,
               "storageType": "aurora-iopt1",
-              "cloudwatchLogsExports": "*",
-              "removalPolicy": "destroy"
+              "cloudwatchLogsExports": "*"
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Subnets": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Subnets": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -375,13 +374,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Subnets/Default": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Subnets/Default": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster164limitlessSubnets4B1674FF"
+            "data": "DatabaseCluster1611limitlessSubnetsE45F41D5"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/SecurityGroup": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/SecurityGroup": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -390,13 +389,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/SecurityGroup/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/SecurityGroup/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster164limitlessSecurityGroupE3B3792F"
+            "data": "DatabaseCluster1611limitlessSecurityGroupA3056B4A"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/MonitoringRole": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/MonitoringRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -412,19 +411,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/MonitoringRole/ImportMonitoringRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/MonitoringRole/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/MonitoringRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster164limitlessMonitoringRoleAD5ED7BA"
+            "data": "DatabaseCluster1611limitlessMonitoringRole9BA03B7A"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -445,13 +438,13 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster164limitlessSecret8EB4E753"
+            "data": "DatabaseCluster1611limitlessSecretCD89479D"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret/Attachment": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret/Attachment": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -460,152 +453,16 @@
             }
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Secret/Attachment/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Secret/Attachment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster164limitlessSecretAttachment5C6ACA6C"
+            "data": "DatabaseCluster1611limitlessSecretAttachment652DA295"
           }
         ],
-        "/LimitlessClusterStack/DatabaseCluster16.4-limitless/Resource": [
+        "/LimitlessClusterStack/DatabaseCluster16.11-limitless/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster164limitless2DB21F68"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "engine": {
-                "engineType": "*",
-                "singleUserRotationApplication": "*",
-                "engineVersion": {
-                  "fullVersion": "*",
-                  "majorVersion": "*"
-                },
-                "parameterGroupFamily": "*",
-                "engineFamily": "*",
-                "defaultUsername": "*",
-                "supportedLogTypes": "*"
-              },
-              "vpc": "*",
-              "clusterScalabilityType": "limitless",
-              "enablePerformanceInsights": true,
-              "performanceInsightRetention": 31,
-              "monitoringInterval": "*",
-              "enableClusterLevelEnhancedMonitoring": true,
-              "storageType": "aurora-iopt1",
-              "cloudwatchLogsExports": "*",
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Subnets": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "removalPolicy": "*"
-            }
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Subnets/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSubnets30AC1262"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "vpc": "*"
-            }
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSecurityGroupF99FFC3A"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/MonitoringRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/MonitoringRole/ImportMonitoringRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/MonitoringRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessMonitoringRoleB9251B2E"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "encryptionKey": "*",
-              "secretName": "*",
-              "replicaRegions": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "username": "*",
-              "secretName": "*",
-              "encryptionKey": "*",
-              "excludeCharacters": "*",
-              "replaceOnPasswordCriteriaChanges": "*",
-              "replicaRegions": "*"
-            }
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSecret13E5F591"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret/Attachment": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "secret": "*",
-              "target": "*"
-            }
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Secret/Attachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitlessSecretAttachment62201C99"
-          }
-        ],
-        "/LimitlessClusterStack/DatabaseCluster16.8-limitless/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster168limitless05206D79"
+            "data": "DatabaseCluster1611limitlessAB5788A6"
           }
         ],
         "/LimitlessClusterStack/BootstrapVersion": [
@@ -618,6 +475,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "DatabaseCluster169limitlessSubnets2FA5CA29": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSubnets2FA5CA29",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessSecurityGroup092DF9D2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSecurityGroup092DF9D2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessMonitoringRole751B52C2": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessMonitoringRole751B52C2",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessSecret6EC679E9": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSecret6EC679E9",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessSecretAttachment1EF19F0E": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessSecretAttachment1EF19F0E",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "DatabaseCluster169limitlessE9A42B52": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DatabaseCluster169limitlessE9A42B52",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },
@@ -683,6 +594,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -701,6 +613,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -812,7 +725,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -966,6 +879,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -997,16 +914,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1151,10 +1058,39 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1106.1"
 }

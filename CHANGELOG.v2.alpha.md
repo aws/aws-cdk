@@ -2,6 +2,77 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.250.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.249.0-alpha.0...v2.250.0-alpha.0) (2026-04-14)
+
+## [2.249.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.248.0-alpha.0...v2.249.0-alpha.0) (2026-04-10)
+
+## [2.248.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.247.0-alpha.0...v2.248.0-alpha.0) (2026-04-02)
+
+## [2.247.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.246.0-alpha.0...v2.247.0-alpha.0) (2026-04-02)
+
+
+### Features
+
+* **mediapackagev2-alpha:** new L2 construct ([#37279](https://github.com/aws/aws-cdk/issues/37279)) ([7debfb9](https://github.com/aws/aws-cdk/commit/7debfb9c5e807fac5df6e9e0ea3097d72325ffbc))
+
+## [2.246.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.245.0-alpha.0...v2.246.0-alpha.0) (2026-03-31)
+
+## [2.245.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.244.0-alpha.0...v2.245.0-alpha.0) (2026-03-27)
+
+
+### Features
+
+* **s3tables-alpha:** add support for partition spec, sort order, and table properties ([#36811](https://github.com/aws/aws-cdk/issues/36811)) ([2696cd1](https://github.com/aws/aws-cdk/commit/2696cd16e8e2edc8d40f1443b9c87eb6171e5d1f))
+* **s3tables-alpha:** add metrics configuration support for TableBucket ([#37275](https://github.com/aws/aws-cdk/issues/37275)) ([e8786f5](https://github.com/aws/aws-cdk/commit/e8786f5d782d906971f933a2d6d432309d5384d7))
+* **s3tables-alpha:** implement ITaggableV2 on TableBucket and Table L2 constructs ([#37277](https://github.com/aws/aws-cdk/issues/37277)) ([69c8944](https://github.com/aws/aws-cdk/commit/69c8944ea3f4abf0f4218af2fc42c8e862e8cad3)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.244.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.243.0-alpha.0...v2.244.0-alpha.0) (2026-03-19)
+
+
+### Bug Fixes
+
+* **kinesisanalytics-flink-alpha:** mark deprecated flink runtimes as deprecated ([#37155](https://github.com/aws/aws-cdk/issues/37155)) ([0a89447](https://github.com/aws/aws-cdk/commit/0a894472650bb1a2c41050ae2b00581fb937c924))
+
+## [2.243.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.242.0-alpha.0...v2.243.0-alpha.0) (2026-03-11)
+
+## [2.242.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.241.0-alpha.0...v2.242.0-alpha.0) (2026-03-10)
+
+
+### Features
+
+* **mixins-preview:** allow passing resource objects into properties in CFN Property mixins ([#37148](https://github.com/aws/aws-cdk/issues/37148)) ([f238629](https://github.com/aws/aws-cdk/commit/f2386291a50961660135b6d13b576a3744fa5ecf))
+* **mixins-preview:** generate EventBridge pattern for all events ([#37081](https://github.com/aws/aws-cdk/issues/37081)) ([f30e836](https://github.com/aws/aws-cdk/commit/f30e8360112c724ce386f26d7d2bf10d6a58e479))
+* **mixins-preview:** support custom merge strategies via IMergeStrategy ([#37170](https://github.com/aws/aws-cdk/issues/37170)) ([0dec011](https://github.com/aws/aws-cdk/commit/0dec0113c45f5808e2afd45ac5be1d044e577a4b))
+
+## [2.241.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.240.0-alpha.0...v2.241.0-alpha.0) (2026-03-02)
+
+
+### Features
+
+* **mixins-preview:** add `recordFields` and `outputFormat` to Vended Logs Mixin ([#37042](https://github.com/aws/aws-cdk/issues/37042)) ([dd94c31](https://github.com/aws/aws-cdk/commit/dd94c312ae77cd9b51cbf6d544c85a2af6a7cdc8))
+* **mixins-preview:** cross account delivery destinations ([#36827](https://github.com/aws/aws-cdk/issues/36827)) ([a759eb6](https://github.com/aws/aws-cdk/commit/a759eb69d560ff039d09d62e91627bb267a664e5))
+
+## [2.240.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.239.0-alpha.0...v2.240.0-alpha.0) (2026-02-23)
+
+## [2.239.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.238.0-alpha.0...v2.239.0-alpha.0) (2026-02-19)
+
+### ⚠ BREAKING CHANGES
+
+redshift-alpha: update default node type from `DC2_LARGE` to `RA3_LARGE`
+
+### Features
+
+* **bedrock-agentcore-alpha:** add `fromCodeAsset` method to create runtime artifact with local code assets ([#36472](https://github.com/aws/aws-cdk/issues/36472)) ([c5a87e6](https://github.com/aws/aws-cdk/commit/c5a87e6682a3668de849d4c7a0913fdee3eb170c)), closes [#36473](https://github.com/aws/aws-cdk/issues/36473)
+* **bedrock-agentcore-alpha:** added new target type (api gateway) in agentcore gateway target. ([#36841](https://github.com/aws/aws-cdk/issues/36841)) ([0842754](https://github.com/aws/aws-cdk/commit/0842754ec56412a9b22f2e92f5aea7c86129ec52)), closes [#36817](https://github.com/aws/aws-cdk/issues/36817)
+* **mixins-preview:** add ECS ClusterSettingsMixin ([#36796](https://github.com/aws/aws-cdk/issues/36796)) ([b8ab5be](https://github.com/aws/aws-cdk/commit/b8ab5be8f2e0733433a55dd48b26e7f56f6e0393))
+* **mixins-preview:** add s3 bucket mixin for publicAccessBlock ([#36905](https://github.com/aws/aws-cdk/issues/36905)) ([feed4b2](https://github.com/aws/aws-cdk/commit/feed4b2690bd481e464dd3ececa4cba0997a03db))
+* **mixins-preview:** send Vended Logs to pre-created DeliveryDestination using `toDestination()` ([#36896](https://github.com/aws/aws-cdk/issues/36896)) ([48f1fe6](https://github.com/aws/aws-cdk/commit/48f1fe6aa86473a25ffdcf53cfecb5e1169b54db))
+
+
+### Bug Fixes
+
+* **redshift-alpha:** update default node type from `DC2_LARGE` to `RA3_LARGE` ([#36516](https://github.com/aws/aws-cdk/issues/36516)) ([ea19e5c](https://github.com/aws/aws-cdk/commit/ea19e5cde2e64d5cdcdfa3af41764542e77e221c)), closes [#36416](https://github.com/aws/aws-cdk/issues/36416)
+
 ## [2.238.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.237.1-alpha.0...v2.238.0-alpha.0) (2026-02-09)
 
 

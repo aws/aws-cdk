@@ -16,6 +16,7 @@ import type { Duration } from '../../core';
 import { ContextProvider, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -124,7 +125,7 @@ export class HostedZone extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
       public get name(): string { return this.zoneName; }
       public get zoneName(): string {
-        throw new ValidationError('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.', this);
+        throw new ValidationError(lit`CannotReferenceZoneNameHosted`, 'Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.', this);
       }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
@@ -182,7 +183,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     if (!query.domainName) {
-      throw new ValidationError('Cannot use undefined value for attribute `domainName`', scope);
+      throw new ValidationError(lit`CannotUndefinedValueAttributeDomain`, 'Cannot use undefined value for attribute `domainName`', scope);
     }
 
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
@@ -291,7 +292,7 @@ export class HostedZone extends Resource implements IHostedZone {
   @MethodMetadata()
   public enableDnssec(options: ZoneSigningOptions): IKeySigningKey {
     if (this.keySigningKey) {
-      throw new ValidationError('DNSSEC is already enabled for this hosted zone', this);
+      throw new ValidationError(lit`AlreadyEnabledHostedZone`, 'DNSSEC is already enabled for this hosted zone', this);
     }
     this.keySigningKey = new KeySigningKey(this, 'KeySigningKey', {
       hostedZone: this,
@@ -318,6 +319,19 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * @default false
    */
   readonly caaAmazon?: boolean;
+
+  /**
+   * Whether to enable accelerated recovery for this hosted zone.
+   *
+   * Accelerated recovery reduces the time to recovery when a hosted zone
+   * becomes unavailable due to DNS resolution issues.
+   *
+   * This feature is only available for public hosted zones.
+   *
+   * @default - no accelerated recovery
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/accelerated-recovery.html
+   */
+  readonly acceleratedRecoveryEnabled?: boolean;
 
   /**
    * A principal which is trusted to assume a role for zone delegation
@@ -379,7 +393,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
       public get name(): string { return this.zoneName; }
-      public get zoneName(): string { throw new ValidationError('Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead', this); }
+      public get zoneName(): string { throw new ValidationError(lit`CannotReferenceZoneNamePublic`, 'Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead', this); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
@@ -434,6 +448,13 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    if (props.acceleratedRecoveryEnabled !== undefined) {
+      const cfnHostedZone = this.node.defaultChild as CfnHostedZone;
+      cfnHostedZone.hostedZoneFeatures = {
+        enableAcceleratedRecovery: props.acceleratedRecoveryEnabled,
+      };
+    }
+
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
         zone: this,
@@ -474,7 +495,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
   @MethodMetadata()
   public addVpc(_vpc: ec2.IVpc) {
-    throw new ValidationError('Cannot associate public hosted zones with a VPC', this);
+    throw new ValidationError(lit`CannotAssociatePublicHostedZones`, 'Cannot associate public hosted zones with a VPC', this);
   }
 
   /**
@@ -559,7 +580,7 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
       public get name(): string { return this.zoneName; }
-      public get zoneName(): string { throw new ValidationError('Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`', this); }
+      public get zoneName(): string { throw new ValidationError(lit`CannotReferenceZoneNamePrivate`, 'Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`', this); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }

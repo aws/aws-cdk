@@ -1,0 +1,2197 @@
+{
+ "Transform": "AWS::Serverless-2016-10-31",
+ "Resources": {
+  "VPCB9E5F0B4": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet1SubnetB4246D30": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet1RouteTableFEE4B781": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet1RouteTableAssociation0B0896DC": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet1DefaultRoute91CEF279": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet1RouteTableFEE4B781"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet1EIP6AD938E8": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet1NATGatewayE0556630": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet1EIP6AD938E8",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet1DefaultRoute91CEF279",
+    "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet2Subnet74179F39": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Public"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet2RouteTable6F1A15F1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet2RouteTableAssociation5A808732": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet2DefaultRouteB7481BBA": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPublicSubnet2RouteTable6F1A15F1"
+    }
+   },
+   "DependsOn": [
+    "VPCVPCGW99B986DC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet2EIP4947BC00": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPublicSubnet2NATGateway3C070193": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "VPCPublicSubnet2EIP4947BC00",
+      "AllocationId"
+     ]
+    },
+    "SubnetId": {
+     "Ref": "VPCPublicSubnet2Subnet74179F39"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PublicSubnet2"
+     }
+    ]
+   },
+   "DependsOn": [
+    "VPCPublicSubnet2DefaultRouteB7481BBA",
+    "VPCPublicSubnet2RouteTableAssociation5A808732"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet1Subnet8BCA10E0": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet1RouteTableBE8A6027": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet1RouteTableAssociation347902D1": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet1DefaultRouteAE1D6490": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet1RouteTableBE8A6027"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet2SubnetCFCDAA7A": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "Private"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Private"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet2RouteTable0A19E10E": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC/PrivateSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet2RouteTableAssociation0C73D413": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    "SubnetId": {
+     "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCPrivateSubnet2DefaultRouteF4F5CFD2": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "NatGatewayId": {
+     "Ref": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    "RouteTableId": {
+     "Ref": "VPCPrivateSubnet2RouteTable0A19E10E"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCIGWB7E252D3": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-rds-cluster-snapshot/VPC"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "VPCVPCGW99B986DC": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "InternetGatewayId": {
+     "Ref": "VPCIGWB7E252D3"
+    },
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceClusterSubnetsA3F9E0D8": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for SourceCluster database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceClusterSecurityGroup37BA323A": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceClusterSecret60A70349": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceClusterSecretAttachmentF1D38ADD": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "SourceClusterSecret60A70349"
+    },
+    "TargetId": {
+     "Ref": "SourceCluster32940E28"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceCluster32940E28": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBSubnetGroupName": {
+     "Ref": "SourceClusterSubnetsA3F9E0D8"
+    },
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "SourceClusterSecret60A70349"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "MasterUsername": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "SourceClusterSecret60A70349"
+       },
+       ":SecretString:username::}}"
+      ]
+     ]
+    },
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "SourceClusterSecurityGroup37BA323A",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceClusterwriterE72946A4": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "SourceCluster32940E28"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "Engine": "aurora-mysql",
+    "PromotionTier": 0
+   },
+   "DependsOn": [
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "rds:AddTagsToResource",
+        "rds:CreateDBClusterSnapshot",
+        "rds:DeleteDBClusterSnapshot"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":rds:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster-snapshot:aws-cdk-rds-cluster-snapshot-integ-test"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":rds:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster:",
+           {
+            "Ref": "SourceCluster32940E28"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "Roles": [
+     {
+      "Ref": "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterOnEventHandler2EFCD3AF": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2.zip"
+    },
+    "Handler": "index.onEventHandler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterOnEventHandlerLogGroup90039F17": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ClusterSnapshoterOnEventHandler2EFCD3AF"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "rds:DescribeDBClusterSnapshots",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":rds:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster-snapshot:aws-cdk-rds-cluster-snapshot-integ-test"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":rds:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster:",
+           {
+            "Ref": "SourceCluster32940E28"
+           }
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "Roles": [
+     {
+      "Ref": "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterIsCompleteHandlerBB5051A9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "4de3506ba5bc3aa77711f1a81ad7f975144fea4ee7137acca0654b62bdc610f2.zip"
+    },
+    "Handler": "index.isCompleteHandler",
+    "Role": {
+     "Fn::GetAtt": [
+      "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x"
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ClusterSnapshoterIsCompleteHandlerBB5051A9"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterOnEventHandler2EFCD3AF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterOnEventHandler2EFCD3AF",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterOnEventHandler2EFCD3AF",
+          "Arn"
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "states:StartExecution",
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "Roles": [
+     {
+      "Ref": "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "ClusterSnapshoterOnEventHandler2EFCD3AF",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+        "Arn"
+       ]
+      },
+      "WAITER_STATE_MACHINE_ARN": {
+       "Ref": "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28"
+      }
+     }
+    },
+    "Handler": "framework.onEvent",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterOnEventHandler2EFCD3AF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterOnEventHandler2EFCD3AF",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterOnEventHandler2EFCD3AF",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "Roles": [
+     {
+      "Ref": "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - isComplete (aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "ClusterSnapshoterOnEventHandler2EFCD3AF",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.isComplete",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterOnEventHandler2EFCD3AF",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterOnEventHandler2EFCD3AF",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "lambda:GetFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterOnEventHandler2EFCD3AF",
+          "Arn"
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "Roles": [
+     {
+      "Ref": "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
+    },
+    "Description": "AWS CDK resource provider framework - onTimeout (aws-cdk-rds-cluster-snapshot/ClusterSnapshoter/SnapshotProvider)",
+    "Environment": {
+     "Variables": {
+      "USER_ON_EVENT_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "ClusterSnapshoterOnEventHandler2EFCD3AF",
+        "Arn"
+       ]
+      },
+      "USER_IS_COMPLETE_FUNCTION_ARN": {
+       "Fn::GetAtt": [
+        "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+        "Arn"
+       ]
+      }
+     }
+    },
+    "Handler": "framework.onTimeout",
+    "LoggingConfig": {
+     "ApplicationLogLevel": "FATAL",
+     "LogFormat": "JSON"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Timeout": 900
+   },
+   "DependsOn": [
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": {
+     "Fn::Join": [
+      "",
+      [
+       "/aws/lambda/",
+       {
+        "Ref": "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3"
+       }
+      ]
+     ]
+    },
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "lambda:InvokeFunction",
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::GetAtt": [
+          "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+             "Arn"
+            ]
+           },
+           ":*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "Roles": [
+     {
+      "Ref": "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":5,\"MaxAttempts\":360,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ClusterSnapshoterSnapshot4EBB28EE": {
+   "Type": "Custom::Snapshoter",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+      "Arn"
+     ]
+    },
+    "DBClusterIdentifier": {
+     "Ref": "SourceCluster32940E28"
+    },
+    "DBClusterSnapshotIdentifier": "aws-cdk-rds-cluster-snapshot-integ-test"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterSubnets60C7DFFD": {
+   "Type": "AWS::RDS::DBSubnetGroup",
+   "Properties": {
+    "DBSubnetGroupDescription": "Subnets for RestoredCluster database",
+    "SubnetIds": [
+     {
+      "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+     },
+     {
+      "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+     }
+    ]
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterSecurityGroup8469D544": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "RDS security group",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterSecurityGroupfromawscdkrdsclustersnapshotRestoredClusterRotationSingleUserSecurityGroupAAF1D148IndirectPort23278485": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "Description": "from awscdkrdsclustersnapshotRestoredClusterRotationSingleUserSecurityGroupAAF1D148:{IndirectPort}",
+    "FromPort": {
+     "Fn::GetAtt": [
+      "RestoredClusterBDABFB2B",
+      "Endpoint.Port"
+     ]
+    },
+    "GroupId": {
+     "Fn::GetAtt": [
+      "RestoredClusterSecurityGroup8469D544",
+      "GroupId"
+     ]
+    },
+    "IpProtocol": "tcp",
+    "SourceSecurityGroupId": {
+     "Fn::GetAtt": [
+      "RestoredClusterRotationSingleUserSecurityGroup55C528B0",
+      "GroupId"
+     ]
+    },
+    "ToPort": {
+     "Fn::GetAtt": [
+      "RestoredClusterBDABFB2B",
+      "Endpoint.Port"
+     ]
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "awscdkrdsclustersnapshotRestoredClusterSnapshotSecretA38D39563fdaad7efa858a3daf9490cf0a702aeb": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Generated by the CDK for stack: ",
+       {
+        "Ref": "AWS::StackName"
+       }
+      ]
+     ]
+    },
+    "GenerateSecretString": {
+     "ExcludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\",
+     "GenerateStringKey": "password",
+     "PasswordLength": 30,
+     "SecretStringTemplate": "{\"username\":\"admin\"}"
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterSnapshotSecretAttachment5F29CAA0": {
+   "Type": "AWS::SecretsManager::SecretTargetAttachment",
+   "Properties": {
+    "SecretId": {
+     "Ref": "awscdkrdsclustersnapshotRestoredClusterSnapshotSecretA38D39563fdaad7efa858a3daf9490cf0a702aeb"
+    },
+    "TargetId": {
+     "Ref": "RestoredClusterBDABFB2B"
+    },
+    "TargetType": "AWS::RDS::DBCluster"
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterSnapshotSecretAttachmentRotationScheduleEBC4DA76": {
+   "Type": "AWS::SecretsManager::RotationSchedule",
+   "Properties": {
+    "RotationLambdaARN": {
+     "Fn::GetAtt": [
+      "RestoredClusterRotationSingleUser48DDFFD0",
+      "Outputs.RotationLambdaARN"
+     ]
+    },
+    "RotationRules": {
+     "ScheduleExpression": "rate(30 days)"
+    },
+    "SecretId": {
+     "Ref": "RestoredClusterSnapshotSecretAttachment5F29CAA0"
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterSnapshotSecretPolicy18A6F5D5": {
+   "Type": "AWS::SecretsManager::ResourcePolicy",
+   "Properties": {
+    "ResourcePolicy": {
+     "Statement": [
+      {
+       "Action": "secretsmanager:DeleteSecret",
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "SecretId": {
+     "Ref": "awscdkrdsclustersnapshotRestoredClusterSnapshotSecretA38D39563fdaad7efa858a3daf9490cf0a702aeb"
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterBDABFB2B": {
+   "Type": "AWS::RDS::DBCluster",
+   "Properties": {
+    "CopyTagsToSnapshot": true,
+    "DBClusterParameterGroupName": "default.aurora-mysql8.0",
+    "DBSubnetGroupName": {
+     "Ref": "RestoredClusterSubnets60C7DFFD"
+    },
+    "Engine": "aurora-mysql",
+    "EngineVersion": "8.0.mysql_aurora.3.12.0",
+    "MasterUserPassword": {
+     "Fn::Join": [
+      "",
+      [
+       "{{resolve:secretsmanager:",
+       {
+        "Ref": "awscdkrdsclustersnapshotRestoredClusterSnapshotSecretA38D39563fdaad7efa858a3daf9490cf0a702aeb"
+       },
+       ":SecretString:password::}}"
+      ]
+     ]
+    },
+    "SnapshotIdentifier": "aws-cdk-rds-cluster-snapshot-integ-test",
+    "VpcSecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "RestoredClusterSecurityGroup8469D544",
+       "GroupId"
+      ]
+     }
+    ]
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterwriterB63A5284": {
+   "Type": "AWS::RDS::DBInstance",
+   "Properties": {
+    "DBClusterIdentifier": {
+     "Ref": "RestoredClusterBDABFB2B"
+    },
+    "DBInstanceClass": "db.t3.medium",
+    "Engine": "aurora-mysql",
+    "PromotionTier": 0
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC",
+    "VPCPrivateSubnet1DefaultRouteAE1D6490",
+    "VPCPrivateSubnet1RouteTableAssociation347902D1",
+    "VPCPrivateSubnet2DefaultRouteF4F5CFD2",
+    "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterRotationSingleUserSecurityGroup55C528B0": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-rds-cluster-snapshot/RestoredCluster/RotationSingleUser/SecurityGroup",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "VPCB9E5F0B4"
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RestoredClusterRotationSingleUser48DDFFD0": {
+   "Type": "AWS::Serverless::Application",
+   "Properties": {
+    "Location": {
+     "ApplicationId": {
+      "Fn::FindInMap": [
+       "RestoredClusterRotationSingleUserSARMappingD8A0064F",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "applicationId"
+      ]
+     },
+     "SemanticVersion": {
+      "Fn::FindInMap": [
+       "RestoredClusterRotationSingleUserSARMappingD8A0064F",
+       {
+        "Ref": "AWS::Partition"
+       },
+       "semanticVersion"
+      ]
+     }
+    },
+    "Parameters": {
+     "endpoint": {
+      "Fn::Join": [
+       "",
+       [
+        "https://secretsmanager.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        }
+       ]
+      ]
+     },
+     "functionName": "wscdkrdsclustersnapshotRestoredClusterRotationSingleUser6498AA7B",
+     "vpcSubnetIds": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Ref": "VPCPrivateSubnet1Subnet8BCA10E0"
+        },
+        ",",
+        {
+         "Ref": "VPCPrivateSubnet2SubnetCFCDAA7A"
+        }
+       ]
+      ]
+     },
+     "vpcSecurityGroupIds": {
+      "Fn::GetAtt": [
+       "RestoredClusterRotationSingleUserSecurityGroup55C528B0",
+       "GroupId"
+      ]
+     },
+     "excludeCharacters": " %+~`#$&*()|[]{}:;<>?!'/@\"\\"
+    }
+   },
+   "DependsOn": [
+    "ClusterSnapshoterIsCompleteHandlerLogGroup12EC2036",
+    "ClusterSnapshoterIsCompleteHandlerBB5051A9",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleDefaultPolicyDEE9409D",
+    "ClusterSnapshoterIsCompleteHandlerServiceRoleF90B92DD",
+    "ClusterSnapshoterOnEventHandlerLogGroup90039F17",
+    "ClusterSnapshoterOnEventHandler2EFCD3AF",
+    "ClusterSnapshoterOnEventHandlerServiceRoleDefaultPolicyBEF3184F",
+    "ClusterSnapshoterOnEventHandlerServiceRole7C9B56C3",
+    "ClusterSnapshoterSnapshot4EBB28EE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteLogGroup2F361DEE",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteFE3200C6",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleDefaultPolicy231357F0",
+    "ClusterSnapshoterSnapshotProviderframeworkisCompleteServiceRoleC6DFA200",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventLogGroup8BAA07F4",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventB6151D2B",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRoleDefaultPolicyB189A751",
+    "ClusterSnapshoterSnapshotProviderframeworkonEventServiceRole0F5C85D0",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutLogGroup0971305A",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeout5EADC0F3",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRoleDefaultPolicy67442D67",
+    "ClusterSnapshoterSnapshotProviderframeworkonTimeoutServiceRole040A6691",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineF5C42E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRoleDefaultPolicyC23D9E28",
+    "ClusterSnapshoterSnapshotProviderwaiterstatemachineRole05275FFC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Mappings": {
+  "RestoredClusterRotationSingleUserSARMappingD8A0064F": {
+   "aws": {
+    "applicationId": "arn:aws:serverlessrepo:us-east-1:297356227824:applications/SecretsManagerRDSMySQLRotationSingleUser",
+    "semanticVersion": "1.1.618"
+   },
+   "aws-cn": {
+    "applicationId": "arn:aws-cn:serverlessrepo:cn-north-1:193023089310:applications/SecretsManagerRDSMySQLRotationSingleUser",
+    "semanticVersion": "1.1.237"
+   },
+   "aws-us-gov": {
+    "applicationId": "arn:aws-us-gov:serverlessrepo:us-gov-west-1:023102451235:applications/SecretsManagerRDSMySQLRotationSingleUser",
+    "semanticVersion": "1.1.213"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
