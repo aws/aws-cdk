@@ -217,6 +217,7 @@ interface CallSite {
  */
 export function traceProperty(node: Node, propertyName: string) {
   if (debugModeEnabled()) {
+    // TODO: update after https://github.com/aws/aws-cdk-cli/pull/1396 is merged
     node.addMetadata('aws:cdk:propertyAssignment', {
       propertyName,
       stackTrace: captureStackTrace(traceProperty),

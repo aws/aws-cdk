@@ -1,6 +1,5 @@
 /* eslint-disable import/order */
 import { Construct, Node } from 'constructs';
-import { debugModeEnabled } from './debug';
 import { Lazy } from './lazy';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
@@ -71,10 +70,11 @@ export abstract class CfnElement extends Construct {
     });
 
     if (!this.node.tryGetContext(cxapi.DISABLE_LOGICAL_ID_METADATA)) {
-      Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId, {
-        stackTrace: debugModeEnabled(),
-        traceFromFunction: this.constructor,
-      });
+      Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId);
+    }
+    if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
+      // TODO: update after https://github.com/aws/aws-cdk-cli/pull/1396 is merged
+      this.node.addMetadata('aws:cdk:creationStack', captureStackTrace(new.target));
     }
   }
 
@@ -126,25 +126,10 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    const trace = Node.of(this).metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID)!.trace;
-    if (!trace) {
-      return [];
-    }
+    // TODO change once https://github.com/aws/aws-cdk-cli/pull/1396 is released
+    const trace = Node.of(this).metadata.find(md => md.type === 'aws:cdk:creationStack')?.data;
 
-    return filterStackTrace(trace);
-
-    function filterStackTrace(stack: string[]): string[] {
-      const result = Array.of(...stack);
-      while (result.length > 0 && shouldFilter(result[result.length - 1])) {
-        result.pop();
-      }
-      // It's weird if we filtered everything, so return the whole stack...
-      return result.length === 0 ? stack : result;
-    }
-
-    function shouldFilter(str: string): boolean {
-      return str.match(/[^(]+\(internal\/.*/) !== null;
-    }
+    return trace ?? [];
   }
 
   /**
@@ -214,4 +199,6 @@ import { Token } from './token';import { ValidationError } from './errors';
 import type { IConstruct, IMixin } from 'constructs';
 import { withMixins } from './mixins/private/mixin-metadata';
 import { lit } from './private/literal-string';
+import { captureStackTrace } from './stack-trace';
+import { debugModeEnabled } from './debug';
 
