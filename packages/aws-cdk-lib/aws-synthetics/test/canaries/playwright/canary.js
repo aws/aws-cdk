@@ -1,5 +1,5 @@
 import { URL } from 'url';
-import { synthetics } from '@amzn/synthetics-playwright';
+import { synthetics } from '@aws/synthetics-playwright';
 
 const loadBlueprints = async function () {
     const urls = [process.env.URL];
