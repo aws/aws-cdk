@@ -18,7 +18,7 @@ const PHYSICAL_RESOURCE_ID_REFERENCE = 'PHYSICAL:RESOURCEID:';
  * Reference to the physical resource id that can be passed to the AWS operation as a parameter.
  */
 export class PhysicalResourceIdReference implements cdk.IResolvable {
-  public readonly creationStack: string[] = cdk.captureStackTrace();
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   /**
    * toJSON serialization to replace `PhysicalResourceIdReference` with a magic string.
