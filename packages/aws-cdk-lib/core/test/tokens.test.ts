@@ -1,5 +1,4 @@
 import { evaluateCFN } from './evaluate-cfn';
-import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 import { CfnResource, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
 import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRINGIFIED_NUMBER_PATTERN } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
