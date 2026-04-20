@@ -6,10 +6,11 @@ import { debugModeEnabled } from './debug';
  *
  * Stack traces are often invaluable tools to help diagnose problems, however
  * their capture is a rather expensive operation, and the stack traces can be
- * large. Consequently, callers of this code should give the user an ability
- * to opt out of call stack capturing.
+ * large. Consequently, users are strongly advised to condition capturing stack
+ * traces to specific user opt-in.
  *
- * Most commonly, use the `deubgModeEnabled()` function to turn them on or off.
+ * Stack traces will only be captured if the `CDK_DEBUG` environment variable
+ * is set to `'true'` or `1`.
  *
  * @param below an optional function starting from which stack frames will be
  *              ignored. Defaults to the `captureStackTrace` function itself.
@@ -23,6 +24,10 @@ export function captureStackTrace(
   below: Function = captureStackTrace,
   limit = Number.MAX_SAFE_INTEGER,
 ): string[] {
+  if (!debugModeEnabled()) {
+    return ['stack traces disabled'];
+  }
+
   const previousLimit = Error.stackTraceLimit;
   try {
     Error.stackTraceLimit = limit;
