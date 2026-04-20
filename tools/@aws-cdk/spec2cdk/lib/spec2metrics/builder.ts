@@ -125,10 +125,6 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
 
       for (const merged of mergedSets) {
         const className = dimSetClassName(merged);
-        if (dimSetClasses.has(className)) {
-          log.debug(`Skipping duplicate dimension set [${merged.dimensions.map(d => d.name).join(', ')}] (class: ${className}) for namespace ${namespace}`);
-          continue;
-        }
 
         const gen = new DimensionSetClassGenerator(metricsClass, merged, context.cloudwatchModule);
         dimSetClasses.set(className, gen.dimensionSetClass);
