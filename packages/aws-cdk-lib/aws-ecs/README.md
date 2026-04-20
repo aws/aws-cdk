@@ -1833,18 +1833,18 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     vCpuCountMax: 8,
     memoryMin: Size.gibibytes(4),
     memoryMax: Size.gibibytes(32),
-    
+
     // CPU preferences
     cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
     instanceGenerations: [ec2.InstanceGeneration.CURRENT],
-    
+
     // Instance type filtering
     allowedInstanceTypes: ['m5.*', 'c5.*'],
-    
+
     // Performance characteristics
     burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
     bareMetal: ec2.BareMetal.EXCLUDED,
-    
+
     // Accelerator requirements (for ML/AI workloads)
     acceleratorTypes: [ec2.AcceleratorType.GPU],
     acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
@@ -2168,6 +2168,11 @@ const service = new ecs.FargateService(this, 'Service', {
       format: ecs.ServiceConnectAccessLogFormat.JSON,
       includeQueryParameters: true,
     },
+    // When configuring access log,
+    // you also need to configure the log driver accordingly.
+    logDriver: ecs.LogDrivers.awsLogs({
+      streamPrefix: 'prefix',
+    }),
   },
 });
 ```
