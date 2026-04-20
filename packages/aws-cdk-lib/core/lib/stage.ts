@@ -96,7 +96,7 @@ export interface StageProps {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
-   * @deprecated Use `Validations.of(stage).addPlugin()` instead.
+   * @deprecated Use `Validations.of(stage).addPlugins()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 
@@ -225,8 +225,8 @@ export class Stage extends Construct {
    *
    * @internal
    */
-  public _addValidationPlugin(plugin: IPolicyValidationPluginBeta1): void {
-    this._policyValidationBeta1.push(plugin);
+  public _addValidationPlugins(...plugins: IPolicyValidationPluginBeta1[]): void {
+    this._policyValidationBeta1.push(...plugins);
   }
 
   /**

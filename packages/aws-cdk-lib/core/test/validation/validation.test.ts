@@ -825,40 +825,40 @@ Policy Validation Report Summary
   });
 
   describe('Validations.of()', () => {
-    test('addPlugin adds plugin to enclosing stage', () => {
+    test('addPlugins adds plugin to enclosing stage', () => {
       // GIVEN
       const app = new core.App();
       const plugin = new FakePlugin('test-plugin', []);
 
       // WHEN
-      core.Validations.of(app).addPlugin(plugin);
+      core.Validations.of(app).addPlugins(plugin);
 
       // THEN
       expect(app.policyValidationBeta1).toContain(plugin);
     });
 
-    test('addPlugin from nested construct resolves to enclosing stage', () => {
+    test('addPlugins from nested construct resolves to enclosing stage', () => {
       // GIVEN
       const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const plugin = new FakePlugin('test-plugin', []);
 
       // WHEN
-      core.Validations.of(stack).addPlugin(plugin);
+      core.Validations.of(stack).addPlugins(plugin);
 
       // THEN - plugin is registered on the app (enclosing stage), not the stack
       expect(app.policyValidationBeta1).toContain(plugin);
     });
 
-    test('throws when addPlugin called without enclosing stage', () => {
+    test('throws when addPlugins called without enclosing stage', () => {
       // GIVEN
       const construct = new Construct(undefined as any, '');
 
       // THEN
-      expect(() => core.Validations.of(construct).addPlugin(new FakePlugin('test', []))).toThrow(/without an enclosing Stage/);
+      expect(() => core.Validations.of(construct).addPlugins(new FakePlugin('test', []))).toThrow(/without an enclosing Stage/);
     });
 
-    test('plugin added via addPlugin runs during synth', () => {
+    test('plugin added via addPlugins runs during synth', () => {
       // GIVEN
       const app = new core.App();
       const stack = new core.Stack(app);
@@ -868,7 +868,7 @@ Policy Validation Report Summary
       });
 
       // WHEN
-      core.Validations.of(app).addPlugin(new FakePlugin('added-plugin', [{
+      core.Validations.of(app).addPlugins(new FakePlugin('added-plugin', [{
         description: 'test recommendation',
         ruleName: 'test-rule',
         violatingResources: [{

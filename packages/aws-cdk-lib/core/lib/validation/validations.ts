@@ -11,7 +11,7 @@ import { Stage } from '../stage';
  * import { CfnGuardValidator } from '@cdklabs/cdk-validator-cfnguard';
  *
  * declare const app: App;
- * Validations.of(app).addPlugin(new CfnGuardValidator());
+ * Validations.of(app).addPlugins(new CfnGuardValidator());
  */
 export class Validations {
   /**
@@ -26,19 +26,19 @@ export class Validations {
   private constructor(private readonly scope: IConstruct) {}
 
   /**
-   * Register a validation plugin that will be executed during synthesis.
+   * Register one or more validation plugins that will be executed during synthesis.
    *
    * Plugins can only be registered within a Stage or App scope.
    * If any plugin reports a violation, synthesis will be interrupted and the
    * report displayed to the user.
    *
-   * @param plugin the validation plugin to add
+   * @param plugins the validation plugins to add
    */
-  public addPlugin(plugin: IPolicyValidationPlugin): void {
+  public addPlugins(...plugins: IPolicyValidationPlugin[]): void {
     const stage = Stage.isStage(this.scope) ? this.scope : Stage.of(this.scope);
     if (!stage) {
       throw new UnscopedValidationError(lit`NoStageForValidationPlugins`, 'Cannot add validation plugins on a construct without an enclosing Stage');
     }
-    stage._addValidationPlugin(plugin);
+    stage._addValidationPlugins(...plugins);
   }
 }
