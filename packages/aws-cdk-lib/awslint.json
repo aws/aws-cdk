@@ -1381,6 +1381,7 @@
     "prefer-ref-interface:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps.ec2InstanceProfile",
     "prefer-ref-interface:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps.infrastructureRole",
     "prefer-ref-interface:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps.securityGroups",
+    "prefer-ref-interface:aws-cdk-lib.aws_ecs.ManagedInstancesCapacityProviderProps.vpc",
     "prefer-ref-interface:aws-cdk-lib.aws_ecs.ScalableTaskCountProps.role",
     "prefer-ref-interface:aws-cdk-lib.aws_ecs.ServiceManagedEBSVolumeConfiguration.kmsKeyId",
     "prefer-ref-interface:aws-cdk-lib.aws_ecs.ServiceManagedEBSVolumeConfiguration.role",
