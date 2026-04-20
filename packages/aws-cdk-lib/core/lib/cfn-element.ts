@@ -66,7 +66,7 @@ export abstract class CfnElement extends Construct {
 
     this.stack = Stack.of(this);
 
-    this.logicalId = Lazy.uncachedString({ produce: () => this.synthesizeLogicalId() }, {
+    this.logicalId = Lazy.uncachedString({ produce: () => this._synthesizeLogicalId() }, {
       displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
     });
 
@@ -170,8 +170,10 @@ export abstract class CfnElement extends Construct {
    * Called during synthesize to render the logical ID of this element. If
    * `overrideLogicalId` was it will be used, otherwise, we will allocate the
    * logical ID through the stack.
+   *
+   * @internal
    */
-  private synthesizeLogicalId() {
+  protected _synthesizeLogicalId() {
     if (this._logicalIdOverride) {
       return this._logicalIdOverride;
     } else {
