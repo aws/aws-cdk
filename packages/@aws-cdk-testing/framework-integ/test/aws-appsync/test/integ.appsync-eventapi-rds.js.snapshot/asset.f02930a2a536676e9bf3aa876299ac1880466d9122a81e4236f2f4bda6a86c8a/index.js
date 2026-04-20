@@ -10120,9 +10120,9 @@ var init_parseJsonBody = __esm({
   }
 });
 
-// node_modules/fast-xml-parser/src/util.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/util.js
 var require_util = __commonJS({
-  "node_modules/fast-xml-parser/src/util.js"(exports2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/util.js"(exports2) {
     "use strict";
     var nameStartChar = ":A-Za-z_\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD";
     var nameChar = nameStartChar + "\\-.\\d\\u00B7\\u0300-\\u036F\\u203F-\\u2040";
@@ -10179,9 +10179,9 @@ var require_util = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/validator.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/validator.js
 var require_validator = __commonJS({
-  "node_modules/fast-xml-parser/src/validator.js"(exports2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/validator.js"(exports2) {
     "use strict";
     var util = require_util();
     var defaultOptions = {
@@ -10491,9 +10491,9 @@ var require_validator = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js
 var require_OptionsBuilder = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js"(exports2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OptionsBuilder.js"(exports2) {
     var defaultOptions = {
       preserveOrder: false,
       attributeNamePrefix: "@_",
@@ -10546,9 +10546,9 @@ var require_OptionsBuilder = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlparser/xmlNode.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/xmlNode.js
 var require_xmlNode = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlparser/xmlNode.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/xmlNode.js"(exports2, module2) {
     "use strict";
     var XmlNode = class {
       constructor(tagname) {
@@ -10573,9 +10573,9 @@ var require_xmlNode = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js
 var require_DocTypeReader = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/DocTypeReader.js"(exports2, module2) {
     var util = require_util();
     function readDocType(xmlData, i) {
       const entities = {};
@@ -10671,9 +10671,9 @@ var require_DocTypeReader = __commonJS({
   }
 });
 
-// node_modules/strnum/strnum.js
+// node_modules/@aws-sdk/core/node_modules/strnum/strnum.js
 var require_strnum = __commonJS({
-  "node_modules/strnum/strnum.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/strnum/strnum.js"(exports2, module2) {
     var hexRegex = /^[-+]?0x[a-fA-F0-9]+$/;
     var numRegex = /^([\-\+])?(0*)([0-9]*(\.[0-9]*)?)$/;
     var consider = {
@@ -10759,9 +10759,9 @@ var require_strnum = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js
 var require_OrderedObjParser = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/OrderedObjParser.js"(exports2, module2) {
     "use strict";
     var util = require_util();
     var xmlNode = require_xmlNode();
@@ -11249,9 +11249,9 @@ var require_OrderedObjParser = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlparser/node2json.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/node2json.js
 var require_node2json = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlparser/node2json.js"(exports2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/node2json.js"(exports2) {
     "use strict";
     function prettify(node, options) {
       return compress(node, options);
@@ -11336,9 +11336,9 @@ var require_node2json = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlparser/XMLParser.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/XMLParser.js
 var require_XMLParser = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlparser/XMLParser.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlparser/XMLParser.js"(exports2, module2) {
     var { buildOptions } = require_OptionsBuilder();
     var OrderedObjParser = require_OrderedObjParser();
     var { prettify } = require_node2json();
@@ -11394,9 +11394,9 @@ var require_XMLParser = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js
 var require_orderedJs2Xml = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/orderedJs2Xml.js"(exports2, module2) {
     var EOL = "\n";
     function toXml(jArray, options) {
       let indentation = "";
@@ -11519,9 +11519,9 @@ var require_orderedJs2Xml = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js
 var require_json2xml = __commonJS({
-  "node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/xmlbuilder/json2xml.js"(exports2, module2) {
     "use strict";
     var buildFromOrderedJs = require_orderedJs2Xml();
     var defaultOptions = {
@@ -11760,9 +11760,9 @@ var require_json2xml = __commonJS({
   }
 });
 
-// node_modules/fast-xml-parser/src/fxp.js
+// node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/fxp.js
 var require_fxp = __commonJS({
-  "node_modules/fast-xml-parser/src/fxp.js"(exports2, module2) {
+  "node_modules/@aws-sdk/core/node_modules/fast-xml-parser/src/fxp.js"(exports2, module2) {
     "use strict";
     var validator = require_validator();
     var XMLParser2 = require_XMLParser();
