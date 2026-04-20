@@ -1,6 +1,6 @@
 import type { IConstruct } from 'constructs';
 import type { IPostProcessor, IResolvable, IResolveContext } from '../../../core';
-import { captureStackTrace, DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
+import { DefaultTokenResolver, Lazy, StringConcat, Token, Tokenization, UnscopedValidationError, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IPolicy } from '../policy';
 
@@ -113,10 +113,9 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
     return Token.asList(new UniqueStringSet(fn));
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
 
   private constructor(private readonly fn: () => string[]) {
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext) {

@@ -1,6 +1,5 @@
 import { UnscopedValidationError } from '../errors';
 import type { IResolvable, IResolveContext } from '../resolvable';
-import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { lit } from './literal-string';
@@ -39,7 +38,7 @@ export class Intrinsic implements IResolvable {
   /**
    * The captured stack trace which represents the location in which this token was created.
    */
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   /**
    * Type that the Intrinsic is expected to evaluate to.
@@ -53,7 +52,6 @@ export class Intrinsic implements IResolvable {
       throw new UnscopedValidationError(lit`MustBeArgumentIntrinsicPlain`, `Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
-    this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
     this.value = value;
     this.typeHint = options.typeHint ?? ResolutionTypeHint.STRING;
   }
@@ -115,3 +113,6 @@ export class Intrinsic implements IResolvable {
 function isFunction(x: any) {
   return typeof x === 'function';
 }
+
+// Setting singleton value on prototype to save memory and allocations
+(Intrinsic.prototype as any).creationStack = ['Token stack traces are deprecated'];

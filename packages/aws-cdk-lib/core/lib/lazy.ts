@@ -1,6 +1,4 @@
-import { CDK_DEBUG, debugModeEnabled } from './debug';
 import type { IResolvable, IResolveContext } from './resolvable';
-import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 /**
@@ -331,17 +329,10 @@ interface ILazyProducer<A> {
 }
 
 abstract class LazyBase<A> implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
   private _cached?: A;
 
   constructor(private readonly producer: ILazyProducer<A>, private readonly cache: boolean) {
-    // Stack trace capture is conditioned to `debugModeEnabled()`, because
-    // lazies can be created in a fairly thrashy way, and the stack traces are
-    // large and slow to obtain; but are mostly useful only when debugging a
-    // resolution issue.
-    this.creationStack = debugModeEnabled()
-      ? captureStackTrace(this.constructor)
-      : [`Execute again with ${CDK_DEBUG}=true to capture stack traces`];
   }
 
   public resolve(context: IResolveContext) {
@@ -365,6 +356,8 @@ abstract class LazyBase<A> implements IResolvable {
     return '<unresolved-lazy>';
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(LazyBase.prototype as any).creationStack = ['Token stack traces are deprecated'];
 
 class LazyString extends LazyBase<string> {
 }

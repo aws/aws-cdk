@@ -1,5 +1,5 @@
 import type { IResolvable, IResolveContext } from '../../core';
-import { captureStackTrace, Token, UnscopedValidationError } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
 type ComparisonOperator = '>' | '>=' | '<' | '<=' | '=';
@@ -256,11 +256,10 @@ export class Match implements IResolvable {
     return new Match(values, { mergeMatchers: true }).asList();
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
 
   private constructor(private readonly matchers: any[],
     private readonly options: MatchOptions) {
-    this.creationStack = captureStackTrace();
   }
 
   resolve(context: IResolveContext): any {

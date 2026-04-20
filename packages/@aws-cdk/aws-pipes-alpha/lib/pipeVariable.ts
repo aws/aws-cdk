@@ -1,5 +1,4 @@
 import type { IResolvable, IResolveContext } from 'aws-cdk-lib';
-import { captureStackTrace } from 'aws-cdk-lib';
 
 /** Reserved pipe variables
  * @see https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes-input-transformation.html#input-transform-reserved
@@ -122,11 +121,10 @@ export class DynamicInput implements IResolvable {
    * Human readable display hint about the event pattern
    */
   public readonly displayHint: string;
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
 
   private constructor(private value :string) {
     this.displayHint = value.toString();
-    this.creationStack = captureStackTrace();
     this.value = value;
   }
 

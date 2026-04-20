@@ -251,7 +251,7 @@ export class JsonNull implements IResolvable {
   /** The canonical instance of `JsonNull`. */
   public static readonly INSTANCE = new JsonNull();
 
-  public readonly creationStack: string[] = [];
+  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
 
   private constructor() { }
 

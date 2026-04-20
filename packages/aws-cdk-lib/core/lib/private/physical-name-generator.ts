@@ -83,7 +83,7 @@ const GENERATE_IF_NEEDED_SYMBOL = Symbol.for('@aws-cdk/core.<private>.GenerateIf
  * This token throws an Error when it is resolved, as a way to prevent inadvertent mis-uses of it.
  */
 export class GeneratedWhenNeededMarker implements IResolvable {
-  public readonly creationStack: string[] = [];
+  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
 
   constructor() {
     Object.defineProperty(this, GENERATE_IF_NEEDED_SYMBOL, { value: true });

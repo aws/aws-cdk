@@ -1,7 +1,7 @@
 import type { IntrinsicExpression } from './intrinstics';
 import { IntrinsicParser } from './intrinstics';
 import type { IResolvable, IResolveContext } from '../../../core';
-import { captureStackTrace, Token, Tokenization, UnscopedValidationError } from '../../../core';
+import { Token, Tokenization, UnscopedValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 
 const JSON_PATH_TOKEN_SYMBOL = Symbol.for('@aws-cdk/aws-stepfunctions.JsonPathToken');
@@ -11,11 +11,10 @@ export class JsonPathToken implements IResolvable {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
   public displayHint: string;
 
   constructor(public readonly path: string) {
-    this.creationStack = captureStackTrace();
     this.displayHint = path.replace(/^[^a-zA-Z]+/, '');
     Object.defineProperty(this, JSON_PATH_TOKEN_SYMBOL, { value: true });
   }

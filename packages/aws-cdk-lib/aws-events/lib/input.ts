@@ -3,7 +3,7 @@ import type {
   IResolveContext,
 } from '../../core';
 import {
-  captureStackTrace, DefaultTokenResolver, Lazy, Stack, StringConcat, Token, Tokenization,
+  DefaultTokenResolver, Lazy, Stack, StringConcat, Token, Tokenization,
   UnscopedValidationError,
 } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
@@ -302,7 +302,7 @@ export class EventField implements IResolvable {
    * Human readable display hint about the event pattern
    */
   public readonly displayHint: string;
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
 
   /**
    *
@@ -311,7 +311,6 @@ export class EventField implements IResolvable {
   private constructor(public readonly path: string) {
     this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(_ctx: IResolveContext): any {
