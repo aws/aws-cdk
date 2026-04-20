@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { Template, Annotations, Match } from '../../../assertions';
 import * as ccommit from '../../../aws-codecommit';
-import { Pipeline, PipelineType } from '../../../aws-codepipeline';
+import { ExecutionMode, Pipeline, PipelineType } from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as sns from '../../../aws-sns';
@@ -208,6 +208,118 @@ test.each([
   Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
     PipelineType: expected,
   });
+});
+
+test.each([
+  [ExecutionMode.SUPERSEDED, 'SUPERSEDED'],
+  [ExecutionMode.QUEUED, 'QUEUED'],
+  [ExecutionMode.PARALLEL, 'PARALLEL'],
+])('can specify execution mode %s for v2 pipeline', (type, expected) => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+  new CodePipeline(stack, 'Pipeline', {
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+    pipelineType: PipelineType.V2,
+    executionMode: type,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    ExecutionMode: expected,
+  });
+});
+
+test('can specify execution mode SUPERSEDED for v1 pipeline', () => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+  new CodePipeline(stack, 'Pipeline', {
+    synth: new cdkp.ShellStep('Synth', {
+      input: cdkInput,
+      installCommands: ['npm ci'],
+      commands: [
+        'npm run build',
+        'npx cdk synth',
+      ],
+    }),
+    pipelineType: PipelineType.V2,
+    executionMode: ExecutionMode.SUPERSEDED,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CodePipeline::Pipeline', {
+    ExecutionMode: 'SUPERSEDED',
+  });
+});
+
+test('throws if executionMode is QUEUED but pipeline type is not V2', () => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  expect(() =>
+    new CodePipeline(stack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkInput,
+        installCommands: ['npm ci'],
+        commands: [
+          'npm run build',
+          'npx cdk synth',
+        ],
+      }),
+      pipelineType: PipelineType.V1,
+      executionMode: ExecutionMode.QUEUED,
+    }).buildPipeline(),
+  ).toThrow('QUEUED execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
+});
+
+test('throws if executionMode is PARALLEL but pipeline type is not V2', () => {
+  const stack = new cdk.Stack();
+  const repo = new ccommit.Repository(stack, 'Repo', {
+    repositoryName: 'MyRepo',
+  });
+
+  const cdkInput = cdkp.CodePipelineSource.codeCommit(
+    repo,
+    'main',
+  );
+
+  expect(() =>
+    new CodePipeline(stack, 'Pipeline', {
+      synth: new cdkp.ShellStep('Synth', {
+        input: cdkInput,
+        installCommands: ['npm ci'],
+        commands: [
+          'npm run build',
+          'npx cdk synth',
+        ],
+      }),
+      pipelineType: PipelineType.V1,
+      executionMode: ExecutionMode.PARALLEL,
+    }).buildPipeline(),
+  ).toThrow('PARALLEL execution mode can only be used with V2 pipelines, `PipelineType.V2` must be specified for `pipelineType`');
 });
 
 test.each([
