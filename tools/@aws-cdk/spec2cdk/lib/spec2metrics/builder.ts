@@ -118,7 +118,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
       const metricsClass = new ClassType(module, {
         name: nsClassName,
         export: true,
-        docs: { summary: `CloudWatch metrics for ${namespace}`, stability: Stability.External },
+        docs: { summary: `CloudWatch metrics facade for ${namespace}\nThis class contains helper functions to initialize the dimension-sets classes\nfor selected resources if available.`, stability: Stability.External },
       });
 
       const dimSetClasses = new Map<string, ClassType>();
