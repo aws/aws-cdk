@@ -113,7 +113,7 @@ export class UniqueStringSet implements IResolvable, IPostProcessor {
     return Token.asList(new UniqueStringSet(fn));
   }
 
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor(private readonly fn: () => string[]) {
   }

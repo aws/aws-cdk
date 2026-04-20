@@ -146,7 +146,7 @@ export class CfnMapping extends CfnRefElement {
 }
 
 class CfnMappingEmbedder implements IResolvable {
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   constructor(private readonly cfnMapping: CfnMapping,
     readonly mapping: Mapping,

@@ -62,7 +62,7 @@ export class PolicyDocument implements cdk.IResolvable {
     return newPolicyDocument;
   }
 
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
   private readonly minimize?: boolean;

@@ -897,7 +897,7 @@ class FnJoin implements IResolvable {
   }
 }
 // Setting singleton value on prototype to save memory and allocations
-(FnJoin.prototype as any).creationStack = ['Token stack traces are deprecated'];
+(FnJoin.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The `Fn::ToJsonString` intrinsic function converts an object or array to its
@@ -926,7 +926,7 @@ class FnToJsonString implements IResolvable {
   }
 }
 // Setting singleton value on prototype to save memory and allocations
-(FnToJsonString.prototype as any).creationStack = ['Token stack traces are deprecated'];
+(FnToJsonString.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The intrinsic function `Fn::Length` returns the number of elements within an array
@@ -955,7 +955,7 @@ class FnLength implements IResolvable {
   }
 }
 // Setting singleton value on prototype to save memory and allocations
-(FnLength.prototype as any).creationStack = ['Token stack traces are deprecated'];
+(FnLength.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
   const result = new Array<T[]>();

@@ -121,7 +121,7 @@ export class DynamicInput implements IResolvable {
    * Human readable display hint about the event pattern
    */
   public readonly displayHint: string;
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor(private value :string) {
     this.displayHint = value.toString();

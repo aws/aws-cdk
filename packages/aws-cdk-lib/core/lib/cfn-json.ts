@@ -29,7 +29,7 @@ export interface CfnJsonProps {
  * This construct is backed by a custom resource.
  */
 export class CfnJson extends Construct implements IResolvable {
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   /**
    * An Fn::GetAtt to the JSON object passed through `value` and resolved during

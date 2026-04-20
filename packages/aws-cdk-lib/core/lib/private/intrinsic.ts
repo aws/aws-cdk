@@ -115,4 +115,4 @@ function isFunction(x: any) {
 }
 
 // Setting singleton value on prototype to save memory and allocations
-(Intrinsic.prototype as any).creationStack = ['Token stack traces are deprecated'];
+(Intrinsic.prototype as any).creationStack = ['Token stack traces are no longer captured'];

@@ -11,7 +11,7 @@ export class JsonPathToken implements IResolvable {
     return (x as any)[JSON_PATH_TOKEN_SYMBOL] === true;
   }
 
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
   public displayHint: string;
 
   constructor(public readonly path: string) {

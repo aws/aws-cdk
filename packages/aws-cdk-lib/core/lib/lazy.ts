@@ -357,7 +357,7 @@ abstract class LazyBase<A> implements IResolvable {
   }
 }
 // Setting singleton value on prototype to save memory and allocations
-(LazyBase.prototype as any).creationStack = ['Token stack traces are deprecated'];
+(LazyBase.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 class LazyString extends LazyBase<string> {
 }

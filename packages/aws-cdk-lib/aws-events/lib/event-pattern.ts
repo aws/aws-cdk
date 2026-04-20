@@ -256,7 +256,7 @@ export class Match implements IResolvable {
     return new Match(values, { mergeMatchers: true }).asList();
   }
 
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   private constructor(private readonly matchers: any[],
     private readonly options: MatchOptions) {

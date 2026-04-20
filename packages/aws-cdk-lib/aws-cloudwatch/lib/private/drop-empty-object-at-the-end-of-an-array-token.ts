@@ -8,7 +8,7 @@ import type * as cdk from '../../../core';
  * that evaluate to "undefined" from showing up in the rendered JSON.
  */
 export class DropEmptyObjectAtTheEndOfAnArray implements cdk.IResolvable, cdk.IPostProcessor {
-  public readonly creationStack: string[] = ['Token stack traces are deprecated'];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   constructor(private readonly value: any) {
   }
