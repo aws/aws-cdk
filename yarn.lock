@@ -74,10 +74,10 @@
     jsonschema "~1.4.1"
     semver "^7.7.4"
 
-"@aws-cdk/cloud-assembly-schema@^53.0.0":
-  version "53.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-53.0.0.tgz#621f2214fc3e2f0e2db1146ecc89d5f51ecb61e0"
-  integrity sha512-8DbZLaBeKM+i+tqujr/oQc/+3cDJoVhlXEkVyf152rkl6gnmfOZniRYjd+JsrOPrzwpcNoq05bo9KHME1EhMVQ==
+"@aws-cdk/cloud-assembly-schema@^53.17.0":
+  version "53.17.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-53.17.0.tgz#03c28a0a376ed9d58e968d4d987e43bb1bc6be26"
+  integrity sha512-JB9L4JCbZeYbMJPs7OKV+7YaxKwk4i2tlI5PCSfCzk4DJvprhCO2TYcqbqo3Y1YWZyyY/SEPLWdorG7b88fUSA==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.4"
