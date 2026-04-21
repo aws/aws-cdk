@@ -1,3 +1,4 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import type { Node } from 'constructs';
 import { debugModeEnabled } from './debug';
 
@@ -212,8 +213,7 @@ interface CallSite {
  */
 export function traceProperty(node: Node, propertyName: string) {
   if (debugModeEnabled()) {
-    // TODO: update after https://github.com/aws/aws-cdk-cli/pull/1396 is merged
-    node.addMetadata('aws:cdk:propertyAssignment', {
+    node.addMetadata(cxschema.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT, {
       propertyName,
       stackTrace: captureStackTrace(traceProperty),
     });

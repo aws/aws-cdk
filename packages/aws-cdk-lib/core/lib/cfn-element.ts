@@ -73,8 +73,7 @@ export abstract class CfnElement extends Construct {
       Node.of(this).addMetadata(cxschema.ArtifactMetadataEntryType.LOGICAL_ID, this.logicalId);
     }
     if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
-      // TODO: update after https://github.com/aws/aws-cdk-cli/pull/1396 is merged
-      this.node.addMetadata('aws:cdk:creationStack', captureStackTrace(new.target));
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
     }
   }
 
@@ -126,8 +125,7 @@ export abstract class CfnElement extends Construct {
    *      node +internal+ entries filtered.
    */
   public get creationStack(): string[] {
-    // TODO change once https://github.com/aws/aws-cdk-cli/pull/1396 is released
-    const trace = Node.of(this).metadata.find(md => md.type === 'aws:cdk:creationStack')?.data;
+    const trace = Node.of(this).metadata.find(md => md.type === cxschema.ArtifactMetadataEntryType.CREATION_STACK)?.data;
 
     return trace ?? [];
   }
