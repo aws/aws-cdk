@@ -1,0 +1,20 @@
+{
+  "version": "44.0.0",
+  "files": {
+    "624b06f574e6775efdb838128575243c4ec353766f578692eea38e5f820a04f7": {
+      "displayName": "aws-cdk-dsql-stack Template",
+      "source": {
+        "path": "aws-cdk-dsql-stack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "624b06f574e6775efdb838128575243c4ec353766f578692eea38e5f820a04f7.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
