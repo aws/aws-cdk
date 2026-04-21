@@ -7,10 +7,9 @@ import * as core from '../../lib';
 import type { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
-let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
@@ -52,7 +51,7 @@ describe('validations', () => {
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
+    expect(consoleErrorMock.mock.calls[1][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
       templatePath: '/path/to/Default.template.json',
       constructPath: 'Default/Fake',
       title: 'test-rule',
@@ -95,15 +94,13 @@ describe('validations', () => {
     app.synth();
     expect(process.exitCode).toBeUndefined();
 
-    expect(consoleLogMock.mock.calls).toEqual([
-      [
-        expect.stringMatching(/Performing Policy Validations/),
-      ],
-      [
-        expect.stringMatching(/Policy Validation Successful!/),
-      ],
+    expect(consoleErrorMock.mock.calls[0]).toEqual([
+      expect.stringMatching(/Performing Policy Validations/),
     ]);
-    expect(consoleErrorMock.mock.calls[0][0]).toEqual(`Validation Report
+    expect(consoleErrorMock.mock.calls[2]).toEqual([
+      expect.stringMatching(/Policy Validation Successful!/),
+    ]);
+    expect(consoleErrorMock.mock.calls[1][0]).toEqual(`Validation Report
 -----------------
 
 Policy Validation Report Summary
@@ -152,7 +149,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[1][0];
     // Assuming the rest of the report's content is checked by another test
     expect(report).toContain('- Template Path: /path/to/stack1.template.json');
     expect(report).not.toContain('- Template Path: /path/to/stack2.template.json');
@@ -236,7 +233,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    const report = consoleErrorMock.mock.calls[1][0].split('\n');
     // Assuming the rest of the report's content is checked by another test
     expect(report).toEqual(expect.arrayContaining(
       validationReport([
@@ -430,7 +427,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[1][0];
     // Assuming the rest of the report's content is checked by another test
     expect(report).toContain('- Construct Path: Default/SomeResource');
     expect(report).not.toContain('- Construct Path: Default/AnotherResource');
@@ -469,7 +466,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    const report = consoleErrorMock.mock.calls[1][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
       validationReport([
         {
@@ -528,7 +525,7 @@ Policy Validation Report Summary
     });
     app.synth();
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    const report = consoleErrorMock.mock.calls[1][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
       validationReport([
         {
@@ -592,7 +589,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[1][0];
     expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
     expect(report).toContain(generateTable('test-plugin', 'failure', 'N/A'));
   });
@@ -693,7 +690,7 @@ Policy Validation Report Summary
         },
       ],
     }));
-    const consoleOut = consoleLogMock.mock.calls[1][0];
+    const consoleOut = consoleErrorMock.mock.calls[1][0];
     expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' for details`);
   });
 
@@ -725,9 +722,9 @@ Policy Validation Report Summary
     });
     app.synth();
     expect(process.exitCode).toEqual(1);
-    const consoleOut = consoleLogMock.mock.calls[1][0];
+    const consoleOut = consoleErrorMock.mock.calls[2][0];
     expect(consoleOut).toContain('Validation failed. See the validation report above for details');
-    const consoleReport = consoleErrorMock.mock.calls[0][0];
+    const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
   });
 
@@ -810,10 +807,16 @@ Policy Validation Report Summary
         },
       ],
     }));
-    const consoleOut = consoleLogMock.mock.calls[1][0];
+    const consoleOut = consoleErrorMock.mock.calls[2][0];
     expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' and above for details`);
-    const consoleReport = consoleErrorMock.mock.calls[0][0];
+    const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
+    const beta1Plugin: core.IPolicyValidationPluginBeta1 = new FakePlugin('beta1-plugin', []);
+    const plugin: core.IPolicyValidationPlugin = beta1Plugin;
+    expect(plugin.name).toEqual('beta1-plugin');
   });
 });
 
