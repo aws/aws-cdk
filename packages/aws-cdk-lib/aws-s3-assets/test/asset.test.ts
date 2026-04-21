@@ -6,9 +6,9 @@ import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import * as cdk from '../../core';
+import { flattenMeta } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import { Asset } from '../lib/asset';
-import { flattenMeta } from '../../core/test/util';
 
 const SAMPLE_ASSET_DIR = path.join(__dirname, 'sample-asset-directory');
 const SAMPLE_ASSET_HASH = '6b84b87243a4a01c592d78e1fd3855c4bfef39328cd0a450cc97e81717fea2a2';
