@@ -2022,15 +2022,6 @@ describe('telemetry metadata', () => {
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     stack = new Stack(app);
 
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
-
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
         apiKeyRequired: true,
@@ -2056,15 +2047,6 @@ describe('telemetry metadata', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     stack = new Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const api = new apigw.RestApi(stack, 'myapi', {
       defaultMethodOptions: {
