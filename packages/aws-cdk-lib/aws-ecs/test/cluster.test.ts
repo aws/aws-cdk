@@ -3545,7 +3545,6 @@ describe('cluster', () => {
       Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('instanceRequirements is not specified'));
     });
 
-
     test('throws when capacity provider name starts with aws, ecs or fargate', () => {
       // GIVEN
       const app = new cdk.App();
