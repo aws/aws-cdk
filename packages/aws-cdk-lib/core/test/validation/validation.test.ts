@@ -812,6 +812,12 @@ Policy Validation Report Summary
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
   });
+
+  test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
+    const beta1Plugin: core.IPolicyValidationPluginBeta1 = new FakePlugin('beta1-plugin', []);
+    const plugin: core.IPolicyValidationPlugin = beta1Plugin;
+    expect(plugin.name).toEqual('beta1-plugin');
+  });
 });
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
