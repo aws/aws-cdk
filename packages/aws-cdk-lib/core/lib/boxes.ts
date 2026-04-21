@@ -1,16 +1,17 @@
 import { debugModeEnabled } from './debug';
-import { UnscopedValidationError } from './errors';
-import { lit } from './private/literal-string';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { captureStackTrace } from './stack-trace';
 
 const BOX_SYM = Symbol.for('@aws-cdk/core.Box');
 
-export interface Box<A> extends IResolvable {
-  set(a: A): void;
+export interface ReadableBox<A> extends IResolvable {
   get(): A;
-  derive<B>(fn: (a: A) => B): Box<B>;
+  derive<B>(fn: (a: A) => B): ReadableBox<B>;
   getStackTraces(): Array<StackTrace>;
+}
+
+export interface Box<A> extends ReadableBox<A> {
+  set(a: A): void;
 }
 
 export interface ArrayBox<A> extends Box<Array<A>> {
@@ -24,14 +25,14 @@ export class Boxes {
     return new State(value);
   }
 
-  public static zipWith<T extends Record<string, Box<any>>, R>(
+  public static zipWith<T extends Record<string, ReadableBox<any>>, R>(
     boxes: T,
-    fn: (values: { [K in keyof T]: T[K] extends Box<infer U> ? U : never }) => R,
-  ): Box<R> {
+    fn: (values: { [K in keyof T]: T[K] extends ReadableBox<infer U> ? U : never }) => R,
+  ): ReadableBox<R> {
     return new ZippedWith(boxes, fn);
   }
 
-  public static isBox(x: any): x is Box<any> {
+  public static isBox(x: any): x is ReadableBox<any> {
     return typeof x === 'object' && x && BOX_SYM in x;
   }
 
@@ -40,19 +41,18 @@ export class Boxes {
   }
 }
 
-abstract class BaseBox<A> implements Box<A> {
+abstract class BaseReadableBox<A> implements ReadableBox<A> {
   public readonly creationStack: string[] = [];
 
   protected constructor() {
     Object.defineProperty(this, BOX_SYM, { value: true });
   }
 
-  public derive<B>(fn: (a: A) => B): Box<B> {
+  public derive<B>(fn: (a: A) => B): ReadableBox<B> {
     return new Computed(this, fn);
   }
 
   abstract get(): A;
-  abstract set(a: A): void;
   abstract getStackTraces(): Array<StackTrace>;
 
   public resolve(_: IResolveContext) {
@@ -60,10 +60,10 @@ abstract class BaseBox<A> implements Box<A> {
   }
 }
 
-class ZippedWith<T extends Record<string, Box<any>>, R> extends BaseBox<R> {
+class ZippedWith<T extends Record<string, ReadableBox<any>>, R> extends BaseReadableBox<R> {
   constructor(
     private readonly boxes: T,
-    private readonly fn: (values: { [K in keyof T]: T[K] extends Box<infer U> ? U : never }) => R,
+    private readonly fn: (values: { [K in keyof T]: T[K] extends ReadableBox<infer U> ? U : never }) => R,
   ) {
     super();
   }
@@ -71,12 +71,8 @@ class ZippedWith<T extends Record<string, Box<any>>, R> extends BaseBox<R> {
   public get(): R {
     const values = Object.fromEntries(
       Object.entries(this.boxes).map(([k, b]) => [k, b.get()]),
-    ) as { [K in keyof T]: T[K] extends Box<infer U> ? U : never };
+    ) as { [K in keyof T]: T[K] extends ReadableBox<infer U> ? U : never };
     return this.fn(values);
-  }
-
-  public set(_: R): void {
-    throw new UnscopedValidationError(lit`Foo`, 'Immutable value');
   }
 
   public getStackTraces(): Array<StackTrace> {
@@ -84,8 +80,8 @@ class ZippedWith<T extends Record<string, Box<any>>, R> extends BaseBox<R> {
   }
 }
 
-class Computed<A, B> extends BaseBox<B> {
-  constructor(private readonly source: Box<A>, private readonly fn: (a: A) => B) {
+class Computed<A, B> extends BaseReadableBox<B> {
+  constructor(private readonly source: ReadableBox<A>, private readonly fn: (a: A) => B) {
     super();
   }
 
@@ -93,17 +89,12 @@ class Computed<A, B> extends BaseBox<B> {
     return this.fn(this.source.get());
   }
 
-  public set(_a: B): void {
-    // TODO avoid this with smarter types
-    throw new UnscopedValidationError(lit`Foo`, 'Immutable value');
-  }
-
   public getStackTraces(): Array<StackTrace> {
     return this.source.getStackTraces();
   }
 }
 
-class State<A> extends BaseBox<A> {
+class State<A> extends BaseReadableBox<A> implements Box<A> {
   protected stackTraces: Array<StackTrace> = [];
 
   constructor(private value: A) {

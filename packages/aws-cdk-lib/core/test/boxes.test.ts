@@ -55,7 +55,8 @@ describe('Boxes', () => {
     test('set() throws', () => {
       const a = Boxes.state(1);
       const result = Boxes.zipWith({ a }, (x) => x.a);
-      expect(() => result.set(99)).toThrow('Immutable value');
+      // result is ReadableBox — no set() method at the type level
+      expect('set' in result).toBe(false);
     });
 
     test('getStackTraces() collects traces from all source boxes', () => {
@@ -106,10 +107,11 @@ describe('Boxes', () => {
       expect(derived.get()).toBe(7);
     });
 
-    test('set() throws', () => {
+    test('set() is not available on derived boxes', () => {
       const box = Boxes.state(1);
       const derived = box.derive((x) => x);
-      expect(() => derived.set(2)).toThrow('Immutable value');
+      // derived is ReadableBox — no set() method at the type level
+      expect('set' in derived).toBe(false);
     });
 
     test('getStackTraces() delegates to the source box', () => {
