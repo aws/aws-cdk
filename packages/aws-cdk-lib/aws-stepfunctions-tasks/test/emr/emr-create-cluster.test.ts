@@ -2259,4 +2259,30 @@ describe('EMR Instance Fleet Priority Feature', () => {
 
     expect(() => stack.resolve(task.toStateJson())).toThrow(/Priority values are set on instance type configs, but allocation strategy is/);
   });
+
+  test('throws when PRIORITIZED strategy is set but no priority values on instance type configs', () => {
+    const task = new EmrCreateCluster(stack, 'TaskNoPriority', {
+      instances: {
+        instanceFleets: [{
+          instanceFleetType: EmrCreateCluster.InstanceRoleType.CORE,
+          instanceTypeConfigs: [{
+            instanceType: 'm5.large',
+          }, {
+            instanceType: 'm5.xlarge',
+          }],
+          launchSpecifications: {
+            onDemandSpecification: {
+              allocationStrategy: EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+            },
+          },
+          targetOnDemandCapacity: 1,
+        }],
+      },
+      clusterRole,
+      name: 'Cluster',
+      serviceRole,
+    });
+
+    expect(() => stack.resolve(task.toStateJson())).toThrow(/PRIORITIZED requires at least one instance type config to have a priority value set/);
+  });
 });

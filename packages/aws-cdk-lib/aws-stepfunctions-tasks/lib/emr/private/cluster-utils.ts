@@ -181,17 +181,25 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
     }
   }
 
+  const onDemandStrategy = property.launchSpecifications?.onDemandSpecification?.allocationStrategy
+    ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE;
+  const isPrioritized = !cdk.Token.isUnresolved(onDemandStrategy)
+    && onDemandStrategy === EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED;
   const hasPriority = property.instanceTypeConfigs?.some(
     config => config.priority !== undefined && !cdk.Token.isUnresolved(config.priority),
   );
-  const onDemandStrategy = property.launchSpecifications?.onDemandSpecification?.allocationStrategy
-    ?? EmrCreateCluster.OnDemandAllocationStrategy.LOWEST_PRICE;
 
-  if (hasPriority && !cdk.Token.isUnresolved(onDemandStrategy)
-    && onDemandStrategy !== EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED) {
+  if (hasPriority && !isPrioritized) {
     throw new UnscopedValidationError(
       `Priority values are set on instance type configs, but allocation strategy is '${onDemandStrategy}'. ` +
       'Priority values only take effect with OnDemandAllocationStrategy.PRIORITIZED.',
+    );
+  }
+
+  if (isPrioritized && !hasPriority && property.instanceTypeConfigs?.length) {
+    throw new UnscopedValidationError(
+      'OnDemandAllocationStrategy.PRIORITIZED requires at least one instance type config to have a priority value set. ' +
+      'See https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-fleet.html',
     );
   }
 
