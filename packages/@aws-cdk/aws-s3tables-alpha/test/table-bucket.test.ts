@@ -810,5 +810,29 @@ describe('TableBucket', () => {
       const key = Object.keys(resources)[0];
       expect(resources[key].Properties.RoleName).toBeUndefined();
     });
+
+    test('two sibling source buckets in the same scope each get their own auto-role without collision', () => {
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+
+      new s3tables.TableBucket(stack, 'SrcA', {
+        tableBucketName: 'repl-src-a',
+        replicationDestinations: [destination],
+      });
+      new s3tables.TableBucket(stack, 'SrcB', {
+        tableBucketName: 'repl-src-b',
+        replicationDestinations: [destination],
+      });
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::IAM::Role', 2);
+
+      const roles = template.findResources('AWS::IAM::Role');
+      const roleLogicalIds = Object.keys(roles);
+      expect(roleLogicalIds.some(id => id.startsWith('SrcAReplicationRole'))).toBe(true);
+      expect(roleLogicalIds.some(id => id.startsWith('SrcBReplicationRole'))).toBe(true);
+      for (const id of roleLogicalIds) {
+        expect(roles[id].Properties.RoleName).toBeUndefined();
+      }
+    });
   });
 });

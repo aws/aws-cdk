@@ -10,9 +10,16 @@ import * as s3tables from '../../lib';
  * Case 1: in-account, in-region destination with an auto-created replication role.
  * Case 2: in-account, in-region destination with a bring-your-own (BYO) replication role.
  *
+ * In addition to verifying that the replication configuration is emitted on the
+ * source bucket, each case also creates a namespace on the source and waits for
+ * the replication service to propagate it to the destination — this is the
+ * end-to-end behaviour users ultimately care about.
+ *
  * Cross-region coverage is intentionally omitted here to keep this integ test
  * scoped and fast; it can be added later once the in-account path is stable.
  */
+
+const REPL_NAMESPACE = 'integreplns';
 
 abstract class ReplicationTestBase extends core.Stack {
   public abstract validateAssertions(integ: IntegTest): void;
@@ -55,6 +62,8 @@ class InAccountReplicationStack extends ReplicationTestBase {
         ],
       },
     }));
+
+    verifyNamespaceReplicates(integ, this.source, this.destination, replicationConfig);
   }
 }
 
@@ -75,21 +84,43 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
       assumedBy: new iam.ServicePrincipal('replication.s3tables.amazonaws.com'),
     });
 
-    // Minimal permissions required by the replication service for this integ test.
+    // Formatted up-front so we can scope the policy before creating the source bucket.
+    const sourceArn = core.Stack.of(this).formatArn({
+      service: 's3tables',
+      resource: 'bucket',
+      resourceName: 'integ-tb-repl-byo-src',
+    });
+
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
       actions: [
         's3tables:ListTables',
+      ],
+      resources: [sourceArn],
+    }));
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
         's3tables:GetTable',
         's3tables:GetTableMetadataLocation',
         's3tables:GetTableMaintenanceConfiguration',
         's3tables:GetTableData',
+      ],
+      resources: [`${sourceArn}/table/*`],
+    }));
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
         's3tables:CreateNamespace',
         's3tables:CreateTable',
+      ],
+      resources: [this.destination.tableBucketArn],
+    }));
+    this.role.addToPrincipalPolicy(new iam.PolicyStatement({
+      actions: [
+        's3tables:GetTableData',
         's3tables:PutTableData',
         's3tables:UpdateTableMetadataLocation',
         's3tables:PutTableMaintenanceConfiguration',
       ],
-      resources: ['*'],
+      resources: [`${this.destination.tableBucketArn}/table/*`],
     }));
 
     this.source = new s3tables.TableBucket(this, 'Src', {
@@ -119,7 +150,47 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
         ],
       },
     }));
+
+    verifyNamespaceReplicates(integ, this.source, this.destination, replicationConfig);
   }
+}
+
+/**
+ * Chain: create a namespace on the source, then poll the destination until it
+ * appears (or the total timeout is reached). The `GetNamespaceCommand` call
+ * will throw `NotFoundException` until the replication service has propagated
+ * the namespace, so `waitForAssertions` retries it.
+ */
+function verifyNamespaceReplicates(
+  integ: IntegTest,
+  source: s3tables.ITableBucket,
+  destination: s3tables.ITableBucket,
+  previous: ReturnType<IntegTest['assertions']['awsApiCall']>,
+) {
+  const createNamespace = integ.assertions.awsApiCall(
+    '@aws-sdk/client-s3tables',
+    'CreateNamespaceCommand',
+    {
+      tableBucketARN: source.tableBucketArn,
+      namespace: [REPL_NAMESPACE],
+    },
+  );
+
+  const getDestinationNamespace = integ.assertions.awsApiCall(
+    '@aws-sdk/client-s3tables',
+    'GetNamespaceCommand',
+    {
+      tableBucketARN: destination.tableBucketArn,
+      namespace: REPL_NAMESPACE,
+    },
+  ).expect(ExpectedResult.objectLike({
+    namespace: [REPL_NAMESPACE],
+  })).waitForAssertions({
+    totalTimeout: core.Duration.minutes(15),
+    interval: core.Duration.seconds(30),
+  });
+
+  previous.next(createNamespace).next(getDestinationNamespace);
 }
 
 const app = new core.App();
