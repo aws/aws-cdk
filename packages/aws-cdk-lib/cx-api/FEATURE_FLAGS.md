@@ -2412,29 +2412,6 @@ where `RECOMMENDED_TLS` (`ELBSecurityPolicy-TLS13-1-2-2021-06`) is used.
 **Compatibility with old behavior:** Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.
 
 
-### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
-
-*Default Lambda Function URL origins to dual-stack IPv4/IPv6*
-
-Flag type: New default behavior
-
-When enabled, Lambda Function URL origins in CloudFront distributions will default to
-dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
-URLs' native dual-stack support and provides better connectivity options.
-
-When disabled, maintains the current IPv4-only default behavior for backward compatibility.
-
-Users can still explicitly set ipAddressType to override the default behavior.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.
-
-
 ### @aws-cdk/aws-batch:defaultToAL2023
 
 *Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2*
@@ -2459,6 +2436,29 @@ When disabled, the default `imageType` remains `ECS_AL2` / `EKS_AL2` for backwar
 **Compatibility with old behavior:** Explicitly set `imageType` to `ECS_AL2` or `EKS_AL2` in your compute environment images configuration.
 
 **Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.
+
+
+### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
+
+*Default Lambda Function URL origins to dual-stack IPv4/IPv6*
+
+Flag type: New default behavior
+
+When enabled, Lambda Function URL origins in CloudFront distributions will default to
+dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
+URLs' native dual-stack support and provides better connectivity options.
+
+When disabled, maintains the current IPv4-only default behavior for backward compatibility.
+
+Users can still explicitly set ipAddressType to override the default behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.
 
 
 <!-- END details -->
