@@ -496,7 +496,7 @@ export interface ClusterProps {
   /**
    * Logging configuration for the cluster.
    *
-   * @default undefined - AWS Redshift default is no logging
+   * @default - no logging
    */
   readonly logging?: ClusterLogging;
 
