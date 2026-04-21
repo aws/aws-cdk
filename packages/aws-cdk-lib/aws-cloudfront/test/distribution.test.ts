@@ -1058,6 +1058,25 @@ describe('custom origin ids', () => {
   });
 });
 
+describe('addOrigin', () => {
+  test('can add an origin without a behavior', () => {
+    const dist = new Distribution(stack, 'Distribution', {
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    dist.addOrigin(defaultOrigin('api.example.com'));
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        Origins: [
+          Match.objectLike({ DomainName: 'www.example.com' }),
+          Match.objectLike({ DomainName: 'api.example.com' }),
+        ],
+      },
+    });
+  });
+});
+
 describe('supported HTTP versions', () => {
   test('setting HTTP/1.1 renders HttpVersion correctly', () => {
     new Distribution(stack, 'Http1Distribution', {
