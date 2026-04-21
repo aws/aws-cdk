@@ -8,9 +8,10 @@ import { Stage } from '../stage';
  * Manages validations for CDK constructs.
  *
  * @example
- * declare const app: App;
+ * /// fixture=validation-plugin
+ * declare const myApp: App;
  * declare const plugin: IPolicyValidationPlugin;
- * Validations.of(app).addPlugins(plugin);
+ * Validations.of(myApp).addPlugins(plugin);
  */
 export class Validations {
   /**
