@@ -6,7 +6,6 @@ import { lit } from './private/literal-string';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
-import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 /**
@@ -847,7 +846,7 @@ class FnValueOfAll extends FnBase {
  * with no delimiter.
  */
 class FnJoin implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly delimiter: string;
   private readonly listOfValues: any[];
@@ -865,7 +864,6 @@ class FnJoin implements IResolvable {
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -898,19 +896,20 @@ class FnJoin implements IResolvable {
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnJoin.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The `Fn::ToJsonString` intrinsic function converts an object or array to its
  * corresponding JSON string.
  */
 class FnToJsonString implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly object: any;
 
   constructor(object: any) {
     this.object = object;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -926,19 +925,20 @@ class FnToJsonString implements IResolvable {
     return '<Fn::ToJsonString>';
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnToJsonString.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The intrinsic function `Fn::Length` returns the number of elements within an array
  * or an intrinsic function that returns an array.
  */
 class FnLength implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly array: any;
 
   constructor(array: any) {
     this.array = array;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -954,6 +954,8 @@ class FnLength implements IResolvable {
     return '<Fn::Length>';
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnLength.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
   const result = new Array<T[]>();
