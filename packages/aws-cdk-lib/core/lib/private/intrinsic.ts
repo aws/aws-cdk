@@ -1,6 +1,5 @@
 import { UnscopedValidationError } from '../errors';
 import type { IResolvable, IResolveContext } from '../resolvable';
-import { captureStackTrace } from '../stack-trace';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { lit } from './literal-string';
@@ -53,7 +52,7 @@ export class Intrinsic implements IResolvable {
       throw new UnscopedValidationError(lit`MustBeArgumentIntrinsicPlain`, `Argument to Intrinsic must be a plain value object, got ${value}`);
     }
 
-    this.creationStack = options.stackTrace ?? true ? captureStackTrace() : [];
+    this.creationStack = [];
     this.value = value;
     this.typeHint = options.typeHint ?? ResolutionTypeHint.STRING;
   }

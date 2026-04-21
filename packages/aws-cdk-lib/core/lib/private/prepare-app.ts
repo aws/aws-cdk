@@ -5,6 +5,26 @@ import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
+import type { IPropertyNameLookupTable } from './resolve';
+import { writePropertyAssignmentMetadataForConstruct } from './resolve';
+
+function writePropertyAssignmentMetadata(root: IConstruct) {
+  function lookupTableFn(c: IConstruct): IPropertyNameLookupTable {
+    return {
+      cfnPropertyName: (cdkPropertyName: string) => {
+        return CfnResource.isCfnResource(c)
+          ? c.cfnPropertyName(cdkPropertyName)
+          : undefined;
+      },
+    };
+  }
+
+  for (const consumer of iterateDfsPreorder(root)) {
+    if (CfnResource.isCfnResource(consumer)) {
+      writePropertyAssignmentMetadataForConstruct(consumer, () => consumer._toCloudFormation(), lookupTableFn(consumer));
+    }
+  }
+}
 
 /**
  * Prepares the app for synthesis. This function is called by the root `prepare`
@@ -32,6 +52,7 @@ export function prepareApp(root: IConstruct) {
   }
 
   resolveReferences(root);
+  writePropertyAssignmentMetadata(root);
 
   // depth-first (children first) queue of nested stacks. We will pop a stack
   // from the head of this queue to prepare its template asset.
