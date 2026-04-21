@@ -4,7 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as assets from 'aws-cdk-lib/aws-s3-assets';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
-import { GlueStartJobRun, WorkerType } from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { GlueStartJobRun, WorkerTypeV2 } from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
@@ -45,7 +45,7 @@ class GlueStartJobRunWorkerStack extends cdk.Stack {
         '--enable-metrics': 'true',
       }),
       workerConfiguration: {
-        workerType: WorkerType.G_1X,
+        workerTypeV2: WorkerTypeV2.G_1X,
         numberOfWorkers: 2,
       },
     });
@@ -54,7 +54,7 @@ class GlueStartJobRunWorkerStack extends cdk.Stack {
     const endTask = new sfn.Pass(this, 'End Task');
 
     this.stateMachine = new sfn.StateMachine(this, 'State Machine', {
-      definition: sfn.Chain.start(startTask).next(jobTask).next(endTask),
+      definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(startTask).next(jobTask).next(endTask)),
     });
   }
 }

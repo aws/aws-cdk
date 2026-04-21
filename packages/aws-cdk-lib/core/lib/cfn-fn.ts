@@ -2,15 +2,15 @@ import type { ICfnConditionExpression, ICfnRuleConditionExpression } from './cfn
 import { UnscopedValidationError } from './errors';
 import { minimalCloudFormationJoin } from './private/cloudformation-lang';
 import { Intrinsic } from './private/intrinsic';
+import { lit } from './private/literal-string';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
-import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 /**
  * CloudFormation intrinsic functions.
- * http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
+ * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference.html
  */
 export class Fn {
   /**
@@ -48,7 +48,7 @@ export class Fn {
    */
   public static join(delimiter: string, listOfValues: string[]): string {
     if (listOfValues.length === 0) {
-      throw new UnscopedValidationError('RequiresFnjoinRequiresLeast', 'FnJoin requires at least one value to be provided');
+      throw new UnscopedValidationError(lit`RequiresFnjoinRequiresLeast`, 'FnJoin requires at least one value to be provided');
     }
 
     return new FnJoin(delimiter, listOfValues).toString();
@@ -105,7 +105,7 @@ export class Fn {
 
     if (Token.isUnresolved(delimiter)) {
       // Limitation of CloudFormation
-      throw new UnscopedValidationError('ValidationError', 'Fn.split: \'delimiter\' may not be a token value');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.split: \'delimiter\' may not be a token value');
     }
 
     const split = Token.asList(new FnSplit(delimiter, source));
@@ -114,7 +114,7 @@ export class Fn {
     }
 
     if (Token.isUnresolved(assumedLength)) {
-      throw new UnscopedValidationError('ValidationError', 'Fn.split: \'assumedLength\' may not be a token value');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.split: \'assumedLength\' may not be a token value');
     }
 
     return range(assumedLength).map(i => Fn.select(i, split));
@@ -232,7 +232,7 @@ export class Fn {
   /**
    * The intrinsic function ``Fn::FindInMap`` returns the value corresponding to
    * keys in a two-level map that is declared in the Mappings section.
-   * Warning: do not use with lazy mappings as this function will not guarentee a lazy mapping to render in the template.
+   * Warning: do not use with lazy mappings as this function will not guarantee a lazy mapping to render in the template.
    * Prefer to use `CfnMapping.findInMap` in general.
    * @returns a token represented as a string
    */
@@ -271,7 +271,7 @@ export class Fn {
    */
   public static conditionAnd(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
-      throw new UnscopedValidationError('ValidationError', 'Fn.conditionAnd() needs at least one argument');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.conditionAnd() needs at least one argument');
     }
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
@@ -333,7 +333,7 @@ export class Fn {
    */
   public static conditionOr(...conditions: ICfnConditionExpression[]): ICfnRuleConditionExpression {
     if (conditions.length === 0) {
-      throw new UnscopedValidationError('ValidationError', 'Fn.conditionOr() needs at least one argument');
+      throw new UnscopedValidationError(lit`ValidationError`, 'Fn.conditionOr() needs at least one argument');
     }
     if (conditions.length === 1) {
       return conditions[0] as ICfnRuleConditionExpression;
@@ -444,7 +444,7 @@ export class Fn {
     // short-circuit if array is not a token
     if (!Token.isUnresolved(array)) {
       if (!Array.isArray(array)) {
-        throw new UnscopedValidationError('ValidationError', 'Fn.length() needs an array');
+        throw new UnscopedValidationError(lit`ValidationError`, 'Fn.length() needs an array');
       }
       return array.length;
     }
@@ -667,7 +667,7 @@ class FnCidr extends FnBase {
    */
   constructor(ipBlock: any, count: any, sizeMask?: any) {
     if (count < 1 || count > 256) {
-      throw new UnscopedValidationError('MustBeFnCidrSCountAttribute', `Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`);
+      throw new UnscopedValidationError(lit`MustBeFnCidrSCountAttribute`, `Fn::Cidr's count attribute must be between 1 and 256, ${count} was provided.`);
     }
     super('Fn::Cidr', [ipBlock, count, sizeMask]);
   }
@@ -846,7 +846,7 @@ class FnValueOfAll extends FnBase {
  * with no delimiter.
  */
 class FnJoin implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly delimiter: string;
   private readonly listOfValues: any[];
@@ -859,12 +859,11 @@ class FnJoin implements IResolvable {
    */
   constructor(delimiter: string, listOfValues: any[]) {
     if (listOfValues.length === 0) {
-      throw new UnscopedValidationError('RequiresFnjoinRequiresLeast', 'FnJoin requires at least one value to be provided');
+      throw new UnscopedValidationError(lit`RequiresFnjoinRequiresLeast`, 'FnJoin requires at least one value to be provided');
     }
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -897,19 +896,20 @@ class FnJoin implements IResolvable {
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnJoin.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The `Fn::ToJsonString` intrinsic function converts an object or array to its
  * corresponding JSON string.
  */
 class FnToJsonString implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly object: any;
 
   constructor(object: any) {
     this.object = object;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -925,19 +925,20 @@ class FnToJsonString implements IResolvable {
     return '<Fn::ToJsonString>';
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnToJsonString.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The intrinsic function `Fn::Length` returns the number of elements within an array
  * or an intrinsic function that returns an array.
  */
 class FnLength implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly array: any;
 
   constructor(array: any) {
     this.array = array;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -953,6 +954,8 @@ class FnLength implements IResolvable {
     return '<Fn::Length>';
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnLength.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
   const result = new Array<T[]>();

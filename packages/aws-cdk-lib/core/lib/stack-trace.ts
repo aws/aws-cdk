@@ -1,3 +1,4 @@
+import type { Node } from 'constructs';
 import { debugModeEnabled } from './debug';
 
 /**
@@ -135,11 +136,15 @@ export function parseErrorStack(stack: string): CallSite[] {
  * - If there is 'node:' in the file path, we assume it is NodeJS internals and we skip it.
  */
 export function renderCallStackJustMyCode(stack: CallSite[], indent = true): string[] {
-  const moduleRe = /(\/|\\)node_modules(\/|\\)([^/\\]+)/;
+  // Look for `/node_modules/` followed by either
+  // - An @ sign, and 2 path segments
+  // - No @ sign, and 1 path segment
+  const moduleRe = /(\/|\\)node_modules(\/|\\)(@[^/\\]+[/\\][^/\\]+|[^@][^/\\]*)/;
 
   const lines = [];
   let skipped = new Array<{ functionName?: string; fileName: string }>();
 
+  let sawMyCode = false;
   let i = 0;
   while (i < stack.length) {
     const frame = stack[i++];
@@ -160,9 +165,15 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
       reportSkipped(true);
       const prefix = indent ? '    at ' : '';
       lines.push(`${prefix}${frame.functionName} (${frame.fileName}:${frame.sourceLocation})`);
+      sawMyCode = true;
     }
   }
   reportSkipped(false);
+
+  if (!sawMyCode) {
+    lines.push(`${indent ? '    ' : ''}(no user code in ${Error.stackTraceLimit} frames, use --stack-trace-limit to capture more)`);
+  }
+
   return lines;
 
   function skip(what: typeof skipped[number]) {
@@ -190,3 +201,26 @@ interface CallSite {
   fileName: string;
   sourceLocation: string;
 }
+
+/**
+ * Records a metadata entry on a construct node to trace a property assignment.
+ *
+ * When debug mode is enabled (via the `CDK_DEBUG` environment variable),
+ * this attaches `aws:cdk:propertyAssignment` metadata to the given node,
+ * including a stack trace pointing back to the caller. This is useful for
+ * diagnosing where a particular property value was set during synthesis.
+ *
+ * This is a no-op when debug mode is not enabled.
+ *
+ * @param node the construct node to attach the metadata to.
+ * @param propertyName the name of the property being assigned.
+ */
+export function traceProperty(node: Node, propertyName: string) {
+  if (debugModeEnabled()) {
+    node.addMetadata('aws:cdk:propertyAssignment', {
+      propertyName,
+      stackTrace: captureStackTrace(traceProperty),
+    });
+  }
+}
+

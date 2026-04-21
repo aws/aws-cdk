@@ -941,6 +941,164 @@
       "Here"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
+    "InputType": [
+      "CMAF",
+      "HLS"
+    ],
+    "IngestEndpoint": [
+      1,
+      2
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.ts": {
+    "AudioCodec": [
+      "AACL",
+      "AACH",
+      "AC-3",
+      "EC-3"
+    ],
+    "VideoCodec": [
+      "H264",
+      "H265",
+      "AV1"
+    ],
+    "VideoDynamicRange": [
+      "dv",
+      "hdr10",
+      "hlg",
+      "sdr"
+    ],
+    "TrickplayType": [
+      "iframe",
+      "image",
+      "none"
+    ],
+    "NumericFilterKey": [
+      "audio_channels",
+      "audio_sample_rate",
+      "trickplay_height",
+      "video_framerate",
+      "video_height"
+    ],
+    "TextFilterKey": [
+      "audio_language",
+      "subtitle_language"
+    ],
+    "BitrateFilterKey": [
+      "audio_bitrate",
+      "video_bitrate"
+    ],
+    "ContainerType": [
+      "TS",
+      "CMAF",
+      "ISM"
+    ],
+    "CmafEncryptionMethod": [
+      "CENC",
+      "CBCS"
+    ],
+    "TsEncryptionMethod": [
+      "AES_128",
+      "SAMPLE_AES"
+    ],
+    "PresetSpeke20Audio": [
+      "PRESET_AUDIO_1",
+      "PRESET_AUDIO_2",
+      "PRESET_AUDIO_3",
+      "SHARED",
+      "UNENCRYPTED"
+    ],
+    "PresetSpeke20Video": [
+      "PRESET_VIDEO_1",
+      "PRESET_VIDEO_2",
+      "PRESET_VIDEO_3",
+      "PRESET_VIDEO_4",
+      "PRESET_VIDEO_5",
+      "PRESET_VIDEO_6",
+      "PRESET_VIDEO_7",
+      "PRESET_VIDEO_8",
+      "SHARED",
+      "UNENCRYPTED"
+    ],
+    "EndpointErrorConfiguration": [
+      "STALE_MANIFEST",
+      "INCOMPLETE_MANIFEST",
+      "MISSING_DRM_KEY",
+      "SLATE_INPUT"
+    ],
+    "ScteMessageType": [
+      "SPLICE_INSERT",
+      "BREAK",
+      "PROVIDER_ADVERTISEMENT",
+      "DISTRIBUTOR_ADVERTISEMENT",
+      "PROVIDER_PLACEMENT_OPPORTUNITY",
+      "DISTRIBUTOR_PLACEMENT_OPPORTUNITY",
+      "PROVIDER_OVERLAY_PLACEMENT_OPPORTUNITY",
+      "DISTRIBUTOR_OVERLAY_PLACEMENT_OPPORTUNITY",
+      "PROGRAM"
+    ],
+    "ScteInSegments": [
+      "NONE",
+      "ALL"
+    ],
+    "DrmSettingsKey": [
+      "exclude_session_keys"
+    ],
+    "AdMarkerDash": [
+      "BINARY",
+      "XML"
+    ],
+    "AdMarkerHls": [
+      "DATERANGE",
+      "SCTE35_ENHANCED"
+    ],
+    "SegmentTemplateFormat": [
+      "NUMBER_WITH_TIMELINE"
+    ],
+    "DashUtcTimingMode": [
+      "HTTP_HEAD",
+      "HTTP_ISO",
+      "HTTP_XSDATE",
+      "UTC_DIRECT"
+    ],
+    "DashPeriodTriggers": [
+      "AVAILS",
+      "DRM_KEY_ROTATION",
+      "SOURCE_CHANGES",
+      "SOURCE_DISRUPTIONS",
+      "NONE"
+    ],
+    "DrmSignalling": [
+      "INDIVIDUAL",
+      "REFERENCED"
+    ],
+    "DashManifestCompactness": [
+      "STANDARD",
+      "NONE"
+    ],
+    "TtmlProfile": [
+      "IMSC_1",
+      "EBU_TT_D_101"
+    ],
+    "MssManifestLayout": [
+      "FULL",
+      "COMPACT"
+    ],
+    "CmafDrmSystem": [
+      "FAIRPLAY",
+      "PLAYREADY",
+      "WIDEVINE",
+      "IRDETO"
+    ],
+    "TsDrmSystem": [
+      "FAIRPLAY",
+      "CLEAR_KEY_AES_128"
+    ],
+    "IsmDrmSystem": [
+      "PLAYREADY"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts": {
     "StorageMode": [
       "LOCAL",
@@ -1112,6 +1270,10 @@
       "Enabled",
       "Disabled"
     ],
+    "RequestMetricsStatus": [
+      "Enabled",
+      "Disabled"
+    ],
     "TableBucketEncryption": [
       "aws:kms",
       "AES256"
@@ -1124,6 +1286,14 @@
     "Status": [
       "enabled",
       "disabled"
+    ],
+    "SortDirection": [
+      "asc",
+      "desc"
+    ],
+    "NullOrder": [
+      "nulls-first",
+      "nulls-last"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -1735,6 +1905,10 @@
       "balanced-only",
       "balanced-best-effort"
     ],
+    "TerminateHookAbandonAction": [
+      "retain",
+      "terminate"
+    ],
     "UpdateType": [
       "None",
       "Replace",
@@ -1969,11 +2143,14 @@
     "EcsMachineImageType": [
       "ECS_AL2",
       "ECS_AL2023",
-      "ECS_AL2_NVIDIA"
+      "ECS_AL2_NVIDIA",
+      "ECS_AL2023_NVIDIA"
     ],
     "EksMachineImageType": [
       "EKS_AL2",
-      "EKS_AL2_NVIDIA"
+      "EKS_AL2_NVIDIA",
+      "EKS_AL2023",
+      "EKS_AL2023_NVIDIA"
     ],
     "AllocationStrategy": [
       "BEST_FIT",
@@ -4718,6 +4895,7 @@
     ],
     "SslPolicy": [
       "ELBSecurityPolicy-TLS13-1-2-2021-06",
+      "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09",
       "ELBSecurityPolicy-2016-08",
       "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
       "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
@@ -4725,6 +4903,11 @@
       "ELBSecurityPolicy-TLS13-1-0-2021-06",
       "ELBSecurityPolicy-TLS13-1-1-2021-06",
       "ELBSecurityPolicy-TLS13-1-3-2021-06",
+      "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-PQ-2025-09",
       "ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04",
@@ -4733,6 +4916,13 @@
       "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04",
+      "ELBSecurityPolicy-TLS13-1-3-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-FIPS-PQ-2025-09",
       "ELBSecurityPolicy-FS-1-2-Res-2020-10",
       "ELBSecurityPolicy-FS-1-2-Res-2019-08",
       "ELBSecurityPolicy-FS-1-2-2019-08",
