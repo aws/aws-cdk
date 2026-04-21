@@ -5,6 +5,7 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { Annotations } from 'aws-cdk-lib/core';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
@@ -14,7 +15,7 @@ import type { Construct } from 'constructs';
 import type { GatewayExceptionLevel, IGateway } from './gateway-base';
 import { GatewayBase } from './gateway-base';
 import type { IGatewayAuthorizerConfig } from './inbound-auth/authorizer';
-import { GatewayAuthorizer } from './inbound-auth/authorizer';
+import { GatewayAuthorizer, GatewayAuthorizerType } from './inbound-auth/authorizer';
 import type { IInterceptor, InterceptorBindConfig } from './interceptor';
 import { InterceptionPoint } from './interceptor';
 import type { ICredentialProviderConfig } from './outbound-auth/credential-provider';
@@ -541,6 +542,12 @@ export class Gateway extends GatewayBase {
       this.authorizerConfiguration = defaultCognitoAuth.authorizerConfig;
       this.tokenEndpointUrl = defaultCognitoAuth.tokenEndpointUrl;
       this.oauthScopes = defaultCognitoAuth.oauthScopes;
+    }
+    if (this.authorizerConfiguration.authorizerType === GatewayAuthorizerType.NONE) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-bedrock-agentcore-alpha:noAuthGateway',
+        'This gateway has no inbound authorization. The endpoint will be publicly accessible without credentials. Ensure you have implemented compensating security controls such as Gateway Interceptors. See https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none',
+      );
     }
     this.exceptionLevel = props.exceptionLevel;
 

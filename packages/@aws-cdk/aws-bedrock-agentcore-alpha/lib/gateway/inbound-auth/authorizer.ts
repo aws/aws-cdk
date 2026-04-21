@@ -226,7 +226,13 @@ export abstract class GatewayAuthorizer {
   }
 
   /**
-   * No authorization
+   * No authorization — the gateway will not perform any inbound authorization.
+   *
+   * The gateway endpoint will be publicly accessible without credentials.
+   * Use this for testing/development, or for production gateways where you have
+   * implemented compensating controls such as Gateway Interceptors.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none
    * @returns IGatewayAuthorizerConfig configured for no authorization
    */
   public static withNoAuth(): IGatewayAuthorizerConfig {

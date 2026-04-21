@@ -1275,7 +1275,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 });
 ```
 
-> **Note:** Do not use No Authorization gateways for testing or development purposes. No Authorization gateways should only be used for production gateways that you intend to make public after you have implemented all the security best practices.
+> **⚠️ Important:** Do not use No Authorization gateways for production workloads unless you have implemented all the security best practices. No Authorization gateways are most appropriate for testing and development purposes. See [Security Best Practices](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none) for required compensating controls.
 
 For more information, see [No Authorization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none).
 
