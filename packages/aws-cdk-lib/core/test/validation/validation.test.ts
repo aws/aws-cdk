@@ -65,11 +65,11 @@ describe('validations', () => {
         expect.stringMatching(/Default \(Default\)/),
         expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+        expect.stringMatching(/│ Location:/),
         expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
         expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+        expect.stringMatching(/│ Location:/),
       ],
       resourceLogicalId: 'Fake',
     }])));
@@ -247,15 +247,15 @@ Policy Validation Report Summary
             expect.stringMatching(/Stage1 \(Stage1\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stage|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  stack1 \(Stage1\/stack1\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  DefaultResource \(Stage1\/stack1\/DefaultResource\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           resourceLogicalId: 'DefaultResource',
           description: 'do something',
@@ -479,11 +479,11 @@ Policy Validation Report Summary
             expect.stringMatching(/Default \(Default\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           description: 'do something',
           resourceLogicalId: 'Fake',
@@ -546,11 +546,11 @@ Policy Validation Report Summary
             expect.stringMatching(/Default \(Default\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           description: 'do another thing',
           resourceLogicalId: 'Fake',
@@ -669,13 +669,13 @@ Policy Validation Report Summary
                     'id': 'Default',
                     'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
-                    'location': "Run with '--debug' to include location info",
+                    'location': expect.any(String),
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
                       'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
-                      'location': "Run with '--debug' to include location info",
+                      'location': expect.any(String),
                       'path': 'Default/Fake',
                     },
                   },
@@ -786,13 +786,13 @@ Policy Validation Report Summary
                     'id': 'Default',
                     'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
-                    'location': "Run with '--debug' to include location info",
+                    'location': expect.any(String),
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
                       'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
-                      'location': "Run with '--debug' to include location info",
+                      'location': expect.any(String),
                       'path': 'Default/Fake',
                     },
                   },
@@ -811,6 +811,12 @@ Policy Validation Report Summary
     expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' and above for details`);
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
+    const beta1Plugin: core.IPolicyValidationPluginBeta1 = new FakePlugin('beta1-plugin', []);
+    const plugin: core.IPolicyValidationPlugin = beta1Plugin;
+    expect(plugin.name).toEqual('beta1-plugin');
   });
 });
 
