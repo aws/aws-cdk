@@ -2019,7 +2019,7 @@ describe('SpecRestApi', () => {
 describe('telemetry metadata', () => {
   beforeEach(() => {
     // In case we didn't compile using jsii
-    if (!(apigw.RestApi as any)[JSII_RUNTIME_SYMBOL]) {
+    if (!(apigw.RestApi as any).hasOwnProperty(JSII_RUNTIME_SYMBOL)) {
       (apigw.RestApi as any)[JSII_RUNTIME_SYMBOL] = {
         fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
       };
