@@ -389,6 +389,21 @@
           true
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addIngressRule": [
+          {
+            "canInlineRule": true,
+            "connections": "*",
+            "uniqueId": "*"
+          },
+          {},
+          "*",
+          false
+        ]
+      }
     }
   ],
   "/aws-cdk-rds-proxy/dbProxy/Resource": [
@@ -886,6 +901,12 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "dbProxyProxySecurityGroup16E727A7"
+    }
+  ],
+  "/aws-cdk-rds-proxy/dbProxy/ProxySecurityGroup/from 0.0.0.0_0:{IndirectPort}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "dbProxyProxySecurityGroupfrom00000IndirectPort7AF515D8"
     }
   ],
   "/aws-cdk-rds-proxy/dbCluster/Subnets/Default": [
