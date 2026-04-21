@@ -882,6 +882,53 @@ Policy Validation Report Summary
       // THEN - exitCode 1 means the plugin ran and reported violations
       expect(process.exitCode).toEqual(1);
     });
+
+    test('addWarning adds warning metadata to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addWarning('my-lib:MyWarning', 'Something is off');
+
+      // THEN
+      const warnings = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].data).toContain('Something is off');
+      expect(warnings[0].data).toContain('[ack: my-lib:MyWarning]');
+    });
+
+    test('addError adds error metadata to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addError('Something is wrong');
+
+      // THEN
+      const errors = construct.node.metadata.filter(m => m.type === 'aws:cdk:error');
+      expect(errors).toHaveLength(1);
+      expect(errors[0].data).toBe('Something is wrong');
+    });
+
+    test('acknowledge routes annotation rules to Annotations.acknowledgeWarning', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      core.Validations.of(construct).addWarning('SomeWarning', 'This is a warning');
+
+      // WHEN
+      core.Validations.of(construct).acknowledge('annotation:SomeWarning');
+
+      // THEN - the warning is acknowledged and won't appear in strict mode
+      core.Validations.of(construct).addWarning('SomeWarning', 'This should be suppressed');
+      const warnings = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warnings).toHaveLength(1); // only the first one, second was suppressed
+    });
   });
 });
 
