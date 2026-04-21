@@ -1848,7 +1848,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       to \`EKS_NODEADM\` when an AL2023 image type is used, as required by the AWS Batch API.
 
       When disabled, the default \`imageType\` remains \`ECS_AL2\` / \`EKS_AL2\` for backward compatibility.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.249.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: `Explicitly set \`imageType\` to \`ECS_AL2\` or \`EKS_AL2\` in your compute environment images configuration.
