@@ -121,7 +121,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   const reports: NamedValidationPluginReport[] = [];
   if (templatePathsByPlugin.size > 0) {
     // eslint-disable-next-line no-console
-    console.log('Performing Policy Validations\n');
+    console.error('Performing Policy Validations\n');
   }
 
   if (templatePathsByPlugin.size > 0) {
@@ -173,11 +173,11 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
       }
       // eslint-disable-next-line no-console
-      console.log(message);
+      console.error(message);
       process.exitCode = 1;
     } else {
       // eslint-disable-next-line no-console
-      console.log('Policy Validation Successful!');
+      console.error('Policy Validation Successful!');
     }
   }
 }

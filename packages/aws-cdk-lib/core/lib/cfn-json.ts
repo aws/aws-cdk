@@ -5,7 +5,6 @@ import { CfnUtilsResourceType } from './private/cfn-utils-provider/consts';
 import type { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
-import { captureStackTrace } from './stack-trace';
 
 export interface CfnJsonProps {
   /**
@@ -30,7 +29,7 @@ export interface CfnJsonProps {
  * This construct is backed by a custom resource.
  */
 export class CfnJson extends Construct implements IResolvable {
-  public readonly creationStack: string[] = [];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   /**
    * An Fn::GetAtt to the JSON object passed through `value` and resolved during
@@ -45,8 +44,6 @@ export class CfnJson extends Construct implements IResolvable {
 
   constructor(scope: Construct, id: string, props: CfnJsonProps) {
     super(scope, id);
-
-    this.creationStack = captureStackTrace();
 
     // stringify the JSON object in a token-aware way.
     this.jsonString = Stack.of(this).toJsonString(props.value);

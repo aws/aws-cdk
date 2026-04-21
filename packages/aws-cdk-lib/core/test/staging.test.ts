@@ -231,6 +231,7 @@ describe('staging', () => {
       'asset.af10ac04b3b607b0f8659c8f0cee8c343025ee75baf0b146f10f0e5311d2c46b.tar.gz',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -320,6 +321,7 @@ describe('staging', () => {
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -351,6 +353,7 @@ describe('staging', () => {
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -400,6 +403,7 @@ describe('staging', () => {
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -445,6 +449,7 @@ describe('staging', () => {
       'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -495,6 +500,7 @@ describe('staging', () => {
       'asset.e80bb8f931b87e84975de193f5a7ecddd7558d3caf3d35d3a536d9ae6539234f', // 'AssetWithDifferentBundlingOptions'
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -542,6 +548,7 @@ describe('staging', () => {
       'asset.2de2347dd01e3f43a463652635acaae09539cdf32769d9a60ac0ad4622b1e943', // 'Asset'
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -596,6 +603,7 @@ describe('staging', () => {
       'asset.33cbf2cae5432438e0f046bc45ba8c3cef7b6afcf47b59d1c183775c1918fb1f', // 'Asset'
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -674,6 +682,7 @@ describe('staging', () => {
       'asset.b1e32e86b3523f2fa512eb99180ee2975a50a4439e63e8badd153f2a68d61aa4',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -774,6 +783,7 @@ describe('staging', () => {
       'asset.ec1d4062c578dacd630d64166a7d1efcd472e570e085a63f8857f6c674491bac',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1371,6 +1381,7 @@ describe('staging', () => {
       'asset.f43148c61174f444925231b5849b468f21e93b5d1469cd07c53625ffd039ef48.zip',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1449,6 +1460,7 @@ describe('staging', () => {
       'asset.86ec07746e1d859290cfd8b9c648e581555649c75f51f741f11e22cab6775abc',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1496,6 +1508,7 @@ describe('staging', () => {
       'asset.adb7bb3f9419564842d16f48e6b90468f63ec759d2775e8e40d6a87e6b8e3469.txt',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1527,6 +1540,7 @@ describe('staging', () => {
       'asset.95c924c84f5d023be4edee540cb2cb401a49f115d01ed403b288f6cb412771df.txt',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1558,6 +1572,7 @@ describe('staging', () => {
       'asset.ef734136dc22840a94140575a2f98cbc061074e09535589d1cd2c11a4ac2fd75_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1590,6 +1605,7 @@ describe('staging', () => {
       'asset.f81c5ba9e81eebb202881a8e61a83ab4b69f6bee261989eb93625c9cf5d35335_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1642,6 +1658,7 @@ describe('staging with docker cp', () => {
       'asset.0ec371a2022d29dfd83f5df104e0f01b34233a4e3e839c3c4ec62008f0b9a0e8.zip',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1689,6 +1706,7 @@ describe('staging with docker cp', () => {
       'asset.93bd4079bff7440a725991ecf249416ae9ad73cb639f4a8d9e8f3ad8d491e89f_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);
@@ -1722,6 +1740,7 @@ describe('staging with docker cp', () => {
       'asset.53a51b4c68874a8e831e24e8982120be2a608f50b2e05edb8501143b3305baa8_noext',
       'cdk.out',
       'manifest.json',
+      'stack.metadata.json',
       'stack.template.json',
       'tree.json',
     ]);

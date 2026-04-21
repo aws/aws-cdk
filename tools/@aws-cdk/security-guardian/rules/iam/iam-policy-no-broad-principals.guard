@@ -22,21 +22,28 @@ rule IAM_POLICY_NO_BROAD_PRINCIPALS when %iam_policies_no_broad_principals !empt
                 # Check for wildcard as entire principal
                 when Principal is_string {
                   Principal != "*"
+                      <<##ERROR:IAM policy must not use broadly scoped principals. Remove '*', root principals, or wildcard account ARNs from Principal and scope to specific accounts or roles.##>>
                 }
                 # Check if AWS principal exists
                 when Principal.AWS exists {
                     # Check if AWS is a string
                     when Principal.AWS is_string {
                         Principal.AWS != "*"
+                            <<##ERROR:IAM policy must not use broadly scoped principals. Remove '*', root principals, or wildcard account ARNs from Principal and scope to specific accounts or roles.##>>
                         Principal.AWS != /(?i):root/
+                            <<##ERROR:IAM policy must not use broadly scoped principals. Remove '*', root principals, or wildcard account ARNs from Principal and scope to specific accounts or roles.##>>
                         Principal.AWS != /arn:aws:iam::\*:/
+                            <<##ERROR:IAM policy must not use broadly scoped principals. Remove '*', root principals, or wildcard account ARNs from Principal and scope to specific accounts or roles.##>>
                     }
                     # Check if AWS is an array - only check string items
                     when Principal.AWS is_list {
                       when Principal.AWS[*] is_string {
                           Principal.AWS[*] != "*"
+                              <<##ERROR:IAM policy must not use broadly scoped principals. Remove '*', root principals, or wildcard account ARNs from Principal and scope to specific accounts or roles.##>>
                           Principal.AWS[*] != /(?i):root/
+                              <<##ERROR:IAM policy must not use broadly scoped principals. Remove '*', root principals, or wildcard account ARNs from Principal and scope to specific accounts or roles.##>>
                           Principal.AWS[*] != /arn:aws:iam::\*:/
+                              <<##ERROR:IAM policy must not use broadly scoped principals. Remove '*', root principals, or wildcard account ARNs from Principal and scope to specific accounts or roles.##>>
                       } 
                     }
                 }
