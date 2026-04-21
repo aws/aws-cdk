@@ -501,31 +501,6 @@ test('imported cluster with imported security group honors allowAllOutbound', ()
   });
 });
 
-test('can create a cluster with logging enabled', () => {
-  // GIVEN
-  const bucket = s3.Bucket.fromBucketName(stack, 'bucket', 'logging-bucket');
-
-  // WHEN
-  new Cluster(stack, 'Redshift', {
-    masterUser: {
-      masterUsername: 'admin',
-    },
-    vpc,
-    loggingProperties: {
-      loggingBucket: bucket,
-      loggingKeyPrefix: 'prefix',
-    },
-  });
-
-  // THEN
-  Template.fromStack(stack).hasResourceProperties('AWS::Redshift::Cluster', {
-    LoggingProperties: {
-      BucketName: 'logging-bucket',
-      S3KeyPrefix: 'prefix',
-    },
-  });
-});
-
 describe('logging', () => {
   test('CloudWatch logging', () => {
     // WHEN
@@ -637,26 +612,6 @@ describe('logging', () => {
 
     // THEN
     Annotations.fromStack(stack).hasWarning('/Default/Redshift', Match.stringLikeRegexp('Could not add bucket policy for Redshift logging.*'));
-  });
-
-  test('throw error when both logging and loggingProperties are specified', () => {
-    // GIVEN
-    const bucket = new s3.Bucket(stack, 'Bucket');
-
-    // WHEN/THEN
-    expect(() => {
-      new Cluster(stack, 'Redshift', {
-        masterUser: {
-          masterUsername: 'admin',
-        },
-        vpc,
-        logging: ClusterLogging.cloudwatch(),
-        loggingProperties: {
-          loggingBucket: bucket,
-          loggingKeyPrefix: 'prefix',
-        },
-      });
-    }).toThrow('Cannot specify both "logging" and "loggingProperties". Use "logging" instead.');
   });
 
   test('throws when CloudWatch logExports contains duplicate values', () => {
