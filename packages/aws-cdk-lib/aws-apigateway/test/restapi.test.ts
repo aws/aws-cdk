@@ -6,7 +6,6 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type { CfnElement } from '../../core';
 import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
-import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
 
