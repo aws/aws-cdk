@@ -1622,12 +1622,12 @@ To use one or more validation plugins in your application, use the
 ```ts fixture=validation-plugin
 // globally for the entire app (an app is a stage)
 const app = new App();
-Validations.of(app).addPlugin(new ThirdPartyPluginX());
-Validations.of(app).addPlugin(new ThirdPartyPluginY());
+Validations.of(app).addPlugins(new ThirdPartyPluginX());
+Validations.of(app).addPlugins(new ThirdPartyPluginY());
 
 // only apply to a particular stage
 const prodStage = new Stage(app, 'ProdStage');
-Validations.of(prodStage).addPlugin(new ThirdPartyPluginX());
+Validations.of(prodStage).addPlugins(new ThirdPartyPluginX());
 ```
 
 Immediately after synthesis, all plugins registered this way will be invoked to
@@ -1645,7 +1645,7 @@ By default, the report will be printed in a human-readable format. If you want a
 report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
 context passing it directly to the application:
 
-```ts
+```ts fixture=validation-plugin
 const app = new App({
   context: { '@aws-cdk/core:validationReportJson': true },
 });
@@ -1658,7 +1658,7 @@ Alternatively, you can set this context key-value pair using the `cdk.json` or
 It is also possible to enable both JSON and human-readable formats by setting
 `@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
 
-```ts
+```ts fixture=validation-plugin
 const app = new App({
   context: {
     '@aws-cdk/core:validationReportJson': true,

@@ -8,10 +8,9 @@ import { Stage } from '../stage';
  * Manages validations for CDK constructs.
  *
  * @example
- * import { CfnGuardValidator } from '@cdklabs/cdk-validator-cfnguard';
- *
  * declare const app: App;
- * Validations.of(app).addPlugins(new CfnGuardValidator());
+ * declare const plugin: IPolicyValidationPlugin;
+ * Validations.of(app).addPlugins(plugin);
  */
 export class Validations {
   /**
