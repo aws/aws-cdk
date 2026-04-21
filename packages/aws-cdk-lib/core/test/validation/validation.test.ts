@@ -814,9 +814,74 @@ Policy Validation Report Summary
   });
 
   test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
+    // GIVEN
     const beta1Plugin: core.IPolicyValidationPluginBeta1 = new FakePlugin('beta1-plugin', []);
+
+    // WHEN
     const plugin: core.IPolicyValidationPlugin = beta1Plugin;
+
+    // THEN
     expect(plugin.name).toEqual('beta1-plugin');
+  });
+
+  describe('Validations.of()', () => {
+    test('addPlugins adds plugin to enclosing stage', () => {
+      // GIVEN
+      const app = new core.App();
+      const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
+      core.Validations.of(app).addPlugins(plugin);
+
+      // THEN
+      expect(app.policyValidationBeta1).toContain(plugin);
+    });
+
+    test('addPlugins from nested construct resolves to enclosing stage', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
+      core.Validations.of(stack).addPlugins(plugin);
+
+      // THEN - plugin is registered on the app (enclosing stage), not the stack
+      expect(app.policyValidationBeta1).toContain(plugin);
+    });
+
+    test('throws when addPlugins called without enclosing stage', () => {
+      // GIVEN
+      const construct = new Construct(undefined as any, '');
+
+      // THEN
+      expect(() => core.Validations.of(construct).addPlugins(new FakePlugin('test', []))).toThrow(/without an enclosing Stage/);
+    });
+
+    test('plugin added via addPlugins runs during synth', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: { result: 'success' },
+      });
+
+      // WHEN
+      core.Validations.of(app).addPlugins(new FakePlugin('added-plugin', [{
+        description: 'test recommendation',
+        ruleName: 'test-rule',
+        violatingResources: [{
+          locations: ['test-location'],
+          resourceLogicalId: 'Fake',
+          templatePath: '/path/to/Default.template.json',
+        }],
+      }]));
+      app.synth();
+
+      // THEN - exitCode 1 means the plugin ran and reported violations
+      expect(process.exitCode).toEqual(1);
+    });
   });
 });
 
