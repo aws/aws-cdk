@@ -1,4 +1,4 @@
-import type { PolicyValidationPluginReport } from './report';
+import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1 } from './report';
 
 /**
  * Represents a validation plugin that will be executed during synthesis
@@ -64,6 +64,56 @@ export interface IPolicyValidationPlugin {
 
 /**
  * Context available to the validation plugin
+ */
+export interface IPolicyValidationContext {
+  /**
+   * The absolute path of all templates to be processed
+   */
+  readonly templatePaths: string[];
+}
+
+/**
+ * Represents a validation plugin that will be executed during synthesis
+ *
+ * @deprecated Use `IPolicyValidationPlugin` instead.
+ */
+export interface IPolicyValidationPluginBeta1 {
+  /**
+   * The name of the plugin that will be displayed in the validation
+   * report
+   */
+  readonly name: string;
+
+  /**
+   * The version of the plugin, following the Semantic Versioning specification (see
+   * https://semver.org/). This version is used for analytics purposes, to
+   * measure the usage of different plugins and different versions. The value of
+   * this property should be kept in sync with the actual version of the
+   * software package. If the version is not provided or is not a valid semantic
+   * version, it will be reported as `0.0.0`.
+   */
+  readonly version?: string;
+
+  /**
+   * The list of rule IDs that the plugin will evaluate. Used for analytics
+   * purposes.
+   *
+   * @default - No rule is reported
+   */
+  readonly ruleIds?: string[];
+
+  /**
+   * The method that will be called by the CDK framework to perform
+   * validations. This is where the plugin will evaluate the CloudFormation
+   * templates for compliance and report and violations
+   */
+  validate(context: IPolicyValidationContext): PolicyValidationPluginReport;
+}
+
+/**
+ * Context available to the validation plugin
+ *
+ * @deprecated Use `IPolicyValidationContext` instead.
  */
 export interface IPolicyValidationContext {
   /**
