@@ -13,6 +13,7 @@ import type { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import type { Duration } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { ApiReference, IApiRef } from '../apigatewayv2.generated';
 import type { IApi, IpAddressType } from '../common/api';
@@ -399,7 +400,7 @@ export class HttpApi extends HttpApiBase {
 
       public get apiEndpoint(): string {
         if (!this._apiEndpoint) {
-          throw new ValidationError('ApiEndpointConfiguredImportedHttp', 'apiEndpoint is not configured on the imported HttpApi.', scope);
+          throw new ValidationError(lit`ApiEndpointConfiguredImportedHttp`, 'apiEndpoint is not configured on the imported HttpApi.', scope);
         }
         return this._apiEndpoint;
       }
@@ -454,7 +455,7 @@ export class HttpApi extends HttpApiBase {
     if (props?.corsPreflight) {
       const cors = props.corsPreflight;
       if (cors.allowOrigins && cors.allowOrigins.includes('*') && cors.allowCredentials) {
-        throw new ValidationError('PreflightAllowCredentialsSupportedAllow', "CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
+        throw new ValidationError(lit`PreflightAllowCredentialsSupportedAllow`, "CORS preflight - allowCredentials is not supported when allowOrigin is '*'", scope);
       }
       const {
         allowCredentials,
@@ -515,7 +516,7 @@ export class HttpApi extends HttpApiBase {
     }
 
     if (props?.createDefaultStage === false && props.defaultDomainMapping) {
-      throw new ValidationError('DefaultDomainMappingSupportedCreate', 'defaultDomainMapping not supported with createDefaultStage disabled', scope);
+      throw new ValidationError(lit`DefaultDomainMappingSupportedCreate`, 'defaultDomainMapping not supported with createDefaultStage disabled', scope);
     }
   }
 
@@ -524,7 +525,7 @@ export class HttpApi extends HttpApiBase {
    */
   public get apiEndpoint(): string {
     if (this.disableExecuteApiEndpoint) {
-      throw new ValidationError('ApiEndpointAccessibleDisableExecute', 'apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
+      throw new ValidationError(lit`ApiEndpointAccessibleDisableExecute`, 'apiEndpoint is not accessible when disableExecuteApiEndpoint is set to true.', this);
     }
     return this._apiEndpoint;
   }
@@ -577,5 +578,5 @@ export function toIHttpApi(x: IHttpApiRef): IHttpApi {
   if (!!ret.addVpcLink && 'apiEndpoint' in ret && 'apiId' in ret && !!ret.arnForExecuteApi && !!ret.metricClientError) {
     return ret;
   }
-  throw new UnscopedValidationError('InputHttpapiDoesImplement', `Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
+  throw new UnscopedValidationError(lit`InputHttpapiDoesImplement`, `Input HttpApi ${x.constructor.name} does not implement IHttpApi`);
 }

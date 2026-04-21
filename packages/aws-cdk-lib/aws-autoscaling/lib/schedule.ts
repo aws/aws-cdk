@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { Annotations, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Schedule for scheduled scaling actions
@@ -20,7 +21,7 @@ export abstract class Schedule {
    */
   public static cron(options: CronOptions): Schedule {
     if (options.weekDay !== undefined && options.day !== undefined) {
-      throw new UnscopedValidationError('CannotSupplyBothDayAndWeekDay', 'Cannot supply both \'day\' and \'weekDay\', use at most one');
+      throw new UnscopedValidationError(lit`CannotSupplyBothDayAndWeekDay`, 'Cannot supply both \'day\' and \'weekDay\', use at most one');
     }
 
     const minute = fallback(options.minute, '*');

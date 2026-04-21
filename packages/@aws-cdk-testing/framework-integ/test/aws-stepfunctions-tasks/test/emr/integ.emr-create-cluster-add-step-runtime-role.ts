@@ -125,7 +125,7 @@ const terminationStep = new tasks.EmrTerminateCluster(stack, 'EmrTerminateCluste
 const definition = createClusterStep.next(addStepStep).next(terminationStep);
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 new IntegTest(app, 'EmrCreateClusterTest', {

@@ -4,6 +4,7 @@ import type { ICluster } from './cluster';
 import { KubectlProvider } from './kubectl-provider';
 import { CustomResource, Stack, ValidationError } from '../../core';
 import type { RemovalPolicy } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 const PRUNE_LABEL_PREFIX = 'aws.cdk.eks/prune-';
 
@@ -140,7 +141,7 @@ export class KubernetesManifest extends Construct {
     const stack = Stack.of(this);
     const provider = KubectlProvider.getKubectlProvider(this, props.cluster);
     if (!provider) {
-      throw new ValidationError('KubectlProviderDefinedClusterDefine', 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
+      throw new ValidationError(lit`KubectlProviderDefinedClusterDefine`, 'Kubectl Provider is not defined in this cluster. Define it when creating the cluster', this);
     }
 
     const prune = props.prune ?? props.cluster.prune;
