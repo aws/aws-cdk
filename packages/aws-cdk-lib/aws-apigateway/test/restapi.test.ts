@@ -6,6 +6,7 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type { CfnElement } from '../../core';
 import { App, CfnResource, Lazy, RemovalPolicy, Size, Stack } from '../../core';
+import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import * as cx_api from '../../cx-api';
 import * as apigw from '../lib';
 
@@ -2016,6 +2017,15 @@ describe('SpecRestApi', () => {
 });
 
 describe('telemetry metadata', () => {
+  beforeEach(() => {
+    // In case we didn't compile using jsii
+    if (!(apigw.RestApi as any)[JSII_RUNTIME_SYMBOL]) {
+      (apigw.RestApi as any)[JSII_RUNTIME_SYMBOL] = {
+        fqn: 'aws-cdk-lib.aws-apigateway.RestApi',
+      };
+    }
+  });
+
   it('redaction happens when feature flag is enabled', () => {
     const app = new App();
     app.node.setContext(cx_api.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);

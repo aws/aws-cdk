@@ -6,6 +6,7 @@ import { ContextProvider } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import type { StackProps } from '../lib';
 import { CfnResource, DefaultStackSynthesizer, Stack, Stage } from '../lib';
+import { flattenMeta } from './util';
 import { Annotations } from '../lib/annotations';
 import type { AppProps } from '../lib/app';
 import { App } from '../lib/app';
@@ -398,17 +399,4 @@ class MyConstruct extends Construct {
     new CfnResource(this, 'r1', { type: 'ResourceType1' });
     new CfnResource(this, 'r2', { type: 'ResourceType2', properties: { FromContext: this.node.tryGetContext('ctx1') } });
   }
-}
-
-function flattenMeta(meta: Record<string, cxapi.MetadataEntry[]>): Record<string, Record<string, unknown[]>> {
-  const ret: Record<string, Record<string, unknown[]>> = {};
-  for (const [cPath, entries] of Object.entries(meta)) {
-    for (const { type, data } of entries) {
-      ret[cPath] ??= {};
-      ret[cPath][type] ??= [];
-      ret[cPath][type].push(data);
-    }
-  }
-
-  return ret;
 }

@@ -17,6 +17,7 @@ import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import * as cdk from '../../core';
 import { Aspects, Lazy, Size } from '../../core';
+import { JSII_RUNTIME_SYMBOL } from '../../core/lib/constants';
 import { getWarnings } from '../../core/test/util';
 import * as cxapi from '../../cx-api';
 import * as lambda from '../lib';
@@ -5198,6 +5199,15 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
+  beforeEach(() => {
+    // In case we didn't compile using jsii
+    if (!(lambda.Function as any)[JSII_RUNTIME_SYMBOL]) {
+      (lambda.Function as any)[JSII_RUNTIME_SYMBOL] = {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      };
+    }
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
