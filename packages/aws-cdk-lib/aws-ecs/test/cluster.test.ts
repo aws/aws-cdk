@@ -1681,6 +1681,44 @@ describe('cluster', () => {
     expect(cluster.autoscalingGroup).toEqual(autoscalingGroup);
   });
 
+  test('Can import cluster with managedStorageConfiguration', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN
+    const cluster = ecs.Cluster.fromClusterAttributes(stack, 'Cluster', {
+      clusterName: 'cluster-name',
+      vpc,
+      managedStorageConfiguration: {
+        kmsKey: key,
+      },
+    });
+
+    // THEN
+    expect(cluster.managedStorageConfiguration).toBeDefined();
+    expect(cluster.managedStorageConfiguration?.kmsKey).toEqual(key);
+  });
+
+  test('Cluster exposes managedStorageConfiguration', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test');
+    const key = new kms.Key(stack, 'Key');
+
+    // WHEN
+    const cluster = new ecs.Cluster(stack, 'Cluster', {
+      managedStorageConfiguration: {
+        fargateEphemeralStorageKmsKey: key,
+      },
+    });
+
+    // THEN
+    expect(cluster.managedStorageConfiguration).toBeDefined();
+    expect(cluster.managedStorageConfiguration?.fargateEphemeralStorageKmsKey).toEqual(key);
+  });
+
   test('Metric', () => {
     // GIVEN
     const stack = new cdk.Stack();
