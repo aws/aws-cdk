@@ -4169,3 +4169,6 @@ removed-mutability:aws-cdk-lib.aws_s3.BucketBase.grants
 # for consumers (they can still provide the values). This aligns with the existing
 # ProvisionedPollerConfig in aws-lambda/event-source-mapping.ts which already has them as optional.
 weakened:aws-cdk-lib.aws_lambda_event_sources.ProvisionedPollerConfig
+
+# Parameter was made optional in override but base class requires it (JSII5008). Method is @deprecated.
+new-argument:aws-cdk-lib.aws_events_targets.LogGroupTargetInput.fromObject
