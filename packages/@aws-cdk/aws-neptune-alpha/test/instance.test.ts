@@ -15,6 +15,7 @@ describe('DatabaseInstance', () => {
     new DatabaseInstance(stack, 'Instance', {
       cluster: stack.cluster,
       instanceType: InstanceType.R5_LARGE,
+      publiclyAccessible: true,
     });
 
     // THEN
@@ -22,6 +23,7 @@ describe('DatabaseInstance', () => {
       Properties: {
         DBClusterIdentifier: { Ref: 'DatabaseB269D8BB' },
         DBInstanceClass: 'db.r5.large',
+        PubliclyAccessible: true,
       },
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
