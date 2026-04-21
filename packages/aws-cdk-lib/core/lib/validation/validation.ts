@@ -107,7 +107,7 @@ export interface IPolicyValidationPluginBeta1 {
    * validations. This is where the plugin will evaluate the CloudFormation
    * templates for compliance and report and violations
    */
-  validate(context: IPolicyValidationContext): PolicyValidationPluginReport;
+  validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1;
 }
 
 /**
@@ -115,23 +115,9 @@ export interface IPolicyValidationPluginBeta1 {
  *
  * @deprecated Use `IPolicyValidationContext` instead.
  */
-export interface IPolicyValidationContext {
+export interface IPolicyValidationContextBeta1 {
   /**
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
 }
-
-/**
- * Represents a validation plugin that will be executed during synthesis
- *
- * @deprecated Use `IPolicyValidationPlugin` instead.
- */
-export interface IPolicyValidationPluginBeta1 extends IPolicyValidationPlugin {}
-
-/**
- * Context available to the validation plugin
- *
- * @deprecated Use `IPolicyValidationContext` instead.
- */
-export interface IPolicyValidationContextBeta1 extends IPolicyValidationContext {}

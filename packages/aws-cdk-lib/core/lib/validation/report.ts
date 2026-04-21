@@ -125,7 +125,7 @@ export interface PolicyViolationBeta1 {
   /**
    * The resources violating this rule.
    */
-  readonly violatingResources: PolicyViolatingResource[];
+  readonly violatingResources: PolicyViolatingResourceBeta1[];
 
   /**
    * How to fix the violation.
@@ -158,7 +158,7 @@ export interface PolicyViolationBeta1 {
  *
  * @deprecated Use `PolicyViolatingResource` instead.
  */
-export interface PolicyViolatingResource {
+export interface PolicyViolatingResourceBeta1 {
   /**
    * The logical ID of the resource in the CloudFormation template.
    */
@@ -174,67 +174,6 @@ export interface PolicyViolatingResource {
    */
   readonly templatePath: string;
 }
-
-/**
- * The final status of the validation report
- *
- * @deprecated Use `PolicyValidationReportStatus` instead.
- */
-export enum PolicyValidationReportStatus {
-  /**
-   * No violations were found
-   */
-  SUCCESS = 'success',
-
-  /**
-   * At least one violation was found
-   */
-  FAILURE = 'failure',
-}
-
-/**
- * The report emitted by the plugin after evaluation.
- *
- * @deprecated Use `PolicyValidationPluginReport` instead.
- */
-export interface PolicyValidationPluginReport {
-  /**
-   * List of violations in the report.
-   */
-  readonly violations: PolicyViolation[];
-
-  /**
-   * Whether or not the report was successful.
-   */
-  readonly success: boolean;
-
-  /**
-   * The version of the plugin that created the report.
-   * @default - no version
-   */
-  readonly pluginVersion?: string;
-
-  /**
-   * Arbitrary information about the report.
-   *
-   * @default - no metadata
-   */
-  readonly metadata?: { readonly [key: string]: string };
-}
-
-/**
- * Violation produced by the validation plugin.
- *
- * @deprecated Use `PolicyViolation` instead.
- */
-export interface PolicyViolationBeta1 extends PolicyViolation {}
-
-/**
- * Resource violating a specific rule.
- *
- * @deprecated Use `PolicyViolatingResource` instead.
- */
-export interface PolicyViolatingResourceBeta1 extends PolicyViolatingResource {}
 
 /**
  * The final status of the validation report
@@ -258,4 +197,27 @@ export enum PolicyValidationReportStatusBeta1 {
  *
  * @deprecated Use `PolicyValidationPluginReport` instead.
  */
-export interface PolicyValidationPluginReportBeta1 extends PolicyValidationPluginReport {}
+export interface PolicyValidationPluginReportBeta1 {
+  /**
+   * List of violations in the report.
+   */
+  readonly violations: PolicyViolationBeta1[];
+
+  /**
+   * Whether or not the report was successful.
+   */
+  readonly success: boolean;
+
+  /**
+   * The version of the plugin that created the report.
+   * @default - no version
+   */
+  readonly pluginVersion?: string;
+
+  /**
+   * Arbitrary information about the report.
+   *
+   * @default - no metadata
+   */
+  readonly metadata?: { readonly [key: string]: string };
+}
