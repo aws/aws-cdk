@@ -1,5 +1,6 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Annotations, Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
 import * as s3tables from '../lib';
 
@@ -501,6 +502,313 @@ describe('TableBucket', () => {
           Match.objectLike({ Key: 'StackTag', Value: 'Propagated' }),
         ]),
       });
+    });
+  });
+
+  describe('replication', () => {
+    const DEST_ARN = 'arn:aws:s3tables:us-west-2:111111111111:bucket/dest-bucket';
+
+    test('does not emit ReplicationConfiguration when props are omitted', () => {
+      new s3tables.TableBucket(stack, 'NoRepl', {
+        tableBucketName: 'no-repl-src',
+      });
+
+      const resources = Template.fromStack(stack).findResources(TABLE_BUCKET_CFN_RESOURCE);
+      const key = Object.keys(resources)[0];
+      expect(resources[key].Properties.ReplicationConfiguration).toBeUndefined();
+    });
+
+    test('emits ReplicationConfiguration with auto-created role when destinations are specified', () => {
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::IAM::Role', 1);
+      template.hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        ReplicationConfiguration: Match.objectLike({
+          Role: Match.objectLike({
+            'Fn::GetAtt': [Match.stringLikeRegexp('SrcReplicationRole.*'), 'Arn'],
+          }),
+          Rules: [
+            {
+              Destinations: [
+                { DestinationTableBucketARN: DEST_ARN },
+              ],
+            },
+          ],
+        }),
+      });
+    });
+
+    test('auto-created role trusts replication.s3tables.amazonaws.com with SourceAccount and SourceArn conditions', () => {
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
+        AssumeRolePolicyDocument: Match.objectLike({
+          Statement: [
+            Match.objectLike({
+              Effect: 'Allow',
+              Action: 'sts:AssumeRole',
+              Principal: { Service: 'replication.s3tables.amazonaws.com' },
+              Condition: {
+                StringEquals: {
+                  'aws:SourceAccount': { Ref: 'AWS::AccountId' },
+                },
+                ArnLike: {
+                  'aws:SourceArn': Match.objectLike({
+                    'Fn::Join': Match.arrayWith([
+                      Match.arrayWith([':s3tables:']),
+                    ]),
+                  }),
+                },
+              },
+            }),
+          ],
+        }),
+      });
+    });
+
+    test('auto-created role has scoped source bucket + table actions', () => {
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3tables:ListTables',
+              Effect: 'Allow',
+            }),
+            Match.objectLike({
+              Action: [
+                's3tables:GetTable',
+                's3tables:GetTableMetadataLocation',
+                's3tables:GetTableMaintenanceConfiguration',
+                's3tables:GetTableData',
+              ],
+              Effect: 'Allow',
+            }),
+          ]),
+        }),
+      });
+    });
+
+    test('auto-created role has scoped destination bucket + table actions', () => {
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                's3tables:CreateNamespace',
+                's3tables:CreateTable',
+              ],
+              Effect: 'Allow',
+              Resource: DEST_ARN,
+            }),
+            Match.objectLike({
+              Action: [
+                's3tables:GetTableData',
+                's3tables:PutTableData',
+                's3tables:UpdateTableMetadataLocation',
+                's3tables:PutTableMaintenanceConfiguration',
+              ],
+              Effect: 'Allow',
+              Resource: `${DEST_ARN}/table/*`,
+            }),
+          ]),
+        }),
+      });
+    });
+
+    test('user-supplied replicationRole is used verbatim and no role is created', () => {
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+      const userRole = iam.Role.fromRoleArn(stack, 'UserRole', 'arn:aws:iam::123456789012:role/custom-replication-role');
+
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+        replicationRole: userRole,
+      });
+
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::IAM::Role', 0);
+      template.hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        ReplicationConfiguration: Match.objectLike({
+          Role: 'arn:aws:iam::123456789012:role/custom-replication-role',
+        }),
+      });
+    });
+
+    test.each([1, 2, 3, 5])('supports %d destination(s)', (count) => {
+      const destinations = Array.from({ length: count }, (_, i) =>
+        s3tables.TableBucket.fromTableBucketArn(stack, `Dest${i}`, `arn:aws:s3tables:us-west-2:111111111111:bucket/dest-${i}`),
+      );
+
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: destinations,
+      });
+
+      const resources = Template.fromStack(stack).findResources(TABLE_BUCKET_CFN_RESOURCE);
+      const key = Object.keys(resources).find(k => k.startsWith('Src'))!;
+      const dests = resources[key].Properties.ReplicationConfiguration.Rules[0].Destinations;
+      expect(dests).toHaveLength(count);
+    });
+
+    test.each([6, 10])('fails when more than 5 destinations are specified (%d)', (count) => {
+      const destinations = Array.from({ length: count }, (_, i) =>
+        s3tables.TableBucket.fromTableBucketArn(stack, `Dest${i}`, `arn:aws:s3tables:us-west-2:111111111111:bucket/dest-${i}`),
+      );
+
+      expect(() => new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: destinations,
+      })).toThrow(`replicationDestinations may have at most 5 entries, got ${count}`);
+    });
+
+    test('fails when replicationRole is set without replicationDestinations', () => {
+      const userRole = iam.Role.fromRoleArn(stack, 'UserRole', 'arn:aws:iam::123456789012:role/custom-replication-role');
+
+      expect(() => new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationRole: userRole,
+      })).toThrow('cannot specify replicationRole when replicationDestinations is empty');
+    });
+
+    test('fails when replicationDestinations is an empty array and replicationRole is set', () => {
+      const userRole = iam.Role.fromRoleArn(stack, 'UserRole', 'arn:aws:iam::123456789012:role/custom-replication-role');
+
+      expect(() => new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [],
+        replicationRole: userRole,
+      })).toThrow('cannot specify replicationRole when replicationDestinations is empty');
+    });
+
+    test('grants kms:Decrypt and kms:GenerateDataKey* on source KMS key when source is KMS-encrypted', () => {
+      const sourceKey = new kms.Key(stack, 'SourceKey');
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        encryption: s3tables.TableBucketEncryption.KMS,
+        encryptionKey: sourceKey,
+        replicationDestinations: [destination],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                'kms:Decrypt',
+                'kms:GenerateDataKey*',
+              ],
+              Effect: 'Allow',
+              Resource: Match.objectLike({
+                'Fn::GetAtt': [Match.stringLikeRegexp('SourceKey.*'), 'Arn'],
+              }),
+            }),
+          ]),
+        }),
+      });
+    });
+
+    test('grants kms:Encrypt + kms:Decrypt + kms:GenerateDataKey* on destination KMS key when destination exposes encryptionKey', () => {
+      const destKey = new kms.Key(stack, 'DestKey');
+      const destination = s3tables.TableBucket.fromTableBucketAttributes(stack, 'Dest', {
+        tableBucketArn: DEST_ARN,
+        encryptionKey: destKey,
+      });
+
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: Match.objectLike({
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: [
+                'kms:Encrypt',
+                'kms:Decrypt',
+                'kms:GenerateDataKey*',
+              ],
+              Effect: 'Allow',
+              Resource: Match.objectLike({
+                'Fn::GetAtt': [Match.stringLikeRegexp('DestKey.*'), 'Arn'],
+              }),
+            }),
+          ]),
+        }),
+      });
+    });
+
+    test('emits info annotation when a destination is in a different account', () => {
+      const app = new core.App();
+      const envStack = new core.Stack(app, 'EnvStack', {
+        env: { account: '111111111111', region: 'us-east-1' },
+      });
+      const destination = s3tables.TableBucket.fromTableBucketAttributes(envStack, 'DestCross', {
+        account: '999999999999',
+        region: 'us-east-1',
+        tableBucketName: 'dest-cross',
+      });
+
+      new s3tables.TableBucket(envStack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      Annotations.fromStack(envStack).hasInfo(
+        '*',
+        Match.stringLikeRegexp('Cross-account S3 Tables replication detected.*'),
+      );
+    });
+
+    test('does not emit info annotation when all destinations are in the same account', () => {
+      const app = new core.App();
+      const envStack = new core.Stack(app, 'EnvStack', {
+        env: { account: '111111111111', region: 'us-east-1' },
+      });
+      const destination = s3tables.TableBucket.fromTableBucketArn(envStack, 'Dest', DEST_ARN);
+
+      new s3tables.TableBucket(envStack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      const infos = Annotations.fromStack(envStack).findInfo('*', Match.stringLikeRegexp('Cross-account.*'));
+      expect(infos).toHaveLength(0);
+    });
+
+    test('generated role name is not hard-coded', () => {
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      const resources = Template.fromStack(stack).findResources('AWS::IAM::Role');
+      const key = Object.keys(resources)[0];
+      expect(resources[key].Properties.RoleName).toBeUndefined();
     });
   });
 });

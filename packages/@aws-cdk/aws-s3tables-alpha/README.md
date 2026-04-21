@@ -235,6 +235,92 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
+### Enabling Cross-Region / Cross-Account Replication
+
+S3 Tables supports continuous, asynchronous replication of tables from one
+table bucket (source) to one or more table buckets (destinations). You can
+configure replication declaratively via the `replicationDestinations`
+property. By default, CDK creates a least-privilege IAM role trusted by the
+S3 Tables replication service with the required permissions on the source
+and destination table buckets (and their KMS keys, when applicable).
+
+Single destination, auto-created role:
+
+```ts
+// Destination can live in the same or a different region/account.
+const destination = TableBucket.fromTableBucketArn(
+    scope,
+    'Destination',
+    'arn:aws:s3tables:us-west-2:123456789012:bucket/replica-bucket',
+);
+
+new TableBucket(scope, 'SourceBucket', {
+    tableBucketName: 'source-bucket',
+    replicationDestinations: [destination],
+});
+```
+
+Multiple destinations (up to 5):
+
+```ts
+const destA = TableBucket.fromTableBucketArn(scope, 'DestA', 'arn:aws:s3tables:us-west-2:123456789012:bucket/replica-a');
+const destB = TableBucket.fromTableBucketArn(scope, 'DestB', 'arn:aws:s3tables:eu-west-1:123456789012:bucket/replica-b');
+
+new TableBucket(scope, 'SourceMulti', {
+    tableBucketName: 'source-multi',
+    replicationDestinations: [destA, destB],
+});
+```
+
+Bring your own replication role (advanced):
+
+```ts
+const destination = TableBucket.fromTableBucketArn(
+    scope,
+    'DestinationBYO',
+    'arn:aws:s3tables:us-west-2:123456789012:bucket/replica-bucket',
+);
+
+const role = new iam.Role(scope, 'MyReplicationRole', {
+    assumedBy: new iam.ServicePrincipal('replication.s3tables.amazonaws.com'),
+});
+// ...attach your own least-privilege permissions to `role`...
+
+new TableBucket(scope, 'SourceByoRole', {
+    tableBucketName: 'source-byo-role',
+    replicationDestinations: [destination],
+    replicationRole: role,
+});
+```
+
+#### Cross-Account Replication
+
+For cross-account replication, the destination table bucket must additionally
+grant the replication role access via a resource policy. CDK cannot do this
+automatically because the destination typically lives in a separate stack or
+account. Add the grant on the destination side, for example:
+
+```ts
+declare const destination: TableBucket;
+declare const sourceReplicationRole: iam.IRole;
+
+destination.addToResourcePolicy(new iam.PolicyStatement({
+    actions: [
+        's3tables:CreateNamespace',
+        's3tables:CreateTable',
+        's3tables:GetTableData',
+        's3tables:PutTableData',
+        's3tables:UpdateTableMetadataLocation',
+        's3tables:PutTableMaintenanceConfiguration',
+    ],
+    principals: [new iam.ArnPrincipal(sourceReplicationRole.roleArn)],
+    resources: [destination.tableBucketArn, `${destination.tableBucketArn}/table/*`],
+}));
+```
+
+When a cross-account destination is detected, CDK emits an `INFO` annotation
+during synthesis reminding you to add this policy.
+
 ### Enabling CloudWatch Request Metrics
 
 You can enable CloudWatch request metrics for your table bucket. Request metrics provide insight into Amazon S3 Tables requests, helping you monitor and optimize your table bucket usage.
