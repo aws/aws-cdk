@@ -310,7 +310,7 @@ export class PropertyAssignmentMetadataWriter extends DefaultTokenResolver {
     function propertyNameFromContext(ctx: IResolveContext): string | undefined {
       const documentPath = ctx.documentPath;
       // Expected pattern:
-      //  ["Resources", "${Token[Default...]}", "Properties", "assumeRolePolicyDocument"]
+      //  ["Resources", "${Token[...]}", "Properties", "assumeRolePolicyDocument"]
       if (documentPath.length < 4 || documentPath[0] !== 'Resources' || documentPath[2] !== 'Properties') {
         return undefined;
       }

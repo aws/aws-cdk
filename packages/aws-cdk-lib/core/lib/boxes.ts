@@ -24,11 +24,11 @@ export class Boxes {
     return new State(value);
   }
 
-  /**
-   * Useful when you have a computation from more than one source
-   */
-  public static zip<A, B>(a: Box<A>, b: Box<B>): Box<[A, B]> {
-    return new Zipped(a, b);
+  public static zipWith<T extends Record<string, Box<any>>, R>(
+    boxes: T,
+    fn: (values: { [K in keyof T]: T[K] extends Box<infer U> ? U : never }) => R,
+  ): Box<R> {
+    return new ZippedWith(boxes, fn);
   }
 
   public static isBox(x: any): x is Box<any> {
@@ -60,22 +60,27 @@ abstract class BaseBox<A> implements Box<A> {
   }
 }
 
-class Zipped<A, B> extends BaseBox<[A, B]> {
-  constructor(private readonly a: Box<A>, private readonly b: Box<B>) {
+class ZippedWith<T extends Record<string, Box<any>>, R> extends BaseBox<R> {
+  constructor(
+    private readonly boxes: T,
+    private readonly fn: (values: { [K in keyof T]: T[K] extends Box<infer U> ? U : never }) => R,
+  ) {
     super();
   }
 
-  public get(): [A, B] {
-    return [this.a.get(), this.b.get()];
+  public get(): R {
+    const values = Object.fromEntries(
+      Object.entries(this.boxes).map(([k, b]) => [k, b.get()]),
+    ) as { [K in keyof T]: T[K] extends Box<infer U> ? U : never };
+    return this.fn(values);
   }
 
-  public set(_: [A, B]): void {
-    // TODO avoid this with smarter types
+  public set(_: R): void {
     throw new UnscopedValidationError(lit`Foo`, 'Immutable value');
   }
 
   public getStackTraces(): Array<StackTrace> {
-    return this.a.getStackTraces().concat(this.b.getStackTraces());
+    return Object.values(this.boxes).flatMap((b) => b.getStackTraces());
   }
 }
 
