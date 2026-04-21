@@ -1,0 +1,32 @@
+{
+  "/integ-distribution-add-origin/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-distribution-add-origin/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-distribution-add-origin/Dist/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DistB3B78991"
+    }
+  ],
+  "/integ-distribution-add-origin/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    }
+  ],
+  "/integ-distribution-add-origin/CDKMetadata/Condition": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadataAvailable"
+    }
+  ]
+}
