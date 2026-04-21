@@ -74,10 +74,10 @@
     jsonschema "~1.4.1"
     semver "^7.7.4"
 
-"@aws-cdk/cloud-assembly-schema@^53.0.0":
-  version "53.0.0"
-  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-53.0.0.tgz#621f2214fc3e2f0e2db1146ecc89d5f51ecb61e0"
-  integrity sha512-8DbZLaBeKM+i+tqujr/oQc/+3cDJoVhlXEkVyf152rkl6gnmfOZniRYjd+JsrOPrzwpcNoq05bo9KHME1EhMVQ==
+"@aws-cdk/cloud-assembly-schema@^53.17.0":
+  version "53.17.0"
+  resolved "https://registry.npmjs.org/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-53.17.0.tgz#03c28a0a376ed9d58e968d4d987e43bb1bc6be26"
+  integrity sha512-JB9L4JCbZeYbMJPs7OKV+7YaxKwk4i2tlI5PCSfCzk4DJvprhCO2TYcqbqo3Y1YWZyyY/SEPLWdorG7b88fUSA==
   dependencies:
     jsonschema "~1.4.1"
     semver "^7.7.4"
@@ -7099,9 +7099,9 @@ baseline-browser-mapping@^2.9.0:
   integrity sha512-lIyg0szRfYbiy67j9KN8IyeD7q7hcmqnJ1ddWmNt19ItGpNN64mnllmxUNFIOdOm6by97jlL6wfpTTJrmnjWAA==
 
 basic-ftp@^5.0.2:
-  version "5.2.2"
-  resolved "https://registry.npmjs.org/basic-ftp/-/basic-ftp-5.2.2.tgz#4cb2422deddf432896bdb3c9b8f13b944ad4842c"
-  integrity sha512-1tDrzKsdCg70WGvbFss/ulVAxupNauGnOlgpyjKzeQxzyllBLS0CGLV7tjIXTK3ZQA9/FBEm9qyFFN1bciA6pw==
+  version "5.3.0"
+  resolved "https://registry.npmjs.org/basic-ftp/-/basic-ftp-5.3.0.tgz#88f057d1ba8442643c505c4c83bbaa4442b15cfd"
+  integrity sha512-5K9eNNn7ywHPsYnFwjKgYH8Hf8B5emh7JKcPaVjjrMJFQQwGpwowEnZNEtHs7DfR7hCZsmaK3VA4HUK0YarT+w==
 
 before-after-hook@^2.2.0:
   version "2.2.3"
