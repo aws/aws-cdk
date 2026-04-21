@@ -150,7 +150,7 @@ export class Group extends cdk.Resource implements IGroup {
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id, {
       physicalName: props.groupName ?? cdk.Lazy.string({
-        produce: () => cdk.Names.uniqueResourceName(this, { maxLength: 64 }),
+        produce: () => cdk.Names.uniqueResourceName(this, { maxLength: 64 }).toLowerCase(),
       }),
     });
 
@@ -176,7 +176,7 @@ export class Group extends cdk.Resource implements IGroup {
       name: this.physicalName,
       resourceArns: cdk.Lazy.list({
         produce: () => Array.from(this._canaries).map(canary => canary.canaryArn),
-      }),
+      }, { omitEmpty: true }),
     });
 
     this.groupId = this._resource.attrId;

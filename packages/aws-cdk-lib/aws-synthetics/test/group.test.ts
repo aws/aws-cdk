@@ -14,9 +14,10 @@ describe('Group', () => {
     new synthetics.Group(stack, 'Group');
 
     // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Synthetics::Group', {
-      Name: 'Group',
-    });
+    const template = Template.fromStack(stack);
+    const groupResource = Object.values(template.findResources('AWS::Synthetics::Group'))[0];
+    expect(groupResource.Properties.Name).toMatch(/^[0-9a-z_\-]{1,64}$/);
+    expect(groupResource.Properties.ResourceArns).toBeUndefined();
   });
 
   test('can create a group with a custom name', () => {
