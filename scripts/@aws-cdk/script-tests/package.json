@@ -18,10 +18,7 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": [
-        "ts-jest",
-        { "tsconfig": { "esModuleInterop": true } }
-      ]
+      "^.+\\.tsx?$": "ts-jest"
     }
   }
 }

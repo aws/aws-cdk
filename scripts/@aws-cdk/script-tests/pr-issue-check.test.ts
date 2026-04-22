@@ -1,10 +1,8 @@
-import prIssueCheck, { buildMissingReferenceMessage, validateIssueReferences } from '../../pr-issue-check';
+import { prIssueCheck } from '../../pr-issue-check';
 
-// --- Mock factories ---
 
 function createMockCore() {
   return {
-    setFailed: jest.fn(),
     warning: jest.fn(),
   };
 }
@@ -48,7 +46,7 @@ function createMockGithub({ issues = {}, existingComments = [] }: { issues?: Rec
   };
 }
 
-async function run(body: string, opts: { issues?: Record<number, MockIssue>; existingComments?: Array<{ id: number; user: { type: string }; body: string }> } = {}) {
+async function runCheck(body: string, opts: { issues?: Record<number, MockIssue>; existingComments?: Array<{ id: number; user: { type: string }; body: string }> } = {}) {
   const core = createMockCore();
   const context = createMockContext(body);
   const github = createMockGithub(opts);
@@ -56,7 +54,6 @@ async function run(body: string, opts: { issues?: Record<number, MockIssue>; exi
   return { core, github };
 }
 
-// --- SHOULD PASS (no comment, no failure) ---
 
 describe('should pass', () => {
   test('standard template with open issue', async () => {
@@ -68,8 +65,7 @@ describe('should pass', () => {
       '### Reason for this change',
       'Test',
     ].join('\n');
-    const { core, github } = await run(body, { issues: { 2: { state: 'open' } } });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: { 2: { state: 'open' } } });
     expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 
@@ -82,8 +78,7 @@ describe('should pass', () => {
       '### Reason for this change',
       'Test',
     ].join('\n');
-    const { core, github } = await run(body, { issues: { 6: { state: 'closed' } } });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: { 6: { state: 'closed' } } });
     expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 
@@ -96,10 +91,10 @@ describe('should pass', () => {
       '### Reason for this change',
       'Test',
     ].join('\n');
-    const { core } = await run(body, {
+    const { github } = await runCheck(body, {
       issues: { 2: { state: 'open' }, 3: { state: 'open' } },
     });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 
   test('Fixes keyword', async () => {
@@ -108,8 +103,8 @@ describe('should pass', () => {
       '',
       'Fixes #2.',
     ].join('\n');
-    const { core } = await run(body, { issues: { 2: { state: 'open' } } });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: { 2: { state: 'open' } } });
+    expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 
   test('Resolves keyword', async () => {
@@ -118,8 +113,8 @@ describe('should pass', () => {
       '',
       'Resolves #3.',
     ].join('\n');
-    const { core } = await run(body, { issues: { 3: { state: 'open' } } });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: { 3: { state: 'open' } } });
+    expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 
   test('bare issue number without keyword', async () => {
@@ -128,8 +123,8 @@ describe('should pass', () => {
       '',
       '#2',
     ].join('\n');
-    const { core } = await run(body, { issues: { 2: { state: 'open' } } });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: { 2: { state: 'open' } } });
+    expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 
   test('issue number in the heading line', async () => {
@@ -139,12 +134,11 @@ describe('should pass', () => {
       '### Reason for this change',
       'Test',
     ].join('\n');
-    const { core } = await run(body, { issues: { 2: { state: 'open' } } });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: { 2: { state: 'open' } } });
+    expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 });
 
-// --- SHOULD FAIL — wrong location ---
 
 describe('should comment - issue in wrong location', () => {
   test('issue ref in Reason section instead of Issue section', async () => {
@@ -157,8 +151,7 @@ describe('should comment - issue in wrong location', () => {
       '',
       'This fixes #2.',
     ].join('\n');
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('not in the expected location'),
@@ -176,8 +169,7 @@ describe('should comment - issue in wrong location', () => {
       '',
       'Related to #3.',
     ].join('\n');
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('not in the expected location'),
@@ -186,7 +178,6 @@ describe('should comment - issue in wrong location', () => {
   });
 });
 
-// --- SHOULD COMMENT — has heading but missing issue number ---
 
 describe('should comment - template present but no issue number', () => {
   test('heading present with no issue number text', async () => {
@@ -198,8 +189,7 @@ describe('should comment - template present but no issue number', () => {
       '### Reason for this change',
       'Test',
     ].join('\n');
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('missing a valid issue number'),
@@ -216,8 +206,7 @@ describe('should comment - template present but no issue number', () => {
       '### Reason for this change',
       'Test',
     ].join('\n');
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('missing a valid issue number'),
@@ -226,12 +215,10 @@ describe('should comment - template present but no issue number', () => {
   });
 });
 
-// --- SHOULD COMMENT — no template at all ---
 
 describe('should comment - no template structure', () => {
   test('completely empty body', async () => {
-    const { core, github } = await run('');
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck('');
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -241,8 +228,7 @@ describe('should comment - no template structure', () => {
 
   test('random freeform text without template', async () => {
     const body = "Hey, here's my change. I updated the README.";
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -255,8 +241,7 @@ describe('should comment - no template structure', () => {
       '- [x] Updated docs',
       '- [ ] Added tests',
     ].join('\n');
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -265,7 +250,6 @@ describe('should comment - no template structure', () => {
   });
 });
 
-// --- SHOULD COMMENT — invalid issue references ---
 
 describe('should comment - invalid issue references', () => {
   test('non-existent issue', async () => {
@@ -274,8 +258,7 @@ describe('should comment - invalid issue references', () => {
       '',
       'Closes #999999.',
     ].join('\n');
-    const { core, github } = await run(body, { issues: {} });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: {} });
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#999999 (does not exist)'),
@@ -289,10 +272,9 @@ describe('should comment - invalid issue references', () => {
       '',
       'Closes #1.',
     ].join('\n');
-    const { core, github } = await run(body, {
+    const { github } = await runCheck(body, {
       issues: { 1: { state: 'open', pull_request: {} } },
     });
-    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#1 (is a pull request, not an issue)'),
@@ -306,10 +288,9 @@ describe('should comment - invalid issue references', () => {
       '',
       'Closes #2, Closes #999999.',
     ].join('\n');
-    const { core, github } = await run(body, {
+    const { github } = await runCheck(body, {
       issues: { 2: { state: 'open' } },
     });
-    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#999999 (does not exist)'),
@@ -328,7 +309,6 @@ describe('should comment - invalid issue references', () => {
     const core = createMockCore();
     const context = createMockContext(body);
     await prIssueCheck({ github, context, core });
-    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#50 (does not exist)'),
@@ -337,7 +317,6 @@ describe('should comment - invalid issue references', () => {
   });
 });
 
-// --- EDGE CASES ---
 
 describe('edge cases', () => {
   test('greeting before template pushes issue out of first two lines', async () => {
@@ -351,8 +330,7 @@ describe('edge cases', () => {
       '### Reason for this change',
       'Test',
     ].join('\n');
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('not in the expected location'),
@@ -366,8 +344,8 @@ describe('edge cases', () => {
       '',
       'Closes #0.',
     ].join('\n');
-    const { core } = await run(body, { issues: {} });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: {} });
+    expect(github.rest.issues.createComment).toHaveBeenCalled();
   });
 
   test('very large issue number', async () => {
@@ -376,8 +354,8 @@ describe('edge cases', () => {
       '',
       'Closes #2147483647.',
     ].join('\n');
-    const { core } = await run(body, { issues: {} });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: {} });
+    expect(github.rest.issues.createComment).toHaveBeenCalled();
   });
 
   test('leading zeros parsed as valid issue number', async () => {
@@ -386,8 +364,8 @@ describe('edge cases', () => {
       '',
       'Closes #0002.',
     ].join('\n');
-    const { core } = await run(body, { issues: { 2: { state: 'open' } } });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: { 2: { state: 'open' } } });
+    expect(github.rest.issues.createComment).not.toHaveBeenCalled();
   });
 
   test('hash in URL fragment matched as issue number', async () => {
@@ -396,8 +374,8 @@ describe('edge cases', () => {
       '',
       'See https://github.com/org/repo/blob/main/file.ts#123',
     ].join('\n');
-    const { core } = await run(body, { issues: {} });
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body, { issues: {} });
+    expect(github.rest.issues.createComment).toHaveBeenCalled();
   });
 
   test('freeform text with GitHub-appended template below', async () => {
@@ -410,8 +388,7 @@ describe('edge cases', () => {
       '',
       '### Description of changes',
     ].join('\n');
-    const { core, github } = await run(body);
-    expect(core.setFailed).not.toHaveBeenCalled();
+    const { github } = await runCheck(body);
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('does not follow the correct template structure'),
@@ -420,7 +397,6 @@ describe('edge cases', () => {
   });
 });
 
-// --- COMMENT MANAGEMENT ---
 
 describe('comment management', () => {
   test('updates existing bot comment instead of creating new one', async () => {
@@ -458,7 +434,6 @@ describe('comment management', () => {
       existingComments: [existingComment],
     });
     await prIssueCheck({ github, context, core });
-    expect(core.setFailed).not.toHaveBeenCalled();
     expect(github.rest.issues.deleteComment).toHaveBeenCalledWith(
       expect.objectContaining({ comment_id: 200 }),
     );
@@ -472,6 +447,5 @@ describe('comment management', () => {
     github.rest.issues.createComment.mockRejectedValue(new Error('rate limited'));
     await prIssueCheck({ github, context, core });
     expect(core.warning).toHaveBeenCalledWith(expect.stringContaining('rate limited'));
-    expect(core.setFailed).not.toHaveBeenCalled();
   });
 });

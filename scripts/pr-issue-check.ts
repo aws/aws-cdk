@@ -5,18 +5,15 @@
  * in the expected location (first two non-empty lines), following the PR template.
  *
  * Called from the pr-issue-check.yml workflow via actions/github-script.
+ *
+ * The types below describe the subset of the @actions/github (Octokit),
+ * @actions/github Context, and @actions/core APIs that this script uses.
  */
-
-interface GitHubIssueComment {
-  id: number;
-  user: { type: string } | null;
-  body?: string;
-}
 
 interface GitHubClient {
   rest: {
     issues: {
-      listComments: (params: { owner: string; repo: string; issue_number: number }) => Promise<{ data: GitHubIssueComment[] }>;
+      listComments: (params: { owner: string; repo: string; issue_number: number }) => Promise<{ data: Array<{ id: number; user: { type: string } | null; body?: string }> }>;
       createComment: (params: { owner: string; repo: string; issue_number: number; body: string }) => Promise<unknown>;
       updateComment: (params: { owner: string; repo: string; comment_id: number; body: string }) => Promise<unknown>;
       deleteComment: (params: { owner: string; repo: string; comment_id: number }) => Promise<unknown>;
@@ -26,13 +23,12 @@ interface GitHubClient {
 }
 
 interface ActionCore {
-  setFailed: (message: string) => void;
-  warning: (message: string) => void;
+  warning: (message: string | Error) => void;
 }
 
 interface ActionContext {
   payload: {
-    pull_request: {
+    pull_request?: {
       body: string | null;
       number: number;
     };
@@ -48,7 +44,7 @@ interface ScriptArgs {
 
 const BOT_MARKER = '<!-- pr-issue-check-bot -->';
 
-async function findBotComment(github: GitHubClient, owner: string, repo: string, prNumber: number): Promise<GitHubIssueComment | undefined> {
+async function findBotComment(github: GitHubClient, owner: string, repo: string, prNumber: number) {
   const { data: comments } = await github.rest.issues.listComments({
     owner, repo, issue_number: prNumber,
   });
@@ -122,10 +118,6 @@ export function buildMissingReferenceMessage(lines: string[]): string {
   ].join('\n');
 }
 
-interface GitHubApiError extends Error {
-  status?: number;
-}
-
 export async function validateIssueReferences(github: GitHubClient, owner: string, repo: string, issueNumbers: number[]): Promise<string[]> {
   const invalid: string[] = [];
   for (const num of issueNumbers) {
@@ -137,7 +129,7 @@ export async function validateIssueReferences(github: GitHubClient, owner: strin
         invalid.push(`#${num} (is a pull request, not an issue)`);
       }
     } catch (e: unknown) {
-      const err = e as GitHubApiError;
+      const err = e as { status?: number };
       if (err.status === 404 || err.status === 410) {
         invalid.push(`#${num} (does not exist)`);
       } else {
@@ -148,9 +140,14 @@ export async function validateIssueReferences(github: GitHubClient, owner: strin
   return invalid;
 }
 
-export default async function prIssueCheck({ github, context, core }: ScriptArgs): Promise<void> {
-  const body = context.payload.pull_request.body || '';
-  const prNumber = context.payload.pull_request.number;
+export async function prIssueCheck({ github, context, core }: ScriptArgs): Promise<void> {
+  const pr = context.payload.pull_request;
+  if (!pr) {
+    core.warning('No pull request found in event payload.');
+    return;
+  }
+  const body = (pr.body) || '';
+  const prNumber = pr.number;
   const owner = context.repo.owner;
   const repo = context.repo.repo;
 
@@ -183,5 +180,4 @@ export default async function prIssueCheck({ github, context, core }: ScriptArgs
   }
 
   await deleteBotComment(github, core, owner, repo, prNumber);
-  console.log(`Valid issue(s) found: ${issueNumbers.map(n => '#' + n).join(', ')}`);
 }
