@@ -24,10 +24,10 @@ export interface Acknowledgment {
  * Manages validations for CDK constructs.
  *
  * @example
- * import { CfnGuardValidator } from '@cdklabs/cdk-validator-cfnguard';
- *
- * declare const app: App;
- * Validations.of(app).addPlugins(new CfnGuardValidator());
+ * /// fixture=validation-plugin
+ * declare const myApp: App;
+ * declare const plugin: IPolicyValidationPlugin;
+ * Validations.of(myApp).addPlugins(plugin);
  */
 export class Validations {
   /**
@@ -94,8 +94,9 @@ export class Validations {
    *
    * Synthesis will be interrupted when errors are reported.
    *
-   * The ID will be stored with the `annotation:` prefix (e.g. `annotation:MyError`).
-   * Use this prefixed ID when calling `acknowledge()` to suppress the error.
+   * Note: Annotation errors are not currently acknowledgeable. The ID is
+   * recorded for identification purposes but `acknowledge()` will not
+   * suppress errors added via this method.
    *
    * @param id unique identifier for the error
    * @param message the error message
@@ -109,6 +110,9 @@ export class Validations {
    *
    * Acknowledgments are recorded to construct metadata so that downstream
    * plugins (e.g. CDK Nag) can read them for audit trails.
+   *
+   * Currently only annotation warnings can be suppressed. Annotation errors
+   * are not yet acknowledgeable.
    *
    * If an ID has no well-known prefix, it is assumed to be an annotation rule
    * for backwards compatibility.
