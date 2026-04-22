@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as es from 'aws-cdk-lib/aws-elasticsearch';
+import * as es from 'aws-cdk-lib/aws-opensearchservice';
 import { User } from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
@@ -8,7 +8,7 @@ const app = new cdk.App();
 const stack = new cdk.Stack(app, 'appsync-elasticsearch');
 const user = new User(stack, 'User');
 const domain = new es.Domain(stack, 'Domain', {
-  version: es.ElasticsearchVersion.V7_1,
+  version: es.EngineVersion.ELASTICSEARCH_7_1,
   removalPolicy: cdk.RemovalPolicy.DESTROY,
   fineGrainedAccessControl: {
     masterUserArn: user.userArn,
@@ -22,10 +22,13 @@ const domain = new es.Domain(stack, 'Domain', {
 
 const api = new appsync.GraphqlApi(stack, 'api', {
   name: 'api',
-  schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  definition: {
+    schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+  },
 });
 
-const ds = api.addElasticsearchDataSource('ds', domain);
+const ds = api.addOpenSearchDataSource('ds', domain);
+// const ds = api.addElasticsearchDataSource('ds', domain);
 
 ds.createResolver('QueryGetTests', {
   typeName: 'Query',

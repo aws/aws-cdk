@@ -1,3 +1,5 @@
+import * as cxschema from '@aws-cdk/cloud-assembly-schema';
+import type { Node } from 'constructs';
 import { debugModeEnabled } from './debug';
 
 /**
@@ -5,11 +7,10 @@ import { debugModeEnabled } from './debug';
  *
  * Stack traces are often invaluable tools to help diagnose problems, however
  * their capture is a rather expensive operation, and the stack traces can be
- * large. Consequently, users are strongly advised to condition capturing stack
- * traces to specific user opt-in.
+ * large. Consequently, callers of this code should give the user an ability
+ * to opt out of call stack capturing.
  *
- * Stack traces will only be captured if the `CDK_DEBUG` environment variable
- * is set to `'true'` or `1`.
+ * Most commonly, use the `debugModeEnabled()` function to turn them on or off.
  *
  * @param below an optional function starting from which stack frames will be
  *              ignored. Defaults to the `captureStackTrace` function itself.
@@ -23,10 +24,6 @@ export function captureStackTrace(
   below: Function = captureStackTrace,
   limit = Number.MAX_SAFE_INTEGER,
 ): string[] {
-  if (!debugModeEnabled()) {
-    return ['stack traces disabled'];
-  }
-
   const previousLimit = Error.stackTraceLimit;
   try {
     Error.stackTraceLimit = limit;
@@ -200,3 +197,26 @@ interface CallSite {
   fileName: string;
   sourceLocation: string;
 }
+
+/**
+ * Records a metadata entry on a construct node to trace a property assignment.
+ *
+ * When debug mode is enabled (via the `CDK_DEBUG` environment variable),
+ * this attaches `aws:cdk:propertyAssignment` metadata to the given node,
+ * including a stack trace pointing back to the caller. This is useful for
+ * diagnosing where a particular property value was set during synthesis.
+ *
+ * This is a no-op when debug mode is not enabled.
+ *
+ * @param node the construct node to attach the metadata to.
+ * @param propertyName the name of the property being assigned.
+ */
+export function traceProperty(node: Node, propertyName: string) {
+  if (debugModeEnabled()) {
+    node.addMetadata(cxschema.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT, {
+      propertyName,
+      stackTrace: captureStackTrace(traceProperty),
+    });
+  }
+}
+

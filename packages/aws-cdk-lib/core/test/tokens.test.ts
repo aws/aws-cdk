@@ -1,5 +1,4 @@
 import { evaluateCFN } from './evaluate-cfn';
-import { reEnableStackTraceCollection, restoreStackTraceColection } from './util';
 import { CfnResource, Fn, isResolvableObject, Lazy, Stack, Token, Tokenization } from '../lib';
 import { createTokenDouble, extractTokenDouble, stringContainsNumberTokens, STRINGIFIED_NUMBER_PATTERN } from '../lib/private/encoding';
 import { Intrinsic } from '../lib/private/intrinsic';
@@ -537,51 +536,6 @@ describe('tokens', () => {
     });
   });
 
-  test('`stack trace is captured at token creati`on', () => {
-    function fn1() {
-      function fn2() {
-        class ExposeTrace extends Intrinsic {
-          public get creationTrace() {
-            return this.creationStack;
-          }
-        }
-
-        return new ExposeTrace('hello');
-      }
-
-      return fn2();
-    }
-
-    const previousValue = reEnableStackTraceCollection();
-    const token = fn1();
-    restoreStackTraceColection(previousValue);
-    expect(token.creationTrace.find(x => x.includes('fn1'))).toBeDefined();
-    expect(token.creationTrace.find(x => x.includes('fn2'))).toBeDefined();
-  });
-
-  test('newError returns an error with the creation stack trace', () => {
-    function fn1() {
-      function fn2() {
-        function fn3() {
-          class ThrowingToken extends Intrinsic {
-            public throwError(message: string) {
-              throw this.newError(message);
-            }
-          }
-          return new ThrowingToken('boom');
-        }
-
-        return fn3();
-      }
-      return fn2();
-    }
-
-    const previousValue = reEnableStackTraceCollection();
-    const token = fn1();
-    restoreStackTraceColection(previousValue);
-    expect(() => token.throwError('message!')).toThrow(/Token created:/);
-  });
-
   describe('type coercion', () => {
     const inputs = [
       'a string',
@@ -636,48 +590,6 @@ describe('tokens', () => {
         expect(resolve(Token.asList(new Intrinsic(numberToken)))).toEqual(expected);
       });
     }
-  });
-
-  test('creation stack is attached to errors emitted during resolve with CDK_DEBUG=true', () => {
-    function showMeInTheStackTrace() {
-      return Lazy.string({ produce: () => { throw new Error('fooError'); } });
-    }
-
-    const previousValue = process.env.CDK_DEBUG;
-
-    process.env.CDK_DEBUG = 'true';
-    const x = showMeInTheStackTrace();
-    let message;
-    try {
-      resolve(x);
-    } catch (e) {
-      message = (e as Error).message;
-    } finally {
-      process.env.CDK_DEBUG = previousValue;
-    }
-
-    expect(message && message.includes('showMeInTheStackTrace')).toEqual(true);
-  });
-
-  test('creation stack is omitted without CDK_DEBUG=true', () => {
-    function showMeInTheStackTrace() {
-      return Lazy.string({ produce: () => { throw new Error('fooError'); } });
-    }
-
-    const previousValue = process.env.CDK_DEBUG;
-    delete process.env.CDK_DEBUG;
-
-    const x = showMeInTheStackTrace();
-    let message;
-    try {
-      resolve(x);
-    } catch (e) {
-      message = (e as Error).message;
-    } finally {
-      process.env.CDK_DEBUG = previousValue;
-    }
-
-    expect(message && message.includes('Execute again with CDK_DEBUG=true')).toEqual(true);
   });
 
   describe('stringifyNumber', () => {

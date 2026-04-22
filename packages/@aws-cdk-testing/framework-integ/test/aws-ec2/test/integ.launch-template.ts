@@ -39,9 +39,7 @@ const sg2 = new ec2.SecurityGroup(stack, 'sg2', {
 lt.addSecurityGroup(sg2);
 
 new ec2.LaunchTemplate(stack, 'LTWithMachineImage', {
-  machineImage: ec2.MachineImage.latestAmazonLinux({
-    generation: ec2.AmazonLinuxGeneration.AMAZON_LINUX_2,
-  }),
+  machineImage: ec2.MachineImage.latestAmazonLinux2(),
 });
 
 const pg = new ec2.PlacementGroup(stack, 'pg', {
