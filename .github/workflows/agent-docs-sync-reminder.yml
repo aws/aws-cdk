@@ -1,0 +1,89 @@
+# Remind PR authors to check agent-facing docs when human-facing docs change.
+# See: cdklabs/cdk-ops#5043
+#
+# Uses pull_request_target (not pull_request) to allow commenting on fork PRs.
+# SECURITY: This workflow does NOT check out PR code. Do not add a checkout step
+# without security review.
+name: Agent Docs Sync Reminder
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened]
+    paths:
+      - docs/DESIGN_GUIDELINES.md
+      - docs/MIXINS_DESIGN_GUIDELINES.md
+      - docs/NEW_CONSTRUCTS_GUIDE.md
+      - CONTRIBUTING.md
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const agentDocs = [
+              'AGENTS.md',
+              'docs/AGENTS_CONSTRUCT_DESIGN.md',
+              'docs/AGENTS_CONSTRUCT_IMPLEMENTATION.md',
+            ];
+            const marker = '<!-- agent-docs-sync-reminder -->';
+            const issueParams = {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            };
+
+            // Step 1: Delete any existing reminder comment (clean slate)
+            const comments = await github.paginate(github.rest.issues.listComments, issueParams);
+            for (const c of comments.filter(c => c.body?.includes(marker))) {
+              core.info(`Deleting previous reminder comment ${c.id}`);
+              await github.rest.issues.deleteComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: c.id,
+              });
+            }
+
+            // Step 2: Check if PR already modifies agent-facing docs
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+            if (files.some(f => agentDocs.includes(f.filename))) {
+              core.info('PR already modifies agent docs — no reminder needed.');
+              try {
+                await github.rest.issues.removeLabel({ ...issueParams, name: 'agent-docs-review-needed' });
+              } catch (e) {
+                // Label may not be present — that's fine
+              }
+              return;
+            }
+
+            // Step 3: Post reminder and add label
+            await github.rest.issues.createComment({
+              ...issueParams,
+              body: [
+                marker,
+                '## 🤖 Agent Docs Sync Reminder',
+                '',
+                'This PR modifies human-facing documentation that has corresponding **agent-facing docs**.',
+                'Please check whether the following agent-facing files need matching updates:',
+                '',
+                ...agentDocs.map(d => `- \`${d}\``),
+                '',
+                'If you consider no agent-facing changes are needed, leave a comment explaining why',
+                'and a maintainer will remove the `agent-docs-review-needed` label.',
+              ].join('\n'),
+            });
+
+            try {
+              await github.rest.issues.addLabels({ ...issueParams, labels: ['agent-docs-review-needed'] });
+            } catch (e) {
+              core.warning(`Could not add label: ${e.message}`);
+            }
