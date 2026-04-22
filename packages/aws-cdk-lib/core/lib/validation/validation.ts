@@ -5,10 +5,10 @@ import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1 } 
  *
  * @example
  * /// fixture=validation-plugin
- * class MyPlugin implements IPolicyValidationPluginBeta1 {
+ * class MyPlugin implements IPolicyValidationPlugin {
  *   public readonly name = 'MyPlugin';
  *
- *   public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+ *   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
  *     // First read the templates using context.templatePaths...
  *
  *     // ...then perform the validation, and then compose and return the report.
