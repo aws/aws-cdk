@@ -110,6 +110,48 @@ describe('Metric Math', () => {
     });
   });
 
+  test('math expression with CDK token does not produce warning', () => {
+    const token = Lazy.string({ produce: () => 'metric1' });
+    const m = new MathExpression({
+      expression: `TIME_SERIES(${token})`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with multiple CDK tokens does not produce warning', () => {
+    const token1 = Lazy.string({ produce: () => 'metric1' });
+    const token2 = Lazy.string({ produce: () => 'metric2' });
+    const m = new MathExpression({
+      expression: `${token1} + ${token2}`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
+  test('math expression with CDK token and real identifier warns only about real identifier', () => {
+    const token = Lazy.string({ produce: () => 'metric1' });
+    const m = new MathExpression({
+      expression: `m1 + ${token}`,
+    });
+
+    expect(m.warningsV2).toMatchObject({
+      'CloudWatch:Math:UnknownIdentifier': expect.stringContaining('references unknown identifiers: m1'),
+    });
+    // Should NOT mention "oken" as an unknown identifier (only "m1" should be listed)
+    expect(m.warningsV2?.['CloudWatch:Math:UnknownIdentifier']).not.toMatch(/identifiers:.*oken/);
+  });
+
+  test('math expression with complex token pattern does not produce warning', () => {
+    const token1 = Lazy.string({ produce: () => 'metric1' });
+    const token2 = Lazy.string({ produce: () => 'metric2' });
+    const m = new MathExpression({
+      expression: `SUM([${token1}, ${token2}])`,
+    });
+
+    expect(m.warningsV2).toBeUndefined();
+  });
+
   test('metrics METRICS expression does not produce warning for unknown identifier', () => {
     const m = new MathExpression({
       expression: 'SUM(METRICS())',
