@@ -1,4 +1,4 @@
-import { Lazy, Names, Stack, Tags } from 'aws-cdk-lib';
+import { ArnFormat, Lazy, Names, Stack, Tags } from 'aws-cdk-lib';
 import { Effect, PolicyStatement, ServicePrincipal, PolicyDocument } from 'aws-cdk-lib/aws-iam';
 import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as logs from 'aws-cdk-lib/aws-logs';
@@ -14,16 +14,32 @@ const MAX_DELIVERY_NAME_LENGTH = 60;
 /**
  * Log types for AgentCore Runtime observability
  */
-export enum LogType {
+export class LogType {
   /**
    * Application logs for agent runtime invocations
    */
-  APPLICATION_LOGS = 'APPLICATION_LOGS',
+  public static readonly APPLICATION_LOGS = new LogType('APPLICATION_LOGS');
 
   /**
    * Usage logs for session-level resource consumption
    */
-  USAGE_LOGS = 'USAGE_LOGS',
+  public static readonly USAGE_LOGS = new LogType('USAGE_LOGS');
+
+  /**
+   * A custom log type value
+   *
+   * @param value The log type value
+   */
+  public static of(value: string): LogType {
+    return new LogType(value);
+  }
+
+  private constructor(
+    /**
+     * The log type value
+     */
+    public readonly value: string,
+  ) {}
 }
 
 /**
@@ -173,7 +189,12 @@ class S3Destination extends LoggingDestination {
           'aws:SourceAccount': stack.account,
         },
         ArnLike: {
-          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
+          'aws:SourceArn': stack.formatArn({
+            service: 'logs',
+            resource: 'delivery-source',
+            resourceName: '*',
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
         },
       },
     }));
@@ -263,6 +284,9 @@ export function configureTracingDelivery(
   }
 
   // Grant permissions for this specific source resource
+  // The xray:PutTraceSegments action requires resources: ['*'] per AWS documentation.
+  // The conditions below restrict this broad scope to only the specific source resource
+  // (via logs:LogGeneratingResourceArns) and the current account and delivery-source ARN.
   // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
   xrayPolicy.document.addStatements(new PolicyStatement({
     effect: Effect.ALLOW,
@@ -277,7 +301,12 @@ export function configureTracingDelivery(
         'aws:SourceAccount': stack.account,
       },
       'ArnLike': {
-        'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:delivery-source:*`,
+        'aws:SourceArn': stack.formatArn({
+          service: 'logs',
+          resource: 'delivery-source',
+          resourceName: '*',
+          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+        }),
       },
     },
   }));
@@ -318,11 +347,11 @@ export function configureLoggingDelivery(
   const deliveries: logs.CfnDelivery[] = [];
 
   // Group configs by log type to create one source per log type
-  const configsByLogType = new Map<LogType, LoggingConfig[]>();
+  const configsByLogType = new Map<string, LoggingConfig[]>();
   for (const config of loggingConfigs) {
-    const existing = configsByLogType.get(config.logType) ?? [];
+    const existing = configsByLogType.get(config.logType.value) ?? [];
     existing.push(config);
-    configsByLogType.set(config.logType, existing);
+    configsByLogType.set(config.logType.value, existing);
   }
 
   // Create delivery sources and deliveries for each log type
