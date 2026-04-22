@@ -10,6 +10,7 @@ const stack = new Stack(app, 'eventbridge-integration');
 const bus = new events.EventBus(stack, 'Bus');
 
 const httpApi = new apigwv2.HttpApi(stack, 'Api');
+// EventBusName is automatically included in the parameter mapping from eventBusRef
 httpApi.addRoutes({
   path: '/default',
   methods: [apigwv2.HttpMethod.POST],
@@ -18,6 +19,7 @@ httpApi.addRoutes({
   }),
 });
 
+// EventBusName is automatically included in the parameter mapping from eventBusRef
 httpApi.addRoutes({
   path: '/put-events',
   methods: [apigwv2.HttpMethod.POST],
