@@ -409,7 +409,7 @@ export class Runtime {
    * - Playwright version 1.58.2
    * - Chromium version 145.0.7632.77
    * - Firefox version 146.0.1
-   * 
+   *
    * New Features:
    * - Applied security patches and updated Playwright and browser versions.
    * 
