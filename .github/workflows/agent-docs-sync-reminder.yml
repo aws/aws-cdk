@@ -1,5 +1,4 @@
 # Remind PR authors to check agent-facing docs when human-facing docs change.
-# See: cdklabs/cdk-ops#5043
 #
 # Uses pull_request_target (not pull_request) to allow commenting on fork PRs.
 # SECURITY: This workflow does NOT check out PR code. Do not add a checkout step
