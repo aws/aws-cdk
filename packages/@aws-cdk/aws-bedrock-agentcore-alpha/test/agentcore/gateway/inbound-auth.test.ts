@@ -12,8 +12,10 @@
  */
 
 import * as cdk from 'aws-cdk-lib';
+import { Annotations, Match } from 'aws-cdk-lib/assertions';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import { CustomClaimOperator } from '../../../lib/common/types';
+import { Gateway } from '../../../lib/gateway/gateway';
 import { GatewayAuthorizer } from '../../../lib/gateway/inbound-auth/authorizer';
 import { GatewayCustomClaim } from '../../../lib/gateway/inbound-auth/custom-claim';
 
@@ -430,6 +432,31 @@ describe('Inbound Auth Tests', () => {
         expect(rendered.customJwtAuthorizer.allowedAudience).toEqual(['app1']);
         expect(rendered.customJwtAuthorizer.allowedScopes).toEqual(['read']);
         expect(rendered.customJwtAuthorizer.customClaims).toHaveLength(1);
+      });
+    });
+
+    describe('withNoAuth', () => {
+      test('Should create No Auth authorizer', () => {
+        const authorizer = GatewayAuthorizer.withNoAuth();
+        expect(authorizer).toBeDefined();
+        expect(authorizer.authorizerType).toBe('NONE');
+      });
+
+      test('Should render No Auth authorizer as undefined', () => {
+        const authorizer = GatewayAuthorizer.withNoAuth();
+        const rendered = authorizer._render();
+        expect(rendered).toBeUndefined();
+      });
+
+      test('Should emit warning when used on a Gateway', () => {
+        new Gateway(stack, 'NoAuthGateway', {
+          gatewayName: 'no-auth-gateway',
+          authorizerConfiguration: GatewayAuthorizer.withNoAuth(),
+        });
+        Annotations.fromStack(stack).hasWarning(
+          '/TestStack/NoAuthGateway',
+          Match.stringLikeRegexp('This gateway has no inbound authorization'),
+        );
       });
     });
   });
