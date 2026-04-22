@@ -40,10 +40,10 @@
   resolved "https://registry.npmjs.org/@actions/io/-/io-1.1.3.tgz#4cdb6254da7962b07473ff5c335f3da485d94d71"
   integrity sha512-wi9JjgKLYS7U/z8PPbco+PvTb/nRWjeoFlJ1Qer83k/3C5PHQi28hiVdeE2kHXmIL99mQFawx8qt/JPjZilJ8Q==
 
-"@aws-cdk/asset-awscli-v1@2.2.273":
-  version "2.2.273"
-  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.273.tgz#81efd05df3f44c5e604f1d43c4b48e12874b0bd3"
-  integrity sha512-X57HYUtHt9BQrlrzUNcMyRsDUCoakYNnY6qh5lNwRCHPtQoTfXmuISkfLk0AjLkcbS5lw1LLTQFiQhTDXfiTvg==
+"@aws-cdk/asset-awscli-v1@2.2.276":
+  version "2.2.276"
+  resolved "https://registry.npmjs.org/@aws-cdk/asset-awscli-v1/-/asset-awscli-v1-2.2.276.tgz#b0600e95e2ae1366c24f32d36d196b0eb84c3bf1"
+  integrity sha512-ag+rGoWtjnhLHOVmSGOfocN8ay1rcC7tvhEJy5bzS4hPo3j+LMn0E4iBSlt5BB4aF81cpbC/7LnjhohWzoLMNA==
 
 "@aws-cdk/asset-node-proxy-agent-v6@^2.1.1":
   version "2.1.1"
