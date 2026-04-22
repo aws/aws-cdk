@@ -670,8 +670,6 @@ export class TableV2 extends TableBaseV2 {
         this.grants = new TableGrants({
           table: this,
           hasIndex: this.hasIndex,
-          encryptedResource: this.encryptionKey ? this : undefined,
-          policyResource: this.resourcePolicy ? this : undefined,
         });
       }
 

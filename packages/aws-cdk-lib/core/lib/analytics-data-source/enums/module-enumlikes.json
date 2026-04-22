@@ -331,6 +331,11 @@
       "SQL_1_0"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
+    "HeadersCMSD": [
+      "MQCS"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster-version.ts": {
     "KafkaVersion": [
       "V1_1_1",
@@ -2855,6 +2860,7 @@
       "VER_16_10_LIMITLESS",
       "VER_16_11",
       "VER_16_11_LIMITLESS",
+      "VER_16_13",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",

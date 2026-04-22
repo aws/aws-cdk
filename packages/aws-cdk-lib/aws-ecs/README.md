@@ -1833,18 +1833,18 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
     vCpuCountMax: 8,
     memoryMin: Size.gibibytes(4),
     memoryMax: Size.gibibytes(32),
-    
+
     // CPU preferences
     cpuManufacturers: [ec2.CpuManufacturer.INTEL, ec2.CpuManufacturer.AMD],
     instanceGenerations: [ec2.InstanceGeneration.CURRENT],
-    
+
     // Instance type filtering
     allowedInstanceTypes: ['m5.*', 'c5.*'],
-    
+
     // Performance characteristics
     burstablePerformance: ec2.BurstablePerformance.EXCLUDED,
     bareMetal: ec2.BareMetal.EXCLUDED,
-    
+
     // Accelerator requirements (for ML/AI workloads)
     acceleratorTypes: [ec2.AcceleratorType.GPU],
     acceleratorManufacturers: [ec2.AcceleratorManufacturer.NVIDIA],
@@ -2145,6 +2145,46 @@ const service = new ecs.FargateService(this, 'Service', {
 ```
 
 > Visit [Amazon ECS support for configurable timeout for services running with Service Connect](https://aws.amazon.com/about-aws/whats-new/2024/01/amazon-ecs-configurable-timeout-service-connect/) for more details.
+
+### Service Connect Access Logs
+
+[Service Connect access logs](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html) provide detailed telemetry about individual requests processed by the Service Connect proxy, including HTTP methods, paths, response codes, and timing information.
+These logs complement application logs by capturing per-request traffic metadata.
+
+```ts
+declare const cluster: ecs.Cluster;
+declare const taskDefinition: ecs.TaskDefinition;
+
+const service = new ecs.FargateService(this, 'Service', {
+  cluster,
+  taskDefinition,
+  serviceConnectConfiguration: {
+    services: [
+      {
+        portMappingName: 'api',
+      },
+    ],
+    accessLogConfiguration: {
+      format: ecs.ServiceConnectAccessLogFormat.JSON,
+      includeQueryParameters: true,
+    },
+    // When configuring access log,
+    // you also need to configure the log driver accordingly.
+    logDriver: ecs.LogDrivers.awsLogs({
+      streamPrefix: 'prefix',
+    }),
+  },
+});
+```
+
+The `format` option determines the format of the access log output:
+
+- `ServiceConnectAccessLogFormat.TEXT` - Human-readable text format
+- `ServiceConnectAccessLogFormat.JSON` - Structured JSON format for log analysis tools
+
+The `includeQueryParameters` option specifies whether to include query parameters in the access logs.
+When enabled, query parameters from HTTP requests are included in the logs. Consider security and privacy implications, as query parameters may contain sensitive information such as request IDs and tokens.
+By default, this parameter is `false`.
 
 ## ServiceManagedVolume
 
