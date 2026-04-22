@@ -114,6 +114,19 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Memory with Custom Execution Role](#memory-with-custom-execution-role)
     - [Memory with self-managed Strategies](#memory-with-self-managed-strategies)
     - [Memory Strategy Methods](#memory-strategy-methods)
+  - [Evaluations](#evaluations)
+    - [Evaluator](#evaluator)
+      - [Evaluator Properties](#evaluator-properties)
+      - [LLM-as-a-Judge Evaluator](#llm-as-a-judge-evaluator)
+      - [Code-Based Evaluator](#code-based-evaluator)
+      - [Evaluator IAM Permissions](#evaluator-iam-permissions)
+    - [Online Evaluation Configuration](#online-evaluation-configuration)
+      - [OnlineEvaluationConfig Properties](#onlineevaluationconfig-properties)
+      - [Basic Online Evaluation Configuration](#basic-online-evaluation-configuration)
+      - [Online Evaluation with Custom Evaluators](#online-evaluation-with-custom-evaluators)
+      - [Online Evaluation with Filters](#online-evaluation-with-filters)
+      - [Online Evaluation Execution Role](#online-evaluation-execution-role)
+      - [OnlineEvaluationConfig IAM Permissions](#onlineevaluationconfig-iam-permissions)
 
 ## AgentCore Runtime
 
@@ -2519,4 +2532,229 @@ const memory = new agentcore.Memory(this, "test-memory", {
 // Add strategies after instantiation
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
+```
+
+## Evaluations
+
+Amazon Bedrock AgentCore Evaluations enables you to assess and monitor AI agent quality using custom evaluators and continuous online evaluation. It supports two evaluation approaches: LLM-as-a-Judge (using a foundation model to score agent responses) and code-based evaluation (using a Lambda function for programmatic checks).
+
+For more information, see the [AgentCore Evaluations documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/evaluations.html).
+
+### Evaluator
+
+The Evaluator construct creates a custom evaluator that assesses agent performance. Evaluators can be used with online evaluation configurations for continuous monitoring, or with on-demand evaluations for targeted assessments.
+
+#### Evaluator Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `evaluatorName` | `string` | No | The name of the evaluator. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}`. If not provided, a unique name will be auto-generated |
+| `evaluatorConfig` | `EvaluatorConfig` | Yes | The evaluator configuration (LLM-as-a-Judge or code-based) |
+| `level` | `EvaluationLevel` | Yes | The evaluation level: `SESSION`, `TRACE`, or `TOOL_CALL` |
+| `description` | `string` | No | Optional description for the evaluator |
+| `tags` | `{ [key: string]: string }` | No | Tags to apply to the evaluator resource |
+
+#### LLM-as-a-Judge Evaluator
+
+Use `EvaluatorConfig.llmAsAJudge()` to create an evaluator that uses a Bedrock foundation model as the judge:
+
+```typescript fixture=default
+const evaluator = new agentcore.Evaluator(this, 'MyEvaluator', {
+  evaluatorName: 'helpfulness_evaluator',
+  level: agentcore.EvaluationLevel.SESSION,
+  evaluatorConfig: agentcore.EvaluatorConfig.llmAsAJudge({
+    evaluationInstructions: 'Evaluate the helpfulness of the assistant response. Context: {context}',
+    modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+    ratingScale: agentcore.RatingScale.numerical([
+      { label: 'Very Good', definition: 'Completely accurate and helpful', value: 1 },
+      { label: 'Good', definition: 'Mostly accurate with minor issues', value: 0.75 },
+      { label: 'Poor', definition: 'Significant errors or not helpful', value: 0.25 },
+      { label: 'Very Poor', definition: 'Completely incorrect or irrelevant', value: 0 },
+    ]),
+    maxTokens: 500,
+    temperature: 1.0,
+  }),
+});
+```
+
+You can also use categorical rating scales:
+
+```typescript fixture=default
+const evaluator = new agentcore.Evaluator(this, 'MyEvaluator', {
+  evaluatorName: 'safety_evaluator',
+  level: agentcore.EvaluationLevel.TRACE,
+  evaluatorConfig: agentcore.EvaluatorConfig.llmAsAJudge({
+    evaluationInstructions: 'Evaluate whether the response is safe. Context: {context}',
+    modelId: 'anthropic.claude-3-5-sonnet-20240620-v1:0',
+    ratingScale: agentcore.RatingScale.categorical([
+      { label: 'Safe', definition: 'Response contains no harmful content' },
+      { label: 'Unsafe', definition: 'Response contains harmful or inappropriate content' },
+    ]),
+  }),
+});
+```
+
+#### Code-Based Evaluator
+
+Use `EvaluatorConfig.codeBased()` to create an evaluator backed by a Lambda function:
+
+```typescript fixture=default
+declare const evaluatorFunction: lambda.IFunction;
+
+const evaluator = new agentcore.Evaluator(this, 'MyEvaluator', {
+  evaluatorName: 'custom_evaluator',
+  level: agentcore.EvaluationLevel.TOOL_CALL,
+  evaluatorConfig: agentcore.EvaluatorConfig.codeBased({
+    lambdaFunction: evaluatorFunction,
+    lambdaTimeoutInSeconds: 120,
+  }),
+});
+```
+
+#### Evaluator IAM Permissions
+
+The Evaluator construct provides convenient methods for granting IAM permissions:
+
+```typescript fixture=default
+declare const evaluator: agentcore.Evaluator;
+
+const role = new iam.Role(this, 'EvalRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+// Grant read permissions (Get + List)
+evaluator.grantRead(role);
+
+// Grant manage permissions (Update + Delete + read)
+evaluator.grantManage(role);
+
+// Grant specific custom permissions
+evaluator.grant(role, 'bedrock-agentcore:InvokeEvaluator');
+```
+
+### Online Evaluation Configuration
+
+The OnlineEvaluationConfig construct creates a continuous monitoring configuration that evaluates live agent traffic from CloudWatch Logs.
+
+#### OnlineEvaluationConfig Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `onlineEvaluationConfigName` | `string` | No | The name of the config. Pattern: `[a-zA-Z][a-zA-Z0-9_]{0,47}`. If not provided, a unique name will be auto-generated |
+| `dataSourceConfig` | `DataSourceConfig` | Yes | The data source configuration (CloudWatch Logs) |
+| `evaluators` | `EvaluatorReference[]` | Yes | List of evaluator references (max 10). Supports built-in and custom evaluators |
+| `samplingPercentage` | `number` | Yes | Percentage of sessions to evaluate (0.01 to 100) |
+| `description` | `string` | No | Optional description |
+| `tags` | `{ [key: string]: string }` | No | Tags to apply |
+| `executionRole` | `iam.IRole` | No | IAM role for the evaluation service. If not provided, a role is auto-created |
+| `executionStatus` | `ExecutionStatus` | No | Whether to start evaluating immediately. Defaults to `DISABLED` |
+| `filters` | `FilterCondition[]` | No | Filter conditions to select which sessions to evaluate |
+| `sessionTimeoutMinutes` | `number` | No | Session idle timeout in minutes |
+
+#### Basic Online Evaluation Configuration
+
+```typescript fixture=default
+new agentcore.OnlineEvaluationConfig(this, 'MyOnlineEval', {
+  onlineEvaluationConfigName: 'my_online_eval',
+  dataSourceConfig: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/agentcore/my-agent-traces'],
+    serviceNames: ['my-agent.DEFAULT'],
+  }),
+  evaluators: [
+    agentcore.EvaluatorReference.fromBuiltIn('Builtin.Helpfulness'),
+    agentcore.EvaluatorReference.fromBuiltIn('Builtin.GoalSuccessRate'),
+  ],
+  samplingPercentage: 10,
+  executionStatus: agentcore.ExecutionStatus.ENABLED,
+});
+```
+
+#### Online Evaluation with Custom Evaluators
+
+You can mix built-in and custom evaluators:
+
+```typescript fixture=default
+declare const customEvaluator: agentcore.Evaluator;
+
+new agentcore.OnlineEvaluationConfig(this, 'MyOnlineEval', {
+  dataSourceConfig: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/agentcore/my-agent-traces'],
+    serviceNames: ['my-agent.DEFAULT'],
+  }),
+  evaluators: [
+    agentcore.EvaluatorReference.fromBuiltIn('Builtin.Helpfulness'),
+    agentcore.EvaluatorReference.fromEvaluator(customEvaluator),
+  ],
+  samplingPercentage: 50,
+});
+```
+
+#### Online Evaluation with Filters
+
+```typescript fixture=default
+new agentcore.OnlineEvaluationConfig(this, 'MyOnlineEval', {
+  dataSourceConfig: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/agentcore/my-agent-traces'],
+    serviceNames: ['my-agent.DEFAULT'],
+  }),
+  evaluators: [
+    agentcore.EvaluatorReference.fromBuiltIn('Builtin.Helpfulness'),
+  ],
+  samplingPercentage: 100,
+  filters: [
+    {
+      key: 'agentId',
+      operator: 'EQUALS',
+      value: agentcore.FilterValue.fromString('my-agent-id'),
+    },
+  ],
+  sessionTimeoutMinutes: 30,
+});
+```
+
+#### Online Evaluation Execution Role
+
+When no `executionRole` is provided, the construct auto-creates a role with permissions for:
+- Reading CloudWatch Logs (user-specified log groups + `aws/spans`)
+- Writing evaluation results to `/aws/bedrock-agentcore/evaluations/results/{config-name}`
+- Invoking custom evaluators (`bedrock-agentcore:InvokeEvaluator`)
+- Invoking Bedrock models for LLM-as-a-Judge evaluators (`bedrock:InvokeModel`)
+
+> **Note:** The AgentCore Evaluations service validates IAM permissions synchronously during resource creation. Due to IAM eventual consistency, the auto-created role's policies may not have propagated in time. For production deployments, consider creating the role separately so that it is fully propagated before the OnlineEvaluationConfig resource is created.
+
+```typescript fixture=default
+// Pre-created role approach (recommended for production)
+const evalRole = new iam.Role(this, 'EvalRole', {
+  assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+});
+
+// Add required permissions to the role...
+
+new agentcore.OnlineEvaluationConfig(this, 'MyOnlineEval', {
+  dataSourceConfig: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/agentcore/my-agent-traces'],
+    serviceNames: ['my-agent.DEFAULT'],
+  }),
+  evaluators: [
+    agentcore.EvaluatorReference.fromBuiltIn('Builtin.Helpfulness'),
+  ],
+  samplingPercentage: 10,
+  executionRole: evalRole,
+});
+```
+
+#### OnlineEvaluationConfig IAM Permissions
+
+```typescript fixture=default
+declare const onlineEvalConfig: agentcore.OnlineEvaluationConfig;
+
+const role = new iam.Role(this, 'AdminRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+});
+
+// Grant read permissions (Get + List)
+onlineEvalConfig.grantRead(role);
+
+// Grant manage permissions (Update + Delete + read)
+onlineEvalConfig.grantManage(role);
 ```

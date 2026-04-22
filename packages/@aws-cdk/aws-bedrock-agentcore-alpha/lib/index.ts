@@ -66,3 +66,11 @@ export * from './gateway/targets/target-configuration';
 export * from './gateway/targets/schema/base-schema';
 export * from './gateway/targets/schema/api-schema';
 export * from './gateway/targets/schema/tool-schema';
+
+// ===================================
+// Evaluations
+// ===================================
+export * from './evaluations/evaluator';
+export * from './evaluations/online-evaluation-config';
+export * from './evaluations/perms';
+// validation-helpers contains internal utilities and should not be exported
