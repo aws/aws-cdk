@@ -35,8 +35,6 @@ export class Validations {
    *
    * Plugin authors can read this metadata to build audit trails from
    * acknowledgments recorded via `acknowledge()`.
-   *
-   * @stability experimental
    */
   public static readonly ACKNOWLEDGED_RULES_METADATA_KEY = 'aws:cdk:acknowledged-rules';
 
