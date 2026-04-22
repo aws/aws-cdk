@@ -403,7 +403,7 @@ export class Runtime {
    */
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_5_1 = new Runtime('syn-nodejs-playwright-5.1', RuntimeFamily.NODEJS);
 
-    /**
+  /**
    * `syn-nodejs-playwright-6.0` includes the following:
    * - Lambda runtime Node.js 22.x
    * - Playwright version 1.58.2
