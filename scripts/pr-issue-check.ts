@@ -65,8 +65,8 @@ async function upsertComment(github: GitHubClient, core: ActionCore, owner: stri
       });
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    core.warning(`Failed to post comment: ${message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    core.warning(`Failed to post comment: ${errMsg}`);
   }
 }
 
@@ -79,8 +79,8 @@ async function deleteBotComment(github: GitHubClient, core: ActionCore, owner: s
       });
     }
   } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    core.warning(`Failed to delete comment: ${message}`);
+    const errMsg = err instanceof Error ? err.message : String(err);
+    core.warning(`Failed to delete comment: ${errMsg}`);
   }
 }
 

@@ -12,7 +12,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
       - name: Compile TypeScript
-        run: npx tsc --target es2020 --skipLibCheck --outDir scripts scripts/pr-issue-check.ts
+        run: npx tsc --project scripts/tsconfig.pr-issue-check.json
       - name: Check PR description for issue reference
         uses: actions/github-script@v8
         with:
