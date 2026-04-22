@@ -30,13 +30,6 @@ export interface IGroup extends cdk.IResource, IGroupRef {
    * @attribute
    */
   readonly groupArn: string;
-
-  /**
-   * Add a canary to this group
-   *
-   * @param canary The canary to add to the group
-   */
-  addCanary(canary: ICanary): void;
 }
 
 /**
@@ -106,10 +99,6 @@ export class Group extends cdk.Resource implements IGroup {
       });
       public get groupRef(): GroupReference {
         return { groupName: this.groupName };
-      }
-
-      public addCanary(_canary: ICanary): void {
-        throw new ValidationError(lit`CannotAddCanaryToImportedGroup`, 'Cannot add canaries to an imported group', this);
       }
     }
 
