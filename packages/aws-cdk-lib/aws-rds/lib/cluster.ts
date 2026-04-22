@@ -1503,11 +1503,11 @@ export class DatabaseCluster extends DatabaseClusterNew {
 
     // Validate IAM master user authentication requirements
     if (isIamMasterAuth) {
-      if (props.credentials?.password) {
-        throw new ValidationError(lit`IamMasterAuthCannotHavePassword`, 'masterUserAuthenticationType IAM cannot be used with an explicit password in credentials', this);
-      }
       if (props.credentials?.secret) {
         throw new ValidationError(lit`IamMasterAuthCannotHaveSecret`, 'masterUserAuthenticationType IAM cannot be used with an explicit secret in credentials', this);
+      }
+      if (props.credentials?.password) {
+        throw new ValidationError(lit`IamMasterAuthCannotHavePassword`, 'masterUserAuthenticationType IAM cannot be used with an explicit password in credentials', this);
       }
       if (!props.iamAuthentication) {
         throw new ValidationError(lit`IamMasterAuthRequiresIamAuthentication`, 'iamAuthentication must be enabled when masterUserAuthenticationType is IAM', this);
