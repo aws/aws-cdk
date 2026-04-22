@@ -39,14 +39,14 @@ def handler(event, context):
 
     def cfn_error(message=None):
         if message:
-            logger.error("| cfn_error: %s" % message.encode())
+            logger.error("| cfn_error: %s" % sanitize_message(message))
         cfn_send(event, context, CFN_FAILED, reason=message, physicalResourceId=event.get('PhysicalResourceId', None))
 
 
     try:
         # We are not logging ResponseURL as this is a pre-signed S3 URL, and could be used to tamper
         # with the response CloudFormation sees from this Custom Resource execution.
-        logger.info({ key:value for (key, value) in event.items() if key != 'ResponseURL'})
+        logger.info(sanitize_message({ key:value for (key, value) in event.items() if key != 'ResponseURL'}))
 
         # cloudformation request type (create/update/delete)
         request_type = event['RequestType']
@@ -160,6 +160,10 @@ def handler(event, context):
 def sanitize_message(message):
     if not message:
         return message
+
+    # Convert non-string types to string for sanitization
+    if not isinstance(message, str):
+        message = str(message)
 
     # Sanitize the message to prevent log injection and HTTP response splitting
     sanitized_message = message.replace('\n', '').replace('\r', '')
@@ -278,7 +282,7 @@ def create_metadata_args(raw_user_metadata, raw_system_metadata):
 # executes an "aws" cli command
 def aws_command(*args):
     aws="/opt/awscli/aws" # from AwsCliLayer
-    logger.info("| aws %s" % ' '.join(args))
+    logger.info("| aws %s" % sanitize_message(' '.join(args)))
     subprocess.check_call([aws] + list(args))
 
 #---------------------------------------------------------------------------------------------------
@@ -298,7 +302,7 @@ def cfn_send(event, context, responseStatus, responseData={}, physicalResourceId
     responseBody['Data'] = responseData
 
     body = json.dumps(responseBody)
-    logger.info("| response body:\n" + body)
+    logger.info("| response body: " + sanitize_message(body))
 
     headers = {
         'content-type' : '',
