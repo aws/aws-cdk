@@ -1,19 +1,48 @@
 import type { IConstruct } from 'constructs';
 import type { IPolicyValidationPlugin } from './validation';
+import { Annotations } from '../annotations';
 import { UnscopedValidationError } from '../errors';
 import { lit } from '../private/literal-string';
 import { Stage } from '../stage';
 
 /**
+ * An acknowledgment of a validation rule, used to suppress it from output.
+ */
+export interface Acknowledgment {
+  /**
+   * The rule ID to acknowledge.
+   */
+  readonly id: string;
+
+  /**
+   * The reason for acknowledging this rule.
+   */
+  readonly reason: string;
+}
+
+/**
  * Manages validations for CDK constructs.
  *
  * @example
- * /// fixture=validation-plugin
- * declare const myApp: App;
- * declare const plugin: IPolicyValidationPlugin;
- * Validations.of(myApp).addPlugins(plugin);
+ * import { CfnGuardValidator } from '@cdklabs/cdk-validator-cfnguard';
+ *
+ * declare const app: App;
+ * Validations.of(app).addPlugins(new CfnGuardValidator());
  */
 export class Validations {
+  /**
+   * Well-known prefix for annotation-based validation rules.
+   *
+   * Every validation source identifies itself via a prefix so that
+   * `acknowledge()` can route suppressions to the correct handler.
+   */
+  public static readonly ANNOTATION_PREFIX = 'annotation';
+
+  /**
+   * Metadata key used to store acknowledged rules on construct nodes.
+   */
+  public static readonly ACKNOWLEDGED_RULES_METADATA_KEY = 'aws:cdk:acknowledged-rules';
+
   /**
    * Returns the Validations for the given construct scope.
    *
@@ -22,6 +51,8 @@ export class Validations {
   public static of(scope: IConstruct): Validations {
     return new Validations(scope);
   }
+
+  private static readonly KNOWN_PREFIXES = [Validations.ANNOTATION_PREFIX];
 
   private constructor(private readonly scope: IConstruct) {}
 
@@ -40,5 +71,73 @@ export class Validations {
       throw new UnscopedValidationError(lit`NoStageForValidationPlugins`, 'Cannot add validation plugins on a construct without an enclosing Stage');
     }
     stage._addValidationPlugins(...plugins);
+  }
+
+  /**
+   * Adds a warning metadata entry to this construct that can be acknowledged.
+   *
+   * The CLI will display the warning when an app is synthesized, or fail if run
+   * in `--strict` mode.
+   *
+   * The ID will be stored with the `annotation:` prefix (e.g. `annotation:MyWarning`).
+   * Use this prefixed ID when calling `acknowledge()` to suppress the warning.
+   *
+   * @param id unique identifier for the warning, used for acknowledgement
+   * @param message the warning message
+   */
+  public addWarning(id: string, message: string): void {
+    Annotations.of(this.scope).addWarningV2(this.ensurePrefix(id), message);
+  }
+
+  /**
+   * Adds an error metadata entry to this construct.
+   *
+   * Synthesis will be interrupted when errors are reported.
+   *
+   * The ID will be stored with the `annotation:` prefix (e.g. `annotation:MyError`).
+   * Use this prefixed ID when calling `acknowledge()` to suppress the error.
+   *
+   * @param id unique identifier for the error
+   * @param message the error message
+   */
+  public addError(id: string, message: string): void {
+    Annotations.of(this.scope).addError(`${message} (${this.ensurePrefix(id)})`);
+  }
+
+  /**
+   * Acknowledge one or more rules, suppressing them from validation output.
+   *
+   * Acknowledgments are recorded to construct metadata so that downstream
+   * plugins (e.g. CDK Nag) can read them for audit trails.
+   *
+   * If an ID has no well-known prefix, it is assumed to be an annotation rule
+   * for backwards compatibility.
+   *
+   * @param rules the rules to acknowledge
+   */
+  public acknowledge(...rules: Acknowledgment[]): void {
+    for (const rule of rules) {
+      this.recordAcknowledgment(rule.id, rule.reason);
+
+      // For now, all rules route to annotation acknowledgment.
+      // Future validation types will be distinguished by their prefix.
+      Annotations.of(this.scope).acknowledgeWarning(this.ensurePrefix(rule.id));
+    }
+  }
+
+  private recordAcknowledgment(id: string, reason: string): void {
+    const existing = this.scope.node.metadata.find(
+      m => m.type === Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+    );
+    const acknowledged: Record<string, string> = existing?.data ?? {};
+    acknowledged[id] = reason;
+    this.scope.node.addMetadata(Validations.ACKNOWLEDGED_RULES_METADATA_KEY, acknowledged);
+  }
+
+  private ensurePrefix(id: string): string {
+    if (Validations.KNOWN_PREFIXES.some(p => id.startsWith(`${p}:`))) {
+      return id;
+    }
+    return `${Validations.ANNOTATION_PREFIX}:${id}`;
   }
 }
