@@ -4,6 +4,7 @@ import { CfnResource } from './cfn-resource';
 import type { Duration } from './duration';
 import { ValidationError } from './errors';
 import { addConstructMetadata, MethodMetadata } from './metadata-resource';
+import { noBoxStackTraces } from './no-box-stack-traces';
 import { lit } from './private/literal-string';
 import { propertyInjectable } from './prop-injectable';
 import { RemovalPolicy } from './removal-policy';
@@ -158,6 +159,7 @@ export interface CustomResourceProps {
  *
  * @resource AWS::CloudFormation::CustomResource
  */
+@noBoxStackTraces
 @propertyInjectable
 export class CustomResource extends Resource {
   /** Uniquely identifies this class. */

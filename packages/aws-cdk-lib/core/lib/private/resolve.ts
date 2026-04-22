@@ -17,7 +17,7 @@ import {
 import type { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
 import { lit } from './literal-string';
-import { Boxes } from '../boxes';
+import { Boxes } from '../helpers-internal/boxes';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
@@ -297,6 +297,7 @@ export interface IPropertyNameLookupTable {
 
 export class PropertyAssignmentMetadataWriter extends DefaultTokenResolver {
   private readonly lookupTable: IPropertyNameLookupTable;
+  private readonly seenDocumentPaths = new Set<string>();
 
   constructor(concat: IFragmentConcatenator, lookupTable: IPropertyNameLookupTable) {
     super(concat);
@@ -318,12 +319,14 @@ export class PropertyAssignmentMetadataWriter extends DefaultTokenResolver {
     }
 
     const propertyName = propertyNameFromContext(context);
-    if (Boxes.isBox(t) && propertyName) {
+    const documentPathKey = context.documentPath.join('/');
+    if (Boxes.isBox(t) && propertyName && !this.seenDocumentPaths.has(documentPathKey)) {
       for (let stackTrace of t.getStackTraces()) {
         context.scope.node.addMetadata('aws:cdk:propertyAssignment', {
           propertyName,
           stackTrace,
         });
+        this.seenDocumentPaths.add(documentPathKey);
       }
     }
 

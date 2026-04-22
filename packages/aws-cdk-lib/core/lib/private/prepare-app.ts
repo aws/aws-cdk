@@ -7,8 +7,11 @@ import { Stage } from '../stage';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
 import type { IPropertyNameLookupTable } from './resolve';
 import { writePropertyAssignmentMetadataForConstruct } from './resolve';
+import { debugModeEnabled } from '../debug';
 
 function writePropertyAssignmentMetadata(root: IConstruct) {
+  if (!debugModeEnabled()) return;
+
   function lookupTableFn(c: IConstruct): IPropertyNameLookupTable {
     return {
       cfnPropertyName: (cdkPropertyName: string) => {
