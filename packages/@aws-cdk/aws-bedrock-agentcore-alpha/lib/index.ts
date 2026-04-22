@@ -24,6 +24,7 @@ export * from './runtime/inbound-auth/runtime-authorizer-configuration';
 export * from './runtime/runtime-endpoint-base';
 export * from './runtime/runtime-endpoint';
 export * from './runtime/runtime';
+export * from './runtime/observability';
 // Tools
 // ===================================
 export * from './tools/code-interpreter';
@@ -73,4 +74,13 @@ export * from './gateway/targets/schema/tool-schema';
 export * from './evaluations/evaluator';
 export * from './evaluations/online-evaluation-config';
 export * from './evaluations/perms';
+// Policy
+// ===================================
+export * from './policy/perms';
+export * from './policy/policy-types';
+export * from './policy/policy-engine-base';
+export * from './policy/policy-engine';
+export * from './policy/policy-base';
+export * from './policy/policy';
+export * from './policy/policy-statement';
 // validation-helpers contains internal utilities and should not be exported
