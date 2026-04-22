@@ -412,7 +412,7 @@ export class Runtime {
    *
    * New Features:
    * - Applied security patches and updated Playwright and browser versions.
-   * 
+   *
    * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Synthetics_Library_nodejs_playwright.html#Synthetics_runtimeversion-syn-nodejs-playwright-6.0
    */
   public static readonly SYNTHETICS_NODEJS_PLAYWRIGHT_6_0 = new Runtime('syn-nodejs-playwright-6.0', RuntimeFamily.NODEJS);
