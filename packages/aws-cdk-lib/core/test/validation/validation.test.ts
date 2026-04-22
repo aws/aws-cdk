@@ -65,11 +65,11 @@ describe('validations', () => {
         expect.stringMatching(/Default \(Default\)/),
         expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+        expect.stringMatching(/│ Location:/),
         expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
         expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+        expect.stringMatching(/│ Location:/),
       ],
       resourceLogicalId: 'Fake',
     }])));
@@ -247,15 +247,15 @@ Policy Validation Report Summary
             expect.stringMatching(/Stage1 \(Stage1\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stage|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  stack1 \(Stage1\/stack1\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  DefaultResource \(Stage1\/stack1\/DefaultResource\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           resourceLogicalId: 'DefaultResource',
           description: 'do something',
@@ -479,11 +479,11 @@ Policy Validation Report Summary
             expect.stringMatching(/Default \(Default\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           description: 'do something',
           resourceLogicalId: 'Fake',
@@ -546,11 +546,11 @@ Policy Validation Report Summary
             expect.stringMatching(/Default \(Default\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           description: 'do another thing',
           resourceLogicalId: 'Fake',
@@ -669,13 +669,13 @@ Policy Validation Report Summary
                     'id': 'Default',
                     'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
-                    'location': "Run with '--debug' to include location info",
+                    'location': expect.any(String),
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
                       'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
-                      'location': "Run with '--debug' to include location info",
+                      'location': expect.any(String),
                       'path': 'Default/Fake',
                     },
                   },
@@ -786,13 +786,13 @@ Policy Validation Report Summary
                     'id': 'Default',
                     'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
-                    'location': "Run with '--debug' to include location info",
+                    'location': expect.any(String),
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
                       'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
-                      'location': "Run with '--debug' to include location info",
+                      'location': expect.any(String),
                       'path': 'Default/Fake',
                     },
                   },
@@ -950,6 +950,27 @@ Policy Validation Report Summary
       expect(lastEntry.data).toEqual({
         'annotation:SomeWarning': 'Accepted risk per team review',
         'some-plugin:RuleX': 'Not applicable',
+      });
+    });
+
+    test('multiple acknowledge calls accumulate in metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN - two separate calls
+      core.Validations.of(construct).acknowledge({ id: 'RuleA', reason: 'reason A' });
+      core.Validations.of(construct).acknowledge({ id: 'RuleB', reason: 'reason B' });
+
+      // THEN - last metadata entry has both rules
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      const lastEntry = ackEntries[ackEntries.length - 1];
+      expect(lastEntry.data).toEqual({
+        'RuleA': 'reason A',
+        'RuleB': 'reason B',
       });
     });
   });

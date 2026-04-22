@@ -31,15 +31,12 @@ export interface Acknowledgment {
  */
 export class Validations {
   /**
-   * Well-known prefix for annotation-based validation rules.
-   *
-   * Every validation source identifies itself via a prefix so that
-   * `acknowledge()` can route suppressions to the correct handler.
-   */
-  public static readonly ANNOTATION_PREFIX = 'annotation';
-
-  /**
    * Metadata key used to store acknowledged rules on construct nodes.
+   *
+   * Plugin authors can read this metadata to build audit trails from
+   * acknowledgments recorded via `acknowledge()`.
+   *
+   * @stability experimental
    */
   public static readonly ACKNOWLEDGED_RULES_METADATA_KEY = 'aws:cdk:acknowledged-rules';
 
@@ -52,7 +49,13 @@ export class Validations {
     return new Validations(scope);
   }
 
-  private static readonly KNOWN_PREFIXES = [Validations.ANNOTATION_PREFIX];
+  /**
+   * Well-known prefix for annotation-based validation rules.
+   *
+   * Every validation source identifies itself via a prefix so that
+   * `acknowledge()` can route suppressions to the correct handler.
+   */
+  private static readonly ANNOTATION_PREFIX = 'annotation';
 
   private constructor(private readonly scope: IConstruct) {}
 
@@ -130,16 +133,17 @@ export class Validations {
   }
 
   private recordAcknowledgment(id: string, reason: string): void {
-    const existing = this.scope.node.metadata.find(
-      m => m.type === Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+    const matches = this.scope.node.metadata.filter(
+      (m: { type: string }) => m.type === Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
     );
+    const existing = matches.length > 0 ? matches[matches.length - 1] : undefined;
     const acknowledged: Record<string, string> = existing?.data ?? {};
     acknowledged[id] = reason;
     this.scope.node.addMetadata(Validations.ACKNOWLEDGED_RULES_METADATA_KEY, acknowledged);
   }
 
   private ensurePrefix(id: string): string {
-    if (Validations.KNOWN_PREFIXES.some(p => id.startsWith(`${p}:`))) {
+    if (id.includes(':')) {
       return id;
     }
     return `${Validations.ANNOTATION_PREFIX}:${id}`;
