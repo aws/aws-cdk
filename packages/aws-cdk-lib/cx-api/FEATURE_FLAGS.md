@@ -113,6 +113,7 @@ Flags come in three types:
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | 2.239.0 | new default |
 | [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2\_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | 2.245.0 | new default |
 | [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
+| [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
 
 <!-- END table -->
 
@@ -207,7 +208,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
     "@aws-cdk/aws-route53-patterns:useDistribution": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
-    "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true
+    "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
+    "@aws-cdk/aws-batch:defaultToAL2023": true
   }
 }
 ```
@@ -2406,6 +2408,32 @@ where `RECOMMENDED_TLS` (`ELBSecurityPolicy-TLS13-1-2-2021-06`) is used.
 | 2.245.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.
+
+
+### @aws-cdk/aws-batch:defaultToAL2023
+
+*Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2*
+
+Flag type: New default behavior
+
+When enabled, EC2 Batch compute environments (both ECS and EKS) that do not specify an `imageType`
+will default to `ECS_AL2023` or `EKS_AL2023` instead of the deprecated `ECS_AL2` or `EKS_AL2`
+(Amazon Linux 2, reaching EOL June 2026 for ECS; already EOL for EKS).
+
+For EKS compute environments with a launch template, `userdataType` will automatically be set
+to `EKS_NODEADM` when an AL2023 image type is used, as required by the AWS Batch API.
+
+When disabled, the default `imageType` remains `ECS_AL2` / `EKS_AL2` for backward compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.249.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Explicitly set `imageType` to `ECS_AL2` or `EKS_AL2` in your compute environment images configuration.
+
+**Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.
 
 
 <!-- END details -->

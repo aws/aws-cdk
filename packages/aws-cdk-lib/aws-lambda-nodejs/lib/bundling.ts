@@ -115,8 +115,12 @@ export class Bundling implements cdk.BundlingOptions {
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
     this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
 
+    if (this.relativeEntryPath.includes('..')) {
+      throw new ValidationError(lit`PathNotUnderRoot`, `entryPath (${props.entry}) should be under projectRoot (${this.projectRoot})`, scope);
+    }
+
     if (this.relativeDepsLockFilePath.includes('..')) {
-      throw new ValidationError(lit`ExpectedDepsLockFilePath`, `Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`, scope);
+      throw new ValidationError(lit`PathNotUnderRoot`, `depsLockFilePath (${props.depsLockFilePath}) should be under projectRoot (${this.projectRoot})`, scope);
     }
 
     if (props.tsconfig) {
@@ -329,8 +333,7 @@ export class Bundling implements cdk.BundlingOptions {
     const osPlatform = os.platform();
     const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
-    const createSteps = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) =>
-      this.createLocalBundlingSteps(scope, outputDir, esbuild, tsc);
+    const self = this;
 
     return {
       tryBundle(outputDir: string) {
@@ -353,7 +356,7 @@ export class Bundling implements cdk.BundlingOptions {
           cwd,
         };
 
-        const steps = createSteps(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
+        const steps = self.createLocalBundlingSteps(scope, outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
         for (const step of steps) {
           switch (step.type) {
             case 'shell':

@@ -13,7 +13,7 @@ const ipv6 = new ec2.CfnVPCCidrBlock(stack, 'Ipv6CidrBlock', { vpcId: vpc.vpcId,
 vpc.isolatedSubnets.forEach((subnet, idx) => {
   const cfnSubnet = subnet.node.defaultChild as ec2.CfnSubnet;
   cfnSubnet.ipv6CidrBlock = cdk.Fn.select(idx, cdk.Fn.cidr(cdk.Fn.select(0, vpc.vpcIpv6CidrBlocks), 256, '64'));
-  cfnSubnet.addDependsOn(ipv6);
+  cfnSubnet.addDependency(ipv6);
 });
 
 new rds.DatabaseInstance(stack, 'DualstackInstance', {

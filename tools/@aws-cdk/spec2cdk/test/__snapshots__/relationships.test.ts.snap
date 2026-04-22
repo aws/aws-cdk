@@ -93,6 +93,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -192,7 +193,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnResource.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
+  private _permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
 
   /**
    * Create a new \`AWS::IAM::Resource\`.
@@ -207,16 +208,24 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
       properties: props
     });
 
-    this.permissions = props.permissions;
+    this._permissions = props.permissions;
   }
 
   public get resourceRef(): ResourceReference {
     return {};
   }
 
+  public get permissions(): Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable | undefined {
+    return this._permissions;
+  }
+  public set permissions(value: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable | undefined) {
+    cdk.traceProperty(this.node, "Permissions");
+    this._permissions = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      permissions: this.permissions
+      permissions: this._permissions
     };
   }
 
@@ -227,6 +236,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -444,6 +454,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -586,6 +597,7 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnUser.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -685,7 +697,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnPolicy.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public principalArn?: string;
+  private _principalArn?: string;
 
   /**
    * Create a new \`AWS::IAM::Policy\`.
@@ -700,16 +712,24 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
       properties: props
     });
 
-    this.principalArn = cdk.getRefProperty((props.principalArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.getRefProperty((props.principalArn as iamRefs.IUserRef)?.userRef, 'userArn') ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
+    this._principalArn = cdk.getRefProperty((props.principalArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.getRefProperty((props.principalArn as iamRefs.IUserRef)?.userRef, 'userArn') ?? cdk.ensureStringOrUndefined(props.principalArn, "principalArn", "iam.IRoleRef | iam.IUserRef | string");
   }
 
   public get policyRef(): PolicyReference {
     return {};
   }
 
+  public get principalArn(): string | undefined {
+    return this._principalArn;
+  }
+  public set principalArn(value: string | undefined) {
+    cdk.traceProperty(this.node, "PrincipalArn");
+    this._principalArn = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      principalArn: this.principalArn
+      principalArn: this._principalArn
     };
   }
 
@@ -720,6 +740,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnPolicy.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -881,6 +902,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -980,7 +1002,7 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnTask.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
+  private _executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
 
   /**
    * Create a new \`AWS::IAM::Task\`.
@@ -995,16 +1017,24 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
       properties: props
     });
 
-    this.executionConfig = props.executionConfig;
+    this._executionConfig = props.executionConfig;
   }
 
   public get taskRef(): TaskReference {
     return {};
   }
 
+  public get executionConfig(): CfnTask.ExecutionConfigProperty | cdk.IResolvable | undefined {
+    return this._executionConfig;
+  }
+  public set executionConfig(value: CfnTask.ExecutionConfigProperty | cdk.IResolvable | undefined) {
+    cdk.traceProperty(this.node, "ExecutionConfig");
+    this._executionConfig = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      executionConfig: this.executionConfig
+      executionConfig: this._executionConfig
     };
   }
 
@@ -1015,6 +1045,7 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnTask.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1231,6 +1262,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1330,7 +1362,7 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnJob.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public config?: cdk.IResolvable | CfnJob.OldConfigProperty;
+  private _config?: cdk.IResolvable | CfnJob.OldConfigProperty;
 
   /**
    * Create a new \`AWS::IAM::Job\`.
@@ -1345,16 +1377,24 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
       properties: props
     });
 
-    this.config = props.config;
+    this._config = props.config;
   }
 
   public get jobRef(): JobReference {
     return {};
   }
 
+  public get config(): cdk.IResolvable | CfnJob.OldConfigProperty | undefined {
+    return this._config;
+  }
+  public set config(value: cdk.IResolvable | CfnJob.OldConfigProperty | undefined) {
+    cdk.traceProperty(this.node, "Config");
+    this._config = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      config: this.config
+      config: this._config
     };
   }
 
@@ -1365,6 +1405,7 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnJob.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1644,6 +1685,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1743,7 +1785,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
     return (cdk.CfnResource.isCfnResource(x) && (x.cfnResourceType === CfnFunction.CFN_RESOURCE_TYPE_NAME));
   }
 
-  public roleArn?: string;
+  private _roleArn?: string;
 
   /**
    * Create a new \`AWS::IAM::Function\`.
@@ -1758,16 +1800,24 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
       properties: props
     });
 
-    this.roleArn = cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
+    this._roleArn = cdk.getRefProperty((props.roleArn as iamRefs.IRoleRef)?.roleRef, 'roleArn') ?? cdk.ensureStringOrUndefined(props.roleArn, "roleArn", "iam.IRoleRef | string");
   }
 
   public get functionRef(): FunctionReference {
     return {};
   }
 
+  public get roleArn(): string | undefined {
+    return this._roleArn;
+  }
+  public set roleArn(value: string | undefined) {
+    cdk.traceProperty(this.node, "RoleArn");
+    this._roleArn = value;
+  }
+
   protected get cfnProperties(): Record<string, any> {
     return {
-      roleArn: this.roleArn
+      roleArn: this._roleArn
     };
   }
 
@@ -1778,6 +1828,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnFunction.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
