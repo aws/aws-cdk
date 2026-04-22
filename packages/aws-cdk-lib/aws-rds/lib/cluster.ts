@@ -10,8 +10,8 @@ import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
 import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials } from './private/util';
-import type { BackupProps, Credentials, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
-import { PerformanceInsightRetention } from './props';
+import type { BackupProps, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
+import { Credentials, MasterUserAuthenticationType, PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
 import { DatabaseProxy, ProxyTarget } from './proxy';
 import type { CfnDBClusterProps } from './rds.generated';
@@ -370,6 +370,21 @@ interface DatabaseClusterBaseProps {
    * @default false
    */
   readonly iamAuthentication?: boolean;
+
+  /**
+   * Specifies the authentication type for the master user of the database cluster.
+   *
+   * When set to `MasterUserAuthenticationType.IAM`, the master user authenticates
+   * using IAM database authentication instead of a password. No master user password
+   * or Secrets Manager secret will be generated.
+   *
+   * When using IAM master user authentication, `iamAuthentication` must also be enabled.
+   *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.IAMDBAuth.html
+   *
+   * @default - password authentication is used for the master user
+   */
+  readonly masterUserAuthenticationType?: MasterUserAuthenticationType;
 
   /**
    * Whether to enable storage encryption.
@@ -961,6 +976,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
       associatedRoles: clusterAssociatedRoles.length > 0 ? clusterAssociatedRoles : undefined,
       deletionProtection: defaultDeletionProtection(props.deletionProtection, props.removalPolicy),
       enableIamDatabaseAuthentication: props.iamAuthentication,
+      masterUserAuthenticationType: props.masterUserAuthenticationType,
       enableHttpEndpoint: Lazy.any({ produce: () => this.enableDataApi }),
       networkType: props.networkType,
       serverlessV2ScalingConfiguration: Lazy.any({
@@ -1483,16 +1499,35 @@ export class DatabaseCluster extends DatabaseClusterNew {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    const isIamMasterAuth = props.masterUserAuthenticationType === MasterUserAuthenticationType.IAM;
+
+    // Validate IAM master user authentication requirements
+    if (isIamMasterAuth) {
+      if (props.credentials?.password) {
+        throw new ValidationError(lit`IamMasterAuthCannotHavePassword`, 'masterUserAuthenticationType IAM cannot be used with an explicit password in credentials', this);
+      }
+      if (props.credentials?.secret) {
+        throw new ValidationError(lit`IamMasterAuthCannotHaveSecret`, 'masterUserAuthenticationType IAM cannot be used with an explicit secret in credentials', this);
+      }
+      if (!props.iamAuthentication) {
+        throw new ValidationError(lit`IamMasterAuthRequiresIamAuthentication`, 'iamAuthentication must be enabled when masterUserAuthenticationType is IAM', this);
+      }
+    }
 
     const canHaveCredentials = props.replicationSourceIdentifier == undefined;
+
+    // For IAM master auth we only need the username — skip secret/password generation
+    const username = props.credentials?.username ?? props.engine.defaultUsername ?? 'admin';
+    const credentials = isIamMasterAuth
+      ? Credentials.fromUsername(username)
+      : renderCredentials(this, props.engine, props.credentials);
+    const secret = isIamMasterAuth ? undefined : credentials.secret;
 
     const cluster = new CfnDBCluster(this, 'Resource', {
       ...this.newCfnProps,
       // Admin
       masterUsername: canHaveCredentials ? credentials.username : undefined,
-      masterUserPassword: canHaveCredentials ? credentials.password?.unsafeUnwrap() : undefined,
+      masterUserPassword: canHaveCredentials && !isIamMasterAuth ? credentials.password?.unsafeUnwrap() : undefined,
       replicationSourceIdentifier: props.replicationSourceIdentifier,
     });
 
