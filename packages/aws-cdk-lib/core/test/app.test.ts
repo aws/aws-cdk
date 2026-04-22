@@ -6,6 +6,7 @@ import { ContextProvider } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
 import type { StackProps } from '../lib';
 import { CfnResource, DefaultStackSynthesizer, Stack, Stage } from '../lib';
+import { flattenMeta } from './util';
 import { Annotations } from '../lib/annotations';
 import type { AppProps } from '../lib/app';
 import { App } from '../lib/app';
@@ -75,13 +76,16 @@ describe('app', () => {
         s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } },
       },
     });
-    expect(stack1.metadata).toEqual({
-      '/stack1': [{ type: 'meta', data: 111 }],
-      '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
-      '/stack1/s1c2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2' },
-          { type: 'aws:cdk:warning', data: 'warning1 [ack: warning1]' },
-          { type: 'aws:cdk:warning', data: 'warning2 [ack: warning2]' }],
+    expect(flattenMeta(stack1.metadata)).toMatchObject({
+      '/stack1': { meta: [111] },
+      '/stack1/s1c1': { 'aws:cdk:logicalId': ['s1c1'] },
+      '/stack1/s1c2': {
+        'aws:cdk:logicalId': ['s1c2'],
+        'aws:cdk:warning': [
+          'warning1 [ack: warning1]',
+          'warning2 [ack: warning2]',
+        ],
+      },
     });
 
     const stack2 = response.stacks[1];
@@ -96,13 +100,17 @@ describe('app', () => {
         s1c2r25F685FFF: { Type: 'ResourceType2' },
       },
     });
-    expect(stack2.metadata).toEqual({
-      '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
-      '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],
-      '/stack2/s1c2/r1':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r1D1791C01' }],
-      '/stack2/s1c2/r2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF' }],
+    expect(flattenMeta(stack2.metadata)).toMatchObject({
+      '/stack2/s2c1': {
+        'aws:cdk:logicalId': ['s2c1'],
+      },
+      '/stack2/s1c2': { meta: [{ key: 'value' }] },
+      '/stack2/s1c2/r1': {
+        'aws:cdk:logicalId': ['s1c2r1D1791C01'],
+      },
+      '/stack2/s1c2/r2': {
+        'aws:cdk:logicalId': ['s1c2r25F685FFF'],
+      },
     });
   });
 
