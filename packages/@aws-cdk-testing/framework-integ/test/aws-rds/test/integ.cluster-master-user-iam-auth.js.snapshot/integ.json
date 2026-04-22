@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cluster-master-user-iam-auth-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-cluster-master-user-iam-auth"
+      ],
+      "assertionStack": "cluster-master-user-iam-auth-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "clustermasteruseriamauthintegtestDefaultTestDeployAssert756817B4"
+    }
+  },
+  "minimumCliVersion": "2.1118.3"
+}
