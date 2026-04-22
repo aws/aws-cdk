@@ -180,7 +180,7 @@ export class Group extends cdk.Resource implements IGroup {
   /**
    * Add a canary to this group
    *
-   * @param canary The canary to add to the group
+   * @param canary The canary to add to the group [disable-awslint:prefer-ref-interface]
    */
   public addCanary(canary: ICanary): void {
     if (this._canaries.size >= 10) {
