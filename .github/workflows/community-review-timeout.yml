@@ -15,7 +15,7 @@ on:
         type: number
 
 env:
-  DAYS_THRESHOLD: 40
+  DAYS_THRESHOLD: 30
 
 permissions:
   contents: read

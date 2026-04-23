@@ -130,7 +130,7 @@ export class PullRequestLinter extends PullRequestLinterBase {
 
     const fixesP1 = pr.labels.some(label => label.name === 'p1');
     // Set by the community-review-timeout.yml scheduled workflow when a PR has been
-    // waiting for community review longer than the configured threshold (default 40 days).
+    // waiting for community review longer than the configured threshold (default 30 days).
     // Treated as equivalent to community approval to ensure the PR reaches maintainers.
     const communityReviewTimedOut = pr.labels.some(label => label.name === 'pr/community-review-timeout');
     let readyForReview = true;
