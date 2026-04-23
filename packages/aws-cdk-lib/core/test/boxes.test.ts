@@ -212,6 +212,65 @@ describe('Boxes', () => {
         const box = Boxes.array(['a', 'b']);
         expect(box.resolve({} as any)).toEqual(['a', 'b']);
       });
+
+      test('map() transforms each element', () => {
+        const box = Boxes.array([1, 2, 3]);
+        const doubled = box.map(x => x * 2);
+        expect(doubled.get()).toEqual([2, 4, 6]);
+      });
+
+      test('map() reflects subsequent pushes', () => {
+        const box = Boxes.array([1]);
+        const doubled = box.map(x => x * 2);
+        box.push(2);
+        box.push(3);
+        expect(doubled.get()).toEqual([2, 4, 6]);
+      });
+
+      test('map() reflects set()', () => {
+        const box = Boxes.array([1, 2]);
+        const doubled = box.map(x => x * 2);
+        box.set([10, 20, 30]);
+        expect(doubled.get()).toEqual([20, 40, 60]);
+      });
+
+      test('map() can change element type', () => {
+        const box = Boxes.array([1, 2, 3]);
+        const strings = box.map(x => `item-${x}`);
+        expect(strings.get()).toEqual(['item-1', 'item-2', 'item-3']);
+      });
+
+      test('map() returns a read-only box', () => {
+        const box = Boxes.array([1]);
+        const mapped = box.map(x => x);
+        expect('set' in mapped).toBe(false);
+        expect('push' in mapped).toBe(false);
+      });
+
+      test('map() result resolves correctly', () => {
+        const box = Boxes.array([1, 2]);
+        const doubled = box.map(x => x * 2);
+        expect(doubled.resolve({} as any)).toEqual([2, 4]);
+      });
+
+      test('map() preserves stack traces from source', () => {
+        const previousDebugMode = process.env.CDK_DEBUG;
+        try {
+          process.env.CDK_DEBUG = '1';
+          const box = Boxes.array([1]);
+          box.push(2);
+          const mapped = box.map(x => x * 2);
+          expect(mapped.getStackTraces()).toEqual(box.getStackTraces());
+        } finally {
+          process.env.CDK_DEBUG = previousDebugMode;
+        }
+      });
+
+      test('map() on empty array returns empty array', () => {
+        const box = Boxes.array<number>([]);
+        const doubled = box.map(x => x * 2);
+        expect(doubled.get()).toEqual([]);
+      });
     });
 
     describe('Boxes.isBox', () => {

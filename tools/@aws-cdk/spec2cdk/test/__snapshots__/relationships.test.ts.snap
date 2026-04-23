@@ -54,6 +54,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return resource.roleRef.roleArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::IAM::Role\`.
    *
@@ -194,6 +196,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   private _permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    permissions: "Permissions"
+  };
 
   /**
    * Create a new \`AWS::IAM::Resource\`.
@@ -415,6 +421,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return resource.roleRef.roleArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::IAM::Role\`.
    *
@@ -558,6 +566,8 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
     return resource.userRef.userArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::IAM::User\`.
    *
@@ -698,6 +708,10 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
   }
 
   private _principalArn?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    principalArn: "PrincipalArn"
+  };
 
   /**
    * Create a new \`AWS::IAM::Policy\`.
@@ -863,6 +877,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return resource.roleRef.roleArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::IAM::Role\`.
    *
@@ -1003,6 +1019,10 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
   }
 
   private _executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    executionConfig: "ExecutionConfig"
+  };
 
   /**
    * Create a new \`AWS::IAM::Task\`.
@@ -1223,6 +1243,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return resource.roleRef.roleArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::IAM::Role\`.
    *
@@ -1363,6 +1385,10 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
   }
 
   private _config?: cdk.IResolvable | CfnJob.OldConfigProperty;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    config: "Config"
+  };
 
   /**
    * Create a new \`AWS::IAM::Job\`.
@@ -1646,6 +1672,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     return resource.roleRef.roleArn;
   }
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Create a new \`AWS::IAM::Role\`.
    *
@@ -1786,6 +1814,10 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
   }
 
   private _roleArn?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    roleArn: "RoleArn"
+  };
 
   /**
    * Create a new \`AWS::IAM::Function\`.

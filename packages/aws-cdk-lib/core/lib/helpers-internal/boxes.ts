@@ -78,6 +78,16 @@ export interface ArrayBox<A> extends Box<Array<A>> {
    * @param a the element to append.
    */
   push(a: A): void;
+
+  /**
+   * Creates a derived read-only box by applying `fn` to each element of the array.
+   *
+   * Shorthand for `this.derive(a => a.map(fn))`.
+   *
+   * @param fn a pure transformation applied to each element.
+   * @returns a new read-only box holding the mapped array.
+   */
+  map<B>(fn: (a: A) => B): IReadableBox<Array<B>>;
 }
 
 type StackTrace = Array<string>;
@@ -298,5 +308,9 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
       this.orderedTraces.push({ trace: captureStackTrace(this.push.bind(this)), seq: globalSeq++ });
     }
+  }
+
+  public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {
+    return this.derive(arr => arr.map(fn));
   }
 }
