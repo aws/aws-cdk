@@ -285,3 +285,33 @@ const RESERVED_TYPE_NAMES_LIST = new Set(['Object', 'Tag', 'Math']);
 
 const RESERVED_FIELD_NAMES_LIST = new Set(['build']);
 
+/**
+ * Convert a known dimension value to an enum member name: MyEnum -> MY_ENUM
+ */
+export function dimensionEnumMemberName(value: string): string {
+  return value.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
+}
+
+/**
+ * Convert a metric name to a method name like `metricInvocations`
+ */
+export function metricMethodName(name: string): string {
+  const pascal = metricSanitizeName(name);
+  // Normalize HTTP status code patterns after PascalCasing (e.g. 4Xx -> 4xx, 5Xx -> 5xx)
+  const normalized = pascal.replace(/([2-5])xx/gi, '$1xx');
+  return `metric${normalized.replace(/^_/, '')}`;
+}
+
+/**
+ * Sanitize a metric-related name to PascalCase
+ */
+export function metricSanitizeName(name: string): string {
+  return sanitizeTypeName(name.replace(/[^a-zA-Z0-9]/g, '-'));
+}
+
+/**
+ * Derive a dimension set class name from its name: "Function" → "FunctionMetrics"
+ */
+export function dimSetClassName(name: string): string {
+  return `${metricSanitizeName(name)}Metrics`;
+}

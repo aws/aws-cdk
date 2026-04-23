@@ -114,7 +114,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
       const mergedSets = collectAndMergeDimensionSets(context.db, nsMetrics);
       if (mergedSets.length === 0) continue;
 
-      const nsClassName = namespaceClassName(namespace);
+      const nsClassName = naming.metricsClassNameFromService(namespace);
       const metricsClass = new ClassType(module, {
         name: nsClassName,
         export: true,
@@ -124,7 +124,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
       const dimSetClasses = new Map<string, ClassType>();
 
       for (const merged of mergedSets) {
-        const className = dimSetClassName(merged);
+        const className = naming.dimSetClassName(merged.name);
 
         const gen = new DimensionSetClassGenerator(metricsClass, merged, context.cloudwatchModule);
         dimSetClasses.set(className, gen.dimensionSetClass);
@@ -174,7 +174,7 @@ class DimensionSetClassGenerator {
     private readonly merged: MergedDimensionSet,
     private readonly cloudwatchModule: ExternalModule,
   ) {
-    const className = dimSetClassName(merged);
+    const className = naming.dimSetClassName(merged.name);
 
     this.dimensionSetClass = new ClassType(scope, {
       name: className,
@@ -208,12 +208,12 @@ class DimensionSetClassGenerator {
 
       if (dim.knownValues.length > 0) {
         const enumType = new EnumType(this.scope, {
-          name: `${className}${sanitizeName(dim.name)}`,
+          name: `${className}${naming.metricSanitizeName(dim.name)}`,
           export: true,
           docs: { summary: `Known values for the ${dim.name} dimension` },
         });
         for (const value of dim.knownValues) {
-          enumType.addMember({ name: dimensionEnumMemberName(value), value, docs: `${dim.name} = ${value}` });
+          enumType.addMember({ name: naming.dimensionEnumMemberName(value), value, docs: `${dim.name} = ${value}` });
         }
         propType = enumType.type;
       }
@@ -235,7 +235,7 @@ class DimensionSetClassGenerator {
   public addMetricMethods(nsClassName: string, className: string, namespace: string) {
     const usedMethodNames = new Set<string>();
     for (const metric of this.merged.metrics) {
-      const baseName = metricMethodName(metric.name);
+      const baseName = naming.metricMethodName(metric.name);
       if (usedMethodNames.has(baseName)) {
         // TODO: remove once the 7 affected metrics (6 of which are for deprecated services) have been removed in the service spec
         // This happens when 2 metrics with the same name but different statistics are associated with 2 different resources in the same namespace
@@ -320,7 +320,7 @@ class ResourceFactoryGenerator {
    * dimensions can be mapped to reference properties.
    */
   public tryAddFactory(dimSet: DimensionSet): void {
-    const className = dimSetClassName(dimSet);
+    const className = naming.dimSetClassName(dimSet.name);
     const found = this.submodule.findDimSetClass(className);
     if (!found) {
       throw new Error(`Could not find dimension set class '${className}' for resource ${this.resource.name}.`);
@@ -447,32 +447,3 @@ function collectAndMergeDimensionSets(db: SpecDatabase, metrics: Metric[]): Merg
   return [...byName.values()];
 }
 
-/** Derive class name from CloudWatch namespace: "AWS/Lambda" → "LambdaMetrics" */
-function namespaceClassName(namespace: string): string {
-  return `${namespace.replace(/^AWS\//, '').replace(/\//g, '')}Metrics`;
-}
-
-/** Derive a dimension set class name from either a merged or raw dimension set */
-function dimSetClassName(ds: MergedDimensionSet | DimensionSet): string {
-  if (ds.dimensions.length === 0) {
-    return 'AccountMetrics';
-  }
-  return `${sanitizeName(ds.name)}Metrics`;
-}
-
-/** Convert a known dimension value to enum name MyEnum -> MY_ENUM */
-function dimensionEnumMemberName(value: string): string {
-  return value.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toUpperCase();
-}
-
-/** Convert a metric name to a method name like `metricInvocations` */
-function metricMethodName(name: string): string {
-  const pascal = sanitizeName(name);
-  // Normalize HTTP status code patterns after PascalCasing (e.g. 4Xx -> 4xx, 5Xx -> 5xx)
-  const normalized = pascal.replace(/([2-5])Xx/g, '$1xx');
-  return `metric${normalized.replace(/^_/, '')}`;
-}
-
-function sanitizeName(name: string): string {
-  return naming.sanitizeTypeName(name.replace(/[^a-zA-Z0-9]/g, '-'));
-}
