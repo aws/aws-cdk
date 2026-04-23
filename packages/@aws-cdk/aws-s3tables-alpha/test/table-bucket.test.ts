@@ -767,7 +767,7 @@ describe('TableBucket', () => {
         env: { account: '111111111111', region: 'us-east-1' },
       });
       const destination = s3tables.TableBucket.fromTableBucketAttributes(envStack, 'DestCross', {
-        account: '999999999999',
+        account: '234567890123',
         region: 'us-east-1',
         tableBucketName: 'dest-cross',
       });
