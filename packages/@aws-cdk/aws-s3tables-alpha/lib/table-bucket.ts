@@ -811,16 +811,6 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
         this,
       );
     }
-
-    for (const dest of destinations) {
-      if (dest === (this as ITableBucket)) {
-        throw new ValidationError(
-          lit`CannotReplicateToSelf`,
-          'replicationDestinations must not include the source table bucket itself',
-          this,
-        );
-      }
-    }
   }
 
   /**

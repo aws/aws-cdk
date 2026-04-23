@@ -248,8 +248,8 @@ Replicate to one or more destinations (up to 5). CDK creates a least-privilege
 role for you automatically:
 
 ```ts
-declare const destA: TableBucket;
-declare const destB: TableBucket;
+declare const destA: ITableBucket;
+declare const destB: ITableBucket;
 
 new TableBucket(scope, 'SourceMulti', {
     tableBucketName: 'source-multi',
@@ -261,8 +261,8 @@ Bring your own replication role (advanced). Supply a role only when you need
 to control its trust policy, permissions boundary, name, or similar:
 
 ```ts
-declare const destA: TableBucket;
-declare const destB: TableBucket;
+declare const destA: ITableBucket;
+declare const destB: ITableBucket;
 
 const role = new iam.Role(scope, 'MyReplicationRole', {
     assumedBy: new iam.ServicePrincipal('replication.s3tables.amazonaws.com'),
@@ -300,9 +300,6 @@ destination.addToResourcePolicy(new iam.PolicyStatement({
     resources: [destination.tableBucketArn, `${destination.tableBucketArn}/table/*`],
 }));
 ```
-
-When a cross-account destination is detected, CDK emits an `INFO` annotation
-during synthesis reminding you to add this policy.
 
 ### Enabling CloudWatch Request Metrics
 

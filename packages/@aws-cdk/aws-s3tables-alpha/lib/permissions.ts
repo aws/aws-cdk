@@ -84,15 +84,15 @@ export const REPLICATION_DESTINATION_TABLE_ACCESS = [
   's3tables:PutTableMaintenanceConfiguration',
 ];
 
-// KMS: source key (decrypt to read source)
+// KMS: source key (per S3 Tables replication permissions doc)
 export const REPLICATION_KEY_SOURCE_ACCESS = [
   'kms:Decrypt',
-  'kms:GenerateDataKey*',
+  'kms:GenerateDataKey',
+  'kms:Encrypt',
 ];
 
-// KMS: destination key (encrypt to write destination)
+// KMS: destination key (per S3 Tables replication permissions doc)
 export const REPLICATION_KEY_DESTINATION_ACCESS = [
-  'kms:Encrypt',
   'kms:Decrypt',
-  'kms:GenerateDataKey*',
+  'kms:GenerateDataKey',
 ];

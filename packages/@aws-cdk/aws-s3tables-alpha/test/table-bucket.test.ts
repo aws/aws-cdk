@@ -701,7 +701,7 @@ describe('TableBucket', () => {
       })).toThrow('cannot specify replicationRole when replicationDestinations is empty');
     });
 
-    test('grants kms:Decrypt and kms:GenerateDataKey* on source KMS key when source is KMS-encrypted', () => {
+    test('grants kms:Decrypt, kms:GenerateDataKey, kms:Encrypt on source KMS key when source is KMS-encrypted', () => {
       const sourceKey = new kms.Key(stack, 'SourceKey');
       const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
 
@@ -718,7 +718,8 @@ describe('TableBucket', () => {
             Match.objectLike({
               Action: [
                 'kms:Decrypt',
-                'kms:GenerateDataKey*',
+                'kms:GenerateDataKey',
+                'kms:Encrypt',
               ],
               Effect: 'Allow',
               Resource: Match.objectLike({
@@ -730,7 +731,7 @@ describe('TableBucket', () => {
       });
     });
 
-    test('grants kms:Encrypt + kms:Decrypt + kms:GenerateDataKey* on destination KMS key when destination exposes encryptionKey', () => {
+    test('grants kms:Decrypt, kms:GenerateDataKey on destination KMS key when destination exposes encryptionKey', () => {
       const destKey = new kms.Key(stack, 'DestKey');
       const destination = s3tables.TableBucket.fromTableBucketAttributes(stack, 'Dest', {
         tableBucketArn: DEST_ARN,
@@ -747,9 +748,8 @@ describe('TableBucket', () => {
           Statement: Match.arrayWith([
             Match.objectLike({
               Action: [
-                'kms:Encrypt',
                 'kms:Decrypt',
-                'kms:GenerateDataKey*',
+                'kms:GenerateDataKey',
               ],
               Effect: 'Allow',
               Resource: Match.objectLike({
