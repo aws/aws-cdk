@@ -798,7 +798,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
 
     if (destinations.length === 0 && props.replicationRole) {
       throw new ValidationError(
-        lit`CannotSpecifyReplicationRoleReplication`,
+        lit`ReplicationRoleWithoutDestinations`,
         'cannot specify replicationRole when replicationDestinations is empty',
         this,
       );
@@ -813,7 +813,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
     }
 
     for (const dest of destinations) {
-      if (dest === (this as unknown as ITableBucket)) {
+      if (dest === (this as ITableBucket)) {
         throw new ValidationError(
           lit`CannotReplicateToSelf`,
           'replicationDestinations must not include the source table bucket itself',
