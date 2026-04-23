@@ -1,0 +1,50 @@
+digraph G {
+  # Arrows represent an "unlocks" relationship (opposite of dependency). So chosen
+  # because the layout looks more natural that way.
+  # To represent subgraph dependencies, subgraphs are represented by BEGIN/END nodes.
+  # To render: `dot -Tsvg AssetBuildsPipelineE155E780.dot > graph.svg`, open in a browser.
+  node [shape="box"];
+"BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Build.Synth";
+"Source.c8c4d2fddff17c4ba24c67e3bc2f5d60ad719df8c7" -> "Build.Synth";
+"BEGIN Build" -> "Build.Synth";
+"Build.Synth" -> "END Build";
+"BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate";
+"Build.Synth" -> "UpdatePipeline.SelfMutate";
+"BEGIN UpdatePipeline" -> "UpdatePipeline.SelfMutate";
+"UpdatePipeline.SelfMutate" -> "END UpdatePipeline";
+"BEGIN Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Assets" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Assets.FileAsset";
+"UpdatePipeline.SelfMutate" -> "Assets.FileAsset";
+"Assets.DockerAsset";
+"UpdatePipeline.SelfMutate" -> "Assets.DockerAsset";
+"BEGIN Assets" -> "Assets.DockerAsset";
+"BEGIN Assets" -> "Assets.FileAsset";
+"Assets.DockerAsset" -> "END Assets";
+"Assets.FileAsset" -> "END Assets";
+"BEGIN TestStage" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END TestStage" [shape="cds", style="filled", fillcolor="#b7deff"];
+"UpdatePipeline.SelfMutate" -> "BEGIN TestStage";
+"BEGIN TestStage.AppStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END TestStage.AppStack" [shape="cds", style="filled", fillcolor="#b7deff"];
+"TestStage.AppStack.Deploy";
+"TestStage.AppStack.Prepare" -> "TestStage.AppStack.Deploy";
+"TestStage.AppStack.Prepare";
+"Build.Synth" -> "TestStage.AppStack.Prepare";
+"Assets.FileAsset" -> "TestStage.AppStack.Prepare";
+"Assets.FileAsset" -> "TestStage.AppStack.Prepare";
+"Assets.DockerAsset" -> "TestStage.AppStack.Prepare";
+"BEGIN TestStage.AppStack" -> "TestStage.AppStack.Prepare";
+"TestStage.AppStack.Deploy" -> "END TestStage.AppStack";
+"BEGIN TestStage" -> "BEGIN TestStage.AppStack";
+"END TestStage.AppStack" -> "END TestStage";
+"BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
+"Source.c8c4d2fddff17c4ba24c67e3bc2f5d60ad719df8c7";
+"BEGIN Source" -> "Source.c8c4d2fddff17c4ba24c67e3bc2f5d60ad719df8c7";
+"Source.c8c4d2fddff17c4ba24c67e3bc2f5d60ad719df8c7" -> "END Source";
+}
