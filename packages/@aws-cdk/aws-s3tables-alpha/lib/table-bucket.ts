@@ -408,11 +408,9 @@ export interface TableBucketProps {
    *
    * Only meaningful when `replicationDestinations` is set.
    *
-   * [disable-awslint:prefer-ref-interface]
-   *
    * @default - A new role is created with the necessary permissions.
    */
-  readonly replicationRole?: iam.IRole;
+  readonly replicationRole?: iam.IRoleRef;
 }
 
 /**
@@ -919,7 +917,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
       ?? this.createReplicationRole(sourceArn, destinations, this.encryptionKey);
 
     return {
-      role: role.roleArn,
+      role: role.roleRef.roleArn,
       rules: [{
         destinations: destinations.map(d => ({
           destinationTableBucketArn: d.tableBucketArn,
