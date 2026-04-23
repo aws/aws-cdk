@@ -244,27 +244,11 @@ property. By default, CDK creates a least-privilege IAM role trusted by the
 S3 Tables replication service with the required permissions on the source
 and destination table buckets (and their KMS keys, when applicable).
 
-Single destination, auto-created role:
+Replicate to one or more destinations (up to 5), with an auto-created role:
 
 ```ts
-// Destination can live in the same or a different region/account.
-const destination = TableBucket.fromTableBucketArn(
-    scope,
-    'Destination',
-    'arn:aws:s3tables:us-west-2:123456789012:bucket/replica-bucket',
-);
-
-new TableBucket(scope, 'SourceBucket', {
-    tableBucketName: 'source-bucket',
-    replicationDestinations: [destination],
-});
-```
-
-Multiple destinations (up to 5):
-
-```ts
-const destA = TableBucket.fromTableBucketArn(scope, 'DestA', 'arn:aws:s3tables:us-west-2:123456789012:bucket/replica-a');
-const destB = TableBucket.fromTableBucketArn(scope, 'DestB', 'arn:aws:s3tables:eu-west-1:123456789012:bucket/replica-b');
+declare const destA: TableBucket;
+declare const destB: TableBucket;
 
 new TableBucket(scope, 'SourceMulti', {
     tableBucketName: 'source-multi',
@@ -275,11 +259,7 @@ new TableBucket(scope, 'SourceMulti', {
 Bring your own replication role (advanced):
 
 ```ts
-const destination = TableBucket.fromTableBucketArn(
-    scope,
-    'DestinationBYO',
-    'arn:aws:s3tables:us-west-2:123456789012:bucket/replica-bucket',
-);
+declare const destination: TableBucket;
 
 const role = new iam.Role(scope, 'MyReplicationRole', {
     assumedBy: new iam.ServicePrincipal('replication.s3tables.amazonaws.com'),
