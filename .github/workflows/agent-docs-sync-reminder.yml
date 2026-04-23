@@ -16,7 +16,11 @@ on:
 
 permissions:
   pull-requests: write
-  issues: write
+  issues: write  # Required: PR labels are managed via the Issues API
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
 
 jobs:
   remind:
