@@ -11,6 +11,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+      - name: Install type dependencies
+        run: yarn install --frozen-lockfile
       - name: Compile TypeScript
         run: npx tsc --project scripts/tsconfig.pr-issue-check.json
       - name: Check PR description for issue reference
