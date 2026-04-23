@@ -179,7 +179,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._containers = Boxes.array(props?.containers ?? []);
+    this._containers = Boxes.fromArray(props?.containers ?? []);
     this.mainNode = props?.mainNode;
     this._instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;

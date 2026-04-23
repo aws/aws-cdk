@@ -7,7 +7,7 @@ type ArbitraryConstructor = { new (...args: any[]): {} };
  * the decorated class's constructor.
  *
  * Apply this to L2 constructs that create or mutate boxes during construction.
- * Without it, every `Boxes.state(...)`, `box.set(...)`, and `box.push(...)` call
+ * Without it, every `Boxes.fromValue(...)`, `box.set(...)`, and `box.push(...)` call
  * inside the constructor would capture a stack trace pointing at CDK internals
  * rather than user code, polluting the `aws:cdk:propertyAssignment` metadata.
  *
@@ -24,7 +24,7 @@ type ArbitraryConstructor = { new (...args: any[]): {} };
  *   constructor(scope: Construct, id: string) {
  *     super(scope, id);
  *     // No stack traces captured for these mutations:
- *     this.items = Boxes.array(['default']);
+ *     this.items = Boxes.fromArray(['default']);
  *     this.items.push('another-default');
  *   }
  *

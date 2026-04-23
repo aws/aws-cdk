@@ -50,7 +50,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box = Boxes.state('hello');
+    const box = Boxes.fromValue('hello');
     const lookupTable = makeLookupTable({ myProp: 'MyProp' });
     const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
 
@@ -93,7 +93,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box = Boxes.state('hello');
+    const box = Boxes.fromValue('hello');
     const lookupTable = makeLookupTable({ myProp: 'MyProp' });
     const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
 
@@ -112,7 +112,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box = Boxes.state('hello');
+    const box = Boxes.fromValue('hello');
     const lookupTable = makeLookupTable({}); // no mapping
     const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
 
@@ -130,7 +130,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box = Boxes.state('hello');
+    const box = Boxes.fromValue('hello');
     const lookupTable = makeLookupTable({ myProp: 'MyProp' });
     const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
     const obj = { Resources: { LogicalId: { Properties: { myProp: box } } } };
@@ -151,8 +151,8 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box1 = Boxes.state('val1');
-    const box2 = Boxes.state('val2');
+    const box1 = Boxes.fromValue('val1');
+    const box2 = Boxes.fromValue('val2');
     const lookupTable = makeLookupTable({ propA: 'PropA', propB: 'PropB' });
     const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
 
@@ -171,7 +171,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box = Boxes.state('hello');
+    const box = Boxes.fromValue('hello');
     const lookupTable = makeLookupTable({ myProp: 'MyProp' });
     const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
 
@@ -190,7 +190,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box = Boxes.array([1]);
+    const box = Boxes.fromArray([1]);
     box.push(2); // ArrayBox.push adds another stack trace
 
     const lookupTable = makeLookupTable({ myProp: 'MyProp' });
@@ -215,7 +215,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
     const stack = new Stack(app, 'Stack');
     const construct = new Construct(stack, 'MyConstruct');
 
-    const box = Boxes.state('resolved-value');
+    const box = Boxes.fromValue('resolved-value');
     const lookupTable = makeLookupTable({ myProp: 'MyProp' });
     const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
 
@@ -324,9 +324,9 @@ describe('Entire synthesis workflow', () => {
         ─ ─ ►  Only wired if assignBoxToAnotherScalar() is called
        */
 
-      this.scalar = Boxes.state('...');
-      this.anotherScalar = Boxes.state('...');
-      this.array = Boxes.array(['a']);
+      this.scalar = Boxes.fromValue('...');
+      this.anotherScalar = Boxes.fromValue('...');
+      this.array = Boxes.fromArray(['a']);
 
       this.scalar.set('Ignore this stack trace');
       this.array.set(['Also ignore this stack trace']);

@@ -1,35 +1,35 @@
 import { Boxes } from '../lib/helpers-internal';
 
 describe('Boxes', () => {
-  describe('State (Boxes.state)', () => {
+  describe('State (Boxes.fromValue)', () => {
     test('get() returns the initial value', () => {
-      const box = Boxes.state(42);
+      const box = Boxes.fromValue(42);
       expect(box.get()).toBe(42);
     });
 
     test('set() updates the value', () => {
-      const box = Boxes.state(1);
+      const box = Boxes.fromValue(1);
       box.set(2);
       expect(box.get()).toBe(2);
     });
 
     test('works with different types', () => {
-      const strBox = Boxes.state('hello');
+      const strBox = Boxes.fromValue('hello');
       expect(strBox.get()).toBe('hello');
 
-      const objBox = Boxes.state({ a: 1, b: 'two' });
+      const objBox = Boxes.fromValue({ a: 1, b: 'two' });
       expect(objBox.get()).toEqual({ a: 1, b: 'two' });
     });
 
     test('resolve() returns the current value', () => {
-      const box = Boxes.state(10);
+      const box = Boxes.fromValue(10);
       expect(box.resolve({} as any)).toBe(10);
       box.set(20);
       expect(box.resolve({} as any)).toBe(20);
     });
 
     test('getStackTraces() returns empty array when debug mode is off', () => {
-      const box = Boxes.state(1);
+      const box = Boxes.fromValue(1);
       expect(box.getStackTraces()).toEqual([]);
     });
 
@@ -37,7 +37,7 @@ describe('Boxes', () => {
       const previousDebugMode = process.env.CDK_DEBUG;
       try {
         process.env.CDK_DEBUG = '1';
-        const box = Boxes.state(1);
+        const box = Boxes.fromValue(1);
         const tracesAfterInit = box.getStackTraces();
         box.set(1);
         expect(box.getStackTraces()).toEqual(tracesAfterInit);
@@ -52,7 +52,7 @@ describe('Boxes', () => {
       const previousDebugMode = process.env.CDK_DEBUG;
       try {
         process.env.CDK_DEBUG = '1';
-        const box = Boxes.state({ id: 1, name: 'a' }, {
+        const box = Boxes.fromValue({ id: 1, name: 'a' }, {
           equals: (a, b) => a.id === b.id,
         });
         const tracesAfterInit = box.getStackTraces();
@@ -72,18 +72,18 @@ describe('Boxes', () => {
     });
   });
 
-  describe('Zipped (Boxes.zipWith)', () => {
+  describe('Combined (Boxes.combine)', () => {
     test('get() applies the function to unwrapped box values', () => {
-      const a = Boxes.state(3);
-      const b = Boxes.state('hi');
-      const result = Boxes.zipWith({ a, b }, (x) => x.a + x.b.length);
+      const a = Boxes.fromValue(3);
+      const b = Boxes.fromValue('hi');
+      const result = Boxes.combine({ a, b }, (x) => x.a + x.b.length);
       expect(result.get()).toBe(5);
     });
 
     test('reflects updates to source boxes', () => {
-      const a = Boxes.state(1);
-      const b = Boxes.state(10);
-      const result = Boxes.zipWith({ a, b }, (x) => x.a * x.b);
+      const a = Boxes.fromValue(1);
+      const b = Boxes.fromValue(10);
+      const result = Boxes.combine({ a, b }, (x) => x.a * x.b);
 
       expect(result.get()).toBe(10);
       a.set(5);
@@ -91,17 +91,17 @@ describe('Boxes', () => {
     });
 
     test('set() throws', () => {
-      const a = Boxes.state(1);
-      const result = Boxes.zipWith({ a }, (x) => x.a);
+      const a = Boxes.fromValue(1);
+      const result = Boxes.combine({ a }, (x) => x.a);
       // result is ReadableBox — no set() method at the type level
       expect('set' in result).toBe(false);
     });
 
     test('getStackTraces() collects traces from all source boxes', () => {
-      const a = Boxes.state(1);
-      const b = Boxes.state(2);
-      const c = Boxes.state(3);
-      const result = Boxes.zipWith({ a, b, c }, (x) => x.a + x.b + x.c);
+      const a = Boxes.fromValue(1);
+      const b = Boxes.fromValue(2);
+      const c = Boxes.fromValue(3);
+      const result = Boxes.combine({ a, b, c }, (x) => x.a + x.b + x.c);
       expect(result.getStackTraces()).toEqual([
         ...a.getStackTraces(),
         ...b.getStackTraces(),
@@ -110,15 +110,15 @@ describe('Boxes', () => {
     });
 
     test('works with a single box', () => {
-      const a = Boxes.state(7);
-      const result = Boxes.zipWith({ a }, (x) => x.a * 2);
+      const a = Boxes.fromValue(7);
+      const result = Boxes.combine({ a }, (x) => x.a * 2);
       expect(result.get()).toBe(14);
     });
 
     test('resolve() returns the computed value', () => {
-      const a = Boxes.state(2);
-      const b = Boxes.state(3);
-      const result = Boxes.zipWith({ a, b }, (x) => x.a + x.b);
+      const a = Boxes.fromValue(2);
+      const b = Boxes.fromValue(3);
+      const result = Boxes.combine({ a, b }, (x) => x.a + x.b);
       expect(result.resolve({} as any)).toBe(5);
     });
 
@@ -126,10 +126,10 @@ describe('Boxes', () => {
       const previousDebugMode = process.env.CDK_DEBUG;
       try {
         process.env.CDK_DEBUG = '1';
-        const odds = Boxes.array([1]);
-        const evens = Boxes.array([2]);
+        const odds = Boxes.fromArray([1]);
+        const evens = Boxes.fromArray([2]);
         // Due to the function we used, the numbers are not in order here
-        const naturals = Boxes.zipWith({ o: odds, e: evens }, ({ o, e }) => o.concat(e));
+        const naturals = Boxes.combine({ o: odds, e: evens }, ({ o, e }) => o.concat(e));
         odds.push(3);
         evens.push(4);
         odds.push(5);
@@ -149,13 +149,13 @@ describe('Boxes', () => {
 
     describe('Computed (Box.derive)', () => {
       test('get() applies the transformation', () => {
-        const box = Boxes.state(5);
+        const box = Boxes.fromValue(5);
         const derived = box.derive((x) => x * 2);
         expect(derived.get()).toBe(10);
       });
 
       test('reflects updates to the source box', () => {
-        const box = Boxes.state(1);
+        const box = Boxes.fromValue(1);
         const derived = box.derive((x) => x + 100);
 
         expect(derived.get()).toBe(101);
@@ -164,63 +164,63 @@ describe('Boxes', () => {
       });
 
       test('can be chained', () => {
-        const box = Boxes.state(2);
+        const box = Boxes.fromValue(2);
         const derived = box.derive((x) => x * 3).derive((x) => x + 1);
         expect(derived.get()).toBe(7);
       });
 
       test('set() is not available on derived boxes', () => {
-        const box = Boxes.state(1);
+        const box = Boxes.fromValue(1);
         const derived = box.derive((x) => x);
         // derived is ReadableBox — no set() method at the type level
         expect('set' in derived).toBe(false);
       });
 
       test('getStackTraces() delegates to the source box', () => {
-        const box = Boxes.state(1);
+        const box = Boxes.fromValue(1);
         const derived = box.derive((x) => x);
         expect(derived.getStackTraces()).toEqual(box.getStackTraces());
       });
 
       test('resolve() returns the derived value', () => {
-        const box = Boxes.state(3);
+        const box = Boxes.fromValue(3);
         const derived = box.derive((x) => x * x);
         expect(derived.resolve({} as any)).toBe(9);
       });
     });
 
-    describe('ArrayBox (Boxes.array)', () => {
+    describe('ArrayBox (Boxes.fromArray)', () => {
       test('get() returns the array', () => {
-        const box = Boxes.array([1, 2, 3]);
+        const box = Boxes.fromArray([1, 2, 3]);
         expect(box.get()).toEqual([1, 2, 3]);
       });
 
       test('push() appends to the array', () => {
-        const box = Boxes.array([1]);
+        const box = Boxes.fromArray([1]);
         box.push(2);
         box.push(3);
         expect(box.get()).toEqual([1, 2, 3]);
       });
 
       test('set() replaces the array', () => {
-        const box = Boxes.array([1, 2]);
+        const box = Boxes.fromArray([1, 2]);
         box.set([10, 20, 30]);
         expect(box.get()).toEqual([10, 20, 30]);
       });
 
       test('resolve() returns the array', () => {
-        const box = Boxes.array(['a', 'b']);
+        const box = Boxes.fromArray(['a', 'b']);
         expect(box.resolve({} as any)).toEqual(['a', 'b']);
       });
 
       test('map() transforms each element', () => {
-        const box = Boxes.array([1, 2, 3]);
+        const box = Boxes.fromArray([1, 2, 3]);
         const doubled = box.map(x => x * 2);
         expect(doubled.get()).toEqual([2, 4, 6]);
       });
 
       test('map() reflects subsequent pushes', () => {
-        const box = Boxes.array([1]);
+        const box = Boxes.fromArray([1]);
         const doubled = box.map(x => x * 2);
         box.push(2);
         box.push(3);
@@ -228,27 +228,27 @@ describe('Boxes', () => {
       });
 
       test('map() reflects set()', () => {
-        const box = Boxes.array([1, 2]);
+        const box = Boxes.fromArray([1, 2]);
         const doubled = box.map(x => x * 2);
         box.set([10, 20, 30]);
         expect(doubled.get()).toEqual([20, 40, 60]);
       });
 
       test('map() can change element type', () => {
-        const box = Boxes.array([1, 2, 3]);
+        const box = Boxes.fromArray([1, 2, 3]);
         const strings = box.map(x => `item-${x}`);
         expect(strings.get()).toEqual(['item-1', 'item-2', 'item-3']);
       });
 
       test('map() returns a read-only box', () => {
-        const box = Boxes.array([1]);
+        const box = Boxes.fromArray([1]);
         const mapped = box.map(x => x);
         expect('set' in mapped).toBe(false);
         expect('push' in mapped).toBe(false);
       });
 
       test('map() result resolves correctly', () => {
-        const box = Boxes.array([1, 2]);
+        const box = Boxes.fromArray([1, 2]);
         const doubled = box.map(x => x * 2);
         expect(doubled.resolve({} as any)).toEqual([2, 4]);
       });
@@ -257,7 +257,7 @@ describe('Boxes', () => {
         const previousDebugMode = process.env.CDK_DEBUG;
         try {
           process.env.CDK_DEBUG = '1';
-          const box = Boxes.array([1]);
+          const box = Boxes.fromArray([1]);
           box.push(2);
           const mapped = box.map(x => x * 2);
           expect(mapped.getStackTraces()).toEqual(box.getStackTraces());
@@ -267,7 +267,7 @@ describe('Boxes', () => {
       });
 
       test('map() on empty array returns empty array', () => {
-        const box = Boxes.array<number>([]);
+        const box = Boxes.fromArray<number>([]);
         const doubled = box.map(x => x * 2);
         expect(doubled.get()).toEqual([]);
       });
@@ -275,20 +275,20 @@ describe('Boxes', () => {
 
     describe('Boxes.isBox', () => {
       test('returns true for state boxes', () => {
-        expect(Boxes.isBox(Boxes.state(1))).toBe(true);
+        expect(Boxes.isBox(Boxes.fromValue(1))).toBe(true);
       });
 
       test('returns true for zipped boxes', () => {
-        const a = Boxes.state(1);
-        expect(Boxes.isBox(Boxes.zipWith({ a }, (x) => x.a))).toBe(true);
+        const a = Boxes.fromValue(1);
+        expect(Boxes.isBox(Boxes.combine({ a }, (x) => x.a))).toBe(true);
       });
 
       test('returns true for derived boxes', () => {
-        expect(Boxes.isBox(Boxes.state(1).derive((x) => x))).toBe(true);
+        expect(Boxes.isBox(Boxes.fromValue(1).derive((x) => x))).toBe(true);
       });
 
       test('returns true for array boxes', () => {
-        expect(Boxes.isBox(Boxes.array([]))).toBe(true);
+        expect(Boxes.isBox(Boxes.fromArray([]))).toBe(true);
       });
 
       test('returns false for plain objects', () => {
@@ -304,17 +304,17 @@ describe('Boxes', () => {
     });
 
     describe('composition', () => {
-      test('derive on zipWith', () => {
-        const a = Boxes.state(10);
-        const b = Boxes.state(20);
-        const result = Boxes.zipWith({ a, b }, (x) => x.a + x.b).derive((x) => x * 2);
+      test('derive on combine', () => {
+        const a = Boxes.fromValue(10);
+        const b = Boxes.fromValue(20);
+        const result = Boxes.combine({ a, b }, (x) => x.a + x.b).derive((x) => x * 2);
         expect(result.get()).toBe(60);
       });
 
-      test('zipWith of derived boxes', () => {
-        const a = Boxes.state(3).derive((x) => x * 2);
-        const b = Boxes.state(4).derive((x) => x * 2);
-        const result = Boxes.zipWith({ a, b }, (x) => x.a + x.b);
+      test('combine of derived boxes', () => {
+        const a = Boxes.fromValue(3).derive((x) => x * 2);
+        const b = Boxes.fromValue(4).derive((x) => x * 2);
+        const result = Boxes.combine({ a, b }, (x) => x.a + x.b);
         expect(result.get()).toBe(14);
       });
     });

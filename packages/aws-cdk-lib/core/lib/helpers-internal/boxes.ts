@@ -71,13 +71,20 @@ export interface Box<A> extends IReadableBox<A> {
  * individually, and the resulting metadata will contain one entry per `push` call
  * (plus one for the initial construction or last `set`, if any).
  */
-export interface ArrayBox<A> extends Box<Array<A>> {
+export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   /**
    * Appends an element to the array and captures a stack trace for this addition.
    *
    * @param a the element to append.
    */
   push(a: A): void;
+
+  /**
+   * Removes the last element from the array and captures a stack trace for this removal.
+   *
+   * @returns the removed element, or `undefined` if the array is empty.
+   */
+  pop(): A | undefined;
 
   /**
    * Creates a derived read-only box by applying `fn` to each element of the array.
@@ -88,6 +95,17 @@ export interface ArrayBox<A> extends Box<Array<A>> {
    * @returns a new read-only box holding the mapped array.
    */
   map<B>(fn: (a: A) => B): IReadableBox<Array<B>>;
+
+  /**
+   * Creates a derived read-only box by reducing the array to a single value.
+   *
+   * Shorthand for `this.derive(a => a.reduce(fn, initialValue))`.
+   *
+   * @param fn a reducer applied to each element.
+   * @param initialValue the initial accumulator value.
+   * @returns a new read-only box holding the reduced value.
+   */
+  reduce<B>(fn: (acc: B, a: A) => B, initialValue: B): IReadableBox<B>;
 }
 
 type StackTrace = Array<string>;
@@ -114,7 +132,7 @@ let globalSeq = 0;
  *
  *   constructor(scope: Construct, id: string) {
  *     super(scope, id);
- *     this.items = Boxes.array([]);
+ *     this.items = Boxes.fromArray([]);
  *     new CfnResource(this, 'Resource', {
  *       items: Token.asList(this.items),
  *     });
@@ -135,7 +153,7 @@ export class Boxes {
    *   Defaults to reference equality (`===`).
    * @returns a new `Box<A>`.
    */
-  public static state<A>(value: A, options?: { equals?: (a: A, b: A) => boolean }): Box<A> {
+  public static fromValue<A>(value: A, options?: { equals?: (a: A, b: A) => boolean }): Box<A> {
     return new State(value, options);
   }
 
@@ -150,16 +168,16 @@ export class Boxes {
    * @param fn a pure function that receives the unwrapped values and produces the result.
    * @returns a new read-only `IReadableBox<R>`.
    * @example
-   *   const a = Boxes.state(10);
-   *   const b = Boxes.state(20);
-   *   const result = Boxes.zipWith({ a, b }, (x) => x.a + x.b).derive((x) => x * 2);
+   *   const a = Boxes.fromValue(10);
+   *   const b = Boxes.fromValue(20);
+   *   const result = Boxes.combine({ a, b }, (x) => x.a + x.b).derive((x) => x * 2);
    *   result.get(); // 60
    */
-  public static zipWith<T extends Record<string, IReadableBox<any>>, R>(
+  public static combine<T extends Record<string, IReadableBox<any>>, R>(
     boxes: T,
     fn: (values: { [K in keyof T]: T[K] extends IReadableBox<infer U> ? U : never }) => R,
   ): IReadableBox<R> {
-    return new ZippedWith(boxes, fn);
+    return new Combined(boxes, fn);
   }
 
   /**
@@ -178,7 +196,7 @@ export class Boxes {
    * @param as the initial array contents.
    * @returns a new `ArrayBox<A>`.
    */
-  public static array<A>(as: Array<A>): ArrayBox<A> {
+  public static fromArray<A>(as: Array<A>): ArrayBox<A> {
     return new ArrayState(as);
   }
 
@@ -223,7 +241,7 @@ abstract class BaseReadableBox<A> implements IReadableBox<A> {
   }
 }
 
-class ZippedWith<T extends Record<string, IReadableBox<any>>, R> extends BaseReadableBox<R> {
+class Combined<T extends Record<string, IReadableBox<any>>, R> extends BaseReadableBox<R> {
   constructor(
     private readonly boxes: T,
     private readonly fn: (values: { [K in keyof T]: T[K] extends IReadableBox<infer U> ? U : never }) => R,
@@ -299,18 +317,36 @@ class State<A> extends BaseReadableBox<A> implements Box<A> {
 }
 
 class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
-  constructor(private as: Array<A>) {
-    super(as);
+  constructor(private array: Array<A>) {
+    super(array);
   }
 
   public push(a: A): void {
-    this.as.push(a);
+    this.array.push(a);
+    this.appendTrace(captureStackTrace(this.push.bind(this)));
+  }
+
+  public pop(): A | undefined {
+    const result = this.array.pop();
+    this.appendTrace(captureStackTrace(this.pop.bind(this)));
+    return result;
+  }
+
+  private appendTrace(trace: StackTrace): void {
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
-      this.orderedTraces.push({ trace: captureStackTrace(this.push.bind(this)), seq: globalSeq++ });
+      this.orderedTraces.push({ trace, seq: globalSeq++ });
     }
   }
 
   public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {
     return this.derive(arr => arr.map(fn));
+  }
+
+  public reduce<B>(fn: (acc: B, a: A) => B, initialValue: B): IReadableBox<B> {
+    return this.derive(arr => arr.reduce(fn, initialValue));
+  }
+
+  public [Symbol.iterator](): Iterator<A> {
+    return this.array[Symbol.iterator]();
   }
 }

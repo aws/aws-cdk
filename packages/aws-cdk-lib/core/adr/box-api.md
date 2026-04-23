@@ -18,13 +18,13 @@ We need a mechanism that:
 
 ## Decision
 
-We introduce the **Box API** (`Boxes.state`, `Boxes.array`, `Boxes.zipWith`) as a replacement for `Lazy` in L2 constructs. Boxes are mutable, observable containers that implement `IResolvable` (and thus participate in CDK token resolution) while capturing stack traces at the correct points in time.
+We introduce the **Box API** (`Boxes.fromValue`, `Boxes.fromArray`, `Boxes.combine`) as a replacement for `Lazy` in L2 constructs. Boxes are mutable, observable containers that implement `IResolvable` (and thus participate in CDK token resolution) while capturing stack traces at the correct points in time.
 
 ### Box Types
 
-- **`Boxes.state<A>(value)`** — A read/write box holding a single value. Calling `set(newValue)` replaces the value and captures a new stack trace at the call site.
-- **`Boxes.array<A>(values)`** — An array box. Supports `push(item)` in addition to `set(newArray)`. Each `push` captures its own stack trace.
-- **`Boxes.zipWith(boxes, fn)`** — A read-only derived box that combines multiple boxes through a function. It collects and merges stack traces from all source boxes, ordered by a global sequence number.
+- **`Boxes.fromValue<A>(value)`** — A read/write box holding a single value. Calling `set(newValue)` replaces the value and captures a new stack trace at the call site.
+- **`Boxes.fromArray<A>(values)`** — An array box. Supports `push(item)` in addition to `set(newArray)`. Each `push` captures its own stack trace.
+- **`Boxes.combine(boxes, fn)`** — A read-only derived box that combines multiple boxes through a function. It collects and merges stack traces from all source boxes, ordered by a global sequence number.
 - **`box.derive(fn)`** — A read-only computed box that transforms the value of a single source box. It inherits the source's stack traces.
 
 ### How Boxes Replace Lazy
@@ -62,7 +62,7 @@ class MyL2 extends Resource {
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    this._statements = Boxes.array([]);
+    this._statements = Boxes.fromArray([]);
 
     new CfnResource(this, 'Resource', {
       policyDocument: Token.asAny(this._statements.derive(stmts => this.renderPolicy(stmts))),
@@ -91,7 +91,7 @@ class MyL2 extends Resource {
   constructor(scope: Construct, id: string) {
     super(scope, id);
     // Box.set() / Box.push() calls here do NOT capture stack traces
-    this.myBox = Boxes.state('default');
+    this.myBox = Boxes.fromValue('default');
     this.myBox.set('initial value'); // No trace captured
   }
 
