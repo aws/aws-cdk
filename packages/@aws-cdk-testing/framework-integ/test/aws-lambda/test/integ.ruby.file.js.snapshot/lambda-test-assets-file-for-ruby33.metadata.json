@@ -1,0 +1,64 @@
+{
+  "/lambda-test-assets-file-for-ruby33/MyRuby33Lambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby33/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby33/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby33/MyRuby33Lambda/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby33/MyRuby33Lambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyRuby33Lambda335A543E"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby33/Exports/Output{\"Ref\":\"MyRuby33Lambda335A543E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyRuby33Lambda335A543E78F0067A"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby33/MyRuby33Lambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyRuby33LambdaServiceRole51E65E25"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby33/MyRuby33Lambda/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}
