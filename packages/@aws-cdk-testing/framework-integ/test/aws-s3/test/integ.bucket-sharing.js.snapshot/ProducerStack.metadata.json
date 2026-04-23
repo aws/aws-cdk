@@ -1,0 +1,99 @@
+{
+  "/ProducerStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:31:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ProducerStack/MyBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/ProducerStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ProducerStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ProducerStack/MyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketF68F3FF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Producer (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:15:24)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:31:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ProducerStack/Exports/Output{\"Fn::GetAtt\":[\"MyBucketF68F3FF0\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMyBucketF68F3FF0Arn0F7E8E58"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Producer.exportValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

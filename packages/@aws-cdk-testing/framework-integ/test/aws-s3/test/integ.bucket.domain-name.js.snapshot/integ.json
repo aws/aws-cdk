@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "53.0.0",
   "testCases": {
     "cdk-integ-bucket-domain-name/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-integ-bucket-domain-name/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegbucketdomainnameDefaultTestDeployAssert72465477"
     }
-  }
+  },
+  "minimumCliVersion": "2.1119.0"
 }

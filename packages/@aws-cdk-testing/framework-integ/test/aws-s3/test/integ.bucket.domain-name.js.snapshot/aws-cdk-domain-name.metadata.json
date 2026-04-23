@@ -1,0 +1,113 @@
+{
+  "/aws-cdk-domain-name": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.domain-name.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-domain-name/MyBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-domain-name/MyBucket2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-domain-name/RealBucketDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RealBucketDomain"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.domain-name.js:15:9)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.domain-name.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-domain-name/ImportedBucketDomain": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ImportedBucketDomain"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.domain-name.js:16:9)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.domain-name.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-domain-name/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-domain-name/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-domain-name/MyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketF68F3FF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.domain-name.js:9:24)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.domain-name.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

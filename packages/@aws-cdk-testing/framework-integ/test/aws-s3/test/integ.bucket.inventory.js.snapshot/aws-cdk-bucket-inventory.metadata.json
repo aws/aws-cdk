@@ -1,0 +1,175 @@
+{
+  "/aws-cdk-bucket-inventory": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.inventory.js:23:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bucket-inventory/InventoryBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bucket-inventory/AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "inventories": [
+          {
+            "destination": {
+              "bucket": "*"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addInventory": [
+          {
+            "destination": {
+              "bucket": "*"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bucket-inventory/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bucket-inventory/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bucket-inventory/InventoryBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InventoryBucketA869B8CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.inventory.js:9:33)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.inventory.js:23:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bucket-inventory/InventoryBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bucket-inventory/AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVery@#$+:;?!&LongNodeIdName/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryVeryLongNodeIdName525AF55D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.inventory.js:10:9)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket.inventory.js:23:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bucket-inventory/InventoryBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InventoryBucketPolicyEDF94353"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:287:31)",
+        "WrappedClass.addToResourcePolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:275:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2047: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2047:5)",
+        "Array.map (:)",
+        "WrappedClass.parseInventoryConfiguration (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2039:37)",
+        "Object.produce (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1340:82)",
+        "LazyAny.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/lazy.js:278:66)",
+        "LazyAny.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/lazy.js:323:32)",
+        "RememberingTokenResolver.resolveToken (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "RememberingTokenResolver.resolveToken (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:195:22)",
+        "resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:134:55)",
+        "Object.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "Object.resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:55:48)",
+        "resolve (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:149:51)",
+        "findTokens (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/resolve.js:185:5)",
+        "findAllReferences (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:139:55)",
+        "resolveReferences (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:32:19)",
+        "prepareApp (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

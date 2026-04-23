@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "cdk-integ-lambda-bucket-s3-notifications.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a4be5442d3877fcd1461e757a87dde096dc7d34f57071d3ccc0609a3b01564fb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/113de4228a09594a9f22084e5b8d7ca00f5e1d32d6280410342ab5097ab45781.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,241 +33,7 @@
       "dependencies": [
         "cdk-integ-lambda-bucket-s3-notifications.assets"
       ],
-      "metadata": {
-        "/cdk-integ-lambda-bucket-s3-notifications/MyBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/MyBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyBucketF68F3FF0"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/MyFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/MyFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/MyFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunctionServiceRole3C357FF2"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/MyFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunction3BAA72D1"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/YourBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/YourBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "YourBucketC6A57364"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/YourBucket/Notifications/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "YourBucketNotifications8D39901A"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/YourBucket/AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "YourBucketAllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39EAF10051"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addManagedPolicy": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/Construct1/IntegUnmanagedBucket1/Notifications/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Construct1IntegUnmanagedBucket1Notifications4A1599D7"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/Construct1/IntegUnmanagedBucket1/AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F39": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Construct1IntegUnmanagedBucket1AllowBucketNotificationsTocdkinteglambdabuckets3notificationsMyFunction47013F393FAEEFAB"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/Exports/Output{\"Ref\":\"MyBucketF68F3FF0\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefMyBucketF68F3FF0442F9925"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/cdk-integ-lambda-bucket-s3-notifications/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "cdk-integ-lambda-bucket-s3-notifications.metadata.json",
       "displayName": "cdk-integ-lambda-bucket-s3-notifications"
     },
     "LambdaBucketNotificationsTestDefaultTestDeployAssertDC5450F4.assets": {
@@ -287,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d8281948df5e0fd02ba7cbc8d28d8378b935ac314f525ac558439e13e817d084.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6dc2b435cb9481df8201be4cd8329ada59601b56fcb5e5d73d3c3d5dd1a00abd.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -303,58 +69,7 @@
         "cdk-integ-lambda-bucket-s3-notifications",
         "LambdaBucketNotificationsTestDefaultTestDeployAssertDC5450F4.assets"
       ],
-      "metadata": {
-        "/LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a"
-          }
-        ],
-        "/LambdaBucketNotificationsTest/DefaultTest/DeployAssert/AwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3getBucketNotificationConfigurationa12ea6c9e9639f75995e7228edc2fa6a"
-          }
-        ],
-        "/LambdaBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/LambdaBucketNotificationsTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/LambdaBucketNotificationsTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/LambdaBucketNotificationsTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "LambdaBucketNotificationsTestDefaultTestDeployAssertDC5450F4.metadata.json",
       "displayName": "LambdaBucketNotificationsTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -655,6 +370,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -856,16 +572,28 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "cdk-integ-s3-access-logs/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-integ-s3-access-logs/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegs3accesslogsDefaultTestDeployAssert37A16466"
     }
-  }
+  },
+  "minimumCliVersion": "2.1119.0"
 }

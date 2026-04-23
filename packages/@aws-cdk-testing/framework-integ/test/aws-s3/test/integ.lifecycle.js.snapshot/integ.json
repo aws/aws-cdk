@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "53.0.0",
   "testCases": {
     "cdk-integ-lifecycle/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-integ-lifecycle/DefaultTest/DeployAssert",
       "assertionStackName": "cdkinteglifecycleDefaultTestDeployAssert83FA03B1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1119.0"
 }

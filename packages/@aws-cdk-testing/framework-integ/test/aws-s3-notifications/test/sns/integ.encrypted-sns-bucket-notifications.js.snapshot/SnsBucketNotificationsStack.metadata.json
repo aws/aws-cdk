@@ -1,0 +1,566 @@
+{
+  "/SnsBucketNotificationsStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/Topic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "masterKey": "*"
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/Queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/SnsBucketNotificationsStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:16:24)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Topic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicBFC7AF6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns/lib/topic.js:270:30)",
+        "new Topic (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:19:23)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Topic/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topics": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/Queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Queue4A7E3555"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:22:22)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Queue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/Queue/SnsBucketNotificationsStackTopic94A66F53": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topic": "*",
+        "endpoint": "*",
+        "protocol": "sqs",
+        "rawMessageDelivery": "*",
+        "filterPolicy": "*",
+        "filterPolicyWithMessageBody": "*",
+        "region": "*",
+        "deadLetterQueue": "*"
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketF68F3FF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:24:23)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SnsBucketNotificationsStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:99:25)",
+        "new AutoDeleteObjectsProvider (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:24:23)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:115:24)",
+        "new AutoDeleteObjectsProvider (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:24:23)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NotificationsResourceHandler (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:75:26)",
+        "NotificationsResourceHandler.singleton (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
+        "BucketNotifications.createResourceOnce (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:100:93)",
+        "BucketNotifications.addNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:28:21)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Exports/Output{\"Ref\":\"MyBucketF68F3FF0\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyBucketF68F3FF0442F9925"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "MyStack.exportValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Exports/Output{\"Ref\":\"Queue4A7E3555\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefQueue4A7E3555425E8BD3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "MyStack.exportValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Topic/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TopicPolicyA1747468"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TopicPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns/lib/policy.js:118:13)",
+        "new TopicPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createTopicPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:121:27)",
+        "WrappedClass.addToResourcePolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:100:14)",
+        "SnsDestination.bind (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3-notifications/lib/sns.js:38:20)",
+        "BucketNotifications.addNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:55:36)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:28:21)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Queue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueuePolicy25439813"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "SqsSubscription.bind (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns-subscriptions/lib/sqs.js:66:50)",
+        "WrappedClass.addSubscription (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:58:54)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:23:15)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/Queue/SnsBucketNotificationsStackTopic94A66F53/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "QueueSnsBucketNotificationsStackTopic94A66F53B0AFCD28"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subscription (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns/lib/subscription.js:140:13)",
+        "new Subscription (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addSubscription (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:69:30)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:23:15)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketPolicyE7FBAC7B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:287:31)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2082:18)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:24:23)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketAutoDeleteObjectsCustomResource2C28D565"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketAutoDeleteObjects.applyTo (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:24:23)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/Notifications/HandlerPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/Notifications/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketNotifications46AC0CD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "BucketNotifications.createResourceOnce (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:116:29)",
+        "BucketNotifications.addNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:28:21)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NotificationsResourceHandler (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:59:35)",
+        "NotificationsResourceHandler.singleton (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
+        "BucketNotifications.createResourceOnce (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:100:93)",
+        "BucketNotifications.addNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:28:21)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SnsBucketNotificationsStack/MyBucket/Notifications/HandlerPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketNotificationsHandlerPolicy983F24BD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketNotifications.addHandlerPermissions (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:172:24)",
+        "BucketNotifications.createResourceOnce (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:115:39)",
+        "BucketNotifications.addNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "new MyStack (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:28:21)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sns/integ.encrypted-sns-bucket-notifications.js:37:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "/ConsumerStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:33:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ConsumerStack/MyUser": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/ConsumerStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ConsumerStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ConsumerStack/MyUser/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyUserDC45028B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new User (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-iam/lib/user.js:257:30)",
+        "new User (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Consumer (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:27:22)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:33:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/ConsumerStack/MyUser/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/ConsumerStack/MyUser/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyUserDefaultPolicy7B897426"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-iam/lib/user.js:342:38)",
+        "WrappedClass.<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)",
+        "BucketGrants.readWrite (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:240:21)",
+        "WrappedClass.grantReadWrite (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/aws-cdk-lib/aws-s3/lib/bucket.js:528:32)",
+        "new Consumer (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:28:26)",
+        "<anonymous> (/Users/hunhsieh/repos/aws-cdk-wip/aws-cdk-latest/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-sharing.js:33:17)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

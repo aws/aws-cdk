@@ -40,31 +40,32 @@ new integ.IntegTest(app, 'ScopedPermissionsTest', {
 // Add assertions to verify IAM policies are scoped to specific bucket ARNs
 const template = Template.fromStack(stack);
 
-// Verify that IAM policies do not contain wildcard permissions
+// Verify that each bucket has its own dedicated IAM policy with scoped permissions
+// (not a shared policy with wildcard permissions)
+// See https://github.com/aws/aws-cdk/issues/37667
 template.hasResourceProperties('AWS::IAM::Policy', {
   PolicyDocument: {
     Statement: Match.arrayWith([
       Match.objectLike({
         Effect: 'Allow',
         Action: 's3:PutBucketNotification',
-        Resource: Match.not('*'), // Ensure no wildcard permissions
+        Resource: Match.objectLike({
+          'Fn::GetAtt': [Match.stringLikeRegexp('Bucket1'), 'Arn'],
+        }),
       }),
     ]),
   },
 });
 
-// Verify that the IAM policy contains specific bucket ARNs
 template.hasResourceProperties('AWS::IAM::Policy', {
   PolicyDocument: {
     Statement: Match.arrayWith([
       Match.objectLike({
         Effect: 'Allow',
         Action: 's3:PutBucketNotification',
-        Resource: Match.arrayWith([
-          Match.objectLike({
-            'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Bucket[12]'), 'Arn']),
-          }),
-        ]),
+        Resource: Match.objectLike({
+          'Fn::GetAtt': [Match.stringLikeRegexp('Bucket2'), 'Arn'],
+        }),
       }),
     ]),
   },

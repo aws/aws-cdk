@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "files": {
     "680224db1786deb417c994d38f450f115dd410266ba1ffc919b54991e5a73e4a": {
+      "displayName": "aws-cdk-s3-access-logs Template",
       "source": {
         "path": "aws-cdk-s3-access-logs.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-afd49afb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "680224db1786deb417c994d38f450f115dd410266ba1ffc919b54991e5a73e4a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

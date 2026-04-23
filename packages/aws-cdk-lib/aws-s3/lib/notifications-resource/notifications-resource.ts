@@ -139,8 +139,12 @@ export class BucketNotifications extends Construct {
         managed = false;
       }
 
-      // Add permissions for this bucket to the handler
-      this.addHandlerPermissions(handler, managed);
+      // Add permissions for this bucket to the handler via a dedicated policy.
+      // Each bucket gets its own IAM policy so that when a notification is removed,
+      // the policy is deleted (not updated), and CloudFormation correctly orders
+      // the custom resource deletion before the policy deletion.
+      // See https://github.com/aws/aws-cdk/issues/37667
+      const bucketPolicy = this.addHandlerPermissions(handler, managed);
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
@@ -152,6 +156,11 @@ export class BucketNotifications extends Construct {
           SkipDestinationValidation: this.skipDestinationValidation,
         },
       });
+
+      // The custom resource must depend on its dedicated IAM policy so that
+      // on deletion, the custom resource is deleted first (handler still has
+      // permission), then the policy is deleted.
+      this.resource.node.addDependency(bucketPolicy);
 
       // Add dependency on bucket policy if it exists to avoid race conditions
       // S3 does not allow calling PutBucketPolicy and PutBucketNotification APIs at the same time
@@ -181,22 +190,27 @@ export class BucketNotifications extends Construct {
    * @param handler The notifications resource handler
    * @param managed Whether this is a managed (CDK-created) bucket
    */
-  private addHandlerPermissions(handler: NotificationsResourceHandler, managed: boolean): void {
-    // All buckets need PutBucketNotification to set/update notification configurations
-    handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: [this.bucket.bucketArn],
-    }));
+  private addHandlerPermissions(handler: NotificationsResourceHandler, managed: boolean): iam.Policy {
+    const statements = [
+      new iam.PolicyStatement({
+        actions: ['s3:PutBucketNotification'],
+        resources: [this.bucket.bucketArn],
+      }),
+    ];
 
     // Unmanaged (imported) buckets need GetBucketNotification to read existing configurations
     // before merging with new notifications. Managed buckets don't need this since CDK
     // controls their complete notification state from creation.
     if (!managed) {
-      handler.addToRolePolicy(new iam.PolicyStatement({
+      statements.push(new iam.PolicyStatement({
         actions: ['s3:GetBucketNotification'],
         resources: [this.bucket.bucketArn],
       }));
     }
+
+    const policy = new iam.Policy(this, 'HandlerPolicy', { statements });
+    handler.role.attachInlinePolicy(policy);
+    return policy;
   }
 }
 

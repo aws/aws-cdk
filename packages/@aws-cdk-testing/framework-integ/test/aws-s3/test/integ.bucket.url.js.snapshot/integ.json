@@ -1,5 +1,5 @@
 {
-  "version": "30.1.0",
+  "version": "53.0.0",
   "testCases": {
     "cdk-integ-s3-urls/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "cdk-integ-s3-urls/DefaultTest/DeployAssert",
       "assertionStackName": "cdkintegs3urlsDefaultTestDeployAssertDB43F13E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1119.0"
 }
