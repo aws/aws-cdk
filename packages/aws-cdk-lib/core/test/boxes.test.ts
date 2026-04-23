@@ -202,6 +202,19 @@ describe('Boxes', () => {
         expect(box.get()).toEqual([1, 2, 3]);
       });
 
+      test('push() accepts multiple arguments', () => {
+        const box = Boxes.fromArray([1]);
+        box.push(2, 3, 4);
+        expect(box.get()).toEqual([1, 2, 3, 4]);
+      });
+
+      test('push() accepts spread operator', () => {
+        const box = Boxes.fromArray([1]);
+        const other = [2, 3, 4];
+        box.push(...other);
+        expect(box.get()).toEqual([1, 2, 3, 4]);
+      });
+
       test('set() replaces the array', () => {
         const box = Boxes.fromArray([1, 2]);
         box.set([10, 20, 30]);

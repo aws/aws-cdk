@@ -73,11 +73,11 @@ export interface Box<A> extends IReadableBox<A> {
  */
 export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   /**
-   * Appends an element to the array and captures a stack trace for this addition.
+   * Appends one or more elements to the array and captures a stack trace for this addition.
    *
-   * @param a the element to append.
+   * @param items the elements to append.
    */
-  push(a: A): void;
+  push(...items: A[]): void;
 
   /**
    * Removes the last element from the array and captures a stack trace for this removal.
@@ -321,8 +321,8 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
     super(array);
   }
 
-  public push(a: A): void {
-    this.array.push(a);
+  public push(...items: A[]): void {
+    this.array.push(...items);
     this.appendTrace(captureStackTrace(this.push.bind(this)));
   }
 
