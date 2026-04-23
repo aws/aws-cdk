@@ -1,6 +1,6 @@
 import { Boxes } from './helpers-internal/boxes';
 
-type ArbitraryConstructor = { new (...args: any[]): {} };
+type ArbitraryConstructor = (abstract new (...args: any[]) => {}) | (new (...args: any[]) => {});
 
 /**
  * Class decorator that disables box stack trace collection for the duration of
