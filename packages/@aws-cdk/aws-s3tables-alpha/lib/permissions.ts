@@ -88,11 +88,11 @@ export const REPLICATION_DESTINATION_TABLE_ACCESS = [
 export const REPLICATION_KEY_SOURCE_ACCESS = [
   'kms:Decrypt',
   'kms:GenerateDataKey',
-  'kms:Encrypt',
 ];
 
 // KMS: destination key (per S3 Tables replication permissions doc)
 export const REPLICATION_KEY_DESTINATION_ACCESS = [
+  'kms:Encrypt',
   'kms:Decrypt',
   'kms:GenerateDataKey',
 ];
