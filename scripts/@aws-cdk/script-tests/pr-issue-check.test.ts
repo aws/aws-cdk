@@ -50,7 +50,7 @@ async function runCheck(body: string, opts: { issues?: Record<number, MockIssue>
   const core = createMockCore();
   const context = createMockContext(body);
   const github = createMockGithub(opts);
-  await prIssueCheck({ github, context, core });
+  await prIssueCheck({ github: github as any, context: context as any, core: core as any });
   return { core, github };
 }
 
@@ -308,7 +308,7 @@ describe('should comment - invalid issue references', () => {
     github.rest.issues.get.mockRejectedValue(Object.assign(new Error('Gone'), { status: 410 }));
     const core = createMockCore();
     const context = createMockContext(body);
-    await prIssueCheck({ github, context, core });
+    await prIssueCheck({ github: github as any, context: context as any, core: core as any });
     expect(github.rest.issues.createComment).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.stringContaining('#50 (does not exist)'),
@@ -409,7 +409,7 @@ describe('comment management', () => {
     const core = createMockCore();
     const context = createMockContext(body);
     const github = createMockGithub({ existingComments: [existingComment] });
-    await prIssueCheck({ github, context, core });
+    await prIssueCheck({ github: github as any, context: context as any, core: core as any });
     expect(github.rest.issues.updateComment).toHaveBeenCalledWith(
       expect.objectContaining({ comment_id: 100 }),
     );
@@ -433,7 +433,7 @@ describe('comment management', () => {
       issues: { 2: { state: 'open' } },
       existingComments: [existingComment],
     });
-    await prIssueCheck({ github, context, core });
+    await prIssueCheck({ github: github as any, context: context as any, core: core as any });
     expect(github.rest.issues.deleteComment).toHaveBeenCalledWith(
       expect.objectContaining({ comment_id: 200 }),
     );
@@ -445,7 +445,7 @@ describe('comment management', () => {
     const context = createMockContext(body);
     const github = createMockGithub();
     github.rest.issues.createComment.mockRejectedValue(new Error('rate limited'));
-    await prIssueCheck({ github, context, core });
+    await prIssueCheck({ github: github as any, context: context as any, core: core as any });
     expect(core.warning).toHaveBeenCalledWith(expect.stringContaining('rate limited'));
   });
 });
