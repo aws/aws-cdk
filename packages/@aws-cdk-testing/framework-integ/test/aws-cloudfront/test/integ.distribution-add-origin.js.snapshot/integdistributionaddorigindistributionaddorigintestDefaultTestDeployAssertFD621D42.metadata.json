@@ -10,17 +10,5 @@
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
     }
-  ],
-  "/integ-distribution-add-origin/distribution-add-origin-test/DefaultTest/DeployAssert/CDKMetadata/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CDKMetadata"
-    }
-  ],
-  "/integ-distribution-add-origin/distribution-add-origin-test/DefaultTest/DeployAssert/CDKMetadata/Condition": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CDKMetadataAvailable"
-    }
   ]
 }

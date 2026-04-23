@@ -1,4 +1,18 @@
 {
+  "/integ-distribution-add-origin/Dist": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
   "/integ-distribution-add-origin/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -15,18 +29,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "DistB3B78991"
-    }
-  ],
-  "/integ-distribution-add-origin/CDKMetadata/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CDKMetadata"
-    }
-  ],
-  "/integ-distribution-add-origin/CDKMetadata/Condition": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "CDKMetadataAvailable"
     }
   ]
 }
