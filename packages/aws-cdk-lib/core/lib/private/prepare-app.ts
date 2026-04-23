@@ -5,26 +5,19 @@ import { CfnResource } from '../cfn-resource';
 import { Stack } from '../stack';
 import { Stage } from '../stage';
 import { iterateDfsPostorder, iterateDfsPreorder } from './construct-iteration';
-import type { IPropertyNameLookupTable } from './resolve';
 import { writePropertyAssignmentMetadataForConstruct } from './resolve';
 import { debugModeEnabled } from '../debug';
 
 function writePropertyAssignmentMetadata(root: IConstruct) {
   if (!debugModeEnabled()) return;
 
-  function lookupTableFn(c: IConstruct): IPropertyNameLookupTable {
-    return {
-      cfnPropertyName: (cdkPropertyName: string) => {
-        return CfnResource.isCfnResource(c)
-          ? c.cfnPropertyName(cdkPropertyName)
-          : undefined;
-      },
-    };
-  }
+  const lookupTableFor = (c: CfnResource) => ({
+    cfnPropertyName: (cdkPropertyName: string) => c.cfnPropertyName(cdkPropertyName),
+  });
 
   for (const consumer of iterateDfsPreorder(root)) {
     if (CfnResource.isCfnResource(consumer)) {
-      writePropertyAssignmentMetadataForConstruct(consumer, () => consumer._toCloudFormation(), lookupTableFn(consumer));
+      writePropertyAssignmentMetadataForConstruct(consumer, () => consumer._toCloudFormation(), lookupTableFor(consumer));
     }
   }
 }

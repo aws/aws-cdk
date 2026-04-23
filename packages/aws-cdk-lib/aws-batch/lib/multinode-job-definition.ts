@@ -5,9 +5,9 @@ import { Compatibility } from './ecs-job-definition';
 import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
 import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
-import type { ArrayBox } from '../../core';
-import { ArnFormat, Boxes, Stack, Token } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { ArnFormat, Stack, Token } from '../../core';
+import type { ArrayBox } from '../../core/lib/helpers-internal';
+import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
