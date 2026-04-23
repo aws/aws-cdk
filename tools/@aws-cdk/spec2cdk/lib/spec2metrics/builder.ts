@@ -143,13 +143,7 @@ export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
     const resourceDimSets = this.db.follow('resourceHasDimensionSet', resource).map(e => e.entity);
     if (resourceDimSets.length === 0) return;
 
-    const context: MetricsGenerationContext = {
-      db: this.db,
-      cloudwatchModule: new ExternalModule('aws-cdk-lib/aws-cloudwatch'),
-      metricsModule: submodule.metricsModule,
-    };
-
-    const factoryGen = new ResourceFactoryGenerator(context, submodule, resource);
+    const factoryGen = new ResourceFactoryGenerator(submodule, submodule.metricsModule, resource);
     for (const dimSet of resourceDimSets) {
       factoryGen.tryAddFactory(dimSet);
     }
@@ -243,6 +237,8 @@ class DimensionSetClassGenerator {
     for (const metric of this.merged.metrics) {
       const baseName = metricMethodName(metric.name);
       if (usedMethodNames.has(baseName)) {
+        // TODO: remove once the 7 affected metrics (6 of which are for deprecated services) have been removed in the service spec
+        // This happens when 2 metrics with the same name but different statistics are associated with 2 different resources in the same namespace
         log.debug(`Skipping duplicate metric method '${baseName}' in ${nsClassName}.${className} (metric: ${metric.name}, namespace: ${namespace}, statistic: ${metric.statistic})`);
         continue;
       }
@@ -310,8 +306,8 @@ class ResourceFactoryGenerator {
   private readonly refProps: Set<string>;
 
   constructor(
-    private readonly context: MetricsGenerationContext,
     private readonly submodule: MetricsServiceModule,
+    private readonly metricsModule: Module,
     private readonly resource: Resource,
   ) {
     const referenceProps = new ResourceReference(resource).referenceProps;
@@ -347,7 +343,7 @@ class ResourceFactoryGenerator {
 
     const refInterfaceName = naming.referenceInterfaceName(this.resource.name);
     const serviceModule = new ExternalModule(`aws-cdk-lib/${this.submodule.submoduleName}`);
-    serviceModule.importSelective(this.context.metricsModule, [refInterfaceName]);
+    serviceModule.importSelective(this.metricsModule, [refInterfaceName]);
 
     const refInterface = Type.fromName(serviceModule, refInterfaceName);
     const refAttrName = naming.referenceInterfaceAttributeName(this.resource.name);
@@ -460,9 +456,6 @@ function namespaceClassName(namespace: string): string {
 function dimSetClassName(ds: MergedDimensionSet | DimensionSet): string {
   if (ds.dimensions.length === 0) {
     return 'AccountMetrics';
-  }
-  if (!ds.name) {
-    throw new Error(`DimensionSet is missing a name (dimensions: ${ds.dimensions.map(d => d.name).join(', ')})`);
   }
   return `${sanitizeName(ds.name)}Metrics`;
 }
