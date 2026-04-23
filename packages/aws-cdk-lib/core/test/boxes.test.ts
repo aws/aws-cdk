@@ -202,6 +202,13 @@ describe('Boxes', () => {
         expect(box.get()).toEqual([1, 2, 3]);
       });
 
+      test('set() followed by push() resets the array', () => {
+        const box = Boxes.fromArray([1, 2, 3]);
+        box.set([42]);
+        box.push(43);
+        expect(box.get()).toEqual([42, 43]);
+      });
+
       test('push() accepts multiple arguments', () => {
         const box = Boxes.fromArray([1]);
         box.push(2, 3, 4);

@@ -87,6 +87,28 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   pop(): A | undefined;
 
   /**
+   * Returns the index of the first element that satisfies the predicate, or -1.
+   *
+   * Delegates to `Array.prototype.findIndex` on the underlying array.
+   *
+   * @param predicate a function called for each element.
+   * @returns the index of the first matching element, or -1.
+   */
+  findIndex(predicate: (value: A, index: number, obj: Array<A>) => unknown): number;
+
+  /**
+   * Removes elements from the array and optionally inserts new elements in their place.
+   *
+   * Delegates to `Array.prototype.splice` on the underlying array.
+   *
+   * @param start the zero-based index at which to start changing the array.
+   * @param deleteCount the number of elements to remove.
+   * @param items elements to insert at `start`.
+   * @returns an array of the removed elements.
+   */
+  splice(start: number, deleteCount: number, ...items: A[]): A[];
+
+  /**
    * Creates a derived read-only box by applying `fn` to each element of the array.
    *
    * Shorthand for `this.derive(a => a.map(fn))`.
@@ -321,6 +343,11 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
     super(array);
   }
 
+  public set(value: Array<A>): void {
+    super.set(value);
+    this.array = value;
+  }
+
   public push(...items: A[]): void {
     this.array.push(...items);
     this.appendTrace(captureStackTrace(this.push.bind(this)));
@@ -329,6 +356,16 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
   public pop(): A | undefined {
     const result = this.array.pop();
     this.appendTrace(captureStackTrace(this.pop.bind(this)));
+    return result;
+  }
+
+  public findIndex(predicate: (value: A, index: number, obj: Array<A>) => unknown): number {
+    return this.array.findIndex(predicate);
+  }
+
+  public splice(start: number, deleteCount: number, ...items: A[]): A[] {
+    const result = this.array.splice(start, deleteCount, ...items);
+    this.appendTrace(captureStackTrace(this.splice.bind(this)));
     return result;
   }
 
