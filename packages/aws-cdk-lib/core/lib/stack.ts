@@ -467,6 +467,10 @@ export class Stack extends Construct implements ITaggable {
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
+    if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
+    }
+
     this._logicalIds = new LogicalIDs();
 
     const { account, region, environment } = this.parseEnvironment(props.env);
@@ -1903,4 +1907,6 @@ import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
+import { debugModeEnabled } from './debug';
+import { captureStackTrace } from './stack-trace';
 /* eslint-enable import/order */

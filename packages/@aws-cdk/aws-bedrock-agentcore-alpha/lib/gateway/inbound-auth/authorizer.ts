@@ -15,6 +15,8 @@ export enum GatewayAuthorizerType {
   CUSTOM_JWT = 'CUSTOM_JWT',
   /** AWS IAM authorizer type */
   AWS_IAM = 'AWS_IAM',
+  /** No authorization type */
+  NONE = 'NONE',
 }
 
 /**
@@ -134,6 +136,24 @@ export class IamAuthorizer implements IGatewayAuthorizerConfig {
 }
 
 /******************************************************************************
+ *                               No Authorization
+ *****************************************************************************/
+
+/**
+ * No authorization configuration implementation
+ */
+export class NoAuthAuthorizer implements IGatewayAuthorizerConfig {
+  public readonly authorizerType = GatewayAuthorizerType.NONE;
+
+  /**
+   * @internal
+   */
+  _render(): any {
+    return undefined;
+  }
+}
+
+/******************************************************************************
  *                               Factory
  *****************************************************************************/
 
@@ -203,5 +223,19 @@ export abstract class GatewayAuthorizer {
       allowedScopes: props.allowedScopes,
       customClaims: props.customClaims,
     });
+  }
+
+  /**
+   * No authorization — the gateway will not perform any inbound authorization.
+   *
+   * The gateway endpoint will be publicly accessible without credentials.
+   * Use this for testing/development, or for production gateways where you have
+   * implemented compensating controls such as Gateway Interceptors.
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none
+   * @returns IGatewayAuthorizerConfig configured for no authorization
+   */
+  public static withNoAuth(): IGatewayAuthorizerConfig {
+    return new NoAuthAuthorizer();
   }
 }
