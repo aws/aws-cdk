@@ -244,31 +244,22 @@ property. By default, CDK creates a least-privilege IAM role trusted by the
 S3 Tables replication service with the required permissions on the source
 and destination table buckets (and their KMS keys, when applicable).
 
-Replicate to one or more destinations (up to 5), with an auto-created role:
+Replicate to one or more destinations (up to 5):
 
 ```ts
 declare const destA: TableBucket;
 declare const destB: TableBucket;
 
-new TableBucket(scope, 'SourceMulti', {
-    tableBucketName: 'source-multi',
-    replicationDestinations: [destA, destB],
-});
-```
-
-Bring your own replication role (advanced):
-
-```ts
-declare const destination: TableBucket;
-
+// Optional: CDK creates a least-privilege role by default, so this is
+// normally unnecessary. Supply a role only if you need to control its
+// trust policy, permissions boundary, name, or similar.
 const role = new iam.Role(scope, 'MyReplicationRole', {
     assumedBy: new iam.ServicePrincipal('replication.s3tables.amazonaws.com'),
 });
-// ...attach your own least-privilege permissions to `role`...
 
-new TableBucket(scope, 'SourceByoRole', {
-    tableBucketName: 'source-byo-role',
-    replicationDestinations: [destination],
+new TableBucket(scope, 'SourceMulti', {
+    tableBucketName: 'source-multi',
+    replicationDestinations: [destA, destB],
     replicationRole: role,
 });
 ```
