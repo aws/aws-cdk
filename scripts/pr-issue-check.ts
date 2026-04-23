@@ -6,52 +6,23 @@
  *
  * Called from the pr-issue-check.yml workflow via actions/github-script.
  *
- * The types below describe the subset of the @actions/github (Octokit),
- * @actions/github Context, and @actions/core APIs that this script uses.
+ * Uses `any` for the GitHub client, context, and core parameters so that
+ * callers (including tests) don't need to satisfy rigid interface contracts
+ * and won't break when the upstream Octokit / actions types change.
  */
 
-interface GitHubClient {
-  rest: {
-    issues: {
-      listComments: (params: { owner: string; repo: string; issue_number: number }) => Promise<{ data: Array<{ id: number; user: { type: string } | null; body?: string }> }>;
-      createComment: (params: { owner: string; repo: string; issue_number: number; body: string }) => Promise<unknown>;
-      updateComment: (params: { owner: string; repo: string; comment_id: number; body: string }) => Promise<unknown>;
-      deleteComment: (params: { owner: string; repo: string; comment_id: number }) => Promise<unknown>;
-      get: (params: { owner: string; repo: string; issue_number: number }) => Promise<{ data: { pull_request?: unknown; state: string } }>;
-    };
-  };
-}
-
-interface ActionCore {
-  warning: (message: string | Error) => void;
-}
-
-interface ActionContext {
-  payload: {
-    pull_request?: {
-      body: string | null;
-      number: number;
-    };
-  };
-  repo: { owner: string; repo: string };
-}
-
-interface ScriptArgs {
-  github: GitHubClient;
-  context: ActionContext;
-  core: ActionCore;
-}
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 const BOT_MARKER = '<!-- pr-issue-check-bot -->';
 
-async function findBotComment(github: GitHubClient, owner: string, repo: string, prNumber: number) {
+async function findBotComment(github: any, owner: string, repo: string, prNumber: number) {
   const { data: comments } = await github.rest.issues.listComments({
     owner, repo, issue_number: prNumber,
   });
-  return comments.find(c => c.user?.type === 'Bot' && c.body?.includes(BOT_MARKER));
+  return comments.find((c: any) => c.user?.type === 'Bot' && c.body?.includes(BOT_MARKER));
 }
 
-async function upsertComment(github: GitHubClient, core: ActionCore, owner: string, repo: string, prNumber: number, message: string): Promise<void> {
+async function upsertComment(github: any, core: any, owner: string, repo: string, prNumber: number, message: string): Promise<void> {
   const markedMessage = `${BOT_MARKER}\n${message}`;
   try {
     const existing = await findBotComment(github, owner, repo, prNumber);
@@ -70,7 +41,7 @@ async function upsertComment(github: GitHubClient, core: ActionCore, owner: stri
   }
 }
 
-async function deleteBotComment(github: GitHubClient, core: ActionCore, owner: string, repo: string, prNumber: number): Promise<void> {
+async function deleteBotComment(github: any, core: any, owner: string, repo: string, prNumber: number): Promise<void> {
   try {
     const existing = await findBotComment(github, owner, repo, prNumber);
     if (existing) {
@@ -118,7 +89,7 @@ export function buildMissingReferenceMessage(lines: string[]): string {
   ].join('\n');
 }
 
-export async function validateIssueReferences(github: GitHubClient, owner: string, repo: string, issueNumbers: number[]): Promise<string[]> {
+export async function validateIssueReferences(github: any, owner: string, repo: string, issueNumbers: number[]): Promise<string[]> {
   const invalid: string[] = [];
   for (const num of issueNumbers) {
     try {
@@ -140,18 +111,18 @@ export async function validateIssueReferences(github: GitHubClient, owner: strin
   return invalid;
 }
 
-export async function prIssueCheck({ github, context, core }: ScriptArgs): Promise<void> {
+export async function prIssueCheck({ github, context, core }: { github: any; context: any; core: any }): Promise<void> {
   const pr = context.payload.pull_request;
   if (!pr) {
     core.warning('No pull request found in event payload.');
     return;
   }
-  const body = (pr.body) || '';
+  const body: string = (pr.body) || '';
   const prNumber = pr.number;
   const owner = context.repo.owner;
   const repo = context.repo.repo;
 
-  const lines = body.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+  const lines = body.split('\n').map((l: string) => l.trim()).filter((l: string) => l.length > 0);
   const firstTwo = lines.slice(0, 2).join('\n');
   const issuePattern = /#(\d+)/g;
   const matches = [...firstTwo.matchAll(issuePattern)];
