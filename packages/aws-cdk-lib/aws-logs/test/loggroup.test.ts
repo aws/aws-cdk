@@ -564,76 +564,6 @@ describe('log group', () => {
     });
   });
 
-  test('set data protection policy with custom name and description and no audit destinations', () => {
-    // GIVEN
-    const stack = new Stack();
-
-    const dataProtectionPolicy = new DataProtectionPolicy({
-      name: 'test-policy-name',
-      description: 'test description',
-      identifiers: [DataIdentifier.EMAILADDRESS],
-    });
-
-    // WHEN
-    const logGroupName = 'test-log-group';
-    new LogGroup(stack, 'LogGroup', {
-      logGroupName: logGroupName,
-      dataProtectionPolicy: dataProtectionPolicy,
-    });
-
-    // THEN
-    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
-      LogGroupName: logGroupName,
-      DataProtectionPolicy: {
-        Name: 'test-policy-name',
-        Description: 'test description',
-        Version: '2021-06-01',
-        Statement: [
-          {
-            Sid: 'audit-statement-cdk',
-            DataIdentifier: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
-                ],
-              },
-            ],
-            Operation: {
-              Audit: {
-                FindingsDestination: {},
-              },
-            },
-          },
-          {
-            Sid: 'redact-statement-cdk',
-            DataIdentifier: [
-              {
-                'Fn::Join': [
-                  '',
-                  [
-                    'arn:',
-                    { Ref: 'AWS::Partition' },
-                    ':dataprotection::aws:data-identifier/EmailAddress',
-                  ],
-                ],
-              },
-            ],
-            Operation: {
-              Deidentify: {
-                MaskConfig: {},
-              },
-            },
-          },
-        ],
-      },
-    });
-  });
-
   test('set data protection policy string-based data identifier', () => {
     // GIVEN
     const stack = new Stack();
@@ -841,6 +771,79 @@ describe('log group', () => {
             Sid: 'redact-statement-cdk',
             DataIdentifier: [
               'EmployeeId',
+            ],
+            Operation: {
+              Deidentify: {
+                MaskConfig: {},
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test.each([
+    DataIdentifier.EMAILADDRESS,
+    DataIdentifier.DATEOFBIRTH,
+  ])('set %s data protection policy with custom name and description and no audit destinations', (id) => {
+    // GIVEN
+    const stack = new Stack();
+
+    const dataProtectionPolicy = new DataProtectionPolicy({
+      name: 'test-policy-name',
+      description: 'test description',
+      identifiers: [id],
+    });
+
+    // WHEN
+    const logGroupName = 'test-log-group';
+    new LogGroup(stack, 'LogGroup', {
+      logGroupName: logGroupName,
+      dataProtectionPolicy: dataProtectionPolicy,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: logGroupName,
+      DataProtectionPolicy: {
+        Name: 'test-policy-name',
+        Description: 'test description',
+        Version: '2021-06-01',
+        Statement: [
+          {
+            Sid: 'audit-statement-cdk',
+            DataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    `:dataprotection::aws:data-identifier/${id.name}`,
+                  ],
+                ],
+              },
+            ],
+            Operation: {
+              Audit: {
+                FindingsDestination: {},
+              },
+            },
+          },
+          {
+            Sid: 'redact-statement-cdk',
+            DataIdentifier: [
+              {
+                'Fn::Join': [
+                  '',
+                  [
+                    'arn:',
+                    { Ref: 'AWS::Partition' },
+                    `:dataprotection::aws:data-identifier/${id.name}`,
+                  ],
+                ],
+              },
             ],
             Operation: {
               Deidentify: {
