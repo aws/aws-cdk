@@ -1,7 +1,7 @@
 import { LambdaMetrics } from '../lib/services/aws-lambda/metrics.generated';
 
 test('statistic can be overridden via MetricOptions', () => {
-  const metrics = new LambdaMetrics.FunctionNameMetrics({
+  const metrics = new LambdaMetrics.FunctionMetrics({
     functionName: 'my-function',
   });
 

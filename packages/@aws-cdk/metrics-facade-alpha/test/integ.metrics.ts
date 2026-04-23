@@ -36,8 +36,8 @@ class MetricsDashboard extends cdk.Stack {
     const l2Metrics = LambdaMetrics.fromFunction(fn);
 
     // Unscoped metrics with explicit dimensions
-    const unscopedByName = new LambdaMetrics.FunctionNameMetrics({ functionName: 'my-function' });
-    const unscopedByResource = new LambdaMetrics.FunctionNamePerResourceMetrics({
+    const unscopedByName = new LambdaMetrics.FunctionMetrics({ functionName: 'my-function' });
+    const unscopedByResource = new LambdaMetrics.ResourceMetrics({
       functionName: 'my-function',
       resource: 'prod',
     });
