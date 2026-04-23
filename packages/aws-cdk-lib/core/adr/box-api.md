@@ -167,24 +167,22 @@ User code                    L2 construct                 L1 construct          
 myL2.addItem(x)  ──────►  arrayBox.push(x)                                        
                            [captures stack trace]                                   
                                     │                                               
-                                    │  (wired at construction via Token.asList)     
+                                    │  (wired at construction 
+                                    │    via Token.asList)     
                                     ▼                                               
-                              Token.asList(arrayBox)  ──►  cfnProps.items           
-                                                                  │                 
-                                                                  ▼                 
-                                                           _toCloudFormation()      
-                                                                  │                 
-                                                                  ▼  (during prepareApp)
-                                                     PropertyAssignmentMetadataWriter
-                                                           resolveToken()           
-                                                                  │                 
-                                                                  ▼                 
-                                                     aws:cdk:propertyAssignment     
-                                                     {                              
-                                                       propertyName: "Items",       
-                                                       stackTrace: [user's code]    
-                                                     }                              
-```
+                              Token.asList(arrayBox)  ──►  cfnProps.items  ──►  _toCloudFormation()                                                                                       
+                                                                                          │                 
+                                                                                          ▼  (during prepareApp)
+                                                                             PropertyAssignmentMetadataWriter
+                                                                                   resolveToken()           
+                                                                                          │                 
+                                                                                          ▼                 
+                                                                             aws:cdk:propertyAssignment     
+                                                                             {                              
+                                                                               propertyName: "Items",       
+                                                                               stackTrace: [user's code]    
+                                                                             }                              
+         ```
 
 ## Consequences
 

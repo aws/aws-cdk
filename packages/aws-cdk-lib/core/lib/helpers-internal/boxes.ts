@@ -139,6 +139,11 @@ export class Boxes {
    * @param boxes a record of named source boxes.
    * @param fn a pure function that receives the unwrapped values and produces the result.
    * @returns a new read-only `IReadableBox<R>`.
+   * @example
+   *   const a = Boxes.state(10);
+   *   const b = Boxes.state(20);
+   *   const result = Boxes.zipWith({ a, b }, (x) => x.a + x.b).derive((x) => x * 2);
+   *   result.get(); // 60
    */
   public static zipWith<T extends Record<string, IReadableBox<any>>, R>(
     boxes: T,

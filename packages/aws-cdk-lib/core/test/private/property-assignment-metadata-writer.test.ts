@@ -228,8 +228,7 @@ describe('PropertyAssignmentMetadataWriter', () => {
   });
 });
 
-// todo RENAME
-describe('Integrated', () => {
+describe('Entire synthesis workflow', () => {
   interface CfnFooProps {
     scalar: string | IResolvable;
     anotherScalar: string | IResolvable;
@@ -244,7 +243,7 @@ describe('Integrated', () => {
   class CfnFoo extends CfnResource {
     private readonly _scalar: string | IResolvable;
     private _anotherScalar: string | IResolvable;
-    private _derivedScalar: number | IResolvable;
+    private readonly _derivedScalar: number | IResolvable;
     private readonly _array: string[] | IResolvable;
     private readonly _nested: {
       scalar: string | IResolvable;
