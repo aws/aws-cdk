@@ -1,0 +1,193 @@
+{
+  "/InAccountReplicationStack/Dest": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/InAccountReplicationStack/Src": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/InAccountReplicationStack/SrcNs": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/InAccountReplicationStack/SrcTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/InAccountReplicationStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/InAccountReplicationStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/InAccountReplicationStack/Dest/Dest": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Dest19D1B204"
+    }
+  ],
+  "/InAccountReplicationStack/Src/ReplicationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/InAccountReplicationStack/Src/Src": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcF041394B"
+    }
+  ],
+  "/InAccountReplicationStack/SrcNs/SrcNs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcNs4F2AC532"
+    }
+  ],
+  "/InAccountReplicationStack/SrcTable/SrcTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcTableF6A9F8CF"
+    }
+  ],
+  "/InAccountReplicationStack/Exports/Output{\"Fn::GetAtt\":[\"Dest19D1B204\",\"TableBucketARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+    }
+  ],
+  "/InAccountReplicationStack/Src/ReplicationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcReplicationRoleC6562B9B"
+    }
+  ],
+  "/InAccountReplicationStack/Src/ReplicationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/InAccountReplicationStack/Src/ReplicationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcReplicationRoleDefaultPolicy690C00E0"
+    }
+  ]
+}

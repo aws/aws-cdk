@@ -1,0 +1,778 @@
+{
+ "Resources": {
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "GetTableCommand",
+    "expected": "{\"$ObjectLike\":{\"name\":\"integrepltbl\"}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitFor577F549B"
+    },
+    "parameters": {
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "InAccountReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+        },
+        "\""
+       ]
+      ]
+     },
+     "namespace": "\"integreplns\"",
+     "name": "\"integrepltbl\""
+    },
+    "flattenResponse": "false",
+    "salt": "1776906612732"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForIsCompleteProviderInvokeAE1F77F3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForRole130ED016",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForTimeoutProviderInvoke7B32AEF8": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForRole130ED016",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForRole130ED016": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitFor577F549B": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":30,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForRole130ED016",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForRole130ED016"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3tables:GetTable"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:DeleteTable"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:DeleteNamespace"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:GetTable"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "states:StartExecution"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:DeleteTable"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:DeleteNamespace"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": [
+          "s3tables:GetTable"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        },
+        {
+         "Action": [
+          "s3tables:GetTable"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.isComplete",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.onTimeout",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b6": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesDeleteTa",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "DeleteTableCommand",
+    "parameters": {
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "InAccountReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+        },
+        "\""
+       ]
+      ]
+     },
+     "namespace": "\"integreplns\"",
+     "name": "\"integrepltbl\""
+    },
+    "flattenResponse": "false",
+    "salt": "1776906612734"
+   },
+   "DependsOn": [
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForIsCompleteProviderInvokeAE1F77F3",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitFor577F549B",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForRole130ED016",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitForTimeoutProviderInvoke7B32AEF8"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b1027": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesDeleteNa",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "DeleteNamespaceCommand",
+    "parameters": {
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "InAccountReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+        },
+        "\""
+       ]
+      ]
+     },
+     "namespace": "\"integreplns\""
+    },
+    "flattenResponse": "false",
+    "salt": "1776906612734"
+   },
+   "DependsOn": [
+    "AwsApiCallawssdkclients3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b6"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesGetTable",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "GetTableCommand",
+    "expected": "{\"$ObjectLike\":{\"name\":\"integrepltbl\"}}",
+    "stateMachineArn": {
+     "Ref": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitFor0D10E316"
+    },
+    "parameters": {
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "BringYourOwnRoleReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+        },
+        "\""
+       ]
+      ]
+     },
+     "namespace": "\"integreplns\"",
+     "name": "\"integrepltbl\""
+    },
+    "flattenResponse": "false",
+    "salt": "1776906612734"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForIsCompleteProviderInvoke1F516CC0": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForRole1652F980",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForTimeoutProviderInvokeEDD3E4C7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+      "Arn"
+     ]
+    },
+    "Principal": {
+     "Fn::GetAtt": [
+      "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForRole1652F980",
+      "Arn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForRole1652F980": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "states.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "Policies": [
+     {
+      "PolicyName": "InlineInvokeFunctions",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Action": "lambda:InvokeFunction",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::GetAtt": [
+            "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+            "Arn"
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitFor0D10E316": {
+   "Type": "AWS::StepFunctions::StateMachine",
+   "Properties": {
+    "DefinitionString": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"StartAt\":\"framework-isComplete-task\",\"States\":{\"framework-isComplete-task\":{\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"States.ALL\"],\"IntervalSeconds\":30,\"MaxAttempts\":30,\"BackoffRate\":1}],\"Catch\":[{\"ErrorEquals\":[\"States.ALL\"],\"Next\":\"framework-onTimeout-task\"}],\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE",
+         "Arn"
+        ]
+       },
+       "\"},\"framework-onTimeout-task\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
+       {
+        "Fn::GetAtt": [
+         "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA",
+         "Arn"
+        ]
+       },
+       "\"}}}"
+      ]
+     ]
+    },
+    "RoleArn": {
+     "Fn::GetAtt": [
+      "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForRole1652F980",
+      "Arn"
+     ]
+    }
+   },
+   "DependsOn": [
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForRole1652F980"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b61": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesDeleteTa",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "DeleteTableCommand",
+    "parameters": {
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "BringYourOwnRoleReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+        },
+        "\""
+       ]
+      ]
+     },
+     "namespace": "\"integreplns\"",
+     "name": "\"integrepltbl\""
+    },
+    "flattenResponse": "false",
+    "salt": "1776906612735"
+   },
+   "DependsOn": [
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForIsCompleteProviderInvoke1F516CC0",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitFor0D10E316",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForRole1652F980",
+    "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForTimeoutProviderInvokeEDD3E4C7"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b10271": {
+   "Type": "Custom::DeployAssert@SdkCall@aws-sdkclient-s3tablesDeleteNa",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "@aws-sdk/client-s3tables",
+    "api": "DeleteNamespaceCommand",
+    "parameters": {
+     "tableBucketARN": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "BringYourOwnRoleReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+        },
+        "\""
+       ]
+      ]
+     },
+     "namespace": "\"integreplns\""
+    },
+    "flattenResponse": "false",
+    "salt": "1776906612735"
+   },
+   "DependsOn": [
+    "AwsApiCallawssdkclients3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b61"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

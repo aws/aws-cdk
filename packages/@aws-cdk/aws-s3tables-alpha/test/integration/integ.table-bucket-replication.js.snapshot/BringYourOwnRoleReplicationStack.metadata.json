@@ -1,0 +1,193 @@
+{
+  "/BringYourOwnRoleReplicationStack/Dest": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/ReplicationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/Src": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/SrcNs": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/SrcTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/Dest/Dest": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Dest19D1B204"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/ReplicationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicationRoleCE149CEC"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/ReplicationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/Src/Src": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcF041394B"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/SrcNs/SrcNs": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcNs4F2AC532"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/SrcTable/SrcTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrcTableF6A9F8CF"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/Exports/Output{\"Fn::GetAtt\":[\"Dest19D1B204\",\"TableBucketARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+    }
+  ],
+  "/BringYourOwnRoleReplicationStack/ReplicationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ReplicationRoleDefaultPolicy80AD15BB"
+    }
+  ]
+}

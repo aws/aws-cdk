@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "dcf5543149351f750962490470fb611e1a9423832d029be70ee7a3fade2b80f5": {
+      "displayName": "InAccountReplicationStack Template",
+      "source": {
+        "path": "InAccountReplicationStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-99336ff4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "dcf5543149351f750962490470fb611e1a9423832d029be70ee7a3fade2b80f5.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

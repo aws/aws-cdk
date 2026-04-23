@@ -10,16 +10,22 @@ import * as s3tables from '../../lib';
  * Case 1: in-account, in-region destination with an auto-created replication role.
  * Case 2: in-account, in-region destination with a bring-your-own (BYO) replication role.
  *
- * In addition to verifying that the replication configuration is emitted on the
- * source bucket, each case also creates a namespace on the source and waits for
- * the replication service to propagate it to the destination — this is the
- * end-to-end behaviour users ultimately care about.
+ * Each case creates a namespace + table on the source as native CloudFormation
+ * resources (L2 `Namespace` + `Table`) and then waits for the table to appear on
+ * the destination — this exercises the replication pipeline end-to-end. S3
+ * Tables replication operates at the table level, so an empty namespace alone
+ * is never propagated; a table is required to trigger replication.
+ *
+ * Before the stacks tear down, the test also deletes the replicated
+ * namespace/table from the destination so that CloudFormation can delete the
+ * destination bucket cleanly (S3 Tables refuses to delete non-empty buckets).
  *
  * Cross-region coverage is intentionally omitted here to keep this integ test
  * scoped and fast; it can be added later once the in-account path is stable.
  */
 
 const REPL_NAMESPACE = 'integreplns';
+const REPL_TABLE = 'integrepltbl';
 
 abstract class ReplicationTestBase extends core.Stack {
   public abstract validateAssertions(integ: IntegTest): void;
@@ -33,37 +39,20 @@ class InAccountReplicationStack extends ReplicationTestBase {
     super(scope, id, props);
 
     this.destination = new s3tables.TableBucket(this, 'Dest', {
-      tableBucketName: 'integ-tb-repl-dst',
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      tableBucketName: 'integ-tb-repl-dst-v4',
     });
 
     this.source = new s3tables.TableBucket(this, 'Src', {
-      tableBucketName: 'integ-tb-repl-src',
+      tableBucketName: 'integ-tb-repl-src-v4',
       replicationDestinations: [this.destination],
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
+
+    createSourceTable(this, this.source);
   }
 
   public validateAssertions(integ: IntegTest) {
-    const replicationConfig = integ.assertions.awsApiCall(
-      '@aws-sdk/client-s3tables',
-      'GetTableBucketReplicationCommand',
-      { tableBucketARN: this.source.tableBucketArn },
-    );
-
-    replicationConfig.expect(ExpectedResult.objectLike({
-      replicationConfiguration: {
-        rules: [
-          {
-            destinations: [
-              { destinationTableBucketArn: this.destination.tableBucketArn },
-            ],
-          },
-        ],
-      },
-    }));
-
-    verifyNamespaceReplicates(integ, this.source, this.destination, replicationConfig);
+    verifyTableReplicates(integ, this.destination);
   }
 }
 
@@ -76,8 +65,7 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
     super(scope, id, props);
 
     this.destination = new s3tables.TableBucket(this, 'Dest', {
-      tableBucketName: 'integ-tb-repl-byo-dst',
-      removalPolicy: core.RemovalPolicy.DESTROY,
+      tableBucketName: 'integ-tb-repl-byo-dst-v4',
     });
 
     this.role = new iam.Role(this, 'ReplicationRole', {
@@ -88,7 +76,7 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
     const sourceArn = core.Stack.of(this).formatArn({
       service: 's3tables',
       resource: 'bucket',
-      resourceName: 'integ-tb-repl-byo-src',
+      resourceName: 'integ-tb-repl-byo-src-v4',
     });
 
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
@@ -124,76 +112,91 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
     }));
 
     this.source = new s3tables.TableBucket(this, 'Src', {
-      tableBucketName: 'integ-tb-repl-byo-src',
+      tableBucketName: 'integ-tb-repl-byo-src-v4',
       replicationDestinations: [this.destination],
       replicationRole: this.role,
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
+
+    createSourceTable(this, this.source);
   }
 
   public validateAssertions(integ: IntegTest) {
-    const replicationConfig = integ.assertions.awsApiCall(
-      '@aws-sdk/client-s3tables',
-      'GetTableBucketReplicationCommand',
-      { tableBucketARN: this.source.tableBucketArn },
-    );
-
-    replicationConfig.expect(ExpectedResult.objectLike({
-      replicationConfiguration: {
-        role: this.role.roleArn,
-        rules: [
-          {
-            destinations: [
-              { destinationTableBucketArn: this.destination.tableBucketArn },
-            ],
-          },
-        ],
-      },
-    }));
-
-    verifyNamespaceReplicates(integ, this.source, this.destination, replicationConfig);
+    verifyTableReplicates(integ, this.destination);
   }
 }
 
 /**
- * Chain: create a namespace on the source, then poll the destination until it
- * appears (or the total timeout is reached). The `GetNamespaceCommand` call
- * will throw `NotFoundException` until the replication service has propagated
- * the namespace, so `waitForAssertions` retries it.
+ * Creates a namespace + empty Iceberg table on the source bucket as native CFN
+ * resources. The table's presence is what the replication service picks up and
+ * copies to the destination; an empty namespace alone would not be replicated.
  */
-function verifyNamespaceReplicates(
-  integ: IntegTest,
-  source: s3tables.ITableBucket,
-  destination: s3tables.ITableBucket,
-  previous: ReturnType<IntegTest['assertions']['awsApiCall']>,
-) {
-  const createNamespace = integ.assertions.awsApiCall(
-    '@aws-sdk/client-s3tables',
-    'CreateNamespaceCommand',
-    {
-      tableBucketARN: source.tableBucketArn,
-      namespace: [REPL_NAMESPACE],
-    },
-  );
+function createSourceTable(stack: core.Stack, source: s3tables.TableBucket) {
+  const namespace = new s3tables.Namespace(stack, 'SrcNs', {
+    namespaceName: REPL_NAMESPACE,
+    tableBucket: source,
+    removalPolicy: core.RemovalPolicy.DESTROY,
+  });
 
-  const getDestinationNamespace = integ.assertions.awsApiCall(
+  new s3tables.Table(stack, 'SrcTable', {
+    tableName: REPL_TABLE,
+    namespace,
+    openTableFormat: s3tables.OpenTableFormat.ICEBERG,
+    withoutMetadata: true,
+    removalPolicy: core.RemovalPolicy.DESTROY,
+  });
+}
+
+/**
+ * Poll the destination for the replicated table (retrying until the replication
+ * service has copied it across), then delete the replicated table + namespace
+ * on the destination. The delete step is required because S3 Tables will reject
+ * bucket deletion during stack teardown if any namespace remains.
+ */
+function verifyTableReplicates(
+  integ: IntegTest,
+  destination: s3tables.ITableBucket,
+) {
+  const getDestinationTable = integ.assertions.awsApiCall(
     '@aws-sdk/client-s3tables',
-    'GetNamespaceCommand',
+    'GetTableCommand',
     {
       tableBucketARN: destination.tableBucketArn,
       namespace: REPL_NAMESPACE,
+      name: REPL_TABLE,
     },
   ).expect(ExpectedResult.objectLike({
-    namespace: [REPL_NAMESPACE],
+    name: REPL_TABLE,
   })).waitForAssertions({
     totalTimeout: core.Duration.minutes(15),
     interval: core.Duration.seconds(30),
   });
 
-  previous.next(createNamespace).next(getDestinationNamespace);
+  const deleteDestinationTable = integ.assertions.awsApiCall(
+    '@aws-sdk/client-s3tables',
+    'DeleteTableCommand',
+    {
+      tableBucketARN: destination.tableBucketArn,
+      namespace: REPL_NAMESPACE,
+      name: REPL_TABLE,
+    },
+  );
+
+  const deleteDestinationNamespace = integ.assertions.awsApiCall(
+    '@aws-sdk/client-s3tables',
+    'DeleteNamespaceCommand',
+    {
+      tableBucketARN: destination.tableBucketArn,
+      namespace: REPL_NAMESPACE,
+    },
+  );
+
+  getDestinationTable.next(deleteDestinationTable).next(deleteDestinationNamespace);
 }
 
 const app = new core.App();
+
+core.RemovalPolicies.of(app).apply(core.RemovalPolicy.DESTROY);
 
 const testCases = [
   new InAccountReplicationStack(app, 'InAccountReplicationStack'),
