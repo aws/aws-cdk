@@ -16,7 +16,7 @@ jobs:
       - name: Compile TypeScript
         run: npx tsc --project scripts/tsconfig.pr-issue-check.json
       - name: Check PR description for issue reference
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
