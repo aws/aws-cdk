@@ -89,7 +89,7 @@ const step = new MediaConvertCreateJob(stack, 'MediaConvertCreateJob', {
 });
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition: step,
+  definitionBody: sfn.DefinitionBody.fromChainable(step),
 });
 
 new IntegTest(app, 'MediaConvertCreateJobTest', {
