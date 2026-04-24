@@ -2,7 +2,7 @@ import { Construct } from 'constructs';
 import { assertNoPrototypePollution } from './prototype-pollution';
 import { getWarnings } from './util';
 import * as cxschema from '../../cloud-assembly-schema';
-import { VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '../../cx-api';
+import { DISABLE_CREATION_STACK_TRACES, VALIDATE_SNAPSHOT_REMOVAL_POLICY } from '../../cx-api';
 import * as core from '../lib';
 import { Names } from '../lib';
 
@@ -397,19 +397,45 @@ describe('cfn resource', () => {
   });
 
   test('CfnResource has logical ID metadata with stack trace attached', () => {
-    process.env.CDK_DEBUG = '1';
+    const app = new core.App();
+    const stack = new core.Stack(app, 'Stack');
+    const res = new core.CfnResource(stack, 'SomeCfnResource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const metadata = res.node.metadata.find(m => m.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
+    expect(metadata).toBeDefined();
+  });
+
+  test.each([
+    [false, false, true],
+    [false, true, true],
+    [true, false, false],
+    [true, true, true],
+  ])('CfnResource has creation stack stacktrace with DISABLE_CREATION_STACK_TRACE=%p and CDK_DEBUG=%p: %p', (disableStack, enableDebug, expected) => {
+    if (enableDebug) {
+      process.env.CDK_DEBUG = '1';
+    }
     try {
-      const app = new core.App();
+      const app = new core.App({
+        context: {
+          [DISABLE_CREATION_STACK_TRACES]: disableStack,
+        },
+      });
       const stack = new core.Stack(app, 'Stack');
       const res = new core.CfnResource(stack, 'SomeCfnResource', {
         type: 'Some::Resource',
       });
 
       // THEN
-      const metadata = res.node.metadata.find(m => m.type === cxschema.ArtifactMetadataEntryType.LOGICAL_ID);
-      expect(metadata).toBeDefined();
-      expect(metadata?.trace).toBeDefined();
-      expect(metadata?.trace?.length).toBeGreaterThan(0);
+      const metadata = res.node.metadata.find(m => m.type === 'aws:cdk:creationStack');
+
+      if (expected) {
+        expect(metadata).toBeDefined();
+      } else {
+        expect(metadata).not.toBeDefined();
+      }
     } finally {
       delete process.env.CDK_DEBUG;
     }

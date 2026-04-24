@@ -1614,31 +1614,20 @@ generated CloudFormation templates against your policies immediately after
 synthesis. If there are any violations, the synthesis will fail and a report
 will be printed to the console or to a file (see below).
 
-> [!NOTE]
-> This feature is considered experimental, and both the plugin API and the
-> format of the validation report are subject to change in the future.
-
 ### For application developers
 
 To use one or more validation plugins in your application, use the
-`policyValidationBeta1` property of `Stage`:
+`Validations.of()` API:
 
 ```ts fixture=validation-plugin
 // globally for the entire app (an app is a stage)
-const app = new App({
-  policyValidationBeta1: [
-    // These hypothetical classes implement IPolicyValidationPluginBeta1:
-    new ThirdPartyPluginX(),
-    new ThirdPartyPluginY(),
-  ],
-});
+const app = new App();
+Validations.of(app).addPlugins(new ThirdPartyPluginX());
+Validations.of(app).addPlugins(new ThirdPartyPluginY());
 
 // only apply to a particular stage
-const prodStage = new Stage(app, 'ProdStage', {
-  policyValidationBeta1: [
-    new ThirdPartyPluginX(),
-  ],
-});
+const prodStage = new Stage(app, 'ProdStage');
+Validations.of(prodStage).addPlugins(new ThirdPartyPluginX());
 ```
 
 Immediately after synthesis, all plugins registered this way will be invoked to
@@ -1656,7 +1645,7 @@ By default, the report will be printed in a human-readable format. If you want a
 report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
 context passing it directly to the application:
 
-```ts
+```ts fixture=validation-plugin
 const app = new App({
   context: { '@aws-cdk/core:validationReportJson': true },
 });
@@ -1669,7 +1658,7 @@ Alternatively, you can set this context key-value pair using the `cdk.json` or
 It is also possible to enable both JSON and human-readable formats by setting
 `@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
 
-```ts
+```ts fixture=validation-plugin
 const app = new App({
   context: {
     '@aws-cdk/core:validationReportJson': true,
@@ -1686,21 +1675,21 @@ the standard output.
 ### For plugin authors
 
 The communication protocol between the CDK core module and your policy tool is
-defined by the `IPolicyValidationPluginBeta1` interface. To create a new plugin you must
+defined by the `IPolicyValidationPlugin` interface. To create a new plugin you must
 write a class that implements this interface. There are two things you need to
 implement: the plugin name (by overriding the `name` property), and the
 `validate()` method.
 
-The framework will call `validate()`, passing an `IPolicyValidationContextBeta1` object.
+The framework will call `validate()`, passing an `IPolicyValidationContext` object.
 The location of the templates to be validated is given by `templatePaths`. The
-plugin should return an instance of `PolicyValidationPluginReportBeta1`. This object
-represents the report that the user wil receive at the end of the synthesis.
+plugin should return an instance of `PolicyValidationPluginReport`. This object
+represents the report that the user will receive at the end of the synthesis.
 
 ```ts fixture=validation-plugin
-class MyPlugin implements IPolicyValidationPluginBeta1 {
+class MyPlugin implements IPolicyValidationPlugin {
   public readonly name = 'MyPlugin';
 
-  public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     // First read the templates using context.templatePaths...
 
     // ...then perform the validation, and then compose and return the report.
@@ -1723,7 +1712,7 @@ class MyPlugin implements IPolicyValidationPluginBeta1 {
 ```
 
 In addition to the name, plugins may optionally report their version (`version`
-property ) and a list of IDs of the rules they are going to evaluate (`ruleIds`
+property) and a list of IDs of the rules they are going to evaluate (`ruleIds`
 property).
 
 Note that plugins are not allowed to modify anything in the cloud assembly. Any

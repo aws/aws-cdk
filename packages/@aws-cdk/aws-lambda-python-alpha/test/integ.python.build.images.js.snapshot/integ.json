@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "53.0.0",
   "testCases": {
     "lambda-python-build-images/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "lambda-python-build-images/DefaultTest/DeployAssert",
       "assertionStackName": "lambdapythonbuildimagesDefaultTestDeployAssertB7623923"
     }
-  }
+  },
+  "minimumCliVersion": "2.1119.0"
 }
