@@ -97,6 +97,16 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   findIndex(predicate: (value: A, index: number, obj: Array<A>) => unknown): number;
 
   /**
+   * Returns the first element that satisfies the predicate, or `undefined`.
+   *
+   * Delegates to `Array.prototype.find` on the underlying array.
+   *
+   * @param predicate a function called for each element.
+   * @returns the first matching element, or `undefined`.
+   */
+  find(predicate: (value: A, index: number, obj: Array<A>) => unknown): A | undefined;
+
+  /**
    * Removes elements from the array and optionally inserts new elements in their place.
    *
    * Delegates to `Array.prototype.splice` on the underlying array.
@@ -361,6 +371,10 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
 
   public findIndex(predicate: (value: A, index: number, obj: Array<A>) => unknown): number {
     return this.array.findIndex(predicate);
+  }
+
+  public find(predicate: (value: A, index: number, obj: Array<A>) => unknown): A | undefined {
+    return this.array.find(predicate);
   }
 
   public splice(start: number, deleteCount: number, ...items: A[]): A[] {
