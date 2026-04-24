@@ -107,6 +107,11 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   find(predicate: (value: A, index: number, obj: Array<A>) => unknown): A | undefined;
 
   /**
+   * Returns the number of elements in the array.
+   */
+  readonly length: number;
+
+  /**
    * Removes elements from the array and optionally inserts new elements in their place.
    *
    * Delegates to `Array.prototype.splice` on the underlying array.
@@ -375,6 +380,10 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
 
   public find(predicate: (value: A, index: number, obj: Array<A>) => unknown): A | undefined {
     return this.array.find(predicate);
+  }
+
+  public get length(): number {
+    return this.array.length;
   }
 
   public splice(start: number, deleteCount: number, ...items: A[]): A[] {
