@@ -29,7 +29,7 @@ beforeEach(() => {
   jest.spyOn(Code, 'fromAsset');
 
   detectPackageInstallationMock = jest.spyOn(PackageInstallation, 'detect').mockReturnValue({
-    isLocal: true,
+    isWorkspacePackage: true,
     version: '0.8.8',
   });
 
@@ -731,7 +731,7 @@ test('Local bundling', () => {
 
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
-    isLocal: true,
+    isWorkspacePackage: true,
     version: '3.4.5',
   });
 

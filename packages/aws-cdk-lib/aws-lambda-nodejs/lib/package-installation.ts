@@ -11,7 +11,7 @@ export abstract class PackageInstallation {
       const version = tryGetModuleVersionFromRequire(module);
       if (version) {
         return {
-          isLocal: true,
+          isWorkspacePackage: true,
           version,
         };
       }
@@ -20,7 +20,7 @@ export abstract class PackageInstallation {
       const proc = spawnSync(module, ['--version']);
       if (proc.status === 0 && !proc.error) {
         return {
-          isLocal: false,
+          isWorkspacePackage: false,
           version: proc.stdout.toString().trim(),
         };
       }
@@ -30,6 +30,6 @@ export abstract class PackageInstallation {
     }
   }
 
-  public abstract readonly isLocal: boolean;
+  public abstract readonly isWorkspacePackage: boolean;
   public abstract readonly version: string;
 }

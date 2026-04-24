@@ -330,21 +330,24 @@ export class Bundling implements cdk.BundlingOptions {
 
     steps.push({ type: 'spawn', command: [...this.packageManager.installCommand], cwd: outputDir });
 
-    if (isPnpm || isBun) {
+    if (isPnpm) {
       steps.push({
         type: 'callback',
         operation: () => {
-          if (isPnpm) {
-            const modulesYaml = path.join(outputDir, 'node_modules', '.modules.yaml');
-            if (fs.existsSync(modulesYaml)) {
-              fs.rmSync(modulesYaml, { force: true });
-            }
+          const modulesYaml = path.join(outputDir, 'node_modules', '.modules.yaml');
+          if (fs.existsSync(modulesYaml)) {
+            fs.rmSync(modulesYaml, { force: true });
           }
-          if (isBun) {
-            const cacheDir = path.join(outputDir, 'node_modules', '.cache');
-            if (fs.existsSync(cacheDir)) {
-              fs.rmSync(cacheDir, { recursive: true, force: true });
-            }
+        },
+      });
+    }
+    if (isBun) {
+      steps.push({
+        type: 'callback',
+        operation: () => {
+          const cacheDir = path.join(outputDir, 'node_modules', '.cache');
+          if (fs.existsSync(cacheDir)) {
+            fs.rmSync(cacheDir, { recursive: true, force: true });
           }
         },
       });
@@ -354,13 +357,10 @@ export class Bundling implements cdk.BundlingOptions {
   }
 
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
-    const osPlatform = os.platform();
-    const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
-    const self = this;
 
     return {
-      tryBundle(outputDir: string) {
+      tryBundle: (outputDir: string) => {
         if (!Bundling.esbuildInstallation) {
           process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
           return false;
@@ -370,63 +370,19 @@ export class Bundling implements cdk.BundlingOptions {
           throw new ValidationError(lit`ExpectedEsbuildVersion`, `Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
         }
 
-        const execOptions = {
-          env: { ...process.env, ...environment },
-          stdio: [
-            'ignore', // ignore stdio
-            process.stderr, // redirect stdout to stderr
-            'inherit', // inherit stderr
-          ] as ['ignore', NodeJS.WriteStream, 'inherit'],
-          cwd,
-        };
-
         const esbuild = Bundling.esbuildInstallation!;
         const tsc = Bundling.tscInstallation;
 
-        const steps = self.createBundlingSteps(scope, {
+        const steps = this.createBundlingSteps(scope, {
           inputDir: cwd,
           outputDir,
           pathJoin: (...args: string[]) => path.join(...args),
-          esbuildRunner: esbuild.isLocal ? self.packageManager.runBinCommand('esbuild') : ['esbuild'],
-          tscRunner: tsc && (tsc.isLocal ? self.packageManager.runBinCommand('tsc') : ['tsc']),
-          createFileOps: (deps) => self.localFileOps(outputDir, deps),
+          esbuildRunner: esbuild.isWorkspacePackage ? this.packageManager.runBinCommand('esbuild') : ['esbuild'],
+          tscRunner: tsc && (tsc.isWorkspacePackage ? this.packageManager.runBinCommand('tsc') : ['tsc']),
+          createFileOps: (deps) => this.localFileOps(outputDir, deps),
         });
-        for (const step of steps) {
-          switch (step.type) {
-            case 'shell':
-              for (const cmd of step.commands) {
-                exec(
-                  osPlatform === 'win32' ? (process.env.COMSPEC ?? 'cmd') : 'bash',
-                  [osPlatform === 'win32' ? '/c' : '-c', cmd],
-                  { ...execOptions, windowsVerbatimArguments: osPlatform === 'win32' },
-                );
-              }
-              break;
-            case 'spawn':
-              // On Windows with Node 22+, spawnSync fails with EINVAL when invoking
-              // .cmd shims (e.g. npx.cmd) directly. Route through powershell instead.
-              // See https://github.com/aws/aws-cdk/issues/37387
-              if (osPlatform === 'win32') {
-                exec('powershell.exe', ['-NoProfile', '-Command', `& ${step.command.map(powershellEscape).join(' ')}`], {
-                  ...execOptions,
-                  cwd: step.cwd ?? cwd,
-                });
-              } else {
-                exec(step.command[0], step.command.slice(1), {
-                  ...execOptions,
-                  cwd: step.cwd ?? cwd,
-                });
-              }
-              break;
-            case 'callback':
-              try {
-                step.operation();
-              } catch (err) {
-                throw new ValidationError(lit`LocalBundlingFileOperationFailed`, `Local bundling file operation failed: ${err instanceof Error ? err.message : String(err)}`, scope);
-              }
-              break;
-          }
-        }
+
+        this.executeBundlingSteps(scope, steps);
 
         return true;
       },
@@ -497,6 +453,64 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     return steps;
+  }
+
+  private executeBundlingSteps(scope: IConstruct, steps: BundlingStep[]) {
+    const cwd = this.projectRoot;
+    const osPlatform = os.platform();
+    const isWindows = osPlatform === 'win32';
+    const environment = this.props.environment ?? {};
+
+    const execOptions = {
+      env: { ...process.env, ...environment },
+      stdio: [
+        'ignore', // ignore stdio
+        process.stderr, // redirect stdout to stderr
+        'inherit', // inherit stderr
+      ] as ['ignore', NodeJS.WriteStream, 'inherit'],
+      cwd,
+    };
+
+    for (const step of steps) {
+      switch (step.type) {
+        case 'shell':
+          for (const cmd of step.commands) {
+            if (isWindows) {
+              exec(process.env.COMSPEC ?? 'cmd', ['/c', cmd], {
+                ...execOptions,
+                windowsVerbatimArguments: true,
+              });
+            } else {
+              exec('bash', ['-c', cmd], execOptions);
+            }
+          }
+          break;
+        case 'spawn':
+          // On Windows, spawnSync fails with EINVAL when invoking .cmd shims
+          // (e.g. npx.cmd, npx.bat) directly. We need to route through a shell.
+          // Powershell.exe instead of cmd.exe because the quoting rules are saner.
+          // See https://github.com/aws/aws-cdk/issues/37387
+          if (isWindows) {
+            exec('powershell.exe', ['-NoProfile', '-Command', `& ${step.command.map(powershellEscape).join(' ')}`], {
+              ...execOptions,
+              cwd: step.cwd ?? cwd,
+            });
+          } else {
+            exec(step.command[0], step.command.slice(1), {
+              ...execOptions,
+              cwd: step.cwd ?? cwd,
+            });
+          }
+          break;
+        case 'callback':
+          try {
+            step.operation();
+          } catch (err) {
+            throw new ValidationError(lit`LocalBundlingFileOperationFailed`, `Local bundling file operation failed: ${err instanceof Error ? err.message : String(err)}`, scope);
+          }
+          break;
+      }
+    }
   }
 }
 
