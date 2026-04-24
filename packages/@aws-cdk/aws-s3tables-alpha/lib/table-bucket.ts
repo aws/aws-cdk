@@ -717,6 +717,7 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
       if ( key === undefined ) {
         return { bucketEncryption: undefined, encryptionKey: undefined };
       } else {
+        this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
         return {
           bucketEncryption: {
             kmsKeyArn: key.keyArn,
@@ -733,8 +734,8 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
           description: `Created by ${this.node.path}`,
           enableKeyRotation: true,
         });
-        this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
       }
+      this.allowTablesMaintenanceAccessToKey(key, props.tableBucketName);
       return {
         bucketEncryption: {
           kmsKeyArn: key.keyArn,
@@ -858,11 +859,25 @@ export class TableBucket extends TableBucketBase implements ITaggableV2 {
 
     if (sourceKey) {
       sourceKey.grant(role, ...perms.REPLICATION_KEY_SOURCE_ACCESS);
+      sourceKey.addToResourcePolicy(new iam.PolicyStatement({
+        sid: 'AllowS3TablesReplicationRoleSource',
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.ArnPrincipal(role.roleArn)],
+        actions: perms.REPLICATION_KEY_SOURCE_ACCESS,
+        resources: ['*'],
+      }));
     }
 
     for (const dest of destinations) {
       if (dest.encryptionKey) {
         dest.encryptionKey.grant(role, ...perms.REPLICATION_KEY_DESTINATION_ACCESS);
+        dest.encryptionKey.addToResourcePolicy(new iam.PolicyStatement({
+          sid: 'AllowS3TablesReplicationRoleDestination',
+          effect: iam.Effect.ALLOW,
+          principals: [new iam.ArnPrincipal(role.roleArn)],
+          actions: perms.REPLICATION_KEY_DESTINATION_ACCESS,
+          resources: ['*'],
+        }));
       }
     }
 

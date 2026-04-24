@@ -4,7 +4,8 @@
     "TableBucketReplicationIntegTest/DefaultTest": {
       "stacks": [
         "InAccountReplicationStack",
-        "BringYourOwnRoleReplicationStack"
+        "BringYourOwnRoleReplicationStack",
+        "KmsReplicationStack"
       ],
       "assertionStack": "TableBucketReplicationIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "TableBucketReplicationIntegTestDefaultTestDeployAssert4F7E9876"

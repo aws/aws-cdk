@@ -1,10 +1,198 @@
 {
  "Resources": {
+  "DestKeyF2202C67": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Condition": {
+        "StringLike": {
+         "kms:EncryptionContext:aws:s3:arn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3tables:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":bucket/integ-tb-repl-kms-dst-v9/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "maintenance.s3tables.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "AllowS3TablesMaintenanceAccess"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "SrcReplicationRoleC6562B9B",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": "*",
+       "Sid": "AllowS3TablesReplicationRoleDestination"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
   "Dest19D1B204": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "integ-tb-repl-dst-v9",
+    "EncryptionConfiguration": {
+     "KMSKeyArn": {
+      "Fn::GetAtt": [
+       "DestKeyF2202C67",
+       "Arn"
+      ]
+     },
+     "SSEAlgorithm": "aws:kms"
+    },
+    "TableBucketName": "integ-tb-repl-kms-dst-v9",
     "UnreferencedFileRemoval": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SourceKey54E02282": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Condition": {
+        "StringLike": {
+         "kms:EncryptionContext:aws:s3:arn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3tables:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":bucket/integ-tb-repl-kms-src-v9/*"
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "maintenance.s3tables.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "AllowS3TablesMaintenanceAccess"
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "SrcReplicationRoleC6562B9B",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": "*",
+       "Sid": "AllowS3TablesReplicationRoleSource"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -39,7 +227,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":bucket/integ-tb-repl-src-v9"
+            ":bucket/integ-tb-repl-kms-src-v9"
            ]
           ]
          }
@@ -81,7 +269,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":bucket/integ-tb-repl-src-v9"
+          ":bucket/integ-tb-repl-kms-src-v9"
          ]
         ]
        }
@@ -110,7 +298,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":bucket/integ-tb-repl-src-v9/table/*"
+          ":bucket/integ-tb-repl-kms-src-v9/table/*"
          ]
         ]
        }
@@ -150,6 +338,33 @@
          ]
         ]
        }
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "SourceKey54E02282",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "kms:Decrypt",
+        "kms:Encrypt",
+        "kms:GenerateDataKey"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "DestKeyF2202C67",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -167,6 +382,15 @@
   "SrcF041394B": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
+    "EncryptionConfiguration": {
+     "KMSKeyArn": {
+      "Fn::GetAtt": [
+       "SourceKey54E02282",
+       "Arn"
+      ]
+     },
+     "SSEAlgorithm": "aws:kms"
+    },
     "ReplicationConfiguration": {
      "Role": {
       "Fn::GetAtt": [
@@ -189,7 +413,7 @@
       }
      ]
     },
-    "TableBucketName": "integ-tb-repl-src-v9",
+    "TableBucketName": "integ-tb-repl-kms-src-v9",
     "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
@@ -205,7 +429,7 @@
     ]
    },
    "Export": {
-    "Name": "InAccountReplicationStack:ExportsOutputFnGetAttSrcF041394BTableBucketARN09011220"
+    "Name": "KmsReplicationStack:ExportsOutputFnGetAttSrcF041394BTableBucketARN09011220"
    }
   },
   "ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D": {
@@ -216,7 +440,7 @@
     ]
    },
    "Export": {
-    "Name": "InAccountReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
+    "Name": "KmsReplicationStack:ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D"
    }
   }
  },

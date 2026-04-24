@@ -70,18 +70,6 @@
       "data": "*"
     }
   ],
-  "/BringYourOwnRoleReplicationStack/SrcNs": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/BringYourOwnRoleReplicationStack/SrcTable": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
   "/BringYourOwnRoleReplicationStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -166,16 +154,10 @@
       "data": "SrcF041394B"
     }
   ],
-  "/BringYourOwnRoleReplicationStack/SrcNs/SrcNs": [
+  "/BringYourOwnRoleReplicationStack/Exports/Output{\"Fn::GetAtt\":[\"SrcF041394B\",\"TableBucketARN\"]}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "SrcNs4F2AC532"
-    }
-  ],
-  "/BringYourOwnRoleReplicationStack/SrcTable/SrcTable": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "SrcTableF6A9F8CF"
+      "data": "ExportsOutputFnGetAttSrcF041394BTableBucketARN09011220"
     }
   ],
   "/BringYourOwnRoleReplicationStack/Exports/Output{\"Fn::GetAtt\":[\"Dest19D1B204\",\"TableBucketARN\"]}": [

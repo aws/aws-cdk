@@ -11,6 +11,30 @@
       "data": "CheckBootstrapVersion"
     }
   ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateTableCommand1b956f3c70817852551965b73e147245/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6/Default": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -29,18 +53,6 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6"
-    }
-  ],
-  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-    }
-  ],
-  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
     }
   ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
@@ -67,6 +79,18 @@
       "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
     }
   ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f453179/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b6/Default": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -74,6 +98,18 @@
     }
   ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b1027/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c1/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateTableCommand1b956f3c70817852551965b73e1472451/Default": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -99,6 +135,18 @@
       "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61"
     }
   ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a1/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f4531791/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b61/Default": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -109,6 +157,74 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c2/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateTableCommand1b956f3c70817852551965b73e1472452/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a2/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f4531792/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b62/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b10272/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateTableCommand1b956f3c70817852551965b73e147245/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesCreateTableCommand1b956f3c70817852551965b73e147245"
     }
   ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6/Default/Default": [
@@ -129,6 +245,18 @@
       "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6WaitFor577F549B"
     }
   ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f453179/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f453179"
+    }
+  ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b6/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -139,6 +267,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b1027"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c1/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c1"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateTableCommand1b956f3c70817852551965b73e1472451/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesCreateTableCommand1b956f3c70817852551965b73e1472451"
     }
   ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61/Default/Default": [
@@ -159,6 +299,18 @@
       "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitFor0D10E316"
     }
   ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a1/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a1"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f4531791/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f4531791"
+    }
+  ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b61/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -169,6 +321,60 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b10271"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c2/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesCreateNamespaceCommand0a999297f12fcfa1b895e0df213bce6c2"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesCreateTableCommand1b956f3c70817852551965b73e1472452/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesCreateTableCommand1b956f3c70817852551965b73e1472452"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62WaitForRole53CFD6C0"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62WaitForCA74A3EE"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a2/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteTableCommand77b5b30ededaf853399cc863d3493e6a2"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f4531792/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand8c8b484eeb51ba72ff49b9113f4531792"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b62/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteTableCommand1018e2a1dd3887eabcb69058372bc8b62"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b10272/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesDeleteNamespaceCommand6d4a477f5db58a64700146947b2b10272"
     }
   ],
   "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b6/WaitFor/IsCompleteProvider/Invoke": [
@@ -193,6 +399,18 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b61WaitForTimeoutProviderInvokeEDD3E4C7"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62WaitForIsCompleteProviderInvokeA897D339"
+    }
+  ],
+  "/TableBucketReplicationIntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-s3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallawssdkclients3tablesGetTableCommand1018e2a1dd3887eabcb69058372bc8b62WaitForTimeoutProviderInvoke6B8E9C39"
     }
   ]
 }

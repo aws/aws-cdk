@@ -3,7 +3,7 @@
   "Dest19D1B204": {
    "Type": "AWS::S3Tables::TableBucket",
    "Properties": {
-    "TableBucketName": "integ-tb-repl-byo-dst-v4",
+    "TableBucketName": "integ-tb-repl-byo-dst-v9",
     "UnreferencedFileRemoval": {}
    },
    "UpdateReplacePolicy": "Delete",
@@ -52,7 +52,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":bucket/integ-tb-repl-byo-src-v4"
+          ":bucket/integ-tb-repl-byo-src-v9"
          ]
         ]
        }
@@ -81,7 +81,7 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":bucket/integ-tb-repl-byo-src-v4/table/*"
+          ":bucket/integ-tb-repl-byo-src-v9/table/*"
          ]
         ]
        }
@@ -160,48 +160,25 @@
       }
      ]
     },
-    "TableBucketName": "integ-tb-repl-byo-src-v4",
+    "TableBucketName": "integ-tb-repl-byo-src-v9",
     "UnreferencedFileRemoval": {}
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SrcNs4F2AC532": {
-   "Type": "AWS::S3Tables::Namespace",
-   "Properties": {
-    "Namespace": "integreplns",
-    "TableBucketARN": {
-     "Fn::GetAtt": [
-      "SrcF041394B",
-      "TableBucketARN"
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "SrcTableF6A9F8CF": {
-   "Type": "AWS::S3Tables::Table",
-   "Properties": {
-    "Namespace": "integreplns",
-    "OpenTableFormat": "ICEBERG",
-    "TableBucketARN": {
-     "Fn::GetAtt": [
-      "SrcF041394B",
-      "TableBucketARN"
-     ]
-    },
-    "TableName": "integrepltbl",
-    "WithoutMetadata": "Yes"
-   },
-   "DependsOn": [
-    "SrcNs4F2AC532"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
+  "ExportsOutputFnGetAttSrcF041394BTableBucketARN09011220": {
+   "Value": {
+    "Fn::GetAtt": [
+     "SrcF041394B",
+     "TableBucketARN"
+    ]
+   },
+   "Export": {
+    "Name": "BringYourOwnRoleReplicationStack:ExportsOutputFnGetAttSrcF041394BTableBucketARN09011220"
+   }
+  },
   "ExportsOutputFnGetAttDest19D1B204TableBucketARN3726BD5D": {
    "Value": {
     "Fn::GetAtt": [

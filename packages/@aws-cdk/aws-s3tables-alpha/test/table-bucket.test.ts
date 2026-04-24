@@ -799,6 +799,62 @@ describe('TableBucket', () => {
       expect(infos).toHaveLength(0);
     });
 
+    test('adds replication role to source KMS key policy (not just IAM identity policy)', () => {
+      const sourceKey = new kms.Key(stack, 'SourceKey');
+      const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
+
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        encryption: s3tables.TableBucketEncryption.KMS,
+        encryptionKey: sourceKey,
+        replicationDestinations: [destination],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: Match.objectLike({
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Sid: 'AllowS3TablesReplicationRoleSource',
+              Effect: 'Allow',
+              Action: [
+                'kms:Decrypt',
+                'kms:GenerateDataKey',
+              ],
+            }),
+          ]),
+        }),
+      });
+    });
+
+    test('adds replication role to destination KMS key policy (not just IAM identity policy)', () => {
+      const destKey = new kms.Key(stack, 'DestKey');
+      const destination = s3tables.TableBucket.fromTableBucketAttributes(stack, 'Dest', {
+        tableBucketArn: DEST_ARN,
+        encryptionKey: destKey,
+      });
+
+      new s3tables.TableBucket(stack, 'Src', {
+        tableBucketName: 'repl-src',
+        replicationDestinations: [destination],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+        KeyPolicy: Match.objectLike({
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Sid: 'AllowS3TablesReplicationRoleDestination',
+              Effect: 'Allow',
+              Action: [
+                'kms:Encrypt',
+                'kms:Decrypt',
+                'kms:GenerateDataKey',
+              ],
+            }),
+          ]),
+        }),
+      });
+    });
+
     test('generated role name is not hard-coded', () => {
       const destination = s3tables.TableBucket.fromTableBucketArn(stack, 'Dest', DEST_ARN);
       new s3tables.TableBucket(stack, 'Src', {

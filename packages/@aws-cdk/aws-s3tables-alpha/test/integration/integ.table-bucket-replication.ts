@@ -37,11 +37,11 @@ class InAccountReplicationStack extends ReplicationTestBase {
     super(scope, id, props);
 
     this.destination = new s3tables.TableBucket(this, 'Dest', {
-      tableBucketName: 'integ-tb-repl-dst-v7',
+      tableBucketName: 'integ-tb-repl-dst-v9',
     });
 
     this.source = new s3tables.TableBucket(this, 'Src', {
-      tableBucketName: 'integ-tb-repl-src-v7',
+      tableBucketName: 'integ-tb-repl-src-v9',
       replicationDestinations: [this.destination],
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
@@ -61,7 +61,7 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
     super(scope, id, props);
 
     this.destination = new s3tables.TableBucket(this, 'Dest', {
-      tableBucketName: 'integ-tb-repl-byo-dst-v7',
+      tableBucketName: 'integ-tb-repl-byo-dst-v9',
     });
 
     this.role = new iam.Role(this, 'ReplicationRole', {
@@ -72,7 +72,7 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
     const sourceArn = core.Stack.of(this).formatArn({
       service: 's3tables',
       resource: 'bucket',
-      resourceName: 'integ-tb-repl-byo-src-v7',
+      resourceName: 'integ-tb-repl-byo-src-v9',
     });
 
     this.role.addToPrincipalPolicy(new iam.PolicyStatement({
@@ -108,7 +108,7 @@ class BringYourOwnRoleReplicationStack extends ReplicationTestBase {
     }));
 
     this.source = new s3tables.TableBucket(this, 'Src', {
-      tableBucketName: 'integ-tb-repl-byo-src-v7',
+      tableBucketName: 'integ-tb-repl-byo-src-v9',
       replicationDestinations: [this.destination],
       replicationRole: this.role,
       removalPolicy: core.RemovalPolicy.DESTROY,
@@ -133,7 +133,7 @@ class KmsReplicationStack extends ReplicationTestBase {
     });
 
     this.destination = new s3tables.TableBucket(this, 'Dest', {
-      tableBucketName: 'integ-tb-repl-kms-dst-v4',
+      tableBucketName: 'integ-tb-repl-kms-dst-v9',
       encryption: s3tables.TableBucketEncryption.KMS,
       encryptionKey: destKey,
     });
@@ -144,7 +144,7 @@ class KmsReplicationStack extends ReplicationTestBase {
     });
 
     this.source = new s3tables.TableBucket(this, 'Src', {
-      tableBucketName: 'integ-tb-repl-kms-src-v4',
+      tableBucketName: 'integ-tb-repl-kms-src-v9',
       encryption: s3tables.TableBucketEncryption.KMS,
       encryptionKey: sourceKey,
       replicationDestinations: [this.destination],
