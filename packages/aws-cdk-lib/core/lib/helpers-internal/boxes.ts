@@ -73,6 +73,11 @@ export interface Box<A> extends IReadableBox<A> {
  */
 export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   /**
+   * Returns the number of elements in the array.
+   */
+  readonly length: number;
+
+  /**
    * Appends one or more elements to the array and captures a stack trace for this addition.
    *
    * @param items the elements to append.
@@ -107,11 +112,6 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   find(predicate: (value: A, index: number, obj: Array<A>) => unknown): A | undefined;
 
   /**
-   * Returns the number of elements in the array.
-   */
-  readonly length: number;
-
-  /**
    * Removes elements from the array and optionally inserts new elements in their place.
    *
    * Delegates to `Array.prototype.splice` on the underlying array.
@@ -124,6 +124,16 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   splice(start: number, deleteCount: number, ...items: A[]): A[];
 
   /**
+   * Tests whether at least one element in the array passes the predicate.
+   *
+   * Delegates to `Array.prototype.some` on the underlying array.
+   *
+   * @param predicate a function called for each element.
+   * @returns `true` if the predicate returns a truthy value for at least one element, otherwise `false`.
+   */
+  some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean;
+
+  /**
    * Creates a derived read-only box by applying `fn` to each element of the array.
    *
    * Shorthand for `this.derive(a => a.map(fn))`.
@@ -132,17 +142,6 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
    * @returns a new read-only box holding the mapped array.
    */
   map<B>(fn: (a: A) => B): IReadableBox<Array<B>>;
-
-  /**
-   * Creates a derived read-only box by reducing the array to a single value.
-   *
-   * Shorthand for `this.derive(a => a.reduce(fn, initialValue))`.
-   *
-   * @param fn a reducer applied to each element.
-   * @param initialValue the initial accumulator value.
-   * @returns a new read-only box holding the reduced value.
-   */
-  reduce<B>(fn: (acc: B, a: A) => B, initialValue: B): IReadableBox<B>;
 }
 
 type StackTrace = Array<string>;
@@ -398,12 +397,12 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
     }
   }
 
-  public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {
-    return this.derive(arr => arr.map(fn));
+  public some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean {
+    return this.array.some(predicate);
   }
 
-  public reduce<B>(fn: (acc: B, a: A) => B, initialValue: B): IReadableBox<B> {
-    return this.derive(arr => arr.reduce(fn, initialValue));
+  public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {
+    return this.derive(arr => arr.map(fn));
   }
 
   public [Symbol.iterator](): Iterator<A> {
