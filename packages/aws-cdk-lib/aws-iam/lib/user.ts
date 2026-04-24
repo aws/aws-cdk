@@ -8,13 +8,14 @@ import { Policy } from './policy';
 import type { PolicyStatement } from './policy-statement';
 import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ArnPrincipal } from './principals';
-import { AttachedPolicies, undefinedIfEmpty } from './private/util';
+import { AttachedPolicies, MAX_POLICY_NAME_LEN, undefinedIfEmpty } from './private/util';
 import type { SecretValue } from '../../core';
-import { Arn, ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
+import { Arn, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 
 /**
  * Represents an IAM user
@@ -127,9 +128,21 @@ export interface UserProps {
 }
 
 /**
+ * Options for importing a user from their ARN.
+ */
+export interface FromUserArnOptions {
+  /**
+   * The name of the default policy to create.
+   *
+   * @default 'Policy'
+   */
+  readonly defaultPolicyName?: string;
+}
+
+/**
  * Represents a user defined outside of this stack.
  */
-export interface UserAttributes {
+export interface UserAttributes extends FromUserArnOptions {
   /**
    * The ARN of the user.
    *
@@ -174,10 +187,11 @@ export class User extends Resource implements IIdentity, IUser {
    *
    * @param scope construct scope
    * @param id construct id
-   * @param userArn the ARN of an existing user to import
+   * @param userArn the ARN of the user to import
+   * @param options options for the import
    */
-  public static fromUserArn(scope: Construct, id: string, userArn: string): IUser {
-    return User.fromUserAttributes(scope, id, { userArn });
+  public static fromUserArn(scope: Construct, id: string, userArn: string, options: FromUserArnOptions = {}): IUser {
+    return User.fromUserAttributes(scope, id, { userArn, ...options });
   }
 
   /**
@@ -211,7 +225,17 @@ export class User extends Resource implements IIdentity, IUser {
 
       public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
         if (!this.defaultPolicy) {
-          this.defaultPolicy = new Policy(this, 'Policy');
+          const useUniqueName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME);
+          const prefix = 'Policy';
+          let defaultDefaultPolicyName = useUniqueName
+            ? `${prefix}${Names.uniqueId(this)}`
+            : prefix;
+          if (defaultDefaultPolicyName.length > MAX_POLICY_NAME_LEN) {
+            defaultDefaultPolicyName = `${prefix}${Names.uniqueResourceName(this, { maxLength: MAX_POLICY_NAME_LEN - prefix.length })}`;
+          }
+
+          const policyName = attrs.defaultPolicyName ?? defaultDefaultPolicyName;
+          this.defaultPolicy = new Policy(this, policyName, (useUniqueName || !!attrs.defaultPolicyName) ? { policyName } : undefined);
           this.defaultPolicy.attachToUser(this);
         }
         this.defaultPolicy.addStatements(statement);

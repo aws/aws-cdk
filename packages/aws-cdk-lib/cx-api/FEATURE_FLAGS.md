@@ -114,6 +114,8 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2\_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | 2.245.0 | new default |
 | [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
+| [@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported users that depend on the stack the user is in. | V2.NEXT | fix |
+| [@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedgroupstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported groups that depend on the stack the group is in. | V2.NEXT | fix |
 
 <!-- END table -->
 
@@ -209,7 +211,9 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-patterns:useDistribution": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
     "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
-    "@aws-cdk/aws-batch:defaultToAL2023": true
+    "@aws-cdk/aws-batch:defaultToAL2023": true,
+    "@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName": true
   }
 }
 ```
@@ -2434,6 +2438,44 @@ When disabled, the default `imageType` remains `ECS_AL2` / `EKS_AL2` for backwar
 **Compatibility with old behavior:** Explicitly set `imageType` to `ECS_AL2` or `EKS_AL2` in your compute environment images configuration.
 
 **Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.
+
+
+### @aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName
+
+*Enable this feature to create default policy names for imported users that depend on the stack the user is in.*
+
+Flag type: Backwards incompatible bugfix
+
+Without this, importing the same user in multiple places could lead to the permissions given for one version of the imported user
+to overwrite permissions given to the user at a different place where it was imported. This was due to all imported instances
+of a user using the same default policy name.
+
+This new implementation creates default policy names based on the constructs node path in their stack.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2.NEXT | `false` | `true` |
+
+
+### @aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName
+
+*Enable this feature to create default policy names for imported groups that depend on the stack the group is in.*
+
+Flag type: Backwards incompatible bugfix
+
+Without this, importing the same group in multiple places could lead to the permissions given for one version of the imported group
+to overwrite permissions given to the group at a different place where it was imported. This was due to all imported instances
+of a group using the same default policy name.
+
+This new implementation creates default policy names based on the constructs node path in their stack.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2.NEXT | `false` | `true` |
 
 
 <!-- END details -->

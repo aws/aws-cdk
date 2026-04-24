@@ -325,6 +325,122 @@ describe('IAM user', () => {
       ],
     });
   });
+
+  describe('imported user policy name', () => {
+    test('default behavior (no flag)', () => {
+      const stack = new Stack();
+      const user = User.fromUserArn(stack, 'ImportedUser', 'arn:aws:iam::123456789012:user/john');
+
+      user.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'ImportedUserPolicy1A28650A',
+          Users: ['john'],
+        },
+      });
+    });
+
+    test('with feature flag enabled', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName': true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      const user = User.fromUserArn(stack, 'ImportedUser', 'arn:aws:iam::123456789012:user/john');
+
+      user.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'PolicyStackImportedUser20D76C76',
+          Users: ['john'],
+        },
+      });
+    });
+
+    test('cross-stack uniqueness with feature flag', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName': true,
+        },
+      });
+      const stack1 = new Stack(app, 'Stack1', {
+        stackName: 'FirstStack',
+      });
+      const stack2 = new Stack(app, 'Stack2', {
+        stackName: 'SecondStack',
+      });
+
+      // Use same ID and ARNs in both stacks
+      const user1 = User.fromUserArn(stack1, 'ImportedUser', 'arn:aws:iam::123456789012:user/john');
+      user1.addToPrincipalPolicy(new PolicyStatement({ actions: ['aws:S1'], resources: ['*'] }));
+
+      const user2 = User.fromUserArn(stack2, 'ImportedUser', 'arn:aws:iam::123456789012:user/john');
+      user2.addToPrincipalPolicy(new PolicyStatement({ actions: ['aws:S2'], resources: ['*'] }));
+
+      const template1 = Template.fromStack(stack1);
+      const template2 = Template.fromStack(stack2);
+
+      const policy1 = template1.findResources('AWS::IAM::Policy');
+      const policy2 = template2.findResources('AWS::IAM::Policy');
+
+      const name1 = Object.values(policy1)[0].Properties.PolicyName;
+      const name2 = Object.values(policy2)[0].Properties.PolicyName;
+
+      expect(name1).not.toEqual(name2);
+    });
+
+    test('with custom defaultPolicyName', () => {
+      const stack = new Stack();
+      const user = User.fromUserArn(stack, 'ImportedUser', 'arn:aws:iam::123456789012:user/john', {
+        defaultPolicyName: 'CustomPolicyName',
+      });
+
+      user.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'CustomPolicyName',
+          Users: ['john'],
+        },
+      });
+    });
+
+    test('with both feature flag and custom defaultPolicyName (custom wins)', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName': true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      const user = User.fromUserArn(stack, 'ImportedUser', 'arn:aws:iam::123456789012:user/john', {
+        defaultPolicyName: 'CustomPolicyName',
+      });
+
+      user.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'CustomPolicyName',
+          Users: ['john'],
+        },
+      });
+    });
+  });
 });
 
 test('cross-env user ARNs include path', () => {

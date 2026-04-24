@@ -1,6 +1,6 @@
 import { Annotations, Template } from '../../assertions';
 import { App, CfnResource, Stack } from '../../core';
-import { Group, ManagedPolicy, User } from '../lib';
+import { Group, ManagedPolicy, PolicyStatement, User } from '../lib';
 
 describe('IAM groups', () => {
   test('default group', () => {
@@ -71,6 +71,125 @@ describe('IAM groups', () => {
     });
     expect(stack.resolve(group2.groupArn)).toStrictEqual({
       'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::', { Ref: 'AWS::AccountId' }, ':group/division/MyGroupName2']],
+    });
+  });
+
+  describe('imported group policy name', () => {
+    test('default behavior (no flag)', () => {
+      const stack = new Stack();
+      const group = Group.fromGroupName(stack, 'ImportedGroup', 'admins');
+
+      group.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'ImportedGroupDefaultPolicy5FF6A7A2',
+          Groups: ['admins'],
+        },
+      });
+    });
+
+    test('with feature flag enabled', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName': true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      const group = Group.fromGroupName(stack, 'ImportedGroup', 'admins');
+
+      group.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'DefaultPolicyStackImportedGroupD2A19646',
+          Groups: ['admins'],
+        },
+      });
+    });
+
+    test('with custom defaultPolicyName', () => {
+      const stack = new Stack();
+      const group = Group.fromGroupName(stack, 'ImportedGroup', 'admins', {
+        defaultPolicyName: 'CustomPolicyName',
+      });
+
+      group.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'CustomPolicyName',
+          Groups: ['admins'],
+        },
+      });
+    });
+
+    test('with both feature flag and custom defaultPolicyName (custom wins)', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName': true,
+        },
+      });
+      const stack = new Stack(app, 'Stack');
+      const group = Group.fromGroupName(stack, 'ImportedGroup', 'admins', {
+        defaultPolicyName: 'CustomPolicyName',
+      });
+
+      group.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction'],
+        resources: ['*'],
+      }));
+
+      Template.fromStack(stack).hasResource('AWS::IAM::Policy', {
+        Properties: {
+          PolicyName: 'CustomPolicyName',
+          Groups: ['admins'],
+        },
+      });
+    });
+
+    test('cross-stack uniqueness with feature flag', () => {
+      const app = new App({
+        context: {
+          '@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName': true,
+        },
+      });
+
+      const stack1 = new Stack(app, 'Stack1');
+      const group1 = Group.fromGroupName(stack1, 'ImportedGroup', 'admins');
+      group1.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction1'],
+        resources: ['*'],
+      }));
+
+      const stack2 = new Stack(app, 'Stack2');
+      const group2 = Group.fromGroupName(stack2, 'ImportedGroup', 'admins');
+      group2.addToPrincipalPolicy(new PolicyStatement({
+        actions: ['aws:TestAction2'],
+        resources: ['*'],
+      }));
+
+      const template1 = Template.fromStack(stack1);
+      const template2 = Template.fromStack(stack2);
+
+      const policy1 = template1.findResources('AWS::IAM::Policy');
+      const policy2 = template2.findResources('AWS::IAM::Policy');
+
+      const name1 = Object.values(policy1)[0].Properties.PolicyName;
+      const name2 = Object.values(policy2)[0].Properties.PolicyName;
+
+      expect(name1).toMatch(/^DefaultPolicyStack1ImportedGroup/);
+      expect(name2).toMatch(/^DefaultPolicyStack2ImportedGroup/);
+      expect(name1).not.toEqual(name2);
     });
   });
 });
