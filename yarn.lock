@@ -6982,9 +6982,9 @@ axios@^0.27.2:
     form-data "^4.0.0"
 
 axios@^1.13.5, axios@^1.8.3:
-  version "1.15.1"
-  resolved "https://registry.npmjs.org/axios/-/axios-1.15.1.tgz#075420b785da8adbdf545785b69f90c926b28542"
-  integrity sha512-WOG+Jj8ZOvR0a3rAn+Tuf1UQJRxw5venr6DgdbJzngJE3qG7X0kL83CZGpdHMxEm+ZK3seAbvFsw4FfOfP9vxg==
+  version "1.15.2"
+  resolved "https://registry.npmjs.org/axios/-/axios-1.15.2.tgz#eb8fb6d30349abace6ade5b4cb4d9e8a0dc23e5b"
+  integrity sha512-wLrXxPtcrPTsNlJmKjkPnNPK2Ihe0hn0wGSaTEiHRPxwjvJwT3hKmXF4dpqxmPO9SoNb2FsYXj/xEo0gHN+D5A==
   dependencies:
     follow-redirects "^1.15.11"
     form-data "^4.0.5"
