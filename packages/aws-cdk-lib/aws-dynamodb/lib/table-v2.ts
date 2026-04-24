@@ -47,8 +47,10 @@ import {
   Annotations,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { ArrayBox } from '../../core/lib/helpers-internal';
+import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -599,6 +601,7 @@ export interface TableAttributesV2 {
  * A DynamoDB Table.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class TableV2 extends TableBaseV2 {
   /**
    * Uniquely identifies this class.
@@ -742,7 +745,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
-  private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
+  private readonly _attributeDefinitions: ArrayBox<CfnGlobalTable.AttributeDefinitionProperty>;
   private readonly nonKeyAttributes = new Set<string>();
 
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
@@ -802,6 +805,8 @@ export class TableV2 extends TableBaseV2 {
     this.encryptionKey = this.encryption?.tableKey;
     this.configureReplicaKeys(this.encryption?.replicaKeyArns);
 
+    this._attributeDefinitions = Boxes.fromArray<CfnGlobalTable.AttributeDefinitionProperty>([]);
+
     // Only set up keys if not a replica - CloudFormation inherits keys from globalTableSourceArn
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
     if (props.sortKey) {
@@ -835,7 +840,7 @@ export class TableV2 extends TableBaseV2 {
     this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
-      attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
+      attributeDefinitions: this._attributeDefinitions,
       replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
       globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
@@ -1195,13 +1200,13 @@ export class TableV2 extends TableBaseV2 {
   private addAttributeDefinition(attribute: Attribute) {
     const { name, type } = attribute;
 
-    const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
+    const existingAttributeDef = this._attributeDefinitions.find(def => def.attributeName === name);
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
       throw new ValidationError(lit`AttributeTypeConflict`, `Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`, this);
     }
 
     if (!existingAttributeDef) {
-      this.attributeDefinitions.push({ attributeName: name, attributeType: type });
+      this._attributeDefinitions.push({ attributeName: name, attributeType: type });
     }
   }
 

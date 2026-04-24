@@ -10,8 +10,10 @@ import type { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import type { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { ArrayBox } from '../../core/lib/helpers-internal';
+import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -154,6 +156,7 @@ abstract class VirtualNodeBase extends cdk.Resource implements IVirtualNode {
  * @see https://docs.aws.amazon.com/app-mesh/latest/userguide/virtual_nodes.html
  */
 @propertyInjectable
+@noBoxStackTraces
 export class VirtualNode extends VirtualNodeBase {
   /**
    * Uniquely identifies this class.
@@ -214,8 +217,8 @@ export class VirtualNode extends VirtualNodeBase {
 
   private readonly serviceDiscoveryConfig?: ServiceDiscoveryConfig;
 
-  private readonly backends = new Array<CfnVirtualNode.BackendProperty>();
-  private readonly listeners = new Array<VirtualNodeListenerConfig>();
+  private readonly _backends: ArrayBox<CfnVirtualNode.BackendProperty>;
+  private readonly _listeners: ArrayBox<VirtualNodeListenerConfig>;
   private readonly resource: CfnVirtualNode;
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
@@ -224,6 +227,9 @@ export class VirtualNode extends VirtualNodeBase {
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    this._backends = Boxes.fromArray<CfnVirtualNode.BackendProperty>([]);
+    this._listeners = Boxes.fromArray<VirtualNodeListenerConfig>([]);
 
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
@@ -237,8 +243,8 @@ export class VirtualNode extends VirtualNodeBase {
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
-        backends: cdk.Lazy.any({ produce: () => this.backends }, { omitEmptyArray: true }),
-        listeners: cdk.Lazy.any({ produce: () => this.listeners.map(listener => listener.listener) }, { omitEmptyArray: true }),
+        backends: this._backends.derive(arr => arr.length === 0 ? undefined : arr),
+        listeners: this._listeners.derive(arr => arr.length === 0 ? undefined : arr.map(listener => listener.listener)),
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
@@ -269,7 +275,7 @@ export class VirtualNode extends VirtualNodeBase {
     if (!this.serviceDiscoveryConfig) {
       throw new cdk.ValidationError(lit`ServiceDiscoveryRequired`, 'Service discovery information is required for a VirtualNode with a listener.', this);
     }
-    this.listeners.push(listener.bind(this));
+    this._listeners.push(listener.bind(this));
   }
 
   /**
@@ -277,7 +283,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   @MethodMetadata()
   public addBackend(backend: Backend) {
-    this.backends.push(backend.bind(this).virtualServiceBackend);
+    this._backends.push(backend.bind(this).virtualServiceBackend);
   }
 }
 

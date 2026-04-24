@@ -9,39 +9,32 @@ import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import type * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
-import type {
-  IResolvable,
-  IResource,
-} from '../../../core';
+import type { IResolvable, IResource } from '../../../core';
 import {
   Annotations,
+  Arn,
+  ArnFormat,
   Duration,
+  FeatureFlags,
+  Fn,
   Lazy,
   Resource,
   Stack,
-  ArnFormat,
-  FeatureFlags,
   Token,
-  Arn,
-  Fn,
   ValidationError,
 } from '../../../core';
-import { memoizedGetter } from '../../../core/lib/helpers-internal';
+import type { ArrayBox } from '../../../core/lib/helpers-internal';
+import { Boxes, memoizedGetter } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
 import type { IAlternateTarget } from '../alternate-target-configuration';
-import type {
-  LoadBalancerTargetOptions,
-  TaskDefinition,
-} from '../base/task-definition';
-import {
-  NetworkMode,
-  TaskDefinitionRevision,
-} from '../base/task-definition';
-import type { ICluster, CapacityProviderStrategy } from '../cluster';
-import { ExecuteCommandLogging, Cluster } from '../cluster';
+import type { LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
+import { NetworkMode, TaskDefinitionRevision } from '../base/task-definition';
+import type { CapacityProviderStrategy, ICluster } from '../cluster';
+import { Cluster, ExecuteCommandLogging } from '../cluster';
 import type { ContainerDefinition, Protocol } from '../container-definition';
 import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
@@ -665,6 +658,7 @@ export interface IBaseService extends IService {
 /**
  * The base class for Ec2Service and FargateService services.
  */
+@noBoxStackTraces
 export abstract class BaseService extends Resource
   implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
   /**
@@ -754,7 +748,7 @@ export abstract class BaseService extends Resource
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
+  protected get loadBalancers(): CfnService.LoadBalancerProperty[] { return this._loadBalancers.get(); }
 
   /**
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
@@ -772,7 +766,7 @@ export abstract class BaseService extends Resource
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
-  protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
+  protected get serviceRegistries(): CfnService.ServiceRegistryProperty[] { return this._serviceRegistries.get(); }
 
   /**
    * The service connect configuration for this service.
@@ -786,19 +780,22 @@ export abstract class BaseService extends Resource
    */
   private readonly isEcsDeploymentController: boolean;
 
+  private readonly _loadBalancers: ArrayBox<CfnService.LoadBalancerProperty>;
+  private readonly _serviceRegistries: ArrayBox<CfnService.ServiceRegistryProperty>;
+
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
 
   /**
    * All volumes
    */
-  private readonly volumes: ServiceManagedVolume[] = [];
+  private readonly _volumes: ArrayBox<ServiceManagedVolume>;
 
   /**
    * A deployment lifecycle hook runs custom logic at specific stages of the deployment process.
    * @default - none
    */
-  private readonly lifecycleHooks: IDeploymentLifecycleHookTarget[] = [];
+  private readonly _lifecycleHooks: ArrayBox<IDeploymentLifecycleHookTarget>;
 
   @memoizedGetter
   public get serviceArn(): string {
@@ -831,12 +828,15 @@ export abstract class BaseService extends Resource
     super(scope, id, {
       physicalName: props.serviceName,
     });
-
     if (props.propagateTags && props.propagateTaskTagsFrom) {
       throw new ValidationError(lit`OnlySpecifyEitherPropagateTags`, 'You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
     }
 
     this.taskDefinition = taskDefinition;
+    this._loadBalancers = Boxes.fromArray<CfnService.LoadBalancerProperty>([]);
+    this._serviceRegistries = Boxes.fromArray<CfnService.ServiceRegistryProperty>([]);
+    this._volumes = Boxes.fromArray<ServiceManagedVolume>([]);
+    this._lifecycleHooks = Boxes.fromArray<IDeploymentLifecycleHookTarget>([]);
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -860,7 +860,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
+      loadBalancers: this._loadBalancers.derive(arr => arr.length === 0 ? undefined : arr),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -890,9 +890,9 @@ export abstract class BaseService extends Resource
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
+      serviceRegistries: this._serviceRegistries.derive(arr => arr.length === 0 ? undefined : arr),
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
-      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
+      volumeConfigurations: this._volumes.derive(arr => arr.length === 0 ? undefined : this.renderVolumes()),
       ...additionalProps,
     });
 
@@ -1038,11 +1038,11 @@ export abstract class BaseService extends Resource
     if (!this.isEcsDeploymentController) {
       throw new ValidationError(lit`RequiresDeploymentLifecycleHooks`, 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
     }
-    this.lifecycleHooks.push(target);
+    this._lifecycleHooks.push(target);
   }
 
   private renderLifecycleHooks(): CfnService.DeploymentLifecycleHookProperty[] {
-    return this.lifecycleHooks.map((target) => {
+    return this._lifecycleHooks.get().map((target) => {
       const config = target.bind(this);
       return {
         hookTargetArn: config.targetArn,
@@ -1056,14 +1056,14 @@ export abstract class BaseService extends Resource
    * Adds a volume to the Service.
    */
   public addVolume(volume: ServiceManagedVolume) {
-    this.volumes.push(volume);
+    this._volumes.push(volume);
   }
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
-    if (this.volumes.length > 1) {
-      throw new ValidationError(lit`OnlyVolumeSpecifiedVolumeConfigurations`, `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`, this);
+    if (this._volumes.length > 1) {
+      throw new ValidationError(lit`OnlyVolumeSpecifiedVolumeConfigurations`, `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this._volumes.length}`, this);
     }
-    return this.volumes.map(renderVolume);
+    return this._volumes.get().map(renderVolume);
     function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
       const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
         return {
@@ -1783,7 +1783,7 @@ export abstract class BaseService extends Resource
       throw new ValidationError(lit`CannotClassicLoad`, 'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
     }
 
-    this.loadBalancers.push({
+    this._loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName,
       containerPort,
@@ -1803,7 +1803,7 @@ export abstract class BaseService extends Resource
     }
 
     const advancedConfiguration = alternateTarget?.bind(this);
-    this.loadBalancers.push({
+    this._loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
       containerPort,
@@ -1846,7 +1846,7 @@ export abstract class BaseService extends Resource
     }
 
     const sr = this.renderServiceRegistry(registry);
-    this.serviceRegistries.push(sr);
+    this._serviceRegistries.push(sr);
   }
 
   /**
@@ -1855,7 +1855,7 @@ export abstract class BaseService extends Resource
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.any({
-      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
+      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this._loadBalancers.length > 0 ? 60 : undefined),
     });
   }
 

@@ -8,8 +8,11 @@ import { BackupSelection } from './selection';
 import type { IBackupVault } from './vault';
 import { BackupVault } from './vault';
 import type { IResource } from '../../core';
-import { ArnFormat, Lazy, Resource, ValidationError } from '../../core';
+import { ArnFormat, Resource, ValidationError } from '../../core';
+import type { ArrayBox } from '../../core/lib/helpers-internal';
+import { Boxes } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
@@ -67,6 +70,7 @@ export interface BackupPlanProps {
  * A backup plan
  */
 @propertyInjectable
+@noBoxStackTraces
 export class BackupPlan extends Resource implements IBackupPlan {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-backup.BackupPlan';
@@ -157,7 +161,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     };
   }
 
-  private readonly rules: CfnBackupPlan.BackupRuleResourceTypeProperty[] = [];
+  private readonly _rules: ArrayBox<CfnBackupPlan.BackupRuleResourceTypeProperty>;
   private _backupVault?: IBackupVaultRef;
 
   constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
@@ -165,11 +169,13 @@ export class BackupPlan extends Resource implements IBackupPlan {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this._rules = Boxes.fromArray<CfnBackupPlan.BackupRuleResourceTypeProperty>([]);
+
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
         advancedBackupSettings: this.advancedBackupSettings(props),
         backupPlanName: props.backupPlanName || id,
-        backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
+        backupPlanRule: this._rules.derive(arr => arr.length === 0 ? undefined : arr),
       },
     });
 
@@ -215,13 +221,13 @@ export class BackupPlan extends Resource implements IBackupPlan {
       vault = this._backupVault;
     }
 
-    this.rules.push({
+    this._rules.push({
       completionWindowMinutes: rule.props.completionWindow?.toMinutes(),
       lifecycle: (rule.props.deleteAfter || rule.props.moveToColdStorageAfter) && {
         deleteAfterDays: rule.props.deleteAfter?.toDays(),
         moveToColdStorageAfterDays: rule.props.moveToColdStorageAfter?.toDays(),
       },
-      ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this.rules.length}`,
+      ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this._rules.length}`,
       scheduleExpression: rule.props.scheduleExpression?.expressionString,
       scheduleExpressionTimezone: rule.props.scheduleExpressionTimezone?.timezoneName,
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
@@ -267,7 +273,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   }
 
   private validatePlan() {
-    if (this.rules.length === 0) {
+    if (this._rules.length === 0) {
       return ['A backup plan must have at least 1 rule.'];
     }
 
