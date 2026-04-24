@@ -84,7 +84,7 @@
     "@aws-cdk/cloud-assembly-api": "^2.2.2"
   },
   "peerDependencies": {
-    "@aws-cdk/cloud-assembly-schema": ">=53.0.0"
+    "@aws-cdk/cloud-assembly-schema": ">=53.18.0"
   },
   "license": "Apache-2.0",
   "devDependencies": {
