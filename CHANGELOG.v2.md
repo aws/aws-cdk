@@ -37,11 +37,6 @@ aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: SourceSecurit
 * **lambda:** add `Token.isUnresolved` checks to provisioned poller config validation ([#37197](https://github.com/aws/aws-cdk/issues/37197)) ([667ed30](https://github.com/aws/aws-cdk/commit/667ed3019a02564c88fa2b8f7fe56bd46b760c67))
 * **stepfunctions-tasks:** warn when CallAwsServiceCrossRegion endpoint is resolved from state input ([#37646](https://github.com/aws/aws-cdk/issues/37646)) ([9fdf590](https://github.com/aws/aws-cdk/commit/9fdf5907b12713b62190de4f5ad7c79b97b3a7a4))
 
-
-### Reverts
-
-* use workflow_run pattern for auto integ test to fix PR secret access ([#37603](https://github.com/aws/aws-cdk/issues/37603)) ([4196c7f](https://github.com/aws/aws-cdk/commit/4196c7f33e20100650b7ba0671865abadbefe9cf)), closes [aws/aws-cdk#37333](https://github.com/aws/aws-cdk/issues/37333)
-
 ## [2.250.0](https://github.com/aws/aws-cdk/compare/v2.249.0...v2.250.0) (2026-04-14)
 
 
