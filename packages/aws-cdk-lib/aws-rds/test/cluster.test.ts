@@ -6031,6 +6031,31 @@ describe('masterUserAuthenticationType', () => {
     // THEN
     expect(cluster.secret).toBeUndefined();
   });
+
+  test('DatabaseClusterFromSnapshot with IAM master auth sets MasterUserAuthenticationType and omits MasterUserPassword', () => {
+    // GIVEN
+    const stack = testStack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+
+    // WHEN
+    new DatabaseClusterFromSnapshot(stack, 'Database', {
+      engine: DatabaseClusterEngine.auroraPostgres({ version: AuroraPostgresEngineVersion.VER_17_4 }),
+      writer: ClusterInstance.serverlessV2('writer'),
+      vpc,
+      snapshotIdentifier: 'my-snapshot',
+      iamAuthentication: true,
+      masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::RDS::DBCluster', {
+      MasterUserAuthenticationType: 'iam-db-auth',
+      EnableIAMDatabaseAuthentication: true,
+      SnapshotIdentifier: 'my-snapshot',
+      MasterUserPassword: Match.absent(),
+    });
+  });
 });
 
 function testStack(app?: cdk.App, stackId?: string) {
