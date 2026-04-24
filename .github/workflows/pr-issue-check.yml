@@ -1,0 +1,24 @@
+name: PR Issue Reference Check
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+
+jobs:
+  check-issue-reference:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Install type dependencies
+        run: yarn install --frozen-lockfile
+      - name: Compile TypeScript
+        run: npx tsc --project scripts/tsconfig.pr-issue-check.json
+      - name: Check PR description for issue reference
+        uses: actions/github-script@v9
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { prIssueCheck } = require('./scripts/pr-issue-check.js');
+            await prIssueCheck({ github, context, core });

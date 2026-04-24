@@ -1,14 +1,16 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "RubyRuntimeTest/DefaultTest": {
       "stacks": [
         "lambda-test-assets-file-for-ruby32",
         "lambda-test-assets-file-for-ruby33",
-        "lambda-test-assets-file-for-ruby34"
+        "lambda-test-assets-file-for-ruby34",
+        "lambda-test-assets-file-for-ruby40"
       ],
       "assertionStack": "RubyRuntimeTest/DefaultTest/DeployAssert",
       "assertionStackName": "RubyRuntimeTestDefaultTestDeployAssert42E8EBE5"
     }
-  }
+  },
+  "minimumCliVersion": "2.1108.0"
 }
