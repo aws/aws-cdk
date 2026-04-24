@@ -851,6 +851,20 @@ const user = iam.User.fromUserAttributes(this, 'MyImportedUserByAttributes', {
 });
 ```
 
+### Imported User Policy Naming
+
+When you grant permissions to an imported user, an inline policy is created and attached to that user. By default, this policy is named `'Policy'`. However, importing the same user in multiple stacks can lead to policy name collisions and unintended overwrites.
+
+To solve this, you can enable the `@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName` feature flag. This will generate unique policy names based on the stack and the construct's path.
+
+Alternatively, you can specify a custom name for the default policy:
+
+```ts
+const user = iam.User.fromUserArn(this, 'MyImportedUserByArn', 'arn:aws:iam::123456789012:user/johnsmith', {
+  defaultPolicyName: 'MyCustomPolicyName',
+});
+```
+
 ### Access Keys
 
 The ability for a user to make API calls via the CLI or an SDK is enabled by the user having an
@@ -890,6 +904,20 @@ To import an existing group by name [with path](https://docs.aws.amazon.com/IAM/
 
 ```ts
 const group = iam.Group.fromGroupName(this, 'MyImportedGroupByName', 'group-name');
+```
+
+### Imported Group Policy Naming
+
+When you grant permissions to an imported group, an inline policy is created and attached to that group. By default, this policy is named `'DefaultPolicy'`. However, importing the same group in multiple stacks can lead to policy name collisions and unintended overwrites.
+
+To solve this, you can enable the `@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName` feature flag. This will generate unique policy names based on the stack and the construct's path.
+
+Alternatively, you can specify a custom name for the default policy:
+
+```ts
+const group = iam.Group.fromGroupArn(this, 'MyImportedGroupByArn', 'arn:aws:iam::account-id:group/group-name', {
+  defaultPolicyName: 'MyCustomPolicyName',
+});
 ```
 
 To add a user to a group (both for a new and imported user/group):
