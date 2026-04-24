@@ -205,7 +205,7 @@ def s3_deploy(s3_source_zips, s3_dest, user_metadata, system_metadata, prune, ex
                 logger.info("archive: %s" % archive)
                 aws_command("s3", "cp", s3_source_zip, archive)
                 logger.info("| extracting archive to: %s\n" % contents_dir)
-                logger.info("| markers: %s" % markers)
+                logger.info("| markers: %s" % sanitize_message(markers))
                 extract_and_replace_markers(archive, contents_dir, markers, markers_config)
             else:
                 logger.info("| copying archive to: %s\n" % contents_dir)
