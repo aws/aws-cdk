@@ -47,6 +47,9 @@ describe('bundling', () => {
   });
 
   test('bundling with image from asset', () => {
+    // Stubbed as win32 so the new POSIX uid:gid default does not apply
+    // and these args remain focused on the build flags under test.
+    sinon.stub(process, 'platform').value('win32');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -88,6 +91,7 @@ describe('bundling', () => {
   });
 
   test('bundling with image from asset with cache disabled', () => {
+    sinon.stub(process, 'platform').value('win32');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -125,6 +129,7 @@ describe('bundling', () => {
   });
 
   test('bundling with image from asset with platform', () => {
+    sinon.stub(process, 'platform').value('win32');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -161,6 +166,7 @@ describe('bundling', () => {
   });
 
   test('bundling with image from asset with cache-to & cache-from', () => {
+    sinon.stub(process, 'platform').value('win32');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -206,6 +212,7 @@ describe('bundling', () => {
   });
 
   test('bundling with image from asset with target stage', () => {
+    sinon.stub(process, 'platform').value('win32');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -242,6 +249,7 @@ describe('bundling', () => {
   });
 
   test('bundling with image from asset with network', () => {
+    sinon.stub(process, 'platform').value('win32');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -750,6 +758,7 @@ describe('bundling', () => {
   });
 
   test('bundling with image from asset with build contexts', () => {
+    sinon.stub(process, 'platform').value('win32');
     const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
@@ -842,5 +851,125 @@ describe('bundling', () => {
 
     // THEN
     expect(fromSrc).toEqual('src=path.json');
+  });
+
+  // Coverage for aws/aws-cdk#32834: bundling output should be owned by the
+  // invoking user, not `root`. We verify the docker run argv carries
+  // `-u <uid>:<gid>` on POSIX hosts and omits `-u` on Windows.
+  describe('default --user (issue #32834)', () => {
+    test('defaults --user to host uid:gid on linux', () => {
+      sinon.stub(process, 'platform').value('linux');
+      sinon.stub(process, 'getuid').value(() => 4242);
+      sinon.stub(process, 'getgid').value(() => 5353);
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from(''),
+        stdout: Buffer.from(''),
+        pid: 1,
+        output: [],
+        signal: null,
+      });
+
+      const image = DockerImage.fromRegistry('alpine');
+      image.run();
+
+      expect(spawnSyncStub.calledWith(dockerCmd, [
+        'run', '--rm',
+        '-u', '4242:5353',
+        'alpine',
+      ])).toEqual(true);
+    });
+
+    test('defaults --user to host uid:gid on darwin', () => {
+      sinon.stub(process, 'platform').value('darwin');
+      sinon.stub(process, 'getuid').value(() => 501);
+      sinon.stub(process, 'getgid').value(() => 20);
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from(''),
+        stdout: Buffer.from(''),
+        pid: 1,
+        output: [],
+        signal: null,
+      });
+
+      const image = DockerImage.fromRegistry('alpine');
+      image.run();
+
+      expect(spawnSyncStub.calledWith(dockerCmd, [
+        'run', '--rm',
+        '-u', '501:20',
+        'alpine',
+      ])).toEqual(true);
+    });
+
+    test('omits --user on win32', () => {
+      sinon.stub(process, 'platform').value('win32');
+      // Even if getuid is somehow exposed on win32, we should not emit -u.
+      sinon.stub(process, 'getuid').value(() => 1000);
+      sinon.stub(process, 'getgid').value(() => 1000);
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from(''),
+        stdout: Buffer.from(''),
+        pid: 1,
+        output: [],
+        signal: null,
+      });
+
+      const image = DockerImage.fromRegistry('alpine');
+      image.run();
+
+      expect(spawnSyncStub.calledWith(dockerCmd, [
+        'run', '--rm',
+        'alpine',
+      ])).toEqual(true);
+    });
+
+    test('caller-supplied user is preserved over default', () => {
+      sinon.stub(process, 'platform').value('linux');
+      sinon.stub(process, 'getuid').value(() => 4242);
+      sinon.stub(process, 'getgid').value(() => 5353);
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from(''),
+        stdout: Buffer.from(''),
+        pid: 1,
+        output: [],
+        signal: null,
+      });
+
+      const image = DockerImage.fromRegistry('alpine');
+      image.run({ user: 'root' });
+
+      expect(spawnSyncStub.calledWith(dockerCmd, [
+        'run', '--rm',
+        '-u', 'root',
+        'alpine',
+      ])).toEqual(true);
+    });
+
+    test('omits --user when getuid/getgid are unavailable', () => {
+      sinon.stub(process, 'platform').value('linux');
+      // Simulate a runtime that doesn't expose getuid/getgid (defensive path).
+      sinon.stub(process, 'getuid').value(undefined as unknown as () => number);
+      sinon.stub(process, 'getgid').value(undefined as unknown as () => number);
+      const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+        status: 0,
+        stderr: Buffer.from(''),
+        stdout: Buffer.from(''),
+        pid: 1,
+        output: [],
+        signal: null,
+      });
+
+      const image = DockerImage.fromRegistry('alpine');
+      image.run();
+
+      expect(spawnSyncStub.calledWith(dockerCmd, [
+        'run', '--rm',
+        'alpine',
+      ])).toEqual(true);
+    });
   });
 });

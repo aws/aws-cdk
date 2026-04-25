@@ -280,9 +280,16 @@ export class BundlingDockerImage {
       ...options.platform
         ? ['--platform', options.platform]
         : [],
-      ...options.user
-        ? ['-u', options.user]
-        : [],
+      ...((): string[] => {
+        // If the caller explicitly provided a user, always honor it.
+        // Otherwise, default to the host's uid:gid on POSIX so that files
+        // produced inside the container (e.g. bundling output) are owned
+        // by the user invoking CDK rather than by `root`. On Windows uids
+        // are not meaningful, so we fall back to the prior behavior of
+        // letting Docker pick the image default. See aws/aws-cdk#32834.
+        const user = options.user ?? defaultDockerUser();
+        return user ? ['-u', user] : [];
+      })(),
       ...options.volumesFrom
         ? flatten(options.volumesFrom.map(v => ['--volumes-from', v]))
         : [],
@@ -554,7 +561,10 @@ export interface DockerRunOptions {
   /**
    * The user to use when running the container.
    *
-   * @default - root or image default
+   * @default - On POSIX hosts, defaults to `${uid}:${gid}` of the current
+   * process so that files written inside the container are owned by the
+   * invoking user rather than `root`. On Windows hosts, no `--user` flag is
+   * passed and Docker uses the image default.
    */
   readonly user?: string;
 
@@ -663,6 +673,37 @@ export interface DockerBuildOptions {
 
 function flatten(x: string[][]) {
   return Array.prototype.concat([], ...x);
+}
+
+/**
+ * Computes the default Docker `--user` value for `docker run`.
+ *
+ * Returns `${uid}:${gid}` of the current process on POSIX hosts so that any
+ * files created inside the container land on the host owned by the caller,
+ * not `root` (the typical container default). Returns `undefined` on Windows
+ * where uids/gids are not meaningful and `process.getuid` is not exposed.
+ *
+ * Callers may override this by passing an explicit `user` in `DockerRunOptions`.
+ */
+function defaultDockerUser(): string | undefined {
+  if (process.platform === 'win32') {
+    return undefined;
+  }
+  // process.getuid / getgid are only present on POSIX. Guard anyway in case
+  // a future runtime lacks them so we degrade gracefully (no `--user` flag).
+  const getuid = (process as { getuid?: () => number }).getuid;
+  const getgid = (process as { getgid?: () => number }).getgid;
+  if (typeof getuid !== 'function' || typeof getgid !== 'function') {
+    return undefined;
+  }
+  const uid = getuid.call(process);
+  const gid = getgid.call(process);
+  // -1 indicates the value is unknown (matches os.userInfo() behavior on
+  // Windows, but kept here as a defensive check on other platforms too).
+  if (uid < 0 || gid < 0) {
+    return undefined;
+  }
+  return `${uid}:${gid}`;
 }
 
 function isSeLinux(): boolean {
