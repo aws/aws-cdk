@@ -2,6 +2,41 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.251.0](https://github.com/aws/aws-cdk/compare/v2.250.0...v2.251.0) (2026-04-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: SourceSecurityGroup attribute removed.
+aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: PolicyItem type removed.
+aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: SourceSecurityGroup type removed.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37684](https://github.com/aws/aws-cdk/issues/37684)) ([9e6c2ef](https://github.com/aws/aws-cdk/commit/9e6c2efc42b72115414b5874cc77900de4ba13a5))
+* **lambda:** add ruby 4.0 runtime ([#37650](https://github.com/aws/aws-cdk/issues/37650)) ([04d4337](https://github.com/aws/aws-cdk/commit/04d4337b1d104d9f32e76109675f968da082781c))
+* update L1 CloudFormation resource definitions ([#37644](https://github.com/aws/aws-cdk/issues/37644)) ([e64f943](https://github.com/aws/aws-cdk/commit/e64f943fec033f404a4830133aa916ebaf0cc2aa))
+* **core:** `Validations` class is the new way to add validation plugins to CDK Apps ([#37611](https://github.com/aws/aws-cdk/issues/37611)) ([95696b4](https://github.com/aws/aws-cdk/commit/95696b463de0df91fb8d50b15add5200ac6818c1)), closes [#37613](https://github.com/aws/aws-cdk/issues/37613)
+* **core:** graduate `policyValidationBeta1` interfaces to `policyValidation` ([#37613](https://github.com/aws/aws-cdk/issues/37613)) ([8c613cf](https://github.com/aws/aws-cdk/commit/8c613cf291eda9920165585bda06c55ef28667bc))
+* **ecs:** support for service connect access log configuration ([#36067](https://github.com/aws/aws-cdk/issues/36067)) ([5ad1c06](https://github.com/aws/aws-cdk/commit/5ad1c06e196b9f3bfec2bc79c9d7aa85af366ee0))
+* **route53:** accelerated recovery for public hosted zone ([#36358](https://github.com/aws/aws-cdk/issues/36358)) ([f1b7b03](https://github.com/aws/aws-cdk/commit/f1b7b03e3f65253fed5d934fc2f1d1ea08e3e2fc))
+* **synthetics:** support canary group  ([#35689](https://github.com/aws/aws-cdk/issues/35689)) ([20ccd31](https://github.com/aws/aws-cdk/commit/20ccd310789828854b85faadb603466ac405e695)), closes [#34043](https://github.com/aws/aws-cdk/issues/34043)
+
+
+### Bug Fixes
+
+* **core:** `Stage.policyValidationBeta1` is mutable ([#37612](https://github.com/aws/aws-cdk/issues/37612)) ([3c1faf1](https://github.com/aws/aws-cdk/commit/3c1faf13b325587971a461d1837734b09c92909d))
+* **core:** construct creation stack traces are implicit ([#37643](https://github.com/aws/aws-cdk/issues/37643)) ([5635c20](https://github.com/aws/aws-cdk/commit/5635c208a465772bacb9ea087af98e4e668b9125))
+* **core:** synth output is not valid YAML when using policy validation ([#37597](https://github.com/aws/aws-cdk/issues/37597)) ([927dd60](https://github.com/aws/aws-cdk/commit/927dd60d6bdab7a57a5b14bd8f0e7df6fe7cfdce)), closes [#25331](https://github.com/aws/aws-cdk/issues/25331)
+* **core:** token stack traces expensively clutter --debug mode ([#37642](https://github.com/aws/aws-cdk/issues/37642)) ([498c546](https://github.com/aws/aws-cdk/commit/498c5469f8f132103e16fdb89bd5cf17b1f84dbd))
+* **core:** tree metadata does not contain logical ID ([#37630](https://github.com/aws/aws-cdk/issues/37630)) ([284ab23](https://github.com/aws/aws-cdk/commit/284ab2367e8fe891fdf4cb2d5a193a695fc1bc49))
+* **ec2:** fixing vpc endpoint for eu-isoe-west-1 region ([#37596](https://github.com/aws/aws-cdk/issues/37596)) ([555c930](https://github.com/aws/aws-cdk/commit/555c930e3d3eb7248fc695c853ce50c06cd246bd)), closes [#31690](https://github.com/aws/aws-cdk/issues/31690)
+* **events-targets:** make LogGroupTargetInput extend RuleTargetInput for JSII compatibility ([#37451](https://github.com/aws/aws-cdk/issues/37451)) ([46dbc7a](https://github.com/aws/aws-cdk/commit/46dbc7abc92ceb84e5271698f5281941d8324769)), closes [#36733](https://github.com/aws/aws-cdk/issues/36733)
+* **lambda:** add `Token.isUnresolved` checks to provisioned poller config validation ([#37197](https://github.com/aws/aws-cdk/issues/37197)) ([667ed30](https://github.com/aws/aws-cdk/commit/667ed3019a02564c88fa2b8f7fe56bd46b760c67))
+* **stepfunctions-tasks:** warn when CallAwsServiceCrossRegion endpoint is resolved from state input ([#37646](https://github.com/aws/aws-cdk/issues/37646)) ([9fdf590](https://github.com/aws/aws-cdk/commit/9fdf5907b12713b62190de4f5ad7c79b97b3a7a4))
+
 ## [2.250.0](https://github.com/aws/aws-cdk/compare/v2.249.0...v2.250.0) (2026-04-14)
 
 
