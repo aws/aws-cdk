@@ -41,6 +41,9 @@ import {
   Duration,
   Bitrate,
   Fn,
+  ForEachCondition,
+  ForEachOutput,
+  ForEachResource,
   IAspect,
   ITaggable,
   PermissionsBoundary,
@@ -82,6 +85,7 @@ declare const myFunction: lambda.IFunction;
 declare const myTopic: sns.ITopic;
 declare const onEventHandler: lambda.Function;
 declare const resourceProps: CfnResourceProps;
+declare const buckets: ForEachResource;
 
 declare class MyStack extends Stack {}
 declare class YourStack extends Stack {}
