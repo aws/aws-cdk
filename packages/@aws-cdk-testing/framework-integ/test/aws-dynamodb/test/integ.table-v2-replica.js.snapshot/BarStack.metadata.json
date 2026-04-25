@@ -1,0 +1,199 @@
+{
+  "/BarStack/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "code": "*",
+        "handler": "*",
+        "environment": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/BarStack/GlobalTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "tableName": "*",
+        "removalPolicy": "destroy",
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "replicas": [
+          {
+            "region": "*"
+          },
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addReplica": [
+          {
+            "region": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": {
+        "Ref": "GlobalTable89F068B2"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "replica": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/BarStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/BarStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/BarStack/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/BarStack/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    }
+  ],
+  "/BarStack/GlobalTable/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GlobalTable89F068B2"
+    }
+  ],
+  "/BarStack/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    }
+  ],
+  "/BarStack/Function/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/BarStack/Function/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BarStack/Function/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRoleDefaultPolicy2F49994A"
+    }
+  ]
+}
