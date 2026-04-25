@@ -652,6 +652,7 @@ test('scopes batch:SubmitJob permissions when jobDefinitionArn is a token (CDK c
 
   // THEN — for tokenized ARNs we defer name extraction to CloudFormation
   // via Fn::Split / Fn::Select, then assemble the tightened resource ARN.
+  // Both the tightened job-definition ARN and the queue ARN must be present.
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: Match.arrayWith([
@@ -659,6 +660,7 @@ test('scopes batch:SubmitJob permissions when jobDefinitionArn is a token (CDK c
           Action: 'batch:SubmitJob',
           Effect: 'Allow',
           Resource: Match.arrayWith([
+            // Tightened job-definition ARN with deploy-time name extraction
             Match.objectLike({
               'Fn::Join': Match.arrayWith([
                 Match.arrayWith([
@@ -673,6 +675,10 @@ test('scopes batch:SubmitJob permissions when jobDefinitionArn is a token (CDK c
                   ':*',
                 ]),
               ]),
+            }),
+            // Queue ARN must remain in the resource list
+            Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith(['JobQueueEE3AD499', 'JobQueueArn']),
             }),
           ]),
         }),
@@ -694,6 +700,7 @@ test('falls back to wildcard job-definition ARN when jobDefinitionArn is a JsonP
   });
 
   // THEN — JsonPath cannot be resolved at deploy time, so fall back to the wildcard.
+  // The queue ARN must still appear in the resource list.
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Statement: Match.arrayWith([
@@ -701,6 +708,7 @@ test('falls back to wildcard job-definition ARN when jobDefinitionArn is a JsonP
           Action: 'batch:SubmitJob',
           Effect: 'Allow',
           Resource: Match.arrayWith([
+            // Wildcard job-definition ARN (fallback for state-machine-time expressions)
             Match.objectLike({
               'Fn::Join': [
                 '',
@@ -715,6 +723,8 @@ test('falls back to wildcard job-definition ARN when jobDefinitionArn is a JsonP
                 ],
               ],
             }),
+            // Queue ARN (literal string passed in)
+            'arn:aws:batch:us-east-1:123456789012:job-queue/MyQueue',
           ]),
         }),
       ]),
