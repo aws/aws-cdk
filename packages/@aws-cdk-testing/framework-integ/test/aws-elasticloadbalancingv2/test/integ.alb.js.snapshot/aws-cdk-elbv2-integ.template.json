@@ -398,6 +398,10 @@
      {
       "Key": "deletion_protection.enabled",
       "Value": "false"
+     },
+     {
+      "Key": "routing.http.drop_invalid_header_fields.enabled",
+      "Value": "false"
      }
     ],
     "Scheme": "internet-facing",
