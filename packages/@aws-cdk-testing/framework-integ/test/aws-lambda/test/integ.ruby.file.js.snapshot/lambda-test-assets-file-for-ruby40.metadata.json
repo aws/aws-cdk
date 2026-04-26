@@ -1,0 +1,64 @@
+{
+  "/lambda-test-assets-file-for-ruby40/MyRuby40Lambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby40/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby40/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby40/MyRuby40Lambda/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby40/MyRuby40Lambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyRuby40LambdaCE687E3C"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby40/Exports/Output{\"Ref\":\"MyRuby40LambdaCE687E3C\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyRuby40LambdaCE687E3C89A6EAD8"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby40/MyRuby40Lambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyRuby40LambdaServiceRole6972CD6F"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby40/MyRuby40Lambda/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}
