@@ -349,7 +349,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     // THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow(/hookDetails must be a JSON object, not an array or primitive/);
+    }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
   });
 
   test('hookDetails with CDK token renders Fn::ToJsonString', () => {
@@ -394,6 +394,6 @@ describe('DeploymentLifecycleHookTarget', () => {
     // THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow(/hookDetails must be a JSON object, not an array or primitive/);
+    }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
   });
 });

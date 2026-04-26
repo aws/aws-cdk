@@ -105,7 +105,7 @@ export interface DeploymentLifecycleLambdaTargetProps {
    *
    * @default - No custom parameters
    */
-  readonly hookDetails?: { [key: string]: any };
+  readonly hookDetails?: Record<string, unknown>;
 }
 
 /**
@@ -147,7 +147,7 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
         this.props.hookDetails === null
       )
     ) {
-      throw new ValidationError(lit`HookDetailsMustBeJsonObject`, 'hookDetails must be a JSON object, not an array or primitive', scope);
+      throw new ValidationError(lit`HookDetailsMustBeJsonObject`, 'hookDetails must be a plain JSON object (arrays and primitives are not allowed)', scope);
     }
 
     return {
