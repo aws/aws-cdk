@@ -1,6 +1,8 @@
 import type { IConstruct } from 'constructs';
 import * as iam from '../../aws-iam';
 import type * as lambda from '../../aws-lambda';
+import { Fn, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Deployment lifecycle stages where hooks can be executed
@@ -55,6 +57,13 @@ export interface DeploymentLifecycleHookTargetConfig {
    * The lifecycle stages when this hook should be executed
    */
   readonly lifecycleStages: DeploymentLifecycleStage[];
+
+  /**
+   * Custom parameters that Amazon ECS passes to hook target invocations, serialized as a JSON string.
+   *
+   * @default - No custom parameters
+   */
+  readonly hookDetails?: string;
 }
 
 /**
@@ -83,6 +92,19 @@ export interface DeploymentLifecycleLambdaTargetProps {
    * The lifecycle stages when this hook should be executed
    */
   readonly lifecycleStages: DeploymentLifecycleStage[];
+
+  /**
+   * Custom parameters that Amazon ECS passes to hook target invocations.
+   *
+   * Must be a JSON object (not an array or primitive).
+   *
+   * Note: If values contain CDK tokens (e.g. `cdk.Aws.STACK_NAME`), the
+   * synthesized template will use `Fn::ToJsonString` which requires the
+   * `AWS::LanguageExtensions` transform (added automatically by CDK).
+   *
+   * @default - No custom parameters
+   */
+  readonly hookDetails?: { [key: string]: any };
 }
 
 /**
@@ -117,10 +139,17 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
       this.handler.grantInvoke(this._role);
     }
 
+    if (Array.isArray(this.props.hookDetails)) {
+      throw new ValidationError(lit`HookDetailsMustBeJsonObject`, 'hookDetails must be a JSON object, not an array', scope);
+    }
+
     return {
       targetArn: this.handler.functionArn,
       role: this._role,
       lifecycleStages: this.props.lifecycleStages,
+      hookDetails: this.props.hookDetails
+        ? Fn.toJsonString(this.props.hookDetails)
+        : undefined,
     };
   }
 }
