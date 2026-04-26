@@ -916,7 +916,11 @@ describe('State Machine', () => {
                   'Fn::Join': [
                     '',
                     [
-                      'arn:aws:states:',
+                      'arn:',
+                      {
+                        Ref: 'AWS::Partition',
+                      },
+                      ':states:',
                       {
                         Ref: 'AWS::Region',
                       },
