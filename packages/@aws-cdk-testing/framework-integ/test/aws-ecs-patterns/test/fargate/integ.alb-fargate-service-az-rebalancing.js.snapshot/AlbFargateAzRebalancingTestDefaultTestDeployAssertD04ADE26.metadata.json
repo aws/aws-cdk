@@ -1,0 +1,62 @@
+{
+  "/AlbFargateAzRebalancingTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/home/robert/git/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/home/robert/git/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/home/robert/git/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.alb-fargate-service-az-rebalancing.js:19:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AlbFargateAzRebalancingTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.alb-fargate-service-az-rebalancing.js:22:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AlbFargateAzRebalancingTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/home/robert/git/github/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/home/robert/git/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/fargate/integ.alb-fargate-service-az-rebalancing.js:22:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
