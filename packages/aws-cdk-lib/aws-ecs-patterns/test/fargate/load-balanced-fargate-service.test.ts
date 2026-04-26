@@ -1765,6 +1765,28 @@ describe('ApplicationLoadBalancedFargateService', () => {
       })],
     });
   });
+
+  test.each([
+    { name: 'not provided', azRebalance: undefined, expected: Match.absent() },
+    { name: 'enabled', azRebalance: ecs.AvailabilityZoneRebalancing.ENABLED, expected: 'ENABLED' },
+    { name: 'disabled', azRebalance: ecs.AvailabilityZoneRebalancing.DISABLED, expected: 'DISABLED' },
+  ])('configuring AZ rebalancing: $name', ({ azRebalance, expected }) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.ApplicationLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      availabilityZoneRebalancing: azRebalance,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: expected,
+    });
+  });
 });
 
 describe('NetworkLoadBalancedFargateService', () => {
@@ -2564,6 +2586,28 @@ describe('NetworkLoadBalancedFargateService', () => {
         Protocol: 'HTTP',
         TargetType: 'ip',
       });
+    });
+  });
+
+  test.each([
+    { name: 'not provided', azRebalance: undefined, expected: Match.absent() },
+    { name: 'enabled', azRebalance: ecs.AvailabilityZoneRebalancing.ENABLED, expected: 'ENABLED' },
+    { name: 'disabled', azRebalance: ecs.AvailabilityZoneRebalancing.DISABLED, expected: 'DISABLED' },
+  ])('configuring AZ rebalancing: $name', ({ azRebalance, expected }) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN
+    new ecsPatterns.NetworkLoadBalancedFargateService(stack, 'Service', {
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      availabilityZoneRebalancing: azRebalance,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: expected,
     });
   });
 });

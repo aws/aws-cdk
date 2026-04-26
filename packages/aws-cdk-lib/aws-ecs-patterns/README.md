@@ -1065,6 +1065,25 @@ Please note, ECS Exec leverages AWS Systems Manager (SSM). So as a prerequisite 
 to work, you need to have the SSM plugin for the AWS CLI installed locally. For more information, see
 [Install Session Manager plugin for AWS CLI](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
+### Availability Zone Rebalancing
+
+Fargate services support [Availability Zone rebalancing](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-rebalancing.html),
+which actively corrects AZ imbalances by moving tasks from overbalanced to underbalanced AZs.
+
+You can configure this when creating your service:
+
+```ts
+declare const cluster: ecs.Cluster;
+
+const loadBalancedFargateService = new ecsPatterns.ApplicationLoadBalancedFargateService(this, 'Service', {
+  cluster,
+  taskImageOptions: {
+    image: ecs.ContainerImage.fromRegistry("amazon/amazon-ecs-sample"),
+  },
+  availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+});
+```
+
 ### Propagate Tags from task definition for ScheduledFargateTask
 
 For tasks that are defined by a Task Definition, tags applied to the definition will not be applied

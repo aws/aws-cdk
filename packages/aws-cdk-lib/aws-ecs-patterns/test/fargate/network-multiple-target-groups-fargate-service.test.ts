@@ -66,4 +66,29 @@ describe('NetworkMultipleTargetGroupsFargateService', () => {
     // THEN: shows warning about minHealthyPercent
     Annotations.fromStack(stack).hasWarning('*', 'minHealthyPercent has not been configured so the default value of 50% is used. The number of running tasks will decrease below the desired count during deployments etc. See https://github.com/aws/aws-cdk/issues/31705 [ack: @aws-cdk/aws-ecs:minHealthyPercent]');
   });
+
+  test.each([
+    { name: 'not provided', azRebalance: undefined, expected: Match.absent() },
+    { name: 'enabled', azRebalance: ecs.AvailabilityZoneRebalancing.ENABLED, expected: 'ENABLED' },
+    { name: 'disabled', azRebalance: ecs.AvailabilityZoneRebalancing.DISABLED, expected: 'DISABLED' },
+  ])('configuring AZ rebalancing: $name', ({ azRebalance, expected }) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'VPC');
+    const cluster = new ecs.Cluster(stack, 'Cluster', { vpc });
+
+    // WHEN
+    new ecsPatterns.NetworkMultipleTargetGroupsFargateService(stack, 'Service', {
+      cluster,
+      taskImageOptions: {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      },
+      availabilityZoneRebalancing: azRebalance,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      AvailabilityZoneRebalancing: expected,
+    });
+  });
 });
