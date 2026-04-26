@@ -80,7 +80,7 @@ export abstract class AtLeastThreshold {
    *
    * @param count the minimum number of alarms that must be in the specified state
    */
-  public static count(count: number): AtLeastThresholdCount {
+  public static count(count: number): AtLeastThreshold {
     return new AtLeastThresholdCount(count);
   }
 
@@ -91,7 +91,7 @@ export abstract class AtLeastThreshold {
    *
    * @param percentage the minimum percentage of alarms that must be in the specified state
    */
-  public static percentage(percentage: number): AtLeastThresholdPercentage {
+  public static percentage(percentage: number): AtLeastThreshold {
     return new AtLeastThresholdPercentage(percentage);
   }
 
@@ -108,7 +108,7 @@ export abstract class AtLeastThreshold {
  *
  * Use `AtLeastThreshold.count()` to create an instance.
  */
-export class AtLeastThresholdCount extends AtLeastThreshold {
+class AtLeastThresholdCount extends AtLeastThreshold {
   constructor(private readonly count: number) {
     super();
   }
@@ -137,7 +137,7 @@ export class AtLeastThresholdCount extends AtLeastThreshold {
  *
  * Use `AtLeastThreshold.percentage()` to create an instance.
  */
-export class AtLeastThresholdPercentage extends AtLeastThreshold {
+class AtLeastThresholdPercentage extends AtLeastThreshold {
   constructor(private readonly percentage: number) {
     super();
   }

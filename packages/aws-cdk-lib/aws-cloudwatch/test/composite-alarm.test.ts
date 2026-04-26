@@ -230,7 +230,7 @@ describe('CompositeAlarm', () => {
     })).toThrow('Did not detect any operands for AT_LEAST NOT OK');
   });
 
-  test.each([0, 3, 1.5])('invalid count for atLeast: %s', (count: number) => {
+  test.each([0, -1, 3, 1.5])('invalid count for atLeast: %s', (count: number) => {
     const stack = new Stack();
     const testMetric = new Metric({
       namespace: 'CDK/Test',
@@ -250,7 +250,7 @@ describe('CompositeAlarm', () => {
     })).toThrow(`count must be between 1 and alarm length(1) integer, got ${count}`);
   });
 
-  test.each([0, 101, 1.5])('invalid percentage for atLeast: %s%%', (percentage: number) => {
+  test.each([0, -1, 101, 1.5])('invalid percentage for atLeast: %s%%', (percentage: number) => {
     const stack = new Stack();
     const testMetric = new Metric({
       namespace: 'CDK/Test',
