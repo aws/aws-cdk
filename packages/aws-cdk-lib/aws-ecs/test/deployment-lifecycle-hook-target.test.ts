@@ -349,6 +349,51 @@ describe('DeploymentLifecycleHookTarget', () => {
     // THEN
     expect(() => {
       Template.fromStack(stack);
-    }).toThrow(/hookDetails must be a JSON object, not an array/);
+    }).toThrow(/hookDetails must be a JSON object, not an array or primitive/);
+  });
+
+  test('hookDetails with CDK token renders Fn::ToJsonString', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: { stackName: cdk.Aws.STACK_NAME },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      DeploymentConfiguration: {
+        LifecycleHooks: [
+          {
+            HookDetails: { 'Fn::ToJsonString': { stackName: { Ref: 'AWS::StackName' } } },
+            LifecycleStages: ['PRE_SCALE_UP'],
+          },
+        ],
+      },
+    });
+  });
+
+  test('hookDetails throws when primitive is provided', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: 'not-an-object' as any,
+    }));
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow(/hookDetails must be a JSON object, not an array or primitive/);
   });
 });

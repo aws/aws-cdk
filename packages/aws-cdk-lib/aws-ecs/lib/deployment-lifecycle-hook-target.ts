@@ -59,7 +59,8 @@ export interface DeploymentLifecycleHookTargetConfig {
   readonly lifecycleStages: DeploymentLifecycleStage[];
 
   /**
-   * Custom parameters that Amazon ECS passes to hook target invocations, serialized as a JSON string.
+   * Custom parameters that Amazon ECS passes to hook target invocations.
+   * Already serialized JSON string — do not pass raw objects here.
    *
    * @default - No custom parameters
    */
@@ -139,8 +140,14 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
       this.handler.grantInvoke(this._role);
     }
 
-    if (Array.isArray(this.props.hookDetails)) {
-      throw new ValidationError(lit`HookDetailsMustBeJsonObject`, 'hookDetails must be a JSON object, not an array', scope);
+    if (
+      this.props.hookDetails !== undefined && (
+        Array.isArray(this.props.hookDetails) ||
+        typeof this.props.hookDetails !== 'object' ||
+        this.props.hookDetails === null
+      )
+    ) {
+      throw new ValidationError(lit`HookDetailsMustBeJsonObject`, 'hookDetails must be a JSON object, not an array or primitive', scope);
     }
 
     return {
