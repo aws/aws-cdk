@@ -247,7 +247,7 @@ describe('CompositeAlarm', () => {
         operands: [alarm],
         threshold: AtLeastThreshold.count(count),
       }),
-    })).toThrow(`count must be between 1 and alarm length(1) integer, got ${count}`);
+    })).toThrow(`count must be an integer between 1 and the number of operands (1), got ${count}`);
   });
 
   test.each([0, -1, 101, 1.5])('invalid percentage for atLeast: %s%%', (percentage: number) => {
@@ -267,6 +267,6 @@ describe('CompositeAlarm', () => {
         operands: [alarm],
         threshold: AtLeastThreshold.percentage(percentage),
       }),
-    })).toThrow(`percentage must be between 1 and 100, got ${percentage}`);
+    })).toThrow(`percentage must be an integer between 1 and 100, got ${percentage}`);
   });
 });

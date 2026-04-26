@@ -38,6 +38,8 @@ enum Operator {
 export interface AtLeastOptions {
   /**
    * Alarms to evaluate in the AT_LEAST expression.
+   *
+   * Must contain at least one alarm.
    */
   readonly operands: IAlarm[];
 
@@ -63,14 +65,10 @@ interface AtLeastThresholdConfig {
 }
 
 /**
- * Represents a threshold for the AT_LEAST expression in composite alarm rules.
+ * Threshold configuration for the AT_LEAST composite alarm rule expression.
  *
- * Use the static factory methods to create a threshold:
- *
- * ```
- * AtLeastThreshold.count(2)        // at least 2 alarms
- * AtLeastThreshold.percentage(60)  // at least 60% of alarms
- * ```
+ * Use `AtLeastThreshold.count()` for an absolute number or
+ * `AtLeastThreshold.percentage()` for a percentage-based threshold.
  */
 export abstract class AtLeastThreshold {
   /**
@@ -103,11 +101,7 @@ export abstract class AtLeastThreshold {
   public abstract _bind(operands: IAlarm[]): AtLeastThresholdConfig;
 }
 
-/**
- * A count-based threshold for the AT_LEAST expression.
- *
- * Use `AtLeastThreshold.count()` to create an instance.
- */
+/** @internal */
 class AtLeastThresholdCount extends AtLeastThreshold {
   constructor(private readonly count: number) {
     super();
@@ -124,7 +118,7 @@ class AtLeastThresholdCount extends AtLeastThreshold {
     if (this.count < 1 || operands.length < this.count || !Number.isInteger(this.count)) {
       throw new UnscopedValidationError(
         lit`InvalidAtLeastCount`,
-        `count must be between 1 and alarm length(${operands.length}) integer, got ${this.count}`,
+        `count must be an integer between 1 and the number of operands (${operands.length}), got ${this.count}`,
       );
     }
 
@@ -132,11 +126,7 @@ class AtLeastThresholdCount extends AtLeastThreshold {
   }
 }
 
-/**
- * A percentage-based threshold for the AT_LEAST expression.
- *
- * Use `AtLeastThreshold.percentage()` to create an instance.
- */
+/** @internal */
 class AtLeastThresholdPercentage extends AtLeastThreshold {
   constructor(private readonly percentage: number) {
     super();
@@ -153,7 +143,7 @@ class AtLeastThresholdPercentage extends AtLeastThreshold {
     if (this.percentage < 1 || 100 < this.percentage || !Number.isInteger(this.percentage)) {
       throw new UnscopedValidationError(
         lit`InvalidAtLeastPercentage`,
-        `percentage must be between 1 and 100, got ${this.percentage}`,
+        `percentage must be an integer between 1 and 100, got ${this.percentage}`,
       );
     }
 
@@ -198,44 +188,20 @@ export class AlarmRule {
   }
 
   /**
-   * Function to create an AT_LEAST expression for the given alarm state.
+   * function to create an AT_LEAST expression for the given alarm state.
    *
-   * AT_LEAST evaluates to TRUE when at least the specified threshold of the
-   * given alarms are in the specified state.
-   *
-   * Example: trigger when at least 2 of 3 alarms are in ALARM state:
-   *
-   * ```
-   * AlarmRule.atLeast(AlarmState.ALARM, {
-   *   operands: [alarm1, alarm2, alarm3],
-   *   threshold: AtLeastThreshold.count(2),
-   * })
-   * ```
-   *
-   * @param alarmState the alarm state to evaluate against
-   * @param options options including operands and threshold
+   * @param alarmState the alarm state to evaluate against.
+   * @param options operands and threshold for the AT_LEAST expression.
    */
   public static atLeast(alarmState: AlarmState, options: AtLeastOptions): IAlarmRule {
     return this.renderAtLeast(`${alarmState}`, options);
   }
 
   /**
-   * Function to create an AT_LEAST expression for the negated alarm state.
+   * function to create an AT_LEAST expression for the negated alarm state.
    *
-   * AT_LEAST evaluates to TRUE when at least the specified threshold of the
-   * given alarms are NOT in the specified state.
-   *
-   * Example: trigger when at least 60% of alarms are NOT in OK state:
-   *
-   * ```
-   * AlarmRule.atLeastNot(AlarmState.OK, {
-   *   operands: [alarm1, alarm2, alarm3],
-   *   threshold: AtLeastThreshold.percentage(60),
-   * })
-   * ```
-   *
-   * @param alarmState the alarm state to negate and evaluate against
-   * @param options options including operands and threshold
+   * @param alarmState the alarm state to negate and evaluate against.
+   * @param options operands and threshold for the AT_LEAST expression.
    */
   public static atLeastNot(alarmState: AlarmState, options: AtLeastOptions): IAlarmRule {
     return this.renderAtLeast(`${Operator.NOT} ${alarmState}`, options);
