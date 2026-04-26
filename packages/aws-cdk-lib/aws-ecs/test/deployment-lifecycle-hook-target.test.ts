@@ -396,4 +396,23 @@ describe('DeploymentLifecycleHookTarget', () => {
       Template.fromStack(stack);
     }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
   });
+
+  test('hookDetails throws when null is provided', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.addLifecycleHook(new ecs.DeploymentLifecycleLambdaTarget(lambdaFunction, 'PreScaleUpHook', {
+      lifecycleStages: [ecs.DeploymentLifecycleStage.PRE_SCALE_UP],
+      hookDetails: null as any,
+    }));
+
+    // THEN
+    expect(() => {
+      Template.fromStack(stack);
+    }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
+  });
 });

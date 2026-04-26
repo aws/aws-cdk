@@ -142,9 +142,9 @@ export class DeploymentLifecycleLambdaTarget implements IDeploymentLifecycleHook
 
     if (
       this.props.hookDetails !== undefined && (
+        this.props.hookDetails === null ||
         Array.isArray(this.props.hookDetails) ||
-        typeof this.props.hookDetails !== 'object' ||
-        this.props.hookDetails === null
+        typeof this.props.hookDetails !== 'object'
       )
     ) {
       throw new ValidationError(lit`HookDetailsMustBeJsonObject`, 'hookDetails must be a plain JSON object (arrays and primitives are not allowed)', scope);
