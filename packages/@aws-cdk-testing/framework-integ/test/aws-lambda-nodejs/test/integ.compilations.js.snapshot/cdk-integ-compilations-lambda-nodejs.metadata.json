@@ -1,0 +1,233 @@
+{
+  "/cdk-integ-compilations-lambda-nodejs": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:38:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "preCompilation": true
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "preCompilation": true
+        },
+        "runtime": "*"
+      }
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "tsconfig": "*",
+          "preCompilation": true
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "tsconfig": "*",
+          "preCompilation": true
+        },
+        "runtime": "*"
+      }
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:39:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:39:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tsdecoratorhandlerC8E2F076"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:10:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:38:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tsdecoratorhandlertsconfig68EC191E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:20:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:38:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tsdecoratorhandlerServiceRole61E9E52C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:10:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:38:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tsdecoratorhandlertsconfigServiceRoleC4AE481E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:20:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.compilations.js:38:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-compilations-lambda-nodejs/ts-decorator-handler-tsconfig/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

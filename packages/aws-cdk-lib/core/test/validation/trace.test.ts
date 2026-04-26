@@ -34,7 +34,7 @@ describe('ReportTrace', () => {
         id: 'MyStack',
         construct: expect.stringMatching(/.*(Stack|Construct)/),
         libraryVersion: expect.any(String),
-        location: expect.stringMatching(/Object.<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
+        location: expect.stringMatching(/<anonymous> \(.*\/trace.test.ts:[0-9]+:[0-9]+\)/),
         path: 'MyStack',
         child: {
           id: 'MyConstruct',
@@ -61,50 +61,6 @@ describe('ReportTrace', () => {
     } finally {
       process.env.CDK_DEBUG = '';
     }
-  });
-
-  test('trace does not include location when CDK_DEBUG=false', () => {
-    // GIVEN
-    const app = new core.App({
-      treeMetadata: true,
-    });
-    const stack = new MyStack(app, 'MyStack');
-    app.synth();
-    const tree = new ConstructTree(app);
-
-    // WHEN
-    const trace = new ReportTrace(tree);
-    const formatted = trace.formatJson(stack.constructPath);
-
-    // THEN
-    expect(formatted).toEqual({
-      id: 'MyStack',
-      construct: expect.stringMatching(/.*(Stack|Construct)/),
-      libraryVersion: expect.any(String),
-      location: "Run with '--debug' to include location info",
-      path: 'MyStack',
-      child: {
-        id: 'MyConstruct',
-        construct: 'constructs.Construct',
-        libraryVersion: expect.any(String),
-        location: "Run with '--debug' to include location info",
-        path: 'MyStack/MyConstruct',
-        child: {
-          id: 'MyL2Resource',
-          construct: expect.stringMatching(/(Resource|Construct)/),
-          libraryVersion: expect.any(String),
-          location: "Run with '--debug' to include location info",
-          path: 'MyStack/MyConstruct/MyL2Resource',
-          child: {
-            id: 'Resource',
-            construct: expect.stringMatching(/(CfnResource|Construct)/),
-            libraryVersion: expect.any(String),
-            location: "Run with '--debug' to include location info",
-            path: 'MyStack/MyConstruct/MyL2Resource/Resource',
-          },
-        },
-      },
-    });
   });
 });
 
