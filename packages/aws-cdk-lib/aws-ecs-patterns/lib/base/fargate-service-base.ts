@@ -1,5 +1,4 @@
-import type { FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
-import type { AvailabilityZoneRebalancing } from '../../../aws-ecs';
+import type { AvailabilityZoneRebalancing, FargatePlatformVersion, FargateTaskDefinition, RuntimePlatform } from '../../../aws-ecs';
 
 export interface FargateServiceBaseProps {
   /**
