@@ -78,6 +78,17 @@ export interface SqsEventSourceProps {
    * @default - Enhanced monitoring is disabled
    */
   readonly metricsConfig?: lambda.MetricsConfig;
+
+  /**
+   * Configuration for provisioned pollers that read from the event source.
+   * When specified, allows control over the minimum and maximum number of pollers
+   * that can be provisioned to process events from the queue.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/with-sqs.html
+   *
+   * @default - no provisioned pollers
+   */
+  readonly provisionedPollerConfig?: lambda.ProvisionedPollerConfig;
 }
 
 /**
@@ -104,6 +115,20 @@ export class SqsEventSource implements lambda.IEventSource {
         throw new ValidationError(lit`MaximumBatchSizeInclusiveGiven`, `Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`, queue);
       }
     }
+    if (this.props.provisionedPollerConfig) {
+      const { minimumPollers, maximumPollers } = this.props.provisionedPollerConfig;
+      const hasMin = minimumPollers !== undefined && !Token.isUnresolved(minimumPollers);
+      const hasMax = maximumPollers !== undefined && !Token.isUnresolved(maximumPollers);
+      if (hasMin && (minimumPollers < 2 || minimumPollers > 200)) {
+        throw new ValidationError(lit`SqsMinimumProvisionedPollersInclusive`, `Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: ${minimumPollers}`, queue);
+      }
+      if (hasMax && (maximumPollers < 2 || maximumPollers > 2000)) {
+        throw new ValidationError(lit`SqsMaximumProvisionedPollersInclusive`, `Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: ${maximumPollers}`, queue);
+      }
+      if (hasMin && hasMax && minimumPollers > maximumPollers) {
+        throw new ValidationError(lit`SqsMinimumProvisionedPollersLessEqual`, `Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=${minimumPollers}, max=${maximumPollers}`, queue);
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -117,6 +142,7 @@ export class SqsEventSource implements lambda.IEventSource {
       filters: this.props.filters,
       filterEncryption: this.props.filterEncryption,
       metricsConfig: this.props.metricsConfig,
+      provisionedPollerConfig: this.props.provisionedPollerConfig,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;

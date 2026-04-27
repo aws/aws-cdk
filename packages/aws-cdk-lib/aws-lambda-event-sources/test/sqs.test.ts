@@ -593,4 +593,66 @@ describe('SQSEventSource', () => {
       MetricsConfig: { Metrics: ['EventCount'] },
     });
   });
+
+  test('adding provisionedPollerConfig', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN
+    fn.addEventSource(new sources.SqsEventSource(q, {
+      provisionedPollerConfig: {
+        minimumPollers: 2,
+        maximumPollers: 10,
+      },
+    }));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::EventSourceMapping', {
+      'ProvisionedPollerConfig': {
+        'MinimumPollers': 2,
+        'MaximumPollers': 10,
+      },
+    });
+  });
+
+  test.each([1, 201])('fails if minimumPollers for SQS is out of range (%i)', (minimumPollers) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      provisionedPollerConfig: { minimumPollers },
+    }))).toThrow(`Minimum provisioned pollers for SQS must be between 2 and 200 inclusive, got: ${minimumPollers}`);
+  });
+
+  test.each([1, 2001])('fails if maximumPollers for SQS is out of range (%i)', (maximumPollers) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      provisionedPollerConfig: { maximumPollers },
+    }))).toThrow(`Maximum provisioned pollers for SQS must be between 2 and 2000 inclusive, got: ${maximumPollers}`);
+  });
+
+  test.each([
+    [10, 5],
+    [200, 2],
+  ])('fails if minimumPollers (%i) exceeds maximumPollers (%i) for SQS', (minimumPollers, maximumPollers) => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      provisionedPollerConfig: { minimumPollers, maximumPollers },
+    }))).toThrow(`Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=${minimumPollers}, max=${maximumPollers}`);
+  });
 });
