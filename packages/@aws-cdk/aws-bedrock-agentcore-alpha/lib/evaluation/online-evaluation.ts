@@ -1,0 +1,445 @@
+/**
+ *  Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance
+ *  with the License. A copy of the License is located at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES
+ *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions
+ *  and limitations under the License.
+ */
+
+import { Arn, ArnFormat, Aws, Stack } from 'aws-cdk-lib';
+import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { DataSourceConfig } from './data-source';
+import type { EvaluatorReference } from './evaluator';
+import { type IOnlineEvaluationConfig, OnlineEvaluationBase } from './online-evaluation-base';
+import {
+  EVALUATION_BEDROCK_MODEL_PERMS,
+  EVALUATION_CLOUDWATCH_INDEX_POLICY_PERMS,
+  EVALUATION_CLOUDWATCH_LOGS_DESCRIBE_PERMS,
+  EVALUATION_CLOUDWATCH_LOGS_QUERY_PERMS,
+  EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS,
+} from './perms';
+import {
+  type OnlineEvaluationBaseProps,
+  type OnlineEvaluationConfigAttributes,
+} from './types';
+import {
+  validateConfigName,
+  validateDescription,
+  validateEvaluators,
+  validateSamplingPercentage,
+  validateFilters,
+  validateSessionTimeout,
+  throwIfInvalid,
+} from './validation-helpers';
+
+/**
+ * Properties for creating an OnlineEvaluationConfig.
+ */
+export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
+  /**
+   * The list of evaluators to apply during online evaluation.
+   *
+   * Can include both built-in evaluators and custom evaluators.
+   *
+   * @minimum 1
+   * @maximum 10
+   */
+  readonly evaluators: EvaluatorReference[];
+
+  /**
+   * The data source configuration that specifies where to read agent traces from.
+   */
+  readonly dataSource: DataSourceConfig;
+}
+
+/**
+ * Online evaluation configuration for Amazon Bedrock AgentCore.
+ *
+ * Enables continuous evaluation of agent performance using built-in or custom evaluators.
+ * Supports CloudWatch Logs and Agent Endpoint data sources.
+ *
+ * @resource AWS::BedrockAgentCore::OnlineEvaluationConfig
+ *
+ * @example
+ * // Basic usage with built-in evaluators
+ * const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MyEvaluation', {
+ *   configName: 'my_evaluation',
+ *   evaluators: [
+ *     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+ *     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
+ *   ],
+ *   dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+ *     logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+ *     serviceNames: ['my-agent.default'],
+ *   }),
+ * });
+ */
+@propertyInjectable
+export class OnlineEvaluationConfig extends OnlineEvaluationBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string =
+    '@aws-cdk.aws-bedrock-agentcore-alpha.OnlineEvaluationConfig';
+
+  /**
+   * Import an existing OnlineEvaluationConfig by its ID.
+   *
+   * @param scope - The construct scope
+   * @param id - Construct identifier
+   * @param onlineEvaluationConfigId - The configuration ID to import
+   * @returns An IOnlineEvaluationConfig reference
+   */
+  public static fromOnlineEvaluationConfigId(
+    scope: Construct,
+    id: string,
+    onlineEvaluationConfigId: string,
+  ): IOnlineEvaluationConfig {
+    const stack = Stack.of(scope);
+    const configArn = Arn.format(
+      {
+        service: 'bedrock-agentcore',
+        resource: 'online-evaluation-config',
+        resourceName: onlineEvaluationConfigId,
+      },
+      stack,
+    );
+
+    return OnlineEvaluationConfig.fromOnlineEvaluationConfigAttributes(scope, id, {
+      onlineEvaluationConfigArn: configArn,
+      onlineEvaluationConfigId: onlineEvaluationConfigId,
+      onlineEvaluationConfigName: onlineEvaluationConfigId,
+    });
+  }
+
+  /**
+   * Import an existing OnlineEvaluationConfig by its ARN.
+   *
+   * @param scope - The construct scope
+   * @param id - Construct identifier
+   * @param onlineEvaluationConfigArn - The configuration ARN to import
+   * @returns An IOnlineEvaluationConfig reference
+   */
+  public static fromOnlineEvaluationConfigArn(
+    scope: Construct,
+    id: string,
+    onlineEvaluationConfigArn: string,
+  ): IOnlineEvaluationConfig {
+    const arnParts = Arn.split(onlineEvaluationConfigArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const configId = arnParts.resourceName!;
+
+    return OnlineEvaluationConfig.fromOnlineEvaluationConfigAttributes(scope, id, {
+      onlineEvaluationConfigArn: onlineEvaluationConfigArn,
+      onlineEvaluationConfigId: configId,
+      onlineEvaluationConfigName: configId,
+    });
+  }
+
+  /**
+   * Import an existing OnlineEvaluationConfig from its attributes.
+   *
+   * @param scope - The construct scope
+   * @param id - Construct identifier
+   * @param attrs - The configuration attributes
+   * @returns An IOnlineEvaluationConfig reference
+   */
+  public static fromOnlineEvaluationConfigAttributes(
+    scope: Construct,
+    id: string,
+    attrs: OnlineEvaluationConfigAttributes,
+  ): IOnlineEvaluationConfig {
+    class Import extends OnlineEvaluationBase {
+      public readonly onlineEvaluationConfigArn = attrs.onlineEvaluationConfigArn;
+      public readonly onlineEvaluationConfigId = attrs.onlineEvaluationConfigId;
+      public readonly onlineEvaluationConfigName = attrs.onlineEvaluationConfigName;
+      public readonly executionRole = attrs.executionRoleArn
+        ? iam.Role.fromRoleArn(scope, `${id}Role`, attrs.executionRoleArn)
+        : undefined;
+      public readonly status = undefined;
+      public readonly executionStatus = undefined;
+      public readonly createdAt = undefined;
+      public readonly updatedAt = undefined;
+      public readonly grantPrincipal: iam.IPrincipal;
+
+      constructor(s: Construct, i: string) {
+        super(s, i);
+        this.grantPrincipal = this.executionRole ?? new iam.UnknownPrincipal({ resource: this });
+      }
+    }
+
+    return new Import(scope, id);
+  }
+
+  /**
+   * The ARN of the online evaluation configuration.
+   * @attribute
+   */
+  public readonly onlineEvaluationConfigArn: string;
+
+  /**
+   * The unique identifier of the online evaluation configuration.
+   * @attribute
+   */
+  public readonly onlineEvaluationConfigId: string;
+
+  /**
+   * The name of the online evaluation configuration.
+   * @attribute
+   */
+  public readonly onlineEvaluationConfigName: string;
+
+  /**
+   * The IAM execution role for the evaluation.
+   */
+  public readonly executionRole?: iam.IRole;
+
+  /**
+   * The lifecycle status of the configuration.
+   * @attribute
+   */
+  public readonly status?: string;
+
+  /**
+   * The execution status of the evaluation (ENABLED or DISABLED).
+   */
+  public readonly executionStatus?: string;
+
+  /**
+   * The timestamp when the configuration was created.
+   * @attribute
+   */
+  public readonly createdAt?: string;
+
+  /**
+   * The timestamp when the configuration was last updated.
+   * @attribute
+   */
+  public readonly updatedAt?: string;
+
+  /**
+   * The principal to grant permissions to.
+   */
+  public readonly grantPrincipal: iam.IPrincipal;
+
+  constructor(scope: Construct, id: string, props: OnlineEvaluationConfigProps) {
+    super(scope, id);
+
+    addConstructMetadata(this, props);
+
+    throwIfInvalid(validateConfigName, props.configName, this);
+    throwIfInvalid(validateDescription, props.description, this);
+    throwIfInvalid(validateEvaluators, props.evaluators, this);
+    throwIfInvalid(validateSamplingPercentage, props.samplingPercentage, this);
+    throwIfInvalid(validateFilters, props.filters, this);
+    throwIfInvalid(validateSessionTimeout, props.sessionTimeoutMinutes, this);
+
+    this.onlineEvaluationConfigName = props.configName;
+    this.executionRole = props.executionRole ?? this.createExecutionRole(props.dataSource);
+    this.grantPrincipal = this.executionRole;
+
+    const resource = new bedrockagentcore.CfnOnlineEvaluationConfig(this, 'Resource', {
+      onlineEvaluationConfigName: props.configName,
+      evaluators: props.evaluators.map((e) => e.bind()),
+      dataSourceConfig: props.dataSource.bind(),
+      evaluationExecutionRoleArn: this.executionRole!.roleArn,
+      rule: this.buildRuleConfig(props),
+      description: props.description,
+      executionStatus: props.executionStatus,
+    });
+
+    // Ensure the execution role's policies are created before the L1 resource,
+    // because BedrockAgentCore validates role permissions at create time.
+    if (this.executionRole instanceof iam.Role && this.executionRole.node.defaultChild) {
+      resource.node.addDependency(this.executionRole);
+    }
+
+    this.onlineEvaluationConfigArn = resource.attrOnlineEvaluationConfigArn;
+    this.onlineEvaluationConfigId = resource.attrOnlineEvaluationConfigId;
+    this.status = resource.attrStatus;
+    this.executionStatus = resource.executionStatus;
+    this.createdAt = resource.attrCreatedAt;
+    this.updatedAt = resource.attrUpdatedAt;
+  }
+
+  private createExecutionRole(dataSource: DataSourceConfig): iam.IRole {
+    const stack = Stack.of(this);
+
+    const role = new iam.Role(this, 'ExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
+        conditions: {
+          StringEquals: {
+            'aws:SourceAccount': stack.account,
+            'aws:ResourceAccount': stack.account,
+          },
+          ArnLike: {
+            'aws:SourceArn': [
+              Arn.format(
+                {
+                  service: 'bedrock-agentcore',
+                  resource: 'evaluator',
+                  resourceName: '*',
+                },
+                stack,
+              ),
+              Arn.format(
+                {
+                  service: 'bedrock-agentcore',
+                  resource: 'online-evaluation-config',
+                  resourceName: '*',
+                },
+                stack,
+              ),
+            ],
+          },
+        },
+      }),
+      description: 'Execution role for Bedrock AgentCore Online Evaluation',
+    });
+
+    // The service requires query access to user-specified log groups AND the
+    // implicit aws/spans log group it uses internally for trace data.
+    const logGroupArns = [
+      ...dataSource.cloudWatchLogsConfig.logGroupNames,
+      'aws/spans',
+    ].flatMap(
+      (name) => [
+        Arn.format(
+          {
+            service: 'logs',
+            resource: 'log-group',
+            resourceName: name,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          },
+          stack,
+        ),
+        Arn.format(
+          {
+            service: 'logs',
+            resource: 'log-group',
+            resourceName: `${name}:*`,
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          },
+          stack,
+        ),
+      ],
+    );
+
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        sid: 'CloudWatchLogDescribeStatement',
+        actions: EVALUATION_CLOUDWATCH_LOGS_DESCRIBE_PERMS,
+        resources: ['*'],
+      }),
+    );
+
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        sid: 'CloudWatchLogQueryStatement',
+        actions: EVALUATION_CLOUDWATCH_LOGS_QUERY_PERMS,
+        resources: logGroupArns,
+      }),
+    );
+
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        sid: 'CloudWatchLogWriteStatement',
+        actions: EVALUATION_CLOUDWATCH_LOGS_WRITE_PERMS,
+        resources: [
+          Arn.format(
+            {
+              service: 'logs',
+              resource: 'log-group',
+              resourceName: '/aws/bedrock-agentcore/evaluations/*',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            },
+            stack,
+          ),
+        ],
+      }),
+    );
+
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        sid: 'CloudWatchIndexPolicyStatement',
+        actions: EVALUATION_CLOUDWATCH_INDEX_POLICY_PERMS,
+        resources: [
+          Arn.format(
+            {
+              service: 'logs',
+              resource: 'log-group',
+              resourceName: 'aws/spans',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            },
+            stack,
+          ),
+          Arn.format(
+            {
+              service: 'logs',
+              resource: 'log-group',
+              resourceName: 'aws/spans:*',
+              arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+            },
+            stack,
+          ),
+        ],
+      }),
+    );
+
+    role.addToPolicy(
+      new iam.PolicyStatement({
+        sid: 'BedrockInvokeStatement',
+        actions: EVALUATION_BEDROCK_MODEL_PERMS,
+        resources: [
+          `arn:${Aws.PARTITION}:bedrock:*::foundation-model/*`,
+          Arn.format(
+            {
+              service: 'bedrock',
+              resource: 'inference-profile',
+              resourceName: '*',
+              region: '*',
+            },
+            stack,
+          ),
+        ],
+      }),
+    );
+
+    return role;
+  }
+
+  private buildRuleConfig(props: OnlineEvaluationConfigProps): bedrockagentcore.CfnOnlineEvaluationConfig.RuleProperty {
+    return {
+      samplingConfig: {
+        samplingPercentage: props.samplingPercentage ?? 10,
+      },
+      sessionConfig: {
+        sessionTimeoutMinutes: props.sessionTimeoutMinutes ?? 15,
+      },
+      ...(props.filters && props.filters.length > 0 ? {
+        filters: props.filters.map((f) => ({
+          key: f.key,
+          operator: f.operator,
+          value: this.formatFilterValue(f.value),
+        })),
+      } : {}),
+    };
+  }
+
+  private formatFilterValue(value: string | number | boolean): bedrockagentcore.CfnOnlineEvaluationConfig.FilterValueProperty {
+    if (typeof value === 'string') {
+      return { stringValue: value };
+    } else if (typeof value === 'number') {
+      return { doubleValue: value };
+    } else if (typeof value === 'boolean') {
+      return { booleanValue: value };
+    }
+    return { stringValue: String(value) };
+  }
+}
