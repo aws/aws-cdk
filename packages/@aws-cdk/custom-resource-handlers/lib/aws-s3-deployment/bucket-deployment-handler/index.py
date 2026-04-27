@@ -336,6 +336,9 @@ def extract_and_replace_markers(archive, contents_dir, markers, markers_config):
     with ZipFile(archive, "r") as zip:
         zip.extractall(contents_dir)
 
+        if not markers:
+            return
+
         # replace markers for this source
         for file in zip.namelist():
             file_path = os.path.join(contents_dir, file)
