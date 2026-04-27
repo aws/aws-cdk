@@ -799,6 +799,68 @@ describe.each([EcsEc2ContainerDefinition, EcsFargateContainerDefinition])('%p', 
       },
     });
   });
+
+  test('respects repository credentials for private registries', () => {
+    // GIVEN
+    const secret = new secretsmanager.Secret(stack, 'RegistrySecret');
+
+    // WHEN
+    new EcsJobDefinition(stack, 'ECSJobDefn', {
+      container: new ContainerDefinition(stack, 'EcsContainer', {
+        ...defaultContainerProps,
+        image: ecs.ContainerImage.fromRegistry('private.registry.com/my-image:tag', {
+          credentials: secret,
+        }),
+      }),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+      ...pascalCaseExpectedProps,
+      ContainerProperties: {
+        ...pascalCaseExpectedProps.ContainerProperties,
+        Image: 'private.registry.com/my-image:tag',
+        RepositoryCredentials: {
+          CredentialsParameter: { Ref: 'RegistrySecret44FA9C40' },
+        },
+      },
+    });
+
+    // Verify execution role has permission to read the secret
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
+            Effect: 'Allow',
+            Resource: { Ref: 'RegistrySecret44FA9C40' },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('throws error when repository credentials are set without credentialsParameter', () => {
+    // GIVEN
+    const mockImage = {
+      bind: () => ({
+        imageName: 'private.registry.com/my-image:tag',
+        repositoryCredentials: {
+          credentialsParameter: undefined,
+        },
+      }),
+    } as any;
+
+    // WHEN / THEN
+    expect(() => {
+      new EcsJobDefinition(stack, 'ECSJobDefn', {
+        container: new ContainerDefinition(stack, 'EcsContainer', {
+          ...defaultContainerProps,
+          image: mockImage,
+        }),
+      });
+    }).toThrow(/credentialsParameter is required when repositoryCredentials is set/);
+  });
 });
 
 describe('EC2 containers', () => {
