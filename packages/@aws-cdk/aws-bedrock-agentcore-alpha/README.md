@@ -63,6 +63,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Other configuration](#other-configuration)
       - [Lifecycle configuration](#lifecycle-configuration)
       - [Request header configuration](#request-header-configuration)
+      - [Filesystem configuration](#filesystem-configuration)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -159,6 +160,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
 | `lifecycleConfiguration` | LifecycleConfiguration | No | The life cycle configuration for the AgentCore Runtime. Defaults to 900 seconds (15 minutes) for idle, 28800 seconds (8 hours) for max life time |
 | `requestHeaderConfiguration` | RequestHeaderConfiguration | No | Configuration for HTTP request headers that will be passed through to the runtime. Defaults to no configuration |
+| `filesystemConfiguration` | FilesystemConfiguration | No | Filesystem configuration for the AgentCore Runtime. Defaults to no filesystem configuration |
 
 ### Runtime Endpoint Properties
 
@@ -851,6 +853,32 @@ new agentcore.Runtime(this, 'test-runtime', {
       destination: agentcore.LoggingDestination.firehose(firehoseStream),
     },
   ],
+});
+```
+
+#### Filesystem configuration
+
+Session storage is a filesystem mounted inside the AgentCore Runtime that provides persistent
+storage across invocations (stop/resume cycles). Each session gets an isolated directory at
+the configured mount path.
+
+The mount path must be under `/mnt` with one subdirectory level (for example, `/mnt/data`).
+
+For additional information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-persistent-filesystems.html).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  filesystemConfiguration: {
+    sessionStorage: { mountPath: '/mnt/data' },
+  },
 });
 ```
 

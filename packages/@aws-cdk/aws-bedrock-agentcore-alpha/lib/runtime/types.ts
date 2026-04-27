@@ -56,3 +56,29 @@ export interface LifecycleConfiguration {
    */
   readonly maxLifetime?: Duration;
 }
+
+/**
+ * Session storage configuration for an AgentCore Runtime filesystem.
+ * Session storage is a filesystem mounted inside the AgentCore Runtime that provides
+ * persistent storage across invocations (stop/resume cycles).
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-persistent-filesystems.html
+ */
+export interface SessionStorageConfiguration {
+  /**
+   * The mount path inside the runtime container where the session storage is mounted.
+   * Must be under `/mnt` with one subdirectory level (for example, `/mnt/data`).
+   */
+  readonly mountPath: string;
+}
+
+/**
+ * Filesystem configuration for the AgentCore Runtime.
+ */
+export interface FilesystemConfiguration {
+  /**
+   * Session storage configuration for the runtime.
+   * @default - No session storage
+   */
+  readonly sessionStorage?: SessionStorageConfiguration;
+}

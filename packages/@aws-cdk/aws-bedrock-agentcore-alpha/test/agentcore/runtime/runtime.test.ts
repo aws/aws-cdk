@@ -3301,3 +3301,112 @@ describe('Runtime observability tests', () => {
     });
   });
 });
+
+describe('Runtime filesystem configuration tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('Should omit FilesystemConfigurations when not specified', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    app.synth();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      FilesystemConfigurations: Match.absent(),
+    });
+  });
+
+  test('Should omit FilesystemConfigurations when sessionStorage is not specified', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      filesystemConfiguration: {},
+    });
+
+    app.synth();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      FilesystemConfigurations: Match.absent(),
+    });
+  });
+
+  test('Should set session storage mount path', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      filesystemConfiguration: {
+        sessionStorage: { mountPath: '/mnt/data' },
+      },
+    });
+
+    app.synth();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      FilesystemConfigurations: [{ SessionStorage: { MountPath: '/mnt/data' } }],
+    });
+  });
+
+  test.each([
+    '/tmp/data',
+    '/mnt',
+    '/mnt/',
+    '/mnt/bad path',
+    '/mnt/one/two',
+  ])('fails when mountPath does not match the required pattern (%s)', (mountPath) => {
+    expect(() => new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      filesystemConfiguration: {
+        sessionStorage: { mountPath },
+      },
+    })).toThrow(/Session storage mount path must be under \/mnt/);
+  });
+
+  test('fails when mountPath is shorter than 6 characters', () => {
+    expect(() => new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      filesystemConfiguration: {
+        sessionStorage: { mountPath: '/mnt/' },
+      },
+    })).toThrow(/must be at least 6 characters/);
+  });
+
+  test('fails when mountPath exceeds 200 characters', () => {
+    const longName = 'a'.repeat(196); // '/mnt/' + 196 = 201
+    expect(() => new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      filesystemConfiguration: {
+        sessionStorage: { mountPath: `/mnt/${longName}` },
+      },
+    })).toThrow(/must be less than or equal to 200 characters/);
+  });
+
+  test('does not fail validation if mountPath is a late-bound value', () => {
+    const mountPathParam = new cdk.CfnParameter(stack, 'MountPath', {
+      default: '/mnt/data',
+      type: 'String',
+    });
+
+    expect(() => new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+      filesystemConfiguration: {
+        sessionStorage: { mountPath: mountPathParam.valueAsString },
+      },
+    })).not.toThrow();
+  });
+});
