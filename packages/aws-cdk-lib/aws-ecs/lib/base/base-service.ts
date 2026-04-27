@@ -748,7 +748,7 @@ export abstract class BaseService extends Resource
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected get loadBalancers(): CfnService.LoadBalancerProperty[] { return this._loadBalancers.get(); }
+  protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
 
   /**
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
@@ -766,7 +766,7 @@ export abstract class BaseService extends Resource
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
-  protected get serviceRegistries(): CfnService.ServiceRegistryProperty[] { return this._serviceRegistries.get(); }
+  protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
 
   /**
    * The service connect configuration for this service.
@@ -779,9 +779,6 @@ export abstract class BaseService extends Resource
    * @internal
    */
   private readonly isEcsDeploymentController: boolean;
-
-  private readonly _loadBalancers: ArrayBox<CfnService.LoadBalancerProperty>;
-  private readonly _serviceRegistries: ArrayBox<CfnService.ServiceRegistryProperty>;
 
   private readonly resource: CfnService;
   private scalableTaskCount?: ScalableTaskCount;
@@ -833,8 +830,6 @@ export abstract class BaseService extends Resource
     }
 
     this.taskDefinition = taskDefinition;
-    this._loadBalancers = Boxes.fromArray<CfnService.LoadBalancerProperty>([], { omitEmpty: true });
-    this._serviceRegistries = Boxes.fromArray<CfnService.ServiceRegistryProperty>([], { omitEmpty: true });
     this._volumes = Boxes.fromArray<ServiceManagedVolume>([], { omitEmpty: true });
     this._lifecycleHooks = Boxes.fromArray<IDeploymentLifecycleHookTarget>([], { omitEmpty: true });
 
@@ -860,7 +855,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: this._loadBalancers,
+      loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -890,7 +885,7 @@ export abstract class BaseService extends Resource
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: this._serviceRegistries,
+      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
       volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
@@ -1783,7 +1778,7 @@ export abstract class BaseService extends Resource
       throw new ValidationError(lit`CannotClassicLoad`, 'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
     }
 
-    this._loadBalancers.push({
+    this.loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName,
       containerPort,
@@ -1803,7 +1798,7 @@ export abstract class BaseService extends Resource
     }
 
     const advancedConfiguration = alternateTarget?.bind(this);
-    this._loadBalancers.push({
+    this.loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
       containerPort,
@@ -1846,7 +1841,7 @@ export abstract class BaseService extends Resource
     }
 
     const sr = this.renderServiceRegistry(registry);
-    this._serviceRegistries.push(sr);
+    this.serviceRegistries.push(sr);
   }
 
   /**
@@ -1855,7 +1850,7 @@ export abstract class BaseService extends Resource
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
     return Lazy.any({
-      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this._loadBalancers.length > 0 ? 60 : undefined),
+      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
     });
   }
 
