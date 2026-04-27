@@ -25,8 +25,9 @@ export interface GatewayIamRoleCredentialProviderProps {
    *
    * Use the SigV4 signing name (typically the endpoint prefix), e.g.
    * `bedrock-runtime`, `s3`, `execute-api`, `dynamodb`.
+   * Can be up to 64 characters long.
    *
-   * Pattern: `^[a-zA-Z0-9._-]+$`, length 1-64.
+   * Pattern: ^[a-zA-Z0-9._-]+$
    *
    * @default - Gateway infers the service from the target endpoint
    * @see https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
@@ -35,8 +36,9 @@ export interface GatewayIamRoleCredentialProviderProps {
 
   /**
    * The AWS Region used for SigV4 signing of outbound requests.
+   * Can be up to 32 characters long.
    *
-   * Pattern: `^[a-zA-Z0-9-]+$`, length 1-32.
+   * Pattern: ^[a-zA-Z0-9-]+$
    *
    * @default - Gateway's own Region
    */
