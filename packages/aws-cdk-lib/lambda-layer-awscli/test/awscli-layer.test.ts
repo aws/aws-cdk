@@ -14,3 +14,16 @@ test('synthesized to a layer version', () => {
     Description: '/opt/awscli/aws',
   });
 });
+
+test('layer declares compatible architectures', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new AwsCliLayer(stack, 'MyLayer');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Lambda::LayerVersion', {
+    CompatibleArchitectures: ['x86_64', 'arm64'],
+  });
+});

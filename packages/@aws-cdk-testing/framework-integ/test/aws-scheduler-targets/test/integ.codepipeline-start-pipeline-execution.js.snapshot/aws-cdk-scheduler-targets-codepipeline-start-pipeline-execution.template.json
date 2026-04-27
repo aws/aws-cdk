@@ -5,7 +5,7 @@
    "Properties": {
     "Name": "MyParameter",
     "Type": "String",
-    "Value": "🌧️"
+    "Value": "\ud83c\udf27\ufe0f"
    }
   },
   "StateMachineRoleB840431D": {
@@ -57,7 +57,7 @@
        {
         "Ref": "AWS::Partition"
        },
-       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"MyParameter\",\"Value\":\"🌈\",\"Type\":\"String\",\"Overwrite\":true}}}}"
+       ":states:::aws-sdk:ssm:putParameter\",\"Parameters\":{\"Name\":\"MyParameter\",\"Value\":\"\ud83c\udf08\",\"Type\":\"String\",\"Overwrite\":true}}}}"
       ]
      ]
     },
@@ -233,7 +233,11 @@
      },
      "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
     },
-    "Description": "/opt/awscli/aws"
+    "Description": "/opt/awscli/aws",
+    "CompatibleArchitectures": [
+     "x86_64",
+     "arm64"
+    ]
    }
   },
   "BucketDeploymentCustomResourceCB7E2133": {
