@@ -1,7 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-console */
 import * as https from 'https';
-import * as url from 'url';
 import type { StartExecutionInput } from '@aws-sdk/client-sfn';
 import { SFN } from '@aws-sdk/client-sfn';
 
@@ -103,10 +102,10 @@ export abstract class CustomResourceHandler<Request extends object, Response ext
 
     console.log('Responding to CloudFormation', responseBody);
 
-    const parsedUrl = url.parse(this.event.ResponseURL);
+    const parsedUrl = new URL(this.event.ResponseURL);
     const requestOptions = {
       hostname: parsedUrl.hostname,
-      path: parsedUrl.path,
+      path: parsedUrl.pathname + parsedUrl.search,
       method: 'PUT',
       headers: {
         'content-type': '',

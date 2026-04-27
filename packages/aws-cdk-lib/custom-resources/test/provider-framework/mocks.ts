@@ -1,7 +1,6 @@
 
 import type { OutgoingHttpHeaders } from 'http';
 import type * as https from 'https';
-import { parse as urlparse } from 'url';
 import type { InvocationResponse, InvokeCommandInput } from '@aws-sdk/client-lambda';
 import type { StartExecutionCommandInput, StartExecutionInput } from '@aws-sdk/client-sfn';
 import * as consts from '../../lib/provider-framework/runtime/consts';
@@ -34,10 +33,10 @@ export function setup() {
 }
 
 export async function httpRequestMock(options: https.RequestOptions, body: string) {
-  const responseUrl = urlparse(MOCK_REQUEST.ResponseURL);
+  const responseUrl = new URL(MOCK_REQUEST.ResponseURL);
 
   expect(options.method).toEqual('PUT');
-  expect(options.path).toEqual(responseUrl.path);
+  expect(options.path).toEqual(responseUrl.pathname + responseUrl.search);
   expect(options.hostname).toEqual(responseUrl.hostname);
   const headers = options.headers || {};
   expect((headers as OutgoingHttpHeaders)['content-length']).toEqual(body.length);

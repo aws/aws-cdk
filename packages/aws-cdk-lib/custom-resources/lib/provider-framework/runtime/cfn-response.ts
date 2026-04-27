@@ -1,5 +1,4 @@
 
-import * as url from 'url';
 import { httpRequest } from './outbound';
 import { log, withRetries } from './util';
 import type { OnEventResponse } from '../types';
@@ -35,7 +34,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
 
   const responseBody = JSON.stringify(json);
 
-  const parsedUrl = url.parse(event.ResponseURL);
+  const parsedUrl = new URL(event.ResponseURL);
   const loggingSafeUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/${parsedUrl.pathname}?***`;
   if (options?.noEcho) {
     log('submit redacted response to cloudformation', loggingSafeUrl, redactDataFromPayload(json));
@@ -49,7 +48,7 @@ export async function submitResponse(status: 'SUCCESS' | 'FAILED', event: CloudF
   };
   await withRetries(retryOptions, httpRequest)({
     hostname: parsedUrl.hostname,
-    path: parsedUrl.path,
+    path: parsedUrl.pathname + parsedUrl.search,
     method: 'PUT',
     headers: {
       'content-type': '',
