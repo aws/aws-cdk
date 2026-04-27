@@ -637,6 +637,42 @@ describe('function', () => {
           runtime: lambda.Runtime.PYTHON_3_9,
         });
       });
+      
+    describe('grantInvokeLatestVersion', () => {
+      test('grants both $LATEST and unqualified function ARNs', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        
+        const fn = new lambda.Function(stack, 'MyLambda', {
+          code: new lambda.InlineCode('foo'),
+          handler: 'index.handler',
+          runtime: lambda.Runtime.NODEJS_LATEST,
+        });
+        
+        const role = new iam.Role(stack, 'MyRole', {
+          assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        });
+        
+        // WHEN
+        fn.grantInvokeLatestVersion(role);
+        
+        // THEN
+        Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Action: 'lambda:InvokeFunction',
+                Effect: 'Allow',
+                Resource: Match.arrayWith([
+                  { 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] },
+                  { 'Fn::Join': ['', [{ 'Fn::GetAtt': ['MyLambdaCCE802FB', 'Arn'] }, ':$LATEST']] },
+                ]),
+              }),
+            ]),
+          },
+        });
+      });
+    });
 
       describe('permissions on functions', () => {
         test('without lambda:InvokeFunction', () => {
