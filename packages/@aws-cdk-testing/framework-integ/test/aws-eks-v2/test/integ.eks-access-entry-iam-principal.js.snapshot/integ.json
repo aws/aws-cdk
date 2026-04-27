@@ -1,0 +1,21 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "aws-cdk-eks-access-entry-iam-principal-integ/DefaultTest": {
+      "stacks": [
+        "EKSAccessEntryIamPrincipal"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": true
+          }
+        }
+      },
+      "assertionStack": "aws-cdk-eks-access-entry-iam-principal-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkeksaccessentryiamprincipalintegDefaultTestDeployAssertEFA6C70F"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

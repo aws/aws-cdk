@@ -1,4 +1,5 @@
 import { Template } from '../../assertions';
+import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { App, Stack } from '../../core';
 import type { AccessEntryProps, IAccessPolicy } from '../lib';
@@ -277,5 +278,86 @@ describe('AccessEntry', () => {
         });
       },
     );
+  });
+
+  describe('iamPrincipal', () => {
+    test('creates an AccessEntry with an IAM role', () => {
+      // GIVEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
+      });
+
+      // WHEN
+      new AccessEntry(stack, 'AccessEntry', {
+        cluster,
+        accessPolicies: mockAccessPolicies,
+        iamPrincipal: role,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        ClusterName: { Ref: 'ClusterEB0386A7' },
+        PrincipalArn: stack.resolve(role.roleArn),
+      });
+    });
+
+    test('creates an AccessEntry with an IAM user', () => {
+      // GIVEN
+      const user = new iam.User(stack, 'User');
+
+      // WHEN
+      new AccessEntry(stack, 'AccessEntry', {
+        cluster,
+        accessPolicies: mockAccessPolicies,
+        iamPrincipal: user,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        ClusterName: { Ref: 'ClusterEB0386A7' },
+        PrincipalArn: stack.resolve(user.userArn),
+      });
+    });
+
+    test('throws error when both iamPrincipal and principal are specified', () => {
+      // GIVEN
+      const role = new iam.Role(stack, 'Role', {
+        assumedBy: new iam.ServicePrincipal('eks.amazonaws.com'),
+      });
+
+      // WHEN & THEN
+      expect(() => {
+        new AccessEntry(stack, 'AccessEntry', {
+          cluster,
+          accessPolicies: mockAccessPolicies,
+          iamPrincipal: role,
+          principal: 'mock-principal-arn',
+        });
+      }).toThrow('Only one of `iamPrincipal` or `principal` can be specified, not both.');
+    });
+
+    test('throws error when neither iamPrincipal nor principal is specified', () => {
+      // WHEN & THEN
+      expect(() => {
+        new AccessEntry(stack, 'AccessEntry', {
+          cluster,
+          accessPolicies: mockAccessPolicies,
+        });
+      }).toThrow('Either `iamPrincipal` or `principal` must be specified.');
+    });
+
+    test('throws error when iamPrincipal is not a role or user', () => {
+      // GIVEN - ServicePrincipal implements IPrincipal but has no roleArn/userArn
+      const servicePrincipal = new iam.ServicePrincipal('eks.amazonaws.com');
+
+      // WHEN & THEN
+      expect(() => {
+        new AccessEntry(stack, 'AccessEntry', {
+          cluster,
+          accessPolicies: mockAccessPolicies,
+          iamPrincipal: servicePrincipal,
+        });
+      }).toThrow('Cannot determine the ARN from the provided `iamPrincipal`.');
+    });
   });
 });
