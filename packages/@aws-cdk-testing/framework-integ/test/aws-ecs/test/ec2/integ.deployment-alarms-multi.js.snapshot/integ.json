@@ -1,0 +1,9 @@
+{
+  "version": "v1.33.0",
+  "testCases": {
+    "DeploymentAlarmsMulti": {
+      "stackName": "integ-deployment-alarms-multi",
+      "path": "test/aws-ecs/test/ec2/integ.deployment-alarms-multi.ts"
+    }
+  }
+}
