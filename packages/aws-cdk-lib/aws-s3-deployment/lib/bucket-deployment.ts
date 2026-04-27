@@ -987,5 +987,6 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
 }
 
 function sanitize<A>(box: IReadableBox<Array<A>>) {
-  return box.derive(arr => arr.filter(Boolean));
+  return box.derive(arr => arr.filter(Boolean))
+    .derive(arr => arr.length === 0 ? undefined : arr);
 }
