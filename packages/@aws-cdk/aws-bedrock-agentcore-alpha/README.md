@@ -746,6 +746,13 @@ runtime.grantInvokeRuntimeForUser(invokerFunction);
 // Grant both invoke permissions (most common use case)
 runtime.grantInvoke(invokerFunction);
 
+// Grant permission to invoke the runtime via WebSocket stream
+runtime.grantInvokeWithWebSocketStream(invokerFunction);
+
+// Grant permission to invoke the runtime via WebSocket stream on behalf of a user
+// (requires X-Amzn-Bedrock-AgentCore-Runtime-User-Id header)
+runtime.grantInvokeWithWebSocketStreamForUser(invokerFunction);
+
 // Grant specific custom permissions to the runtime's execution role
 runtime.grant(['bedrock:InvokeModel'], ['arn:aws:bedrock:*:*:*']);
 
