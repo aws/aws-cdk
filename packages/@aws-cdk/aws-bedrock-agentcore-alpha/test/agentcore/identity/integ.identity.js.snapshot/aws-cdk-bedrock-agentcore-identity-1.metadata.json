@@ -1,4 +1,19 @@
 {
+  "/aws-cdk-bedrock-agentcore-identity-1": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:13:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/WorkloadIdentity": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/aws-cdk-bedrock-agentcore-identity-1/ApiKeyProvider": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -33,42 +48,140 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:59:5)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-bedrock-agentcore-identity-1/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:59:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-1/WorkloadIdentity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkloadIdentityC18104DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WorkloadIdentity (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/workload-identity.js:203:30)",
+        "new WorkloadIdentity (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:15:1)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-bedrock-agentcore-identity-1/ApiKeyProvider/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ApiKeyProvider7AFC53BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ApiKeyCredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:207:31)",
+        "new ApiKeyCredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:21:1)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-bedrock-agentcore-identity-1/GithubOAuth/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "GithubOAuth5958D16B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:815:31)",
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "OAuth2CredentialProvider.usingGithub (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:299:20)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:27:36)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-bedrock-agentcore-identity-1/YandexOAuth/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "YandexOAuth515CCC8D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:815:31)",
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "newOAuth2WithIncludedClientCredentialsOnly (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:204:12)",
+        "OAuth2CredentialProvider.usingYandex (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:512:20)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:34:36)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-bedrock-agentcore-identity-1/CustomOAuth/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CustomOAuthD038AAB9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:815:31)",
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "OAuth2CredentialProvider.usingCustom (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:718:20)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:40:36)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-bedrock-agentcore-identity-1/OktaOAuth/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "OktaOAuth26B0DEBF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:815:31)",
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "newOAuth2WithIncludedTenant (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:220:12)",
+        "OAuth2CredentialProvider.usingOkta (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:427:20)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity.js:47:36)",
+        "...node internals..."
+      ]
     }
   ]
 }

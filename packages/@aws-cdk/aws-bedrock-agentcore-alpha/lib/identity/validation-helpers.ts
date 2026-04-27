@@ -36,6 +36,71 @@ export const CREDENTIAL_PROVIDER_TAG_MIN = 1;
 /** @internal */
 export const CREDENTIAL_PROVIDER_TAG_MAX = 256;
 
+/** @internal */
+export const WORKLOAD_IDENTITY_NAME_MIN = 3;
+
+/** @internal */
+export const WORKLOAD_IDENTITY_NAME_MAX = 255;
+
+/** @internal */
+export const WORKLOAD_IDENTITY_NAME_PATTERN = /^[A-Za-z0-9_.-]+$/;
+
+/** @internal */
+export const ALLOWED_OAUTH2_RETURN_URL_MIN = 1;
+
+/** @internal */
+export const ALLOWED_OAUTH2_RETURN_URL_MAX = 2048;
+
+/**
+ * @internal
+ */
+export function validateWorkloadIdentityName(name: string, scope?: IConstruct): string[] {
+  const errors: string[] = [];
+  errors.push(...validateStringFieldLength({
+    value: name,
+    fieldName: 'Workload identity name',
+    minLength: WORKLOAD_IDENTITY_NAME_MIN,
+    maxLength: WORKLOAD_IDENTITY_NAME_MAX,
+  }, scope));
+  errors.push(...validateFieldPattern(
+    name,
+    'Workload identity name',
+    WORKLOAD_IDENTITY_NAME_PATTERN,
+    'Workload identity name may only contain letters, numbers, dots, underscores, and hyphens.',
+    scope,
+  ));
+  return errors;
+}
+
+/**
+ * @internal
+ */
+export function validateAllowedResourceOauth2ReturnUrls(urls: string[] | undefined, scope?: IConstruct): string[] {
+  if (urls == null) {
+    return [];
+  }
+  if (Token.isUnresolved(urls)) {
+    return [];
+  }
+  const errors: string[] = [];
+  if (urls.length === 0) {
+    errors.push('Allowed OAuth2 return URLs must contain at least one URL when specified.');
+    return errors;
+  }
+  for (const url of urls) {
+    if (Token.isUnresolved(url)) {
+      continue;
+    }
+    errors.push(...validateStringFieldLength({
+      value: url,
+      fieldName: 'Allowed OAuth2 return URL',
+      minLength: ALLOWED_OAUTH2_RETURN_URL_MIN,
+      maxLength: ALLOWED_OAUTH2_RETURN_URL_MAX,
+    }, scope));
+  }
+  return errors;
+}
+
 /**
  * @internal
  */

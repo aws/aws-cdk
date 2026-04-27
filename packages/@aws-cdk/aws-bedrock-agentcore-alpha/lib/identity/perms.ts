@@ -101,3 +101,35 @@ export namespace OAuth2CredentialProviderIdentityPerms {
    */
   export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...LIST_PERMS, ...ADMIN_PERMS, ...USE_PERMS])];
 }
+
+/**
+ * IAM actions for AgentCore workload identities.
+ *
+ * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
+ */
+export namespace WorkloadIdentityPerms {
+  /**
+   * Read a single workload identity.
+   */
+  export const READ_PERMS = ['bedrock-agentcore:GetWorkloadIdentity'] as const;
+
+  /**
+   * List workload identities in the account (not scoped to a single identity ARN).
+   */
+  export const LIST_PERMS = ['bedrock-agentcore:ListWorkloadIdentities'] as const;
+
+  /**
+   * Control plane permissions to create, read, update, and delete this workload identity.
+   */
+  export const ADMIN_PERMS = [
+    'bedrock-agentcore:CreateWorkloadIdentity',
+    'bedrock-agentcore:GetWorkloadIdentity',
+    'bedrock-agentcore:UpdateWorkloadIdentity',
+    'bedrock-agentcore:DeleteWorkloadIdentity',
+  ] as const;
+
+  /**
+   * All workload identity actions used by the L2 grant helpers.
+   */
+  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...LIST_PERMS, ...ADMIN_PERMS])];
+}

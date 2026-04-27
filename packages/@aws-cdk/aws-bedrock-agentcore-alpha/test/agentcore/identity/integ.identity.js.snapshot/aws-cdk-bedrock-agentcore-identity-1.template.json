@@ -1,5 +1,20 @@
 {
  "Resources": {
+  "WorkloadIdentityC18104DE": {
+   "Type": "AWS::BedrockAgentCore::WorkloadIdentity",
+   "Properties": {
+    "AllowedResourceOauth2ReturnUrls": [
+     "https://example.com/oauth/callback"
+    ],
+    "Name": "integ-test-workload-identity",
+    "Tags": [
+     {
+      "Key": "integ",
+      "Value": "identity"
+     }
+    ]
+   }
+  },
   "ApiKeyProvider7AFC53BE": {
    "Type": "AWS::BedrockAgentCore::ApiKeyCredentialProvider",
    "Properties": {

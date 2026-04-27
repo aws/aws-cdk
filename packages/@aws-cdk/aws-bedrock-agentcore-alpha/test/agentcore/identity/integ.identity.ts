@@ -1,6 +1,7 @@
 /*
- * Integration test for Bedrock AgentCore Token Vault identity constructs:
- * ApiKeyCredentialProvider and OAuth2CredentialProvider (vendor, included, and custom factories).
+ * Integration test for Bedrock AgentCore Identity constructs:
+ * ApiKeyCredentialProvider and OAuth2CredentialProvider (vendor, included, and custom factories),
+ * plus WorkloadIdentity (AWS::BedrockAgentCore::WorkloadIdentity).
  */
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-identity-1
@@ -12,6 +13,13 @@ import * as agentcore from '../../../lib';
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-agentcore-identity-1');
+
+// Workload identity — manual identity in the account-wide agent identity directory (see README)
+new agentcore.WorkloadIdentity(stack, 'WorkloadIdentity', {
+  workloadIdentityName: 'integ-test-workload-identity',
+  allowedResourceOauth2ReturnUrls: ['https://example.com/oauth/callback'],
+  tags: { integ: 'identity' },
+});
 
 // API key credential provider (Token Vault)
 new agentcore.ApiKeyCredentialProvider(stack, 'ApiKeyProvider', {

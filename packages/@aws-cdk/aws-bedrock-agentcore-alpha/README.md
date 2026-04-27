@@ -99,6 +99,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Api schema For OpenAPI and Smithy target](#api-schema-for-openapi-and-smithy-target)
     - [Outbound auth](#outbound-auth)
       - [Token Vault credential providers](#token-vault-credential-providers)
+      - [Workload identities](#workload-identities)
     - [Basic Gateway Target Creation](#basic-gateway-target-creation)
       - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
       - [Using static factory methods](#using-static-factory-methods)
@@ -1777,6 +1778,26 @@ agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuthMeta", {
     authorizationEndpoint: "https://idp.example.com/oauth2/authorize",
     tokenEndpoint: "https://idp.example.com/oauth2/token",
   },
+});
+```
+
+#### Workload identities
+
+A **workload identity** is the stable identity of an agent in your AWS account within the AgentCore Identity model. It ties together IAM roles, OAuth2 flows, API keys, and workload access tokens so agents can authenticate consistently across environments. For conceptual background, see [Understanding workload identities](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/understanding-agent-identities.html).
+
+**Agent identity directory** — Each account has a single logical directory that holds every workload identity, whether it was created by AgentCore Runtime, AgentCore Gateway, or manually (for example through CloudFormation or the control-plane API). The directory is created automatically when the first workload identity exists. Resource ARNs follow the pattern described in [Understanding the agent identity directory](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agent-identity-directory.html) (`workload-identity-directory/default` and child `workload-identity/<name>` entries).
+
+**When to create one in CDK** — Runtime and Gateway can create workload identities for you during deployment. Use the **`WorkloadIdentity`** L2 when you need a **manually defined** identity (custom name, allowed OAuth2 return URLs, tags) or when integrating workloads that are not driven by those services.
+
+**Construct** — `WorkloadIdentity` maps to **`AWS::BedrockAgentCore::WorkloadIdentity`**. It exposes `workloadIdentityArn`, `workloadIdentityName`, and `workloadIdentityRef` for wiring into IAM or other AgentCore resources. Import an existing identity with **`WorkloadIdentity.fromWorkloadIdentityAttributes`**. Grant helpers (`grantRead`, `grantAdmin`, `grantFullAccess`) align with [directory-level IAM patterns](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agent-identity-directory.html#directory-access-control-and-permissions) such as listing identities on the directory resource and scoping mutations to specific identity ARNs.
+
+**Example**
+
+```typescript fixture=default
+new agentcore.WorkloadIdentity(this, "MyWorkloadIdentity", {
+  workloadIdentityName: "customer-support-agent-prod",
+  allowedResourceOauth2ReturnUrls: ["https://app.example.com/oauth/callback"],
+  tags: { team: "agents", env: "prod" },
 });
 ```
 
