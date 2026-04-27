@@ -1,3 +1,4 @@
+export * from './consumable-resource';
 export * from './ecs-job-definition';
 export * from './compute-environment-base';
 export * from './eks-job-definition';
