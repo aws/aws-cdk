@@ -896,7 +896,7 @@ Policy Validation Report Summary
       const warnings = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
       expect(warnings).toHaveLength(1);
       expect(warnings[0].data).toContain('Something is off');
-      expect(warnings[0].data).toContain('[ack: annotation:my-lib:MyWarning]');
+      expect(warnings[0].data).toContain('[ack: annotation::my-lib:MyWarning]');
     });
 
     test('addError adds error metadata with id to construct', () => {
@@ -911,7 +911,7 @@ Policy Validation Report Summary
       // THEN
       const errors = construct.node.metadata.filter(m => m.type === 'aws:cdk:error');
       expect(errors).toHaveLength(1);
-      expect(errors[0].data).toBe('Something is wrong (annotation:my-lib:MyError)');
+      expect(errors[0].data).toBe('Something is wrong (annotation::my-lib:MyError)');
     });
 
     test('acknowledge routes annotation rules to Annotations.acknowledgeWarning', () => {
@@ -937,8 +937,8 @@ Policy Validation Report Summary
 
       // WHEN
       core.Validations.of(construct).acknowledge(
-        { id: 'annotation:SomeWarning', reason: 'Accepted risk per team review' },
-        { id: 'some-plugin:RuleX', reason: 'Not applicable' },
+        { id: 'annotation::SomeWarning', reason: 'Accepted risk per team review' },
+        { id: 'some-plugin::RuleX', reason: 'Not applicable' },
       );
 
       // THEN
@@ -948,8 +948,8 @@ Policy Validation Report Summary
       // Last entry contains all acknowledged rules
       const lastEntry = ackEntries[ackEntries.length - 1];
       expect(lastEntry.data).toEqual({
-        'annotation:SomeWarning': 'Accepted risk per team review',
-        'some-plugin:RuleX': 'Not applicable',
+        'annotation::SomeWarning': 'Accepted risk per team review',
+        'some-plugin::RuleX': 'Not applicable',
       });
     });
 
@@ -972,6 +972,26 @@ Policy Validation Report Summary
         'RuleA': 'reason A',
         'RuleB': 'reason B',
       });
+    });
+
+    test('throws on invalid ID with multiple delimiters', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: 'a::b::c', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID 'a::b::c'/);
+    });
+
+    test('throws on invalid ID with empty prefix', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: '::foo', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID '::foo'/);
     });
   });
 });

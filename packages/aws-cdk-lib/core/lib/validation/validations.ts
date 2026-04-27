@@ -52,6 +52,8 @@ export class Validations {
    *
    * Every validation source identifies itself via a prefix so that
    * `acknowledge()` can route suppressions to the correct handler.
+   * The `::` delimiter is reserved for separating the prefix from the
+   * rule name (e.g. `annotation::MyWarning`).
    */
   private static readonly ANNOTATION_PREFIX = 'annotation';
 
@@ -80,14 +82,14 @@ export class Validations {
    * The CLI will display the warning when an app is synthesized, or fail if run
    * in `--strict` mode.
    *
-   * The ID will be stored with the `annotation:` prefix (e.g. `annotation:MyWarning`).
+   * The ID will be stored with the `annotation` prefix (e.g. `annotation::MyWarning`).
    * Use this prefixed ID when calling `acknowledge()` to suppress the warning.
    *
    * @param id unique identifier for the warning, used for acknowledgement
    * @param message the warning message
    */
   public addWarning(id: string, message: string): void {
-    Annotations.of(this.scope).addWarningV2(this.ensurePrefix(id), message);
+    Annotations.of(this.scope).addWarningV2(this.qualifyId(id), message);
   }
 
   /**
@@ -103,7 +105,7 @@ export class Validations {
    * @param message the error message
    */
   public addError(id: string, message: string): void {
-    Annotations.of(this.scope).addError(`${message} (${this.ensurePrefix(id)})`);
+    Annotations.of(this.scope).addError(`${message} (${this.qualifyId(id)})`);
   }
 
   /**
@@ -122,11 +124,12 @@ export class Validations {
    */
   public acknowledge(...rules: Acknowledgment[]): void {
     for (const rule of rules) {
-      this.recordAcknowledgment(rule.id, rule.reason);
+      const qualifiedId = this.qualifyId(rule.id);
+      this.recordAcknowledgment(qualifiedId, rule.reason);
 
       // For now, all rules route to annotation acknowledgment.
       // Future validation types will be distinguished by their prefix.
-      Annotations.of(this.scope).acknowledgeWarning(this.ensurePrefix(rule.id));
+      Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
     }
   }
 
@@ -140,10 +143,14 @@ export class Validations {
     this.scope.node.addMetadata(Validations.ACKNOWLEDGED_RULES_METADATA_KEY, acknowledged);
   }
 
-  private ensurePrefix(id: string): string {
-    if (id.includes(':')) {
+  private qualifyId(id: string): string {
+    const parts = id.split('::');
+    if (parts.length > 2 || (parts.length === 2 && parts[0].length === 0)) {
+      throw new UnscopedValidationError(lit`InvalidValidationId`, `Invalid validation rule ID '${id}'. The '::' delimiter is reserved for separating the prefix from the rule name (e.g. 'prefix::RuleName').`);
+    }
+    if (parts.length === 2) {
       return id;
     }
-    return `${Validations.ANNOTATION_PREFIX}:${id}`;
+    return `${Validations.ANNOTATION_PREFIX}::${id}`;
   }
 }
