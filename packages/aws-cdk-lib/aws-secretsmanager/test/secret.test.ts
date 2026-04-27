@@ -330,14 +330,21 @@ test('grantRead with KMS Key', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-      }],
+      Statement: Match.arrayWith([
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+        },
+        {
+          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['KMS63B14B3C', 'Arn'] },
+        },
+      ]),
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -486,19 +493,26 @@ test('grantRead with version label constraint', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:GetSecretValue',
-          'secretsmanager:DescribeSecret',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-        Condition: {
-          'ForAnyValue:StringEquals': {
-            'secretsmanager:VersionStage': ['FOO', 'bar'],
+      Statement: Match.arrayWith([
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+          Condition: {
+            'ForAnyValue:StringEquals': {
+              'secretsmanager:VersionStage': ['FOO', 'bar'],
+            },
           },
         },
-      }],
+        {
+          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['KMS63B14B3C', 'Arn'] },
+        },
+      ]),
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -575,15 +589,26 @@ test('grantWrite with kms', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
     PolicyDocument: {
       Version: '2012-10-17',
-      Statement: [{
-        Action: [
-          'secretsmanager:PutSecretValue',
-          'secretsmanager:UpdateSecret',
-          'secretsmanager:UpdateSecretVersionStage',
-        ],
-        Effect: 'Allow',
-        Resource: { Ref: 'SecretA720EF05' },
-      }],
+      Statement: Match.arrayWith([
+        {
+          Action: [
+            'secretsmanager:PutSecretValue',
+            'secretsmanager:UpdateSecret',
+            'secretsmanager:UpdateSecretVersionStage',
+          ],
+          Effect: 'Allow',
+          Resource: { Ref: 'SecretA720EF05' },
+        },
+        {
+          Action: [
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['KMS63B14B3C', 'Arn'] },
+        },
+      ]),
     },
   });
   Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
@@ -1004,6 +1029,42 @@ describe('fromSecretAttributes', () => {
 
     // THEN
     expect(secret.env.account).toBe(secretAccount);
+  });
+});
+
+test('fromSecretAttributes with encryptionKey should grant kms:Decrypt on grantRead', () => {
+  // GIVEN
+  const secretArn = 'arn:aws:secretsmanager:eu-west-1:111111111111:secret:MySecret-f3gDy9';
+  const key = new kms.Key(stack, 'KMS');
+  const secret = secretsmanager.Secret.fromSecretAttributes(stack, 'Secret', {
+    secretCompleteArn: secretArn,
+    encryptionKey: key,
+  });
+  const role = new iam.Role(stack, 'Role', { assumedBy: new iam.AccountRootPrincipal() });
+
+  // WHEN
+  secret.grantRead(role);
+
+  // THEN - the role's IAM policy should include kms:Decrypt for the encryption key
+  Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Version: '2012-10-17',
+      Statement: Match.arrayWith([
+        {
+          Action: [
+            'secretsmanager:GetSecretValue',
+            'secretsmanager:DescribeSecret',
+          ],
+          Effect: 'Allow',
+          Resource: secretArn,
+        },
+        {
+          Action: 'kms:Decrypt',
+          Effect: 'Allow',
+          Resource: { 'Fn::GetAtt': ['KMS63B14B3C', 'Arn'] },
+        },
+      ]),
+    },
   });
 });
 

@@ -1,0 +1,13 @@
+{
+  "version": "45.0.0",
+  "testCases": {
+    "cdk-integ-secret-grant-read-kms-test/DefaultTest": {
+      "stacks": [
+        "cdk-integ-secret-grant-read-kms"
+      ],
+      "assertionStack": "cdk-integ-secret-grant-read-kms-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegsecretgrantreadkmstestDefaultTestDeployAssert029D57EA"
+    }
+  },
+  "minimumCliVersion": "2.1020.2"
+}
