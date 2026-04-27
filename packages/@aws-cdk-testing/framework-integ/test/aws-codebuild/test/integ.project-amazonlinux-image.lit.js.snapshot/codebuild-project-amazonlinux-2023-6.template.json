@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "ProjectRole4CCB274E": {
+  "MyProjectRole9BBE5233": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -17,7 +17,7 @@
     }
    }
   },
-  "ProjectRoleDefaultPolicy7F29461B": {
+  "MyProjectRoleDefaultPolicyB19B7C29": {
    "Type": "AWS::IAM::Policy",
    "Properties": {
     "PolicyDocument": {
@@ -48,7 +48,7 @@
            },
            ":log-group:/aws/codebuild/",
            {
-            "Ref": "ProjectC78D97AD"
+            "Ref": "MyProject39F7B0AE"
            },
            ":*"
           ]
@@ -72,7 +72,7 @@
            },
            ":log-group:/aws/codebuild/",
            {
-            "Ref": "ProjectC78D97AD"
+            "Ref": "MyProject39F7B0AE"
            }
           ]
          ]
@@ -106,7 +106,7 @@
           },
           ":report-group/",
           {
-           "Ref": "ProjectC78D97AD"
+           "Ref": "MyProject39F7B0AE"
           },
           "-*"
          ]
@@ -116,15 +116,15 @@
      ],
      "Version": "2012-10-17"
     },
-    "PolicyName": "ProjectRoleDefaultPolicy7F29461B",
+    "PolicyName": "MyProjectRoleDefaultPolicyB19B7C29",
     "Roles": [
      {
-      "Ref": "ProjectRole4CCB274E"
+      "Ref": "MyProjectRole9BBE5233"
      }
     ]
    }
   },
-  "ProjectC78D97AD": {
+  "MyProject39F7B0AE": {
    "Type": "AWS::CodeBuild::Project",
    "Properties": {
     "Artifacts": {
@@ -136,14 +136,14 @@
     "EncryptionKey": "alias/aws/s3",
     "Environment": {
      "ComputeType": "BUILD_GENERAL1_SMALL",
-     "Image": "aws/codebuild/standard:6.0",
+     "Image": "aws/codebuild/amazonlinux-x86_64-standard:6.0",
      "ImagePullCredentialsType": "CODEBUILD",
      "PrivilegedMode": false,
      "Type": "LINUX_CONTAINER"
     },
     "ServiceRole": {
      "Fn::GetAtt": [
-      "ProjectRole4CCB274E",
+      "MyProjectRole9BBE5233",
       "Arn"
      ]
     },
