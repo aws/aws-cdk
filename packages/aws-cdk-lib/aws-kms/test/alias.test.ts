@@ -214,6 +214,22 @@ test('imported alias by name - will throw an error when accessing the key', () =
   expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
 });
 
+test('imported alias by name - adds alias/ prefix when missing', () => {
+  const stack = new Stack();
+
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'myAlias');
+
+  expect(myAlias.aliasName).toEqual('alias/myAlias');
+});
+
+test('imported alias by name - does not double-prefix alias/', () => {
+  const stack = new Stack();
+
+  const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
+
+  expect(myAlias.aliasName).toEqual('alias/myAlias');
+});
+
 test('imported alias by name - grantDecrypt applies kms:ResourceAliases condition', () => {
   const stack = new Stack();
   stack.node.setContext(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL, true);
