@@ -1,8 +1,6 @@
-
-/// !cdk-integ PipelineStack pragma:set-context:@aws-cdk/core:newStyleStackSynthesis=true
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import type { StackProps, StageProps } from 'aws-cdk-lib';
-import { App, Stack, Stage } from 'aws-cdk-lib';
+import { App, Stack, Stage, RemovalPolicy } from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as pipelines from 'aws-cdk-lib/pipelines';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -13,12 +11,22 @@ class PipelineStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const bucket = s3.Bucket.fromBucketName(this, 'LogBucket', 'bucket-name');
-    const logGroup = logs.LogGroup.fromLogGroupName(this, 'LogGroup', 'log-group-name');
+    const bucket = new s3.Bucket(this, 'LogBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    const logGroup = new logs.LogGroup(this, 'LogGroup', {
+      removalPolicy: RemovalPolicy.DESTROY,
+    });
+
+    const sourceBucket = new s3.Bucket(this, 'SourceBucket', {
+      removalPolicy: RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
 
     const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
       synth: new pipelines.ShellStep('Synth', {
-        input: pipelines.CodePipelineSource.gitHub('colifran/cdk-pipelines-demo', 'main'),
+        input: pipelines.CodePipelineSource.s3(sourceBucket, 'key'),
         commands: [
           'npm ci',
           'npm run build',

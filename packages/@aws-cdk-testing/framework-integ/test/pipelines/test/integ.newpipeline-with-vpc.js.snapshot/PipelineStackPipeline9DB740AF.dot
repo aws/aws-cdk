@@ -7,7 +7,7 @@ digraph G {
 "BEGIN Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Build" [shape="cds", style="filled", fillcolor="#b7deff"];
 "Build.Synth";
-"Source.aws/aws-cdk" -> "Build.Synth";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071" -> "Build.Synth";
 "BEGIN Build" -> "Build.Synth";
 "Build.Synth" -> "END Build";
 "BEGIN UpdatePipeline" [shape="cds", style="filled", fillcolor="#b7deff"];
@@ -43,7 +43,7 @@ digraph G {
 "END Beta.Stack1" -> "END Beta";
 "BEGIN Source" [shape="cds", style="filled", fillcolor="#b7deff"];
 "END Source" [shape="cds", style="filled", fillcolor="#b7deff"];
-"Source.aws/aws-cdk";
-"BEGIN Source" -> "Source.aws/aws-cdk";
-"Source.aws/aws-cdk" -> "END Source";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071";
+"BEGIN Source" -> "Source.c82506a27b454f271b71bfc81dcc633cd314f52071";
+"Source.c82506a27b454f271b71bfc81dcc633cd314f52071" -> "END Source";
 }
