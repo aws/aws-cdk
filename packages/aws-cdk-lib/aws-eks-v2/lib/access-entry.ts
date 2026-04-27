@@ -267,7 +267,7 @@ export enum AccessEntryType {
   /**
    * Represents an EC2 access entry for EKS Auto Mode.
    * Use this type for node roles in EKS Auto Mode clusters where AWS automatically manages
-   * the compute infrastructure. This type cannot have access policies attached.
+   * the compute infrastructure.
    *
    * @see https://docs.aws.amazon.com/eks/latest/userguide/eks-auto-mode.html
    */
@@ -455,7 +455,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
    * @private
    */
   private validateAccessPoliciesForRestrictedTypes(accessPolicies: IAccessPolicy[], accessEntryType?: AccessEntryType): void {
-    const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
+    const restrictedTypes = [AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
     if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
         !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
       throw new ValidationError(lit`AccessEntryTypeCannot`, `Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
