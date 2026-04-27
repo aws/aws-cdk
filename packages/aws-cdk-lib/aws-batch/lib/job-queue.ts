@@ -330,14 +330,6 @@ export class JobQueue extends Resource implements IJobQueue {
           order: ce.order,
         };
       }),
-      // computeEnvironmentOrder: Lazy.any({
-      //   produce: () => this.computeEnvironments.map((ce) => {
-      //     return {
-      //       computeEnvironment: ce.computeEnvironment.computeEnvironmentRef.computeEnvironmentArn,
-      //       order: ce.order,
-      //     };
-      //   }),
-      // }),
       priority: this.priority,
       jobQueueName: props?.jobQueueName,
       state: (this.enabled ?? true) ? 'ENABLED' : 'DISABLED',
