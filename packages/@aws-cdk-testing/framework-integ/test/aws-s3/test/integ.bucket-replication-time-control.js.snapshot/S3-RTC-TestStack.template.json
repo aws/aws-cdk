@@ -1,0 +1,321 @@
+{
+ "Resources": {
+  "DstBucket3E241BF2": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "S3SourceBucket1ReplicationRoleD6E982E6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "S3SourceBucket1ReplicationRoleDefaultPolicy61FC49E2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetReplicationConfiguration",
+        "s3:ListBucket"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "S3SourceBucket1FB05F2D8",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:GetObjectVersionAcl",
+        "s3:GetObjectVersionForReplication",
+        "s3:GetObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "S3SourceBucket1FB05F2D8",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:ObjectOwnerOverrideToBucketOwner",
+        "s3:ReplicateDelete",
+        "s3:ReplicateObject",
+        "s3:ReplicateTags"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "DstBucket3E241BF2",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "S3SourceBucket1ReplicationRoleDefaultPolicy61FC49E2",
+    "Roles": [
+     {
+      "Ref": "S3SourceBucket1ReplicationRoleD6E982E6"
+     }
+    ]
+   }
+  },
+  "S3SourceBucket1FB05F2D8": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "ReplicationConfiguration": {
+     "Role": {
+      "Fn::GetAtt": [
+       "S3SourceBucket1ReplicationRoleD6E982E6",
+       "Arn"
+      ]
+     },
+     "Rules": [
+      {
+       "DeleteMarkerReplication": {
+        "Status": "Disabled"
+       },
+       "Destination": {
+        "Bucket": {
+         "Fn::GetAtt": [
+          "DstBucket3E241BF2",
+          "Arn"
+         ]
+        },
+        "Metrics": {
+         "Status": "Enabled"
+        }
+       },
+       "Filter": {
+        "Prefix": ""
+       },
+       "Priority": 1,
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "S3SourceBucket2ReplicationRole68101260": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "s3.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "S3SourceBucket2ReplicationRoleDefaultPolicy414F29F2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:GetReplicationConfiguration",
+        "s3:ListBucket"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "S3SourceBucket278BFBAF8",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:GetObjectVersionAcl",
+        "s3:GetObjectVersionForReplication",
+        "s3:GetObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "S3SourceBucket278BFBAF8",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "s3:ObjectOwnerOverrideToBucketOwner",
+        "s3:ReplicateDelete",
+        "s3:ReplicateObject",
+        "s3:ReplicateTags"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "DstBucket3E241BF2",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "S3SourceBucket2ReplicationRoleDefaultPolicy414F29F2",
+    "Roles": [
+     {
+      "Ref": "S3SourceBucket2ReplicationRole68101260"
+     }
+    ]
+   }
+  },
+  "S3SourceBucket278BFBAF8": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "ReplicationConfiguration": {
+     "Role": {
+      "Fn::GetAtt": [
+       "S3SourceBucket2ReplicationRole68101260",
+       "Arn"
+      ]
+     },
+     "Rules": [
+      {
+       "DeleteMarkerReplication": {
+        "Status": "Disabled"
+       },
+       "Destination": {
+        "Bucket": {
+         "Fn::GetAtt": [
+          "DstBucket3E241BF2",
+          "Arn"
+         ]
+        },
+        "Metrics": {
+         "EventThreshold": {
+          "Minutes": 15
+         },
+         "Status": "Enabled"
+        },
+        "ReplicationTime": {
+         "Status": "Enabled",
+         "Time": {
+          "Minutes": 15
+         }
+        }
+       },
+       "Filter": {
+        "Prefix": ""
+       },
+       "Priority": 1,
+       "Status": "Enabled"
+      }
+     ]
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
