@@ -1,0 +1,201 @@
+{
+ "Resources": {
+  "GroupC77FDACD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "integ-cf-origin-group"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "integ-cf-origin-group",
+    "ChannelName": "awscdkmediapackagev2cloudfrontoriginChannel4596F369",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointEEF1FD8F": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "integ-cf-origin-group",
+    "ChannelName": "awscdkmediapackagev2cloudfrontoriginChannel4596F369",
+    "ContainerType": "CMAF",
+    "HlsManifests": [
+     {
+      "ManifestName": "index"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2cloudfrontoriginEndpointD5810477",
+    "Segment": {}
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EndpointPolicyA1BBD448": {
+   "Type": "AWS::MediaPackageV2::OriginEndpointPolicy",
+   "Properties": {
+    "ChannelGroupName": "integ-cf-origin-group",
+    "ChannelName": "awscdkmediapackagev2cloudfrontoriginChannel4596F369",
+    "OriginEndpointName": "awscdkmediapackagev2cloudfrontoriginEndpointD5810477",
+    "Policy": {
+     "Statement": [
+      {
+       "Action": [
+        "mediapackagev2:GetHeadObject",
+        "mediapackagev2:GetObject"
+       ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "Distribution830FAC52"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "EndpointEEF1FD8F",
+         "Arn"
+        ]
+       },
+       "Sid": "AllowCloudFrontServicePrincipal"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "DistributionOrigin1MediaPackageV2OAC7A801A77": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Name": "awscdkmediapackagev2cloudfrotionOrigin1MediaPackageV2OAC28733382",
+     "OriginAccessControlOriginType": "mediapackagev2",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   }
+  },
+  "Distribution830FAC52": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "DefaultCacheBehavior": {
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "Compress": true,
+      "TargetOriginId": "awscdkmediapackagev2cloudfrontoriginDistributionOrigin1B4BEB8C5",
+      "ViewerProtocolPolicy": "allow-all"
+     },
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "CustomOriginConfig": {
+        "OriginProtocolPolicy": "https-only",
+        "OriginSSLProtocols": [
+         "TLSv1.2"
+        ]
+       },
+       "DomainName": {
+        "Fn::GetAtt": [
+         "GroupC77FDACD",
+         "EgressDomain"
+        ]
+       },
+       "Id": "awscdkmediapackagev2cloudfrontoriginDistributionOrigin1B4BEB8C5",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "DistributionOrigin1MediaPackageV2OAC7A801A77",
+         "Id"
+        ]
+       }
+      }
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "DistributionDomainName": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Distribution830FAC52",
+     "DomainName"
+    ]
+   }
+  },
+  "EndpointArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "EndpointEEF1FD8F",
+     "Arn"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

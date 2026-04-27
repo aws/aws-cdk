@@ -222,7 +222,24 @@ channel.grants.ingest(mediaLiveRole);
 
 MediaPackage origin endpoints are designed to be used with Content Delivery Network (CDN) like Amazon CloudFront distributions. CloudFront provides caching, DDoS protection, and global content delivery for your streaming content.
 
-To allow a CloudFront distribution to access a MediaPackage origin endpoint, add a resource policy with the CloudFront service principal:
+The simplest way to connect CloudFront to a MediaPackage V2 endpoint is with `MediaPackageV2Origin`, which automatically creates an Origin Access Control (OAC) and wires the endpoint policy:
+
+```ts
+declare const endpoint: OriginEndpoint;
+declare const group: ChannelGroup;
+
+new cloudfront.Distribution(this, 'Distribution', {
+  defaultBehavior: {
+    origin: new MediaPackageV2Origin(endpoint, {
+      channelGroup: group,
+    }),
+  },
+});
+```
+
+This handles OAC creation, HTTPS-only origin config, and the IAM policy granting CloudFront access to the endpoint (including `GetHeadObject` for MQAR support).
+
+For more control, you can manually configure the policy and OAC:
 
 ```ts
 declare const originEndpoint: OriginEndpoint;
@@ -242,7 +259,7 @@ originEndpoint.addToResourcePolicy(new iam.PolicyStatement({
 }));
 ```
 
-You can complete the confirmation with an OAC (Origin Access Control) Policy on the CloudFront Distribution.
+> **Graduation plan:** `MediaPackageV2Origin` currently lives in this alpha module. When MediaPackage V2 graduates to stable, it will move to `aws-cloudfront-origins` alongside `S3BucketOrigin` and other origin helpers.
 
 ## Manifest Configuration
 
