@@ -416,6 +416,7 @@ export class BucketDeployment extends Construct {
 
     this.sources = Boxes.fromArray(
       props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole })),
+      { omitEmpty: true },
     );
 
     this.destinationBucket.grantReadWrite(handler);
@@ -986,5 +987,5 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
 }
 
 function sanitize<A>(box: IReadableBox<Array<A>>) {
-  return box.derive(arr => arr.filter(Boolean)).derive(arr => arr.length > 0 ? arr : undefined);
+  return box.derive(arr => arr.filter(Boolean));
 }

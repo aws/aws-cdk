@@ -30,7 +30,7 @@ import {
   Token,
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
-import type { ArrayBox, Box } from '../../core/lib/helpers-internal';
+import type { ArrayBox } from '../../core/lib/helpers-internal';
 import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
@@ -1468,10 +1468,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly _userData?: ec2.UserData;
   private readonly _role?: iam.IRole;
 
-  /**
-   * @internal
-   */
-  protected _newInstancesProtectedFromScaleIn: Box<boolean | undefined>;
+  protected newInstancesProtectedFromScaleIn?: boolean;
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id, {
@@ -1480,9 +1477,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._newInstancesProtectedFromScaleIn = Boxes.fromValue<boolean | undefined>(props.newInstancesProtectedFromScaleIn);
-    this._loadBalancerNames = Boxes.fromArray<string>([]);
-    this._targetGroupArns = Boxes.fromArray<string>([]);
+    this._loadBalancerNames = Boxes.fromArray<string>([], { omitEmpty: true });
+    this._targetGroupArns = Boxes.fromArray<string>([], { omitEmpty: true });
 
     if (props.initOptions && !props.init) {
       throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
@@ -1703,15 +1699,15 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
-      loadBalancerNames: Token.asList(this._loadBalancerNames.omitEmpty(), { displayHint: 'loadBalancerNames' }),
-      targetGroupArns: Token.asList(this._targetGroupArns.omitEmpty(), { displayHint: 'targetGroupArns' }),
+      loadBalancerNames: Token.asList(this._loadBalancerNames, { displayHint: 'loadBalancerNames' }),
+      targetGroupArns: Token.asList(this._targetGroupArns, { displayHint: 'targetGroupArns' }),
       notificationConfigurations: this.renderNotificationConfiguration(),
       metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
       vpcZoneIdentifier: subnetIds,
       healthCheckType,
       healthCheckGracePeriod,
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
-      newInstancesProtectedFromScaleIn: this._newInstancesProtectedFromScaleIn,
+      newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
       terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
@@ -1847,7 +1843,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public protectNewInstancesFromScaleIn() {
-    this._newInstancesProtectedFromScaleIn.set(true);
+    this.newInstancesProtectedFromScaleIn = true;
   }
 
   /**
@@ -1855,7 +1851,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public areNewInstancesProtectedFromScaleIn(): boolean {
-    return this._newInstancesProtectedFromScaleIn.get() === true;
+    return this.newInstancesProtectedFromScaleIn === true;
   }
 
   /**

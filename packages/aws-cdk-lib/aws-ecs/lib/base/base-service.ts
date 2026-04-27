@@ -833,10 +833,10 @@ export abstract class BaseService extends Resource
     }
 
     this.taskDefinition = taskDefinition;
-    this._loadBalancers = Boxes.fromArray<CfnService.LoadBalancerProperty>([]);
-    this._serviceRegistries = Boxes.fromArray<CfnService.ServiceRegistryProperty>([]);
-    this._volumes = Boxes.fromArray<ServiceManagedVolume>([]);
-    this._lifecycleHooks = Boxes.fromArray<IDeploymentLifecycleHookTarget>([]);
+    this._loadBalancers = Boxes.fromArray<CfnService.LoadBalancerProperty>([], { omitEmpty: true });
+    this._serviceRegistries = Boxes.fromArray<CfnService.ServiceRegistryProperty>([], { omitEmpty: true });
+    this._volumes = Boxes.fromArray<ServiceManagedVolume>([], { omitEmpty: true });
+    this._lifecycleHooks = Boxes.fromArray<IDeploymentLifecycleHookTarget>([], { omitEmpty: true });
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -860,7 +860,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: this._loadBalancers.omitEmpty(),
+      loadBalancers: this._loadBalancers,
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -890,9 +890,9 @@ export abstract class BaseService extends Resource
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: this._serviceRegistries.omitEmpty(),
+      serviceRegistries: this._serviceRegistries,
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
-      volumeConfigurations: this._volumes.derive(arr => arr.length === 0 ? undefined : this.renderVolumes()),
+      volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
     });
 

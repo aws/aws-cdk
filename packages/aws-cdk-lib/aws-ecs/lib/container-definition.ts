@@ -601,12 +601,12 @@ export class ContainerDefinition extends Construct {
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
 
-    this._mountPoints = Boxes.fromArray<MountPoint>([]);
-    this._portMappings = Boxes.fromArray<PortMapping>([]);
-    this._volumesFrom = Boxes.fromArray<VolumeFrom>([]);
-    this._ulimits = Boxes.fromArray<Ulimit>([]);
-    this._containerDependencies = Boxes.fromArray<ContainerDependency>([]);
-    this._links = Boxes.fromArray<string>([]);
+    this._mountPoints = Boxes.fromArray<MountPoint>([], { omitEmpty: true });
+    this._portMappings = Boxes.fromArray<PortMapping>([], { omitEmpty: true });
+    this._volumesFrom = Boxes.fromArray<VolumeFrom>([], { omitEmpty: true });
+    this._ulimits = Boxes.fromArray<Ulimit>([], { omitEmpty: true });
+    this._containerDependencies = Boxes.fromArray<ContainerDependency>([], { omitEmpty: true });
+    this._links = Boxes.fromArray<string>([], { omitEmpty: true });
 
     this.imageConfig = props.image.bind(this, this);
     this.imageName = this.imageConfig.imageName;
@@ -950,7 +950,7 @@ export class ContainerDefinition extends Construct {
       credentialSpecs: this.credentialSpecs && this.credentialSpecs.map(renderCredentialSpec),
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: this._containerDependencies.derive(arr => arr.length === 0 ? undefined : arr.map(renderContainerDependency)),
+      dependsOn: this._containerDependencies.map(renderContainerDependency),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: Object.keys(this.dockerLabels).length ? this.dockerLabels : undefined,
@@ -962,19 +962,19 @@ export class ContainerDefinition extends Construct {
       interactive: this.props.interactive,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: this._mountPoints.derive(arr => arr.length === 0 ? undefined : arr.map(renderMountPoint)),
+      mountPoints: this._mountPoints.map(renderMountPoint),
       name: this.containerName,
-      portMappings: this._portMappings.derive(arr => arr.length === 0 ? undefined : arr.map(renderPortMapping)),
+      portMappings: this._portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       pseudoTerminal: this.props.pseudoTerminal,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
-      ulimits: this._ulimits.derive(arr => arr.length === 0 ? undefined : arr.map(renderUlimit)),
+      ulimits: this._ulimits.map(renderUlimit),
       user: this.props.user,
       versionConsistency: this.versionConsistency,
-      volumesFrom: this._volumesFrom.derive(arr => arr.length === 0 ? undefined : arr.map(renderVolumeFrom)),
+      volumesFrom: this._volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
@@ -982,7 +982,7 @@ export class ContainerDefinition extends Construct {
       secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this, this.props.healthCheck),
-      links: cdk.Token.asList(this._links.omitEmpty(), { displayHint: 'links' }),
+      links: cdk.Token.asList(this._links, { displayHint: 'links' }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),

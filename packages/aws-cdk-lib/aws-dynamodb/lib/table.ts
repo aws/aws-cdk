@@ -1308,8 +1308,8 @@ export class Table extends TableBase {
       physicalName: props.tableName,
     });
 
-    this._globalSecondaryIndexes = Boxes.fromArray<CfnTable.GlobalSecondaryIndexProperty>([]);
-    this._localSecondaryIndexes = Boxes.fromArray<CfnTable.LocalSecondaryIndexProperty>([]);
+    this._globalSecondaryIndexes = Boxes.fromArray<CfnTable.GlobalSecondaryIndexProperty>([], { omitEmpty: true });
+    this._localSecondaryIndexes = Boxes.fromArray<CfnTable.LocalSecondaryIndexProperty>([], { omitEmpty: true });
 
     if (!props?.partitionKey) {
       throw new ValidationError(lit`PartitionKeyRequired`, 'partitionKey is required for Table', this);
@@ -1359,8 +1359,8 @@ export class Table extends TableBase {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: this._globalSecondaryIndexes.omitEmpty(),
-      localSecondaryIndexes: this._localSecondaryIndexes.omitEmpty(),
+      globalSecondaryIndexes: this._globalSecondaryIndexes,
+      localSecondaryIndexes: this._localSecondaryIndexes,
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {

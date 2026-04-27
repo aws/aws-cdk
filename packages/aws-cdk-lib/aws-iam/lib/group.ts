@@ -224,12 +224,12 @@ export class Group extends GroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []]);
+    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []], { omitEmpty: true });
     this._path = props.path;
 
     this._resource = new CfnGroup(this, 'Resource', {
       groupName: this.physicalName,
-      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn).derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'managedPolicyArns' }),
+      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn), { displayHint: 'managedPolicyArns' }),
       path: props.path,
     });
 

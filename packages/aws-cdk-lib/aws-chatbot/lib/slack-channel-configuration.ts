@@ -315,14 +315,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.grantPrincipal = this.role;
 
-    this._notificationTopics = Boxes.fromArray<sns.ITopic>(props.notificationTopics ?? []);
+    this._notificationTopics = Boxes.fromArray<sns.ITopic>(props.notificationTopics ?? [], { omitEmpty: true });
 
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: cdk.Token.asList(this._notificationTopics.map(topic => topic.topicArn).derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'snsTopicArns' }),
+      snsTopicArns: cdk.Token.asList(this._notificationTopics.map(topic => topic.topicArn), { displayHint: 'snsTopicArns' }),
       loggingLevel: props.loggingLevel?.toString(),
       guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
       userRoleRequired: props.userRoleRequired,

@@ -316,7 +316,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
-    this._autoScalingGroups = Boxes.fromArray<autoscaling.IAutoScalingGroup>(props.autoScalingGroups || []);
+    this._autoScalingGroups = Boxes.fromArray<autoscaling.IAutoScalingGroup>(props.autoScalingGroups || [], { omitEmpty: true });
     this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
@@ -339,7 +339,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigRef.deploymentConfigName,
-      autoScalingGroups: cdk.Token.asList(this._autoScalingGroups.map(asg => asg.autoScalingGroupName).derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'autoScalingGroups' }),
+      autoScalingGroups: cdk.Token.asList(this._autoScalingGroups.map(asg => asg.autoScalingGroupName), { displayHint: 'autoScalingGroups' }),
       loadBalancerInfo: this.loadBalancersInfo(this.loadBalancers),
       deploymentStyle: this.loadBalancers === undefined
         ? undefined

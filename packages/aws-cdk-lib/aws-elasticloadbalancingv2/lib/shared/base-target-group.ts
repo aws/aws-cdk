@@ -378,7 +378,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       );
     }
 
-    this._targetsJson = Boxes.fromArray<CfnTargetGroup.TargetDescriptionProperty>([]);
+    this._targetsJson = Boxes.fromArray<CfnTargetGroup.TargetDescriptionProperty>([], { omitEmpty: true });
 
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;
@@ -388,7 +388,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       name: baseProps.targetGroupName,
       targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       targetType: cdk.Lazy.string({ produce: () => this.targetType }),
-      targets: this._targetsJson.omitEmpty(),
+      targets: this._targetsJson,
       vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
 
       // HEALTH CHECK

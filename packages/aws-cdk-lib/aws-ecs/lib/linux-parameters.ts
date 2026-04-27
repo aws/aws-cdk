@@ -105,10 +105,10 @@ export class LinuxParameters extends Construct {
 
     this.validateProps(props);
 
-    this.capAdd = Boxes.fromArray<Capability>([]);
-    this.capDrop = Boxes.fromArray<Capability>([]);
-    this.devices = Boxes.fromArray<Device>([]);
-    this.tmpfs = Boxes.fromArray<Tmpfs>([]);
+    this.capAdd = Boxes.fromArray<Capability>([], { omitEmpty: true });
+    this.capDrop = Boxes.fromArray<Capability>([], { omitEmpty: true });
+    this.devices = Boxes.fromArray<Device>([], { omitEmpty: true });
+    this.tmpfs = Boxes.fromArray<Tmpfs>([], { omitEmpty: true });
 
     this.sharedMemorySize = props.sharedMemorySize;
     this.initProcessEnabled = props.initProcessEnabled;
@@ -176,11 +176,11 @@ export class LinuxParameters extends Construct {
       maxSwap: this.maxSwap?.toMebibytes(),
       swappiness: this.swappiness,
       capabilities: {
-        add: cdk.Token.asList(this.capAdd.omitEmpty(), { displayHint: 'capAdd' }),
-        drop: cdk.Token.asList(this.capDrop.omitEmpty(), { displayHint: 'capDrop' }),
+        add: cdk.Token.asList(this.capAdd, { displayHint: 'capAdd' }),
+        drop: cdk.Token.asList(this.capDrop, { displayHint: 'capDrop' }),
       },
-      devices: this.devices.derive(arr => arr.length === 0 ? undefined : arr.map(renderDevice)),
-      tmpfs: this.tmpfs.derive(arr => arr.length === 0 ? undefined : arr.map(renderTmpfs)),
+      devices: this.devices.map(renderDevice),
+      tmpfs: this.tmpfs.map(renderTmpfs),
     };
   }
 }

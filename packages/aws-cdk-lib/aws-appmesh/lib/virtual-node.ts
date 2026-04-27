@@ -228,8 +228,8 @@ export class VirtualNode extends VirtualNodeBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._backends = Boxes.fromArray<CfnVirtualNode.BackendProperty>([]);
-    this._listeners = Boxes.fromArray<VirtualNodeListenerConfig>([]);
+    this._backends = Boxes.fromArray<CfnVirtualNode.BackendProperty>([], { omitEmpty: true });
+    this._listeners = Boxes.fromArray<VirtualNodeListenerConfig>([], { omitEmpty: true });
 
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
@@ -243,8 +243,8 @@ export class VirtualNode extends VirtualNodeBase {
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
-        backends: this._backends.omitEmpty(),
-        listeners: this._listeners.derive(arr => arr.length === 0 ? undefined : arr.map(listener => listener.listener)),
+        backends: this._backends,
+        listeners: this._listeners.map(listener => listener.listener),
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {

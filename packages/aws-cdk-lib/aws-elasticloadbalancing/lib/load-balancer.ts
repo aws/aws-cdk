@@ -285,7 +285,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
     this._listeners = Boxes.fromArray<CfnLoadBalancer.ListenersProperty>([]);
-    this._instanceIds = Boxes.fromArray<string>([]);
+    this._instanceIds = Boxes.fromArray<string>([], { omitEmpty: true });
 
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
@@ -293,7 +293,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: this._listeners,
-      instances: Token.asList(this._instanceIds.omitEmpty(), { displayHint: 'instances' }),
+      instances: Token.asList(this._instanceIds, { displayHint: 'instances' }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,

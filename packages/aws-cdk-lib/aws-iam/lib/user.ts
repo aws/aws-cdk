@@ -302,14 +302,14 @@ export class User extends Resource implements IIdentity, IUser {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []]);
+    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []], { omitEmpty: true });
     this.permissionsBoundary = props.permissionsBoundary;
     this._path = props.path;
 
     this._resource = new CfnUser(this, 'Resource', {
       userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
-      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn).derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'managedPolicyArns' }),
+      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn), { displayHint: 'managedPolicyArns' }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       loginProfile: this.parseLoginProfile(props),
