@@ -1714,7 +1714,7 @@ The gateway authenticates on its own behalf, not on behalf of a user.
 
 #### Specifying SigV4 service / region for IAM authentication
 
-By default, `GatewayCredentialProvider.fromIamRole()` lets the gateway infer the SigV4 signing service and region from the target endpoint. You can override either or both — useful for cross-region calls or for targets where the service can't be inferred from the URL (e.g., custom endpoints, some Smithy/MCP-server targets).
+By default, `GatewayCredentialProvider.fromIamRole()` lets the gateway infer the SigV4 signing service and region from the target endpoint. You can override either or both — useful for cross-region calls or for targets where the service can't be inferred from the URL.
 
 ```typescript fixture=default
 agentcore.GatewayCredentialProvider.fromIamRole({
@@ -1724,6 +1724,8 @@ agentcore.GatewayCredentialProvider.fromIamRole({
 ```
 
 The `service` is the SigV4 signing name (typically the endpoint prefix), e.g. `bedrock-runtime`, `s3`, `execute-api`, `dynamodb`. See the [AWS service authorization reference](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html) for a full list. `region` defaults to the gateway's region.
+
+> **Target type constraint:** The Bedrock AgentCore service only accepts `IamCredentialProvider` with explicit `service` / `region` for **MCP Server** targets. Lambda, Smithy, OpenAPI and API Gateway targets must use the bare `GatewayCredentialProvider.fromIamRole()` (with no arguments). The CDK enforces this with a synth-time validation.
 
 ### Basic Gateway Target Creation
 

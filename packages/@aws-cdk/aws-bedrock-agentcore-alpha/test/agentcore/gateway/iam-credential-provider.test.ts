@@ -52,6 +52,7 @@ describe('IAM credential provider', () => {
 
   describe('rendering', () => {
     test('renders only credentialProviderType when no props are provided (backwards compatible)', () => {
+      // Bare fromIamRole() is still valid for Lambda targets.
       GatewayTarget.forLambda(stack, 'Target', {
         gateway,
         gatewayTargetName: 'target',
@@ -71,11 +72,9 @@ describe('IAM credential provider', () => {
     });
 
     test('renders iamCredentialProvider with service when service is provided', () => {
-      GatewayTarget.forLambda(stack, 'Target', {
-        gateway,
-        gatewayTargetName: 'target',
-        lambdaFunction,
-        toolSchema,
+      gateway.addMcpServerTarget('McpTarget', {
+        gatewayTargetName: 'mcp-target',
+        endpoint: 'https://mcp-server.example.com',
         credentialProviderConfigurations: [
           GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
         ],
@@ -97,11 +96,9 @@ describe('IAM credential provider', () => {
     });
 
     test('renders iamCredentialProvider with service and region when both are provided', () => {
-      GatewayTarget.forLambda(stack, 'Target', {
-        gateway,
-        gatewayTargetName: 'target',
-        lambdaFunction,
-        toolSchema,
+      gateway.addMcpServerTarget('McpTarget', {
+        gatewayTargetName: 'mcp-target',
+        endpoint: 'https://mcp-server.example.com',
         credentialProviderConfigurations: [
           GatewayCredentialProvider.fromIamRole({
             service: 'bedrock-runtime',
@@ -175,6 +172,20 @@ describe('IAM credential provider', () => {
         service: cdk.Token.asString({ resolve: () => 'bedrock-runtime' }),
         region: tokenStack.region,
       })).not.toThrow();
+    });
+
+    test('fails when explicit service/region is used with a Lambda target', () => {
+      expect(() => GatewayTarget.forLambda(stack, 'Target', {
+        gateway,
+        gatewayTargetName: 'target',
+        lambdaFunction,
+        toolSchema,
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromIamRole({ service: 'bedrock-runtime' }),
+        ],
+      })).toThrow(
+        /IamCredentialProvider with explicit service\/region is only supported for MCP Server targets/,
+      );
     });
   });
 

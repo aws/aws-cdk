@@ -18,6 +18,7 @@ import type { ApiGatewayToolConfiguration, ITargetConfiguration, MetadataConfigu
 import { ApiGatewayTargetConfiguration, LambdaTargetConfiguration, McpServerTargetConfiguration, OpenApiTargetConfiguration, SmithyTargetConfiguration } from './target-configuration';
 import type { ICredentialProviderConfig } from '../outbound-auth/credential-provider';
 import { GatewayCredentialProvider } from '../outbound-auth/credential-provider';
+import { GatewayIamRoleCredentialProviderConfig } from '../outbound-auth/iam-role';
 import { validateStringField, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************
@@ -537,6 +538,8 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
       props.credentialProviderConfigurations,
     );
 
+    this.validateIamCredentialProviderTargetType();
+
     // Bind the target configuration
     // This sets up permissions and dependencies
     this.targetConfiguration.bind(this, this.gateway);
@@ -648,6 +651,33 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
    */
   private _renderCredentialProviderConfigurations(): any {
     return this.credentialProviderConfigurations?.map(provider => provider._render());
+  }
+
+  /**
+   * Validates that explicit SigV4 service / region on the IAM credential provider is only
+   * used with the MCP Server target type. The Bedrock AgentCore service rejects
+   * `IamCredentialProvider` (with service / region) for every other target type at deploy time
+   * (Lambda, Smithy, API Gateway and OpenAPI). Surface that as a synthesis-time error so users
+   * get fail-fast feedback.
+   */
+  private validateIamCredentialProviderTargetType(): void {
+    if (!this.credentialProviderConfigurations) {
+      return;
+    }
+    const hasExplicitIamCredentialProvider = this.credentialProviderConfigurations.some(
+      (c) => c instanceof GatewayIamRoleCredentialProviderConfig
+        && (c.service !== undefined || c.region !== undefined),
+    );
+    if (!hasExplicitIamCredentialProvider) {
+      return;
+    }
+    if (this.targetType !== McpTargetType.MCP_SERVER) {
+      throw new ValidationError(
+        lit`IamCredentialProviderUnsupportedTargetType`,
+        `IamCredentialProvider with explicit service/region is only supported for MCP Server targets, got target type "${this.targetType}"`,
+        this,
+      );
+    }
   }
 
   /**
