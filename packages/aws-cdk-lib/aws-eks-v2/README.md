@@ -912,6 +912,81 @@ bucket.grantReadWrite(serviceAccount);
 
 Note that adding service accounts requires running `kubectl` commands against the cluster which requires you to provide `kubectlProviderOptions` in the cluster props to create the `kubectl` provider. See [Kubectl Support](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-eks-v2-readme.html#kubectl-support)
 
+### Pod Identities
+
+[Amazon EKS Pod Identities](https://docs.aws.amazon.com/eks/latest/userguide/pod-identities.html) is a feature that simplifies how
+Kubernetes applications running on Amazon EKS can obtain AWS IAM credentials. It provides a way to associate an IAM role with a
+Kubernetes service account, allowing pods to retrieve temporary AWS credentials without the need
+to manage IAM roles and policies directly.
+
+By default, `ServiceAccount` creates an `OpenIdConnectProvider` for
+[IRSA (IAM roles for service accounts)](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html) if
+`identityType` is `undefined` or `IdentityType.IRSA`.
+
+You may opt in to Amazon EKS Pod Identities as below:
+
+```ts
+declare const cluster: eks.Cluster;
+
+new eks.ServiceAccount(this, 'ServiceAccount', {
+  cluster,
+  name: 'test-sa',
+  namespace: 'default',
+  identityType: eks.IdentityType.POD_IDENTITY,
+});
+```
+
+When you create the `ServiceAccount` with the `identityType` set to `POD_IDENTITY`,
+the `ServiceAccount` construct will perform the following actions behind the scenes:
+
+1. It will create an IAM role with the necessary trust policy to allow the `pods.eks.amazonaws.com` principal to assume the role.
+   This trust policy grants the EKS service the permission to retrieve temporary AWS credentials on behalf of the pods using this service account.
+
+2. It will enable the "Amazon EKS Pod Identity Agent" add-on on the EKS cluster. This add-on is responsible for managing the temporary
+   AWS credentials and making them available to the pods.
+
+3. It will create an association between the IAM role and the Kubernetes service account. This association allows the pods using this
+   service account to obtain the temporary AWS credentials from the associated IAM role.
+
+#### Using an existing IAM role with Pod Identity
+
+If you want to manage IAM roles centrally (e.g., in a dedicated `IamConstruct`) or reuse an existing role created via
+`iam.Role.fromRoleArn()`, you can pass it to `ServiceAccount` via the `role` property.
+
+The `role` property accepts any `IRoleRef`, including `iam.Role`, `iam.Role.fromRoleArn()`, and L1 `iam.CfnRole`.
+**This option is only valid when `identityType` is `IdentityType.POD_IDENTITY`.**
+
+The caller is responsible for configuring the trust policy of the role correctly. For Pod Identity, the role must allow
+`pods.eks.amazonaws.com` to perform `sts:AssumeRole` and `sts:TagSession`.
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+declare const cluster: eks.Cluster;
+
+// Create and manage the IAM role separately
+const appRole = new iam.Role(this, 'AppRole', {
+  assumedBy: new iam.SessionTagsPrincipal(
+    new iam.ServicePrincipal('pods.eks.amazonaws.com'),
+  ),
+});
+appRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3ReadOnlyAccess'));
+
+// Pass the existing role to ServiceAccount
+new eks.ServiceAccount(this, 'AppServiceAccount', {
+  cluster,
+  name: 'app-sa',
+  namespace: 'production',
+  identityType: eks.IdentityType.POD_IDENTITY,
+  role: appRole,
+});
+```
+
+When `role` is specified, the auto-generation of an IAM role is skipped.
+The provided role's ARN is used directly in the `PodIdentityAssociation`.
+
+> **Note:** If you pass an L1 construct (`iam.CfnRole`) as the `role`, the `ServiceAccount` and `PodIdentityAssociation`
+> are created successfully. However, accessing `serviceAccount.role` to call methods such as `grant()` or
+> `addManagedPolicy()` will throw an error, as those methods are only available on L2 `IRole` instances.
 
 #### Migrating from the deprecated eks.OpenIdConnectProvider to eks.OidcProviderNative
 
