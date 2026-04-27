@@ -316,7 +316,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
-    this._autoScalingGroups = Boxes.fromArray<autoscaling.IAutoScalingGroup>(props.autoScalingGroups || [], { omitEmpty: true });
+    this._autoScalingGroups = Boxes.fromArray<autoscaling.IAutoScalingGroup>(props.autoScalingGroups || []);
     this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);

@@ -297,7 +297,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     }
 
     if (!this.strategies) {
-      this.strategies = Boxes.fromArray([]);
+      this.strategies = Boxes.fromArray([], { omitEmpty: false });
     }
     for (const strategy of newStrategies) {
       this.strategies.push(...strategy.toJson());
@@ -313,7 +313,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     if (this.constraints != null) {
       this.constraints.set([]);
     } else {
-      this.constraints = Boxes.fromArray([]);
+      this.constraints = Boxes.fromArray([], { omitEmpty: false });
     }
     for (const constraint of constraints) {
       const items = constraint.toJson();

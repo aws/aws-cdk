@@ -472,7 +472,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     addConstructMetadata(this, props);
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
     const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
-    this._cognitoIdentityProviders = Boxes.fromArray<CfnIdentityPool.CognitoIdentityProviderProperty>(providers || []);
+    this._cognitoIdentityProviders = Boxes.fromArray<CfnIdentityPool.CognitoIdentityProviderProperty>(providers || [], { omitEmpty: false });
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
         openIdProvider.oidcProviderRef.oidcProviderArn,

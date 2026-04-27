@@ -601,12 +601,12 @@ export class ContainerDefinition extends Construct {
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
 
-    this._mountPoints = Boxes.fromArray<MountPoint>([], { omitEmpty: true });
-    this._portMappings = Boxes.fromArray<PortMapping>([], { omitEmpty: true });
-    this._volumesFrom = Boxes.fromArray<VolumeFrom>([], { omitEmpty: true });
-    this._ulimits = Boxes.fromArray<Ulimit>([], { omitEmpty: true });
-    this._containerDependencies = Boxes.fromArray<ContainerDependency>([], { omitEmpty: true });
-    this._links = Boxes.fromArray<string>([], { omitEmpty: true });
+    this._mountPoints = Boxes.fromArray<MountPoint>([]);
+    this._portMappings = Boxes.fromArray<PortMapping>([]);
+    this._volumesFrom = Boxes.fromArray<VolumeFrom>([]);
+    this._ulimits = Boxes.fromArray<Ulimit>([]);
+    this._containerDependencies = Boxes.fromArray<ContainerDependency>([]);
+    this._links = Boxes.fromArray<string>([]);
 
     this.imageConfig = props.image.bind(this, this);
     this.imageName = this.imageConfig.imageName;

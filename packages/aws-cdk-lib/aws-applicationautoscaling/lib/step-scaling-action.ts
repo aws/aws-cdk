@@ -84,7 +84,7 @@ export class StepScalingAction extends Construct {
   constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
-    this.adjustments = Boxes.fromArray<CfnScalingPolicy.StepAdjustmentProperty>([]);
+    this.adjustments = Boxes.fromArray<CfnScalingPolicy.StepAdjustmentProperty>([], { omitEmpty: false });
 
     // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace
     // properties, or the ScalingTargetId property, but not both.

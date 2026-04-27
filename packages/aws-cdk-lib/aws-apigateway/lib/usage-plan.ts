@@ -261,7 +261,7 @@ export class UsagePlan extends UsagePlanBase {
     addConstructMetadata(this, props);
     let resource: CfnUsagePlan;
 
-    this._apiStages = Boxes.fromArray<UsagePlanPerApiStage>([]);
+    this._apiStages = Boxes.fromArray<UsagePlanPerApiStage>([], { omitEmpty: false });
 
     resource = new CfnUsagePlan(this, 'Resource', {
       apiStages: this._apiStages.derive(arr => this.renderApiStages(arr)),

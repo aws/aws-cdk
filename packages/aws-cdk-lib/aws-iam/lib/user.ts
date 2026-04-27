@@ -302,7 +302,7 @@ export class User extends Resource implements IIdentity, IUser {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []], { omitEmpty: true });
+    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []]);
     this.permissionsBoundary = props.permissionsBoundary;
     this._path = props.path;
 

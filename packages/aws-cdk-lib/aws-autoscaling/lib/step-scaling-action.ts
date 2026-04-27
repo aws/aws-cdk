@@ -78,7 +78,7 @@ export class StepScalingAction extends Construct {
   constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
-    this.adjustments = Boxes.fromArray<CfnScalingPolicy.StepAdjustmentProperty>([]);
+    this.adjustments = Boxes.fromArray<CfnScalingPolicy.StepAdjustmentProperty>([], { omitEmpty: false });
 
     // Specify cooldown property in StepScaling policy type is ineffective and may cause deployment failure
     // in certain regions. We can't simply remove the property since it break existing users. Since setting

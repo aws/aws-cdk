@@ -199,7 +199,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     this._scalableDimension = props.scalableDimension;
     this._serviceNamespace = props.serviceNamespace;
 
-    this._actions = Boxes.fromArray<CfnScalableTarget.ScheduledActionProperty>([], { omitEmpty: true });
+    this._actions = Boxes.fromArray<CfnScalableTarget.ScheduledActionProperty>([]);
 
     const resource = new CfnScalableTarget(this, 'Resource', {
       maxCapacity: props.maxCapacity,

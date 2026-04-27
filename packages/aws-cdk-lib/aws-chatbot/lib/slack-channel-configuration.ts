@@ -315,7 +315,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.grantPrincipal = this.role;
 
-    this._notificationTopics = Boxes.fromArray<sns.ITopic>(props.notificationTopics ?? [], { omitEmpty: true });
+    this._notificationTopics = Boxes.fromArray<sns.ITopic>(props.notificationTopics ?? []);
 
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,

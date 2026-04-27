@@ -593,7 +593,7 @@ export class Instance extends Resource implements IInstance {
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
-    this._securityGroups = Boxes.fromArray<ISecurityGroup>([this.securityGroup]);
+    this._securityGroups = Boxes.fromArray<ISecurityGroup>([this.securityGroup], { omitEmpty: false });
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     if (props.instanceProfile && props.role) {

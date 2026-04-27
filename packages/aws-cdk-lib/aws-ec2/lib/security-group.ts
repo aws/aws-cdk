@@ -546,8 +546,8 @@ export class SecurityGroup extends SecurityGroupBase {
       !!props.disableInlineRules :
       !!this.node.tryGetContext(SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY);
 
-    this.directIngressRules = Boxes.fromArray<CfnSecurityGroup.IngressProperty>([], { omitEmpty: true });
-    this.directEgressRules = Boxes.fromArray<CfnSecurityGroup.EgressProperty>([], { omitEmpty: true });
+    this.directIngressRules = Boxes.fromArray<CfnSecurityGroup.IngressProperty>([]);
+    this.directEgressRules = Boxes.fromArray<CfnSecurityGroup.EgressProperty>([]);
 
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,

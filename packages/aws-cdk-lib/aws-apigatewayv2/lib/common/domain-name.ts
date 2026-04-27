@@ -217,7 +217,7 @@ export class DomainName extends Resource implements IDomainName {
       throw new ValidationError(lit`OwnershipCertificateMtlsDomains`, 'ownership certificate can only be used with mtls domains', scope);
     }
 
-    this._domainNameConfigurations = Boxes.fromArray<CfnDomainName.DomainNameConfigurationProperty>([]);
+    this._domainNameConfigurations = Boxes.fromArray<CfnDomainName.DomainNameConfigurationProperty>([], { omitEmpty: false });
 
     const mtlsConfig = this.configureMTLS(props.mtls);
     const domainNameProps: CfnDomainNameProps = {

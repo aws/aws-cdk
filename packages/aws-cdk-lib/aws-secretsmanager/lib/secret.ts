@@ -679,7 +679,7 @@ export class Secret extends SecretBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._replicaRegions = Boxes.fromArray<secretsmanager.CfnSecret.ReplicaRegionProperty>([], { omitEmpty: true });
+    this._replicaRegions = Boxes.fromArray<secretsmanager.CfnSecret.ReplicaRegionProperty>([]);
 
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&

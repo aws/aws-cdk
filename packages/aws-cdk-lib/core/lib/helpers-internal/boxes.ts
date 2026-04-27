@@ -296,14 +296,14 @@ export class Boxes {
    * Creates a mutable array box.
    *
    * @param as the initial array contents.
-   * @param options.omitEmpty if true, the box resolves to `undefined` when the
+   * @param options.omitEmpty if true (the default), the box resolves to `undefined` when the
    *   array is empty. This behavior propagates through `map`, `derive`, and
    *   `reduce`, so derived boxes also resolve to `undefined` when the source
-   *   array is empty.
+   *   array is empty. Set to `false` to resolve to an empty array instead.
    * @returns a new `ArrayBox<A>`.
    */
   public static fromArray<A>(as: Array<A>, options?: { omitEmpty?: boolean }): ArrayBox<A> {
-    return new ArrayState(as, options?.omitEmpty);
+    return new ArrayState(as, options?.omitEmpty ?? true);
   }
 
   /**

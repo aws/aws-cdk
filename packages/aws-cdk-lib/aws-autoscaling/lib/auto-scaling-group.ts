@@ -1477,8 +1477,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._loadBalancerNames = Boxes.fromArray<string>([], { omitEmpty: true });
-    this._targetGroupArns = Boxes.fromArray<string>([], { omitEmpty: true });
+    this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
+    this._loadBalancerNames = Boxes.fromArray<string>([]);
+    this._targetGroupArns = Boxes.fromArray<string>([]);
 
     if (props.initOptions && !props.init) {
       throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
@@ -1578,7 +1579,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         this.launchTemplate = launchTemplateFromConfig;
       } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-        this._securityGroups = Boxes.fromArray<ec2.ISecurityGroup>([this.securityGroup]);
+        this._securityGroups = Boxes.fromArray<ec2.ISecurityGroup>([this.securityGroup], { omitEmpty: false });
 
         if (props.keyPair) {
           throw new ValidationError(lit`OnlyKeypairFeatureFlag`, 'Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set', this);

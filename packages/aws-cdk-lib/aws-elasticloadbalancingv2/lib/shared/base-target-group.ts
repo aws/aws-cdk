@@ -378,7 +378,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       );
     }
 
-    this._targetsJson = Boxes.fromArray<CfnTargetGroup.TargetDescriptionProperty>([], { omitEmpty: true });
+    this._targetsJson = Boxes.fromArray<CfnTargetGroup.TargetDescriptionProperty>([]);
 
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;

@@ -224,7 +224,7 @@ export class Group extends GroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []], { omitEmpty: true });
+    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []]);
     this._path = props.path;
 
     this._resource = new CfnGroup(this, 'Resource', {

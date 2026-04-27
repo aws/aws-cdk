@@ -185,7 +185,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   constructor(scope: Construct, id: string, private readonly props: SageMakerCreateTrainingJobProps) {
     super(scope, id, props);
 
-    this._securityGroups = Boxes.fromArray<ec2.ISecurityGroup>([]);
+    this._securityGroups = Boxes.fromArray<ec2.ISecurityGroup>([], { omitEmpty: false });
 
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateTrainingJob.SUPPORTED_INTEGRATION_PATTERNS);

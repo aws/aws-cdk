@@ -406,7 +406,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     this.cluster = props.cluster;
     this.principal = props.principal;
-    this._accessPolicies = Boxes.fromArray<IAccessPolicy>(props.accessPolicies);
+    this._accessPolicies = Boxes.fromArray<IAccessPolicy>(props.accessPolicies, { omitEmpty: false });
     this.accessEntryType = props.accessEntryType;
 
     // Validate that certain access entry types cannot have access policies

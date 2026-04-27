@@ -802,7 +802,7 @@ export class TableV2 extends TableBaseV2 {
     this.encryptionKey = this.encryption?.tableKey;
     this.configureReplicaKeys(this.encryption?.replicaKeyArns);
 
-    this._attributeDefinitions = Boxes.fromArray<CfnGlobalTable.AttributeDefinitionProperty>([]);
+    this._attributeDefinitions = Boxes.fromArray<CfnGlobalTable.AttributeDefinitionProperty>([], { omitEmpty: false });
 
     // Only set up keys if not a replica - CloudFormation inherits keys from globalTableSourceArn
     this.addKey(props.partitionKey, HASH_KEY_TYPE);

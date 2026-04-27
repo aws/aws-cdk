@@ -830,8 +830,8 @@ export abstract class BaseService extends Resource
     }
 
     this.taskDefinition = taskDefinition;
-    this._volumes = Boxes.fromArray<ServiceManagedVolume>([], { omitEmpty: true });
-    this._lifecycleHooks = Boxes.fromArray<IDeploymentLifecycleHookTarget>([], { omitEmpty: true });
+    this._volumes = Boxes.fromArray<ServiceManagedVolume>([]);
+    this._lifecycleHooks = Boxes.fromArray<IDeploymentLifecycleHookTarget>([]);
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||

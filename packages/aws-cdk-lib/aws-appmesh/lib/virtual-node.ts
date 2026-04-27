@@ -228,8 +228,8 @@ export class VirtualNode extends VirtualNodeBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._backends = Boxes.fromArray<CfnVirtualNode.BackendProperty>([], { omitEmpty: true });
-    this._listeners = Boxes.fromArray<VirtualNodeListenerConfig>([], { omitEmpty: true });
+    this._backends = Boxes.fromArray<CfnVirtualNode.BackendProperty>([]);
+    this._listeners = Boxes.fromArray<VirtualNodeListenerConfig>([]);
 
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);

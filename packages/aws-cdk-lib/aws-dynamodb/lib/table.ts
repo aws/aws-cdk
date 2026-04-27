@@ -1308,8 +1308,8 @@ export class Table extends TableBase {
       physicalName: props.tableName,
     });
 
-    this._globalSecondaryIndexes = Boxes.fromArray<CfnTable.GlobalSecondaryIndexProperty>([], { omitEmpty: true });
-    this._localSecondaryIndexes = Boxes.fromArray<CfnTable.LocalSecondaryIndexProperty>([], { omitEmpty: true });
+    this._globalSecondaryIndexes = Boxes.fromArray<CfnTable.GlobalSecondaryIndexProperty>([]);
+    this._localSecondaryIndexes = Boxes.fromArray<CfnTable.LocalSecondaryIndexProperty>([]);
 
     if (!props?.partitionKey) {
       throw new ValidationError(lit`PartitionKeyRequired`, 'partitionKey is required for Table', this);
