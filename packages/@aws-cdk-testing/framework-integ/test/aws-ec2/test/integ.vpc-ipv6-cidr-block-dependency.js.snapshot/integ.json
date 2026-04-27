@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "VpcIpv6CidrBlockDependency/DefaultTest": {
+      "stacks": [
+        "VpcIpv6CidrBlockDependencyStack"
+      ],
+      "assertionStack": "VpcIpv6CidrBlockDependency/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcIpv6CidrBlockDependencyDefaultTestDeployAssert756FB4F0"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
