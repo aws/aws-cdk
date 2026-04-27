@@ -883,7 +883,7 @@ by events via an event rule.
 ### Using Project as an event target
 
 The `aws-cdk-lib/aws-events-targets.CodeBuildProject` allows using an AWS CodeBuild
-project as a AWS CloudWatch event rule target:
+project as an AWS CloudWatch event rule target:
 
 ```ts
 // start build when a commit is pushed

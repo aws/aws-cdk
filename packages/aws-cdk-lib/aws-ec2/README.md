@@ -1366,7 +1366,7 @@ new ec2.Instance(this, 'Instance5', {
 
 ### Latest Amazon Linux Images
 
-Rather than specifying a specific AMI ID to use, it is possible to specify a SSM
+Rather than specifying a specific AMI ID to use, it is possible to specify an SSM
 Parameter that contains the AMI ID. AWS publishes a set of [public parameters](https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-public-parameters-ami.html)
 that contain the latest Amazon Linux AMIs. To make it easier to query a
 particular image parameter, the CDK provides a couple of constructs `AmazonLinux2ImageSsmParameter`,

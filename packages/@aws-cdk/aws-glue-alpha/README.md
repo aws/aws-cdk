@@ -547,7 +547,7 @@ new glue.Database(this, 'MyDatabase', {
 
 ## Table
 
-A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in a S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
+A Glue table describes a table of data in S3: its structure (column names and types), location of data (S3 objects with a common prefix in an S3 bucket), and format for the files (Json, Avro, Parquet, etc.):
 
 ```ts
 declare const myDatabase: glue.Database;
@@ -565,7 +565,7 @@ new glue.S3Table(this, 'MyTable', {
 });
 ```
 
-By default, a S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `s3Prefix`:
+By default, an S3 bucket will be created to store the table's data but you can manually pass the `bucket` and `s3Prefix`:
 
 ```ts
 declare const myBucket: s3.Bucket;

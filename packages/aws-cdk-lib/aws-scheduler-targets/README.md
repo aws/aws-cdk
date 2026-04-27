@@ -149,7 +149,7 @@ new Schedule(this, 'Schedule', {
 
 Use the `SnsPublish` target to publish messages to an Amazon SNS topic.
 
-The code snippets below create an event rule with a Amazon SNS topic as a target.
+The code snippets below create an event rule with an Amazon SNS topic as a target.
 It's called every hour by Amazon EventBridge Scheduler with a custom payload.
 
 ```ts
@@ -322,7 +322,7 @@ new Schedule(this, 'Schedule', {
 });
 ```
 
-The code snippet below creates an event rule with a EC2 task definition and cluster as the target which is called every hour by EventBridge Scheduler.
+The code snippet below creates an event rule with an EC2 task definition and cluster as the target which is called every hour by EventBridge Scheduler.
 
 ```ts
 import * as ecs from 'aws-cdk-lib/aws-ecs';
