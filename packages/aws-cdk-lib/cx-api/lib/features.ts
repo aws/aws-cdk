@@ -71,6 +71,8 @@ export const EC2_UNIQUE_IMDSV2_LAUNCH_TEMPLATE_NAME = '@aws-cdk/aws-ec2:uniqueIm
 export const ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME = '@aws-cdk/aws-ecs:arnFormatIncludesClusterName';
 export const IAM_MINIMIZE_POLICIES = '@aws-cdk/aws-iam:minimizePolicies';
 export const IAM_IMPORTED_ROLE_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName';
+export const IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName';
+export const IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME = '@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName';
 export const VALIDATE_SNAPSHOT_REMOVAL_POLICY = '@aws-cdk/core:validateSnapshotRemovalPolicy';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEY_ALIAS_STACK_SAFE_RESOURCE_NAME = '@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName';
 export const S3_CREATE_DEFAULT_LOGGING_POLICY = '@aws-cdk/aws-s3:createDefaultLoggingPolicy';
@@ -675,6 +677,36 @@ export const FLAGS: Record<string, FlagInfo> = {
       This new implementation creates default policy names based on the constructs node path in their stack.
       `,
     introducedIn: { v2: '2.60.0' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Enable this feature to create default policy names for imported users that depend on the stack the user is in.',
+    detailsMd: `
+      Without this, importing the same user in multiple places could lead to the permissions given for one version of the imported user
+      to overwrite permissions given to the user at a different place where it was imported. This was due to all imported instances
+      of a user using the same default policy name.
+
+      This new implementation creates default policy names based on the constructs node path in their stack.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'Enable this feature to create default policy names for imported groups that depend on the stack the group is in.',
+    detailsMd: `
+      Without this, importing the same group in multiple places could lead to the permissions given for one version of the imported group
+      to overwrite permissions given to the group at a different place where it was imported. This was due to all imported instances
+      of a group using the same default policy name.
+
+      This new implementation creates default policy names based on the constructs node path in their stack.
+      `,
+    introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },
 

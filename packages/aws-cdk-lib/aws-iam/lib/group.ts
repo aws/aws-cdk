@@ -7,12 +7,13 @@ import { Policy } from './policy';
 import type { PolicyStatement } from './policy-statement';
 import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ArnPrincipal } from './principals';
-import { AttachedPolicies } from './private/util';
+import { AttachedPolicies, MAX_POLICY_NAME_LEN } from './private/util';
 import type { IUser } from './user';
-import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
+import { Annotations, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
 
 /**
  * Represents an IAM Group.
@@ -73,6 +74,18 @@ export interface GroupProps {
   readonly path?: string;
 }
 
+/**
+ * Options for importing a group from their ARN.
+ */
+export interface FromGroupArnOptions {
+  /**
+   * The name of the default policy to create.
+   *
+   * @default 'DefaultPolicy'
+   */
+  readonly defaultPolicyName?: string;
+}
+
 abstract class GroupBase extends Resource implements IGroup {
   public abstract readonly groupName: string;
   public abstract readonly groupArn: string;
@@ -82,7 +95,7 @@ abstract class GroupBase extends Resource implements IGroup {
   public readonly assumeRoleAction: string = 'sts:AssumeRole';
 
   private readonly attachedPolicies = new AttachedPolicies();
-  private defaultPolicy?: Policy;
+  protected defaultPolicy?: Policy;
 
   public get policyFragment(): PrincipalPolicyFragment {
     return new ArnPrincipal(this.groupArn).policyFragment;
@@ -159,14 +172,35 @@ export class Group extends GroupBase {
    * @param scope construct scope
    * @param id construct id
    * @param groupArn the ARN of the group to import (e.g. `arn:aws:iam::account-id:group/group-name`)
+   * @param options options for the import
    */
-  public static fromGroupArn(scope: Construct, id: string, groupArn: string): IGroup {
+  public static fromGroupArn(scope: Construct, id: string, groupArn: string, options: FromGroupArnOptions = {}): IGroup {
     const arnComponents = Stack.of(scope).splitArn(groupArn, ArnFormat.SLASH_RESOURCE_NAME);
     const groupName = arnComponents.resourceName!;
     class Import extends GroupBase {
       public groupName = groupName;
       public groupArn = groupArn;
       public principalAccount = arnComponents.account;
+
+      public addToPrincipalPolicy(statement: PolicyStatement): AddToPrincipalPolicyResult {
+        if (!this.defaultPolicy) {
+          const useUniqueName = FeatureFlags.of(this).isEnabled(IAM_IMPORTED_GROUP_STACK_SAFE_DEFAULT_POLICY_NAME);
+          const prefix = 'DefaultPolicy';
+          let defaultDefaultPolicyName = useUniqueName
+            ? `${prefix}${Names.uniqueId(this)}`
+            : prefix;
+          if (defaultDefaultPolicyName.length > MAX_POLICY_NAME_LEN) {
+            defaultDefaultPolicyName = `${prefix}${Names.uniqueResourceName(this, { maxLength: MAX_POLICY_NAME_LEN - prefix.length })}`;
+          }
+
+          const policyName = options.defaultPolicyName ?? defaultDefaultPolicyName;
+          this.defaultPolicy = new Policy(this, policyName, (useUniqueName || !!options.defaultPolicyName) ? { policyName } : undefined);
+          this.defaultPolicy.attachToGroup(this);
+        }
+
+        this.defaultPolicy.addStatements(statement);
+        return { statementAdded: true, policyDependable: this.defaultPolicy };
+      }
     }
 
     return new Import(scope, id);
@@ -179,15 +213,16 @@ export class Group extends GroupBase {
    * @param scope construct scope
    * @param id construct id
    * @param groupName the groupName (path included) of the existing group to import
+   * @param options options for the import
    */
-  static fromGroupName(scope: Construct, id: string, groupName: string) {
+  public static fromGroupName(scope: Construct, id: string, groupName: string, options: FromGroupArnOptions = {}): IGroup {
     const groupArn = Stack.of(scope).formatArn({
       service: 'iam',
       region: '',
       resource: 'group',
       resourceName: groupName,
     });
-    return Group.fromGroupArn(scope, id, groupArn);
+    return Group.fromGroupArn(scope, id, groupArn, options);
   }
 
   /**
