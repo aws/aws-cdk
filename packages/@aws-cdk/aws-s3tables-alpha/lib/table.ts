@@ -263,6 +263,12 @@ export interface CompactionProperty {
    */
   readonly status: Status;
   /**
+   * The compaction strategy to use.
+   *
+   * @default - No strategy specified (service default)
+   */
+  readonly strategy?: CompactionStrategy;
+  /**
    * Target file size in megabytes for compaction.
    */
   readonly targetFileSizeMb: number;
@@ -280,6 +286,28 @@ export enum Status {
    * Disable the maintenance action.
    */
   DISABLED = 'disabled',
+}
+
+/**
+ * Compaction strategy values for the compaction maintenance action.
+ */
+export enum CompactionStrategy {
+  /**
+   * Automatically select the best compaction strategy.
+   */
+  AUTO = 'auto',
+  /**
+   * Bin-pack compaction strategy.
+   */
+  BINPACK = 'binpack',
+  /**
+   * Sort-based compaction strategy.
+   */
+  SORT = 'sort',
+  /**
+   * Z-order compaction strategy.
+   */
+  Z_ORDER = 'z-order',
 }
 
 /**
@@ -783,7 +811,10 @@ export class Table extends TableBase implements ITaggableV2 {
       openTableFormat: props.openTableFormat,
       tableBucketArn: props.namespace.tableBucket.tableBucketArn,
       namespace: props.namespace.namespaceName,
-      compaction: props.compaction,
+      compaction: props.compaction ? {
+        status: props.compaction.status,
+        targetFileSizeMb: props.compaction.targetFileSizeMb,
+      } : undefined,
       icebergMetadata: this.buildIcebergMetadata(props.icebergMetadata),
       snapshotManagement: props.snapshotManagement,
       withoutMetadata: props.withoutMetadata ? 'Yes' : undefined,
@@ -795,6 +826,11 @@ export class Table extends TableBase implements ITaggableV2 {
     this.cdkTagManager = this._resource.cdkTagManager;
     this._resource.applyRemovalPolicy(props.removalPolicy);
     this.node.addDependency(this.namespace);
+
+    // Strategy is not yet in the L1 CFN spec, so we use addPropertyOverride
+    if (props.compaction?.strategy) {
+      this._resource.addPropertyOverride('Compaction.Strategy', props.compaction.strategy);
+    }
   }
 
   /**

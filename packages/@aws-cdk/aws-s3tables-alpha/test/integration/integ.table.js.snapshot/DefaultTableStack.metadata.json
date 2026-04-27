@@ -1,0 +1,56 @@
+{
+  "/DefaultTableStack/DefaultBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DefaultTableStack/DefaultNamespace": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DefaultTableStack/DefaultTable": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/DefaultTableStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/DefaultTableStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/DefaultTableStack/DefaultBucket/DefaultBucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultBucket62385A75"
+    }
+  ],
+  "/DefaultTableStack/DefaultNamespace/DefaultNamespace": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultNamespaceD1A02467"
+    }
+  ],
+  "/DefaultTableStack/DefaultTable/DefaultTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultTable0A5768B5"
+    }
+  ],
+  "/DefaultTableStack/Exports/Output{\"Fn::GetAtt\":[\"DefaultBucket62385A75\",\"TableBucketARN\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttDefaultBucket62385A75TableBucketARN40A5C30D"
+    }
+  ]
+}

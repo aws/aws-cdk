@@ -28,7 +28,8 @@
    "Properties": {
     "Compaction": {
      "Status": "enabled",
-     "TargetFileSizeMB": 128
+     "TargetFileSizeMB": 128,
+     "Strategy": "binpack"
     },
     "IcebergMetadata": {
      "IcebergSchema": {

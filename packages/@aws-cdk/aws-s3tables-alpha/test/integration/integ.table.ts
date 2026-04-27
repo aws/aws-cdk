@@ -83,6 +83,7 @@ class SchemaTableStack extends core.Stack {
       compaction: {
         status: s3tables.Status.ENABLED,
         targetFileSizeMb: 128,
+        strategy: s3tables.CompactionStrategy.BINPACK,
       },
       snapshotManagement: {
         status: s3tables.Status.ENABLED,
