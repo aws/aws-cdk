@@ -1,0 +1,19 @@
+{
+  "version": "22.0.0",
+  "files": {
+    "6eaaafeb13c4375b70517d040fa167eff377037d6b9dd13d5351e0b60a45cc9f": {
+      "source": {
+        "path": "integ-cloudtrail-sns-topic.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6eaaafeb13c4375b70517d040fa167eff377037d6b9dd13d5351e0b60a45cc9f.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

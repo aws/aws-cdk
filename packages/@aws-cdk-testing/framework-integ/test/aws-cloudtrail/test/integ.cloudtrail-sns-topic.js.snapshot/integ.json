@@ -1,0 +1,12 @@
+{
+  "version": "22.0.0",
+  "testCases": {
+    "CloudTrailSnsTopicTest/DefaultTest": {
+      "stacks": [
+        "integ-cloudtrail-sns-topic"
+      ],
+      "assertionStack": "CloudTrailSnsTopicTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CloudTrailSnsTopicTestDefaultTestDeployAssert4B2E898D"
+    }
+  }
+}
