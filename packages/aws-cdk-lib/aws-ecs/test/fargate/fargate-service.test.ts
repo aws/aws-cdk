@@ -5039,5 +5039,73 @@ describe('fargate service', () => {
         });
       }).toThrow(/You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank/);
     });
+
+    test('does not include AvailabilityZoneRebalancing in CloudFormation when explicitly set to DISABLED', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.DISABLED,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        LaunchType: LaunchType.FARGATE,
+        // AvailabilityZoneRebalancing should be absent when explicitly set to DISABLED
+        // This prevents unnecessary CloudFormation changes
+        AvailabilityZoneRebalancing: Match.absent(),
+      });
+    });
+
+    test('includes AvailabilityZoneRebalancing in CloudFormation when explicitly set to ENABLED', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      const taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      // WHEN
+      new ecs.FargateService(stack, 'FargateService', {
+        cluster,
+        taskDefinition,
+        availabilityZoneRebalancing: ecs.AvailabilityZoneRebalancing.ENABLED,
+        maxHealthyPercent: 150, // Required when ENABLED
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        TaskDefinition: {
+          Ref: 'FargateTaskDefC6FB60B4',
+        },
+        Cluster: {
+          Ref: 'EcsCluster97242B84',
+        },
+        LaunchType: LaunchType.FARGATE,
+        // AvailabilityZoneRebalancing should be present when explicitly set to ENABLED
+        AvailabilityZoneRebalancing: 'ENABLED',
+      });
+    });
   });
 });
