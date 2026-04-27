@@ -235,6 +235,72 @@ const encryptedBucketAuto = new TableBucket(scope, 'EncryptedTableBucketAuto', {
 });
 ```
 
+### Enabling Cross-Region / Cross-Account Replication
+
+S3 Tables supports continuous, asynchronous replication of tables from one
+table bucket (source) to one or more table buckets (destinations). You can
+configure replication declaratively via the `replicationDestinations`
+property. By default, CDK creates a least-privilege IAM role trusted by the
+S3 Tables replication service with the required permissions on the source
+and destination table buckets (and their KMS keys, when applicable).
+
+Replicate to one or more destinations (up to 5). CDK creates a least-privilege
+role for you automatically:
+
+```ts
+declare const destA: ITableBucket;
+declare const destB: ITableBucket;
+
+new TableBucket(scope, 'SourceMulti', {
+    tableBucketName: 'source-multi',
+    replicationDestinations: [destA, destB],
+});
+```
+
+Bring your own replication role (advanced). Supply a role only when you need
+to control its trust policy, permissions boundary, name, or similar:
+
+```ts
+declare const destA: ITableBucket;
+declare const destB: ITableBucket;
+
+const role = new iam.Role(scope, 'MyReplicationRole', {
+    assumedBy: new iam.ServicePrincipal('replication.s3tables.amazonaws.com'),
+});
+// ...attach your own least-privilege permissions to `role`...
+
+new TableBucket(scope, 'SourceByoRole', {
+    tableBucketName: 'source-byo-role',
+    replicationDestinations: [destA, destB],
+    replicationRole: role,
+});
+```
+
+#### Cross-Account Replication
+
+For cross-account replication, the destination table bucket must additionally
+grant the replication role access via a resource policy. CDK cannot do this
+automatically because the destination typically lives in a separate stack or
+account. Add the grant on the destination side, for example:
+
+```ts
+declare const destination: TableBucket;
+declare const sourceReplicationRole: iam.IRole;
+
+destination.addToResourcePolicy(new iam.PolicyStatement({
+    actions: [
+        's3tables:CreateNamespace',
+        's3tables:CreateTable',
+        's3tables:GetTableData',
+        's3tables:PutTableData',
+        's3tables:UpdateTableMetadataLocation',
+        's3tables:PutTableMaintenanceConfiguration',
+    ],
+    principals: [new iam.ArnPrincipal(sourceReplicationRole.roleArn)],
+    resources: [destination.tableBucketArn, `${destination.tableBucketArn}/table/*`],
+}));
+```
+
 ### Enabling CloudWatch Request Metrics
 
 You can enable CloudWatch request metrics for your table bucket. Request metrics provide insight into Amazon S3 Tables requests, helping you monitor and optimize your table bucket usage.
