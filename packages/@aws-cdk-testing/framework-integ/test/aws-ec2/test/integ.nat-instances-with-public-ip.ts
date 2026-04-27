@@ -1,5 +1,6 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import { EC2_RESTRICT_DEFAULT_SECURITY_GROUP } from 'aws-cdk-lib/cx-api';
 
@@ -8,11 +9,13 @@ class NatInstanceStack extends cdk.Stack {
     super(scope, id, props);
     this.node.setContext(EC2_RESTRICT_DEFAULT_SECURITY_GROUP, false);
 
+    const natGatewayProvider = ec2.NatProvider.instanceV2({
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
+      associatePublicIpAddress: true,
+    });
+
     new ec2.Vpc(this, 'Vpc', {
-      natGatewayProvider: ec2.NatProvider.instanceV2({
-        instanceType: ec2.InstanceType.of(ec2.InstanceClass.T4G, ec2.InstanceSize.MICRO),
-        associatePublicIpAddress: true,
-      }),
+      natGatewayProvider,
       subnetConfiguration: [
         {
           subnetType: ec2.SubnetType.PUBLIC,
@@ -25,6 +28,10 @@ class NatInstanceStack extends cdk.Stack {
         },
       ],
     });
+
+    // Suppress Security Guardian for NAT instance security group (open by design)
+    const natSgCfn = natGatewayProvider.securityGroup.node.defaultChild as CfnResource;
+    natSgCfn.addMetadata('guard', { SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'] });
   }
 }
 
