@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.nimblestudio"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.NimbleStudio"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_nimblestudio"
+    }
+  }
+}

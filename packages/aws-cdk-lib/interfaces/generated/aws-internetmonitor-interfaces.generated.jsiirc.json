@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.internetmonitor"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.InternetMonitor"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_internetmonitor"
+    }
+  }
+}

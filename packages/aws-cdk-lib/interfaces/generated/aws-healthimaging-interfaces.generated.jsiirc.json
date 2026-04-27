@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.healthimaging"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.HealthImaging"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_healthimaging"
+    }
+  }
+}

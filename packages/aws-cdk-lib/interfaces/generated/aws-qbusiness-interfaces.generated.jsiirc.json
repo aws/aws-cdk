@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.qbusiness"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.QBusiness"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_qbusiness"
+    }
+  }
+}

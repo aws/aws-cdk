@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.fis"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.FIS"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_fis"
+    }
+  }
+}

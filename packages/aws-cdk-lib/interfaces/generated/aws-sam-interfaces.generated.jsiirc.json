@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.sam"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.SAM"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_sam"
+    }
+  }
+}

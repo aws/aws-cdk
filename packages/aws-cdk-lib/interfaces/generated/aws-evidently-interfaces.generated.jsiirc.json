@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.evidently"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Evidently"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_evidently"
+    }
+  }
+}

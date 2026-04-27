@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.events"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Events"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_events"
+    }
+  }
+}

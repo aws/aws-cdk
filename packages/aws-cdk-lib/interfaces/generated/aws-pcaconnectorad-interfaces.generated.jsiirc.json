@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.pcaconnectorad"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.PCAConnectorAD"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_pcaconnectorad"
+    }
+  }
+}

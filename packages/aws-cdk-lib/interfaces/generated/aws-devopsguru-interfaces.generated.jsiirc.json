@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.devopsguru"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.DevOpsGuru"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_devopsguru"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.aiops"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.AIOps"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_aiops"
+    }
+  }
+}

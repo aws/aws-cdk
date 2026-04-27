@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.route53"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Route53"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_route53"
+    }
+  }
+}

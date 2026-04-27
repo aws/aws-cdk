@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.docdbelastic"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.DocDBElastic"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_docdbelastic"
+    }
+  }
+}

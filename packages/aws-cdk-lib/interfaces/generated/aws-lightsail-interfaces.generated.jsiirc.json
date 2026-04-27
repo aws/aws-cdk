@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.lightsail"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.Lightsail"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_lightsail"
+    }
+  }
+}

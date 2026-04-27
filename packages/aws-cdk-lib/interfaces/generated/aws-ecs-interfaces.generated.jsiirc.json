@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.ecs"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.ECS"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_ecs"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.opensearchserverless"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.OpenSearchServerless"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_opensearchserverless"
+    }
+  }
+}

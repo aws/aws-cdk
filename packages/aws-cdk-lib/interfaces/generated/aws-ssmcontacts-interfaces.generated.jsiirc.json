@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.ssmcontacts"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.SSMContacts"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_ssmcontacts"
+    }
+  }
+}

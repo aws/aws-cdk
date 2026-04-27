@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.fsx"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.FSx"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_fsx"
+    }
+  }
+}

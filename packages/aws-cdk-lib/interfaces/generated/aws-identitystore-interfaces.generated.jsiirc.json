@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.identitystore"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.IdentityStore"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_identitystore"
+    }
+  }
+}

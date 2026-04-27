@@ -1,0 +1,13 @@
+{
+  "targets": {
+    "java": {
+      "package": "software.amazon.awscdk.interfaces.opsworks"
+    },
+    "dotnet": {
+      "namespace": "Amazon.CDK.Interfaces.OpsWorks"
+    },
+    "python": {
+      "module": "aws_cdk.interfaces.aws_opsworks"
+    }
+  }
+}
