@@ -57,7 +57,14 @@
     }
    },
    "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS"
+     ]
+    }
+   }
   },
   "Vpc8378EB38": {
    "Type": "AWS::EC2::VPC",
@@ -1009,7 +1016,10 @@
        }
       ]
      },
-     "accessConfig": {}
+     "accessConfig": {},
+     "controlPlaneScalingConfig": {
+      "tier": "standard"
+     }
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -3867,10 +3877,10 @@
      ]
     },
     "Release": "awscdkeksclusterclusterchartdashboard864cec4a",
-    "Chart": "kubernetes-dashboard",
-    "Version": "6.0.8",
+    "Chart": "headlamp",
+    "Version": "0.39.0",
     "Namespace": "default",
-    "Repository": "https://kubernetes.github.io/dashboard/",
+    "Repository": "https://kubernetes-sigs.github.io/headlamp/",
     "CreateNamespace": true
    },
    "DependsOn": [
@@ -4145,7 +4155,7 @@
      ]
     },
     "RejectUnauthorized": false,
-    "CodeHash": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a"
+    "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -4400,7 +4410,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/74f0c23bdc75a98d28fe19433302a52c4bea843e3db955cba46671106f67d08f.json"
+       "/6dc232add6a062645fabdd7bcc4d54abc79ec7cd75f81ffa688ba876a92cb64d.json"
       ]
      ]
     }
@@ -4446,7 +4456,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/841e346827b3ba40d7f399611acabdb98a1b960a0112ea2dc4e010e172d29700.json"
+       "/7283a0885dbc163925aace6a82c153f9c77fffa1a0762dc78994458748a48ae2.json"
       ]
      ]
     }
@@ -4564,7 +4574,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "b46659075f6ac484daca2864bddb40b91116f1b2e131984596229981a499183a.zip"
+     "S3Key": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -4678,6 +4688,10 @@
      ]
     ]
    }
+  },
+  "ControlPlaneScalingTier": {
+   "Description": "Control plane scaling tier configured",
+   "Value": "standard"
   },
   "ClusterEndpoint": {
    "Value": {
