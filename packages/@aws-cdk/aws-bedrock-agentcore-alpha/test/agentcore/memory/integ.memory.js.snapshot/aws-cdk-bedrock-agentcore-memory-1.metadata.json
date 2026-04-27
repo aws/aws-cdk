@@ -1,0 +1,650 @@
+{
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MyEncryptionKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryEventStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "MANAGED",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithStreamDelivery": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Memory3232ACAB"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MyEncryptionKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyEncryptionKeyD795679F"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinStrategiesMemory25697FD7"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithCustomStrategiesMemoryFBD56D7A"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryBucket34BAD4CD"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryTopic5EB6DDE2"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithSelfManagedStrategyMemory927C030F"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinEpisodicExMemory4F42AC13"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryEventStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryEventStream982A05ED"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithStreamDelivery/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithStreamDelivery/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithStreamDeliveryMemoryE85ED633"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/Memory/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryServiceRoleC95D1642"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinStrategiesServiceRole9D3D59C7"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithCustomStrategiesServiceRole8BB48B33"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryBucketPolicyE2E00A35"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryBucketAutoDeleteObjectsCustomResource24E6631C"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithSelfManagedStrategyServiceRole9A484437"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinEpisodicEx/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinEpisodicExServiceRoleB89EDF28"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithStreamDelivery/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithStreamDeliveryServiceRole890B7A55"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithStreamDelivery/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithBuiltinStrategies/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithBuiltinStrategiesServiceRoleDefaultPolicy99037030"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithCustomStrategies/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithCustomStrategiesServiceRoleDefaultPolicyB8522B1A"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithSelfManagedStrategy/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithSelfManagedStrategyServiceRoleDefaultPolicy8649CA0E"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-1/MemoryWithStreamDelivery/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithStreamDeliveryServiceRoleDefaultPolicy0FFA2F76"
+    }
+  ]
+}

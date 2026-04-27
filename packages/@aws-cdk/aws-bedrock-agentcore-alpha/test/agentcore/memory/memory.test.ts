@@ -3,11 +3,14 @@ import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import {
   Memory,
+  StreamDeliveryContentType,
+  StreamDeliveryContentLevel,
 } from '../../../lib/memory/memory';
 import { MemoryStrategy } from '../../../lib/memory/memory-strategy';
 
@@ -2496,5 +2499,379 @@ describe('Episodic strategy validation edge cases tests', () => {
         namespaces: ['/journey/{badVariable}/episodes'],
       });
     }).toThrow('Namespace with templates should contain valid variables: /journey/{badVariable}/episodes');
+  });
+});
+
+describe('Memory with stream delivery resource tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const stream = new kinesis.Stream(stack, 'MemoryEventStream');
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_with_stream',
+      description: 'A test memory with stream delivery',
+      expirationDuration: Duration.days(30),
+      streamDeliveryResources: [
+        {
+          stream,
+          contentConfigurations: [
+            {
+              type: StreamDeliveryContentType.MEMORY_RECORDS,
+              level: StreamDeliveryContentLevel.FULL_CONTENT,
+            },
+          ],
+        },
+      ],
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('Should have the correct resources', () => {
+    template.resourceCountIs('AWS::BedrockAgentCore::Memory', 1);
+    template.resourceCountIs('AWS::Kinesis::Stream', 1);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+  });
+
+  test('Should have Memory resource with StreamDeliveryResources', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      Name: 'test_memory_with_stream',
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              DataStreamArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('MemoryEventStream*'), 'Arn'] },
+              ContentConfigurations: [
+                {
+                  Type: 'MEMORY_RECORDS',
+                  Level: 'FULL_CONTENT',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Should grant Kinesis write permissions to execution role', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: Match.arrayWith([
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ]),
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('MemoryEventStream*'), 'Arn'] },
+          }),
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: 'kinesis:DescribeStream',
+            Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('MemoryEventStream*'), 'Arn'] },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should have stream delivery resource in construct property', () => {
+    expect(memory.streamDeliveryResources).toHaveLength(1);
+  });
+});
+
+describe('Memory with addStreamDeliveryResource method tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const stream = new kinesis.Stream(stack, 'AddedStream');
+
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_add_stream',
+    });
+
+    memory.addStreamDeliveryResource({
+      stream,
+      contentConfigurations: [
+        {
+          type: StreamDeliveryContentType.MEMORY_RECORDS,
+          level: StreamDeliveryContentLevel.METADATA_ONLY,
+        },
+      ],
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('Should have Memory resource with StreamDeliveryResources added via method', () => {
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              DataStreamArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('AddedStream*'), 'Arn'] },
+              ContentConfigurations: [
+                {
+                  Type: 'MEMORY_RECORDS',
+                  Level: 'METADATA_ONLY',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Should grant Kinesis write permissions via addStreamDeliveryResource', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: Match.arrayWith([
+              'kinesis:PutRecord',
+              'kinesis:PutRecords',
+            ]),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should have stream delivery resources in construct property', () => {
+    expect(memory.streamDeliveryResources).toHaveLength(1);
+  });
+});
+
+describe('Memory stream delivery validation tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+  });
+
+  test('Should use default contentConfigurations when not specified', () => {
+    const stream = new kinesis.Stream(stack, 'DefaultConfigStream');
+
+    new Memory(stack, 'default-config-memory', {
+      memoryName: 'default_config_memory',
+      streamDeliveryResources: [{ stream }],
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              ContentConfigurations: [
+                {
+                  Type: 'MEMORY_RECORDS',
+                  Level: 'FULL_CONTENT',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('Should throw error for more than one content configuration', () => {
+    const stream = new kinesis.Stream(stack, 'TooManyConfigStream');
+
+    expect(() => {
+      new Memory(stack, 'invalid-memory', {
+        memoryName: 'invalid_stream_memory',
+        streamDeliveryResources: [
+          {
+            stream,
+            contentConfigurations: [
+              { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.FULL_CONTENT },
+              { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.METADATA_ONLY },
+            ],
+          },
+        ],
+      });
+    }).toThrow('Stream delivery resource currently supports at most one content configuration');
+  });
+
+  test('Should throw error for empty content configurations array', () => {
+    const stream = new kinesis.Stream(stack, 'EmptyConfigStream');
+
+    expect(() => {
+      new Memory(stack, 'empty-config-memory', {
+        memoryName: 'empty_config_memory',
+        streamDeliveryResources: [
+          {
+            stream,
+            contentConfigurations: [],
+          },
+        ],
+      });
+    }).toThrow('Stream delivery resource contentConfigurations must not be an empty array');
+  });
+
+  test('Should throw error when adding more than one stream delivery resource', () => {
+    const stream1 = new kinesis.Stream(stack, 'Stream1');
+    const stream2 = new kinesis.Stream(stack, 'Stream2');
+
+    const memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory',
+      streamDeliveryResources: [
+        {
+          stream: stream1,
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS },
+          ],
+        },
+      ],
+    });
+
+    expect(() => {
+      memory.addStreamDeliveryResource({
+        stream: stream2,
+        contentConfigurations: [
+          { type: StreamDeliveryContentType.MEMORY_RECORDS },
+        ],
+      });
+    }).toThrow('Memory currently supports at most one stream delivery resource');
+  });
+
+  test('Should not include StreamDeliveryResources when not configured', () => {
+    new Memory(stack, 'no-stream-memory', {
+      memoryName: 'no_stream_memory',
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
+    const memoryResource = Object.values(memoryResources)[0];
+    expect(memoryResource.Properties.StreamDeliveryResources).toBeUndefined();
+  });
+
+  test('Should handle content configuration without level (optional)', () => {
+    const stream = new kinesis.Stream(stack, 'NoLevelStream');
+
+    new Memory(stack, 'no-level-memory', {
+      memoryName: 'no_level_memory',
+      streamDeliveryResources: [
+        {
+          stream,
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS },
+          ],
+        },
+      ],
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      StreamDeliveryResources: {
+        Resources: [
+          {
+            Kinesis: {
+              ContentConfigurations: [
+                {
+                  Type: 'MEMORY_RECORDS',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    });
+  });
+});
+
+describe('Memory with KMS-encrypted Kinesis stream tests', () => {
+  let template: Template;
+  let app: cdk.App;
+  let stack: cdk.Stack;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const kmsKey = new kms.Key(stack, 'StreamEncryptionKey');
+    const stream = new kinesis.Stream(stack, 'EncryptedStream', {
+      encryptionKey: kmsKey,
+    });
+
+    new Memory(stack, 'test-memory', {
+      memoryName: 'test_memory_kms_stream',
+      streamDeliveryResources: [
+        {
+          stream,
+          contentConfigurations: [
+            { type: StreamDeliveryContentType.MEMORY_RECORDS, level: StreamDeliveryContentLevel.FULL_CONTENT },
+          ],
+        },
+      ],
+    });
+
+    app.synth();
+    template = Template.fromStack(stack);
+  });
+
+  test('Should grant KMS permissions when stream uses customer-managed key', () => {
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Action: Match.arrayWith([
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ]),
+          }),
+        ]),
+      },
+    });
   });
 });

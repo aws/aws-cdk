@@ -7,6 +7,7 @@
 import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
@@ -37,6 +38,12 @@ new agentcore.Memory(stack, 'MemoryWithBuiltinStrategies', {
 });
 
 // Create a memory with LTM strategies (custom)
+// Create a cross-region inference profile for the custom strategy model
+const customStrategyModel = bedrock.CrossRegionInferenceProfile.fromConfig({
+  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
+  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_SONNET_4_V1_0,
+});
+
 new agentcore.Memory(stack, 'MemoryWithCustomStrategies', {
   memoryName: 'memory_with_custom_strategies',
   description: 'A long term memory with consolidation',
@@ -47,11 +54,11 @@ new agentcore.Memory(stack, 'MemoryWithCustomStrategies', {
       description: 'Custom semantic memory strategy',
       namespaces: ['/custom/strategies/{memoryStrategyId}/actors/{actorId}'],
       customConsolidation: {
-        model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        model: customStrategyModel,
         appendToPrompt: 'Custom consolidation prompt for semantic memory',
       },
       customExtraction: {
-        model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        model: customStrategyModel,
         appendToPrompt: 'Custom extraction prompt for semantic memory',
       },
     }),
@@ -94,6 +101,19 @@ new agentcore.Memory(stack, 'MemoryWithBuiltinEpisodicEx', {
   memoryStrategies: [
     agentcore.MemoryStrategy.usingBuiltInEpisodic(),
   ],
+});
+
+// Create a memory with Kinesis stream delivery
+const memoryEventStream = new kinesis.Stream(stack, 'MemoryEventStream', {
+  encryption: kinesis.StreamEncryption.MANAGED,
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+});
+
+new agentcore.Memory(stack, 'MemoryWithStreamDelivery', {
+  memoryName: 'memory_with_stream_delivery',
+  description: 'A memory with Kinesis stream delivery',
+  expirationDuration: cdk.Duration.days(60),
+  streamDeliveryResources: [{ stream: memoryEventStream }],
 });
 
 new integ.IntegTest(app, 'BedrockAgentCoreMemory', {
