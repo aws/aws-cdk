@@ -969,8 +969,8 @@ Policy Validation Report Summary
       );
       const lastEntry = ackEntries[ackEntries.length - 1];
       expect(lastEntry.data).toEqual({
-        'RuleA': 'reason A',
-        'RuleB': 'reason B',
+        'annotation::RuleA': 'reason A',
+        'annotation::RuleB': 'reason B',
       });
     });
 
