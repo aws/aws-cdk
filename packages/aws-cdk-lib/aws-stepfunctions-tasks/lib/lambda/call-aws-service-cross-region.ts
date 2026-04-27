@@ -2,10 +2,10 @@ import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import type { IFunction } from '../../../aws-lambda';
 import * as sfn from '../../../aws-stepfunctions';
-import { Token, Duration, ValidationError } from '../../../core';
+import { Annotations, Token, Duration, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { CrossRegionAwsSdkSingletonFunction } from '../../../custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated';
-import { integrationResourceArn } from '../private/task-utils';
+import { integrationResourceArn, isJsonPathOrJsonataExpression } from '../private/task-utils';
 
 interface CallAwsServiceCrossRegionOptions {
   /**
@@ -69,6 +69,12 @@ interface CallAwsServiceCrossRegionOptions {
 
   /**
    * The AWS API endpoint.
+   *
+   * Be aware that if you set this to a value from the Step Functions state
+   * (e.g. `sfn.JsonPath.stringAt('$.endpoint')`), the endpoint is controlled
+   * at runtime by whoever can start the state machine execution. This could
+   * allow them to redirect the authenticated AWS API call to a server they
+   * control, allowing them to intercept and replay that specific API call.
    *
    * @default Do not override API endpoint.
    */
@@ -149,6 +155,16 @@ export class CallAwsServiceCrossRegion extends sfn.TaskStateBase {
 
     if (!Token.isUnresolved(props.action) && !props.action.startsWith(props.action[0]?.toLowerCase())) {
       throw new ValidationError(lit`MustBeActionCamelCase`, `action must be camelCase, got: ${props.action}`, this);
+    }
+
+    if (props.endpoint && isJsonPathOrJsonataExpression(props.endpoint)) {
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-stepfunctions-tasks:crossRegionEndpointSsrfRisk',
+        'The endpoint property is resolved from the Step Functions state input (e.g. JsonPath or JSONata). '
+        + 'This means the endpoint is controlled at runtime by whoever starts the execution. '
+        + 'They could redirect the authenticated AWS API call to their own server, intercepting and replaying it. '
+        + 'Only use a runtime-resolved endpoint if you trust all principals that can start executions of this state machine.',
+      );
     }
 
     // props.service expects a service name in the AWS SDK for JavaScript v3 format.
