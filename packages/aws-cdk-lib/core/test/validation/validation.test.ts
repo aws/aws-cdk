@@ -882,6 +882,117 @@ Policy Validation Report Summary
       // THEN - exitCode 1 means the plugin ran and reported violations
       expect(process.exitCode).toEqual(1);
     });
+
+    test('addWarning adds warning metadata to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addWarning('my-lib:MyWarning', 'Something is off');
+
+      // THEN
+      const warnings = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].data).toContain('Something is off');
+      expect(warnings[0].data).toContain('[ack: annotation::my-lib:MyWarning]');
+    });
+
+    test('addError adds error metadata with id to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addError('my-lib:MyError', 'Something is wrong');
+
+      // THEN
+      const errors = construct.node.metadata.filter(m => m.type === 'aws:cdk:error');
+      expect(errors).toHaveLength(1);
+      expect(errors[0].data).toBe('Something is wrong (annotation::my-lib:MyError)');
+    });
+
+    test('acknowledge routes annotation rules to Annotations.acknowledgeWarning', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      core.Validations.of(construct).addWarning('SomeWarning', 'This is a warning');
+
+      // WHEN - no prefix defaults to annotation rule
+      core.Validations.of(construct).acknowledge({ id: 'SomeWarning', reason: 'Accepted risk' });
+
+      // THEN - existing warning is removed
+      const warningsAfterAck = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warningsAfterAck).toHaveLength(0);
+    });
+
+    test('acknowledge records to construct metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).acknowledge(
+        { id: 'annotation::SomeWarning', reason: 'Accepted risk per team review' },
+        { id: 'some-plugin::RuleX', reason: 'Not applicable' },
+      );
+
+      // THEN
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      // Last entry contains all acknowledged rules
+      const lastEntry = ackEntries[ackEntries.length - 1];
+      expect(lastEntry.data).toEqual({
+        'annotation::SomeWarning': 'Accepted risk per team review',
+        'some-plugin::RuleX': 'Not applicable',
+      });
+    });
+
+    test('multiple acknowledge calls accumulate in metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN - two separate calls
+      core.Validations.of(construct).acknowledge({ id: 'RuleA', reason: 'reason A' });
+      core.Validations.of(construct).acknowledge({ id: 'RuleB', reason: 'reason B' });
+
+      // THEN - last metadata entry has both rules
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      const lastEntry = ackEntries[ackEntries.length - 1];
+      expect(lastEntry.data).toEqual({
+        'annotation::RuleA': 'reason A',
+        'annotation::RuleB': 'reason B',
+      });
+    });
+
+    test('throws on invalid ID with multiple delimiters', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: 'a::b::c', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID 'a::b::c'/);
+    });
+
+    test('throws on invalid ID with empty prefix', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: '::foo', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID '::foo'/);
+    });
   });
 });
 
