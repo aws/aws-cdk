@@ -10,6 +10,7 @@ export type CrossAccountZoneDelegationEvent = AWSLambda.CloudFormationCustomReso
 
 interface ResourceProperties {
   AssumeRoleArn: string;
+  IntermediateRoleArn?: string;
   ParentZoneName?: string;
   ParentZoneId?: string;
   DelegatedZoneName: string;
@@ -38,24 +39,43 @@ async function cfnUpdateEventHandler(props: ResourceProperties, oldProps: Resour
 }
 
 async function cfnEventHandler(props: ResourceProperties, isDeleteEvent: boolean) {
-  const { AssumeRoleArn, ParentZoneId, ParentZoneName, DelegatedZoneName, DelegatedZoneNameServers, TTL, AssumeRoleRegion } = props;
+  const {
+    AssumeRoleArn,
+    IntermediateRoleArn,
+    ParentZoneId,
+    ParentZoneName,
+    DelegatedZoneName,
+    DelegatedZoneNameServers,
+    TTL,
+    AssumeRoleRegion,
+  } = props;
 
   if (!ParentZoneId && !ParentZoneName) {
     throw Error('One of ParentZoneId or ParentZoneName must be specified');
   }
 
   const timestamp = (new Date()).getTime();
-  const route53 = new Route53({
-    credentials: fromTemporaryCredentials({
-      clientConfig: {
-        region: AssumeRoleRegion ?? route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? ''),
-      },
-      params: {
-        RoleArn: AssumeRoleArn,
-        RoleSessionName: `cross-account-zone-delegation-${timestamp}`,
-      },
+  const region = AssumeRoleRegion ?? route53Region(process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION ?? '');
+
+  // Create credentials with optional intermediate role in the chain
+  const credentials = fromTemporaryCredentials({
+    clientConfig: { region },
+    params: {
+      RoleArn: AssumeRoleArn,
+      RoleSessionName: `cross-account-zone-delegation-${timestamp}`,
+    },
+    ...(IntermediateRoleArn && {
+      masterCredentials: fromTemporaryCredentials({
+        clientConfig: { region },
+        params: {
+          RoleArn: IntermediateRoleArn,
+          RoleSessionName: `intermediate-role-assumption-${timestamp}`,
+        },
+      }),
     }),
   });
+
+  const route53 = new Route53({ credentials });
 
   const parentZoneId = ParentZoneId ?? await getHostedZoneIdByName(ParentZoneName!, route53);
 
