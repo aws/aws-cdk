@@ -1591,6 +1591,167 @@ describe('cluster', () => {
     }).toThrow(/Can only add default namespace once./);
   });
 
+  test('allows using an existing PrivateDnsNamespace as default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const existingNamespace = new cloudmap.PrivateDnsNamespace(stack, 'ExistingNamespace', {
+      name: 'existing.local',
+      vpc,
+    });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      namespace: existingNamespace,
+    });
+
+    // THEN
+    expect(namespace).toBe(existingNamespace);
+    expect(cluster.defaultCloudMapNamespace).toBe(existingNamespace);
+
+    // Should not create a new namespace
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::PrivateDnsNamespace', 1);
+  });
+
+  test('allows using an existing PublicDnsNamespace as default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const existingNamespace = new cloudmap.PublicDnsNamespace(stack, 'ExistingNamespace', {
+      name: 'existing.com',
+    });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      namespace: existingNamespace,
+    });
+
+    // THEN
+    expect(namespace).toBe(existingNamespace);
+    expect(cluster.defaultCloudMapNamespace).toBe(existingNamespace);
+
+    // Should not create a new namespace
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::PublicDnsNamespace', 1);
+  });
+
+  test('allows using an existing HttpNamespace as default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const existingNamespace = new cloudmap.HttpNamespace(stack, 'ExistingNamespace', {
+      name: 'existing',
+    });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      namespace: existingNamespace,
+    });
+
+    // THEN
+    expect(namespace).toBe(existingNamespace);
+    expect(cluster.defaultCloudMapNamespace).toBe(existingNamespace);
+
+    // Should not create a new namespace
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::HttpNamespace', 1);
+  });
+
+  test('allows using an imported namespace as default', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const importedNamespace = cloudmap.PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(stack, 'ImportedNamespace', {
+      namespaceId: 'ns-xxxxxxxxxxxxx',
+      namespaceArn: 'arn:aws:servicediscovery:us-east-1:123456789012:namespace/ns-xxxxxxxxxxxxx',
+      namespaceName: 'imported.local',
+    });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    const namespace = cluster.addDefaultCloudMapNamespace({
+      namespace: importedNamespace,
+    });
+
+    // THEN
+    expect(namespace).toBe(importedNamespace);
+    expect(cluster.defaultCloudMapNamespace).toBe(importedNamespace);
+
+    // Should not create any namespace
+    Template.fromStack(stack).resourceCountIs('AWS::ServiceDiscovery::PrivateDnsNamespace', 0);
+  });
+
+  test('existing namespace can be used for Service Connect', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const existingNamespace = new cloudmap.PrivateDnsNamespace(stack, 'ExistingNamespace', {
+      name: 'existing.local',
+      vpc,
+    });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // WHEN
+    cluster.addDefaultCloudMapNamespace({
+      namespace: existingNamespace,
+      useForServiceConnect: true,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Cluster', {
+      ServiceConnectDefaults: {
+        Namespace: {
+          'Fn::GetAtt': ['ExistingNamespaceE824D60B', 'Arn'],
+        },
+      },
+    });
+  });
+
+  test('throws when both namespace and name are specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const existingNamespace = new cloudmap.PrivateDnsNamespace(stack, 'ExistingNamespace', {
+      name: 'existing.local',
+      vpc,
+    });
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // THEN
+    expect(() => {
+      cluster.addDefaultCloudMapNamespace({
+        namespace: existingNamespace,
+        name: 'foo.com',
+      });
+    }).toThrow(/Cannot specify both "namespace" and "name"/);
+  });
+
+  test('throws when neither namespace nor name is specified', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+
+    // THEN
+    expect(() => {
+      cluster.addDefaultCloudMapNamespace({});
+    }).toThrow(/Must specify either "namespace" or "name"/);
+  });
+
   test('export/import of a cluster with a namespace', () => {
     // GIVEN
     const stack1 = new cdk.Stack();
