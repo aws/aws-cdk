@@ -756,6 +756,25 @@ const sgVpcOrigins = ec2.SecurityGroup.fromSecurityGroupId(
 alb.connections.allowFrom(sgVpcOrigins, ec2.Port.HTTP);
 ```
 
+### Cross-account VPC origins
+
+You can use a VPC origin from a different AWS account by specifying the `ownerAccountId` property.
+This is useful in multi-account architectures where the VPC origin resource (ALB, NLB, or EC2 instance)
+exists in a separate account from the CloudFront distribution.
+
+```ts
+// Use a VPC origin from a different AWS account
+const vpcOrigin = cloudfront.VpcOrigin.fromVpcOriginId(this, 'CrossAccountVpcOrigin', 'vo-1234567890abcdef0');
+new cloudfront.Distribution(this, 'myDist', {
+  defaultBehavior: {
+    origin: origins.VpcOrigin.withVpcOrigin(vpcOrigin, {
+      domainName: 'vpcorigin.example.com',
+      ownerAccountId: '111122223333',
+    }),
+  },
+});
+```
+
 ## Failover Origins (Origin Groups)
 
 You can set up CloudFront with origin failover for scenarios that require high availability.
