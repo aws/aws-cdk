@@ -1174,7 +1174,7 @@ export const FLAGS: Record<string, FlagInfo> = {
     type: FlagType.ApiDefault,
     summary: 'When enabled, the default volume type of the EBS volume will be GP3',
     detailsMd: `
-      When this featuer flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
+      When this feature flag is enabled, the default volume type of the EBS volume will be \`EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3\`.
     `,
     introducedIn: { v2: '2.140.0' },
     recommendedValue: true,
