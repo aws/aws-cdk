@@ -21,10 +21,13 @@ import {
   GeoRestriction,
   HttpVersion,
   LambdaEdgeEventType,
+  MtlsMode,
   PriceClass,
   RealtimeLogConfig,
   SecurityPolicyProtocol,
   SSLMethod,
+  TrustStore,
+  ViewerProtocolPolicy,
 } from '../lib';
 import { DistributionGrants } from '../lib/cloudfront-grants.generated';
 
@@ -1700,5 +1703,247 @@ describe('gRPC', () => {
         },
       });
     }).toThrow(msg);
+  });
+});
+
+describe('viewer mTLS', () => {
+  test.each([
+    MtlsMode.REQUIRED,
+    MtlsMode.OPTIONAL,
+  ])('can configure mTLS with %s mode', (mode) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123456789');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+      },
+      viewerMtlsConfig: {
+        mode,
+        trustStore,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: mode,
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    [true, true],
+    [true, false],
+    [false, true],
+    [false, false],
+  ])('can configure mTLS with all trust store options', (advertiseTrustStoreCaNames, ignoreCertificateExpiry) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123456789');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+      },
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStore,
+        advertiseTrustStoreCaNames,
+        ignoreCertificateExpiry,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123456789',
+            AdvertiseTrustStoreCaNames: advertiseTrustStoreCaNames,
+            IgnoreCertificateExpiry: ignoreCertificateExpiry,
+          },
+        },
+      },
+    });
+  });
+
+  test('mTLS config is not present when not specified', () => {
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: { origin: defaultOrigin() },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        ViewerMtlsConfig: Match.absent(),
+      },
+    });
+  });
+
+  test.each([
+    HttpVersion.HTTP3,
+    HttpVersion.HTTP2_AND_3,
+  ])('throws if mTLS is configured with %s', (httpVersion) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+        },
+        httpVersion,
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow(`'httpVersion' must be http1.1 or http2 when 'viewerMtlsConfig' is specified. HTTP/3 is not supported with mTLS, got ${httpVersion}`);
+  });
+
+  test.each([
+    [HttpVersion.HTTP1_1, 'http1.1'],
+    [HttpVersion.HTTP2, 'http2'],
+    [undefined, 'http2'],
+  ])('mTLS works with httpVersion %s', (httpVersion, expectedHttpVersion) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+      },
+      httpVersion,
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStore,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        HttpVersion: expectedHttpVersion,
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123',
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    ViewerProtocolPolicy.HTTPS_ONLY,
+    ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+  ])('mTLS works with viewerProtocolPolicy %s', (viewerProtocolPolicy) => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    new Distribution(stack, 'Dist', {
+      defaultBehavior: {
+        origin: defaultOrigin(),
+        viewerProtocolPolicy,
+      },
+      additionalBehaviors: {
+        '/api/*': {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy,
+        },
+      },
+      viewerMtlsConfig: {
+        mode: MtlsMode.REQUIRED,
+        trustStore,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+      DistributionConfig: {
+        DefaultCacheBehavior: {
+          ViewerProtocolPolicy: viewerProtocolPolicy,
+        },
+        CacheBehaviors: [{
+          PathPattern: '/api/*',
+          ViewerProtocolPolicy: viewerProtocolPolicy,
+        }],
+        ViewerMtlsConfig: {
+          Mode: 'required',
+          TrustStoreConfig: {
+            TrustStoreId: 'ts-123',
+          },
+        },
+      },
+    });
+  });
+
+  test('throws if mTLS is configured with viewerProtocolPolicy ALLOW_ALL in default behavior', () => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow("'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in default behavior");
+  });
+
+  test('throws if mTLS is configured with viewerProtocolPolicy undefined in default behavior', () => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow("'viewerProtocolPolicy' must be explicitly set to 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified. If not specified, it defaults to 'allow-all' which is not compatible with mTLS.");
+  });
+
+  test('throws if mTLS is configured with viewerProtocolPolicy ALLOW_ALL in additional behavior', () => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+        },
+        additionalBehaviors: {
+          '/api/*': {
+            origin: defaultOrigin(),
+            viewerProtocolPolicy: ViewerProtocolPolicy.ALLOW_ALL,
+          },
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow("'viewerProtocolPolicy' must be 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified, got 'allow-all' in behavior for path '/api/*'");
+  });
+
+  test('throws if mTLS is configured with viewerProtocolPolicy undefined in additional behavior', () => {
+    const trustStore = TrustStore.fromTrustStoreId(stack, 'TrustStore', 'ts-123');
+    expect(() => {
+      new Distribution(stack, 'Dist', {
+        defaultBehavior: {
+          origin: defaultOrigin(),
+          viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+        },
+        additionalBehaviors: {
+          '/images/*': {
+            origin: defaultOrigin(),
+          },
+        },
+        viewerMtlsConfig: {
+          mode: MtlsMode.REQUIRED,
+          trustStore,
+        },
+      });
+    }).toThrow("'viewerProtocolPolicy' must be explicitly set to 'https-only' or 'redirect-to-https' when 'viewerMtlsConfig' is specified for behavior at path '/images/*'. If not specified, it defaults to 'allow-all' which is not compatible with mTLS.");
   });
 });
