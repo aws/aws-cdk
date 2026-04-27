@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "8f0f1484f8796b62b5d545b889317938d090e4dd5cc2798fe7b37fe93f27ac15": {
+      "displayName": "AlarmMuteRuleIntegrationTest Template",
+      "source": {
+        "path": "AlarmMuteRuleIntegrationTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9a643d61": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "8f0f1484f8796b62b5d545b889317938d090e4dd5cc2798fe7b37fe93f27ac15.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
