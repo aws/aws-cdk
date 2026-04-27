@@ -1,0 +1,449 @@
+import type { Resource, Service, DimensionSet, Metric, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { Splat, ExternalModule, Module, ClassType, EnumType, StructType, Type, expr, stmt, MemberVisibility, Stability } from '@cdklabs/typewriter';
+import type { AddServiceProps, LibraryBuilderProps } from '../cdk/library-builder';
+import { LibraryBuilder } from '../cdk/library-builder';
+import { ResourceReference } from '../cdk/reference-props';
+import type { LocatedModule, ServiceSubmoduleProps } from '../cdk/service-submodule';
+import { BaseServiceSubmodule } from '../cdk/service-submodule';
+import * as naming from '../naming';
+import { log } from '../util';
+
+/** A single dimension after merging: accumulates all known values from multiple DimensionSets sharing the same name */
+interface MergedDimension {
+  readonly name: string;
+  readonly knownValues: string[];
+}
+
+/**
+ * A post-merge representation of one or more DimensionSets that share the same name.
+ *
+ * Multiple spec-level DimensionSets with the same name are collapsed into a single
+ * MergedDimensionSet: dimension values are accumulated into `knownValues` arrays
+ * (used to generate enum types), and all associated metrics are collected.
+ */
+interface MergedDimensionSet {
+  readonly name: string;
+  readonly dimensions: MergedDimension[];
+  readonly metrics: Metric[];
+}
+
+/** A namespace-level metrics class with its dimension set classes */
+interface NamespaceMetrics {
+  readonly metricsClass: ClassType;
+  readonly dimSetClasses: Map<string, ClassType>;
+  readonly namespace: string;
+}
+
+/**
+ * Shared context for metrics code generation.
+ */
+interface MetricsGenerationContext {
+  readonly db: SpecDatabase;
+  readonly cloudwatchModule: ExternalModule;
+  readonly metricsModule: Module;
+}
+
+class MetricsServiceModule extends BaseServiceSubmodule {
+  public readonly constructLibModule: ExternalModule;
+  public metricsModule?: Module;
+  /** One metrics class per CloudWatch namespace */
+  public readonly namespaceMetrics = new Map<string, NamespaceMetrics>();
+
+  public constructor(props: ServiceSubmoduleProps) {
+    super(props);
+    this.constructLibModule = new ExternalModule(`aws-cdk-lib/${props.submoduleName}`);
+  }
+
+  /**
+   * Find the NamespaceMetrics that contains a given dimension set class name.
+   * Searches across all namespaces in this submodule.
+   */
+  public findDimSetClass(className: string): { nsMetrics: NamespaceMetrics; dimensionSetClass: ClassType } | undefined {
+    for (const nsMetrics of this.namespaceMetrics.values()) {
+      const dimensionSetClass = nsMetrics.dimSetClasses.get(className);
+      if (dimensionSetClass) return { nsMetrics, dimensionSetClass };
+    }
+    return undefined;
+  }
+}
+
+export interface MetricsBuilderProps extends LibraryBuilderProps {
+  filePattern?: string;
+  moduleNamePrefix?: string;
+}
+
+export class MetricsBuilder extends LibraryBuilder<MetricsServiceModule> {
+  private readonly filePattern: string;
+  private readonly moduleNamePrefix: string;
+
+  public constructor(props: MetricsBuilderProps) {
+    super(props);
+    this.filePattern = props.filePattern ?? '%moduleName%/metrics.generated.ts';
+    this.moduleNamePrefix = props.moduleNamePrefix ?? '@aws-cdk/metrics-facade-alpha';
+  }
+
+  protected createServiceSubmodule(service: Service, submoduleName: string): MetricsServiceModule {
+    const submodule = new MetricsServiceModule({ submoduleName, service });
+
+    const allMetrics = this.db.follow('serviceHasMetric', service).map(e => e.entity);
+    if (allMetrics.length === 0) return submodule;
+
+    const metricsByNamespace = new Map<string, Metric[]>();
+    for (const metric of allMetrics) {
+      let metrics = metricsByNamespace.get(metric.namespace);
+      if (!metrics) {
+        metrics = [];
+        metricsByNamespace.set(metric.namespace, metrics);
+      }
+      metrics.push(metric);
+    }
+
+    const { module } = this.createMetricsModule(submodule, service);
+    submodule.metricsModule = module;
+
+    const cloudwatchModule = new ExternalModule('aws-cdk-lib/aws-cloudwatch');
+    cloudwatchModule.import(module, 'cloudwatch');
+
+    const context: MetricsGenerationContext = {
+      db: this.db,
+      cloudwatchModule,
+      metricsModule: module,
+    };
+
+    for (const [namespace, nsMetrics] of metricsByNamespace) {
+      const mergedSets = collectAndMergeDimensionSets(context.db, nsMetrics);
+      if (mergedSets.length === 0) continue;
+
+      const nsClassName = naming.metricsClassNameFromService(namespace);
+      const metricsClass = new ClassType(module, {
+        name: nsClassName,
+        export: true,
+        docs: { summary: `CloudWatch metrics facade for ${namespace}\nThis class contains helper functions to initialize the dimension-sets classes\nfor selected resources if available.`, stability: Stability.External },
+      });
+
+      const dimSetClasses = new Map<string, ClassType>();
+
+      for (const merged of mergedSets) {
+        const className = naming.dimSetClassName(merged.name);
+
+        const gen = new DimensionSetClassGenerator(metricsClass, merged, context.cloudwatchModule);
+        dimSetClasses.set(className, gen.dimensionSetClass);
+        gen.addMetricMethods(nsClassName, className, namespace);
+      }
+
+      submodule.namespaceMetrics.set(namespace, { metricsClass, dimSetClasses, namespace });
+    }
+
+    return submodule;
+  }
+
+  protected addResourceToSubmodule(submodule: MetricsServiceModule, resource: Resource, _props?: AddServiceProps): void {
+    if (!submodule.metricsModule || submodule.namespaceMetrics.size === 0) return;
+
+    const resourceDimSets = this.db.follow('resourceHasDimensionSet', resource).map(e => e.entity);
+    if (resourceDimSets.length === 0) return;
+
+    const factoryGen = new ResourceFactoryGenerator(submodule, submodule.metricsModule, resource);
+    for (const dimSet of resourceDimSets) {
+      factoryGen.tryAddFactory(dimSet);
+    }
+
+    for (const { metricsClass } of submodule.namespaceMetrics.values()) {
+      submodule.registerResource(resource.cloudFormationType, metricsClass);
+    }
+  }
+
+  private createMetricsModule(submodule: MetricsServiceModule, service: Service): LocatedModule<Module> {
+    const module = new Module(`${this.moduleNamePrefix}/${submodule.submoduleName}/metrics`);
+    const filePath = this.pathFor(this.filePattern, submodule.submoduleName, service);
+    submodule.registerModule({ module, filePath });
+    this.rememberModule({ module, filePath });
+    return { module, filePath };
+  }
+}
+
+/**
+ * Generates a TypeScript class for a single MergedDimensionSet.
+ *
+ */
+class DimensionSetClassGenerator {
+  public readonly dimensionSetClass: ClassType;
+
+  constructor(
+    private readonly scope: ClassType,
+    private readonly merged: MergedDimensionSet,
+    private readonly cloudwatchModule: ExternalModule,
+  ) {
+    const className = naming.dimSetClassName(merged.name);
+
+    this.dimensionSetClass = new ClassType(scope, {
+      name: className,
+      export: true,
+      docs: { summary: `Metrics for dimension set: ${merged.name} {${merged.dimensions.map(d => d.name).join(', ') || 'no dimensions'}}`, stability: Stability.External },
+    });
+
+    this.dimensionSetClass.addProperty({
+      name: 'dimensions',
+      type: Type.mapOf(Type.STRING),
+      immutable: true,
+      visibility: MemberVisibility.Private,
+    });
+
+    const propsStruct = merged.dimensions.length > 0
+      ? this.buildPropsStruct(className, merged.dimensions)
+      : undefined;
+
+    this.addConstructor(propsStruct);
+  }
+
+  private buildPropsStruct(className: string, dimensions: MergedDimension[]): StructType {
+    const propsStruct = new StructType(this.scope, {
+      name: `${className}Props`,
+      export: true,
+      docs: { summary: `Dimensions for ${className}`, stability: Stability.External },
+    });
+    for (const dim of dimensions) {
+      const propName = naming.dimensionPropertyName(dim.name);
+      let propType: Type = Type.STRING;
+
+      if (dim.knownValues.length > 0) {
+        const enumType = new EnumType(this.scope, {
+          name: `${className}${naming.metricSanitizeName(dim.name)}`,
+          export: true,
+          docs: { summary: `Known values for the ${dim.name} dimension` },
+        });
+        for (const value of dim.knownValues) {
+          enumType.addMember({ name: naming.dimensionEnumMemberName(value), value, docs: `${dim.name} = ${value}` });
+        }
+        propType = enumType.type;
+      }
+
+      propsStruct.addProperty({
+        name: propName,
+        type: propType,
+        docs: { summary: `The ${dim.name} dimension` },
+      });
+    }
+    return propsStruct;
+  }
+
+  /**
+   * Generate a method for each metric, including `V2`/`V3`/... methods for each
+   * entry in `previousStatistics` (oldest first). Older-statistic methods keep
+   * their original name for backwards compatibility and are marked `@deprecated`.
+   */
+  public addMetricMethods(nsClassName: string, className: string, namespace: string) {
+    const usedMethodNames = new Set<string>();
+    for (const metric of this.merged.metrics) {
+      const baseName = naming.metricMethodName(metric.name);
+      if (usedMethodNames.has(baseName)) {
+        // TODO: remove once the 7 affected metrics (6 of which are for deprecated services) have been removed in the service spec
+        // This happens when 2 metrics with the same name but different statistics are associated with 2 different resources in the same namespace
+        log.debug(`Skipping duplicate metric method '${baseName}' in ${nsClassName}.${className} (metric: ${metric.name}, namespace: ${namespace}, statistic: ${metric.statistic})`);
+        continue;
+      }
+      usedMethodNames.add(baseName);
+
+      const stats = [...metric.previousStatistics, metric.statistic];
+      const latestName = stats.length > 1 ? `${baseName}V${stats.length}` : baseName;
+      stats.forEach((statistic, i) => {
+        this.addMetricMethod(metric, {
+          methodName: i === 0 ? baseName : `${baseName}V${i + 1}`,
+          statistic,
+          deprecated: i < stats.length - 1
+            ? `Use ${latestName}() instead; the default statistic changed to ${metric.statistic}.`
+            : undefined,
+        });
+      });
+    }
+  }
+
+  private addMetricMethod(metric: Metric, { methodName, statistic, deprecated }: { methodName: string; statistic: string; deprecated?: string }) {
+    const method = this.dimensionSetClass.addMethod({
+      name: methodName,
+      returnType: Type.fromName(this.cloudwatchModule, 'IMetric'),
+      docs: { summary: metric.description ?? `The ${metric.name} metric`, default: `${statistic} over 5 minutes`, deprecated },
+    });
+    const optionsParam = method.addParameter({
+      name: 'options',
+      type: Type.fromName(this.cloudwatchModule, 'MetricOptions'),
+      optional: true,
+    });
+
+    method.addBody(
+      stmt.ret(Type.fromName(this.cloudwatchModule, 'Metric').newInstance(
+        expr.object({
+          namespace: expr.lit(metric.namespace),
+          metricName: expr.lit(metric.name),
+          dimensionsMap: expr.this_().prop('dimensions'),
+          statistic: expr.lit(statistic),
+        }, new Splat(optionsParam)),
+      )),
+    );
+  }
+
+  private addConstructor(propsStruct?: StructType) {
+    const ctor = this.dimensionSetClass.addInitializer({});
+
+    if (propsStruct) {
+      const propsParam = ctor.addParameter({ name: 'props', type: propsStruct.type });
+      const dimEntries = this.merged.dimensions.map(dim => {
+        const propName = naming.dimensionPropertyName(dim.name);
+        return [dim.name, propsParam.prop(propName)] as const;
+      });
+      ctor.addBody(stmt.assign(expr.this_().prop('dimensions'), expr.object(dimEntries)));
+    } else {
+      ctor.addBody(stmt.assign(expr.this_().prop('dimensions'), expr.object([])));
+    }
+  }
+}
+
+/**
+ * Generates static factory methods on namespace classes that create dimension set
+ * instances from resource references (e.g., `LambdaMetrics.fromFunction(ref)`).
+ */
+class ResourceFactoryGenerator {
+  private readonly refProps: Set<string>;
+
+  constructor(
+    private readonly submodule: MetricsServiceModule,
+    private readonly metricsModule: Module,
+    private readonly resource: Resource,
+  ) {
+    const referenceProps = new ResourceReference(resource).referenceProps;
+    this.refProps = new Set(referenceProps.map(p => p.declaration.name));
+  }
+
+  /**
+   * Attempt to generate a factory method for the given DimensionSet.
+   * Skips silently if the dimension set has fixed values, or if not all
+   * dimensions can be mapped to reference properties.
+   */
+  public tryAddFactory(dimSet: DimensionSet): void {
+    const className = naming.dimSetClassName(dimSet.name);
+    const found = this.submodule.findDimSetClass(className);
+    if (!found) {
+      throw new Error(`Could not find dimension set class '${className}' for resource ${this.resource.name}.`);
+    }
+    const { nsMetrics, dimensionSetClass } = found;
+    // Skip if the dim-set contains an enum value
+    if (dimSet.dimensions.some(d => d.value)) return;
+
+    // Check if all dimensions can be filled from the reference interface
+    const dimMappings = this.resolveDimensionMappings(dimSet);
+    if (!dimMappings) return;
+
+    const factoryName = `from${this.resource.name}`;
+    if (nsMetrics.metricsClass.methods.find(m => m.name === factoryName)) {
+      throw Error(
+        `${this.resource.name}, factory:${factoryName} already exists, trying to generate ${JSON.stringify(dimSet)}` +
+        ' This is a sign that this dim-set should be associated with another resource',
+      );
+    }
+
+    const refInterfaceName = naming.referenceInterfaceName(this.resource.name);
+    const serviceModule = new ExternalModule(`aws-cdk-lib/${this.submodule.submoduleName}`);
+    serviceModule.importSelective(this.metricsModule, [refInterfaceName]);
+
+    const refInterface = Type.fromName(serviceModule, refInterfaceName);
+    const refAttrName = naming.referenceInterfaceAttributeName(this.resource.name);
+
+    const factory = nsMetrics.metricsClass.addMethod({
+      name: factoryName,
+      static: true,
+      returnType: dimensionSetClass.type,
+      docs: { summary: `Create ${dimensionSetClass.name} from a ${this.resource.name} reference` },
+    });
+    const refParam = factory.addParameter({ name: 'ref', type: refInterface });
+
+    const propEntries = dimMappings.map(m => [
+      naming.dimensionPropertyName(m.dimName),
+      refParam.prop(refAttrName).prop(m.refPropName),
+    ] as const);
+
+    factory.addBody(
+      stmt.ret(dimensionSetClass.newInstance(expr.object(propEntries))),
+    );
+  }
+
+  /**
+   * Try to map every dimension in the set to a reference property.
+   * Returns the mappings if all dimensions match, or undefined if any dimension is unmappable.
+   */
+  private resolveDimensionMappings(dimSet: DimensionSet): Array<{ dimName: string; refPropName: string }> | undefined {
+    const mappings: Array<{ dimName: string; refPropName: string }> = [];
+    for (const dim of dimSet.dimensions) {
+      const refPropName = naming.referencePropertyName(dim.name, this.resource.name);
+      if (!this.refProps.has(refPropName)) return undefined;
+      mappings.push({ dimName: dim.name, refPropName });
+    }
+    return mappings.length > 0 ? mappings : undefined;
+  }
+}
+
+/**
+ * Collects all DimensionSets referenced by the given metrics and merges them by name.
+ *
+ * Phase 1: Groups DimensionSets by `dedupKey`, collecting the metrics that reference each.
+ * Phase 2: Merges by `name` — DimensionSets sharing the same name have their per-dimension
+ *          values accumulated into `knownValues[]` arrays and their metrics unioned.
+ *
+ * This two-phase approach is needed because the spec database may contain multiple
+ * DimensionSet entities with the same name but different dimension values (e.g., different
+ * known values for a "StorageType" dimension across different metrics).
+ */
+function collectAndMergeDimensionSets(db: SpecDatabase, metrics: Metric[]): MergedDimensionSet[] {
+  // Phase 1: Group by dedupKey, collecting metrics for each DimensionSet
+  const byDedupKey = new Map<string, { dimSet: DimensionSet; metrics: Metric[] }>();
+  for (const metric of metrics) {
+    for (const { entity: ds } of db.follow('usesDimensionSet', metric)) {
+      let entry = byDedupKey.get(ds.dedupKey);
+      if (!entry) {
+        entry = { dimSet: ds, metrics: [] };
+        byDedupKey.set(ds.dedupKey, entry);
+      }
+      if (!entry.metrics.some(m => m.dedupKey === metric.dedupKey)) {
+        entry.metrics.push(metric);
+      }
+    }
+  }
+
+  // Phase 2: Merge by name, accumulating known dimension values and deduplicating metrics
+  const byName = new Map<string, MergedDimensionSet>();
+  for (const { dimSet, metrics: dsMetrics } of byDedupKey.values()) {
+    const key = dimSet.name || 'Account';
+    let merged = byName.get(key);
+    if (!merged) {
+      merged = {
+        name: key,
+        dimensions: dimSet.dimensions.map(d => ({ name: d.name, knownValues: [] })),
+        metrics: [],
+      };
+      byName.set(key, merged);
+    } else {
+      const mergedDimNames = new Set(merged.dimensions.map(d => d.name));
+      const incomingDimNames = new Set(dimSet.dimensions.map(d => d.name));
+      if (mergedDimNames.size !== incomingDimNames.size || [...mergedDimNames].some(n => !incomingDimNames.has(n))) {
+        throw new Error(`DimensionSets with name '${key}' have divergent dimension lists: [${[...mergedDimNames].join(', ')}] vs [${[...incomingDimNames].join(', ')}]`);
+      }
+    }
+
+    for (const dim of dimSet.dimensions) {
+      if (dim.value) {
+        const mergedDim = merged.dimensions.find(d => d.name === dim.name);
+        if (mergedDim && !mergedDim.knownValues.includes(dim.value)) {
+          mergedDim.knownValues.push(dim.value);
+        }
+      }
+    }
+
+    for (const metric of dsMetrics) {
+      if (!merged.metrics.some(m => m.dedupKey === metric.dedupKey)) {
+        merged.metrics.push(metric);
+      }
+    }
+  }
+
+  return [...byName.values()];
+}
+
