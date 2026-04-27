@@ -28,7 +28,10 @@ import {
   Aws,
   Duration, FeatureFlags, Fn, Lazy, PhysicalName, Resource, Stack, Tags,
   Token,
-  Tokenization, UnscopedValidationError, ValidationError, withResolved,
+  Tokenization,
+  UnscopedValidationError,
+  ValidationError,
+  withResolved,
 } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -872,11 +875,16 @@ export abstract class Signals {
    */
   public static waitForAll(options: SignalsOptions = {}): Signals {
     validatePercentage(options.minSuccessPercentage);
-    return new class extends Signals {
-      public renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy {
-        return this.doRender(options, renderOptions.desiredCapacity ?? renderOptions.minCapacity);
+    return new (class extends Signals {
+      public renderCreationPolicy(
+        renderOptions: RenderSignalsOptions,
+      ): CfnCreationPolicy {
+        return this.doRender(
+          options,
+          renderOptions.desiredCapacity ?? renderOptions.minCapacity,
+        );
       }
-    }();
+    })();
   }
 
   /**
@@ -887,11 +895,13 @@ export abstract class Signals {
    */
   public static waitForMinCapacity(options: SignalsOptions = {}): Signals {
     validatePercentage(options.minSuccessPercentage);
-    return new class extends Signals {
-      public renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy {
+    return new (class extends Signals {
+      public renderCreationPolicy(
+        renderOptions: RenderSignalsOptions,
+      ): CfnCreationPolicy {
         return this.doRender(options, renderOptions.minCapacity);
       }
-    }();
+    })();
   }
 
   /**
@@ -903,27 +913,39 @@ export abstract class Signals {
    * This number is used during initial creation and during replacing updates.
    * During rolling updates, all updated instances must send a signal.
    */
-  public static waitForCount(count: number, options: SignalsOptions = {}): Signals {
+  public static waitForCount(
+    count: number,
+    options: SignalsOptions = {},
+  ): Signals {
     validatePercentage(options.minSuccessPercentage);
-    return new class extends Signals {
+    return new (class extends Signals {
       public renderCreationPolicy(): CfnCreationPolicy {
         return this.doRender(options, count);
       }
-    }();
+    })();
   }
 
   /**
    * Render the ASG's CreationPolicy
    */
-  public abstract renderCreationPolicy(renderOptions: RenderSignalsOptions): CfnCreationPolicy;
+  public abstract renderCreationPolicy(
+    renderOptions: RenderSignalsOptions
+  ): CfnCreationPolicy;
 
   /**
    * Helper to render the actual creation policy, as the logic between them is quite similar
    */
-  protected doRender(options: SignalsOptions, count?: number): CfnCreationPolicy {
-    const minSuccessfulInstancesPercent = validatePercentage(options.minSuccessPercentage);
+  protected doRender(
+    options: SignalsOptions,
+    count?: number,
+  ): CfnCreationPolicy {
+    const minSuccessfulInstancesPercent = validatePercentage(
+      options.minSuccessPercentage,
+    );
     return {
-      ...options.minSuccessPercentage !== undefined ? { autoScalingCreationPolicy: { minSuccessfulInstancesPercent } } : { },
+      ...(options.minSuccessPercentage !== undefined
+        ? { autoScalingCreationPolicy: { minSuccessfulInstancesPercent } }
+        : {}),
       resourceSignal: {
         count,
         timeout: options.timeout?.toIsoString(),
@@ -984,43 +1006,60 @@ export abstract class UpdatePolicy {
    * Create a new AutoScalingGroup and switch over to it
    */
   public static replacingUpdate(): UpdatePolicy {
-    return new class extends UpdatePolicy {
+    return new (class extends UpdatePolicy {
       public _renderUpdatePolicy(): CfnUpdatePolicy {
         return {
           autoScalingReplacingUpdate: { willReplace: true },
         };
       }
-    }();
+    })();
   }
 
   /**
    * Replace the instances in the AutoScalingGroup one by one, or in batches
    */
-  public static rollingUpdate(options: RollingUpdateOptions = {}): UpdatePolicy {
-    const minSuccessPercentage = validatePercentage(options.minSuccessPercentage);
+  public static rollingUpdate(
+    options: RollingUpdateOptions = {},
+  ): UpdatePolicy {
+    const minSuccessPercentage = validatePercentage(
+      options.minSuccessPercentage,
+    );
 
-    return new class extends UpdatePolicy {
-      public _renderUpdatePolicy(renderOptions: RenderUpdateOptions): CfnUpdatePolicy {
+    return new (class extends UpdatePolicy {
+      public _renderUpdatePolicy(
+        renderOptions: RenderUpdateOptions,
+      ): CfnUpdatePolicy {
         return {
           autoScalingRollingUpdate: {
             maxBatchSize: options.maxBatchSize,
             minInstancesInService: options.minInstancesInService,
-            suspendProcesses: options.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
+            suspendProcesses:
+              options.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
             minSuccessfulInstancesPercent:
-              minSuccessPercentage ?? renderOptions.creationPolicy?.autoScalingCreationPolicy?.minSuccessfulInstancesPercent,
-            waitOnResourceSignals: options.waitOnResourceSignals ?? renderOptions.creationPolicy?.resourceSignal !== undefined ? true : undefined,
-            pauseTime: options.pauseTime?.toIsoString() ?? renderOptions.creationPolicy?.resourceSignal?.timeout,
+              minSuccessPercentage ??
+              renderOptions.creationPolicy?.autoScalingCreationPolicy
+                ?.minSuccessfulInstancesPercent,
+            waitOnResourceSignals:
+              options.waitOnResourceSignals ??
+              renderOptions.creationPolicy?.resourceSignal !== undefined
+                ? true
+                : undefined,
+            pauseTime:
+              options.pauseTime?.toIsoString() ??
+              renderOptions.creationPolicy?.resourceSignal?.timeout,
           },
         };
       }
-    }();
+    })();
   }
 
   /**
    * Render the ASG's CreationPolicy
    * @internal
    */
-  public abstract _renderUpdatePolicy(renderOptions: RenderUpdateOptions): CfnUpdatePolicy;
+  public abstract _renderUpdatePolicy(
+    renderOptions: RenderUpdateOptions
+  ): CfnUpdatePolicy;
 }
 
 /**
@@ -1106,7 +1145,7 @@ export class GroupMetrics {
   public _metrics = new Set<GroupMetric>();
 
   constructor(...metrics: GroupMetric[]) {
-    metrics?.forEach(metric => this._metrics.add(metric));
+    metrics?.forEach((metric) => this._metrics.add(metric));
   }
 }
 
@@ -1127,37 +1166,49 @@ export class GroupMetric {
   /**
    * The number of instances that the Auto Scaling group attempts to maintain
    */
-  public static readonly DESIRED_CAPACITY = new GroupMetric('GroupDesiredCapacity');
+  public static readonly DESIRED_CAPACITY = new GroupMetric(
+    'GroupDesiredCapacity',
+  );
 
   /**
    * The number of instances that are running as part of the Auto Scaling group
    * This metric does not include instances that are pending or terminating
    */
-  public static readonly IN_SERVICE_INSTANCES = new GroupMetric('GroupInServiceInstances');
+  public static readonly IN_SERVICE_INSTANCES = new GroupMetric(
+    'GroupInServiceInstances',
+  );
 
   /**
    * The number of instances that are pending
    * A pending instance is not yet in service, this metric does not include instances that are in service or terminating
    */
-  public static readonly PENDING_INSTANCES = new GroupMetric('GroupPendingInstances');
+  public static readonly PENDING_INSTANCES = new GroupMetric(
+    'GroupPendingInstances',
+  );
 
   /**
    * The number of instances that are in a Standby state
    * Instances in this state are still running but are not actively in service
    */
-  public static readonly STANDBY_INSTANCES = new GroupMetric('GroupStandbyInstances');
+  public static readonly STANDBY_INSTANCES = new GroupMetric(
+    'GroupStandbyInstances',
+  );
 
   /**
    * The number of instances that are in the process of terminating
    * This metric does not include instances that are in service or pending
    */
-  public static readonly TERMINATING_INSTANCES = new GroupMetric('GroupTerminatingInstances');
+  public static readonly TERMINATING_INSTANCES = new GroupMetric(
+    'GroupTerminatingInstances',
+  );
 
   /**
    * The total number of instances in the Auto Scaling group
    * This metric identifies the number of instances that are in service, pending, and terminating
    */
-  public static readonly TOTAL_INSTANCES = new GroupMetric('GroupTotalInstances');
+  public static readonly TOTAL_INSTANCES = new GroupMetric(
+    'GroupTotalInstances',
+  );
 
   /**
    * The name of the group metric
@@ -1236,7 +1287,9 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   public abstract autoScalingGroupArn: string;
   public abstract readonly osType: ec2.OperatingSystemType;
   protected albTargetGroup?: elbv2.ApplicationTargetGroup;
-  public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({ resource: this });
+  public readonly grantPrincipal: iam.IPrincipal = new iam.UnknownPrincipal({
+    resource: this,
+  });
   protected hasCalledScaleOnRequestCount: boolean = false;
 
   public get autoScalingGroupRef(): AutoScalingGroupReference {
@@ -1249,7 +1302,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Send a message to either an SQS queue or SNS topic when instances launch or terminate
    */
-  public addLifecycleHook(id: string, props: BasicLifecycleHookProps): LifecycleHook {
+  public addLifecycleHook(
+    id: string,
+    props: BasicLifecycleHookProps,
+  ): LifecycleHook {
     return new LifecycleHook(this, `LifecycleHook${id}`, {
       autoScalingGroup: this,
       ...props,
@@ -1269,7 +1325,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Scale out or in based on time
    */
-  public scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction {
+  public scaleOnSchedule(
+    id: string,
+    props: BasicScheduledActionProps,
+  ): ScheduledAction {
     return new ScheduledAction(this, `ScheduledAction${id}`, {
       autoScalingGroup: this,
       ...props,
@@ -1279,7 +1338,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Scale out or in to achieve a target CPU utilization
    */
-  public scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy {
+  public scaleOnCpuUtilization(
+    id: string,
+    props: CpuUtilizationScalingProps,
+  ): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASG_AVERAGE_CPU_UTILIZATION,
@@ -1291,7 +1353,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Scale out or in to achieve a target network ingress rate
    */
-  public scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
+  public scaleOnIncomingBytes(
+    id: string,
+    props: NetworkUtilizationScalingProps,
+  ): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_IN,
@@ -1303,7 +1368,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Scale out or in to achieve a target network egress rate
    */
-  public scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy {
+  public scaleOnOutgoingBytes(
+    id: string,
+    props: NetworkUtilizationScalingProps,
+  ): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       predefinedMetric: PredefinedMetric.ASG_AVERAGE_NETWORK_OUT,
@@ -1318,7 +1386,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
    * The AutoScalingGroup must have been attached to an Application Load Balancer
    * in order to be able to call this.
    */
-  public scaleOnRequestCount(id: string, props: RequestCountScalingProps): TargetTrackingScalingPolicy {
+  public scaleOnRequestCount(
+    id: string,
+    props: RequestCountScalingProps,
+  ): TargetTrackingScalingPolicy {
     if (this.albTargetGroup === undefined) {
       throw new ValidationError(lit`AttachAutoScalingGroupNon`, 'Attach the AutoScalingGroup to a non-imported Application Load Balancer before calling scaleOnRequestCount()', this);
     }
@@ -1355,7 +1426,10 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Scale out or in in order to keep a metric around a target value
    */
-  public scaleToTrackMetric(id: string, props: MetricTargetTrackingProps): TargetTrackingScalingPolicy {
+  public scaleToTrackMetric(
+    id: string,
+    props: MetricTargetTrackingProps,
+  ): TargetTrackingScalingPolicy {
     return new TargetTrackingScalingPolicy(this, `ScalingPolicy${id}`, {
       autoScalingGroup: this,
       customMetric: props.metric,
@@ -1366,8 +1440,14 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
   /**
    * Scale out or in, in response to a metric
    */
-  public scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy {
-    return new StepScalingPolicy(this, id, { ...props, autoScalingGroup: this });
+  public scaleOnMetric(
+    id: string,
+    props: BasicStepScalingPolicyProps,
+  ): StepScalingPolicy {
+    return new StepScalingPolicy(this, id, {
+      ...props,
+      autoScalingGroup: this,
+    });
   }
 
   public addUserData(..._commands: string[]): void {
@@ -1388,17 +1468,24 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
  * the Vpc default strategy if not specified.
  */
 @propertyInjectable
-export class AutoScalingGroup extends AutoScalingGroupBase implements
-  elb.ILoadBalancerTarget,
-  ec2.IConnectable,
-  elbv2.IApplicationLoadBalancerTarget,
-  elbv2.INetworkLoadBalancerTarget {
+export class AutoScalingGroup
+  extends AutoScalingGroupBase
+  implements
+    elb.ILoadBalancerTarget,
+    ec2.IConnectable,
+    elbv2.IApplicationLoadBalancerTarget,
+    elbv2.INetworkLoadBalancerTarget {
   /**
    * Uniquely identifies this class.
    */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-autoscaling.AutoScalingGroup';
+  public static readonly PROPERTY_INJECTION_ID: string =
+    'aws-cdk-lib.aws-autoscaling.AutoScalingGroup';
 
-  public static fromAutoScalingGroupName(scope: Construct, id: string, autoScalingGroupName: string): IAutoScalingGroup {
+  public static fromAutoScalingGroupName(
+    scope: Construct,
+    id: string,
+    autoScalingGroupName: string,
+  ): IAutoScalingGroup {
     class Import extends AutoScalingGroupBase {
       public autoScalingGroupName = autoScalingGroupName;
       public autoScalingGroupArn = Stack.of(this).formatArn({
@@ -1474,7 +1561,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
+    this.newInstancesProtectedFromScaleIn =
+      props.newInstancesProtectedFromScaleIn;
 
     if (props.initOptions && !props.init) {
       throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
@@ -1496,7 +1584,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new ValidationError(lit`SettingMixedInstancesPolicySet`, 'Setting \'mixedInstancesPolicy\' must not be set when \'launchTemplate\' is set', this);
       }
 
-      if (bareLaunchTemplate && bareLaunchTemplate instanceof ec2.LaunchTemplate) {
+      if (
+        bareLaunchTemplate &&
+        bareLaunchTemplate instanceof ec2.LaunchTemplate
+      ) {
         if (!bareLaunchTemplate.instanceType) {
           throw new ValidationError(lit`RequiresSettingLaunchtemplateRequires`, 'Setting \'launchTemplate\' requires its \'instanceType\' to be set', this);
         }
@@ -1508,7 +1599,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         this.launchTemplate = bareLaunchTemplate;
       }
 
-      if (mixedInstancesPolicy && mixedInstancesPolicy.launchTemplate instanceof ec2.LaunchTemplate) {
+      if (
+        mixedInstancesPolicy &&
+        mixedInstancesPolicy.launchTemplate instanceof ec2.LaunchTemplate
+      ) {
         if (!mixedInstancesPolicy.launchTemplate.imageId) {
           throw new ValidationError(lit`SettingMixedInstancesPolicyLaunch`, 'Setting \'mixedInstancesPolicy.launchTemplate\' requires its \'machineImage\' to be set', this);
         }
@@ -1517,9 +1611,11 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       }
 
       this._role = this.launchTemplate?.role;
-      this.grantPrincipal = this._role || new iam.UnknownPrincipal({ resource: this });
+      this.grantPrincipal =
+        this._role || new iam.UnknownPrincipal({ resource: this });
 
-      this.osType = this.launchTemplate?.osType ?? ec2.OperatingSystemType.UNKNOWN;
+      this.osType =
+        this.launchTemplate?.osType ?? ec2.OperatingSystemType.UNKNOWN;
     } else {
       if (!props.machineImage) {
         throw new ValidationError(lit`IsRequiredSettingMachineimageRequired`, 'Setting \'machineImage\' is required when \'launchTemplate\' and \'mixedInstancesPolicy\' is not set', this);
@@ -1534,15 +1630,19 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
       Tags.of(this).add(NAME_TAG, this.node.path);
 
-      this.securityGroup = props.securityGroup || new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
-        vpc: props.vpc,
-        allowAllOutbound: props.allowAllOutbound !== false,
-      });
+      this.securityGroup =
+        props.securityGroup ||
+        new ec2.SecurityGroup(this, 'InstanceSecurityGroup', {
+          vpc: props.vpc,
+          allowAllOutbound: props.allowAllOutbound !== false,
+        });
 
-      this._role = props.role || new iam.Role(this, 'InstanceRole', {
-        roleName: PhysicalName.GENERATE_IF_NEEDED,
-        assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-      });
+      this._role =
+        props.role ||
+        new iam.Role(this, 'InstanceRole', {
+          roleName: PhysicalName.GENERATE_IF_NEEDED,
+          assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+        });
       this.grantPrincipal = this._role;
 
       const iamProfile = new iam.CfnInstanceProfile(this, 'InstanceProfile', {
@@ -1550,30 +1650,48 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       });
 
       // generate launch template from launch config props when feature flag is set
-      if (FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
-        const instanceProfile = iam.InstanceProfile.fromInstanceProfileAttributes(this, 'ImportedInstanceProfile', {
-          instanceProfileArn: iamProfile.attrArn,
-          role: this.role,
-        });
+      if (
+        FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)
+      ) {
+        const instanceProfile =
+          iam.InstanceProfile.fromInstanceProfileAttributes(
+            this,
+            'ImportedInstanceProfile',
+            {
+              instanceProfileArn: iamProfile.attrArn,
+              role: this.role,
+            },
+          );
 
-        launchTemplateFromConfig = new ec2.LaunchTemplate(this, 'LaunchTemplate', {
-          machineImage: props.machineImage,
-          instanceType: props.instanceType,
-          detailedMonitoring: props.instanceMonitoring !== undefined && props.instanceMonitoring === Monitoring.DETAILED,
-          securityGroup: this.securityGroup,
-          userData: props.userData,
-          associatePublicIpAddress: props.associatePublicIpAddress,
-          spotOptions: props.spotPrice !== undefined ? { maxPrice: parseFloat(props.spotPrice) } : undefined,
-          blockDevices: props.blockDevices,
-          instanceProfile,
-          keyPair: props.keyPair,
-          ...(props.keyName ? { keyName: props.keyName } : {}),
-        });
+        launchTemplateFromConfig = new ec2.LaunchTemplate(
+          this,
+          'LaunchTemplate',
+          {
+            machineImage: props.machineImage,
+            instanceType: props.instanceType,
+            detailedMonitoring:
+              props.instanceMonitoring !== undefined &&
+              props.instanceMonitoring === Monitoring.DETAILED,
+            securityGroup: this.securityGroup,
+            userData: props.userData,
+            associatePublicIpAddress: props.associatePublicIpAddress,
+            spotOptions:
+              props.spotPrice !== undefined
+                ? { maxPrice: parseFloat(props.spotPrice) }
+                : undefined,
+            blockDevices: props.blockDevices,
+            instanceProfile,
+            keyPair: props.keyPair,
+            ...(props.keyName ? { keyName: props.keyName } : {}),
+          },
+        );
 
         this.osType = launchTemplateFromConfig.osType!;
         this.launchTemplate = launchTemplateFromConfig;
       } else {
-        this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
+        this._connections = new ec2.Connections({
+          securityGroups: [this.securityGroup],
+        });
         this.securityGroups = [this.securityGroup];
 
         if (props.keyPair) {
@@ -1583,21 +1701,30 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         // use delayed evaluation
         const imageConfig = props.machineImage.getImage(this);
         this._userData = props.userData ?? imageConfig.userData;
-        const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
-        const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups!.map(sg => sg.securityGroupId) });
+        const userDataToken = Lazy.string({
+          produce: () => Fn.base64(this.userData!.render()),
+        });
+        const securityGroupsToken = Lazy.list({
+          produce: () => this.securityGroups!.map((sg) => sg.securityGroupId),
+        });
 
         launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
           imageId: imageConfig.imageId,
           keyName: props.keyName,
           instanceType: props.instanceType.toString(),
-          instanceMonitoring: (props.instanceMonitoring !== undefined ? (props.instanceMonitoring === Monitoring.DETAILED) : undefined),
+          instanceMonitoring:
+            props.instanceMonitoring !== undefined
+              ? props.instanceMonitoring === Monitoring.DETAILED
+              : undefined,
           securityGroups: securityGroupsToken,
           iamInstanceProfile: iamProfile.ref,
           userData: userDataToken,
           associatePublicIpAddress: props.associatePublicIpAddress,
           spotPrice: props.spotPrice,
-          blockDeviceMappings: (props.blockDevices !== undefined ?
-            synthesizeBlockDeviceMappings(this, props.blockDevices) : undefined),
+          blockDeviceMappings:
+            props.blockDevices !== undefined
+              ? synthesizeBlockDeviceMappings(this, props.blockDevices)
+              : undefined,
         });
 
         launchConfig.node.addDependency(this.role);
@@ -1606,15 +1733,22 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     if (props.ssmSessionPermissions && this._role) {
-      this._role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore'));
+      this._role.addManagedPolicy(
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonSSMManagedInstanceCore',
+        ),
+      );
     }
 
     // desiredCapacity just reflects what the user has supplied.
     const desiredCapacity = props.desiredCapacity;
     const minCapacity = props.minCapacity ?? 1;
-    const maxCapacity = props.maxCapacity ??
+    const maxCapacity =
+      props.maxCapacity ??
       desiredCapacity ??
-      (Token.isUnresolved(minCapacity) ? minCapacity : Math.max(minCapacity, 1));
+      (Token.isUnresolved(minCapacity)
+        ? minCapacity
+        : Math.max(minCapacity, 1));
 
     withResolved(minCapacity, maxCapacity, (min, max) => {
       if (min > max) {
@@ -1622,20 +1756,27 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       }
     });
     withResolved(desiredCapacity, minCapacity, (desired, min) => {
-      if (desired === undefined) { return; }
+      if (desired === undefined) {
+        return;
+      }
       if (desired < min) {
         throw new ValidationError(lit`MinCapacity`, `Should have minCapacity (${min}) <= desiredCapacity (${desired})`, this);
       }
     });
     withResolved(desiredCapacity, maxCapacity, (desired, max) => {
-      if (desired === undefined) { return; }
+      if (desired === undefined) {
+        return;
+      }
       if (max < desired) {
         throw new ValidationError(lit`DesiredCapacity`, `Should have desiredCapacity (${desired}) <= maxCapacity (${max})`, this);
       }
     });
 
     if (desiredCapacity !== undefined) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-autoscaling:desiredCapacitySet', 'desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215');
+      Annotations.of(this).addWarningV2(
+        '@aws-cdk/aws-autoscaling:desiredCapacitySet',
+        'desiredCapacity has been configured. Be aware this will reset the size of your AutoScalingGroup on every deployment. See https://github.com/aws/aws-cdk/issues/5215',
+      );
     }
 
     this.maxInstanceLifetime = props.maxInstanceLifetime;
@@ -1651,13 +1792,15 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }
 
     if (props.notificationsTopic) {
-      this.notifications = [{
-        topic: props.notificationsTopic,
-      }];
+      this.notifications = [
+        {
+          topic: props.notificationsTopic,
+        },
+      ];
     }
 
     if (props.notifications) {
-      this.notifications = props.notifications.map(nc => ({
+      this.notifications = props.notifications.map((nc) => ({
         topic: nc.topic,
         scalingEvents: nc.scalingEvents ?? ScalingEvents.ALL,
       }));
@@ -1677,14 +1820,19 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
             throw new ValidationError(lit`TerminationPolicyCustomLambdaFunction`, 'terminationPolicyCustomLambdaFunctionArn property must be specified if the TerminationPolicy.CUSTOM_LAMBDA_FUNCTION is used', this);
           }
 
-          terminationPolicies.push(props.terminationPolicyCustomLambdaFunctionArn);
+          terminationPolicies.push(
+            props.terminationPolicyCustomLambdaFunctionArn,
+          );
         } else {
           terminationPolicies.push(terminationPolicy);
         }
       });
     }
 
-    const { healthCheckType, healthCheckGracePeriod } = this.renderHealthChecks(props.healthChecks, props.healthCheck);
+    const { healthCheckType, healthCheckGracePeriod } = this.renderHealthChecks(
+      props.healthChecks,
+      props.healthCheck,
+    );
 
     const asgProps: CfnAutoScalingGroupProps = {
       autoScalingGroupName: this.physicalName,
@@ -1694,17 +1842,33 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       cooldown: props.cooldown?.toSeconds().toString(),
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
-      desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
-      loadBalancerNames: Lazy.list({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
-      targetGroupArns: Lazy.list({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
+      desiredCapacity:
+        desiredCapacity !== undefined
+          ? Tokenization.stringifyNumber(desiredCapacity)
+          : undefined,
+      loadBalancerNames: Lazy.list(
+        { produce: () => this.loadBalancerNames },
+        { omitEmpty: true },
+      ),
+      targetGroupArns: Lazy.list(
+        { produce: () => this.targetGroupArns },
+        { omitEmpty: true },
+      ),
       notificationConfigurations: this.renderNotificationConfiguration(),
-      metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
+      metricsCollection: Lazy.any({
+        produce: () => this.renderMetricsCollection(),
+      }),
       vpcZoneIdentifier: subnetIds,
       healthCheckType,
       healthCheckGracePeriod,
-      maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
-      newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
-      terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
+      maxInstanceLifetime: this.maxInstanceLifetime
+        ? this.maxInstanceLifetime.toSeconds()
+        : undefined,
+      newInstancesProtectedFromScaleIn: Lazy.any({
+        produce: () => this.newInstancesProtectedFromScaleIn,
+      }),
+      terminationPolicies:
+        terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
       deletionProtection: props.deletionProtection,
@@ -1771,7 +1935,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    * Attach to ELBv2 Application Target Group
    */
   @MethodMetadata()
-  public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
+  public attachToApplicationTargetGroup(
+    targetGroup: elbv2.IApplicationTargetGroup,
+  ): elbv2.LoadBalancerTargetProps {
     this.targetGroupArns.push(targetGroup.targetGroupArn);
     if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
       // Copy onto self if it's a concrete type. We need this for autoscaling
@@ -1816,7 +1982,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    *   before reporting success.
    */
   @MethodMetadata()
-  public applyCloudFormationInit(init: ec2.CloudFormationInit, options: ApplyCloudFormationInitOptions = {}) {
+  public applyCloudFormationInit(
+    init: ec2.CloudFormationInit,
+    options: ApplyCloudFormationInitOptions = {},
+  ) {
     if (!this.autoScalingGroup.cfnOptions.creationPolicy?.resourceSignal) {
       throw new ValidationError(lit`ApplyingCloudFormationInitConfigure`, 'When applying CloudFormationInit, you must also configure signals by supplying \'signals\' at instantiation time.', this);
     }
@@ -1831,6 +2000,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       ignoreFailures: options.ignoreFailures,
       includeRole: options.includeRole,
       includeUrl: options.includeUrl,
+      includeSignalCommand: options.includeSignalCommand,
     });
   }
 
@@ -1937,7 +2107,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   /**
    * Apply CloudFormation update policies for the AutoScalingGroup
    */
-  private applyUpdatePolicies(props: AutoScalingGroupProps, signalOptions: RenderSignalsOptions) {
+  private applyUpdatePolicies(
+    props: AutoScalingGroupProps,
+    signalOptions: RenderSignalsOptions,
+  ) {
     // Make sure people are not using the old and new properties together
     const oldProps: Array<keyof AutoScalingGroupProps> = [
       'updateType',
@@ -1955,7 +2128,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // Reify updatePolicy to `rollingUpdate` default in case it is combined with `init`
     props = {
       ...props,
-      updatePolicy: props.updatePolicy ?? (props.init ? UpdatePolicy.rollingUpdate() : undefined),
+      updatePolicy:
+        props.updatePolicy ??
+        (props.init ? UpdatePolicy.rollingUpdate() : undefined),
     };
 
     if (props.signals || props.updatePolicy) {
@@ -1970,7 +2145,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (props.ignoreUnmodifiedSizeProperties !== false) {
       this.autoScalingGroup.cfnOptions.updatePolicy = {
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
-        autoScalingScheduledAction: { ignoreUnmodifiedGroupSizeProperties: true },
+        autoScalingScheduledAction: {
+          ignoreUnmodifiedGroupSizeProperties: true,
+        },
       };
     }
 
@@ -1980,9 +2157,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         throw new ValidationError(
           lit`MigrateToLaunchTemplateRequiresRollingUpdate`,
           'When migrateToLaunchTemplate is true, you must use AutoScalingRollingUpdate ' +
-          'to ensure instances are properly replaced during migration. ' +
-          'This prevents instances from referencing a deleted IAM instance profile.',
-          this);
+            'to ensure instances are properly replaced during migration. ' +
+            'This prevents instances from referencing a deleted IAM instance profile.',
+          this,
+        );
       }
     }
 
@@ -1994,21 +2172,28 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       //
       // If they call `applyCloudFormationInit()` after construction, nothing bad
       // happens either, we'll just have a duplicate statement which doesn't hurt.
-      this.addToRolePolicy(new iam.PolicyStatement({
-        actions: ['cloudformation:SignalResource'],
-        resources: [Aws.STACK_ID],
-      }));
+      this.addToRolePolicy(
+        new iam.PolicyStatement({
+          actions: ['cloudformation:SignalResource'],
+          resources: [Aws.STACK_ID],
+        }),
+      );
     }
   }
 
   /**
    * Use 'signals' and 'updatePolicy' to determine the creation and update policies
    */
-  private applyNewSignalUpdatePolicies(props: AutoScalingGroupProps, signalOptions: RenderSignalsOptions) {
-    this.autoScalingGroup.cfnOptions.creationPolicy = props.signals?.renderCreationPolicy(signalOptions);
-    this.autoScalingGroup.cfnOptions.updatePolicy = props.updatePolicy?._renderUpdatePolicy({
-      creationPolicy: this.autoScalingGroup.cfnOptions.creationPolicy,
-    });
+  private applyNewSignalUpdatePolicies(
+    props: AutoScalingGroupProps,
+    signalOptions: RenderSignalsOptions,
+  ) {
+    this.autoScalingGroup.cfnOptions.creationPolicy =
+      props.signals?.renderCreationPolicy(signalOptions);
+    this.autoScalingGroup.cfnOptions.updatePolicy =
+      props.updatePolicy?._renderUpdatePolicy({
+        creationPolicy: this.autoScalingGroup.cfnOptions.creationPolicy,
+      });
   }
 
   private applyLegacySignalUpdatePolicies(props: AutoScalingGroupProps) {
@@ -2029,52 +2214,74 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         this.autoScalingGroup.cfnOptions.creationPolicy = {
           ...this.autoScalingGroup.cfnOptions.creationPolicy,
           autoScalingCreationPolicy: {
-            minSuccessfulInstancesPercent: validatePercentage(props.replacingUpdateMinSuccessfulInstancesPercent),
+            minSuccessfulInstancesPercent: validatePercentage(
+              props.replacingUpdateMinSuccessfulInstancesPercent,
+            ),
           },
         };
       }
     } else if (props.updateType === UpdateType.ROLLING_UPDATE) {
       this.autoScalingGroup.cfnOptions.updatePolicy = {
         ...this.autoScalingGroup.cfnOptions.updatePolicy,
-        autoScalingRollingUpdate: renderRollingUpdateConfig(props.rollingUpdateConfiguration),
+        autoScalingRollingUpdate: renderRollingUpdateConfig(
+          props.rollingUpdateConfiguration,
+        ),
       };
     }
 
-    if (props.resourceSignalCount !== undefined || props.resourceSignalTimeout !== undefined) {
+    if (
+      props.resourceSignalCount !== undefined ||
+      props.resourceSignalTimeout !== undefined
+    ) {
       this.autoScalingGroup.cfnOptions.creationPolicy = {
         ...this.autoScalingGroup.cfnOptions.creationPolicy,
         resourceSignal: {
           count: props.resourceSignalCount,
-          timeout: props.resourceSignalTimeout && props.resourceSignalTimeout.toIsoString(),
+          timeout:
+            props.resourceSignalTimeout &&
+            props.resourceSignalTimeout.toIsoString(),
         },
       };
     }
   }
 
-  private renderNotificationConfiguration(): CfnAutoScalingGroup.NotificationConfigurationProperty[] | undefined {
+  private renderNotificationConfiguration():
+    | CfnAutoScalingGroup.NotificationConfigurationProperty[]
+    | undefined {
     if (this.notifications.length === 0) {
       return undefined;
     }
 
-    return this.notifications.map(notification => ({
+    return this.notifications.map((notification) => ({
       topicArn: notification.topic.topicArn,
-      notificationTypes: notification.scalingEvents ? notification.scalingEvents._types : ScalingEvents.ALL._types,
+      notificationTypes: notification.scalingEvents
+        ? notification.scalingEvents._types
+        : ScalingEvents.ALL._types,
     }));
   }
 
-  private renderMetricsCollection(): CfnAutoScalingGroup.MetricsCollectionProperty[] | undefined {
+  private renderMetricsCollection():
+    | CfnAutoScalingGroup.MetricsCollectionProperty[]
+    | undefined {
     if (this.groupMetrics.length === 0) {
       return undefined;
     }
 
-    return this.groupMetrics.map(group => ({
+    return this.groupMetrics.map((group) => ({
       granularity: '1Minute',
-      metrics: group._metrics?.size !== 0 ? [...group._metrics].map(m => m.name) : undefined,
+      metrics:
+        group._metrics?.size !== 0
+          ? [...group._metrics].map((m) => m.name)
+          : undefined,
     }));
   }
 
-  private getLaunchSettings(launchConfig?: CfnLaunchConfiguration, launchTemplate?: ec2.ILaunchTemplate, mixedInstancesPolicy?: MixedInstancesPolicy)
-    : Pick<CfnAutoScalingGroupProps, 'launchConfigurationName'>
+  private getLaunchSettings(
+    launchConfig?: CfnLaunchConfiguration,
+    launchTemplate?: ec2.ILaunchTemplate,
+    mixedInstancesPolicy?: MixedInstancesPolicy,
+  ):
+    | Pick<CfnAutoScalingGroupProps, 'launchConfigurationName'>
     | Pick<CfnAutoScalingGroupProps, 'launchTemplate'>
     | Pick<CfnAutoScalingGroupProps, 'mixedInstancesPolicy'> {
     if (launchConfig) {
@@ -2085,18 +2292,23 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
     if (launchTemplate) {
       return {
-        launchTemplate: this.convertILaunchTemplateToSpecification(launchTemplate),
+        launchTemplate:
+          this.convertILaunchTemplateToSpecification(launchTemplate),
       };
     }
 
     if (mixedInstancesPolicy) {
-      let instancesDistribution: CfnAutoScalingGroup.InstancesDistributionProperty | undefined = undefined;
+      let instancesDistribution:
+        | CfnAutoScalingGroup.InstancesDistributionProperty
+        | undefined = undefined;
       if (mixedInstancesPolicy.instancesDistribution) {
         const dist = mixedInstancesPolicy.instancesDistribution;
         instancesDistribution = {
-          onDemandAllocationStrategy: dist.onDemandAllocationStrategy?.toString(),
+          onDemandAllocationStrategy:
+            dist.onDemandAllocationStrategy?.toString(),
           onDemandBaseCapacity: dist.onDemandBaseCapacity,
-          onDemandPercentageAboveBaseCapacity: dist.onDemandPercentageAboveBaseCapacity,
+          onDemandPercentageAboveBaseCapacity:
+            dist.onDemandPercentageAboveBaseCapacity,
           spotAllocationStrategy: dist.spotAllocationStrategy?.toString(),
           spotInstancePools: dist.spotInstancePools,
           spotMaxPrice: dist.spotMaxPrice,
@@ -2136,7 +2348,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     throw new ValidationError(lit`LaunchConfigLaunchTemplateMixed`, 'Either launchConfig, launchTemplate or mixedInstancesPolicy needs to be specified.', this);
   }
 
-  private convertILaunchTemplateToSpecification(launchTemplate: ec2.ILaunchTemplate): CfnAutoScalingGroup.LaunchTemplateSpecificationProperty {
+  private convertILaunchTemplateToSpecification(
+    launchTemplate: ec2.ILaunchTemplate,
+  ): CfnAutoScalingGroup.LaunchTemplateSpecificationProperty {
     if (launchTemplate.launchTemplateId) {
       return {
         launchTemplateId: launchTemplate.launchTemplateId,
@@ -2153,7 +2367,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private validateTargetGroup(): string[] {
     const errors = new Array<string>();
     if (this.hasCalledScaleOnRequestCount && this.targetGroupArns.length > 1) {
-      errors.push('Cannon use multiple target groups if `scaleOnRequestCount()` is being used.');
+      errors.push(
+        'Cannon use multiple target groups if `scaleOnRequestCount()` is being used.',
+      );
     }
 
     return errors;
@@ -2185,7 +2401,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     };
   }
 
-  private renderHealthChecks(healthChecks?: HealthChecks, healthCheck?: HealthCheck): { healthCheckType?: string; healthCheckGracePeriod?: number } {
+  private renderHealthChecks(
+    healthChecks?: HealthChecks,
+    healthCheck?: HealthCheck,
+  ): { healthCheckType?: string; healthCheckGracePeriod?: number } {
     if (healthCheck && healthChecks) {
       throw new ValidationError(lit`CannotSpecifyHealthCheckHealth`, 'Cannot specify both \'healthCheck\' and \'healthChecks\'. Please use \'healthChecks\' only.', this);
     }
@@ -2360,25 +2579,36 @@ export class ScalingEvents {
   /**
    * Fleet scaling errors
    */
-  public static readonly ERRORS = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH_ERROR, ScalingEvent.INSTANCE_TERMINATE_ERROR);
+  public static readonly ERRORS = new ScalingEvents(
+    ScalingEvent.INSTANCE_LAUNCH_ERROR,
+    ScalingEvent.INSTANCE_TERMINATE_ERROR,
+  );
 
   /**
    * All fleet scaling events
    */
-  public static readonly ALL = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH,
+  public static readonly ALL = new ScalingEvents(
+    ScalingEvent.INSTANCE_LAUNCH,
     ScalingEvent.INSTANCE_LAUNCH_ERROR,
     ScalingEvent.INSTANCE_TERMINATE,
-    ScalingEvent.INSTANCE_TERMINATE_ERROR);
+    ScalingEvent.INSTANCE_TERMINATE_ERROR,
+  );
 
   /**
    * Fleet scaling launch events
    */
-  public static readonly LAUNCH_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_LAUNCH, ScalingEvent.INSTANCE_LAUNCH_ERROR);
+  public static readonly LAUNCH_EVENTS = new ScalingEvents(
+    ScalingEvent.INSTANCE_LAUNCH,
+    ScalingEvent.INSTANCE_LAUNCH_ERROR,
+  );
 
   /**
    * Fleet termination launch events
    */
-  public static readonly TERMINATION_EVENTS = new ScalingEvents(ScalingEvent.INSTANCE_TERMINATE, ScalingEvent.INSTANCE_TERMINATE_ERROR);
+  public static readonly TERMINATION_EVENTS = new ScalingEvents(
+    ScalingEvent.INSTANCE_TERMINATE,
+    ScalingEvent.INSTANCE_TERMINATE_ERROR,
+  );
 
   /**
    * @internal
@@ -2404,8 +2634,14 @@ export enum ScalingProcess {
 
 // Recommended list of processes to suspend from here:
 // https://aws.amazon.com/premiumsupport/knowledge-center/auto-scaling-group-rolling-updates/
-const DEFAULT_SUSPEND_PROCESSES = [ScalingProcess.HEALTH_CHECK, ScalingProcess.REPLACE_UNHEALTHY, ScalingProcess.AZ_REBALANCE,
-  ScalingProcess.ALARM_NOTIFICATION, ScalingProcess.SCHEDULED_ACTIONS, ScalingProcess.INSTANCE_REFRESH];
+const DEFAULT_SUSPEND_PROCESSES = [
+  ScalingProcess.HEALTH_CHECK,
+  ScalingProcess.REPLACE_UNHEALTHY,
+  ScalingProcess.AZ_REBALANCE,
+  ScalingProcess.ALARM_NOTIFICATION,
+  ScalingProcess.SCHEDULED_ACTIONS,
+  ScalingProcess.INSTANCE_REFRESH,
+];
 
 /**
  * EC2 Heath check options
@@ -2460,7 +2696,10 @@ export class HealthCheck {
     return new HealthCheck(HealthCheckType.ELB, options.grace);
   }
 
-  private constructor(public readonly type: string, public readonly gracePeriod?: Duration) { }
+  private constructor(
+    public readonly type: string,
+    public readonly gracePeriod?: Duration,
+  ) {}
 }
 
 /**
@@ -2480,8 +2719,7 @@ interface HealthChecksBaseOptions {
 /**
  * EC2 Heath checks options
  */
-export interface Ec2HealthChecksOptions extends HealthChecksBaseOptions {
-}
+export interface Ec2HealthChecksOptions extends HealthChecksBaseOptions {}
 
 /**
  * Additional Heath checks options
@@ -2514,11 +2752,16 @@ export class HealthChecks {
    *
    * @param options Additional health checks options
    */
-  public static withAdditionalChecks(options: AdditionalHealthChecksOptions): HealthChecks {
+  public static withAdditionalChecks(
+    options: AdditionalHealthChecksOptions,
+  ): HealthChecks {
     return new HealthChecks(options.additionalTypes, options.gracePeriod);
   }
 
-  private constructor(public readonly types: string[], public readonly gracePeriod?: Duration) {
+  private constructor(
+    public readonly types: string[],
+    public readonly gracePeriod?: Duration,
+  ) {
     if (types.length === 0) {
       throw new UnscopedValidationError(lit`MustBeLeastHealthCheck`, 'At least one health check type must be specified in \'additionalTypes\' for \'healthChecks\'');
     }
@@ -2554,14 +2797,21 @@ export enum AdditionalHealthCheckType {
 /**
  * Render the rolling update configuration into the appropriate object
  */
-function renderRollingUpdateConfig(config: RollingUpdateConfiguration = {}): CfnAutoScalingRollingUpdate {
-  const waitOnResourceSignals = config.minSuccessfulInstancesPercent !== undefined;
-  const pauseTime = config.pauseTime || (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
+function renderRollingUpdateConfig(
+  config: RollingUpdateConfiguration = {},
+): CfnAutoScalingRollingUpdate {
+  const waitOnResourceSignals =
+    config.minSuccessfulInstancesPercent !== undefined;
+  const pauseTime =
+    config.pauseTime ||
+    (waitOnResourceSignals ? Duration.minutes(5) : Duration.seconds(0));
 
   return {
     maxBatchSize: config.maxBatchSize,
     minInstancesInService: config.minInstancesInService,
-    minSuccessfulInstancesPercent: validatePercentage(config.minSuccessfulInstancesPercent),
+    minSuccessfulInstancesPercent: validatePercentage(
+      config.minSuccessfulInstancesPercent,
+    ),
     waitOnResourceSignals,
     pauseTime: pauseTime && pauseTime.toIsoString(),
     suspendProcesses: config.suspendProcesses ?? DEFAULT_SUSPEND_PROCESSES,
@@ -2615,32 +2865,50 @@ export interface IAutoScalingGroup extends IAutoScalingGroupRef, IResource, iam.
   /**
    * Scale out or in based on time
    */
-  scaleOnSchedule(id: string, props: BasicScheduledActionProps): ScheduledAction;
+  scaleOnSchedule(
+    id: string,
+    props: BasicScheduledActionProps
+  ): ScheduledAction;
 
   /**
    * Scale out or in to achieve a target CPU utilization
    */
-  scaleOnCpuUtilization(id: string, props: CpuUtilizationScalingProps): TargetTrackingScalingPolicy;
+  scaleOnCpuUtilization(
+    id: string,
+    props: CpuUtilizationScalingProps
+  ): TargetTrackingScalingPolicy;
 
   /**
    * Scale out or in to achieve a target network ingress rate
    */
-  scaleOnIncomingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy;
+  scaleOnIncomingBytes(
+    id: string,
+    props: NetworkUtilizationScalingProps
+  ): TargetTrackingScalingPolicy;
 
   /**
    * Scale out or in to achieve a target network egress rate
    */
-  scaleOnOutgoingBytes(id: string, props: NetworkUtilizationScalingProps): TargetTrackingScalingPolicy;
+  scaleOnOutgoingBytes(
+    id: string,
+    props: NetworkUtilizationScalingProps
+  ): TargetTrackingScalingPolicy;
 
   /**
    * Scale out or in in order to keep a metric around a target value
    */
-  scaleToTrackMetric(id: string, props: MetricTargetTrackingProps): TargetTrackingScalingPolicy;
+  scaleToTrackMetric(
+    id: string,
+    props: MetricTargetTrackingProps
+  ): TargetTrackingScalingPolicy;
 
   /**
    * Scale out or in, in response to a metric
    */
-  scaleOnMetric(id: string, props: BasicStepScalingPolicyProps): StepScalingPolicy;
+  scaleOnMetric(
+    id: string,
+    props: BasicStepScalingPolicyProps
+  ): StepScalingPolicy;
 }
 
 /**
@@ -2656,7 +2924,8 @@ export interface CpuUtilizationScalingProps extends BaseTargetTrackingProps {
 /**
  * Properties for enabling scaling based on network utilization
  */
-export interface NetworkUtilizationScalingProps extends BaseTargetTrackingProps {
+export interface NetworkUtilizationScalingProps
+  extends BaseTargetTrackingProps {
   /**
    * Target average bytes/seconds on each instance
    */
@@ -2707,19 +2976,23 @@ export interface MetricTargetTrackingProps extends BaseTargetTrackingProps {
  * @param construct the instance/asg construct, used to host any warning
  * @param blockDevices list of block devices
  */
-function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: BlockDevice[]): CfnLaunchConfiguration.BlockDeviceMappingProperty[] {
-  return blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(({ deviceName, volume, mappingEnabled }) => {
-    const { virtualName, ebsDevice: ebs } = volume;
+function synthesizeBlockDeviceMappings(
+  construct: Construct,
+  blockDevices: BlockDevice[],
+): CfnLaunchConfiguration.BlockDeviceMappingProperty[] {
+  return blockDevices.map<CfnLaunchConfiguration.BlockDeviceMappingProperty>(
+    ({ deviceName, volume, mappingEnabled }) => {
+      const { virtualName, ebsDevice: ebs } = volume;
 
-    if (volume === BlockDeviceVolume._NO_DEVICE || mappingEnabled === false) {
-      return {
-        deviceName,
-        noDevice: true,
-      };
-    }
+      if (volume === BlockDeviceVolume._NO_DEVICE || mappingEnabled === false) {
+        return {
+          deviceName,
+          noDevice: true,
+        };
+      }
 
-    if (ebs) {
-      const { iops, volumeType, throughput } = ebs;
+      if (ebs) {
+        const { iops, volumeType, throughput } = ebs;
 
       if (throughput) {
         const throughputRange = { Min: 125, Max: 2000 };
@@ -2743,21 +3016,20 @@ function synthesizeBlockDeviceMappings(construct: Construct, blockDevices: Block
             throw new ValidationError(lit`ThroughputMiBpsIopsRatio`, `Throughput (MiBps) to iops ratio of ${iopsRatio} is too high; maximum is ${maximumThroughputRatio} MiBps per iops`, construct);
           }
         }
-      }
 
       if (!iops) {
         if (volumeType === EbsDeviceVolumeType.IO1) {
           throw new ValidationError(lit`IopsPropertyRequiredVolumeType`, 'iops property is required with volumeType: EbsDeviceVolumeType.IO1', construct);
         }
-      } else if (volumeType !== EbsDeviceVolumeType.IO1) {
-        Annotations.of(construct).addWarningV2('@aws-cdk/aws-autoscaling:iopsIgnored', 'iops will be ignored without volumeType: EbsDeviceVolumeType.IO1');
       }
-    }
 
-    return {
-      deviceName, ebs, virtualName,
-    };
-  });
+      return {
+        deviceName,
+        ebs,
+        virtualName,
+      };
+    },
+  );
 }
 
 /**
@@ -2832,4 +3104,22 @@ export interface ApplyCloudFormationInitOptions {
    * @default false
    */
   readonly includeRole?: boolean;
+
+  /**
+   * Include cfn-signal command in the UserData
+   *
+   * If `true` (the default), the cfn-signal command will be automatically added to the UserData
+   * after cfn-init completes. This signals CloudFormation that the instance has successfully
+   * (or unsuccessfully) initialized.
+   *
+   * Set this to `false` if you want to manage the cfn-signal call manually in your application
+   * logic, allowing you to signal CloudFormation only after your application is fully ready
+   * to serve traffic.
+   *
+   * Note: Even when set to `false`, the instance still needs to send a cfn-signal eventually
+   * to prevent CloudFormation from timing out during stack creation/updates.
+   *
+   * @default true
+   */
+  readonly includeSignalCommand?: boolean;
 }
