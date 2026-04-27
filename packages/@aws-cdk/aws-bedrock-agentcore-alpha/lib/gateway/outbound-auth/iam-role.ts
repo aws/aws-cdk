@@ -24,13 +24,12 @@ export interface GatewayIamRoleCredentialProviderProps {
    * The AWS service name used for SigV4 signing of outbound requests.
    *
    * Use the SigV4 signing name (typically the endpoint prefix), e.g.
-   * `bedrock-runtime`, `s3`, `execute-api`, `dynamodb`. See the AWS service
-   * authorization reference for a complete list:
-   * https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
+   * `bedrock-runtime`, `s3`, `execute-api`, `dynamodb`.
    *
    * Pattern: `^[a-zA-Z0-9._-]+$`, length 1-64.
    *
    * @default - Gateway infers the service from the target endpoint
+   * @see https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html
    */
   readonly service?: string;
 

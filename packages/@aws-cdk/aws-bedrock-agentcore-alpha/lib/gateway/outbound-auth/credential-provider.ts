@@ -88,9 +88,6 @@ export abstract class GatewayCredentialProvider {
    * service / region instead of relying on the gateway's inference from the target
    * endpoint. Useful for cross-region calls and for targets where the service can't be
    * inferred from the URL.
-   *
-   * @param props - Optional configuration for SigV4 signing service / region
-   * @returns ICredentialProviderConfig configured for IAM role authentication
    */
   public static fromIamRole(props?: GatewayIamRoleCredentialProviderProps): ICredentialProviderConfig {
     return new GatewayIamRoleCredentialProviderConfig(props);
