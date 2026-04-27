@@ -1,0 +1,115 @@
+# Auto-bump PRs from pr/needs-community-review to pr/needs-maintainer-review
+# after a configurable timeout period, so the core team doesn't miss them.
+#
+# Related issue: https://github.com/aws/aws-cdk/issues/37619
+name: Community Review Timeout
+
+on:
+  schedule:
+    - cron: '0 9 * * *' # daily at 9am UTC
+  workflow_dispatch:
+    inputs:
+      days_threshold:
+        description: 'Number of days before auto-bumping (overrides DAYS_THRESHOLD)'
+        required: false
+        type: number
+
+env:
+  DAYS_THRESHOLD: 30
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  bump-stale-community-reviews:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
+          script: |
+            const days = parseInt('${{ inputs.days_threshold }}') || parseInt(process.env.DAYS_THRESHOLD);
+            const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+            const bumped = [];
+            const errors = [];
+
+            // Find all open PRs waiting for community review
+            const prs = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: 'pr/needs-community-review',
+              state: 'open',
+              per_page: 100,
+            });
+
+            core.info(`Found ${prs.length} PRs with pr/needs-community-review`);
+
+            for (const pr of prs) {
+              try {
+                // Look up timeline events to find when the label was most recently applied.
+                // We use the label timestamp (not PR creation date) to correctly handle
+                // PRs that were re-labeled after updates.
+                const events = await github.paginate(github.rest.issues.listEvents, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  per_page: 100,
+                });
+
+                // Find the most recent 'labeled' event (use spread to avoid in-place mutation)
+                const labelEvent = [...events]
+                  .reverse()
+                  .find(e => e.event === 'labeled' && e.label?.name === 'pr/needs-community-review');
+
+                // Skip if label was applied recently (within threshold)
+                if (!labelEvent || new Date(labelEvent.created_at) >= cutoff) continue;
+
+                core.info(`PR #${pr.number}: label applied ${labelEvent.created_at}, bumping`);
+
+                // Order matters: add timeout + maintainer-review first, remove community last.
+                // This prevents a race where the pr-linter sees community-review removed
+                // before the timeout label is present.
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  labels: ['pr/community-review-timeout', 'pr/needs-maintainer-review'],
+                });
+
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name: 'pr/needs-community-review',
+                });
+
+                bumped.push({ number: pr.number, title: pr.title, labeled: labelEvent.created_at });
+              } catch (err) {
+                core.warning(`Failed to process PR #${pr.number}: ${err.message}`);
+                errors.push({ number: pr.number, error: err.message });
+              }
+            }
+
+            // Job summary
+            core.summary.addHeading('Community Review Timeout', 2);
+            core.summary.addRaw(`Threshold: ${days} days | Cutoff: ${cutoff.toISOString()} | Scanned: ${prs.length} PRs\n\n`);
+
+            if (bumped.length > 0) {
+              core.summary.addTable([
+                [{ data: 'PR', header: true }, { data: 'Title', header: true }, { data: 'Labeled Since', header: true }],
+                ...bumped.map(p => [`#${p.number}`, p.title, p.labeled]),
+              ]);
+            } else {
+              core.summary.addRaw('No PRs exceeded the timeout threshold.\n');
+            }
+
+            if (errors.length > 0) {
+              core.summary.addHeading('Errors', 3);
+              core.summary.addTable([
+                [{ data: 'PR', header: true }, { data: 'Error', header: true }],
+                ...errors.map(e => [`#${e.number}`, e.error]),
+              ]);
+            }
+
+            await core.summary.write();

@@ -129,6 +129,10 @@ export class PullRequestLinter extends PullRequestLinterBase {
     }, undefined, 2));
 
     const fixesP1 = pr.labels.some(label => label.name === 'p1');
+    // Set by the community-review-timeout.yml scheduled workflow when a PR has been
+    // waiting for community review longer than the configured threshold (default 30 days).
+    // Treated as equivalent to community approval to ensure the PR reaches maintainers.
+    const communityReviewTimedOut = pr.labels.some(label => label.name === 'pr/community-review-timeout');
     let readyForReview = true;
     if (
       // we don't need to review drafts
@@ -151,7 +155,8 @@ export class PullRequestLinter extends PullRequestLinterBase {
     // 1) fixes a p1 bug
     // 2) is already community approved
     // 3) is authored by a core team member
-    if (readyForReview && (fixesP1 || communityApproved || pr.labels.some(label => label.name === 'contribution/core'))) {
+    // 4) community review has timed out (pr/community-review-timeout label present)
+    if (readyForReview && (fixesP1 || communityApproved || communityReviewTimedOut || pr.labels.some(label => label.name === 'contribution/core'))) {
       return {
         addLabels: ['pr/needs-maintainer-review'],
         removeLabels: ['pr/needs-community-review'],
