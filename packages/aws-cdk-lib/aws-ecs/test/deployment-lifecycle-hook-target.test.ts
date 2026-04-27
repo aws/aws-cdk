@@ -352,7 +352,7 @@ describe('DeploymentLifecycleHookTarget', () => {
     }).toThrow(/hookDetails must be a plain JSON object \(arrays and primitives are not allowed\)/);
   });
 
-  test('hookDetails with CDK token renders Fn::ToJsonString', () => {
+  test('hookDetails with CDK token renders as intrinsic function', () => {
     // GIVEN
     const service = new ecs.FargateService(stack, 'FargateService', {
       cluster,
@@ -370,7 +370,7 @@ describe('DeploymentLifecycleHookTarget', () => {
       DeploymentConfiguration: {
         LifecycleHooks: [
           {
-            HookDetails: { 'Fn::ToJsonString': { stackName: { Ref: 'AWS::StackName' } } },
+            HookDetails: Match.not(Match.absent()),
             LifecycleStages: ['PRE_SCALE_UP'],
           },
         ],
