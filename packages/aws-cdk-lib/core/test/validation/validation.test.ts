@@ -824,6 +824,178 @@ Policy Validation Report Summary
     expect(plugin.name).toEqual('beta1-plugin');
   });
 
+  describe('annotation report integration', () => {
+    test('annotation warnings appear in validation report', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      app.synth();
+
+      // Warnings alone should not fail
+      expect(process.exitCode).toBeUndefined();
+
+      // Should show the annotation report
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('annotation::my-lib:SomeWarning');
+      expect(output).toContain('Policy Validation Successful!');
+    });
+
+    test('annotation errors cause validation failure', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addError('Something is broken');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Something is broken');
+      expect(output).toContain('Severity: error');
+    });
+
+    test('acknowledged warnings are excluded from annotation report', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
+      core.Annotations.of(construct).acknowledgeWarning('my-lib:AckedWarning');
+
+      app.synth();
+
+      // No annotations left, so no report at all
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('Construct Annotations');
+    });
+
+    test('annotation report works alongside plugin reports', () => {
+      const app = new core.App({
+        policyValidationBeta1: [
+          new FakePlugin('test-plugin', [{
+            description: 'plugin violation',
+            ruleName: 'plugin-rule',
+            violatingResources: [{
+              locations: ['test-location'],
+              resourceLogicalId: 'Fake',
+              templatePath: '/path/to/Default.template.json',
+            }],
+          }]),
+        ],
+      });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(stack).addWarningV2('my-lib:StackWarning', 'Stack-level warning');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      // Both plugin and annotation reports should appear
+      expect(output).toContain('test-plugin');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('plugin-rule');
+      expect(output).toContain('annotation::my-lib:StackWarning');
+    });
+
+    test('annotation report with no plugins registered still produces output', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addError('Error without plugins');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Error without plugins');
+    });
+
+    test('annotations on constructs without CfnResource use construct path', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'Orphan');
+      // No CfnResource child
+
+      core.Annotations.of(construct).addWarningV2('my-lib:OrphanWarning', 'Warning on orphan');
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('annotation::my-lib:OrphanWarning');
+    });
+
+    test('Validations.of().addWarning appears in annotation report', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(construct).addWarning('MyRule', 'Validation warning');
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('annotation::MyRule');
+    });
+
+    test('Validations.of().addError appears in annotation report and fails', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(construct).addError('MyError', 'Validation error');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Severity: error');
+    });
+  });
+
   describe('Validations.of()', () => {
     test('addPlugins adds plugin to enclosing stage', () => {
       // GIVEN

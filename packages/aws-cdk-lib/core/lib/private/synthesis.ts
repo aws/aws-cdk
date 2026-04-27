@@ -9,6 +9,7 @@ import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
+import { CfnResource } from '../cfn-resource';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
@@ -16,11 +17,13 @@ import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPluginBeta1 } from '../validation';
+import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
 import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
+import * as cxschema from '../../../cloud-assembly-schema';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
@@ -98,6 +101,124 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 }
 
 /**
+ * The plugin name used for annotation-based violations in the validation report.
+ */
+const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
+
+/**
+ * Collect annotation metadata (warnings and errors) from the construct tree
+ * and convert them into a NamedValidationPluginReport that can be merged
+ * into the same report pipeline as plugin violations.
+ */
+function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport | undefined {
+  const violations: PolicyViolationBeta1[] = [];
+
+  visit(root, 'pre', construct => {
+    for (const entry of construct.node.metadata) {
+      if (entry.type !== cxschema.ArtifactMetadataEntryType.WARN && entry.type !== cxschema.ArtifactMetadataEntryType.ERROR) {
+        continue;
+      }
+
+      const message = entry.data as string;
+      const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
+      const ruleName = extractRuleName(message);
+
+      // Find the nearest CfnResource to map back to a logical ID
+      const resource = findNearestResource(construct);
+      let resourceLogicalId: string;
+      let templatePath: string;
+
+      if (resource) {
+        const stack = Stack.of(resource);
+        resourceLogicalId = stack.resolve(resource.logicalId);
+        templatePath = path.join(stack.node.root.node.tryGetContext('outdir') ?? '', stack.templateFile);
+      } else {
+        // Construct is not associated with a CfnResource — use construct path as identifier
+        resourceLogicalId = construct.node.path;
+        try {
+          const stack = Stack.of(construct);
+          templatePath = stack.templateFile;
+        } catch {
+          templatePath = 'N/A';
+        }
+      }
+
+      const violatingResource: PolicyViolatingResourceBeta1 = {
+        resourceLogicalId,
+        templatePath,
+        locations: [],
+      };
+
+      violations.push({
+        ruleName,
+        description: message,
+        severity,
+        violatingResources: [violatingResource],
+      });
+    }
+  });
+
+  if (violations.length === 0) {
+    return undefined;
+  }
+
+  const hasErrors = violations.some(v => v.severity === 'error');
+  return {
+    pluginName: ANNOTATION_PLUGIN_NAME,
+    success: !hasErrors,
+    violations,
+  };
+}
+
+/**
+ * Extract a rule name from an annotation message.
+ * If the message contains an [ack: <id>] tag, use the id.
+ * Otherwise, use a truncated version of the message.
+ */
+function extractRuleName(message: string): string {
+  const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
+  if (ackMatch) {
+    return ackMatch[1];
+  }
+  // Truncate long messages for use as rule names
+  // 80 chars is enough to identify the rule without cluttering the report
+  const maxLength = 80;
+  return message.length > maxLength ? `${message.substring(0, maxLength)}...` : message;
+}
+
+/**
+ * Find the nearest CfnResource for a construct by checking itself,
+ * its default child, or walking up the tree.
+ */
+function findNearestResource(construct: IConstruct): CfnResource | undefined {
+  // Check if the construct itself is a CfnResource
+  if (CfnResource.isCfnResource(construct)) {
+    return construct;
+  }
+
+  // Check the default child
+  const defaultChild = construct.node.defaultChild;
+  if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
+    return defaultChild;
+  }
+
+  // Walk up the tree to find the nearest CfnResource
+  let current = construct.node.scope;
+  while (current) {
+    if (CfnResource.isCfnResource(current)) {
+      return current;
+    }
+    const dc = current.node.defaultChild;
+    if (dc && CfnResource.isCfnResource(dc)) {
+      return dc;
+    }
+    current = current.node.scope;
+  }
+
+  return undefined;
+}
+
+/**
  * Invoke validation plugins for all stages in an App.
  */
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
@@ -146,6 +267,12 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     if (FileSystem.fingerprint(outdir) !== hash) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
+  }
+
+  // Collect annotation-based violations and merge into the report pipeline
+  const annotationReport = collectAnnotationReport(root);
+  if (annotationReport) {
+    reports.push(annotationReport);
   }
 
   if (reports.length > 0) {
