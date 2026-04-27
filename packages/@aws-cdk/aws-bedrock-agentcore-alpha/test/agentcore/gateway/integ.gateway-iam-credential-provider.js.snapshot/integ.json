@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "GatewayIamCredentialProvider/DefaultTest": {
+      "stacks": [
+        "cdk-agentcore-gateway-iam-credential-provider"
+      ],
+      "assertionStack": "GatewayIamCredentialProvider/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayIamCredentialProviderDefaultTestDeployAssertA516A2C3"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}
