@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "AlbFargateAzRebalancingTest/DefaultTest": {
+      "stacks": [
+        "aws-ecs-patterns-az-rebalancing"
+      ],
+      "assertionStack": "AlbFargateAzRebalancingTest/DefaultTest/DeployAssert",
+      "assertionStackName": "AlbFargateAzRebalancingTestDefaultTestDeployAssertD04ADE26"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}
