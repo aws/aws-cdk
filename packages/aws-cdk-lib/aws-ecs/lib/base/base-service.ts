@@ -860,7 +860,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: this._loadBalancers.derive(arr => arr.length === 0 ? undefined : arr),
+      loadBalancers: this._loadBalancers.omitEmpty(),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -890,7 +890,7 @@ export abstract class BaseService extends Resource
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: this._serviceRegistries.derive(arr => arr.length === 0 ? undefined : arr),
+      serviceRegistries: this._serviceRegistries.omitEmpty(),
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
       volumeConfigurations: this._volumes.derive(arr => arr.length === 0 ? undefined : this.renderVolumes()),
       ...additionalProps,

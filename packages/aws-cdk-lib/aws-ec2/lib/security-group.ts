@@ -552,8 +552,8 @@ export class SecurityGroup extends SecurityGroupBase {
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: this.directIngressRules.derive(arr => arr.length === 0 ? undefined : arr),
-      securityGroupEgress: this.directEgressRules.derive(arr => arr.length === 0 ? undefined : arr),
+      securityGroupIngress: this.directIngressRules.omitEmpty(),
+      securityGroupEgress: this.directEgressRules.omitEmpty(),
       vpcId: props.vpc.vpcId,
     });
 

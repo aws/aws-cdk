@@ -207,7 +207,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: this._actions.derive(arr => arr.length === 0 ? undefined : arr),
+      scheduledActions: this._actions.omitEmpty(),
       serviceNamespace: props.serviceNamespace,
     });
 

@@ -243,7 +243,7 @@ export class VirtualNode extends VirtualNodeBase {
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
-        backends: this._backends.derive(arr => arr.length === 0 ? undefined : arr),
+        backends: this._backends.omitEmpty(),
         listeners: this._listeners.derive(arr => arr.length === 0 ? undefined : arr.map(listener => listener.listener)),
         backendDefaults: props.backendDefaults !== undefined
           ? {

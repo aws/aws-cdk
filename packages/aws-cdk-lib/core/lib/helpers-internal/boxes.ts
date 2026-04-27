@@ -142,6 +142,18 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
    * @returns a new read-only box holding the mapped array.
    */
   map<B>(fn: (a: A) => B): IReadableBox<Array<B>>;
+
+  /**
+   * Creates a derived read-only box that resolves to `undefined` when the array is empty.
+   *
+   * Shorthand for `this.derive(arr => arr.length === 0 ? undefined : arr)`.
+   *
+   * This is useful for CloudFormation properties that should be omitted entirely
+   * rather than set to an empty list.
+   *
+   * @returns a new read-only box that holds the array, or `undefined` if the array is empty.
+   */
+  omitEmpty(): IReadableBox<Array<A> | undefined>;
 }
 
 /**
@@ -479,6 +491,10 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
 
   public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {
     return this.derive(arr => arr.map(fn));
+  }
+
+  public omitEmpty(): IReadableBox<Array<A> | undefined> {
+    return this.derive(arr => arr.length === 0 ? undefined : arr);
   }
 
   public [Symbol.iterator](): Iterator<A> {

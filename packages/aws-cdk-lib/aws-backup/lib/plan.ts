@@ -175,7 +175,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
       backupPlan: {
         advancedBackupSettings: this.advancedBackupSettings(props),
         backupPlanName: props.backupPlanName || id,
-        backupPlanRule: this._rules.derive(arr => arr.length === 0 ? undefined : arr),
+        backupPlanRule: this._rules.omitEmpty(),
       },
     });
 

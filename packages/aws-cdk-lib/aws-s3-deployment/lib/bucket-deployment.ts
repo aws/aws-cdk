@@ -449,7 +449,7 @@ export class BucketDeployment extends Construct {
       properties: {
         SourceBucketNames: this.sources.map(source => source.bucket.bucketName),
         SourceObjectKeys: this.sources.map(source => source.zipObjectKey),
-        SourceMarkers: omitEmpty(this.sources.map((source) => {
+        SourceMarkers: sanitize(this.sources.map((source) => {
           if (source.markers) {
             return source.markers;
             // if there are more than 1 source, then all sources
@@ -459,7 +459,7 @@ export class BucketDeployment extends Construct {
           }
           return undefined;
         })),
-        SourceMarkersConfig: omitEmpty(this.sources.map((source) => {
+        SourceMarkersConfig: sanitize(this.sources.map((source) => {
           if (source.markersConfig) {
             return source.markersConfig;
           } else if (this.sources.length > 1) {
@@ -985,6 +985,6 @@ function sourceConfigEqual(stack: cdk.Stack, a: SourceConfig, b: SourceConfig) {
     && a.markers === undefined && b.markers === undefined);
 }
 
-function omitEmpty<A>(box: IReadableBox<Array<A>>) {
+function sanitize<A>(box: IReadableBox<Array<A>>) {
   return box.derive(arr => arr.filter(Boolean)).derive(arr => arr.length > 0 ? arr : undefined);
 }

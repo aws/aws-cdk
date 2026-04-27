@@ -635,7 +635,7 @@ export class Repository extends RepositoryBase {
     this.resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: this._triggers.derive(arr => arr.length === 0 ? undefined : arr),
+      triggers: this._triggers.omitEmpty(),
       code: (props.code?.bind(this))?.code,
       kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });

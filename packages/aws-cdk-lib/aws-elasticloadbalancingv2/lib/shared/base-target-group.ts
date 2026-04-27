@@ -388,7 +388,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       name: baseProps.targetGroupName,
       targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       targetType: cdk.Lazy.string({ produce: () => this.targetType }),
-      targets: this._targetsJson.derive(arr => arr.length === 0 ? undefined : arr),
+      targets: this._targetsJson.omitEmpty(),
       vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
 
       // HEALTH CHECK

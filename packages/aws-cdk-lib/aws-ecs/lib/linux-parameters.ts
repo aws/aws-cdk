@@ -176,8 +176,8 @@ export class LinuxParameters extends Construct {
       maxSwap: this.maxSwap?.toMebibytes(),
       swappiness: this.swappiness,
       capabilities: {
-        add: cdk.Token.asList(this.capAdd.derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'capAdd' }),
-        drop: cdk.Token.asList(this.capDrop.derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'capDrop' }),
+        add: cdk.Token.asList(this.capAdd.omitEmpty(), { displayHint: 'capAdd' }),
+        drop: cdk.Token.asList(this.capDrop.omitEmpty(), { displayHint: 'capDrop' }),
       },
       devices: this.devices.derive(arr => arr.length === 0 ? undefined : arr.map(renderDevice)),
       tmpfs: this.tmpfs.derive(arr => arr.length === 0 ? undefined : arr.map(renderTmpfs)),

@@ -1359,8 +1359,8 @@ export class Table extends TableBase {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: this._globalSecondaryIndexes.derive(arr => arr.length === 0 ? undefined : arr),
-      localSecondaryIndexes: this._localSecondaryIndexes.derive(arr => arr.length === 0 ? undefined : arr),
+      globalSecondaryIndexes: this._globalSecondaryIndexes.omitEmpty(),
+      localSecondaryIndexes: this._localSecondaryIndexes.omitEmpty(),
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {

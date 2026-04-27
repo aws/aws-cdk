@@ -705,7 +705,7 @@ export class Secret extends SecretBase {
       generateSecretString: props.generateSecretString ?? (secretString ? undefined : {}),
       secretString,
       name: this.physicalName,
-      replicaRegions: this._replicaRegions.derive(arr => arr.length === 0 ? undefined : arr),
+      replicaRegions: this._replicaRegions.omitEmpty(),
     });
 
     resource.applyRemovalPolicy(props.removalPolicy, {

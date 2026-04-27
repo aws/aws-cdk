@@ -293,7 +293,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
       listeners: this._listeners,
-      instances: Token.asList(this._instanceIds.derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'instances' }),
+      instances: Token.asList(this._instanceIds.omitEmpty(), { displayHint: 'instances' }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,

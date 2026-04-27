@@ -982,7 +982,7 @@ export class ContainerDefinition extends Construct {
       secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this, this.props.healthCheck),
-      links: cdk.Token.asList(this._links.derive(arr => arr.length === 0 ? undefined : arr), { displayHint: 'links' }),
+      links: cdk.Token.asList(this._links.omitEmpty(), { displayHint: 'links' }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
