@@ -37,7 +37,7 @@ const provider = new ecs.AsgCapacityProvider(stack, 'CapacityProvier', {
       securityGroup,
     },
   ),
-  capacityProviderName: 'test-capacity-provider',
+
 });
 cluster.addAsgCapacityProvider(provider);
 
@@ -74,6 +74,12 @@ applicationLoadBalancedEc2Service.loadBalancer.connections.securityGroups.forEac
 
 new integ.IntegTest(app, 'AlbEc2ServiceWithCommandAndEntryPoint', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
 });
 
 app.synth();

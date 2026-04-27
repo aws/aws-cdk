@@ -5,6 +5,11 @@
       "stacks": [
         "aws-ecs-integ-lb-fargate"
       ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
       "assertionStack": "l3CapacityProviderStrategiesTest/DefaultTest/DeployAssert",
       "assertionStackName": "l3CapacityProviderStrategiesTestDefaultTestDeployAssertCE3F86E7"
     }

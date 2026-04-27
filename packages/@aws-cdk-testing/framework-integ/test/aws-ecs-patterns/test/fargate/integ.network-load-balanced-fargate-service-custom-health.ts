@@ -1,4 +1,4 @@
-import { Vpc } from 'aws-cdk-lib/aws-ec2';
+import { Port, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage } from 'aws-cdk-lib/aws-ecs';
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -11,7 +11,7 @@ const CustomHealthStack = new Stack(app, 'aws-ecs-integ-fargate-health-percentag
 const CustomHealthStackVpc = new Vpc(CustomHealthStack, 'Vpc', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 const CustomHealthStackCluster = new Cluster(CustomHealthStack, 'Cluster', { vpc: CustomHealthStackVpc });
 
-new NetworkMultipleTargetGroupsFargateService(CustomHealthStack, 'myService', {
+const myService = new NetworkMultipleTargetGroupsFargateService(CustomHealthStack, 'myService', {
   cluster: CustomHealthStackCluster,
   memoryLimitMiB: 512,
   taskImageOptions: {
@@ -36,6 +36,7 @@ new NetworkMultipleTargetGroupsFargateService(CustomHealthStack, 'myService', {
   minHealthyPercent: 60,
   maxHealthyPercent: 120,
 });
+myService.loadBalancers.forEach(lb => myService.service.connections.allowFrom(lb, Port.allTcp()));
 
 new integ.IntegTest(app, 'networkMultipleTargetGroupsFargateServiceTest', {
   testCases: [CustomHealthStack],
