@@ -149,8 +149,9 @@ export interface AddOpenApiTargetOptions {
   readonly validateOpenApiSchema?: boolean;
 
   /**
-   * Credential providers for authentication
-   * @default - [GatewayCredentialProvider.iamRole()]
+   * Credential providers for outbound authentication (OpenAPI targets use API Key or OAuth, not IAM).
+   *
+   * @default - none (no credential configuration on the target; supply providers for secured backends)
    */
   readonly credentialProviderConfigurations?: ICredentialProviderConfig[];
 }

@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "1726ca791eac5a033c78aef9826421a01d860f8d3aca6d6f06936cfe33a31f83": {
+      "displayName": "aws-cdk-bedrock-agentcore-gateway-identity-outbound-1 Template",
+      "source": {
+        "path": "aws-cdk-bedrock-agentcore-gateway-identity-outbound-1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-us-east-1-4c7ab1fc": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
+          "objectKey": "1726ca791eac5a033c78aef9826421a01d860f8d3aca6d6f06936cfe33a31f83.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

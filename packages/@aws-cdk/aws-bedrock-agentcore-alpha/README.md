@@ -98,6 +98,8 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Tools schema For Lambda target](#tools-schema-for-lambda-target)
     - [Api schema For OpenAPI and Smithy target](#api-schema-for-openapi-and-smithy-target)
     - [Outbound auth](#outbound-auth)
+      - [Token Vault credential providers](#token-vault-credential-providers)
+      - [Workload identities](#workload-identities)
     - [Basic Gateway Target Creation](#basic-gateway-target-creation)
       - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
       - [Using static factory methods](#using-static-factory-methods)
@@ -1505,7 +1507,7 @@ credential provider attached enabling you to securely access targets whether the
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
 | `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, or API Gateway). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
-| `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. Use `GatewayCredentialProvider.fromApiKeyIdentityArn()`, `GatewayCredentialProvider.fromOauthIdentityArn()`, or `GatewayCredentialProvider.fromIamRole()` |
+| `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. With Token Vault L2 constructs, prefer `GatewayCredentialProvider.fromApiKeyIdentity()` / `fromOauthIdentity()`; otherwise use `fromApiKeyIdentityArn()` / `fromOauthIdentityArn()`, or `fromIamRole()` |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
 This approach gives you full control over the configuration but is typically not necessary for most use cases.
@@ -1712,6 +1714,93 @@ The gateway authenticates on its own behalf, not on behalf of a user.
 
 **Note > You need to set up the outbound identity before you can create a gateway target.
 
+#### Token Vault credential providers
+
+AgentCore stores outbound **API key** and **OAuth2** client credentials in Token Vault. This module includes L2 constructs that create those resources and connect them to gateway targets.
+
+**Shared OAuth2 fields** — Every `OAuth2CredentialProvider` factory accepts the same **`clientId`** and **`clientSecret`**, plus optional **`oAuth2CredentialProviderName`** and **`tags`**. Extra properties appear only when an IdP needs them (for example **`tenantId`** for Microsoft, or **`issuer`** / endpoint overrides for Okta and other *included* configurations).
+
+**Vendor factories** — Prefer `OAuth2CredentialProvider.usingSlack`, `.usingGithub`, `.usingGoogle`, `.usingMicrosoft`, `.usingOkta`, `.usingAuth0`, `.usingCognito`, and the other `using*` helpers for known providers. Each maps to the matching CloudFormation *included* provider configuration.
+
+**Custom OAuth2 (`usingCustom`)** — Supply **exactly one** of:
+
+- **`discoveryUrl`** — OIDC/OAuth2 discovery document URL (for example `https://idp.example.com/.well-known/openid-configuration`), or
+- **`authorizationServerMetadata`** — Manual authorization server metadata (`issuer`, `authorizationEndpoint`, `tokenEndpoint`, and other fields supported by the `AWS::BedrockAgentCore::OAuth2CredentialProvider` resource).
+
+Do not pass both. The construct validates this at synthesis time when values are known; if you use CDK tokens, ensure the resolved template still satisfies the service rules.
+
+**Wiring to gateway targets** — After you create a provider in CDK, pass the construct to **`GatewayCredentialProvider.fromOauthIdentity()`** or **`fromApiKeyIdentity()`** (optional API key header/query settings go in the second argument for API keys). Alternatively, call **`bindForGatewayOAuthTarget`** / **`bindForGatewayApiKeyTarget`** on the provider and pass that object to **`fromOauthIdentityArn`** / **`fromApiKeyIdentityArn`**. You can still pass raw ARNs from the console or API when the provider already exists.
+
+**Example: GitHub OAuth2 and an MCP target**
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const oauth = agentcore.OAuth2CredentialProvider.usingGithub(this, "GhOAuth", {
+  oAuth2CredentialProviderName: "github-oauth",
+  clientId: "your-client-id",
+  clientSecret: "your-client-secret",
+});
+
+gateway.addMcpServerTarget("Mcp", {
+  gatewayTargetName: "mcp-server",
+  description: "MCP with GitHub OAuth",
+  endpoint: "https://my-mcp-server.example.com",
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.fromOauthIdentity(oauth, {
+      scopes: ["read:user"],
+    }),
+  ],
+});
+```
+
+**Example: custom IdP with a discovery URL**
+
+```typescript fixture=default
+agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuth", {
+  oAuth2CredentialProviderName: "custom-idp",
+  clientId: "your-client-id",
+  clientSecret: "your-client-secret",
+  discoveryUrl: "https://idp.example.com/.well-known/openid-configuration",
+});
+```
+
+**Example: custom IdP with explicit authorization server metadata**
+
+```typescript fixture=default
+agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuthMeta", {
+  clientId: "your-client-id",
+  clientSecret: "your-client-secret",
+  authorizationServerMetadata: {
+    issuer: "https://idp.example.com",
+    authorizationEndpoint: "https://idp.example.com/oauth2/authorize",
+    tokenEndpoint: "https://idp.example.com/oauth2/token",
+  },
+});
+```
+
+#### Workload identities
+
+A **workload identity** is the stable identity of an agent in your AWS account within the AgentCore Identity model. It ties together IAM roles, OAuth2 flows, API keys, and workload access tokens so agents can authenticate consistently across environments. For conceptual background, see [Understanding workload identities](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/understanding-agent-identities.html).
+
+**Agent identity directory** — Each account has a single logical directory that holds every workload identity, whether it was created by AgentCore Runtime, AgentCore Gateway, or manually (for example through CloudFormation or the control-plane API). The directory is created automatically when the first workload identity exists. Resource ARNs follow the pattern described in [Understanding the agent identity directory](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agent-identity-directory.html) (`workload-identity-directory/default` and child `workload-identity/<name>` entries).
+
+**When to create one in CDK** — Runtime and Gateway can create workload identities for you during deployment. Use the **`WorkloadIdentity`** L2 when you need a **manually defined** identity (custom name, allowed OAuth2 return URLs, tags) or when integrating workloads that are not driven by those services.
+
+**Construct** — `WorkloadIdentity` maps to **`AWS::BedrockAgentCore::WorkloadIdentity`**. It exposes `workloadIdentityArn`, `workloadIdentityName`, and `workloadIdentityRef` for wiring into IAM or other AgentCore resources. Import an existing identity with **`WorkloadIdentity.fromWorkloadIdentityAttributes`**. Grant helpers (`grantRead`, `grantAdmin`, `grantFullAccess`) align with [directory-level IAM patterns](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agent-identity-directory.html#directory-access-control-and-permissions) such as listing identities on the directory resource and scoping mutations to specific identity ARNs.
+
+**Example**
+
+```typescript fixture=default
+new agentcore.WorkloadIdentity(this, "MyWorkloadIdentity", {
+  workloadIdentityName: "customer-support-agent-prod",
+  allowedResourceOauth2ReturnUrls: ["https://app.example.com/oauth/callback"],
+  tags: { team: "agents", env: "prod" },
+});
+```
+
 ### Basic Gateway Target Creation
 
 You can create targets in two ways: using the static factory methods on `GatewayTarget` or using the convenient `addTarget` methods on the gateway instance.
@@ -1771,7 +1860,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// These ARNs are returned when creating the API key credential provider via Console or API
+// ARNs from the console/API, or from ApiKeyCredentialProvider + bindForGatewayApiKeyTarget
 const apiKeyProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/apikeycredentialprovider/my-apikey"
 const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
@@ -1826,8 +1915,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// OAuth2 authentication (recommended)
-// Note: Create the OAuth provider using AWS console or Identity L2 construct when available
+// OAuth2 (recommended): use OAuth2CredentialProvider + bindForGatewayOAuthTarget, or ARNs from console/API
 const oauthProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/oauth2credentialprovider/my-oauth";
 const oauthSecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-oauth-secret-abc123";
 
@@ -1936,7 +2024,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// outbound auth (Use AWS console to create it, Once Identity L2 construct is available you can use it to create identity)
+// Outbound auth: ApiKeyCredentialProvider + bindForGatewayApiKeyTarget, or ARNs from console/API
 const apiKeyIdentityArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/apikeycredentialprovider/my-apikey"
 const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
@@ -1989,8 +2077,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// OAuth2 authentication (recommended)
-// Note: Create the OAuth provider using AWS console or Identity L2 construct when available
+// OAuth2 (recommended): use OAuth2CredentialProvider + bindForGatewayOAuthTarget, or ARNs from console/API
 const oauthProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/oauth2credentialprovider/my-oauth";
 const oauthSecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-oauth-secret-abc123";
 

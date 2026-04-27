@@ -574,7 +574,7 @@ export class GatewayTarget extends GatewayTargetBase implements IMcpGatewayTarge
     if (this.credentialProviderConfigurations) {
       for (const provider of this.credentialProviderConfigurations) {
         provider
-          .grantNeededPermissionsToRole(this.gateway.role)
+          .grantNeededPermissionsToRole(this.gateway)
           ?.applyBefore(this.targetResource);
       }
     }

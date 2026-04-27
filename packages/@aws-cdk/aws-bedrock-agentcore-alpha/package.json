@@ -157,6 +157,14 @@
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IGatewayTarget",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IMcpGatewayTarget",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IMemory",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IApiKeyCredentialProvider",
+      "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IOAuth2CredentialProvider",
+      "construct-ctor-props-type:@aws-cdk/aws-bedrock-agentcore-alpha.ApiKeyCredentialProvider",
+      "props-no-arn-refs:@aws-cdk/aws-bedrock-agentcore-alpha.ApiKeyCredentialProviderProps.providerArn",
+      "props-no-arn-refs:@aws-cdk/aws-bedrock-agentcore-alpha.ApiKeyCredentialProviderProps.secretArn",
+      "props-physical-name:@aws-cdk/aws-bedrock-agentcore-alpha.ApiKeyCredentialProviderProps",
+      "props-struct-name:@aws-cdk/aws-bedrock-agentcore-alpha.IOAuth2CredentialProvider",
+      "no-unused-type:@aws-cdk/aws-bedrock-agentcore-alpha.OAuth2CredentialProviderVendor",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IRuntimeEndpoint"
     ]
   },
