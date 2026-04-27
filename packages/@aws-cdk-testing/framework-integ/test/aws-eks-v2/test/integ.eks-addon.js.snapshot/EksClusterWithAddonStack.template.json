@@ -946,7 +946,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -1055,7 +1055,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (EksClusterWithAddonStack/Cluster/KubectlProvider/Provider)",
     "Environment": {
@@ -1177,11 +1177,11 @@
   "AddonF8C56F86": {
    "Type": "AWS::EKS::Addon",
    "Properties": {
-    "AddonName": "coredns",
+    "AddonName": "snapshot-controller",
     "ClusterName": {
      "Ref": "ClusterEB0386A7"
     },
-    "ConfigurationValues": "{\"replicaCount\":2}",
+    "ConfigurationValues": "{\"logLevel\":3}",
     "PreserveOnDelete": true
    }
   }
