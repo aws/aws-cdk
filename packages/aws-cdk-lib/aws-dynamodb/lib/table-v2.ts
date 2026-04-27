@@ -6,22 +6,22 @@ import { CfnGlobalTable } from './dynamodb.generated';
 import type { TableEncryptionV2 } from './encryption';
 import type {
   Attribute,
+  ContributorInsightsSpecification,
+  GlobalTableSettingsReplicationMode,
+  KeySchema,
   LocalSecondaryIndexProps,
-  SecondaryIndexProps,
   PointInTimeRecoverySpecification,
+  SecondaryIndexProps,
   TableClass,
   WarmThroughput,
-  ContributorInsightsSpecification,
-  KeySchema,
-  GlobalTableSettingsReplicationMode,
 } from './shared';
 import {
   BillingMode,
+  MultiRegionConsistency,
+  parseKeySchema,
   ProjectionType,
   StreamViewType,
-  MultiRegionConsistency,
   validateContributorInsights,
-  parseKeySchema,
 } from './shared';
 import { TableGrants } from './table-grants';
 import type { ITableV2 } from './table-v2-base';
@@ -31,11 +31,9 @@ import { PolicyDocument } from '../../aws-iam';
 import type { IStream } from '../../aws-kinesis';
 import type { IKey } from '../../aws-kms';
 import { Key } from '../../aws-kms';
-import type {
-  CfnTag,
-  RemovalPolicy,
-} from '../../core';
+import type { CfnTag, RemovalPolicy } from '../../core';
 import {
+  Annotations,
   ArnFormat,
   FeatureFlags,
   Lazy,
@@ -44,10 +42,9 @@ import {
   TagManager,
   TagType,
   Token,
-  Annotations,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
+import type { ArrayBox, MapBox } from '../../core/lib/helpers-internal';
 import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
@@ -759,8 +756,8 @@ export class TableV2 extends TableBaseV2 {
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
 
-  private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
-  private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
+  private readonly globalSecondaryIndexes: MapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Boxes.fromMap(new Map());
+  private readonly localSecondaryIndexes: MapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Boxes.fromMap(new Map());
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
@@ -844,8 +841,8 @@ export class TableV2 extends TableBaseV2 {
       replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
       globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: this.globalSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
+      localSecondaryIndexes: this.localSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
       writeOnDemandThroughputSettings: this.maxWriteRequestUnits
@@ -937,7 +934,7 @@ export class TableV2 extends TableBaseV2 {
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateGlobalSecondaryIndex(props);
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
-    this.globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
+    this.globalSecondaryIndexes.put(props.indexName, globalSecondaryIndex);
   }
 
   /**
@@ -951,7 +948,7 @@ export class TableV2 extends TableBaseV2 {
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
-    this.localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
+    this.localSecondaryIndexes.put(props.indexName, localSecondaryIndex);
   }
 
   /**
@@ -1178,14 +1175,6 @@ export class TableV2 extends TableBaseV2 {
     }));
 
     return replicaTables;
-  }
-
-  private renderGlobalIndexes() {
-    return Array.from(this.globalSecondaryIndexes.values());
-  }
-
-  private renderLocalIndexes() {
-    return Array.from(this.localSecondaryIndexes.values());
   }
 
   private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
