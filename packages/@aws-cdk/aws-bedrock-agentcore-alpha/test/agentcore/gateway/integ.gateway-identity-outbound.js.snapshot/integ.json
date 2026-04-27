@@ -25,5 +25,5 @@
       "assertionStackName": "BedrockAgentCoreGatewayIdentityOutboundDefaultTestDeployAssert882D4745"
     }
   },
-  "minimumCliVersion": "2.1108.0"
+  "minimumCliVersion": "2.1119.0"
 }

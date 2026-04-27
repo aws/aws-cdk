@@ -52,50 +52,73 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "bedrock-agentcore:GetResourceApiKey",
-        "bedrock-agentcore:GetWorkloadAccessToken",
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
-       ],
+       "Action": "bedrock-agentcore:GetWorkloadAccessToken",
        "Effect": "Allow",
        "Resource": [
         {
-         "Fn::GetAtt": [
-          "ApiKeyIdentity3BBCFBED",
-          "ApiKeySecretArn"
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
          ]
         },
         {
-         "Fn::GetAtt": [
-          "ApiKeyIdentity3BBCFBED",
-          "CredentialProviderArn"
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity/integ-gateway-identity-outbound-*"
+          ]
          ]
         }
        ]
       },
       {
+       "Action": "bedrock-agentcore:GetResourceApiKey",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ApiKeyIdentity3BBCFBED",
+         "CredentialProviderArn"
+        ]
+       }
+      },
+      {
        "Action": [
-        "bedrock-agentcore:GetResourceOauth2Token",
-        "bedrock-agentcore:GetWorkloadAccessToken",
         "secretsmanager:DescribeSecret",
         "secretsmanager:GetSecretValue"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "OAuthIdentityB927DA55",
-          "ClientSecretArn"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:secretsmanager:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":secret:*"
          ]
-        },
-        {
-         "Fn::GetAtt": [
-          "OAuthIdentityB927DA55",
-          "CredentialProviderArn"
-         ]
-        }
-       ]
+        ]
+       }
+      },
+      {
+       "Action": "bedrock-agentcore:GetResourceOauth2Token",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OAuthIdentityB927DA55",
+         "CredentialProviderArn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"

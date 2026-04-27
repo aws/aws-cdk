@@ -313,4 +313,174 @@ describe('Gateway Coverage Tests', () => {
     expect(serialized).toContain('bedrock-agentcore:GetResourceOauth2Token');
     expect(serialized).toContain('secretsmanager:GetSecretValue');
   });
+
+  test('API key outbound auth produces three separate IAM statements with correct resource scoping', () => {
+    const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'my-gateway' });
+    const apiKey = new ApiKeyCredentialProvider(stack, 'Key', {
+      apiKeyCredentialProviderName: 'key-prov',
+      apiKey: 'k',
+    });
+
+    gateway.addOpenApiTarget('T', {
+      gatewayTargetName: 'target',
+      apiSchema: minimalOpenApiSchema,
+      validateOpenApiSchema: false,
+      credentialProviderConfigurations: [GatewayCredentialProvider.fromApiKeyIdentity(apiKey)],
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Statement 1: GetWorkloadAccessToken scoped to workload-identity-directory
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetWorkloadAccessToken',
+            Resource: Match.arrayWith([
+              Match.objectLike({
+                'Fn::Join': Match.arrayWith([Match.arrayWith([
+                  Match.stringLikeRegexp('.*bedrock-agentcore.*workload-identity-directory/default'),
+                ])]),
+              }),
+              Match.objectLike({
+                'Fn::Join': Match.arrayWith([Match.arrayWith([
+                  Match.stringLikeRegexp('.*workload-identity-directory/default/workload-identity/my-gateway-\\*'),
+                ])]),
+              }),
+            ]),
+          }),
+        ]),
+      },
+    });
+
+    // Statement 2: GetResourceApiKey scoped to credential provider ARN
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetResourceApiKey',
+            Resource: { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Key.*'), 'CredentialProviderArn']) },
+          }),
+        ]),
+      },
+    });
+
+    // Statement 3: Secrets Manager scoped to account wildcard (not the L1 object attribute)
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['secretsmanager:GetSecretValue']),
+            Resource: Match.objectLike({
+              'Fn::Join': Match.arrayWith([Match.arrayWith([
+                Match.stringLikeRegexp('.*secretsmanager.*secret:\\*'),
+              ])]),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('OAuth outbound auth produces three separate IAM statements with correct resource scoping', () => {
+    const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'my-gateway' });
+    const oauth = OAuth2CredentialProvider.usingGithub(stack, 'Gh', {
+      oAuth2CredentialProviderName: 'oauth-prov',
+      clientId: 'c',
+      clientSecret: 's',
+    });
+
+    gateway.addOpenApiTarget('T', {
+      gatewayTargetName: 'target',
+      apiSchema: minimalOpenApiSchema,
+      validateOpenApiSchema: false,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentity(oauth, { scopes: ['read'] }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Statement 1: GetWorkloadAccessToken scoped to workload-identity-directory
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetWorkloadAccessToken',
+            Resource: Match.arrayWith([
+              Match.objectLike({
+                'Fn::Join': Match.arrayWith([Match.arrayWith([
+                  Match.stringLikeRegexp('.*bedrock-agentcore.*workload-identity-directory/default'),
+                ])]),
+              }),
+            ]),
+          }),
+        ]),
+      },
+    });
+
+    // Statement 2: GetResourceOauth2Token scoped to credential provider ARN
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetResourceOauth2Token',
+            Resource: { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gh.*'), 'CredentialProviderArn']) },
+          }),
+        ]),
+      },
+    });
+
+    // Statement 3: Secrets Manager scoped to account wildcard
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['secretsmanager:GetSecretValue']),
+            Resource: Match.objectLike({
+              'Fn::Join': Match.arrayWith([Match.arrayWith([
+                Match.stringLikeRegexp('.*secretsmanager.*secret:\\*'),
+              ])]),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('API key outbound auth with fromApiKeyIdentityArn uses provided secret ARN string', () => {
+    const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'my-gateway' });
+
+    gateway.addOpenApiTarget('T', {
+      gatewayTargetName: 'target',
+      apiSchema: minimalOpenApiSchema,
+      validateOpenApiSchema: false,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromApiKeyIdentityArn({
+          providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/tv1/apikeycredentialprovider/my-key',
+          secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:my-secret-abc123',
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+
+    // All three statements present and separate
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetWorkloadAccessToken',
+          }),
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetResourceApiKey',
+            Resource: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/tv1/apikeycredentialprovider/my-key',
+          }),
+          Match.objectLike({
+            Action: Match.arrayWith(['secretsmanager:GetSecretValue']),
+          }),
+        ]),
+      },
+    });
+  });
 });

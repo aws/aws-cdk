@@ -1,7 +1,8 @@
-import type { IRole } from 'aws-cdk-lib/aws-iam';
-import { Grant, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { ArnFormat, Stack } from 'aws-cdk-lib';
+import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { ICredentialProviderConfig } from './credential-provider';
 import { CredentialProviderType } from './credential-provider';
+import type { IGateway } from '../gateway-base';
 import { GATEWAY_API_KEY_PERMS, GATEWAY_WORKLOAD_IDENTITY_PERMS, GATEWAY_SECRETS_PERMS } from '../perms';
 
 /******************************************************************************
@@ -150,28 +151,53 @@ export class ApiKeyCredentialProviderConfiguration implements ICredentialProvide
   }
 
   /**
-   * Grant the needed permissions to the role for API key authentication
+   * Grant the needed permissions to the gateway role for API key authentication.
+   *
+   * Produces three scoped IAM statements:
+   * 1. `GetWorkloadAccessToken` on the workload identity directory ARNs
+   * 2. `GetResourceApiKey` on the credential provider ARN
+   * 3. Secrets Manager read on all secrets in the account (the L1 `ApiKeySecretArn` attribute
+   *    is an object, not a string, so CloudFormation cannot resolve it as an IAM resource ARN)
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-outbound-auth.html
    */
-  grantNeededPermissionsToRole(role: IRole): Grant | undefined {
-    const statements = [
-      new PolicyStatement({
-        actions: [
-          ...GATEWAY_API_KEY_PERMS,
-          ...GATEWAY_WORKLOAD_IDENTITY_PERMS,
-        ],
-        resources: [this.providerArn],
-      }),
-      new PolicyStatement({
-        actions: GATEWAY_SECRETS_PERMS,
-        resources: [this.secretArn],
-      }),
-    ];
-
-    return Grant.addToPrincipal({
-      grantee: role,
-      actions: statements.flatMap(s => s.actions),
-      resourceArns: statements.flatMap(s => s.resources),
+  grantNeededPermissionsToRole(gateway: IGateway): Grant | undefined {
+    const stack = Stack.of(gateway);
+    const directoryArn = stack.formatArn({
+      service: 'bedrock-agentcore',
+      resource: 'workload-identity-directory',
+      resourceName: 'default',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
+    const identityWildcardArn = `${directoryArn}/workload-identity/${gateway.name}-*`;
+
+    const workloadIdentityGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_WORKLOAD_IDENTITY_PERMS],
+      resourceArns: [directoryArn, identityWildcardArn],
+      scope: gateway,
+    });
+    const apiKeyGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_API_KEY_PERMS],
+      resourceArns: [this.providerArn],
+      scope: gateway,
+    });
+    // The CFN attribute `ApiKeySecretArn` is typed as an object `{ SecretArn: string }`.
+    // CloudFormation `Fn::GetAtt` cannot extract the nested string, so we use a wildcard.
+    const secretWildcardArn = stack.formatArn({
+      service: 'secretsmanager',
+      resource: 'secret',
+      resourceName: '*',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+    const secretGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_SECRETS_PERMS],
+      resourceArns: [secretWildcardArn],
+      scope: gateway,
+    });
+    return workloadIdentityGrant.combine(apiKeyGrant).combine(secretGrant);
   }
 
   /**

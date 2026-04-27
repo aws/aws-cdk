@@ -1,6 +1,6 @@
 import type { IResolvable } from 'aws-cdk-lib';
 import type { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
-import type { Grant, IRole } from 'aws-cdk-lib/aws-iam';
+import type { Grant } from 'aws-cdk-lib/aws-iam';
 import type { ApiKeyCredentialLocation, ApiKeyCredentialProviderProps } from './api-key';
 import { ApiKeyCredentialProviderConfiguration } from './api-key';
 import { GatewayIamRoleCredentialProviderConfig } from './iam-role';
@@ -8,6 +8,7 @@ import type { OAuthConfiguration } from './oauth';
 import { OAuthCredentialProviderConfiguration } from './oauth';
 import type { IApiKeyCredentialProvider } from '../../identity/api-key-credential-provider';
 import type { IOAuth2CredentialProvider } from '../../identity/oauth2-credential-provider';
+import type { IGateway } from '../gateway-base';
 
 /******************************************************************************
  *                                 Enums
@@ -52,9 +53,10 @@ export interface ICredentialProviderConfig {
   _render(): CfnGatewayTarget.CredentialProviderConfigurationProperty | IResolvable;
 
   /**
-   * Grant the role the permissions
+   * Grant the gateway's execution role the permissions needed for outbound authentication.
+   * @param gateway The gateway whose role needs outbound auth permissions [disable-awslint:prefer-ref-interface]
    */
-  grantNeededPermissionsToRole(role: IRole): Grant | undefined;
+  grantNeededPermissionsToRole(gateway: IGateway): Grant | undefined;
 }
 
 /**
