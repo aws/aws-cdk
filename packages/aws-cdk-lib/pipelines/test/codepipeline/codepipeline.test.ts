@@ -899,6 +899,95 @@ class ReuseCodePipelineStack extends cdk.Stack {
   }
 }
 
+describe('retryMode', () => {
+  test('addStage with retryMode ALL_ACTIONS produces OnFailure with retry configuration', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+    pipeline.addStage(new FileAssetApp(app, 'MyApp'), {
+      retryMode: cdkp.RetryMode.ALL_ACTIONS,
+    });
+
+    const template = Template.fromStack(pipelineStack);
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
+        Match.objectLike({
+          Name: 'MyApp',
+          OnFailure: {
+            Result: 'RETRY',
+            RetryConfiguration: {
+              RetryMode: 'ALL_ACTIONS',
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('addStage with retryMode FAILED_ACTIONS produces OnFailure with retry configuration', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+    pipeline.addStage(new FileAssetApp(app, 'MyApp'), {
+      retryMode: cdkp.RetryMode.FAILED_ACTIONS,
+    });
+
+    const template = Template.fromStack(pipelineStack);
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
+        Match.objectLike({
+          Name: 'MyApp',
+          OnFailure: {
+            Result: 'RETRY',
+            RetryConfiguration: {
+              RetryMode: 'FAILED_ACTIONS',
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('addWave with retryMode produces OnFailure with retry configuration', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+    const wave = pipeline.addWave('MyWave', {
+      retryMode: cdkp.RetryMode.ALL_ACTIONS,
+    });
+    wave.addStage(new FileAssetApp(app, 'App1'));
+    wave.addStage(new FileAssetApp(app, 'App2'));
+
+    const template = Template.fromStack(pipelineStack);
+    template.hasResourceProperties('AWS::CodePipeline::Pipeline', {
+      Stages: Match.arrayWith([
+        Match.objectLike({
+          Name: 'MyWave',
+          OnFailure: {
+            Result: 'RETRY',
+            RetryConfiguration: {
+              RetryMode: 'ALL_ACTIONS',
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('stage without retryMode does not produce OnFailure', () => {
+    const pipelineStack = new cdk.Stack(app, 'PipelineStack', { env: PIPELINE_ENV });
+    const pipeline = new ModernTestGitHubNpmPipeline(pipelineStack, 'Cdk');
+
+    pipeline.addStage(new FileAssetApp(app, 'MyApp'));
+
+    const template = Template.fromStack(pipelineStack);
+    const stages = template.findResources('AWS::CodePipeline::Pipeline');
+    const pipelineResource = Object.values(stages)[0];
+    const appStage = pipelineResource.Properties.Stages.find((s: any) => s.Name === 'MyApp');
+    expect(appStage.OnFailure).toBeUndefined();
+  });
+});
+
 interface ReuseStageProps extends cdk.StageProps {
   readonly reuseStackProps?: cdk.StackProps;
 }
