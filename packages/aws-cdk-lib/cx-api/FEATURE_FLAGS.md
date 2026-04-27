@@ -114,6 +114,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2\_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | 2.245.0 | new default |
 | [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
+| [@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault](#aws-cdkaws-cloudfront-originsfunctionurlorigindualstackdefault) | Default Lambda Function URL origins to dual-stack IPv4/IPv6 | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -204,6 +205,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault": true,
     "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
     "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
     "@aws-cdk/aws-route53-patterns:useDistribution": true,
@@ -2434,6 +2436,29 @@ When disabled, the default `imageType` remains `ECS_AL2` / `EKS_AL2` for backwar
 **Compatibility with old behavior:** Explicitly set `imageType` to `ECS_AL2` or `EKS_AL2` in your compute environment images configuration.
 
 **Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.
+
+
+### @aws-cdk/aws-cloudfront-origins:functionUrlOriginDualStackDefault
+
+*Default Lambda Function URL origins to dual-stack IPv4/IPv6*
+
+Flag type: New default behavior
+
+When enabled, Lambda Function URL origins in CloudFront distributions will default to
+dual-stack IPv4/IPv6 connectivity instead of IPv4-only. This aligns with Lambda Function
+URLs' native dual-stack support and provides better connectivity options.
+
+When disabled, maintains the current IPv4-only default behavior for backward compatibility.
+
+Users can still explicitly set ipAddressType to override the default behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Pass `ipAddressType: OriginIpAddressType.IPV4` explicitly to maintain IPv4-only behavior.
 
 
 <!-- END details -->
