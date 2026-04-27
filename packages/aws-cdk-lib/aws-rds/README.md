@@ -984,6 +984,42 @@ and a list of supported versions and limitations.
 
 The following example shows enabling IAM authentication for a database instance and granting connection access to an IAM role.
 
+### Master User IAM Authentication
+
+You can configure the master user of an Aurora cluster to authenticate using IAM instead of a password.
+When using IAM master user authentication, no master user password or Secrets Manager secret is generated.
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_17_4,
+  }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  vpc,
+  iamAuthentication: true,
+  masterUserAuthenticationType: rds.MasterUserAuthenticationType.IAM,
+  storageEncrypted: true,
+});
+```
+
+You can also specify a custom master username:
+
+```ts
+declare const vpc: ec2.Vpc;
+const cluster = new rds.DatabaseCluster(this, 'Database', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_17_4,
+  }),
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  vpc,
+  iamAuthentication: true,
+  masterUserAuthenticationType: rds.MasterUserAuthenticationType.IAM,
+  storageEncrypted: true,
+  credentials: rds.Credentials.fromUsername('myadmin'),
+});
+```
+
 ### Instance
 
 ```ts

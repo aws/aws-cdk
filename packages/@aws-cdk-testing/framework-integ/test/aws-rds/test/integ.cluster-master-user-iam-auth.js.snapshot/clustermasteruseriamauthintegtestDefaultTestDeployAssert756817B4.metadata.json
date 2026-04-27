@@ -1,0 +1,62 @@
+{
+  "/cluster-master-user-iam-auth-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/sfb/git/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/sfb/git/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/sfb/git/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:22:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cluster-master-user-iam-auth-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:186:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:141:92)",
+        "process.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:79:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cluster-master-user-iam-auth-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:141:92)",
+        "process.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:79:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
