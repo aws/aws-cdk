@@ -14,9 +14,7 @@ import {
   GatewayCredentialProvider,
   OAuth2CredentialProvider,
 } from '../../../lib';
-import { Gateway } from '../../../lib';
 import { PolicyEngineMode } from '../../../lib/gateway/gateway';
-import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
 
