@@ -73,7 +73,7 @@ export class IpAddresses {
   /**
    * Amazon Provided Ipv6 range
    */
-  public static amazonProvidedIpv6(props: SecondaryAddressProps) : IIpAddresses {
+  public static amazonProvidedIpv6(props: SecondaryAddressProps): IIpAddresses {
     return new AmazonProvided(props);
   }
 
@@ -180,7 +180,7 @@ export interface IIpAddresses {
    * Method to define the implementation logic of
    * IP address allocation
    */
-  allocateVpcCidr() : VpcCidrOptions;
+  allocateVpcCidr(): VpcCidrOptions;
 
 }
 
@@ -354,17 +354,17 @@ export class VpcV2 extends VpcV2Base {
       constructor(construct: Construct, constructId: string, props: VpcV2Attributes) {
         super(construct, constructId);
         this.vpcId = props.vpcId,
-        this.region = props.region ?? this.stack.region,
-        this.ownerAccountId = props.ownerAccountId ?? this.stack.account,
-        this._partition = region_info.RegionInfo.get(this.region).partition,
-        this.vpcArn = Arn.format({
-          service: 'ec2',
-          resource: 'vpc',
-          resourceName: this.vpcId,
-          region: this.region,
-          account: this.ownerAccountId,
-          partition: this._partition,
-        }, this.stack);
+          this.region = props.region ?? this.stack.region,
+          this.ownerAccountId = props.ownerAccountId ?? this.stack.account,
+          this._partition = region_info.RegionInfo.get(this.region).partition,
+          this.vpcArn = Arn.format({
+            service: 'ec2',
+            resource: 'vpc',
+            resourceName: this.vpcId,
+            region: this.region,
+            account: this.ownerAccountId,
+            partition: this._partition,
+          }, this.stack);
 
         // Populate region and account fields that can be used to set up peering connection
         // sample vpc Arn - arn:aws:ec2:us-west-2:123456789012:vpc/vpc-0123456789abcdef0
@@ -380,11 +380,11 @@ export class VpcV2 extends VpcV2Base {
           for (const subnet of props.subnets) {
             if (subnet.subnetType === SubnetType.PRIVATE_WITH_EGRESS || subnet.subnetType === SubnetType.PRIVATE_WITH_NAT ||
               subnet.subnetType as string === 'Deprecated_Private') {
-              this.privateSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPrivateSubnet', subnet));
+              this.privateSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName ?? 'ImportedPrivateSubnet', subnet));
             } else if (subnet.subnetType === SubnetType.PUBLIC) {
-              this.publicSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedPublicSubnet', subnet));
+              this.publicSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName ?? 'ImportedPublicSubnet', subnet));
             } else if (subnet.subnetType as string === 'Deprecated_Isolated' || subnet.subnetType === SubnetType.PRIVATE_ISOLATED) {
-              this.isolatedSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName?? 'ImportedIsolatedSubnet', subnet));
+              this.isolatedSubnets.push(SubnetV2.fromSubnetV2Attributes(scope, subnet.subnetName ?? 'ImportedIsolatedSubnet', subnet));
             }
           }
         }
@@ -613,7 +613,7 @@ export class VpcV2 extends VpcV2Base {
  * Supports assigning IPv4 address to VPC
  */
 class ipv4CidrAllocation implements IIpAddresses {
-  constructor(private readonly cidrBlock: string, private readonly props?: { cidrBlockName: string}) {
+  constructor(private readonly cidrBlock: string, private readonly props?: { cidrBlockName: string }) {
   }
 
   /**
@@ -639,7 +639,7 @@ class AmazonProvided implements IIpAddresses {
    * Amazon will automatically assign an IPv6 CIDR range from its pool of available addresses.
    */
 
-  constructor(private readonly props: { cidrBlockName: string}) {}
+  constructor(private readonly props: { cidrBlockName: string }) { }
 
   allocateVpcCidr(): VpcCidrOptions {
     return {
@@ -706,7 +706,7 @@ export interface IVPCCidrBlock {
   /**
    * Amazon Provided Ipv6
    */
-  readonly amazonProvidedIpv6CidrBlock? : boolean;
+  readonly amazonProvidedIpv6CidrBlock?: boolean;
 
   /**
    * The secondary IPv4 CIDR Block
@@ -718,12 +718,12 @@ export interface IVPCCidrBlock {
   /**
    * IPAM pool for IPv6 address type
    */
-  readonly ipv6IpamPoolId ?: string;
+  readonly ipv6IpamPoolId?: string;
 
   /**
    * IPAM pool for IPv4 address type
    */
-  readonly ipv4IpamPoolId ?: string;
+  readonly ipv4IpamPoolId?: string;
 
   /**
    * The IPv6 CIDR block from the specified IPv6 address pool.
@@ -746,7 +746,7 @@ export interface VPCCidrBlockattributes {
    *
    * @default false
    */
-  readonly amazonProvidedIpv6CidrBlock? : boolean;
+  readonly amazonProvidedIpv6CidrBlock?: boolean;
 
   /**
    * The secondary IPv4 CIDR Block
@@ -781,14 +781,14 @@ export interface VPCCidrBlockattributes {
    *
    * @default - no IPAM pool Id provided for IPv6
    */
-  readonly ipv6IpamPoolId ?: string;
+  readonly ipv6IpamPoolId?: string;
 
   /**
    * IPAM pool for IPv4 address type
    *
    * @default - no IPAM pool Id provided for IPv4
    */
-  readonly ipv4IpamPoolId ?: string;
+  readonly ipv4IpamPoolId?: string;
 
   /**
    * IPv4 CIDR provisioned under pool
@@ -836,12 +836,12 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
   /**
    * Import an existing VPC CIDR Block
    */
-  public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes) : IVPCCidrBlock {
+  public static fromVPCCidrBlockattributes(scope: Construct, id: string, props: VPCCidrBlockattributes): IVPCCidrBlock {
     class Import extends Resource implements IVPCCidrBlock {
       public readonly cidrBlock = props.cidrBlock;
-      public readonly amazonProvidedIpv6CidrBlock ?: boolean = props.amazonProvidedIpv6CidrBlock;
-      public readonly ipv6IpamPoolId ?: string = props.ipv6IpamPoolId;
-      public readonly ipv4IpamPoolId ?: string = props.ipv4IpamPoolId;
+      public readonly amazonProvidedIpv6CidrBlock?: boolean = props.amazonProvidedIpv6CidrBlock;
+      public readonly ipv6IpamPoolId?: string = props.ipv6IpamPoolId;
+      public readonly ipv4IpamPoolId?: string = props.ipv4IpamPoolId;
       // BYOIP Pool Attributes
       public readonly ipv6Pool?: string = props.ipv6Pool;
       public readonly ipv6CidrBlock?: string = props.ipv6CidrBlock;
@@ -879,20 +879,24 @@ class VPCCidrBlock extends Resource implements IVPCCidrBlock {
   }
 }
 
-// @internal First two Octet to verify RFC 1918
-interface IPaddressConfig {
-  octet1: number;
-  octet2: number;
-}
-
 /**
- * Validates whether a secondary IPv4 address is within the same private IP address range as the primary IPv4 address.
+ * Validates whether a secondary IPv4 address can be associated with the VPC's primary IPv4 address.
+ *
+ * AWS VPCs support the following secondary CIDR block combinations:
+ * - RFC 1918 ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) can be used together
+ * - 100.64.0.0/10 (Carrier-Grade NAT / Shared Address Space) can be used with RFC 1918
+ * - 198.18.0.0/15 (Inter-network device benchmark testing) can be used with RFC 1918
+ * - Publicly routable IP ranges can be used as secondary CIDRs with RFC 1918 primary
+ *
+ * The main restriction is: you cannot mix 100.64.0.0/10 or public IPs as primary with
+ * RFC 1918 as secondary.
+ *
+ * @see https://docs.aws.amazon.com/vpc/latest/userguide/vpc-cidr-blocks.html#add-cidr-block-restrictions
  *
  * @param cidr1 The secondary IPv4 CIDR block to be validated.
  * @param cidr2 The primary IPv4 CIDR block to validate against.
- * @returns True if the secondary IPv4 CIDR block is within the same private IP address range as the primary IPv4 CIDR block, false otherwise.
+ * @returns True if the secondary IPv4 CIDR block can be associated with the primary IPv4 CIDR block.
  * @internal
- * The private IP address ranges are defined by RFC 1918 as 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16.
  */
 function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
   if (!cidr1 || !cidr2) {
@@ -906,17 +910,47 @@ function validateIpv4address(cidr1?: string, cidr2?: string): boolean {
     return false; // Handle invalid CIDR ranges
   }
 
-  const ip1: IPaddressConfig = {
-    octet1: octetsCidr1[0],
-    octet2: octetsCidr1[1],
+  // Helper functions to classify IP address types
+  const isRfc1918 = (octets: number[]): boolean => {
+    return (octets[0] === 10) || // 10.0.0.0/8
+      (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) || // 172.16.0.0/12
+      (octets[0] === 192 && octets[1] === 168); // 192.168.0.0/16
   };
 
-  const ip2: IPaddressConfig = {
-    octet1: octetsCidr2[0],
-    octet2: octetsCidr2[1],
+  const isCgnat = (octets: number[]): boolean => {
+    // 100.64.0.0/10 = 100.64.0.0 - 100.127.255.255
+    return octets[0] === 100 && octets[1] >= 64 && octets[1] <= 127;
   };
 
-  return (ip1.octet1 === 10 && ip2.octet1 === 10) ||
-    (ip1.octet1 === 192 && ip1.octet2 === 168 && ip2.octet1 === 192 && ip2.octet2 === 168) ||
-    (ip1.octet1 === 172 && ip1.octet2 === 16 && ip2.octet1 === 172 && ip2.octet2 === 16); // CIDR ranges belong to same private IP address ranges
+  const isBenchmark = (octets: number[]): boolean => {
+    // 198.18.0.0/15 = 198.18.0.0 - 198.19.255.255
+    return octets[0] === 198 && (octets[1] === 18 || octets[1] === 19);
+  };
+
+  const primaryIsRfc1918 = isRfc1918(octetsCidr2);
+  const secondaryIsRfc1918 = isRfc1918(octetsCidr1);
+  const secondaryIsCgnat = isCgnat(octetsCidr1);
+  const secondaryIsBenchmark = isBenchmark(octetsCidr1);
+
+  // If primary is RFC 1918, allow:
+  // - Any RFC 1918 range as secondary
+  // - CGNAT (100.64.0.0/10) as secondary
+  // - Benchmark ranges (198.18.0.0/15) as secondary
+  // - Any publicly routable IP as secondary (BYOIP or other valid use cases)
+  if (primaryIsRfc1918) {
+    return true; // AWS allows any secondary CIDR when primary is RFC 1918
+  }
+
+  // If primary is CGNAT, allow other CGNAT or RFC 1918
+  if (isCgnat(octetsCidr2)) {
+    return secondaryIsCgnat || secondaryIsRfc1918 || secondaryIsBenchmark;
+  }
+
+  // If primary is Benchmark range, allow RFC 1918, CGNAT, or other Benchmark
+  if (isBenchmark(octetsCidr2)) {
+    return secondaryIsRfc1918 || secondaryIsCgnat || secondaryIsBenchmark;
+  }
+
+  // For other primary ranges (public IPs), allow RFC 1918, CGNAT, Benchmark as secondary
+  return secondaryIsRfc1918 || secondaryIsCgnat || secondaryIsBenchmark;
 }
