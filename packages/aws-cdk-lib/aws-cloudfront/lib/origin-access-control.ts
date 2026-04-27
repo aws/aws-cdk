@@ -80,6 +80,24 @@ export interface S3OriginAccessControlProps extends OriginAccessControlBaseProps
 export interface FunctionUrlOriginAccessControlProps extends OriginAccessControlBaseProps { }
 
 /**
+ * Properties for creating a MediaPackage V2 Origin Access Control resource.
+ */
+export interface MediaPackageV2OriginAccessControlProps {
+  /**
+   * A description of the origin access control.
+   *
+   * @default - no description
+   */
+  readonly description?: string;
+  /**
+   * A name to identify the origin access control, with a maximum length of 64 characters.
+   *
+   * @default - a generated name
+   */
+  readonly originAccessControlName?: string;
+}
+
+/**
  * Origin types supported by Origin Access Control.
  */
 export enum OriginAccessControlOriginType {
@@ -287,6 +305,58 @@ export class FunctionUrlOriginAccessControl extends OriginAccessControlBase {
         signingBehavior: props.signing?.behavior ?? SigningBehavior.ALWAYS,
         signingProtocol: props.signing?.protocol ?? SigningProtocol.SIGV4,
         originAccessControlOriginType: OriginAccessControlOriginType.LAMBDA, // Lambda specific OAC
+      },
+    });
+
+    this.originAccessControlId = resource.attrId;
+  }
+}
+
+/**
+ * An Origin Access Control for AWS Elemental MediaPackage V2 origins.
+ * @resource AWS::CloudFront::OriginAccessControl
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-mediapackage.html
+ */
+@propertyInjectable
+export class MediaPackageV2OriginAccessControl extends OriginAccessControlBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudfront.MediaPackageV2OriginAccessControl';
+
+  /**
+   * Imports a MediaPackage V2 origin access control from its id.
+   */
+  public static fromOriginAccessControlId(scope: Construct, id: string, originAccessControlId: string): IOriginAccessControl {
+    class Import extends Resource implements IOriginAccessControl {
+      public readonly originAccessControlId = originAccessControlId;
+      public readonly originAccessControlOriginType = OriginAccessControlOriginType.MEDIAPACKAGEV2;
+
+      public get originAccessControlRef(): OriginAccessControlReference {
+        return {
+          originAccessControlId: this.originAccessControlId,
+        };
+      }
+    }
+    return new Import(scope, id);
+  }
+
+  /**
+   * The unique identifier of this Origin Access Control.
+   * @attribute
+   */
+  public readonly originAccessControlId: string;
+
+  constructor(scope: Construct, id: string, props: MediaPackageV2OriginAccessControlProps = {}) {
+    super(scope, id);
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    const resource = new CfnOriginAccessControl(this, 'Resource', {
+      originAccessControlConfig: {
+        description: props.description,
+        name: props.originAccessControlName ?? Names.uniqueResourceName(this, { maxLength: 64 }),
+        signingBehavior: SigningBehavior.ALWAYS,
+        signingProtocol: SigningProtocol.SIGV4,
+        originAccessControlOriginType: OriginAccessControlOriginType.MEDIAPACKAGEV2,
       },
     });
 
