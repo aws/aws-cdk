@@ -1,0 +1,1480 @@
+{
+  "/cdk-integ-lambda-nodejs": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both"
+        },
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both"
+        }
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-log-level": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "logLevel": "*"
+        },
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "logLevel": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-bundling-path": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "inject": "*"
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "inject": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-tsconfig-path": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "tsconfig": "*"
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "tsconfig": "*"
+        }
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-metafile-path": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "metafile": true
+        },
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "bundling": {
+          "metafile": true
+        }
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "vpc": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both"
+        },
+        "handler": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both"
+        },
+        "handler": "*"
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "commandHooks": "*"
+        },
+        "handler": "*",
+        "layers": [
+          "*"
+        ],
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "runtime": "*",
+        "bundling": {
+          "minify": true,
+          "sourceMap": true,
+          "sourceMapMode": "both",
+          "commandHooks": "*"
+        },
+        "handler": "*",
+        "layers": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:97:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:97:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandler4E1C6929"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:13:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-log-level/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-log-level/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlerloglevel0D4E12A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:22:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "jshandlerD8909241"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:32:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-bundling-path/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-bundling-path/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "jshandlerbundlingpath4B2FEE93"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:36:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-tsconfig-path/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-tsconfig-path/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "jshandlertsconfigpath74546CB1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:42:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-metafile-path/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-metafile-path/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlermetafilepath3B73FC2C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:48:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:768:29)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:823:29)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:826:29)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-vpc/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-vpc/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": "*",
+        "allowAllIpv6Outbound": "*"
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlervpcA502E26A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:54:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlercustomhandlernodots381F62EE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:59:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlercustomhandlerdots2695F653"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:69:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlerServiceRole8876B8E7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:13:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-log-level/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlerloglevelServiceRole8512BC45"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:22:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-log-level/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "jshandlerServiceRole781AF366"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:32:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-bundling-path/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "jshandlerbundlingpathServiceRole827F7127"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:36:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-bundling-path/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-tsconfig-path/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "jshandlertsconfigpathServiceRoleC592AD71"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:42:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/js-handler-tsconfig-path/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-metafile-path/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlermetafilepathServiceRoleECB676AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:48:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-metafile-path/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
+        "new PublicSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "Array.forEach (:)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2EIP3C605A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2NATGateway9182C01D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
+        "new Subnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
+        "new PrivateSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
+        "WrappedClass.createSubnets (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
+        "new Vpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:57:18)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-vpc/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlervpcServiceRoleF6D326A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:54:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-vpc/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-vpc/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlervpcSecurityGroup587CC215"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
+        "new SecurityGroup (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "NodejsFunction.configureVpc (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1198:62)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:717:33)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:54:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlercustomhandlernodotsServiceRole1775E15E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:59:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-no-dots/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "tshandlercustomhandlerdotsServiceRole0575D3CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new TestStack (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:69:9)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.function.js:96:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs/ts-handler-custom-handler-dots/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

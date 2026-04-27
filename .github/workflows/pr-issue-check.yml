@@ -9,92 +9,16 @@ jobs:
     permissions:
       pull-requests: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+      - name: Install type dependencies
+        run: yarn install --frozen-lockfile
+      - name: Compile TypeScript
+        run: npx tsc --project scripts/tsconfig.pr-issue-check.json
       - name: Check PR description for issue reference
-        uses: actions/github-script@v7
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const body = context.payload.pull_request.body || '';
-            const lines = body.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-
-            // Expected format from template:
-            //   Line 1: ### Issue # (if applicable)
-            //   Line 2: Closes #<number>.
-            // We check the first two non-empty lines for an issue number pattern.
-            const firstTwo = lines.slice(0, 2).join('\n');
-            const issuePattern = /#(\d+)/g;
-            const matches = [...firstTwo.matchAll(issuePattern)];
-
-            if (matches.length === 0) {
-              // Check if an issue number exists elsewhere in the body
-              const restOfBody = lines.slice(2).join('\n');
-              const issueElsewhere = /#(\d+)/.test(restOfBody);
-
-              let message;
-              if (issueElsewhere) {
-                message = `👋 It looks like your PR description references an issue, but not in the expected location.\n\nThe issue number must appear in the first section of the description (the first two lines), following the template format:\n\`\`\`\n### Issue # (if applicable)\n\nCloses #123.\n\`\`\`\nPlease move your issue reference to the top of the description.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
-              } else {
-                const hasIssueHeading = firstTwo.toLowerCase().includes('issue');
-                if (hasIssueHeading) {
-                  message = `👋 It looks like your PR description follows the template but is missing a valid issue number in the first section.\n\nPlease update the description to include a reference like \`Closes #123\` so the linked issue is closed automatically when this PR is merged.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
-                } else {
-                  message = `⚠️ This pull request does not reference a linked issue.\n\nPull requests that do not close an assigned issue will not be accepted. Please update the description to follow the [PR template](/.github/PULL_REQUEST_TEMPLATE.md) and include a line like \`Closes #123\` at the top.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
-                }
-              }
-
-              try {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.pull_request.number,
-                  body: message
-                });
-              } catch (commentError) {
-                core.warning(`Failed to post comment: ${commentError.message}`);
-              }
-              core.setFailed('PR description is missing a valid issue reference.');
-              return;
-            }
-
-            // Validate that referenced issues exist and are open
-            const issueNumbers = matches.map(m => parseInt(m[1], 10));
-            const invalid = [];
-
-            for (const num of issueNumbers) {
-              try {
-                const { data: issue } = await github.rest.issues.get({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: num
-                });
-                if (issue.pull_request) {
-                  invalid.push(`#${num} (is a pull request, not an issue)`);
-                }
-              } catch (e) {
-                if (e.status === 404 || e.status === 410) {
-                  invalid.push(`#${num} (does not exist)`);
-                } else {
-                  throw e;
-                }
-              }
-            }
-
-            if (invalid.length > 0) {
-              const list = invalid.join('\n- ');
-              const message = `⚠️ The following issue reference(s) in your PR description are not valid issues:\n\n- ${list}\n\nPlease make sure your PR references an existing issue using the format \`Closes #123\`.\n\nGitHub keywords like \`Closes\`, \`Fixes\`, or \`Resolves\` are all supported.`;
-
-              try {
-                await github.rest.issues.createComment({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  issue_number: context.payload.pull_request.number,
-                  body: message
-                });
-              } catch (commentError) {
-                core.warning(`Failed to post comment: ${commentError.message}`);
-              }
-              core.setFailed('PR references invalid issues.');
-              return;
-            }
-
-            console.log(`Valid open issue(s) found: ${issueNumbers.map(n => '#' + n).join(', ')}`);
+            const { prIssueCheck } = require('./scripts/pr-issue-check.js');
+            await prIssueCheck({ github, context, core });

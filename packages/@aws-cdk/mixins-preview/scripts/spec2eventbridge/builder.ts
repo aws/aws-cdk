@@ -508,9 +508,8 @@ class StandaloneEventGenerator {
       hasResource,
     });
 
-    const methodName = naming.eventPatternMethodName(namespaceName);
     const eventPatternMethod = eventNamespace.addMethod({
-      name: methodName,
+      name: 'eventPattern',
       static: true,
       returnType: eventsEventPattern,
       docs: {
