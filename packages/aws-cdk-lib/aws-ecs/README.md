@@ -1866,6 +1866,50 @@ const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICap
 });
 
 ```
+
+#### Using Instance Store (Local NVMe Storage)
+
+By default, ECS Managed Instances provision EBS volumes for container data storage. Setting `useLocalStorage: true` instructs ECS to use the instance's NVMe SSD (instance store) instead, which eliminates EBS provisioning and delivers higher I/O throughput at lower cost.
+
+> **Note:** Instance store volumes are ephemeral — data is lost when the instance is stopped or terminated. Use instance store only for temporary data such as caches, scratch files, or buffers.
+
+To guarantee that ECS always selects instances with instance store volumes, combine `useLocalStorage` with `instanceRequirements.localStorage: LocalStorage.REQUIRED`. When `localStorage` is not specified in `instanceRequirements`, CDK automatically sets it to `REQUIRED`.
+
+```ts
+declare const vpc: ec2.Vpc;
+declare const cluster: ecs.Cluster;
+
+const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', {
+  vpc,
+  description: 'Security group for managed instances',
+});
+
+// localStorage is automatically set to REQUIRED when useLocalStorage is true
+// and instanceRequirements.localStorage is not specified.
+const miCapacityProvider = new ecs.ManagedInstancesCapacityProvider(this, 'MICapacityProvider', {
+  subnets: vpc.privateSubnets,
+  securityGroups: [securityGroup],
+  useLocalStorage: true,
+  instanceRequirements: {
+    vCpuCountMin: 2,
+    memoryMin: Size.gibibytes(4),
+    // localStorage: ec2.LocalStorage.REQUIRED is added automatically
+  },
+});
+
+cluster.addManagedInstancesCapacityProvider(miCapacityProvider);
+```
+
+The following combinations are validated at synthesis time:
+
+| `useLocalStorage` | `instanceRequirements.localStorage` | Result |
+|---|---|---|
+| `true` | Not specified | `localStorage` is automatically set to `REQUIRED` |
+| `true` | `REQUIRED` | Valid — no warning |
+| `true` | `INCLUDED` | Warning — instances without instance store may be selected |
+| `true` | `EXCLUDED` | **Error** — contradicts `useLocalStorage`; no instance store can ever be available |
+| `true` | `instanceRequirements` omitted | Warning — recommend specifying `instanceRequirements.localStorage` |
+
 #### Note: Service Replacement When Migrating from LaunchType to CapacityProviderStrategy
 
 **Understanding the Limitation**

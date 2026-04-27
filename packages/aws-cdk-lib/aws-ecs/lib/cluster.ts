@@ -1612,6 +1612,15 @@ export interface ManagedInstancesCapacityProviderProps {
    * @default - `ON_DEMAND`
    */
   readonly capacityOptionType?: CapacityOptionType;
+
+  /**
+   * Whether to enable instance store (local NVMe storage) for tasks.
+   * When enabled, tasks can use the instance's local storage volumes.
+   * Only applicable when the selected instance types have instance store volumes.
+   *
+   * @default - instance store not used
+   */
+  readonly useLocalStorage?: boolean;
 }
 
 /**
@@ -1676,6 +1685,31 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
       throw new ValidationError(lit`SecurityGroupsCannotEmpty`, 'Security groups cannot be an empty array. Provide at least one security group.', this);
     }
 
+    if (props.useLocalStorage === true) {
+      if (props.instanceRequirements?.localStorage === ec2.LocalStorage.EXCLUDED) {
+        throw new ValidationError(
+          lit`UseLocalStorageConflictsWithExcluded`,
+          'useLocalStorage cannot be true when instanceRequirements.localStorage is EXCLUDED. ' +
+          'EXCLUDED selects only instances without instance store, making useLocalStorage impossible to satisfy.',
+          this,
+        );
+      } else if (props.instanceRequirements === undefined) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ecs:useLocalStorageWithoutInstanceRequirements',
+          'useLocalStorage is true but instanceRequirements is not specified. ' +
+          'Instances without local storage may be selected, making useLocalStorage ineffective. ' +
+          'Set instanceRequirements.localStorage to LocalStorage.REQUIRED to ensure instance store availability.',
+        );
+      } else if (props.instanceRequirements.localStorage === ec2.LocalStorage.INCLUDED) {
+        Annotations.of(this).addWarningV2(
+          '@aws-cdk/aws-ecs:useLocalStorageWithoutRequired',
+          'useLocalStorage is true but instanceRequirements.localStorage is not REQUIRED. ' +
+          'Instances without local storage may be selected, making useLocalStorage ineffective. ' +
+          'Set instanceRequirements.localStorage to LocalStorage.REQUIRED to ensure instance store availability.',
+        );
+      }
+    }
+
     // Create or use provided infrastructure role
     const roleId = `${id}Role`;
     this.infrastructureRole = props.infrastructureRole ?? new iam.Role(this, roleId, {
@@ -1724,7 +1758,15 @@ export class ManagedInstancesCapacityProvider extends Construct implements ec2.I
           monitoring: props.monitoring,
         }),
         ...(props.instanceRequirements && {
-          instanceRequirements: this.renderInstanceRequirements(props.instanceRequirements),
+          instanceRequirements: this.renderInstanceRequirements({
+            ...props.instanceRequirements,
+            ...(props.useLocalStorage === true && props.instanceRequirements.localStorage === undefined && {
+              localStorage: ec2.LocalStorage.REQUIRED,
+            }),
+          }),
+        }),
+        ...(props.useLocalStorage !== undefined && {
+          localStorageConfiguration: { useLocalStorage: props.useLocalStorage },
         }),
       },
       propagateTags: props.propagateTags,
