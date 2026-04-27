@@ -175,6 +175,42 @@ describe('framework', () => {
     expect(result).toContain(expected);
   });
 
+  test('codegen cdk function embeds the provided source hash as assetHash', () => {
+    // GIVEN
+    const module = new HandlerFrameworkModule('cdk-testing/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.FUNCTION,
+      sourceCode: sourceCodeTs,
+    };
+    const outfile = calculateOutfile(sourceCodeTs);
+    module.build(component, calculateCodeDirectory(path.dirname(outfile)), 'abc123');
+
+    // WHEN
+    module.renderTo(`${tmpDir}/result.ts`);
+
+    // THEN
+    const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
+    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler'), { assetHash: 'abc123' })");
+  });
+
+  test('codegen cdk singleton function embeds the provided source hash as assetHash', () => {
+    // GIVEN
+    const module = new HandlerFrameworkModule('cdk-testing/test-provider');
+    const component: ComponentProps = {
+      type: ComponentType.SINGLETON_FUNCTION,
+      sourceCode: sourceCodeTs,
+    };
+    const outfile = calculateOutfile(sourceCodeTs);
+    module.build(component, calculateCodeDirectory(path.dirname(outfile)), 'deadbeef');
+
+    // WHEN
+    module.renderTo(`${tmpDir}/result.ts`);
+
+    // THEN
+    const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
+    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler'), { assetHash: 'deadbeef' })");
+  });
+
   test('codegen eval-nodejs-provider with exposed runtime property', () => {
     // GIVEN
     const module = new HandlerFrameworkModule('cdk-testing/eval-nodejs-provider');
