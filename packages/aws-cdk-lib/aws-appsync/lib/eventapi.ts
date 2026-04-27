@@ -514,7 +514,7 @@ export interface EventApiAttributes {
   readonly apiName?: string;
 
   /**
-   * an unique AWS AppSync Event API identifier
+   * a unique AWS AppSync Event API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   readonly apiId: string;
@@ -580,7 +580,7 @@ export class EventApi extends EventApiBase {
   }
 
   /**
-   * an unique AWS AppSync Event API identifier
+   * a unique AWS AppSync Event API identifier
    * i.e. 'lxz775lwdrgcndgz3nurvac7oa'
    */
   public readonly apiId: string;

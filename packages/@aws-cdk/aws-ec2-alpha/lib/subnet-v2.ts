@@ -530,7 +530,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
   const subnetCidrBlock = new CidrBlock(cidrRange);
   const allCidrs: CidrBlock[] = [];
 
-  // Secondary IP addresses assoicated using user defined IPv4 range
+  // Secondary IP addresses associated using user defined IPv4 range
   if (vpc.secondaryCidrBlock) {
     for (const ipAddress of vpc.secondaryCidrBlock) {
       if (ipAddress.cidrBlock) {
@@ -541,7 +541,7 @@ function checkCidrRanges(vpc: IVpcV2, cidrRange: string) {
     allCidrs.push(...cidrs);
   }
 
-  // Secondary IP addresses assoicated using IPAM IPv4 range
+  // Secondary IP addresses associated using IPAM IPv4 range
   if (vpc.ipv4IpamProvisionedCidrs) {
     const cidrs = vpc.ipv4IpamProvisionedCidrs.map(cidr => new CidrBlock(cidr));
     allCidrs.push(...cidrs);
