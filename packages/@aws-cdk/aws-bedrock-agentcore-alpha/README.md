@@ -1712,6 +1712,19 @@ The gateway authenticates on its own behalf, not on behalf of a user.
 
 **Note > You need to set up the outbound identity before you can create a gateway target.
 
+#### Specifying SigV4 service / region for IAM authentication
+
+By default, `GatewayCredentialProvider.fromIamRole()` lets the gateway infer the SigV4 signing service and region from the target endpoint. You can override either or both — useful for cross-region calls or for targets where the service can't be inferred from the URL (e.g., custom endpoints, some Smithy/MCP-server targets).
+
+```typescript fixture=default
+agentcore.GatewayCredentialProvider.fromIamRole({
+  service: 'bedrock-runtime',
+  region: 'us-east-1',
+});
+```
+
+The `service` is the SigV4 signing name (typically the endpoint prefix), e.g. `bedrock-runtime`, `s3`, `execute-api`, `dynamodb`. See the [AWS service authorization reference](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html) for a full list. `region` defaults to the gateway's region.
+
 ### Basic Gateway Target Creation
 
 You can create targets in two ways: using the static factory methods on `GatewayTarget` or using the convenient `addTarget` methods on the gateway instance.
