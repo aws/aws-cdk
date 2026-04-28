@@ -277,7 +277,7 @@ export class Bundling implements cdk.BundlingOptions {
       createFileOps: (deps) => this.dockerFileOps(osCommand, pathJoin, options, deps),
     });
 
-    return stepsToShellCommand(steps);
+    return stepsToPosixShellCommand(steps);
   }
 
   /**
@@ -561,7 +561,7 @@ interface StepBuilderOptions {
  * `shell` steps are included as-is.
  * `callback` steps are not supported (they should not appear in Docker steps).
  */
-function stepsToShellCommand(steps: BundlingStep[]): string {
+function stepsToPosixShellCommand(steps: BundlingStep[]): string {
   const commands: string[] = [];
   for (const step of steps) {
     switch (step.type) {
