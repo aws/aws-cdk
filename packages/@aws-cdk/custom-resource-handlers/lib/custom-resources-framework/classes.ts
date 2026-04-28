@@ -147,7 +147,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
         ];
         if (props.sourceHash) {
-          fromAssetArgs.push(expr.object({ assetHash: props.sourceHash}));
+          fromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
         }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),
@@ -243,7 +243,7 @@ export abstract class HandlerFrameworkClass extends ClassType {
           PATH_MODULE.join.call(expr.directCode(`__dirname, '${props.codeDirectory}'`)),
         ];
         if (props.sourceHash) {
-          singletonFromAssetArgs.push(expr.directCode(`{ assetHash: '${props.sourceHash}' }`));
+          singletonFromAssetArgs.push(expr.object({ assetHash: expr.lit(props.sourceHash) }));
         }
         const superProps = new ObjectLiteral([
           new Splat(expr.ident('props')),

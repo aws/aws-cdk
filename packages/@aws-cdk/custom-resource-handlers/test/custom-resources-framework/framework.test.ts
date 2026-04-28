@@ -190,7 +190,8 @@ describe('framework', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler'), { assetHash: 'abc123' })");
+    expect(result).toContain('assetHash: "abc123"');
+    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler')");
   });
 
   test('codegen cdk singleton function embeds the provided source hash as assetHash', () => {
@@ -208,7 +209,8 @@ describe('framework', () => {
 
     // THEN
     const result = fs.readFileSync(path.resolve(tmpDir, 'result.ts'), 'utf-8');
-    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler'), { assetHash: 'deadbeef' })");
+    expect(result).toContain('assetHash: "deadbeef"');
+    expect(result).toContain("lambda.Code.fromAsset(path.join(__dirname, 'my-handler')");
   });
 
   test('codegen eval-nodejs-provider with exposed runtime property', () => {
