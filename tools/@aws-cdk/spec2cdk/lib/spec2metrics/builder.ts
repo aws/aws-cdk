@@ -262,7 +262,7 @@ class DimensionSetClassGenerator {
     const method = this.dimensionSetClass.addMethod({
       name: methodName,
       returnType: Type.fromName(this.cloudwatchModule, 'IMetric'),
-      docs: { summary: metric.description ?? `The ${metric.name} metric`, default: `${statistic} over 5 minutes`, deprecated },
+      docs: { summary: `${statistic} of ${metric.description ?? `the ${metric.name} metric`}`, default: `${statistic} over 5 minutes`, deprecated },
     });
     const optionsParam = method.addParameter({
       name: 'options',
