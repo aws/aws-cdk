@@ -1,0 +1,311 @@
+{
+  "/L1L2BucketWithL2Rule": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/bucket": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "bucket"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:16:26)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/bucketL2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/MyFuncA": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/Trail": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/L2RuleForL1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:186:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:149:92)",
+        "process.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:149:92)",
+        "process.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/bucketL2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "bucketL2297FC72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1097:30)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:18:26)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/MyFuncA/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/MyFuncA/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFuncAAF5F3089"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:596:29)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:20:20)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/MyFuncA/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/Trail/S3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/Trail/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Trail022F0CF2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:272:27)",
+        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:30:23)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/L2RuleForL1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L2RuleForL13AA6354B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:142:30)",
+        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:33:24)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/L2RuleForL1/AllowEventRuleL1L2BucketWithL2RuleMyFuncAE7084B38": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "L2RuleForL1AllowEventRuleL1L2BucketWithL2RuleMyFuncAE7084B384341AAF4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:146:9)",
+        "addLambdaPermission (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/util.js:63:17)",
+        "LambdaFunction.bind (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/lambda.js:21:40)",
+        "WrappedClass.addTarget (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:170:40)",
+        "WrappedClass.<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:154:22)",
+        "new Rule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:33:24)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/MyFuncA/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFuncAServiceRole9A674AAA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:389:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:511:39)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:20:20)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/MyFuncA/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFuncALogGroupD7C330A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:512:29)",
+        "new LogGroup (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:680:34)",
+        "new Function (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:20:20)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/Trail/S3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrailS30071F172"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1097:30)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:199:45)",
+        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:30:23)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/L1L2BucketWithL2Rule/Trail/S3/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/L1L2BucketWithL2Rule/Trail/S3/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TrailS3PolicyE42170FE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:143:29)",
+        "new BucketPolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:217:31)",
+        "WrappedClass.addToResourcePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:205:18)",
+        "WrappedClass.enforceSSLStatement (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1223:18)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1128:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:199:45)",
+        "new Trail (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L1L2BucketWithL2Rule (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:30:23)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
