@@ -1741,7 +1741,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
 const oauth = agentcore.OAuth2CredentialProvider.usingGithub(this, "GhOAuth", {
   oAuth2CredentialProviderName: "github-oauth",
   clientId: "your-client-id",
-  clientSecret: "your-client-secret",
+  clientSecret: cdk.SecretValue.unsafePlainText("your-client-secret"),
 });
 
 gateway.addMcpServerTarget("Mcp", {
@@ -1762,7 +1762,7 @@ gateway.addMcpServerTarget("Mcp", {
 agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuth", {
   oAuth2CredentialProviderName: "custom-idp",
   clientId: "your-client-id",
-  clientSecret: "your-client-secret",
+  clientSecret: cdk.SecretValue.unsafePlainText("your-client-secret"),
   discoveryUrl: "https://idp.example.com/.well-known/openid-configuration",
 });
 ```
@@ -1772,7 +1772,7 @@ agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuth", {
 ```typescript fixture=default
 agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuthMeta", {
   clientId: "your-client-id",
-  clientSecret: "your-client-secret",
+  clientSecret: cdk.SecretValue.unsafePlainText("your-client-secret"),
   authorizationServerMetadata: {
     issuer: "https://idp.example.com",
     authorizationEndpoint: "https://idp.example.com/oauth2/authorize",
@@ -1853,7 +1853,40 @@ const lambdaTarget = gateway.addLambdaTarget("MyLambdaTarget", {
 });
 ```
 
-- OpenAPI Target
+- OpenAPI Target (using Token Vault L2 construct — preferred)
+
+``` typescript
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// Create an API key credential provider in Token Vault
+const apiKeyProvider = new agentcore.ApiKeyCredentialProvider(this, "MyApiKeyProvider", {
+  apiKeyCredentialProviderName: "my-apikey",
+});
+
+const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
+const s3mySchema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
+
+// Add an OpenAPI target using the L2 construct directly
+const target = gateway.addOpenApiTarget("MyTarget", {
+  gatewayTargetName: "my-api-target",
+  description: "Target for external API integration",
+  apiSchema: s3mySchema,
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.fromApiKeyIdentity(apiKeyProvider, {
+      credentialLocation: agentcore.ApiKeyCredentialLocation.header({
+        credentialParameterName: "X-API-Key",
+      }),
+    }),
+  ],
+});
+
+// This makes sure your s3 bucket is available before target
+target.node.addDependency(bucket);
+```
+
+- OpenAPI Target (using ARNs — for providers created outside of CDK)
 
 ``` typescript
 const gateway = new agentcore.Gateway(this, "MyGateway", {
@@ -1867,7 +1900,7 @@ const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my
 const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
 const s3mySchema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
 
-// Add an OpenAPI target directly to the gateway
+// Add an OpenAPI target using ARNs directly
 const target = gateway.addOpenApiTarget("MyTarget", {
   gatewayTargetName: "my-api-target",
   description: "Target for external API integration",
@@ -1883,7 +1916,7 @@ const target = gateway.addOpenApiTarget("MyTarget", {
   ],
 });
 
-// This make sure your s3 bucket is available before target 
+// This makes sure your s3 bucket is available before target
 target.node.addDependency(bucket);
 ```
 

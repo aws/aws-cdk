@@ -21,7 +21,7 @@ describe('ApiKeyCredentialProvider', () => {
 
     new ApiKeyCredentialProvider(stack, 'Provider', {
       apiKeyCredentialProviderName: 'my_api_key_provider',
-      apiKey: 'super-secret',
+      apiKey: cdk.SecretValue.unsafePlainText('super-secret'),
       tags: { team: 'agents' },
     });
 
@@ -66,7 +66,7 @@ describe('ApiKeyCredentialProvider', () => {
 
     const provider = new ApiKeyCredentialProvider(stack, 'Provider', {
       apiKeyCredentialProviderName: 'keyprov',
-      apiKey: 'k',
+      apiKey: cdk.SecretValue.unsafePlainText('k'),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
@@ -138,7 +138,7 @@ describe('OAuth2CredentialProvider', () => {
     OAuth2CredentialProvider.usingGithub(stack, 'Provider', {
       oAuth2CredentialProviderName: 'my_oauth_provider',
       clientId: 'gh-client',
-      clientSecret: 'gh-secret',
+      clientSecret: cdk.SecretValue.unsafePlainText('gh-secret'),
     });
 
     const template = Template.fromStack(stack);
@@ -164,7 +164,7 @@ describe('OAuth2CredentialProvider', () => {
     const provider = OAuth2CredentialProvider.usingCustom(stack, 'Provider', {
       oAuth2CredentialProviderName: 'oauthprov',
       clientId: 'cid',
-      clientSecret: 'csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('csec'),
       discoveryUrl: 'https://example.com/.well-known/openid-configuration',
     });
     const role = new iam.Role(stack, 'Role', {
@@ -195,7 +195,7 @@ describe('OAuth2CredentialProvider', () => {
     OAuth2CredentialProvider.usingYandex(stack, 'Yandex', {
       oAuth2CredentialProviderName: 'yandex_idp',
       clientId: 'yandex-cid',
-      clientSecret: 'yandex-csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('yandex-csec'),
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::OAuth2CredentialProvider', {
@@ -219,7 +219,7 @@ describe('OAuth2CredentialProvider', () => {
     OAuth2CredentialProvider.usingOkta(stack, 'Okta', {
       oAuth2CredentialProviderName: 'okta_idp',
       clientId: 'okta-cid',
-      clientSecret: 'okta-csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('okta-csec'),
       issuer: 'https://dev-123.okta.com/oauth2/default',
     });
 
@@ -245,7 +245,7 @@ describe('OAuth2CredentialProvider', () => {
     const provider = OAuth2CredentialProvider.usingSlack(stack, 'Provider', {
       oAuth2CredentialProviderName: 'oauthprov',
       clientId: 'slack-client',
-      clientSecret: 'slack-secret',
+      clientSecret: cdk.SecretValue.unsafePlainText('slack-secret'),
     });
 
     const binding = provider.bindForGatewayOAuthTarget(['chat:write'], { foo: 'bar' });
@@ -269,7 +269,7 @@ describe('OAuth2CredentialProvider', () => {
     expect(() =>
       OAuth2CredentialProvider.usingCustom(stack, 'Bad', {
         clientId: 'cid',
-        clientSecret: 'csec',
+        clientSecret: cdk.SecretValue.unsafePlainText('csec'),
         discoveryUrl: 'https://idp.example.com/.well-known/openid-configuration',
         authorizationServerMetadata: metadata,
       }),
@@ -285,7 +285,7 @@ describe('OAuth2CredentialProvider', () => {
     expect(() =>
       OAuth2CredentialProvider.usingCustom(stack, 'Bad', {
         clientId: 'cid',
-        clientSecret: 'csec',
+        clientSecret: cdk.SecretValue.unsafePlainText('csec'),
       }),
     ).toThrow(/either discoveryUrl or authorizationServerMetadata/);
   });
@@ -299,7 +299,7 @@ describe('OAuth2CredentialProvider', () => {
     OAuth2CredentialProvider.usingCustom(stack, 'CustomMeta', {
       oAuth2CredentialProviderName: 'custom_meta',
       clientId: 'cid',
-      clientSecret: 'csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('csec'),
       authorizationServerMetadata: {
         issuer: 'https://idp.example.com',
         authorizationEndpoint: 'https://idp.example.com/oauth2/authorize',
@@ -335,7 +335,7 @@ describe('GatewayCredentialProvider from Token Vault constructs', () => {
 
     const apiKey = new ApiKeyCredentialProvider(stack, 'KeyProv', {
       apiKeyCredentialProviderName: 'key1',
-      apiKey: 'secret',
+      apiKey: cdk.SecretValue.unsafePlainText('secret'),
     });
     const binding = apiKey.bindForGatewayApiKeyTarget();
     const viaConstruct = GatewayCredentialProvider.fromApiKeyIdentity(apiKey);
@@ -353,7 +353,7 @@ describe('GatewayCredentialProvider from Token Vault constructs', () => {
     });
 
     const apiKey = new ApiKeyCredentialProvider(stack, 'KeyProv', {
-      apiKey: 'secret',
+      apiKey: cdk.SecretValue.unsafePlainText('secret'),
     });
     const loc = ApiKeyCredentialLocation.header({
       credentialParameterName: 'X-API-Key',
@@ -377,7 +377,7 @@ describe('GatewayCredentialProvider from Token Vault constructs', () => {
 
     const oauth = OAuth2CredentialProvider.usingGithub(stack, 'Gh', {
       clientId: 'cid',
-      clientSecret: 'csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('csec'),
     });
     const viaConstruct = GatewayCredentialProvider.fromOauthIdentity(oauth, {
       scopes: ['read:user'],
@@ -394,8 +394,8 @@ describe('GatewayCredentialProvider from Token Vault constructs', () => {
   });
 });
 
-describe('grantFullAccess includes list permissions', () => {
-  test('ApiKeyCredentialProvider grantFullAccess includes List action', () => {
+describe('grantFullAccess scopes list permissions to * and resource permissions to provider ARN', () => {
+  test('ApiKeyCredentialProvider grantFullAccess scopes list to * and others to resource ARN', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -403,21 +403,43 @@ describe('grantFullAccess includes list permissions', () => {
 
     const provider = new ApiKeyCredentialProvider(stack, 'Provider', {
       apiKeyCredentialProviderName: 'keyprov',
-      apiKey: 'k',
+      apiKey: cdk.SecretValue.unsafePlainText('k'),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
     provider.grantFullAccess(role);
 
-    const serialized = JSON.stringify(Template.fromStack(stack).findResources('AWS::IAM::Policy'));
-    for (const action of ApiKeyCredentialProviderIdentityPerms.FULL_ACCESS_PERMS) {
-      expect(serialized).toContain(action);
-    }
-    expect(serialized).toContain('bedrock-agentcore:ListApiKeyCredentialProviders');
+    const template = Template.fromStack(stack);
+
+    // List actions scoped to '*'
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:ListApiKeyCredentialProviders',
+            Resource: '*',
+          }),
+        ]),
+      }),
+    });
+
+    // Resource-scoped actions NOT on '*'
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:GetApiKeyCredentialProvider',
+            ]),
+            Resource: Match.not('*'),
+          }),
+        ]),
+      }),
+    });
   });
 
-  test('OAuth2CredentialProvider grantFullAccess includes List action', () => {
+  test('OAuth2CredentialProvider grantFullAccess scopes list to * and others to resource ARN', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -426,18 +448,40 @@ describe('grantFullAccess includes list permissions', () => {
     const provider = OAuth2CredentialProvider.usingGithub(stack, 'Provider', {
       oAuth2CredentialProviderName: 'oauthprov',
       clientId: 'cid',
-      clientSecret: 'csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('csec'),
     });
     const role = new iam.Role(stack, 'Role', {
       assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
     });
     provider.grantFullAccess(role);
 
-    const serialized = JSON.stringify(Template.fromStack(stack).findResources('AWS::IAM::Policy'));
-    for (const action of OAuth2CredentialProviderIdentityPerms.FULL_ACCESS_PERMS) {
-      expect(serialized).toContain(action);
-    }
-    expect(serialized).toContain('bedrock-agentcore:ListOauth2CredentialProviders');
+    const template = Template.fromStack(stack);
+
+    // List actions scoped to '*'
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:ListOauth2CredentialProviders',
+            Resource: '*',
+          }),
+        ]),
+      }),
+    });
+
+    // Resource-scoped actions NOT on '*'
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: Match.objectLike({
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:GetOauth2CredentialProvider',
+            ]),
+            Resource: Match.not('*'),
+          }),
+        ]),
+      }),
+    });
   });
 });
 
@@ -459,7 +503,7 @@ describe('Custom OAuth2 token safety', () => {
     expect(() =>
       OAuth2CredentialProvider.usingCustom(stack, 'TokenBoth', {
         clientId: 'cid',
-        clientSecret: 'csec',
+        clientSecret: cdk.SecretValue.unsafePlainText('csec'),
         discoveryUrl,
         authorizationServerMetadata: metadata,
       }),
@@ -475,7 +519,7 @@ describe('Custom OAuth2 token safety', () => {
     OAuth2CredentialProvider.usingCustom(stack, 'CustomDisc', {
       oAuth2CredentialProviderName: 'custom_disc',
       clientId: 'cid',
-      clientSecret: 'csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('csec'),
       discoveryUrl: 'https://idp.example.com/.well-known/openid-configuration',
     });
 
@@ -502,7 +546,7 @@ describe('Validation edge cases', () => {
     expect(() =>
       new ApiKeyCredentialProvider(stack, 'Bad', {
         apiKeyCredentialProviderName: 'has spaces!',
-        apiKey: 'k',
+        apiKey: cdk.SecretValue.unsafePlainText('k'),
       }),
     ).toThrow(/Credential provider name/);
   });
@@ -551,7 +595,7 @@ describe('Validation edge cases', () => {
     });
 
     new ApiKeyCredentialProvider(stack, 'Provider', {
-      apiKey: 'k',
+      apiKey: cdk.SecretValue.unsafePlainText('k'),
     });
 
     const template = Template.fromStack(stack);

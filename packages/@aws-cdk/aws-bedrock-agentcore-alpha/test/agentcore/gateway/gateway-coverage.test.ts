@@ -219,7 +219,7 @@ describe('Gateway Coverage Tests', () => {
     const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'test-gateway' });
     const apiKey = new ApiKeyCredentialProvider(stack, 'KeyProv', {
       apiKeyCredentialProviderName: 'gw_cov_apikey',
-      apiKey: 'secret',
+      apiKey: cdk.SecretValue.unsafePlainText('secret'),
     });
 
     gateway.addOpenApiTarget('OpenApiKey', {
@@ -253,7 +253,7 @@ describe('Gateway Coverage Tests', () => {
     const oauth = OAuth2CredentialProvider.usingGithub(stack, 'Gh', {
       oAuth2CredentialProviderName: 'gw_cov_oauth',
       clientId: 'cid',
-      clientSecret: 'csec',
+      clientSecret: cdk.SecretValue.unsafePlainText('csec'),
     });
 
     gateway.addOpenApiTarget('OpenApiOauth', {
@@ -287,12 +287,12 @@ describe('Gateway Coverage Tests', () => {
     const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'test-gateway' });
     const apiKey = new ApiKeyCredentialProvider(stack, 'KeyProv', {
       apiKeyCredentialProviderName: 'gw_cov_grant_key',
-      apiKey: 'k',
+      apiKey: cdk.SecretValue.unsafePlainText('k'),
     });
     const oauth = OAuth2CredentialProvider.usingGithub(stack, 'Gh', {
       oAuth2CredentialProviderName: 'gw_cov_grant_oauth',
       clientId: 'c',
-      clientSecret: 's',
+      clientSecret: cdk.SecretValue.unsafePlainText('s'),
     });
 
     gateway.addOpenApiTarget('A', {
@@ -323,7 +323,7 @@ describe('Gateway Coverage Tests', () => {
     const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'my-gateway' });
     const apiKey = new ApiKeyCredentialProvider(stack, 'Key', {
       apiKeyCredentialProviderName: 'key-prov',
-      apiKey: 'k',
+      apiKey: cdk.SecretValue.unsafePlainText('k'),
     });
 
     gateway.addOpenApiTarget('T', {
@@ -405,7 +405,7 @@ describe('Gateway Coverage Tests', () => {
     const oauth = OAuth2CredentialProvider.usingGithub(stack, 'Gh', {
       oAuth2CredentialProviderName: 'oauth-prov',
       clientId: 'c',
-      clientSecret: 's',
+      clientSecret: cdk.SecretValue.unsafePlainText('s'),
     });
 
     gateway.addOpenApiTarget('T', {

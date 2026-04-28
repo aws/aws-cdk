@@ -24,7 +24,7 @@ new agentcore.WorkloadIdentity(stack, 'WorkloadIdentity', {
 // API key credential provider (Token Vault)
 new agentcore.ApiKeyCredentialProvider(stack, 'ApiKeyProvider', {
   apiKeyCredentialProviderName: 'integ-test-api-key-provider',
-  apiKey: 'integ-test-api-key-placeholder',
+  apiKey: cdk.SecretValue.unsafePlainText('integ-test-api-key-placeholder'),
   tags: { integ: 'identity' },
 });
 
@@ -32,7 +32,7 @@ new agentcore.ApiKeyCredentialProvider(stack, 'ApiKeyProvider', {
 agentcore.OAuth2CredentialProvider.usingGithub(stack, 'GithubOAuth', {
   oAuth2CredentialProviderName: 'integ-test-github-oauth',
   clientId: 'integ-test-github-client-id',
-  clientSecret: 'integ-test-github-client-secret',
+  clientSecret: cdk.SecretValue.unsafePlainText('integ-test-github-client-secret'),
   tags: { integ: 'identity' },
 });
 
@@ -40,14 +40,14 @@ agentcore.OAuth2CredentialProvider.usingGithub(stack, 'GithubOAuth', {
 agentcore.OAuth2CredentialProvider.usingYandex(stack, 'YandexOAuth', {
   oAuth2CredentialProviderName: 'integ-test-yandex-oauth',
   clientId: 'integ-test-yandex-client-id',
-  clientSecret: 'integ-test-yandex-client-secret',
+  clientSecret: cdk.SecretValue.unsafePlainText('integ-test-yandex-client-secret'),
 });
 
 // OAuth2 — custom IdP with discovery URL
 agentcore.OAuth2CredentialProvider.usingCustom(stack, 'CustomOAuth', {
   oAuth2CredentialProviderName: 'integ-test-custom-oauth',
   clientId: 'integ-test-custom-client-id',
-  clientSecret: 'integ-test-custom-client-secret',
+  clientSecret: cdk.SecretValue.unsafePlainText('integ-test-custom-client-secret'),
   discoveryUrl: 'https://example.com/.well-known/openid-configuration',
 });
 
@@ -55,7 +55,7 @@ agentcore.OAuth2CredentialProvider.usingCustom(stack, 'CustomOAuth', {
 agentcore.OAuth2CredentialProvider.usingOkta(stack, 'OktaOAuth', {
   oAuth2CredentialProviderName: 'integ-test-okta-oauth',
   clientId: 'integ-test-okta-client-id',
-  clientSecret: 'integ-test-okta-client-secret',
+  clientSecret: cdk.SecretValue.unsafePlainText('integ-test-okta-client-secret'),
   issuer: 'https://example.okta.com/oauth2/default',
   authorizationEndpoint: 'https://example.okta.com/oauth2/default/v1/authorize',
   tokenEndpoint: 'https://example.okta.com/oauth2/default/v1/token',

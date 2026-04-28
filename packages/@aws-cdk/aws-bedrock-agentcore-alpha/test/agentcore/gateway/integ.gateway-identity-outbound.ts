@@ -44,14 +44,14 @@ const gateway = new agentcore.Gateway(stack, 'Gateway', {
 
 const apiKeyProvider = new agentcore.ApiKeyCredentialProvider(stack, 'ApiKeyIdentity', {
   apiKeyCredentialProviderName: 'integ-gw-outbound-apikey',
-  apiKey: 'integ-placeholder-api-key',
+  apiKey: cdk.SecretValue.unsafePlainText('integ-placeholder-api-key'),
   tags: { integ: 'gateway-identity-outbound' },
 });
 
 const oauthProvider = agentcore.OAuth2CredentialProvider.usingGithub(stack, 'OAuthIdentity', {
   oAuth2CredentialProviderName: 'integ-gw-outbound-oauth',
   clientId: 'integ-github-client-id',
-  clientSecret: 'integ-github-client-secret',
+  clientSecret: cdk.SecretValue.unsafePlainText('integ-github-client-secret'),
   tags: { integ: 'gateway-identity-outbound' },
 });
 

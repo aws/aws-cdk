@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import type { IResource, ResourceProps } from 'aws-cdk-lib';
+import type { IResource, ResourceProps, SecretValue } from 'aws-cdk-lib';
 import { Lazy, Names, Resource, Token, ValidationError } from 'aws-cdk-lib';
 import type {
   ApiKeyCredentialProviderReference,
@@ -126,11 +126,19 @@ export interface ApiKeyCredentialProviderResourceProps {
   readonly apiKeyCredentialProviderName?: string;
 
   /**
-   * Plaintext API key. If omitted, you can supply the key through another mechanism supported by the service.
+   * The API key value.
+   *
+   * **NOTE:** The API key will be included in the CloudFormation template as part of synthesis.
+   * The service stores the key in Secrets Manager after creation, but the value is visible
+   * in the template and deployment history. Use `SecretValue.unsafePlainText()` to explicitly
+   * acknowledge plaintext, or pass a reference from another construct to avoid embedding the
+   * literal value.
+   *
+   * If omitted, you can supply the key through another mechanism supported by the service.
    *
    * @default - no key in template (provider may still be created depending on service behavior)
    */
-  readonly apiKey?: string;
+  readonly apiKey?: SecretValue;
 
   /**
    * Tags for this credential provider.
@@ -240,7 +248,23 @@ abstract class ApiKeyCredentialProviderBase extends Resource implements IApiKeyC
    * [disable-awslint:no-grants]
    */
   public grantFullAccess(grantee: iam.IGrantable): iam.Grant {
-    const bedrock = this.grant(grantee, ...ApiKeyCredentialProviderIdentityPerms.FULL_ACCESS_PERMS);
+    const resourceGrant = iam.Grant.addToPrincipal({
+      grantee,
+      actions: [
+        ...ApiKeyCredentialProviderIdentityPerms.READ_PERMS,
+        ...ApiKeyCredentialProviderIdentityPerms.ADMIN_PERMS,
+        ...ApiKeyCredentialProviderIdentityPerms.USE_PERMS,
+      ],
+      resourceArns: [this.credentialProviderArn],
+      scope: this,
+    });
+    const listGrant = iam.Grant.addToPrincipal({
+      grantee,
+      actions: [...ApiKeyCredentialProviderIdentityPerms.LIST_PERMS],
+      resourceArns: ['*'],
+      scope: this,
+    });
+    const bedrock = resourceGrant.combine(listGrant);
     const secret = grantCredentialSecretRead(
       this,
       grantee,
@@ -338,13 +362,15 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
 
     this.apiKeyCredentialProviderName = this.physicalName;
 
+    const apiKeyValue = props.apiKey?.unsafeUnwrap();
+
     throwIfInvalid(validateCredentialProviderName, this.apiKeyCredentialProviderName, this);
-    throwIfInvalid(validateApiKeyValue, props.apiKey, this);
+    throwIfInvalid(validateApiKeyValue, apiKeyValue, this);
     throwIfInvalid(validateCredentialProviderTags, props.tags, this);
 
     const cfnProps: CfnApiKeyCredentialProviderProps = {
       name: this.apiKeyCredentialProviderName,
-      apiKey: props.apiKey,
+      apiKey: apiKeyValue,
       tags: props.tags && Object.keys(props.tags).length > 0
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
