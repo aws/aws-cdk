@@ -191,6 +191,11 @@ export class PolicyValidationReportFormatter {
     return {
       title: 'Validation Report',
       pluginReports: reps
+        // Include reports that failed OR have violations to render. This is
+        // broader than the original `!rep.success` filter: a source that
+        // returns success=true with violations (e.g. annotation warnings)
+        // will now appear in the report. This is intentional — violations
+        // should always be visible regardless of the overall success status.
         .filter(rep => !rep.success || rep.violations.length > 0)
         .map(rep => ({
           version: rep.pluginVersion,

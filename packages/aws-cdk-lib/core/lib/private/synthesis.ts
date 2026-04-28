@@ -2,10 +2,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
+import { iterateDfsPreorder } from './construct-iteration';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
-import { iterateDfsPreorder } from './construct-iteration';
+import * as cxschema from '../../../cloud-assembly-schema';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
@@ -18,13 +19,12 @@ import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
-import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
 import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
-import * as cxschema from '../../../cloud-assembly-schema';
+import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
@@ -116,8 +116,13 @@ const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
  * global output (not per-stage), and a plugin registered at the App level
  * sees templates from all stages. Annotations should have the same visibility.
  */
-function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport | undefined {
-  const violations: PolicyViolation[] = [];
+function collectAnnotationReport(root: IConstruct, outdir: string): NamedValidationPluginReport | undefined {
+  // Group violations by rule so that multiple constructs triggering the same
+  // rule appear as one violation with multiple violatingResources, matching
+  // how plugins report violations. The key includes description so that
+  // generic aws-cdk:error/aws-cdk:warning annotations with different messages
+  // are kept separate.
+  const violationMap = new Map<string, PolicyViolation & { violatingResources: PolicyViolatingResource[] }>();
 
   for (const construct of iterateDfsPreorder(root)) {
     for (const entry of construct.node.metadata) {
@@ -137,17 +142,22 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
       if (resource) {
         const stack = Stack.of(resource);
         resourceLogicalId = stack.resolve(resource.logicalId);
-        templatePath = path.join(stack.node.root.node.tryGetContext('outdir') ?? '', stack.templateFile);
+        templatePath = path.join(outdir, stack.templateFile);
       } else {
         // Construct is not associated with a CfnResource — use construct path as identifier
         resourceLogicalId = construct.node.path;
         try {
           const stack = Stack.of(construct);
-          templatePath = stack.templateFile;
-        } catch {
-          // Stack.of() throws for constructs not inside a Stack
-          // (e.g. attached directly to App or Stage)
-          templatePath = 'N/A';
+          templatePath = path.join(outdir, stack.templateFile);
+        } catch (e: any) {
+          // Stack.of() throws when the construct is not inside a Stack
+          // (e.g. attached directly to App or Stage). Any other error
+          // is unexpected and should propagate.
+          if (e.message?.includes('should be created in the scope of a Stack')) {
+            templatePath = 'N/A';
+          } else {
+            throw e;
+          }
         }
       }
 
@@ -157,15 +167,22 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
         locations: [],
       };
 
-      violations.push({
-        ruleName,
-        description: message,
-        severity,
-        violatingResources: [violatingResource],
-      });
+      const key = `${ruleName}|${severity}|${message}`;
+      const existing = violationMap.get(key);
+      if (existing) {
+        existing.violatingResources.push(violatingResource);
+      } else {
+        violationMap.set(key, {
+          ruleName,
+          description: message,
+          severity,
+          violatingResources: [violatingResource],
+        });
+      }
     }
   }
 
+  const violations = Array.from(violationMap.values());
   if (violations.length === 0) {
     return undefined;
   }
@@ -190,6 +207,12 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
  * severity is used (e.g. `aws-cdk:warning`, `aws-cdk:error`). These annotations
  * cannot be acknowledged, so uniqueness of the rule name is not required. The
  * full message is available in the violation's `description` field.
+ *
+ * COUPLING NOTE: The `[ack: <id>]` format is produced by the `ackTag()` helper
+ * in `annotations.ts`. There is no structured metadata field for the ack id —
+ * it is embedded in the message string. If the tag format changes, this regex
+ * must be updated to match. See the test 'extractRuleName regex matches
+ * addWarningV2 ack tag format' which verifies this coupling.
  */
 function extractRuleName(message: string, severity: string): string {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
@@ -283,7 +306,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   }
 
   // Collect annotation-based violations and merge into the report pipeline
-  const annotationReport = collectAnnotationReport(root);
+  const annotationReport = collectAnnotationReport(root, assembly.directory);
   if (annotationReport) {
     reports.push(annotationReport);
   }

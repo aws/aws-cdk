@@ -888,6 +888,27 @@ Policy Validation Report Summary
       expect(output).not.toContain('Construct Annotations');
     });
 
+    test('partial acknowledgment only excludes acknowledged warnings', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(construct).addWarning('AckedRule', 'This one is acknowledged');
+      core.Validations.of(construct).addWarning('KeptRule', 'This one is not');
+      core.Validations.of(construct).acknowledge({ id: 'AckedRule', reason: 'Accepted risk' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).not.toContain('annotation::AckedRule');
+      expect(output).toContain('annotation::KeptRule');
+    });
+
     test('annotation report works alongside plugin reports', () => {
       const app = new core.App({
         policyValidationBeta1: [
@@ -955,6 +976,11 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
       expect(output).toContain('my-lib:OrphanWarning');
+      // Without a CfnResource, resourceLogicalId falls back to construct path
+      expect(output).toContain('Resource ID: MyStack/Orphan');
+      // templatePath should still resolve via Stack.of()
+      expect(output).toContain('Template Path:');
+      expect(output).toContain('MyStack.template.json');
     });
 
     test('Validations.of().addWarning appears in annotation report', () => {
@@ -993,6 +1019,30 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
       expect(output).toContain('Severity: error');
+    });
+
+    test('extractRuleName regex matches addWarningV2 ack tag format', () => {
+      // This test verifies the coupling between the [ack: <id>] tag format
+      // produced by Annotations.addWarningV2 and the regex in extractRuleName.
+      // If the tag format in annotations.ts changes, this test should fail.
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:TestId', 'Test message');
+
+      // Verify the metadata contains the expected tag format
+      const warning = construct.node.metadata.find(m => m.type === 'aws:cdk:warning');
+      expect(warning?.data).toContain('[ack: my-lib:TestId]');
+
+      // Verify the report extracts the ID correctly
+      app.synth();
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('my-lib:TestId (');
     });
   });
 
