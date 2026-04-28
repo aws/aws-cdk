@@ -277,10 +277,10 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
   let roleArn: string | undefined = undefined;
   if (options.consumerRoleArn) {
     if (!options.consumerAccount || !options.consumerStackArn) {
-     throw new UnscopedValidationError(
-       lit`MissingConsumerInfoGetStackOutput`,
-       'To create a Fn::GetStackOutput call with a role argument, the \'consumerAccount\' and \'consumerStackArn\' arguments are mandatory.'
-     );
+      throw new UnscopedValidationError(
+        lit`MissingConsumerInfoGetStackOutput`,
+        'To create a Fn::GetStackOutput call with a role argument, the \'consumerAccount\' and \'consumerStackArn\' arguments are mandatory.',
+      );
     }
 
     let role = scope.node.tryFindChild(roleId) as CfnResource;
@@ -300,11 +300,13 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
                   'sts:AssumeRole',
                 ],
                 Condition: {
+                  StringEquals: {
+                    'aws:SourceAccount': options.consumerAccount,
+                  },
                   ArnLike: {
-                    "aws:SourceAccount": options.consumerAccount,
-                    "aws:SourceArn": options.consumerStackArn,
-                  }
-                }
+                    'aws:SourceArn': options.consumerStackArn,
+                  },
+                },
               },
             ],
           },
