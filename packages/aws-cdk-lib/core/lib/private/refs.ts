@@ -84,7 +84,14 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     return createGetStackOutput(reference, {
       consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
       producerAccount,
+      consumerAccount,
       producerRegion,
+      consumerStackArn: consumer.formatArn({
+        service: 'cloudformation',
+        resource: 'stack',
+        resourceName: `${consumer.stackName}/*`,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      }),
     });
   }
 
@@ -236,6 +243,8 @@ interface GetStackOutputOptions {
   consumerRoleArn?: string;
   producerRegion?: string;
   producerAccount?: string;
+  consumerAccount?: string;
+  consumerStackArn?: string;
 }
 
 function createGetStackOutput(reference: Reference, options: GetStackOutputOptions = {}): Intrinsic {
@@ -267,6 +276,13 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   let roleArn: string | undefined = undefined;
   if (options.consumerRoleArn) {
+    if (!options.consumerAccount || !options.consumerStackArn) {
+     throw new UnscopedValidationError(
+       lit`MissingConsumerInfoGetStackOutput`,
+       'To create a Fn::GetStackOutput call with a role argument, the \'consumerAccount\' and \'consumerStackArn\' arguments are mandatory.'
+     );
+    }
+
     let role = scope.node.tryFindChild(roleId) as CfnResource;
     if (role == null) {
       role = new CfnResource(scope, roleId, {
@@ -283,6 +299,12 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
                 Action: [
                   'sts:AssumeRole',
                 ],
+                Condition: {
+                  ArnLike: {
+                    "aws:SourceAccount": options.consumerAccount,
+                    "aws:SourceArn": options.consumerStackArn,
+                  }
+                }
               },
             ],
           },

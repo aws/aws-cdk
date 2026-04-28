@@ -8,7 +8,7 @@ import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString,
-  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
+  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer, CliCredentialsStackSynthesizer,
   NestedStack,
   Aws, Fn, ResolutionTypeHint,
   PermissionsBoundary,
@@ -798,87 +798,286 @@ describe('stack', () => {
     });
   });
 
-  test('cross-account stack references', () => {
+  test('cross-account stack references - producer template contains IAM role with trust policy and condition', () => {
     // GIVEN
     const app = new App();
     const producer = new Stack(app, 'Stack1', {
-      env: {
-        region: 'us-east-1',
-        account: '111111111111',
-      },
+      env: { region: 'us-east-1', account: '111111111111' },
     });
     const exportResource = new CfnResource(producer, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
     const consumer = new Stack(app, 'Stack2', {
-      env: {
-        region: 'us-east-2',
-        account: '222222222222',
-      },
+      env: { region: 'us-east-2', account: '222222222222' },
     });
 
-    // WHEN - used in another account and region
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+
+    // THEN - producer template has an IAM Role with trust policy
+    const resources = producerTemplate.Resources;
+    const roleLogicalIds = Object.keys(resources).filter(
+      (id) => resources[id].Type === 'AWS::IAM::Role',
+    );
+    expect(roleLogicalIds).toHaveLength(1);
+    const role = resources[roleLogicalIds[0]];
+    const statement = role.Properties.AssumeRolePolicyDocument.Statement[0];
+
+    expect(statement.Effect).toBe('Allow');
+    expect(statement.Action).toEqual(['sts:AssumeRole']);
+    // Principal is the consumer's CFN execution role
+    expect(statement.Principal.AWS).toEqual({
+      'Fn::Sub': 'arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-cfn-exec-role-222222222222-us-east-2',
+    });
+    // Condition scopes to consumer account and stack ARN
+    expect(statement.Condition).toEqual({
+      ArnLike: {
+        'aws:SourceAccount': '222222222222',
+        'aws:SourceArn': {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              { Ref: 'AWS::Partition' },
+              ':cloudformation:us-east-2:222222222222:stack/Stack2/*',
+            ],
+          ],
+        },
+      },
+    });
+  });
+
+  test('cross-account stack references - producer template contains IAM policy with cloudformation:DescribeStacks', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '222222222222' },
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+
+    // THEN - producer template has an IAM Policy granting DescribeStacks
+    const resources = producerTemplate.Resources;
+    const policyLogicalIds = Object.keys(resources).filter(
+      (id) => resources[id].Type === 'AWS::IAM::Policy',
+    );
+    expect(policyLogicalIds).toHaveLength(1);
+    const policy = resources[policyLogicalIds[0]];
+    expect(policy.Properties.PolicyDocument.Statement).toEqual([
+      {
+        Effect: 'Allow',
+        Action: 'cloudformation:DescribeStacks',
+        Resource: '*',
+      },
+    ]);
+    // Policy is attached to the role
+    const roleLogicalIds = Object.keys(resources).filter(
+      (id) => resources[id].Type === 'AWS::IAM::Role',
+    );
+    expect(policy.Properties.Roles).toEqual([
+      { Ref: roleLogicalIds[0] },
+    ]);
+  });
+
+  test('cross-account stack references fail with LegacyStackSynthesizer', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '222222222222' },
+      synthesizer: new LegacyStackSynthesizer(),
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Could not find a CloudFormation execution role for the consumer stack/);
+  });
+
+  test('cross-account stack references fail with CliCredentialsStackSynthesizer', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '222222222222' },
+      synthesizer: new CliCredentialsStackSynthesizer(),
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Could not find a CloudFormation execution role for the consumer stack/);
+  });
+
+  test('cross-account stack references fail when region is unknown', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Stack1', {
+      env: { account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { account: '222222222222' },
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Cross stack\/region references are only supported for stacks with an explicit region defined/);
+  });
+
+  test('cross-account stack references with custom cloudFormationExecutionRole', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '222222222222' },
+      synthesizer: new DefaultStackSynthesizer({
+        cloudFormationExecutionRole: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/MyCustomCfnExecRole',
+      }),
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+
+    // THEN - trust policy principal reflects the custom role
+    const resources = producerTemplate.Resources;
+    const roleLogicalIds = Object.keys(resources).filter(
+      (id) => resources[id].Type === 'AWS::IAM::Role',
+    );
+    expect(roleLogicalIds).toHaveLength(1);
+    const statement = resources[roleLogicalIds[0]].Properties.AssumeRolePolicyDocument.Statement[0];
+    expect(statement.Principal.AWS).toEqual({
+      'Fn::Sub': 'arn:${AWS::Partition}:iam::222222222222:role/MyCustomCfnExecRole',
+    });
+  });
+
+  test('cross-account stack references with multiple references create one role per unique reference', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '222222222222' },
+    });
+
+    // WHEN - two different attributes from the same resource
     new CfnResource(consumer, 'SomeResource', {
       type: 'AWS::S3::Bucket',
       properties: {
         Name: exportResource.getAtt('name'),
+        Other: exportResource.getAtt('arn'),
       },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+
+    // THEN - one role and one policy per unique reference (2 references = 2 roles, 2 policies)
+    const resources = producerTemplate.Resources;
+    const roleCount = Object.keys(resources).filter(
+      (id) => resources[id].Type === 'AWS::IAM::Role',
+    ).length;
+    const policyCount = Object.keys(resources).filter(
+      (id) => resources[id].Type === 'AWS::IAM::Policy',
+    ).length;
+    expect(roleCount).toBe(2);
+    expect(policyCount).toBe(2);
+  });
+
+  test('same-account cross-region references do not create IAM roles in producer', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+      crossRegionReferences: true,
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '111111111111' },
+      crossRegionReferences: true,
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
     });
 
     const assembly = app.synth();
     const producerTemplate = assembly.getStackByName(producer.stackName).template;
     const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
 
-    // THEN - producer stack has an output
-    const outputName = 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83';
-    expect(producerTemplate).toMatchObject({
-      Resources: {
-        SomeResourceExport: {
-          Type: 'AWS::S3::Bucket',
-        },
-      },
-      Outputs: expect.objectContaining({
-        [outputName]: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'name',
-            ],
-          },
-        },
-      }),
-    });
+    // THEN - no IAM resources in producer
+    const resources = producerTemplate.Resources ?? {};
+    const iamResources = Object.keys(resources).filter(
+      (id) => resources[id].Type === 'AWS::IAM::Role' || resources[id].Type === 'AWS::IAM::Policy',
+    );
+    expect(iamResources).toHaveLength(0);
 
-    // THEN - consumer stack references via Fn::GetStackOutput
-    expect(consumerTemplate).toMatchObject({
-      Resources: {
-        SomeResource: {
-          Type: 'AWS::S3::Bucket',
-          Properties: {
-            Name: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack1',
-                OutputName: outputName,
-                Region: 'us-east-1',
-                // Use a role created in the producer stack for this purpose
-                RoleArn: {
-                  'Fn::Join': [
-                    '',
-                    [
-                      'arn:',
-                      {
-                        Ref: 'AWS::Partition',
-                      },
-                      ':iam::111111111111:role/PublishRoleFnGetAttSomeResourceExportname99A4FF65',
-                    ],
-                  ],
-                },
-              },
-            },
-          },
-        },
-      },
-    });
+    // THEN - consumer Fn::GetStackOutput has no RoleArn
+    const consumerResource = consumerTemplate.Resources.SomeResource;
+    expect(consumerResource.Properties.Name['Fn::GetStackOutput']).not.toHaveProperty('RoleArn');
   });
 
   test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
