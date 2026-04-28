@@ -1702,8 +1702,16 @@ and authorized during Inbound Auth.
 
 AgentCore Gateway supports the following types of outbound authorization:
 
-**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default
- and most common approach for Lambda targets and AWS service integrations.
+**IAM-based outbound authorization** – The gateway uses its execution role to authenticate with AWS services. This is the default and most common approach for Lambda targets and AWS service integrations. Use `GatewayCredentialProvider.fromIamRole()`; by default the gateway infers the SigV4 signing service and region from the target endpoint. For **MCP Server** targets, you can override either or both — useful for cross-region calls or when the service can't be inferred from the URL:
+
+```typescript fixture=default
+agentcore.GatewayCredentialProvider.fromIamRole({
+  service: 'bedrock-runtime', // SigV4 signing name (typically the endpoint prefix); see the AWS service authorization reference
+  region: 'us-east-1',         // defaults to the gateway's region
+});
+```
+
+The Bedrock AgentCore service only accepts `IamCredentialProvider` with explicit `service` / `region` for MCP Server targets. Lambda, Smithy, OpenAPI and API Gateway targets must use the bare `GatewayCredentialProvider.fromIamRole()` (with no arguments); the CDK enforces this with a synth-time validation.
 
 **2-legged OAuth (OAuth 2LO)** – Use OAuth 2.0 two-legged flow (2LO) for targets that require OAuth authentication.
 The gateway authenticates on its own behalf, not on behalf of a user.
