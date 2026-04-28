@@ -52,7 +52,11 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "bedrock-agentcore:GetWorkloadAccessToken",
+       "Action": [
+        "bedrock-agentcore:GetWorkloadAccessToken",
+        "bedrock-agentcore:GetWorkloadAccessTokenForJWT",
+        "bedrock-agentcore:GetWorkloadAccessTokenForUserId"
+       ],
        "Effect": "Allow",
        "Resource": [
         {
@@ -84,18 +88,53 @@
       {
        "Action": "bedrock-agentcore:GetResourceApiKey",
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "ApiKeyIdentity3BBCFBED",
-         "CredentialProviderArn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ApiKeyIdentity3BBCFBED",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity/integ-gateway-identity-outbound-*"
+          ]
+         ]
+        }
+       ]
       },
       {
-       "Action": [
-        "secretsmanager:DescribeSecret",
-        "secretsmanager:GetSecretValue"
-       ],
+       "Action": "secretsmanager:GetSecretValue",
        "Effect": "Allow",
        "Resource": {
         "Fn::Join": [
@@ -105,20 +144,61 @@
           {
            "Ref": "AWS::AccountId"
           },
-          ":secret:*"
+          ":secret:bedrock-agentcore-identity!*"
          ]
         ]
        }
       },
       {
-       "Action": "bedrock-agentcore:GetResourceOauth2Token",
+       "Action": [
+        "bedrock-agentcore:CompleteResourceTokenAuth",
+        "bedrock-agentcore:GetResourceOauth2Token"
+       ],
        "Effect": "Allow",
-       "Resource": {
-        "Fn::GetAtt": [
-         "OAuthIdentityB927DA55",
-         "CredentialProviderArn"
-        ]
-       }
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "OAuthIdentityB927DA55",
+          "CredentialProviderArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":token-vault/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:bedrock-agentcore:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":workload-identity-directory/default/workload-identity/integ-gateway-identity-outbound-*"
+          ]
+         ]
+        }
+       ]
       }
      ],
      "Version": "2012-10-17"

@@ -1,4 +1,3 @@
-import { TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS } from '../identity/perms';
 
 /******************************************************************************
    * Data Plane Permissions
@@ -38,7 +37,7 @@ export const GATEWAY_KMS_KEY_PERMS = [
 export const GATEWAY_ASSUME_ROLE = ['sts:AssumeRole'];
 
 /**
- * Outbound auth - Workload identity permissions
+ * Outbound auth - Workload identity permissions (API key targets)
  * Used to obtain access tokens for workload identity
  */
 export const GATEWAY_WORKLOAD_IDENTITY_PERMS = [
@@ -46,11 +45,29 @@ export const GATEWAY_WORKLOAD_IDENTITY_PERMS = [
 ];
 
 /**
+ * Outbound auth - Workload identity permissions (OAuth targets)
+ * OAuth flows additionally require JWT-based and user-ID-based token exchange
+ */
+export const GATEWAY_WORKLOAD_IDENTITY_OAUTH_PERMS = [
+  'bedrock-agentcore:GetWorkloadAccessToken',
+  'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+  'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+];
+
+/**
  * Outbound auth - OAuth permissions
- * Used to obtain OAuth tokens for target authentication
+ * Used to obtain OAuth tokens and complete token auth for target authentication
  */
 export const GATEWAY_OAUTH_PERMS = [
   'bedrock-agentcore:GetResourceOauth2Token',
+];
+
+/**
+ * Outbound auth - OAuth complete token auth permissions
+ * Used to complete the OAuth token authorization flow
+ */
+export const GATEWAY_OAUTH_COMPLETE_AUTH_PERMS = [
+  'bedrock-agentcore:CompleteResourceTokenAuth',
 ];
 
 /**
@@ -63,9 +80,11 @@ export const GATEWAY_API_KEY_PERMS = [
 
 /**
  * Secrets Manager permissions
- * Required for reading API key / OAuth client secrets backing Token Vault providers (same as identity `grantUse`).
+ * Required for reading credential secrets backing Token Vault providers.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-outbound-auth.html
  */
-export const GATEWAY_SECRETS_PERMS = [...TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS];
+export const GATEWAY_SECRETS_PERMS = ['secretsmanager:GetSecretValue'];
 
 /******************************************************************************
    * Control Plane Permissions

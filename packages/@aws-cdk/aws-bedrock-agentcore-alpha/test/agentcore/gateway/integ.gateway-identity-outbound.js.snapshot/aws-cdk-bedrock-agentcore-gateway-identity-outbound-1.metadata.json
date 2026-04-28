@@ -152,6 +152,14 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/Resource": [
@@ -298,6 +306,14 @@
           {}
         ]
       }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/aws-cdk-bedrock-agentcore-gateway-identity-outbound-1/Gateway/OpenApiApiKeyTarget/Resource": [
@@ -349,7 +365,7 @@
         "WrappedClass.addToPrincipalPolicy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
         "WrappedClass.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "Grant.addToPrincipal (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "ApiKeyCredentialProviderConfiguration.grantNeededPermissionsToRole (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.js:121:55)",
+        "ApiKeyCredentialProviderConfiguration.grantNeededPermissionsToRole (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/outbound-auth/api-key.js:126:55)",
         "new GatewayTarget (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target.js:382:26)",
         "new GatewayTarget (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "GatewayTarget.forOpenApi (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target.js:170:20)",
