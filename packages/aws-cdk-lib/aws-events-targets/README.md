@@ -19,6 +19,7 @@ Currently supported are:
   - [Invoke an API Destination](#invoke-an-api-destination)
   - [Invoke an AppSync GraphQL API](#invoke-an-appsync-graphql-api)
   - [Put an event on an EventBridge bus](#put-an-event-on-an-eventbridge-bus)
+  - [Put an event on a Firehose delivery stream](#put-an-event-on-a-firehose-delivery-stream)
   - [Run an ECS Task](#run-an-ecs-task)
     - [Tagging Tasks](#tagging-tasks)
     - [Launch type for ECS Task](#launch-type-for-ecs-task)
@@ -528,6 +529,27 @@ rule.addTarget(new targets.EventBus(
 ));
 ```
 
+## Put an event on a Firehose delivery stream
+
+Use the `FirehoseDeliveryStream` target to put event to an Amazon Data Firehose delivery stream.
+
+The code snippet below creates the scheduled event rule that put events to an Amazon Data Firehose delivery stream.
+
+```ts
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+
+declare const bucket: s3.Bucket;
+const stream = new firehose.DeliveryStream(this, 'DeliveryStream', {
+  destination: new firehose.S3Bucket(bucket),
+});
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.expression('rate(1 minute)'),
+});
+rule.addTarget(new targets.FirehoseDeliveryStream(stream));
+```
+
 ## Run an ECS Task
 
 Use the `EcsTask` target to run an ECS Task.
@@ -693,6 +715,52 @@ rule.addTarget(new targets.RedshiftQuery(workgroup.attrWorkgroupWorkgroupArn, {
   database: 'dev',
   deadLetterQueue: dlq,
   sql: ['SELECT * FROM foo','SELECT * FROM baz'],
+}));
+```
+
+## Send events to an SQS queue
+
+Use the `SqsQueue` target to send events to an SQS queue.
+
+The code snippet below creates an event rule that sends events to an SQS queue every hour:
+
+```ts
+const queue = new sqs.Queue(this, 'MyQueue');
+
+const rule = new events.Rule(this, 'Rule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+rule.addTarget(new targets.SqsQueue(queue));
+```
+
+### Using Message Group IDs
+
+You can specify a `messageGroupId` to ensure messages are processed in order. This parameter is required for FIFO queues and optional for standard queues:
+
+```ts
+// FIFO queue - messageGroupId required
+const fifoQueue = new sqs.Queue(this, 'MyFifoQueue', {
+  fifo: true,
+});
+
+const fifoRule = new events.Rule(this, 'FifoRule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+fifoRule.addTarget(new targets.SqsQueue(fifoQueue, {
+  messageGroupId: 'MyMessageGroupId',
+}));
+
+// Standard queue - messageGroupId optional (SQS Fair queue feature)
+const standardQueue = new sqs.Queue(this, 'MyStandardQueue');
+
+const standardRule = new events.Rule(this, 'StandardRule', {
+  schedule: events.Schedule.rate(cdk.Duration.hours(1)),
+});
+
+standardRule.addTarget(new targets.SqsQueue(standardQueue, {
+  messageGroupId: 'MyMessageGroupId', // Optional for standard queues
 }));
 ```
 

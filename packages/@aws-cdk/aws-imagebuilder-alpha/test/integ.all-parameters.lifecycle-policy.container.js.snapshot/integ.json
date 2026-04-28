@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "LifecyclePolicyTest-Container-AllParameters/DefaultTest": {
+      "stacks": [
+        "aws-cdk-imagebuilder-lifecycle-policy-container-all-parameters"
+      ],
+      "assertionStack": "LifecyclePolicyTest-Container-AllParameters/DefaultTest/DeployAssert",
+      "assertionStackName": "LifecyclePolicyTestContainerAllParametersDefaultTestDeployAssert74ABD8DB"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

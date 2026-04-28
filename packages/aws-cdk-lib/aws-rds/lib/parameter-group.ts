@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
-import { IEngine } from './engine';
+import type { Construct } from 'constructs';
+import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
-import { IResource, Lazy, RemovalPolicy, Resource } from '../../core';
+import type { IResource } from '../../core';
+import { Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { aws_rds } from '../../interfaces';
 
 /**
  * Options for `IParameterGroup.bindToCluster`.
@@ -41,7 +44,7 @@ export interface ParameterGroupInstanceConfig {
  * Represents both a cluster parameter group,
  * and an instance parameter group.
  */
-export interface IParameterGroup extends IResource {
+export interface IParameterGroup extends IResource, aws_rds.IDBParameterGroupRef, aws_rds.IDBClusterParameterGroupRef {
   /**
    * Method called when this Parameter Group is used when defining a database cluster.
    */
@@ -105,8 +108,8 @@ export interface ParameterGroupProps {
 
 /**
  * A parameter group.
- * Represents both a cluster parameter group,
- * and an instance parameter group.
+ * Represents both a cluster parameter group (AWS::RDS::DBClusterParameterGroup),
+ * and an instance parameter group (AWS::RDS::DBParameterGroup).
  *
  * @resource AWS::RDS::DBParameterGroup
  */
@@ -133,9 +136,49 @@ export class ParameterGroup extends Resource implements IParameterGroup {
       public addParameter(_key: string, _value: string): boolean {
         return false;
       }
+
+      public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
+        return {
+          dbParameterGroupName: parameterGroupName,
+        };
+      }
+
+      public get dbClusterParameterGroupRef(): aws_rds.DBClusterParameterGroupReference {
+        return {
+          dbClusterParameterGroupName: parameterGroupName,
+        };
+      }
     }
 
     return new Import(scope, id);
+  }
+
+  /**
+   * Creates a standalone instance parameter group.
+   *
+   * This method allows you to explicitly create a parameter group
+   * without binding it to a database instance.
+   *
+   * @returns instance parameter group (AWS::RDS::DBParameterGroup)
+   */
+  public static forInstance(scope: Construct, id: string, props: ParameterGroupProps): IParameterGroup {
+    const parameterGroup = new ParameterGroup(scope, id, props);
+    parameterGroup.createInstanceParameterGroup();
+    return parameterGroup;
+  }
+
+  /**
+   * Creates a standalone cluster parameter group.
+   *
+   * This method allows you to explicitly create a parameter group
+   * without binding it to a database cluster.
+   *
+   * @returns cluster parameter group (AWS::RDS::DBClusterParameterGroup)
+   */
+  public static forCluster(scope: Construct, id: string, props: ParameterGroupProps): IParameterGroup {
+    const parameterGroup = new ParameterGroup(scope, id, props);
+    parameterGroup.createClusterParameterGroup();
+    return parameterGroup;
   }
 
   private readonly parameters: { [key: string]: string };
@@ -154,7 +197,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
     const family = props.engine.parameterGroupFamily;
     if (!family) {
-      throw new ValidationError("ParameterGroup cannot be used with an engine that doesn't specify a version", this);
+      throw new ValidationError(lit`ParametergroupCannotUsedEngine`, "ParameterGroup cannot be used with an engine that doesn't specify a version", this);
     }
     this.family = family;
     this.description = props.description;
@@ -165,39 +208,15 @@ export class ParameterGroup extends Resource implements IParameterGroup {
 
   @MethodMetadata()
   public bindToCluster(_options: ParameterGroupClusterBindOptions): ParameterGroupClusterConfig {
-    if (!this.clusterCfnGroup) {
-      const id = this.instanceCfnGroup ? 'ClusterParameterGroup' : 'Resource';
-      this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
-        description: this.description || `Cluster parameter group for ${this.family}`,
-        family: this.family,
-        dbClusterParameterGroupName: this.name,
-        parameters: Lazy.any({ produce: () => this.parameters }),
-      });
-    }
-    if (this.removalPolicy) {
-      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
-    }
     return {
-      parameterGroupName: this.clusterCfnGroup.ref,
+      parameterGroupName: this.createClusterParameterGroup(),
     };
   }
 
   @MethodMetadata()
   public bindToInstance(_options: ParameterGroupInstanceBindOptions): ParameterGroupInstanceConfig {
-    if (!this.instanceCfnGroup) {
-      const id = this.clusterCfnGroup ? 'InstanceParameterGroup' : 'Resource';
-      this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
-        description: this.description || `Parameter group for ${this.family}`,
-        family: this.family,
-        dbParameterGroupName: this.name,
-        parameters: Lazy.any({ produce: () => this.parameters }),
-      });
-    }
-    if (this.removalPolicy) {
-      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
-    }
     return {
-      parameterGroupName: this.instanceCfnGroup.ref,
+      parameterGroupName: this.createInstanceParameterGroup(),
     };
   }
 
@@ -211,5 +230,67 @@ export class ParameterGroup extends Resource implements IParameterGroup {
   public addParameter(key: string, value: string): boolean {
     this.parameters[key] = value;
     return true;
+  }
+
+  /**
+   * Creates the instance parameter group CloudFormation resource if it doesn't exist.
+   * @returns parameter group name
+   */
+  private createInstanceParameterGroup(): string {
+    if (!this.instanceCfnGroup) {
+      const id = this.clusterCfnGroup ? 'InstanceParameterGroup' : 'Resource';
+      this.instanceCfnGroup = new CfnDBParameterGroup(this, id, {
+        description: this.description || `Parameter group for ${this.family}`,
+        family: this.family,
+        dbParameterGroupName: this.name,
+        parameters: Lazy.any({ produce: () => this.parameters }),
+      });
+    }
+
+    if (this.removalPolicy) {
+      this.instanceCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
+    }
+
+    return this.instanceCfnGroup.ref;
+  }
+
+  /**
+   * Creates the cluster parameter group CloudFormation resource if it doesn't exist.
+   * @returns parameter group name
+   */
+  private createClusterParameterGroup(): string {
+    if (!this.clusterCfnGroup) {
+      const id = this.instanceCfnGroup ? 'ClusterParameterGroup' : 'Resource';
+      this.clusterCfnGroup = new CfnDBClusterParameterGroup(this, id, {
+        description: this.description || `Cluster parameter group for ${this.family}`,
+        family: this.family,
+        dbClusterParameterGroupName: this.name,
+        parameters: Lazy.any({ produce: () => this.parameters }),
+      });
+    }
+
+    if (this.removalPolicy) {
+      this.clusterCfnGroup.applyRemovalPolicy(this.removalPolicy ?? RemovalPolicy.DESTROY);
+    }
+
+    return this.clusterCfnGroup.ref;
+  }
+
+  /**
+   * A reference to this parameter group as a DB parameter group
+   */
+  public get dbParameterGroupRef(): aws_rds.DBParameterGroupReference {
+    return {
+      dbParameterGroupName: this.instanceCfnGroup?.ref ?? this.name ?? '',
+    };
+  }
+
+  /**
+   * A reference to this parameter group as a DB cluster parameter group
+   */
+  public get dbClusterParameterGroupRef(): aws_rds.DBClusterParameterGroupReference {
+    return {
+      dbClusterParameterGroupName: this.clusterCfnGroup?.ref ?? this.name ?? '',
+    };
   }
 }

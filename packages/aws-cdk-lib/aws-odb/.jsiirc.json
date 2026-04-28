@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.odb"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.ODB"
+      "namespace": "Amazon.CDK.AWS.ODB"
     },
     "python": {
       "module": "aws_cdk.aws_odb"

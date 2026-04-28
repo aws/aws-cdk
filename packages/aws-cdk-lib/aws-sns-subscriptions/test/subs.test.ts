@@ -7,7 +7,7 @@ import { App, CfnParameter, Duration, RemovalPolicy, Stack, Token } from '../../
 import * as cxapi from '../../cx-api';
 import * as subs from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 const restrictSqsDescryption = { [cxapi.SNS_SUBSCRIPTIONS_SQS_DECRYPTION_POLICY]: true };
 let stack: Stack;
 let topic: sns.Topic;
@@ -1295,15 +1295,7 @@ test('lambda subscription', () => {
               'Arn',
             ],
           },
-          'Runtime': {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                'Ref': 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          'Runtime': 'nodejs22.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1407,15 +1399,7 @@ test('lambda subscription, cross region env agnostic', () => {
             ],
           },
           'Handler': 'index.handler',
-          'Runtime': {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                'Ref': 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          'Runtime': 'nodejs22.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',
@@ -1878,15 +1862,7 @@ test('multiple subscriptions', () => {
               'Arn',
             ],
           },
-          'Runtime': {
-            'Fn::FindInMap': [
-              'LatestNodeRuntimeMap',
-              {
-                'Ref': 'AWS::Region',
-              },
-              'value',
-            ],
-          },
+          'Runtime': 'nodejs22.x',
         },
         'DependsOn': [
           'MyFuncServiceRole54065130',

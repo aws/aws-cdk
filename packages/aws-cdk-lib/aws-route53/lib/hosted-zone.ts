@@ -1,17 +1,22 @@
-import { Construct } from 'constructs';
-import { HostedZoneProviderProps } from './hosted-zone-provider';
-import { HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes, PrivateHostedZoneAttributes } from './hosted-zone-ref';
-import { IKeySigningKey, KeySigningKey } from './key-signing-key';
+import type { Construct } from 'constructs';
+import { HostedZoneGrants } from './hosted-zone-grants';
+import type { HostedZoneProviderProps } from './hosted-zone-provider';
+import type { GrantDelegationOptions, HostedZoneAttributes, IHostedZone, PublicHostedZoneAttributes, PrivateHostedZoneAttributes } from './hosted-zone-ref';
+import type { IKeySigningKey } from './key-signing-key';
+import { KeySigningKey } from './key-signing-key';
 import { CaaAmazonRecord, ZoneDelegationRecord } from './record-set';
-import { CfnHostedZone, CfnDNSSEC, CfnKeySigningKey } from './route53.generated';
-import { makeGrantDelegation, makeHostedZoneArn, validateZoneName } from './util';
-import * as ec2 from '../../aws-ec2';
+import type { CfnKeySigningKey, HostedZoneReference } from './route53.generated';
+import { CfnHostedZone, CfnDNSSEC } from './route53.generated';
+import { makeHostedZoneArn, validateZoneName } from './util';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
+import type * as kms from '../../aws-kms';
 import * as cxschema from '../../cloud-assembly-schema';
-import { ContextProvider, Duration, Lazy, Resource, Stack } from '../../core';
+import type { Duration } from '../../core';
+import { ContextProvider, Lazy, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -99,6 +104,13 @@ export class HostedZone extends Resource implements IHostedZone {
   }
 
   /**
+   * FQDN of this hosted zone
+   */
+  public get name(): string {
+    return this.zoneName;
+  }
+
+  /**
    * Import a Route 53 hosted zone defined either outside the CDK, or in a different CDK stack
    *
    * Use when hosted zone ID is known. If a HostedZone is imported with this method the zoneName cannot be referenced.
@@ -111,14 +123,20 @@ export class HostedZone extends Resource implements IHostedZone {
   public static fromHostedZoneId(scope: Construct, id: string, hostedZoneId: string): IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = hostedZoneId;
+      public get name(): string { return this.zoneName; }
       public get zoneName(): string {
-        throw new ValidationError('Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.', this);
+        throw new ValidationError(lit`CannotReferenceZoneNameHosted`, 'Cannot reference `zoneName` when using `HostedZone.fromHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromHostedZoneAttributes()` or `fromLookup()` instead.', this);
       }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
+      }
+      public get hostedZoneRef(): HostedZoneReference {
+        return {
+          hostedZoneId: this.hostedZoneId,
+        };
       }
     }
 
@@ -138,11 +156,17 @@ export class HostedZone extends Resource implements IHostedZone {
     class Import extends Resource implements IHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
+      public readonly name = attrs.zoneName;
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
+      }
+      public get hostedZoneRef(): HostedZoneReference {
+        return {
+          hostedZoneId: this.hostedZoneId,
+        };
       }
     }
 
@@ -159,7 +183,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   public static fromLookup(scope: Construct, id: string, query: HostedZoneProviderProps): IHostedZone {
     if (!query.domainName) {
-      throw new ValidationError('Cannot use undefined value for attribute `domainName`', scope);
+      throw new ValidationError(lit`CannotUndefinedValueAttributeDomain`, 'Cannot use undefined value for attribute `domainName`', scope);
     }
 
     const DEFAULT_HOSTED_ZONE: HostedZoneContextResponse = {
@@ -204,6 +228,11 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   private keySigningKey?: IKeySigningKey;
 
+  /**
+   * Grants helper for this hosted zone
+   */
+  public readonly grants = HostedZoneGrants.fromHostedZone(this);
+
   constructor(scope: Construct, id: string, props: HostedZoneProps) {
     super(scope, id);
     // Enhanced CDK Analytics Telemetry
@@ -230,6 +259,12 @@ export class HostedZone extends Resource implements IHostedZone {
     }
   }
 
+  public get hostedZoneRef(): HostedZoneReference {
+    return {
+      hostedZoneId: this.hostedZoneId,
+    };
+  }
+
   /**
    * Add another VPC to this private hosted zone.
    *
@@ -240,9 +275,12 @@ export class HostedZone extends Resource implements IHostedZone {
     this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 
+  /**
+   * [disable-awslint:no-grants]
+   */
   @MethodMetadata()
-  public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-    return makeGrantDelegation(grantee, this.hostedZoneArn);
+  public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+    return this.grants.delegation(grantee, options);
   }
 
   /**
@@ -254,7 +292,7 @@ export class HostedZone extends Resource implements IHostedZone {
   @MethodMetadata()
   public enableDnssec(options: ZoneSigningOptions): IKeySigningKey {
     if (this.keySigningKey) {
-      throw new ValidationError('DNSSEC is already enabled for this hosted zone', this);
+      throw new ValidationError(lit`AlreadyEnabledHostedZone`, 'DNSSEC is already enabled for this hosted zone', this);
     }
     this.keySigningKey = new KeySigningKey(this, 'KeySigningKey', {
       hostedZone: this,
@@ -281,6 +319,19 @@ export interface PublicHostedZoneProps extends CommonHostedZoneProps {
    * @default false
    */
   readonly caaAmazon?: boolean;
+
+  /**
+   * Whether to enable accelerated recovery for this hosted zone.
+   *
+   * Accelerated recovery reduces the time to recovery when a hosted zone
+   * becomes unavailable due to DNS resolution issues.
+   *
+   * This feature is only available for public hosted zones.
+   *
+   * @default - no accelerated recovery
+   * @see https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/accelerated-recovery.html
+   */
+  readonly acceleratedRecoveryEnabled?: boolean;
 
   /**
    * A principal which is trusted to assume a role for zone delegation
@@ -341,12 +392,18 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
   public static fromPublicHostedZoneId(scope: Construct, id: string, publicHostedZoneId: string): IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = publicHostedZoneId;
-      public get zoneName(): string { throw new ValidationError('Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead', this); }
+      public get name(): string { return this.zoneName; }
+      public get zoneName(): string { throw new ValidationError(lit`CannotReferenceZoneNamePublic`, 'Cannot reference `zoneName` when using `PublicHostedZone.fromPublicHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`. If this is the case, use `fromPublicHostedZoneAttributes()` instead', this); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
+      }
+      public get hostedZoneRef(): HostedZoneReference {
+        return {
+          hostedZoneId: this.hostedZoneId,
+        };
       }
     }
     return new Import(scope, id);
@@ -365,11 +422,17 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     class Import extends Resource implements IPublicHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
+      public readonly name = attrs.zoneName;
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
+      }
+      public get hostedZoneRef(): HostedZoneReference {
+        return {
+          hostedZoneId: this.zoneName,
+        };
       }
     }
     return new Import(scope, id);
@@ -384,6 +447,13 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
     super(scope, id, props);
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+
+    if (props.acceleratedRecoveryEnabled !== undefined) {
+      const cfnHostedZone = this.node.defaultChild as CfnHostedZone;
+      cfnHostedZone.hostedZoneFeatures = {
+        enableAcceleratedRecovery: props.acceleratedRecoveryEnabled,
+      };
+    }
 
     if (props.caaAmazon) {
       new CaaAmazonRecord(this, 'CaaAmazon', {
@@ -425,7 +495,7 @@ export class PublicHostedZone extends HostedZone implements IPublicHostedZone {
 
   @MethodMetadata()
   public addVpc(_vpc: ec2.IVpc) {
-    throw new ValidationError('Cannot associate public hosted zones with a VPC', this);
+    throw new ValidationError(lit`CannotAssociatePublicHostedZones`, 'Cannot associate public hosted zones with a VPC', this);
   }
 
   /**
@@ -509,12 +579,18 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
   public static fromPrivateHostedZoneId(scope: Construct, id: string, privateHostedZoneId: string): IPrivateHostedZone {
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = privateHostedZoneId;
-      public get zoneName(): string { throw new ValidationError('Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`', this); }
+      public get name(): string { return this.zoneName; }
+      public get zoneName(): string { throw new ValidationError(lit`CannotReferenceZoneNamePrivate`, 'Cannot reference `zoneName` when using `PrivateHostedZone.fromPrivateHostedZoneId()`. A construct consuming this hosted zone may be trying to reference its `zoneName`', this); }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
+      }
+      public get hostedZoneRef(): HostedZoneReference {
+        return {
+          hostedZoneId: this.hostedZoneId,
+        };
       }
     }
     return new Import(scope, id);
@@ -533,11 +609,17 @@ export class PrivateHostedZone extends HostedZone implements IPrivateHostedZone 
     class Import extends Resource implements IPrivateHostedZone {
       public readonly hostedZoneId = attrs.hostedZoneId;
       public readonly zoneName = attrs.zoneName;
+      public get name(): string { return this.zoneName; }
       public get hostedZoneArn(): string {
         return makeHostedZoneArn(this, this.hostedZoneId);
       }
-      public grantDelegation(grantee: iam.IGrantable): iam.Grant {
-        return makeGrantDelegation(grantee, this.hostedZoneArn);
+      public grantDelegation(grantee: iam.IGrantable, options?: GrantDelegationOptions): iam.Grant {
+        return HostedZoneGrants.fromHostedZone(this).delegation(grantee, options);
+      }
+      public get hostedZoneRef(): HostedZoneReference {
+        return {
+          hostedZoneId: this.hostedZoneId,
+        };
       }
     }
     return new Import(scope, id);

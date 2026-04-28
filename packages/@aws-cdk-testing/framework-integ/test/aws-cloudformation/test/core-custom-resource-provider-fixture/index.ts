@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 
 export function handler(event: any) {
   console.log('I am a custom resource');

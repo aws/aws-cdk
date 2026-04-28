@@ -1,14 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { ArnFormat, Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { IStateMachineRef } from '../../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 interface StepFunctionsStartExecutionOptions {
   /**
    * The Step Functions state machine to start the execution on.
    */
-  readonly stateMachine: sfn.IStateMachine;
+  readonly stateMachine: IStateMachineRef;
 
   /**
    * The JSON input for the execution, same as that of StartExecution.
@@ -101,11 +103,11 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, StepFunctionsStartExecution.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN && !sfn.FieldUtils.containsTaskToken(props.input)) {
-      throw new ValidationError('Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.', scope);
+      throw new ValidationError(lit`IsRequiredTaskTokenRequired`, 'Task Token is required in `input` for callback. Use JsonPath.taskToken to set the token.', scope);
     }
 
     if (this.props.associateWithParent && props.input && props.input.type !== sfn.InputType.OBJECT) {
-      throw new ValidationError('Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.', scope);
+      throw new ValidationError(lit`CouldEnableBecauseTaken`, 'Could not enable `associateWithParent` because `input` is taken directly from a JSON path. Use `sfn.TaskInput.fromObject` instead.', scope);
     }
 
     this.taskPolicies = this.createScopedAccessPolicy();
@@ -136,7 +138,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
       Resource: `${integrationResourceArn('states', 'startExecution', this.integrationPattern)}${suffix}`,
       ...this._renderParametersOrArguments({
         Input: input,
-        StateMachineArn: this.props.stateMachine.stateMachineArn,
+        StateMachineArn: this.props.stateMachine.stateMachineRef.stateMachineArn,
         Name: this.props.name,
       }, queryLanguage),
     };
@@ -155,7 +157,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
     const policyStatements = [
       new iam.PolicyStatement({
         actions: ['states:StartExecution'],
-        resources: [this.props.stateMachine.stateMachineArn],
+        resources: [this.props.stateMachine.stateMachineRef.stateMachineArn],
       }),
     ];
 
@@ -170,7 +172,7 @@ export class StepFunctionsStartExecution extends sfn.TaskStateBase {
               service: 'states',
               resource: 'execution',
               arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-              resourceName: `${stack.splitArn(this.props.stateMachine.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
+              resourceName: `${stack.splitArn(this.props.stateMachine.stateMachineRef.stateMachineArn, ArnFormat.COLON_RESOURCE_NAME).resourceName}*`,
             }),
           ],
         }),

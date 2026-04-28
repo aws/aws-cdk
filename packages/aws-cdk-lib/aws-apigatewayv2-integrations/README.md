@@ -7,6 +7,7 @@
   - [HTTP Proxy Integration](#http-proxy)
   - [StepFunctions Integration](#stepfunctions-integration)
   - [SQS Integration](#sqs-integration)
+  - [EventBridge Integration](#eventbridge-integration)
   - [Private Integration](#private-integration)
   - [Request Parameters](#request-parameters)
 - [WebSocket APIs](#websocket-apis)
@@ -46,6 +47,41 @@ httpApi.addRoutes({
   integration: booksIntegration,
 });
 ```
+
+#### Lambda Integration Permissions
+
+By default, creating a `HttpLambdaIntegration` will add a permission for API Gateway to invoke your AWS Lambda function, scoped to the specific route which uses the integration.
+
+If you reuse the same AWS Lambda function for many integrations, the AWS Lambda permission policy size can be exceeded by adding a separate policy statement for each route which invokes the AWS Lambda function. To avoid this, you can opt to scope permissions to any route on the API by setting `scopePermissionToRoute` to `false`, and this will ensure only a single policy statement is added to the AWS Lambda permission policy.
+
+```ts
+import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const booksDefaultFn: lambda.Function;
+
+const httpApi = new apigwv2.HttpApi(this, 'HttpApi');
+
+const getBooksIntegration = new HttpLambdaIntegration('GetBooksIntegration', booksDefaultFn, {
+  scopePermissionToRoute: false,
+});
+const createBookIntegration = new HttpLambdaIntegration('CreateBookIntegration', booksDefaultFn, {
+  scopePermissionToRoute: false,
+});
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ apigwv2.HttpMethod.GET ],
+  integration: getBooksIntegration,
+});
+
+httpApi.addRoutes({
+  path: '/books',
+  methods: [ apigwv2.HttpMethod.POST ],
+  integration: createBookIntegration,
+});
+```
+
+In the above example, a single permission is added, shared by both `getBookIntegration` and `createBookIntegration`.
 
 ### HTTP Proxy
 
@@ -212,6 +248,57 @@ new apigwv2.ParameterMapping()
 // SQS_PURGE_QUEUE
 new apigwv2.ParameterMapping()
   .custom('QueueUrl', queue.queueUrl);
+```
+
+### EventBridge Integration
+
+EventBridge integrations enable integrating an HTTP API route with Amazon EventBridge using the PutEvents API.
+This allows the HTTP API to forward requests as events to an EventBridge event bus.
+
+The following code configures EventBridge integrations:
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+import { HttpEventBridgeIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+
+declare const bus: events.IEventBus;
+declare const httpApi: apigwv2.HttpApi;
+
+// default integration (PutEvents)
+httpApi.addRoutes({
+  path: '/default',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpEventBridgeIntegration('DefaultEventBridgeIntegration', {
+    eventBusRef: bus.eventBusRef,
+  }),
+});
+
+// explicit subtype
+httpApi.addRoutes({
+  path: '/put-events',
+  methods: [apigwv2.HttpMethod.POST],
+  integration: new HttpEventBridgeIntegration('ExplicitSubtypeIntegration', {
+    eventBusRef: bus.eventBusRef,
+    subtype: apigwv2.HttpIntegrationSubtype.EVENTBRIDGE_PUT_EVENTS,
+  }),
+});
+```
+
+#### EventBridge integration parameter mappings
+
+You can configure the custom parameter mappings of the EventBridge integration using the `parameterMapping` property of the `HttpEventBridgeIntegration` object.
+
+By default, the integration expects the request body to contain `Detail`, `DetailType`, and `Source` fields. 
+
+```ts
+import * as events from 'aws-cdk-lib/aws-events';
+declare const bus: events.IEventBus;
+
+new apigwv2.ParameterMapping()
+  // The following fields are required for the EventBridge PutEvents integration
+  .custom('Detail', '$request.body.Detail')
+  .custom('DetailType', '$request.body.DetailType')
+  .custom('Source', '$request.body.Source');
 ```
 
 ### Private Integration

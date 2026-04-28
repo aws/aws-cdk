@@ -1,0 +1,14 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-s3-bucket-auto-delete-objects-mixin/DefaultTest": {
+      "stacks": [
+        "cdk-s3-bucket-auto-delete-objects-mixin"
+      ],
+      "diffAssets": true,
+      "assertionStack": "cdk-integ-s3-bucket-auto-delete-objects-mixin/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegs3bucketautodeleteobjectsmixinDefaultTestDeployAssert40ADA709"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

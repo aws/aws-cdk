@@ -3,7 +3,7 @@ import * as cloudfront from '../../aws-cloudfront/index';
 import * as origins from '../../aws-cloudfront-origins';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3/index';
-import { App, Duration, Fn, Stack } from '../../core';
+import { App, Duration, Stack } from '../../core';
 
 describe('S3BucketOrigin', () => {
   describe('withOriginAccessControl', () => {

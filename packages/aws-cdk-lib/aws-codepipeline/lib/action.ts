@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
-import { Artifact } from './artifact';
-import * as notifications from '../../aws-codestarnotifications';
+import type { Construct } from 'constructs';
+import type { Artifact } from './artifact';
+import type * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
-import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
+import type * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
+import type { Duration, IResource } from '../../core';
+import { Lazy, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
+import type { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -195,7 +198,7 @@ export interface IAction {
  * It extends `events.IRuleTarget`,
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource, notifications.INotificationRuleSource {
+export interface IPipeline extends IResource, IPipelineRef, notifications.INotificationRuleSource {
   /**
    * The name of the Pipeline.
    *
@@ -398,7 +401,7 @@ export abstract class Action implements IAction {
       produce: () => {
         // make sure the action was bound (= added to a pipeline)
         if (this._actualNamespace === undefined) {
-          throw new UnscopedValidationError(`Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
+          throw new UnscopedValidationError(lit`CannotReferenceVariablesAction`, `Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
         } else {
           return this._customerProvidedNamespace !== undefined
             // if a customer passed a namespace explicitly, always use that
@@ -466,7 +469,7 @@ export abstract class Action implements IAction {
     if (this.__pipeline) {
       return this.__pipeline;
     } else {
-      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError(lit`MustBeActionAddedStage`, 'Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -474,7 +477,7 @@ export abstract class Action implements IAction {
     if (this.__stage) {
       return this.__stage;
     } else {
-      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError(lit`MustBeActionAddedStage`, 'Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -487,7 +490,7 @@ export abstract class Action implements IAction {
     if (this.__scope) {
       return this.__scope;
     } else {
-      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline first');
+      throw new UnscopedValidationError(lit`MustBeActionAddedStage`, 'Action must be added to a stage that is part of a pipeline first');
     }
   }
 }

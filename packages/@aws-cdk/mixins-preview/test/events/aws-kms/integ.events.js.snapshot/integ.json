@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "Key-Test/DefaultTest": {
+      "stacks": [
+        "L1L2KeyWithL2Rule",
+        "L2KeyOtherEventsWithL2Rule"
+      ],
+      "assertionStack": "Key-Test/DefaultTest/DeployAssert",
+      "assertionStackName": "KeyTestDefaultTestDeployAssert2D3BFAA3"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

@@ -103,17 +103,12 @@
         "dynamodb:UpdateItem"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "TestTable5769773A",
-          "Arn"
-         ]
-        },
-        {
-         "Ref": "AWS::NoValue"
-        }
-       ]
+       "Resource": {
+        "Fn::GetAtt": [
+         "TestTable5769773A",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -386,7 +381,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "LambdaIAMDefaultPolicy96DEA124",
@@ -450,7 +445,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "testFailServiceRole9FF22F85"

@@ -44,15 +44,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    }
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "MyLambdaServiceRole4539ECB6"
@@ -209,15 +201,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    }
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "MyLambda2ServiceRoleD09B370C"
@@ -789,9 +773,9 @@
       }
      },
      "ImageId": {
-      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+      "Ref": "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter"
      },
-     "InstanceType": "t2.micro",
+     "InstanceType": "t3.micro",
      "Monitoring": {
       "Enabled": false
      },
@@ -1094,152 +1078,10 @@
    }
   }
  },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isof-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isof-south-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
-   }
-  }
- },
  "Parameters": {
-  "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter": {
+  "SsmParameterValueawsserviceamiamazonlinuxlatestal2023amikernel61x8664C96584B6F00A464EAD1953AFF4B05118Parameter": {
    "Type": "AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>",
-   "Default": "/aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2"
+   "Default": "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-6.1-x86_64"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",

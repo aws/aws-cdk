@@ -1,9 +1,10 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
-import { OriginIpAddressType } from '../../aws-cloudfront';
+import type { OriginIpAddressType } from '../../aws-cloudfront';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for a Lambda Function URL Origin.
@@ -55,7 +56,7 @@ export interface FunctionUrlOriginWithOACProps extends FunctionUrlOriginProps {
    *
    * @default - an Origin Access Control will be created.
    */
-  readonly originAccessControl?: cloudfront.IOriginAccessControl;
+  readonly originAccessControl?: cloudfront.IOriginAccessControlRef;
 
 }
 
@@ -96,7 +97,7 @@ export class FunctionUrlOrigin extends cloudfront.OriginBase {
  * An Origin for a Lambda Function URL with OAC.
  */
 class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
-  private originAccessControl?: cloudfront.IOriginAccessControl;
+  private originAccessControl?: cloudfront.IOriginAccessControlRef;
   private functionUrl: lambda.IFunctionUrl;
   private readonly props: FunctionUrlOriginWithOACProps;
 
@@ -136,7 +137,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
       ...originBindConfig,
       originProperty: {
         ...originBindConfig.originProperty!,
-        originAccessControlId: this.originAccessControl?.originAccessControlId,
+        originAccessControlId: this.originAccessControl?.originAccessControlRef.originAccessControlId,
       },
     };
   }
@@ -169,7 +170,7 @@ class FunctionUrlOriginWithOAC extends cloudfront.OriginBase {
     const isAuthTypeIsNone: boolean = this.functionUrl.authType !== lambda.FunctionUrlAuthType.AWS_IAM;
 
     if (isAlwaysSigning && isAuthTypeIsNone) {
-      throw new cdk.ValidationError('The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.', scope);
+      throw new cdk.ValidationError(lit`FunctionUrlAuthTypeMustBeAwsIam`, 'The authType of the Function URL must be set to AWS_IAM when origin access control signing method is SIGV4_ALWAYS.', scope);
     }
   }
 }

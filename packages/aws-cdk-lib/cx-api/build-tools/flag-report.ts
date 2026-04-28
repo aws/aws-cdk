@@ -5,7 +5,8 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 import { validateFlags } from './validate-flags';
 import * as feats from '../lib/features';
-import { FlagInfo, FlagType, compareVersions } from '../lib/private/flag-modeling';
+import type { FlagInfo } from '../lib/private/flag-modeling';
+import { FlagType, compareVersions } from '../lib/private/flag-modeling';
 
 async function main() {
   validateFlags();
@@ -229,7 +230,6 @@ function firstCmp(...xs: number[]) {
 }
 
 main().catch(e => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

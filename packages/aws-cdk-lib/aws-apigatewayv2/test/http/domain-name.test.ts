@@ -340,7 +340,7 @@ describe('DomainName', () => {
 
   test.each([IpAddressType.IPV4, IpAddressType.DUAL_STACK])('ipAddressType is set', (ipAddressType) => {
     const stack = new Stack();
-    const dn = new DomainName(stack, 'DomainName', {
+    new DomainName(stack, 'DomainName', {
       domainName,
       certificate: Certificate.fromCertificateArn(stack, 'cert', certArn),
       ipAddressType,
@@ -353,6 +353,48 @@ describe('DomainName', () => {
           IpAddressType: ipAddressType,
         },
       ],
+    });
+  });
+
+  test('imported domain name has correct domainNameRef with custom domain name', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // WHEN - import with explicit attributes to verify domainNameRef uses 'name' not 'regionalDomainName'
+    const importedDomain = DomainName.fromDomainNameAttributes(stack, 'ImportedDomain', {
+      name: 'api.example.com',
+      regionalDomainName: 'd-xxxxxxxx.execute-api.us-east-1.amazonaws.com',
+      regionalHostedZoneId: 'Z1234567890',
+    });
+
+    // THEN - domainNameRef.domainName should return the actual domain name, not the regionalDomainName
+    expect(importedDomain.domainNameRef.domainName).toEqual('api.example.com');
+    expect(importedDomain.domainNameRef.domainNameArn).toContain('api.example.com');
+  });
+
+  test('ApiMapping uses custom domain name for imported domain', () => {
+    // GIVEN
+    const stack = new Stack();
+
+    // Import a domain name with explicit attributes
+    const importedDomain = DomainName.fromDomainNameAttributes(stack, 'ImportedDomain', {
+      name: 'api.example.com',
+      regionalDomainName: 'd-xxxxxxxx.execute-api.us-east-1.amazonaws.com',
+      regionalHostedZoneId: 'Z1234567890',
+    });
+
+    // WHEN
+    new HttpApi(stack, 'Api', {
+      createDefaultStage: true,
+      defaultDomainMapping: {
+        domainName: importedDomain,
+      },
+    });
+
+    // THEN - ApiMapping should use the custom domain name, not the regional domain name
+    Template.fromStack(stack).hasResourceProperties('AWS::ApiGatewayV2::ApiMapping', {
+      DomainName: 'api.example.com',
+      Stage: '$default',
     });
   });
 });

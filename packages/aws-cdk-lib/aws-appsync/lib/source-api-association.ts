@@ -1,10 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnSourceApiAssociation } from './appsync.generated';
-import { IGraphqlApi } from './graphqlapi-base';
-import { Effect, IRole, PolicyStatement } from '../../aws-iam';
-import { Fn, IResource, Lazy, Resource } from '../../core';
+import type { IGraphqlApi } from './graphqlapi-base';
+import type { IRole } from '../../aws-iam';
+import { Effect, PolicyStatement } from '../../aws-iam';
+import type { IResource } from '../../core';
+import { Fn, Lazy, Resource } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { ISourceApiAssociationRef, SourceApiAssociationReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
 /**
  * Merge type used to associate the source API
@@ -24,7 +27,7 @@ export enum MergeType {
 /**
  * Interface for AppSync Source Api Association
  */
-export interface ISourceApiAssociation extends IResource {
+export interface ISourceApiAssociation extends IResource, ISourceApiAssociationRef {
 
   /**
    * The association id.
@@ -126,6 +129,11 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
       constructor(s: Construct, i: string) {
         super(s, i);
       }
+      public get sourceApiAssociationRef(): SourceApiAssociationReference {
+        return {
+          associationArn: this.associationArn,
+        };
+      }
     }
     return new Import(scope, id);
   }
@@ -196,6 +204,12 @@ export class SourceApiAssociation extends Resource implements ISourceApiAssociat
     if (this.mergeType === MergeType.AUTO_MERGE) {
       addSourceApiAutoMergePermission(this.association, this.mergedApiExecutionRole);
     }
+  }
+
+  public get sourceApiAssociationRef(): SourceApiAssociationReference {
+    return {
+      associationArn: this.associationArn,
+    };
   }
 }
 

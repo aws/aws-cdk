@@ -140,6 +140,24 @@ describe('FunctionUrl', () => {
     }).toThrow(/FunctionUrl cannot be used with a Version/);
   });
 
+  test('throws when configured with multi-tenant function', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+
+    // WHEN
+    expect(() => {
+      new lambda.FunctionUrl(stack, 'FunctionUrl', {
+        function: fn,
+      });
+    }).toThrow(/FunctionUrl is not supported for functions with tenant isolation mode/);
+  });
+
   test('throws when CORS maxAge is greater than 86400 secs', () => {
     // GIVEN
     const stack = new cdk.Stack();
@@ -316,7 +334,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     // WHEN
@@ -339,7 +357,7 @@ describe('FunctionUrl', () => {
     const fn = new lambda.Function(stack, 'MyLambda', {
       code: new lambda.InlineCode('hello()'),
       handler: 'index.hello',
-      runtime: lambda.Runtime.NODEJS_18_X,
+      runtime: lambda.Runtime.NODEJS_20_X,
     });
 
     // WHEN

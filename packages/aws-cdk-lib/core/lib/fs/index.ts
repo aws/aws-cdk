@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
-import { CopyOptions, FingerprintOptions } from './options';
+import type { CopyOptions, FingerprintOptions } from './options';
 
 export * from './ignore';
 export * from './options';
@@ -67,6 +67,13 @@ export class FileSystem {
    */
   public static mkdtemp(prefix: string): string {
     return fs.mkdtempSync(path.join(FileSystem.tmpdir, prefix));
+  }
+
+  /**
+   * Deletes a directory
+   */
+  public static rmrf(dirname: string) {
+    fs.rmSync(dirname, { force: true, recursive: true });
   }
 
   private static _tmpdir?: string;

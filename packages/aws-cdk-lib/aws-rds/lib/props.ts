@@ -1,8 +1,8 @@
-import { IParameterGroup } from './parameter-group';
-import * as ec2 from '../../aws-ec2';
-import * as kms from '../../aws-kms';
-import * as secretsmanager from '../../aws-secretsmanager';
-import { Duration, SecretValue } from '../../core';
+import type { IParameterGroup } from './parameter-group';
+import type * as ec2 from '../../aws-ec2';
+import type * as kms from '../../aws-kms';
+import type * as secretsmanager from '../../aws-secretsmanager';
+import type { Duration, SecretValue } from '../../core';
 
 /**
  * Instance properties for database instances

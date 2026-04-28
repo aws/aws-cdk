@@ -18,7 +18,7 @@ new signer.SigningProfile(stack, 'SigningProfileOCI', {
 
 new signer.SigningProfile(stack, 'SigningProfileWithName', {
   platform: signer.Platform.AWS_LAMBDA_SHA384_ECDSA,
-  signingProfileName: 'test-signing-profile-name',
+  signingProfileName: 'test_signing_profile_name',
 });
 
 new IntegTest(app, 'cdk-integ-signer-signing-profile', {

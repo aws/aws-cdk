@@ -1,16 +1,19 @@
-import { Construct } from 'constructs';
-import { ConfigurationSetEventDestination, ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
-import { IDedicatedIpPool } from './dedicated-ip-pool';
+import type { Construct } from 'constructs';
+import type { ConfigurationSetEventDestinationOptions } from './configuration-set-event-destination';
+import { ConfigurationSetEventDestination } from './configuration-set-event-destination';
 import { undefinedIfNoKeys } from './private/utils';
 import { CfnConfigurationSet } from './ses.generated';
-import { Duration, IResource, Resource, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Duration, Resource, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IDedicatedIpPoolRef, IConfigurationSetRef, ConfigurationSetReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
 /**
  * A configuration set
  */
-export interface IConfigurationSet extends IResource {
+export interface IConfigurationSet extends IResource, IConfigurationSetRef {
   /**
    * The name of the configuration set
    *
@@ -35,7 +38,7 @@ export interface ConfigurationSetProps {
    *
    * @default - do not use a dedicated IP pool
    */
-  readonly dedicatedIpPool?: IDedicatedIpPool;
+  readonly dedicatedIpPool?: IDedicatedIpPoolRef;
 
   /**
    * Specifies whether messages that use the configuration set are required to
@@ -201,11 +204,23 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
   public static fromConfigurationSetName(scope: Construct, id: string, configurationSetName: string): IConfigurationSet {
     class Import extends Resource implements IConfigurationSet {
       public readonly configurationSetName = configurationSetName;
+
+      public get configurationSetRef(): ConfigurationSetReference {
+        return {
+          configurationSetName: this.configurationSetName,
+        };
+      }
     }
     return new Import(scope, id);
   }
 
   public readonly configurationSetName: string;
+
+  public get configurationSetRef(): ConfigurationSetReference {
+    return {
+      configurationSetName: this.configurationSetName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: ConfigurationSetProps = {}) {
     super(scope, id, {
@@ -215,23 +230,23 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     addConstructMetadata(this, props);
 
     if (props.disableSuppressionList && props.suppressionReasons) {
-      throw new ValidationError('When disableSuppressionList is true, suppressionReasons must not be specified.', this);
+      throw new ValidationError(lit`DisableSuppressionListTrueSuppression`, 'When disableSuppressionList is true, suppressionReasons must not be specified.', this);
     }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
-        throw new ValidationError(`The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
+        throw new ValidationError(lit`MaximumDeliveryDurationGreaterEqual`, `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
       }
       if (props.maxDeliveryDuration.toSeconds() > Duration.hours(14).toSeconds()) {
-        throw new ValidationError(`The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
+        throw new ValidationError(lit`MaximumDeliveryDurationLessEqual`, `The maximum delivery duration must be less than or equal to 14 hours (50400 seconds), got: ${props.maxDeliveryDuration.toSeconds()} seconds.`, this);
       }
     }
     if (props.customTrackingHttpsPolicy && !props.customTrackingRedirectDomain) {
-      throw new ValidationError('customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
+      throw new ValidationError(lit`CustomTrackingHttpsPolicySet`, 'customTrackingHttpsPolicy can only be set when customTrackingRedirectDomain is also set.', this);
     }
 
     const configurationSet = new CfnConfigurationSet(this, 'Resource', {
       deliveryOptions: undefinedIfNoKeys({
-        sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolName,
+        sendingPoolName: props.dedicatedIpPool?.dedicatedIpPoolRef.poolName,
         tlsPolicy: props.tlsPolicy,
         maxDeliverySeconds: props.maxDeliveryDuration?.toSeconds(),
       }),

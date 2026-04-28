@@ -1666,7 +1666,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
@@ -1688,7 +1688,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
@@ -1711,7 +1711,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
@@ -1735,7 +1735,7 @@ describe('ec2 service', () => {
       addDefaultCapacityProvider(cluster, stack, vpc);
       const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
 
-      const container = taskDefinition.addContainer('web', {
+      taskDefinition.addContainer('web', {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
         memoryLimitMiB: 512,
       });
@@ -2304,6 +2304,31 @@ describe('ec2 service', () => {
       // THEN
       Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
         PlacementConstraints: Match.arrayEquals([]),
+      });
+    });
+
+    test('with empty [] placement strategies', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'MyVpc', {});
+      const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+      addDefaultCapacityProvider(cluster, stack, vpc);
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+
+      taskDefinition.addContainer('web', {
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+        memoryLimitMiB: 512,
+      });
+
+      new ecs.Ec2Service(stack, 'Ec2Service', {
+        cluster,
+        taskDefinition,
+        placementStrategies: [],
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+        PlacementStrategies: Match.arrayEquals([]),
       });
     });
 

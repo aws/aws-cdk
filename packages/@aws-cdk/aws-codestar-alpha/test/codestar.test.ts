@@ -1,6 +1,6 @@
+import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
-import * as cdk from 'aws-cdk-lib';
 import { GitHubRepository, RepositoryVisibility } from '../lib';
 
 describe('GitHub Repository', () => {

@@ -1,5 +1,5 @@
-import * as ses from '../../aws-ses';
-import * as sns from '../../aws-sns';
+import type * as ses from '../../aws-ses';
+import type * as sns from '../../aws-sns';
 
 /**
  * Construction properties for a WorkMail action.
@@ -37,7 +37,7 @@ export class WorkMail implements ses.IReceiptRuleAction {
   constructor(private readonly props: WorkMailProps) {
   }
 
-  public bind(_rule: ses.IReceiptRule): ses.ReceiptRuleActionConfig {
+  public bind(_rule: ses.IReceiptRuleRef): ses.ReceiptRuleActionConfig {
     return {
       workmailAction: {
         organizationArn: this.props.organizationArn,

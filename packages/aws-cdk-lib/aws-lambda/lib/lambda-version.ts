@@ -1,16 +1,19 @@
 import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
-import { Construct } from 'constructs';
-import { Alias, AliasOptions } from './alias';
-import { Architecture } from './architecture';
-import { EventInvokeConfigOptions } from './event-invoke-config';
+import type { Construct } from 'constructs';
+import type { Alias, AliasOptions } from './alias';
+import type { Architecture } from './architecture';
+import type { EventInvokeConfigOptions } from './event-invoke-config';
 import { Function } from './function';
-import { IFunction, QualifiedFunctionBase } from './function-base';
-import { CfnVersion, IVersionRef, VersionReference } from './lambda.generated';
+import type { IFunction } from './function-base';
+import { QualifiedFunctionBase } from './function-base';
+import type { IVersionRef, VersionReference } from './lambda.generated';
+import { CfnVersion } from './lambda.generated';
 import { addAlias } from './util';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import { Fn, Lazy, RemovalPolicy, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IVersion extends IFunction, IVersionRef {
@@ -74,6 +77,28 @@ export interface VersionOptions extends EventInvokeConfigOptions {
    * @default RemovalPolicy.DESTROY
    */
   readonly removalPolicy?: RemovalPolicy;
+
+  /**
+   * The minimum number of execution environments to maintain for this version
+   * when published into a capacity provider.
+   *
+   * This setting ensures that at least this many execution environments are always
+   * available to handle function invocations for this specific version, reducing cold start latency.
+   *
+   * @default - 3 execution environments are set to be the minimum
+   */
+  readonly minExecutionEnvironments?: number;
+
+  /**
+   * The maximum number of execution environments allowed for this version
+   * when published into a capacity provider.
+   *
+   * This setting limits the total number of execution environments that can be created
+   * to handle concurrent invocations of this specific version.
+   *
+   * @default - No maximum specified
+   */
+  readonly maxExecutionEnvironments?: number;
 }
 
 /**
@@ -150,7 +175,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (version === '$LATEST') {
-          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+          throw new ValidationError(lit`FunctionVersionCannotLambdaEdge`, '$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -183,7 +208,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
 
       public get edgeArn(): string {
         if (attrs.version === '$LATEST') {
-          throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+          throw new ValidationError(lit`FunctionVersionCannotLambdaEdge`, '$LATEST function version cannot be used for Lambda@Edge', this);
         }
         return this.functionArn;
       }
@@ -197,6 +222,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     return new Import(scope, id);
   }
 
+  /** @jsii suppress JSII5019 For historic reasons */
   public readonly version: string;
   public readonly lambda: IFunction;
   public readonly functionArn: string;
@@ -214,11 +240,16 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     this.lambda = props.lambda;
     this.architecture = props.lambda.architecture;
 
+    if (props.provisionedConcurrentExecutions && this.lambda.tenancyConfig) {
+      throw new ValidationError(lit`ProvisionedConcurrencySupportedFunctionsTenant`, 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+    }
+
     const version = new CfnVersion(this, 'Resource', {
       codeSha256: props.codeSha256,
       description: props.description,
       functionName: props.lambda.functionName,
       provisionedConcurrencyConfig: this.determineProvisionedConcurrency(props),
+      functionScalingConfig: this.getFunctionScalingConfig(props),
     });
     version.addMetadata(ArtifactMetadataEntryType.DO_NOT_REFACTOR, true);
 
@@ -286,7 +317,7 @@ export class Version extends QualifiedFunctionBase implements IVersion {
   public get edgeArn(): string {
     // Validate first that this version can be used for Lambda@Edge
     if (this.version === '$LATEST') {
-      throw new ValidationError('$LATEST function version cannot be used for Lambda@Edge', this);
+      throw new ValidationError(lit`FunctionVersionCannotLambdaEdge`, '$LATEST function version cannot be used for Lambda@Edge', this);
     }
 
     // Check compatibility at synthesis. It could be that the version was associated
@@ -314,10 +345,37 @@ export class Version extends QualifiedFunctionBase implements IVersion {
     }
 
     if (props.provisionedConcurrentExecutions <= 0) {
-      throw new ValidationError('provisionedConcurrentExecutions must have value greater than or equal to 1', this);
+      throw new ValidationError(lit`ProvisionedConcurrentExecutionsValueGreater`, 'provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };
+  }
+
+  private getFunctionScalingConfig(props: VersionProps): CfnVersion.FunctionScalingConfigProperty | undefined {
+    const minExecutionEnvironments = props.minExecutionEnvironments;
+    const maxExecutionEnvironments = props.maxExecutionEnvironments;
+
+    if (minExecutionEnvironments === undefined && maxExecutionEnvironments === undefined) {
+      return undefined;
+    }
+
+    const minDefined = minExecutionEnvironments !== undefined && !Token.isUnresolved(minExecutionEnvironments);
+    const maxDefined = maxExecutionEnvironments !== undefined && !Token.isUnresolved(maxExecutionEnvironments);
+
+    if (minDefined && minExecutionEnvironments < 0) {
+      throw new ValidationError(lit`MinExecutionEnvironmentsNonNegative`, 'minExecutionEnvironments must be a non-negative integer.', this);
+    }
+    if (maxDefined && maxExecutionEnvironments < 0) {
+      throw new ValidationError(lit`MaxExecutionEnvironmentsNonNegative`, 'maxExecutionEnvironments must be a non-negative integer.', this);
+    }
+    if (minDefined && maxDefined && minExecutionEnvironments > maxExecutionEnvironments) {
+      throw new ValidationError(lit`MinExecutionEnvironmentsLessEqual`, 'minExecutionEnvironments must be less than or equal to maxExecutionEnvironments', this);
+    }
+
+    return {
+      minExecutionEnvironments,
+      maxExecutionEnvironments,
+    };
   }
 }
 

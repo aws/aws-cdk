@@ -5,6 +5,32 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Bucket1NotificationsHandlerPolicy2894F2A2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutBucketNotification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Bucket12520700A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Bucket1NotificationsHandlerPolicy2894F2A2",
+    "Roles": [
+     {
+      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+     }
+    ]
+   }
+  },
   "Bucket1NotificationsBC5D9A45": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
@@ -47,6 +73,7 @@
     "SkipDestinationValidation": false
    },
    "DependsOn": [
+    "Bucket1NotificationsHandlerPolicy2894F2A2",
     "EncryptedQueueKey6F4FD304",
     "EncryptedQueuePolicy8AEB1708",
     "EncryptedQueue0428C61A",
@@ -159,46 +186,6 @@
     ]
    }
   },
-  "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:PutBucketNotification",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "Bucket12520700A",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "Bucket25524B414",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "Bucket3WithSkipDestinationValidation4A19337A",
-          "Arn"
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
-    "Roles": [
-     {
-      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-     }
-    ]
-   }
-  },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -217,7 +204,6 @@
     "Timeout": 300
    },
    "DependsOn": [
-    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
    ]
   },
@@ -305,6 +291,32 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Bucket2NotificationsHandlerPolicy2BDDB4E2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutBucketNotification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Bucket25524B414",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Bucket2NotificationsHandlerPolicy2BDDB4E2",
+    "Roles": [
+     {
+      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+     }
+    ]
+   }
+  },
   "Bucket2NotificationsD9BA2A77": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
@@ -346,6 +358,7 @@
     "SkipDestinationValidation": false
    },
    "DependsOn": [
+    "Bucket2NotificationsHandlerPolicy2BDDB4E2",
     "Bucket2Policy945B22E3",
     "MyQueuePolicy6BBEDDAC",
     "MyQueueE6CA6235"
@@ -391,15 +404,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -547,6 +552,32 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Bucket3WithSkipDestinationValidationNotificationsHandlerPolicyAA99C477": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutBucketNotification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Bucket3WithSkipDestinationValidation4A19337A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Bucket3WithSkipDestinationValidationNotificationsHandlerPolicyAA99C477",
+    "Roles": [
+     {
+      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+     }
+    ]
+   }
+  },
   "Bucket3WithSkipDestinationValidationNotificationsA897B602": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
@@ -578,6 +609,7 @@
     "SkipDestinationValidation": true
    },
    "DependsOn": [
+    "Bucket3WithSkipDestinationValidationNotificationsHandlerPolicyAA99C477",
     "MyQueueWithIncorrectS3PermissionsPolicy9249BED3",
     "MyQueueWithIncorrectS3PermissionsBE3BD1C7"
    ]
@@ -640,148 +672,6 @@
       "Ref": "MyQueueWithIncorrectS3PermissionsBE3BD1C7"
      }
     ]
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isof-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isof-south-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
    }
   }
  },

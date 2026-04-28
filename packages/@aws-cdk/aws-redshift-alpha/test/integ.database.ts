@@ -1,11 +1,11 @@
 #!/usr/bin/env node
+import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as integ from '@aws-cdk/integ-tests-alpha';
+
 import { REDSHIFT_COLUMN_ID } from 'aws-cdk-lib/cx-api';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import * as redshift from '../lib';
 
 const useColumnIds = { [REDSHIFT_COLUMN_ID]: false };
@@ -19,11 +19,7 @@ const app = new cdk.App({
   },
 });
 
-const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    region: 'us-east-1',
-  },
-});
+const stack = new cdk.Stack(app, 'aws-cdk-redshift-cluster-database');
 
 cdk.Aspects.of(stack).add({
   visit(node: constructs.IConstruct) {

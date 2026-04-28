@@ -1,6 +1,6 @@
 import * as iot from '@aws-cdk/aws-iot-alpha';
-import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as cdk from 'aws-cdk-lib';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as actions from '../../lib';
 
 class TestStack extends cdk.Stack {

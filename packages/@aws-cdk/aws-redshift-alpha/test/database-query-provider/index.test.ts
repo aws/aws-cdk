@@ -1,4 +1,4 @@
-/* eslint-disable-next-line import/no-unresolved */
+
 import type * as AWSLambda from 'aws-lambda';
 
 const resourceProperties = {

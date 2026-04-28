@@ -2,20 +2,25 @@ name: 'Security Guardian'
 description: 'Security Guardian for custom or granular guard rules'
 
 inputs:
-  data_directory:
-    description: "Path to CloudFormation templates"
-    required: true
+  base_sha:
+    description: "Base commit id"
+    required: false
+  head_sha:
+    description: "Current changes commit id"
+    required: false
   rule_set_path:
     description: "Path to a single .guard file locally"
     required: true
-  show_summary:
-    description: "cfn-guard summary output. Options are all, pass, fail, skip or none"
+  enhance_xml:
+    description: "Enable XML enhancement for individual failure annotations"
     required: false
-    default: "fail"
-  output_format:
-    description: "cfn-guard output format. Options: json, yaml, single-line-summary"
-    required: false
-    default: "single-line-summary"
+    default: 'true'
+
+outputs:
+  junit_files:
+    description: "Comma-separated list of JUnit XML files"
+  all_passed:
+    description: "Whether all validations passed"
 
 runs:
   using: node20

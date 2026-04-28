@@ -582,7 +582,7 @@
         {
          "Ref": "ClusterEB0386A7"
         },
-        " >> /etc/ecs/ecs.config\nsudo iptables --insert FORWARD 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP\nsudo service iptables save\necho ECS_AWSVPC_BLOCK_IMDS=true >> /etc/ecs/ecs.config"
+        " >> /etc/ecs/ecs.config"
        ]
       ]
      }
@@ -952,6 +952,13 @@
     "VpcId": {
      "Ref": "Vpc8378EB38"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
+    }
    }
   },
   "myServicelb1SecurityGrouptoawsecsintegalbidletimeoutClusterDefaultAutoScalingGroupInstanceSecurityGroup9C8FC9DE327686553594C8842C": {
@@ -1147,6 +1154,13 @@
     ],
     "VpcId": {
      "Ref": "Vpc8378EB38"
+    }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "EC2_NO_OPEN_SECURITY_GROUPS"
+     ]
     }
    }
   },

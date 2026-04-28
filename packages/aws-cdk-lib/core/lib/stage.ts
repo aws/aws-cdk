@@ -1,12 +1,15 @@
-import { IConstruct, Construct, Node } from 'constructs';
-import { Environment } from './environment';
+import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
+import { type IConstruct, Construct, Node } from 'constructs';
+import type { Environment } from './environment';
 import { ValidationError } from './errors';
 import { FeatureFlags } from './feature-flags';
-import { PermissionsBoundary } from './permissions-boundary';
+import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
-import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import { IPolicyValidationPluginBeta1 } from './validation';
-import * as cxapi from '../../cx-api';
+import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
+import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
+import * as public_cxapi from '../../cx-api';
+import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
+import { lit } from './private/literal-string';
 
 const STAGE_SYMBOL = Symbol.for('@aws-cdk/core.Stage');
 
@@ -93,6 +96,7 @@ export interface StageProps {
    * synthesis will be interrupted and the report displayed to the user.
    *
    * @default - no validation plugins are used
+   * @deprecated Use `Validations.of(stage).addPlugins()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 
@@ -111,7 +115,7 @@ export interface StageProps {
  * application.
  *
  * You can then instantiate your subclass multiple times to model multiple
- * copies of your application which should be be deployed to different
+ * copies of your application which should be deployed to different
  * environments.
  */
 export class Stage extends Construct {
@@ -149,7 +153,7 @@ export class Stage extends Construct {
    *
    * @internal
    */
-  public readonly _assemblyBuilder: cxapi.CloudAssemblyBuilder;
+  public readonly _assemblyBuilder: public_cxapi.CloudAssemblyBuilder;
 
   /**
    * The name of the stage. Based on names of the parent stages separated by
@@ -167,7 +171,7 @@ export class Stage extends Construct {
   /**
    * The cached assembly if it was already built
    */
-  private assembly?: cxapi.CloudAssembly;
+  private assembly?: public_cxapi.CloudAssembly;
 
   /**
    * The cached set of construct paths. Empty if assembly was not yet built.
@@ -180,13 +184,17 @@ export class Stage extends Construct {
    *
    * @default - no validation plugins are used
    */
-  public readonly policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
+  public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
+    return [...this._policyValidation];
+  }
+
+  private readonly _policyValidation: IPolicyValidationPlugin[] = [];
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
 
     if (id !== '' && !/^[a-z][a-z0-9\-\_\.]*$/i.test(id)) {
-      throw new ValidationError(`invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`, this);
+      throw new ValidationError(lit`InvalidStageName`, `invalid stage name "${id}". Stage name must start with a letter and contain only alphanumeric characters, hypens ('-'), underscores ('_') and periods ('.')`, this);
     }
 
     if (props.propertyInjectors) {
@@ -208,8 +216,17 @@ export class Stage extends Construct {
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
     if (props.policyValidationBeta1) {
-      this.policyValidationBeta1 = props.policyValidationBeta1;
+      this._policyValidation.push(...props.policyValidationBeta1);
     }
+  }
+
+  /**
+   * Register a validation plugin on this stage.
+   *
+   * @internal
+   */
+  public _addValidationPlugins(...plugins: IPolicyValidationPlugin[]): void {
+    this._policyValidation.push(...plugins);
   }
 
   /**
@@ -243,16 +260,16 @@ export class Stage extends Construct {
    * Once an assembly has been synthesized, it cannot be modified. Subsequent
    * calls will return the same assembly.
    */
-  public synth(options: StageSynthesisOptions = { }): cxapi.CloudAssembly {
+  public synth(options: StageSynthesisOptions = { }): public_cxapi.CloudAssembly {
     let newConstructPaths = this.listAllConstructPaths(this);
 
     // If the assembly cache is uninitiazed, run synthesize and reset construct paths cache
     if (this.constructPathsCache.size == 0 || !this.assembly || options.force) {
-      this.assembly = synthesize(this, {
+      this.assembly = _convertCloudAssembly(synthesize(this, {
         skipValidation: options.skipValidation,
         validateOnSynthesis: options.validateOnSynthesis,
-        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(cxapi.ASPECT_STABILIZATION) ?? false,
-      });
+        aspectStabilization: options.aspectStabilization ?? FeatureFlags.of(this).isEnabled(public_cxapi.ASPECT_STABILIZATION) ?? false,
+      }));
       newConstructPaths = this.listAllConstructPaths(this);
       this.constructPathsCache = newConstructPaths;
     }
@@ -261,7 +278,7 @@ export class Stage extends Construct {
     if (!this.constructPathSetsAreEqual(this.constructPathsCache, newConstructPaths)) {
       const errorMessage = 'Synthesis has been called multiple times and the construct tree was modified after the first synthesis.';
       if (options.errorOnDuplicateSynth ?? true) {
-        throw new ValidationError(errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
+        throw new ValidationError(lit`ConstructTreeModifiedAfterSynth`, errorMessage + ' This is not allowed. Remove multple synth() calls and do not modify the construct tree after the first synth().', this);
       } else {
         // eslint-disable-next-line no-console
         console.error(errorMessage + ' Only the results of the first synth() call are used, and modifications done after it are ignored. Avoid construct tree mutations after synth() has been called unless this is intentional.');
@@ -303,7 +320,7 @@ export class Stage extends Construct {
   private createBuilder(outdir?: string) {
     // cannot specify "outdir" if we are a nested stage
     if (this.parentStage && outdir) {
-      throw new ValidationError('"outdir" cannot be specified for nested stages', this);
+      throw new ValidationError(lit`OutdirCannotBeSpecifiedForNestedStage`, '"outdir" cannot be specified for nested stages', this);
     }
 
     // Need to determine fixed output directory already, because we must know where
@@ -311,7 +328,7 @@ export class Stage extends Construct {
     // synthesize() phase).
     return this.parentStage
       ? this.parentStage._assemblyBuilder.createNestedAssembly(this.artifactId, this.node.path)
-      : new cxapi.CloudAssemblyBuilder(outdir);
+      : _convertCloudAssemblyBuilder(new private_cxapi.CloudAssemblyBuilder(outdir));
   }
 }
 

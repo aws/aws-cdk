@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2e562e358b834ae6ba912dbed0a0e9f9a2473362f44a8dce69136a63d4410573.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03b3618cc3a43360cb9d156d3946384701615367b56ab6234a35b31c37dfbb11.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -150,12 +150,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "TableStackRegionNotEqualseuwest2A03859E7"
-          }
-        ],
-        "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/cdk-dynamodb-skip-replica-deletion/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler": [

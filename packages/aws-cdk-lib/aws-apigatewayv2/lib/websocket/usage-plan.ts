@@ -1,13 +1,14 @@
-import { Construct } from 'constructs';
-import { IWebSocketApi } from './api';
-import { IApiKey } from './api-key';
-import { IWebSocketStage } from './stage';
+import type { Construct } from 'constructs';
+import type { IWebSocketApi } from './api';
+import type { IWebSocketStage } from './stage';
+import type { IApiKeyRef, IUsagePlanRef, UsagePlanReference } from '../../../aws-apigateway/lib';
 import { CfnUsagePlan, CfnUsagePlanKey } from '../../../aws-apigateway/lib';
 import { validateDouble, validateInteger } from '../../../aws-apigateway/lib/util';
-import { IResource, Names, Resource, Lazy } from '../../../core';
+import type { IResource } from '../../../core';
+import { Names, Resource, Lazy } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ThrottleSettings } from '../common';
+import type { ThrottleSettings } from '../common';
 
 /**
  * Time period for which quota settings apply.
@@ -125,7 +126,7 @@ export interface AddApiKeyOptions {
 /**
  * A UsagePlan, either managed by this CDK app, or imported.
  */
-export interface IUsagePlan extends IResource {
+export interface IUsagePlan extends IResource, IUsagePlanRef {
   /**
    * Id of the usage plan
    * @attribute
@@ -138,7 +139,7 @@ export interface IUsagePlan extends IResource {
    * @param apiKey the api key to associate with this usage plan
    * @param options options that control the behaviour of this method
    */
-  addApiKey(apiKey: IApiKey, options?: AddApiKeyOptions): void;
+  addApiKey(apiKey: IApiKeyRef, options?: AddApiKeyOptions): void;
 
 }
 
@@ -155,17 +156,21 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
    * @param apiKey the api key to associate with this usage plan
    * @param options options that control the behaviour of this method
    */
-  public addApiKey(apiKey: IApiKey, options?: AddApiKeyOptions): void {
+  public addApiKey(apiKey: IApiKeyRef, options?: AddApiKeyOptions): void {
     const prefix = 'UsagePlanKeyResource';
 
     const resource = new CfnUsagePlanKey(this, `${prefix}:${Names.nodeUniqueId(apiKey.node)}`, {
-      keyId: apiKey.keyId,
+      keyId: apiKey.apiKeyRef.apiKeyId,
       keyType: UsagePlanKeyType.API_KEY,
       usagePlanId: this.usagePlanId,
     });
     if (options?.overrideLogicalId) {
       resource.overrideLogicalId(options?.overrideLogicalId);
     }
+  }
+
+  public get usagePlanRef(): UsagePlanReference {
+    return { usagePlanId: this.usagePlanId };
   }
 }
 

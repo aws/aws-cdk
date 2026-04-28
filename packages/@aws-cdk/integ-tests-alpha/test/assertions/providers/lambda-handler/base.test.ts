@@ -1,10 +1,11 @@
 import { isDeepStrictEqual } from 'util';
+import type { ListBucketsOutput } from '@aws-sdk/client-s3';
+import { ListBucketsCommand, S3Client } from '@aws-sdk/client-s3';
+import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
+import { mockClient } from 'aws-sdk-client-mock';
 import * as nock from 'nock';
 import { handler as lambda_handler, isComplete, onTimeout } from '../../../../lib/assertions/providers/lambda-handler';
 import { CustomResourceHandler } from '../../../../lib/assertions/providers/lambda-handler/base';
-import { mockClient } from 'aws-sdk-client-mock';
-import { ListBucketsCommand, ListBucketsOutput, S3Client } from '@aws-sdk/client-s3';
-import { SFNClient, StartExecutionCommand } from '@aws-sdk/client-sfn';
 import 'aws-sdk-client-mock-jest';
 
 interface MyHandlerRequest {

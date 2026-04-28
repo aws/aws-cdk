@@ -2,14 +2,13 @@ import { Vpc } from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
-import { IResolvable, Lazy, Stack, Token, Tokenization } from '../../core';
+import { Lazy, Stack, Tokenization } from '../../core';
 import { Source } from '../lib';
 import { renderData } from '../lib/render-data';
 
 const expectEqualIfResolved = (stack: Stack, a: any, b: any) => expect(stack.resolve(a)).toStrictEqual(stack.resolve(b));
 
 test('simple string', () => {
-  const stack = new Stack();
   expect(renderData('foo')).toStrictEqual({
     markers: {},
     text: 'foo',
@@ -89,7 +88,6 @@ test('markers are returned in the source config', () => {
 });
 
 test('lazy string is not resolved', () => {
-  const stack = new Stack();
   const token = Lazy.string({ produce: () => 'resolved!' });
 
   expect(renderData(token)).toStrictEqual({
@@ -101,7 +99,6 @@ test('lazy string is not resolved', () => {
 });
 
 test('lazy within a string is not resolved', () => {
-  const stack = new Stack();
   const token = Lazy.string({ produce: () => 'resolved!' });
 
   expect(renderData(`hello, ${token}`)).toStrictEqual({
@@ -110,4 +107,30 @@ test('lazy within a string is not resolved', () => {
       '<<marker:0xbaba:0>>': token,
     },
   });
+});
+
+test('renderData can render empty string data', () => {
+  expect(renderData('')).toStrictEqual({
+    markers: {},
+    text: '',
+  });
+});
+
+test('Source.data with empty string does not throw error', () => {
+  const stack = new Stack();
+  const handler = new lambda.Function(stack, 'Handler', {
+    runtime: lambda.Runtime.NODEJS_LATEST,
+    code: lambda.Code.fromInline('foo'),
+    handler: 'index.handler',
+  });
+
+  // This is the exact reproduction case from issue #35809
+  // Before the fix, this would throw: "The "data" argument must be of type string... Received undefined"
+  expect(() => {
+    const source = Source.data('path/to/empty', '');
+    const actual = source.bind(stack, { handlerRole: handler.role! });
+    expect(actual.markers).toStrictEqual({});
+    expect(actual.bucket).toBeDefined();
+    expect(actual.zipObjectKey).toBeDefined();
+  }).not.toThrow();
 });

@@ -1,11 +1,11 @@
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import type { StackProps } from 'aws-cdk-lib';
 import {
   Stack,
-  StackProps,
   App,
   aws_ec2 as ec2,
 } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 export class TestCase extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {

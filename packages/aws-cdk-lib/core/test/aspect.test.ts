@@ -1,9 +1,11 @@
-import { Construct, IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { Template } from '../../assertions';
 import { Bucket, CfnBucket } from '../../aws-s3';
 import * as cxschema from '../../cloud-assembly-schema';
 import { App, CfnResource, Stack, Tag, Tags } from '../lib';
-import { IAspect, Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
+import type { IAspect } from '../lib/aspect';
+import { Aspects, AspectPriority, _aspectTreeRevisionReader } from '../lib/aspect';
 import { MissingRemovalPolicies, RemovalPolicies } from '../lib/removal-policies';
 import { RemovalPolicy } from '../lib/removal-policy';
 
@@ -129,7 +131,7 @@ describe('aspect', () => {
   test('Aspects applied without priority get the default priority value', () => {
     const app = new App();
     const root = new MyConstruct(app, 'Construct');
-    const child = new MyConstruct(root, 'ChildConstruct');
+    new MyConstruct(root, 'ChildConstruct');
 
     // WHEN - adding an Aspect without priority specified
     Aspects.of(root).add(new MyAspect());
@@ -142,7 +144,7 @@ describe('aspect', () => {
   test('Can override Aspect priority', () => {
     const app = new App();
     const root = new MyConstruct(app, 'Construct');
-    const child = new MyConstruct(root, 'ChildConstruct');
+    new MyConstruct(root, 'ChildConstruct');
 
     // WHEN - adding an Aspect without priority specified and resetting it.
     Aspects.of(root).add(new MyAspect());
@@ -158,7 +160,7 @@ describe('aspect', () => {
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
-    const bucket = new Bucket(stack, 'my-bucket', {
+    new Bucket(stack, 'my-bucket', {
       versioned: false,
     });
 
@@ -178,7 +180,7 @@ describe('aspect', () => {
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
-    const bucket = new Bucket(stack, 'my-bucket', {
+    new Bucket(stack, 'my-bucket', {
       bucketName: 'my-original-bucket',
       versioned: false,
     });
@@ -197,7 +199,7 @@ describe('aspect', () => {
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
-    const bucket = new Bucket(stack, 'my-bucket', {
+    new Bucket(stack, 'my-bucket', {
       bucketName: 'my-original-bucket',
       versioned: false,
     });
@@ -220,7 +222,7 @@ describe('aspect', () => {
     const stack = new Stack(app, 'My-Stack');
 
     // GIVEN - Bucket with versioning disabled
-    const bucket = new Bucket(stack, 'my-bucket', {
+    new Bucket(stack, 'my-bucket', {
       bucketName: 'my-original-bucket',
       versioned: false,
     });

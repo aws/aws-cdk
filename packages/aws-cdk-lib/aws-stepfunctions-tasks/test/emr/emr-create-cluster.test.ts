@@ -2,7 +2,7 @@ import { Template } from '../../../assertions';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import * as cdk from '../../../core';
-// eslint-disable-next-line import/no-extraneous-dependencies
+
 import { ENABLE_EMR_SERVICE_POLICY_V2 } from '../../../cx-api';
 import { EmrCreateCluster } from '../../lib';
 

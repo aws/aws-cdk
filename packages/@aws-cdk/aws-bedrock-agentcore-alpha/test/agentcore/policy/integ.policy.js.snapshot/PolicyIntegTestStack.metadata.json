@@ -1,0 +1,200 @@
+{
+  "/PolicyIntegTestStack/BasicEngineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicEngineArn"
+    }
+  ],
+  "/PolicyIntegTestStack/EncryptedEngineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedEngineArn"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPoliciesArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesArn"
+    }
+  ],
+  "/PolicyIntegTestStack/KmsKeyArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KmsKeyArn"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngineArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedEngineArn"
+    }
+  ],
+  "/PolicyIntegTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/PolicyIntegTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/PolicyIntegTestStack/BasicPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicPolicyEngine05C42F5C"
+    }
+  ],
+  "/PolicyIntegTestStack/BasicPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicPolicy1D506E88"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyEngineKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyEngineKeyF386A3BD"
+    }
+  ],
+  "/PolicyIntegTestStack/EncryptedPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedPolicyEngineBC14AF35"
+    }
+  ],
+  "/PolicyIntegTestStack/RawCedarPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RawCedarPolicy334AC182"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSimplePolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderSimplePolicy88B111D7"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderSpecificPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderSpecificPolicyCDF7CA29"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderConditionsPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderConditionsPolicy13D2B4B7"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderComplexPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderComplexPolicy4617DB4E"
+    }
+  ],
+  "/PolicyIntegTestStack/BuilderForbidPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BuilderForbidPolicy1444DBB2"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesDE8D5253"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedEngine3770C869"
+    }
+  ],
+  "/PolicyIntegTestStack/AutoNamedPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AutoNamedPolicy6F9030FE"
+    }
+  ],
+  "/PolicyIntegTestStack/GatewayPolicyEngine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayPolicyEngine8518A258"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayBC68FA61"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesAddedPolicy1330DF90C"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesAddedPolicy2A0914D25"
+    }
+  ],
+  "/PolicyIntegTestStack/EngineWithAddedPolicies/AddedPolicy3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EngineWithAddedPoliciesAddedPolicy3ACD13EB4"
+    }
+  ],
+  "/PolicyIntegTestStack/GatewayPolicyEngine/AllowToolAccess/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayPolicyEngineAllowToolAccessEAED6CD0"
+    }
+  ],
+  "/PolicyIntegTestStack/GatewayPolicyEngine/DenyDeleteActions/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayPolicyEngineDenyDeleteActions54A18F9A"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayServiceRole3EA38E17"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPool1F7F632A"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayServiceRoleDefaultPolicy5CE49125"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPoolResourceServerCE14D0E7"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/DefaultClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPoolDefaultClientDB3FD216"
+    }
+  ],
+  "/PolicyIntegTestStack/PolicyGateway/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PolicyGatewayUserPoolDomainA7E0A6E2"
+    }
+  ]
+}

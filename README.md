@@ -151,7 +151,7 @@ environment and submit code.
 
 This solution collects anonymous operational metrics to help AWS improve the
 quality and features of the CDK. For more information, including how to disable
-this capability, please see the [developer guide](https://docs.aws.amazon.com/cdk/latest/guide/cli.html#version_reporting).
+this capability, please see the [developer guide](https://docs.aws.amazon.com/cdk/v2/guide/cdktelemetry.html).
 
 ## More Resources
 

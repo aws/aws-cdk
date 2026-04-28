@@ -26,6 +26,7 @@
     "target": "es2022",
     "composite": true,
     "esModuleInterop": false,
+    "isolatedModules": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo"
   },
   "include": [
@@ -33,8 +34,9 @@
   ],
   "exclude": [
     "node_modules",
-    "scripts",
-    "**/test/**/*.ts",
+    ".types-compat",
+    "**/test/**/docker-*-handler/*",
+    "aws-lambda/test/layer-code/*",
     "**/*.d.ts"
   ],
   "references": [
