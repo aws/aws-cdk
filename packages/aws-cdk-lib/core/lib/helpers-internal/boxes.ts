@@ -144,6 +144,72 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
   map<B>(fn: (a: A) => B): IReadableBox<Array<B>>;
 }
 
+/**
+ * A mutable box specialized for maps, extending `Box<Map<K, V>>` with
+ * map-mutation methods.
+ *
+ * Like `ArrayBox`, mutating methods (`put`, `delete`) *append* stack traces
+ * rather than replacing them, so each mutation is tracked individually.
+ */
+export interface MapBox<K, V> extends Box<Map<K, V>>, Iterable<[K, V]> {
+  /**
+   * Returns the number of entries in the map.
+   */
+  readonly size: number;
+
+  /**
+   * Sets a key-value pair in the map and captures a stack trace for this mutation.
+   *
+   * @param key the key.
+   * @param value the value.
+   */
+  put(key: K, value: V): void;
+
+  /**
+   * Removes a key from the map and captures a stack trace for this mutation.
+   *
+   * @param key the key to remove.
+   * @returns `true` if the key existed and was removed, `false` otherwise.
+   */
+  delete(key: K): boolean;
+
+  /**
+   * Returns whether the map contains the given key.
+   *
+   * @param key the key to check.
+   */
+  has(key: K): boolean;
+
+  /**
+   * Returns the value associated with the given key, or `undefined`.
+   *
+   * @param key the key to look up.
+   */
+  getEntry(key: K): V | undefined;
+
+  /**
+   * Returns an iterable of the map's keys.
+   */
+  keys(): IterableIterator<K>;
+
+  /**
+   * Returns an iterable of the map's values.
+   */
+  values(): IterableIterator<V>;
+
+  /**
+   * Returns an iterable of the map's [key, value] pairs.
+   */
+  entries(): IterableIterator<[K, V]>;
+
+  /**
+   * Executes a callback for each entry in the map.
+   *
+   * @param callbackfn a function called for each entry.
+   */
+  forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void): void;
+}
+
 type StackTrace = Array<string>;
 type OrderedStackTrace = { trace: StackTrace; seq: number };
 
@@ -230,10 +296,24 @@ export class Boxes {
    * Creates a mutable array box.
    *
    * @param as the initial array contents.
+   * @param options.omitEmpty if true (the default), the box resolves to `undefined` when the
+   *   array is empty. This behavior propagates through `map`, `derive`, and
+   *   `reduce`, so derived boxes also resolve to `undefined` when the source
+   *   array is empty. Set to `false` to resolve to an empty array instead.
    * @returns a new `ArrayBox<A>`.
    */
-  public static fromArray<A>(as: Array<A>): ArrayBox<A> {
-    return new ArrayState(as);
+  public static fromArray<A>(as: Array<A>, options?: { omitEmpty?: boolean }): ArrayBox<A> {
+    return new ArrayState(as, options?.omitEmpty ?? true);
+  }
+
+  /**
+   * Creates a mutable map box.
+   *
+   * @param map the initial map contents.
+   * @returns a new `MapBox<K, V>`.
+   */
+  public static fromMap<K, V>(map: Map<K, V>): MapBox<K, V> {
+    return new MapState(map);
   }
 
   /**
@@ -272,7 +352,7 @@ abstract class BaseReadableBox<A> implements IReadableBox<A> {
   abstract get(): A;
   abstract getStackTraces(): Array<StackTrace>;
 
-  public resolve(_: IResolveContext) {
+  public resolve(_: IResolveContext): A | undefined {
     return this.get();
   }
 }
@@ -306,6 +386,14 @@ class Computed<A, B> extends BaseReadableBox<B> {
 
   public get(): B {
     return this.fn(this.source.get());
+  }
+
+  public resolve(context: IResolveContext) {
+    const sourceResolved = this.source.resolve(context);
+    if (sourceResolved === undefined) {
+      return undefined;
+    }
+    return this.fn(sourceResolved);
   }
 
   public getStackTraces(): Array<StackTrace> {
@@ -353,8 +441,15 @@ class State<A> extends BaseReadableBox<A> implements Box<A> {
 }
 
 class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
-  constructor(private array: Array<A>) {
+  constructor(private array: Array<A>, private readonly omitEmptyFlag?: boolean) {
     super(array);
+  }
+
+  public resolve(_: IResolveContext) {
+    if (this.omitEmptyFlag && this.array.length === 0) {
+      return undefined;
+    }
+    return this.get();
   }
 
   public set(value: Array<A>): void {
@@ -407,5 +502,65 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
 
   public [Symbol.iterator](): Iterator<A> {
     return this.array[Symbol.iterator]();
+  }
+}
+
+class MapState<K, V> extends State<Map<K, V>> implements MapBox<K, V> {
+  constructor(private map: Map<K, V>) {
+    super(map);
+  }
+
+  public set(value: Map<K, V>): void {
+    super.set(value);
+    this.map = value;
+  }
+
+  public get size(): number {
+    return this.map.size;
+  }
+
+  public put(key: K, value: V): void {
+    this.map.set(key, value);
+    this.appendTrace(captureStackTrace(this.put.bind(this)));
+  }
+
+  public delete(key: K): boolean {
+    const result = this.map.delete(key);
+    this.appendTrace(captureStackTrace(this.delete.bind(this)));
+    return result;
+  }
+
+  public has(key: K): boolean {
+    return this.map.has(key);
+  }
+
+  public getEntry(key: K): V | undefined {
+    return this.map.get(key);
+  }
+
+  public keys(): IterableIterator<K> {
+    return this.map.keys();
+  }
+
+  public values(): IterableIterator<V> {
+    return this.map.values();
+  }
+
+  public entries(): IterableIterator<[K, V]> {
+    return this.map.entries();
+  }
+
+  public forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void): void {
+    this.map.forEach(callbackfn);
+  }
+
+  private appendTrace(trace: StackTrace): void {
+    if (debugModeEnabled() && stackTraceCollectionEnabled) {
+      this.orderedTraces.push({ trace, seq: globalSeq++ });
+    }
+  }
+
+  public [Symbol.iterator](): Iterator<[K, V]> {
+    return this.map[Symbol.iterator]();
   }
 }

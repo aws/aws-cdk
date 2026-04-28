@@ -7,7 +7,10 @@ import { NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token, FeatureFlags } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { ArrayBox } from '../../../core/lib/helpers-internal';
+import { Boxes } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
@@ -131,6 +134,7 @@ export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions 
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 @propertyInjectable
+@noBoxStackTraces
 export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Uniquely identifies this class.
@@ -201,7 +205,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * ARNs of certificates added to this listener
    */
-  private readonly certificateArns: string[];
+  private readonly _certificateArns: ArrayBox<string>;
 
   /**
    * the protocol of the listener
@@ -238,13 +242,21 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       protocol: proto,
       port: props.port,
       sslPolicy: sslPolicy,
-      certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
+      // The value of certificates here is a parameter to the call to `super`. Therefore,
+      // we can't use `this` (because `this` can only be used after the call to `super`).
+      // So we are using Lazy to bridge from the box, allowing the code to compile, have
+      // deferred execution, and correct stack trace capture.
+      certificates: Lazy.any({
+        produce: () => this._certificateArns.length === 0
+          ? undefined
+          : this._certificateArns.get().map(certificateArn => ({ certificateArn })),
+      }),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.certificateArns = [];
+    this._certificateArns = Boxes.fromArray<string>([]);
     this.loadBalancer = props.loadBalancer;
     this.protocol = proto;
 
@@ -292,9 +304,9 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   @MethodMetadata()
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     const additionalCerts = [...certificates];
-    if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
+    if (this._certificateArns.length === 0 && additionalCerts.length > 0) {
       const first = additionalCerts.splice(0, 1)[0];
-      this.certificateArns.push(first.certificateArn);
+      this._certificateArns.push(first.certificateArn);
     }
     // Only one certificate can be specified per resource, even though
     // `certificates` is of type Array

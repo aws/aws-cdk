@@ -1,14 +1,16 @@
 import type { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import type * as elb from '../../../aws-elasticloadbalancing';
-import { Lazy, Resource, Stack, Annotations, Token, ValidationError } from '../../../core';
+import { Annotations, Lazy, Resource, Stack, Token, ValidationError } from '../../../core';
+import type { ArrayBox } from '../../../core/lib/helpers-internal';
+import { Boxes } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AvailabilityZoneRebalancing } from '../availability-zone-rebalancing';
 import type { BaseServiceOptions, IBaseService, IService } from '../base/base-service';
 import { BaseService, DeploymentControllerType, LaunchType } from '../base/base-service';
-import { fromServiceAttributes, extractServiceNameFromArn } from '../base/from-service-attributes';
+import { extractServiceNameFromArn, fromServiceAttributes } from '../base/from-service-attributes';
 import type { TaskDefinition } from '../base/task-definition';
 import { NetworkMode } from '../base/task-definition';
 import type { ICluster } from '../cluster';
@@ -171,8 +173,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
     return fromServiceAttributes(scope, id, attrs);
   }
 
-  private constraints?: CfnService.PlacementConstraintProperty[];
-  private strategies?: CfnService.PlacementStrategyProperty[];
+  private constraints?: ArrayBox<CfnService.PlacementConstraintProperty>;
+  private strategies?: ArrayBox<CfnService.PlacementStrategyProperty>;
   private readonly daemon: boolean;
   private readonly availabilityZoneRebalancingEnabled: boolean;
 
@@ -220,8 +222,14 @@ export class Ec2Service extends BaseService implements IEc2Service {
     {
       cluster: props.cluster.clusterName,
       taskDefinition: props.deploymentController?.type === DeploymentControllerType.EXTERNAL ? undefined : props.taskDefinition.taskDefinitionArn,
+
+      // The values of these two attributes are parameters to the call to `super`. Therefore,
+      // we can't use `this` (because `this` can only be used after the call to `super`).
+      // So we are using Lazy to bridge from the box, allowing the code to compile, have
+      // deferred execution, and correct stack trace capture.
       placementConstraints: Lazy.any({ produce: () => this.constraints }),
       placementStrategies: Lazy.any({ produce: () => this.strategies }),
+
       schedulingStrategy: props.daemon ? 'DAEMON' : 'REPLICA',
       availabilityZoneRebalancing: props.availabilityZoneRebalancing,
     }, props.taskDefinition);
@@ -289,7 +297,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     }
 
     if (!this.strategies) {
-      this.strategies = [];
+      this.strategies = Boxes.fromArray([], { omitEmpty: false });
     }
     for (const strategy of newStrategies) {
       this.strategies.push(...strategy.toJson());
@@ -302,7 +310,11 @@ export class Ec2Service extends BaseService implements IEc2Service {
    */
   @MethodMetadata()
   public addPlacementConstraints(...constraints: PlacementConstraint[]) {
-    this.constraints = [];
+    if (this.constraints != null) {
+      this.constraints.set([]);
+    } else {
+      this.constraints = Boxes.fromArray([], { omitEmpty: false });
+    }
     for (const constraint of constraints) {
       const items = constraint.toJson();
       if (this.availabilityZoneRebalancingEnabled) {

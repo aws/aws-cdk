@@ -41,6 +41,8 @@ import {
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { Box } from '../../core/lib/helpers-internal';
+import { Boxes } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -424,7 +426,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _allowedVpcEndpoints: Set<ec2.IVPCEndpointRef> = new Set();
+  private _allowedVpcEndpoints: Box<Set<ec2.IVPCEndpointRef>> = Boxes.fromValue(new Set());
 
   protected resourcePolicy?: iam.PolicyDocument;
   protected cloudWatchAccount?: CfnAccount;
@@ -522,13 +524,11 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    * @param vpcEndpoints the interface VPC endpoints to grant access to
    */
   public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
-    vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.add(endpoint));
+    vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.get().add(endpoint));
 
-    const endpoints = Lazy.list({
-      produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
-      },
-    });
+    const endpoints = Token.asList(this._allowedVpcEndpoints.derive(es => {
+      return Array.from(es).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
+    }));
 
     this.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.AnyPrincipal()],

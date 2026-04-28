@@ -7,8 +7,11 @@ import type { IRestApi } from './restapi';
 import type { Stage } from './stage';
 import { validateDouble, validateInteger } from './util';
 import type { IResource, Token } from '../../core';
-import { FeatureFlags, Lazy, Names, Resource } from '../../core';
+import { FeatureFlags, Names, Resource } from '../../core';
+import type { ArrayBox } from '../../core/lib/helpers-internal';
+import { Boxes } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID } from '../../cx-api';
 
@@ -222,6 +225,7 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
 }
 
 @propertyInjectable
+@noBoxStackTraces
 export class UsagePlan extends UsagePlanBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.UsagePlan';
@@ -249,7 +253,7 @@ export class UsagePlan extends UsagePlanBase {
    */
   public readonly usagePlanId: string;
 
-  private readonly apiStages = new Array<UsagePlanPerApiStage>();
+  private readonly _apiStages: ArrayBox<UsagePlanPerApiStage>;
 
   constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
     super(scope, id);
@@ -257,15 +261,17 @@ export class UsagePlan extends UsagePlanBase {
     addConstructMetadata(this, props);
     let resource: CfnUsagePlan;
 
+    this._apiStages = Boxes.fromArray<UsagePlanPerApiStage>([], { omitEmpty: false });
+
     resource = new CfnUsagePlan(this, 'Resource', {
-      apiStages: Lazy.any({ produce: () => this.renderApiStages(this.apiStages) }),
+      apiStages: this._apiStages.derive(arr => this.renderApiStages(arr)),
       description: props.description,
       quota: this.renderQuota(props),
       throttle: this.renderThrottle(props.throttle),
       usagePlanName: props.name,
     });
 
-    this.apiStages.push(...(props.apiStages || []));
+    this._apiStages.push(...(props.apiStages || []));
 
     this.usagePlanId = resource.ref;
 
@@ -280,7 +286,7 @@ export class UsagePlan extends UsagePlanBase {
    */
   @MethodMetadata()
   public addApiStage(apiStage: UsagePlanPerApiStage) {
-    this.apiStages.push(apiStage);
+    this._apiStages.push(apiStage);
   }
 
   private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {

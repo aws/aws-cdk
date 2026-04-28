@@ -7,6 +7,9 @@ import { renderAttributes } from './util';
 import type * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { ArrayBox } from '../../../core/lib/helpers-internal';
+import { Boxes } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
@@ -235,6 +238,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
+@noBoxStackTraces
 export abstract class TargetGroupBase extends Construct implements ITargetGroup {
   /**
    * The ARN of the target group
@@ -315,7 +319,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * The JSON objects returned by the directly registered members of this target group
    */
-  private readonly targetsJson = new Array<CfnTargetGroup.TargetDescriptionProperty>();
+  private readonly _targetsJson: ArrayBox<CfnTargetGroup.TargetDescriptionProperty>;
 
   /**
    * The target group VPC
@@ -374,6 +378,8 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       );
     }
 
+    this._targetsJson = Boxes.fromArray<CfnTargetGroup.TargetDescriptionProperty>([]);
+
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;
     this.targetType = baseProps.targetType;
@@ -382,7 +388,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       name: baseProps.targetGroupName,
       targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
       targetType: cdk.Lazy.string({ produce: () => this.targetType }),
-      targets: cdk.Lazy.any({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
+      targets: this._targetsJson,
       vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
 
       // HEALTH CHECK
@@ -475,19 +481,19 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
     }
     this.targetType = props.targetType;
 
-    if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
+    if (this.targetType === TargetType.LAMBDA && this._targetsJson.length >= 1) {
       throw new ValidationError(lit`TargetGroupContainOneTarget`, 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
     }
 
     if (props.targetJson) {
-      this.targetsJson.push(props.targetJson);
+      this._targetsJson.push(props.targetJson);
     }
   }
 
   protected validateTargetGroup(): string[] {
     const ret = new Array<string>();
 
-    if (this.targetType === undefined && this.targetsJson.length === 0) {
+    if (this.targetType === undefined && this._targetsJson.length === 0) {
       cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup', "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 
