@@ -326,7 +326,7 @@ test('a notification destination can specify a set of dependencies that must be 
       NotificationConfiguration: { QueueConfigurations: [{ Events: ['s3:ObjectCreated:*'], QueueArn: 'arn' }] },
       SkipDestinationValidation: false,
     },
-    DependsOn: ['Dependent'],
+    DependsOn: ['BucketNotificationsHandlerPolicy2180A8BD', 'Dependent'],
   });
 });
 

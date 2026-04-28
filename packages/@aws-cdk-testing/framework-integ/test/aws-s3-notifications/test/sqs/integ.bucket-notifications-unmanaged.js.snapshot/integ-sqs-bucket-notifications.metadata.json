@@ -1,0 +1,643 @@
+{
+  "/integ-sqs-bucket-notifications": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Bucket1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-sqs-bucket-notifications/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:72:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:72:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Bucket1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket12520700A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1329:30)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:11:17)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Bucket1/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Bucket1/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:99:25)",
+        "new AutoDeleteObjectsProvider (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:11:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:115:24)",
+        "new AutoDeleteObjectsProvider (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:11:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegQueue16691AAFF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:19:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue1/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegQueue2DA51259C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:20:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue2/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NotificationsResourceHandler (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:75:26)",
+        "NotificationsResourceHandler.singleton (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
+        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:100:93)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Exports/Output{\"Ref\":\"IntegQueue16691AAFF\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefIntegQueue16691AAFF77621FF1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:72:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Exports/Output{\"Ref\":\"IntegQueue2DA51259C\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefIntegQueue2DA51259CC4A33DFB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:72:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Exports/Output{\"Ref\":\"Bucket12520700A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefBucket12520700A8CDAA090"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:36)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:72:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Bucket1/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket1Policy65042C0B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:287:31)",
+        "WrappedClass.enableAutoDeleteObjects (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2082:18)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:11:17)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Bucket1/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Bucket1AutoDeleteObjectsCustomResource41848F29"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketAutoDeleteObjects.applyTo (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:164:54)",
+        "WrappedClass.enableAutoDeleteObjects (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2083:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1401:22)",
+        "new Bucket (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:11:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue1/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegQueue1Policy53174001"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "Grant.addToPrincipalOrResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
+        "QueueGrants.actions (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:54:59)",
+        "QueueGrants.sendMessages (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:129:21)",
+        "WrappedClass.grantSendMessages (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:151:28)",
+        "SqsDestination.bind (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3-notifications/lib/sqs.js:41:20)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:55:36)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/IntegQueue2/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegQueue2Policy109EC112"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "Grant.addToPrincipalOrResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
+        "QueueGrants.actions (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:54:59)",
+        "QueueGrants.sendMessages (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:129:21)",
+        "WrappedClass.grantSendMessages (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:151:28)",
+        "SqsDestination.bind (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3-notifications/lib/sqs.js:41:20)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:55:36)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:24:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NotificationsResourceHandler (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:59:35)",
+        "NotificationsResourceHandler.singleton (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource-handler.js:44:22)",
+        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:100:93)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications/HandlerPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Construct1IntegUnmanagedBucket1Notifications4A1599D7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:116:29)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications/HandlerPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Construct2IntegUnmanagedBucket2Notifications950BFEEC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:116:29)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:24:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct1/IntegUnmanagedBucket1/Notifications/HandlerPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Construct1IntegUnmanagedBucket1NotificationsHandlerPolicy03BFF072"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketNotifications.addHandlerPermissions (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:172:24)",
+        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:115:40)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-sqs-bucket-notifications/Construct2/IntegUnmanagedBucket2/Notifications/HandlerPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Construct2IntegUnmanagedBucket2NotificationsHandlerPolicy6265BBBB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketNotifications.addHandlerPermissions (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:172:24)",
+        "BucketNotifications.createResourceOnce (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:115:40)",
+        "BucketNotifications.addNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/notifications-resource/notifications-resource.js:52:31)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:6)",
+        "WrappedClass.withNotifications (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:635:13)",
+        "WrappedClass.addEventNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:625:18)",
+        "WrappedClass.addObjectCreatedNotification (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:656:25)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-notifications/test/sqs/integ.bucket-notifications-unmanaged.js:24:18)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
