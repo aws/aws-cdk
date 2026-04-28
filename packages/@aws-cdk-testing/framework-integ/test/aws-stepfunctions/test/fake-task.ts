@@ -35,3 +35,33 @@ export class FakeTask extends sfn.TaskStateBase {
     };
   }
 }
+
+/**
+ * JSONata-compatible task for integ testing
+ */
+export class FakeTaskJsonata extends sfn.TaskStateBase {
+  protected readonly taskMetrics?: sfn.TaskMetricsConfig;
+  protected readonly taskPolicies?: iam.PolicyStatement[];
+  protected readonly parameters?: { [key: string]: string };
+
+  constructor(scope: constructs.Construct, id: string, props: FakeTaskProps = {}) {
+    super(scope, id, props);
+    this.parameters = props.parameters;
+  }
+
+  protected _renderTask(): any {
+    return {
+      Type: 'Task',
+      Resource: 'arn:aws:states:::dynamodb:putItem',
+      Arguments: {
+        TableName: 'my-cool-table',
+        Item: {
+          id: {
+            S: 'my-entry',
+          },
+        },
+        ...this.parameters,
+      },
+    };
+  }
+}
