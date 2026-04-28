@@ -1,0 +1,76 @@
+{
+  "/AlarmMuteRuleIntegrationTest/Alarm1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/MuteRule2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm1F9009D71"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm1/MuteRule1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm2A7122E13"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/MuteRule2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MuteRule239F86ED4"
+    }
+  ],
+  "/AlarmMuteRuleIntegrationTest/Alarm1/MuteRule1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm1MuteRule1710E45B5"
+    }
+  ]
+}
