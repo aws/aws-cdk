@@ -477,28 +477,28 @@ export class ContainerDefinition extends Construct {
   /**
    * The mount points for data volumes in your container.
    */
-  public get mountPoints(): MountPoint[] { return this._mountPoints.get(); }
+  public get mountPoints(): MountPoint[] { return this._mountPoints.getMutable(); }
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-  public get portMappings(): PortMapping[] { return this._portMappings.get(); }
+  public get portMappings(): PortMapping[] { return this._portMappings.getMutable(); }
 
   /**
    * The data volumes to mount from another container in the same task definition.
    */
-  public get volumesFrom(): VolumeFrom[] { return this._volumesFrom.get(); }
+  public get volumesFrom(): VolumeFrom[] { return this._volumesFrom.getMutable(); }
 
   /**
    * An array of ulimits to set in the container.
    */
-  public get ulimits(): Ulimit[] { return this._ulimits.get(); }
+  public get ulimits(): Ulimit[] { return this._ulimits.getMutable(); }
 
   /**
    * An array dependencies defined for container startup and shutdown.
    */
-  public get containerDependencies(): ContainerDependency[] { return this._containerDependencies.get(); }
+  public get containerDependencies(): ContainerDependency[] { return this._containerDependencies.getMutable(); }
 
   /**
    * Specifies whether the container will be marked essential.

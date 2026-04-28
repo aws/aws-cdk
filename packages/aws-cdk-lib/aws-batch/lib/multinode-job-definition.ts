@@ -155,7 +155,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   private _containers: IArrayBox<MultiNodeContainer>;
 
   public get containers(): MultiNodeContainer[] {
-    return this._containers.get();
+    return this._containers.getMutable();
   }
 
   @memoizedGetter
@@ -225,7 +225,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   }
 }
 
-function computeNumNodes(containers: MultiNodeContainer[]) {
+function computeNumNodes(containers: readonly MultiNodeContainer[]) {
   let result = 0;
 
   for (const container of containers) {
@@ -235,6 +235,6 @@ function computeNumNodes(containers: MultiNodeContainer[]) {
   return result;
 }
 
-function validateContainers(containers: MultiNodeContainer[]): string[] {
+function validateContainers(containers: readonly MultiNodeContainer[]): string[] {
   return containers.length === 0 ? ['multinode job has no containers!'] : [];
 }

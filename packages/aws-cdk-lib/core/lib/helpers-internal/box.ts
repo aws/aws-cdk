@@ -4,6 +4,11 @@ import { captureStackTrace } from '../stack-trace';
 
 const BOX_SYM = Symbol.for('@aws-cdk/core.Box');
 
+export type MakeReadonly<A> = A extends Set<infer E> ? ReadonlySet<E> :
+  A extends Map<infer K, infer E> ? ReadonlyMap<K, E> :
+    A extends Array<infer E> ? ReadonlyArray<E> :
+      A extends object ? Readonly<A> : A;
+
 /**
  * A read-only observable container that holds a value of type `A` and implements `IResolvable`.
  *
@@ -18,8 +23,20 @@ const BOX_SYM = Symbol.for('@aws-cdk/core.Box');
 export interface IReadableBox<A> extends IResolvable {
   /**
    * Returns the current value held by this box.
+   *
+   * The returned value is wrapped in `MakeReadonly` so that consumers cannot
+   * mutate it in place. All mutations must go through the box's own API
+   * (e.g. `set`, `push`, `put`, `add`).
    */
-  get(): A;
+  get(): MakeReadonly<A>;
+
+  /**
+   * Returns the current value held by this box as a mutable type.
+   *
+   * Unlike `get()`, the returned value is not wrapped in `MakeReadonly`,
+   * allowing direct mutation of the underlying value.
+   */
+  getMutable(): A;
 
   /**
    * Creates a new read-only box whose value is derived by applying `fn` to this box's value.
@@ -31,7 +48,7 @@ export interface IReadableBox<A> extends IResolvable {
    * @param fn a pure transformation function.
    * @returns a new read-only box that recomputes on every `get()` / `resolve()`.
    */
-  derive<B>(fn: (a: A) => B): IReadableBox<B>;
+  derive<B>(fn: (a: MakeReadonly<A>) => B): IReadableBox<B>;
 
   /**
    * Returns the stack traces captured by this box.
@@ -330,7 +347,7 @@ export class Box {
    */
   public static combine<T extends Record<string, IReadableBox<any>>, R>(
     boxes: T,
-    fn: (values: { [K in keyof T]: T[K] extends IReadableBox<infer U> ? U : never }) => R,
+    fn: (values: { [K in keyof T]: T[K] extends IReadableBox<infer U> ? MakeReadonly<U> : never }) => R,
   ): IReadableBox<R> {
     return new Combined(boxes, fn);
   }
@@ -408,14 +425,15 @@ abstract class BaseReadableBox<A> implements IReadableBox<A> {
     Object.defineProperty(this, BOX_SYM, { value: true });
   }
 
-  public derive<B>(fn: (a: A) => B): IReadableBox<B> {
+  public derive<B>(fn: (a: MakeReadonly<A>) => B): IReadableBox<B> {
     return new Computed(this, fn);
   }
 
-  abstract get(): A;
+  abstract get(): MakeReadonly<A>;
+  abstract getMutable(): A;
   abstract getStackTraces(): Array<StackTrace>;
 
-  public resolve(_: IResolveContext): A | undefined {
+  public resolve(_: IResolveContext): MakeReadonly<A> | undefined {
     return this.get();
   }
 }
@@ -423,16 +441,20 @@ abstract class BaseReadableBox<A> implements IReadableBox<A> {
 class Combined<T extends Record<string, IReadableBox<any>>, R> extends BaseReadableBox<R> {
   constructor(
     private readonly boxes: T,
-    private readonly fn: (values: { [K in keyof T]: T[K] extends IReadableBox<infer U> ? U : never }) => R,
+    private readonly fn: (values: { [K in keyof T]: T[K] extends IReadableBox<infer U> ? MakeReadonly<U> : never }) => R,
   ) {
     super();
   }
 
-  public get(): R {
+  public get(): MakeReadonly<R> {
     const values = Object.fromEntries(
       Object.entries(this.boxes).map(([k, b]) => [k, b.get()]),
-    ) as { [K in keyof T]: T[K] extends IReadableBox<infer U> ? U : never };
-    return this.fn(values);
+    ) as { [K in keyof T]: T[K] extends IReadableBox<infer U> ? MakeReadonly<U> : never };
+    return this.fn(values) as MakeReadonly<R>;
+  }
+
+  public getMutable(): R {
+    return this.get() as R;
   }
 
   public getStackTraces(): Array<StackTrace> {
@@ -443,20 +465,24 @@ class Combined<T extends Record<string, IReadableBox<any>>, R> extends BaseReada
 }
 
 class Computed<A, B> extends BaseReadableBox<B> {
-  constructor(private readonly source: IReadableBox<A>, private readonly fn: (a: A) => B) {
+  constructor(private readonly source: IReadableBox<A>, private readonly fn: (a: MakeReadonly<A>) => B) {
     super();
   }
 
-  public get(): B {
-    return this.fn(this.source.get());
+  public get(): MakeReadonly<B> {
+    return this.fn(this.source.get()) as MakeReadonly<B>;
   }
 
-  public resolve(context: IResolveContext) {
+  public getMutable(): B {
+    return this.get() as B;
+  }
+
+  public resolve(context: IResolveContext): MakeReadonly<B> | undefined {
     const sourceResolved = this.source.resolve(context);
     if (sourceResolved === undefined) {
       return undefined;
     }
-    return this.fn(sourceResolved);
+    return this.fn(sourceResolved as MakeReadonly<A>) as MakeReadonly<B>;
   }
 
   public getStackTraces(): Array<StackTrace> {
@@ -480,7 +506,11 @@ class State<A> extends BaseReadableBox<A> implements IBox<A> {
     }
   }
 
-  public get(): A {
+  public get(): MakeReadonly<A> {
+    return this.value as MakeReadonly<A>;
+  }
+
+  public getMutable(): A {
     return this.value;
   }
 

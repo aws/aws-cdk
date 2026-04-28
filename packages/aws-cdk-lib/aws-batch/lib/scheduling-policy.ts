@@ -238,7 +238,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
   }
 
   public get shares(): Share[] {
-    return this._shares.get();
+    return this._shares.getMutable();
   }
 
   @memoizedGetter

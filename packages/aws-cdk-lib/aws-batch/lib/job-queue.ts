@@ -290,7 +290,7 @@ export class JobQueue extends Resource implements IJobQueue {
   }
 
   public get computeEnvironments(): OrderedComputeEnvironment[] {
-    return this._computeEnvironments.get();
+    return this._computeEnvironments.getMutable();
   }
 
   @memoizedGetter
@@ -377,7 +377,7 @@ export class JobQueue extends Resource implements IJobQueue {
   }
 }
 
-function validateOrderedComputeEnvironments(computeEnvironments: OrderedComputeEnvironment[]): string[] {
+function validateOrderedComputeEnvironments(computeEnvironments: readonly OrderedComputeEnvironment[]): string[] {
   const seenOrders: number[] = [];
 
   for (const ce of computeEnvironments) {

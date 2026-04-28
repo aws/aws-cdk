@@ -289,7 +289,7 @@ export class UsagePlan extends UsagePlanBase {
     this.apiStages.push(apiStage);
   }
 
-  private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
+  private renderApiStages(apiStages: readonly UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (apiStages && apiStages.length > 0) {
       const stages: CfnUsagePlan.ApiStageProperty[] = [];
       apiStages.forEach((apiStage: UsagePlanPerApiStage) => {
