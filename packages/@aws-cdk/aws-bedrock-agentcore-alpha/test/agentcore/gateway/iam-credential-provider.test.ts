@@ -113,7 +113,7 @@ describe('IAM credential provider', () => {
   describe('validation', () => {
     test('fails when region is provided without service', () => {
       expect(() => GatewayCredentialProvider.fromIamRole({ region: 'us-east-1' })).toThrow(
-        'service must be provided when region is specified for the IAM credential provider',
+        'service must be provided when region is specified for the IAM credential provider, got: region="us-east-1"',
       );
     });
 

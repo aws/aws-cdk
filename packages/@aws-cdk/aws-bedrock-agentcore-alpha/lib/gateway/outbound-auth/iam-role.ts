@@ -71,7 +71,7 @@ export class GatewayIamRoleCredentialProviderConfig implements ICredentialProvid
    * @internal
    */
   _render(): CfnGatewayTarget.CredentialProviderConfigurationProperty {
-    if (this.service === undefined && this.region === undefined) {
+    if (this.service === undefined) {
       return {
         credentialProviderType: this.credentialProviderType,
       };
@@ -81,8 +81,7 @@ export class GatewayIamRoleCredentialProviderConfig implements ICredentialProvid
       credentialProviderType: this.credentialProviderType,
       credentialProvider: {
         iamCredentialProvider: {
-          // service is guaranteed to be defined here: validate() rejects region-without-service
-          service: this.service!,
+          service: this.service,
           region: this.region,
         },
       },
@@ -108,7 +107,7 @@ export class GatewayIamRoleCredentialProviderConfig implements ICredentialProvid
     if (this.region !== undefined && this.service === undefined) {
       throw new UnscopedValidationError(
         lit`IamCredentialProviderServiceRequired`,
-        'service must be provided when region is specified for the IAM credential provider',
+        `service must be provided when region is specified for the IAM credential provider, got: region=${JSON.stringify(this.region)}`,
       );
     }
 
