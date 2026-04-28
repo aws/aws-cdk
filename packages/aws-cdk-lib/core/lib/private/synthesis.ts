@@ -16,7 +16,7 @@ import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
-import type { IPolicyValidationPluginBeta1 } from '../validation';
+import type { IPolicyValidationPlugin } from '../validation';
 import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
@@ -111,7 +111,7 @@ const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
  * into the same report pipeline as plugin violations.
  */
 function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport | undefined {
-  const violations: PolicyViolationBeta1[] = [];
+  const violations: PolicyViolation[] = [];
 
   visit(root, 'pre', construct => {
     for (const entry of construct.node.metadata) {
@@ -143,7 +143,7 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
         }
       }
 
-      const violatingResource: PolicyViolatingResourceBeta1 = {
+      const violatingResource: PolicyViolatingResource = {
         resourceLogicalId,
         templatePath,
         locations: [],
@@ -225,7 +225,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (!App.isApp(root)) return;
   let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
+  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
       for (const plugin of construct.policyValidationBeta1) {

@@ -6,7 +6,7 @@ import { FeatureFlags } from './feature-flags';
 import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import type { IPolicyValidationPluginBeta1 } from './validation';
+import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
@@ -185,10 +185,10 @@ export class Stage extends Construct {
    * @default - no validation plugins are used
    */
   public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
-    return [...this._policyValidationBeta1];
+    return [...this._policyValidation];
   }
 
-  private readonly _policyValidationBeta1: IPolicyValidationPluginBeta1[] = [];
+  private readonly _policyValidation: IPolicyValidationPlugin[] = [];
 
   constructor(scope: Construct, id: string, props: StageProps = {}) {
     super(scope, id);
@@ -216,7 +216,7 @@ export class Stage extends Construct {
     this.stageName = [this.parentStage?.stageName, props.stageName ?? id].filter(x => x).join('-');
 
     if (props.policyValidationBeta1) {
-      this._policyValidationBeta1.push(...props.policyValidationBeta1);
+      this._policyValidation.push(...props.policyValidationBeta1);
     }
   }
 
@@ -225,8 +225,8 @@ export class Stage extends Construct {
    *
    * @internal
    */
-  public _addValidationPlugins(...plugins: IPolicyValidationPluginBeta1[]): void {
-    this._policyValidationBeta1.push(...plugins);
+  public _addValidationPlugins(...plugins: IPolicyValidationPlugin[]): void {
+    this._policyValidation.push(...plugins);
   }
 
   /**

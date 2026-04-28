@@ -4,7 +4,7 @@ import * as path from 'path';
 import { Construct } from 'constructs';
 import { table } from 'table';
 import * as core from '../../lib';
-import type { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
+import type { PolicyValidationPluginReport, PolicyViolation } from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
 beforeEach(() => {
@@ -1168,15 +1168,15 @@ Policy Validation Report Summary
   });
 });
 
-class FakePlugin implements core.IPolicyValidationPluginBeta1 {
+class FakePlugin implements core.IPolicyValidationPlugin {
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolationBeta1[],
+    private readonly violations: PolicyViolation[],
     public readonly version?: string,
     public readonly ruleIds?: string []) {
   }
 
-  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
@@ -1185,10 +1185,10 @@ class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   }
 }
 
-class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
+class RoguePlugin implements core.IPolicyValidationPlugin {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(context: core.IPolicyValidationContext): PolicyValidationPluginReport {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
@@ -1198,10 +1198,10 @@ class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
   }
 }
 
-class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
+class BrokenPlugin implements core.IPolicyValidationPlugin {
   public readonly name = 'broken-plugin';
 
-  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
     throw new Error('Something went wrong');
   }
 }
