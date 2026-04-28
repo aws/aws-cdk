@@ -145,7 +145,10 @@ export function validateApiKeyValue(apiKey: string | undefined, scope?: IConstru
  */
 export function validateCredentialProviderTags(tags?: { [key: string]: string }, scope?: IConstruct): string[] {
   let errors: string[] = [];
-  if (!tags) {
+  if (tags === undefined) {
+    return errors;
+  }
+  if (Token.isUnresolved(tags)) {
     return errors;
   }
 

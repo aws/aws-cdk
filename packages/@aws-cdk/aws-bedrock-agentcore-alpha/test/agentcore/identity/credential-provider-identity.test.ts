@@ -455,7 +455,7 @@ describe('grantFullAccess scopes all permissions to provider ARN and parent reso
 });
 
 describe('Custom OAuth2 token safety', () => {
-  test('usingCustom accepts tokenized discoveryUrl and metadata without throwing', () => {
+  test('usingCustom rejects both tokenized discoveryUrl and metadata', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -468,7 +468,7 @@ describe('Custom OAuth2 token safety', () => {
       tokenEndpoint: 'https://idp.example.com/oauth2/token',
     };
 
-    // Both are tokens — should NOT throw the mutual-exclusion error
+    // Both provided is always an error, even when values contain Tokens
     expect(() =>
       OAuth2CredentialProvider.usingCustom(stack, 'TokenBoth', {
         clientId: 'cid',
@@ -476,7 +476,7 @@ describe('Custom OAuth2 token safety', () => {
         discoveryUrl,
         authorizationServerMetadata: metadata,
       }),
-    ).not.toThrow();
+    ).toThrow(/not both/);
   });
 
   test('usingCustom with only discoveryUrl synthesizes correctly', () => {

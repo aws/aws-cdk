@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { ArnFormat, Stack, Token } from 'aws-cdk-lib';
+import { Annotations, ArnFormat, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IConstruct } from 'constructs';
 
@@ -129,14 +129,22 @@ export function grantCredentialSecret(
   if (secretArn == null || secretArn === '') {
     return undefined;
   }
-  const secretResourceArns = Token.isUnresolved(secretArn)
-    ? [Stack.of(scope).formatArn({
+  let secretResourceArns: string[];
+  if (Token.isUnresolved(secretArn)) {
+    Annotations.of(scope).addWarningV2(
+      '@aws-cdk/aws-bedrock-agentcore-alpha:wildcardSecretArnGrant',
+      'The secret ARN is an unresolved token. Granting access using a wildcard prefix (bedrock-agentcore-identity!*). ' +
+      'To scope the grant to a specific secret, import the credential provider with an explicit secretArn.',
+    );
+    secretResourceArns = [Stack.of(scope).formatArn({
       service: 'secretsmanager',
       resource: 'secret',
       resourceName: 'bedrock-agentcore-identity!*',
       arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-    })]
-    : [secretArn];
+    })];
+  } else {
+    secretResourceArns = [secretArn];
+  }
   return iam.Grant.addToPrincipal({
     grantee,
     actions: secretActions,

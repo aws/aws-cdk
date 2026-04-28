@@ -556,20 +556,21 @@ function assertCustomOAuth2DiscoveryXor(scope: Construct, props: CustomOAuth2Cre
   const hasDiscoveryUrl = discoveryUrl !== undefined && discoveryUrl !== '';
   const hasMetadata = metadata !== undefined;
 
-  // Bail out early when either value is a Token — we cannot validate at synth time.
-  const discoveryUnresolved = discoveryUrl !== undefined && Token.isUnresolved(discoveryUrl);
-  const metadataUnresolved = metadata !== undefined && oauth2AuthorizationServerMetadataContainsUnresolved(metadata);
-
-  if (discoveryUnresolved || metadataUnresolved) {
-    return;
-  }
-
+  // "Both provided" is always an error, even when values contain Tokens.
   if (hasDiscoveryUrl && hasMetadata) {
     throw new ValidationError(
       lit`CustomOAuth2DiscoveryExclusive`,
       'Provide either discoveryUrl or authorizationServerMetadata for a custom OAuth2 credential provider, not both.',
       scope,
     );
+  }
+
+  // Bail out early when either value is a Token — we cannot validate at synth time.
+  const discoveryUnresolved = discoveryUrl !== undefined && Token.isUnresolved(discoveryUrl);
+  const metadataUnresolved = metadata !== undefined && oauth2AuthorizationServerMetadataContainsUnresolved(metadata);
+
+  if (discoveryUnresolved || metadataUnresolved) {
+    return;
   }
 
   if (!hasDiscoveryUrl && !hasMetadata) {
@@ -1082,7 +1083,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
   private readonly __resource: CfnOAuth2CredentialProvider;
 
   public get clientSecretArn(): string | undefined {
-    if (!this._clientSecretArn) {
+    if (this._clientSecretArn === undefined) {
       this._clientSecretArn = Token.asString(this.__resource.attrClientSecretArn);
     }
     return this._clientSecretArn;
@@ -1131,11 +1132,17 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
     scopes: string[],
     customParameters?: { [key: string]: string },
   ): GatewayOAuth2IdentityBinding {
-    // clientSecretArn is always a CloudFormation GetAtt Token on concrete constructs.
-    // The missing-ARN guard lives in the Import class returned by fromOAuth2CredentialProviderAttributes.
+    const secretArn = this.clientSecretArn;
+    if (secretArn == null) {
+      throw new ValidationError(
+        lit`MissingOAuth2ClientSecretArn`,
+        'clientSecretArn is not available — the CloudFormation attribute has not resolved yet.',
+        this,
+      );
+    }
     return {
       providerArn: this.credentialProviderArn,
-      secretArn: this.clientSecretArn!,
+      secretArn,
       scopes,
       customParameters,
     };

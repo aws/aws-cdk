@@ -41,21 +41,21 @@ export const TOKEN_VAULT_CREDENTIAL_SECRET_WRITE_PERMS = [
  *
  * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
  */
-export namespace ApiKeyCredentialProviderIdentityPerms {
+export class ApiKeyCredentialProviderIdentityPerms {
   /**
    * Read a single API key credential provider definition.
    */
-  export const READ_PERMS = ['bedrock-agentcore:GetApiKeyCredentialProvider'];
+  public static readonly READ_PERMS: string[] = ['bedrock-agentcore:GetApiKeyCredentialProvider'];
 
   /**
    * List API key credential providers (resource-scoped per IAM service authorization reference).
    */
-  export const LIST_PERMS = ['bedrock-agentcore:ListApiKeyCredentialProviders'];
+  public static readonly LIST_PERMS: string[] = ['bedrock-agentcore:ListApiKeyCredentialProviders'];
 
   /**
    * Control plane permissions to create, read, update, and delete this provider.
    */
-  export const ADMIN_PERMS = [
+  public static readonly ADMIN_PERMS: string[] = [
     'bedrock-agentcore:CreateApiKeyCredentialProvider',
     'bedrock-agentcore:GetApiKeyCredentialProvider',
     'bedrock-agentcore:UpdateApiKeyCredentialProvider',
@@ -65,12 +65,21 @@ export namespace ApiKeyCredentialProviderIdentityPerms {
   /**
    * Data plane permissions to retrieve the API key material for outbound calls.
    */
-  export const USE_PERMS = ['bedrock-agentcore:GetResourceApiKey'];
+  public static readonly USE_PERMS: string[] = ['bedrock-agentcore:GetResourceApiKey'];
 
   /**
    * All API key credential provider actions used by the L2 grant helpers.
    */
-  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...LIST_PERMS, ...ADMIN_PERMS, ...USE_PERMS])];
+  public static readonly FULL_ACCESS_PERMS: string[] = [
+    ...new Set([
+      ...ApiKeyCredentialProviderIdentityPerms.READ_PERMS,
+      ...ApiKeyCredentialProviderIdentityPerms.LIST_PERMS,
+      ...ApiKeyCredentialProviderIdentityPerms.ADMIN_PERMS,
+      ...ApiKeyCredentialProviderIdentityPerms.USE_PERMS,
+    ]),
+  ];
+
+  private constructor() {}
 }
 
 /**
@@ -78,21 +87,21 @@ export namespace ApiKeyCredentialProviderIdentityPerms {
  *
  * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
  */
-export namespace OAuth2CredentialProviderIdentityPerms {
+export class OAuth2CredentialProviderIdentityPerms {
   /**
    * Read a single OAuth2 credential provider definition.
    */
-  export const READ_PERMS = ['bedrock-agentcore:GetOauth2CredentialProvider'];
+  public static readonly READ_PERMS: string[] = ['bedrock-agentcore:GetOauth2CredentialProvider'];
 
   /**
    * List OAuth2 credential providers (resource-scoped per IAM service authorization reference).
    */
-  export const LIST_PERMS = ['bedrock-agentcore:ListOauth2CredentialProviders'];
+  public static readonly LIST_PERMS: string[] = ['bedrock-agentcore:ListOauth2CredentialProviders'];
 
   /**
    * Control plane permissions to create, read, update, and delete this provider.
    */
-  export const ADMIN_PERMS = [
+  public static readonly ADMIN_PERMS: string[] = [
     'bedrock-agentcore:CreateOauth2CredentialProvider',
     'bedrock-agentcore:GetOauth2CredentialProvider',
     'bedrock-agentcore:UpdateOauth2CredentialProvider',
@@ -102,7 +111,7 @@ export namespace OAuth2CredentialProviderIdentityPerms {
   /**
    * Data plane permissions to complete OAuth flows and retrieve tokens for outbound calls.
    */
-  export const USE_PERMS = [
+  public static readonly USE_PERMS: string[] = [
     'bedrock-agentcore:GetResourceOauth2Token',
     'bedrock-agentcore:CompleteResourceTokenAuth',
   ];
@@ -110,7 +119,16 @@ export namespace OAuth2CredentialProviderIdentityPerms {
   /**
    * All OAuth2 credential provider actions used by the L2 grant helpers.
    */
-  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...LIST_PERMS, ...ADMIN_PERMS, ...USE_PERMS])];
+  public static readonly FULL_ACCESS_PERMS: string[] = [
+    ...new Set([
+      ...OAuth2CredentialProviderIdentityPerms.READ_PERMS,
+      ...OAuth2CredentialProviderIdentityPerms.LIST_PERMS,
+      ...OAuth2CredentialProviderIdentityPerms.ADMIN_PERMS,
+      ...OAuth2CredentialProviderIdentityPerms.USE_PERMS,
+    ]),
+  ];
+
+  private constructor() {}
 }
 
 /**
@@ -118,29 +136,37 @@ export namespace OAuth2CredentialProviderIdentityPerms {
  *
  * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
  */
-export namespace WorkloadIdentityPerms {
+export class WorkloadIdentityPerms {
   /**
    * Read a single workload identity.
    */
-  export const READ_PERMS = ['bedrock-agentcore:GetWorkloadIdentity'] as const;
+  public static readonly READ_PERMS: string[] = ['bedrock-agentcore:GetWorkloadIdentity'];
 
   /**
    * List workload identities (resource-scoped per IAM service authorization reference).
    */
-  export const LIST_PERMS = ['bedrock-agentcore:ListWorkloadIdentities'] as const;
+  public static readonly LIST_PERMS: string[] = ['bedrock-agentcore:ListWorkloadIdentities'];
 
   /**
    * Control plane permissions to create, read, update, and delete this workload identity.
    */
-  export const ADMIN_PERMS = [
+  public static readonly ADMIN_PERMS: string[] = [
     'bedrock-agentcore:CreateWorkloadIdentity',
     'bedrock-agentcore:GetWorkloadIdentity',
     'bedrock-agentcore:UpdateWorkloadIdentity',
     'bedrock-agentcore:DeleteWorkloadIdentity',
-  ] as const;
+  ];
 
   /**
    * All workload identity actions used by the L2 grant helpers.
    */
-  export const FULL_ACCESS_PERMS = [...new Set([...READ_PERMS, ...LIST_PERMS, ...ADMIN_PERMS])];
+  public static readonly FULL_ACCESS_PERMS: string[] = [
+    ...new Set([
+      ...WorkloadIdentityPerms.READ_PERMS,
+      ...WorkloadIdentityPerms.LIST_PERMS,
+      ...WorkloadIdentityPerms.ADMIN_PERMS,
+    ]),
+  ];
+
+  private constructor() {}
 }

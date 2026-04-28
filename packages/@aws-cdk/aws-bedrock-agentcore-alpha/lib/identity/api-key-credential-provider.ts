@@ -351,7 +351,7 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
   private readonly __resource: CfnApiKeyCredentialProvider;
 
   public get apiKeySecretArn(): string | undefined {
-    if (!this._apiKeySecretArn) {
+    if (this._apiKeySecretArn === undefined) {
       this._apiKeySecretArn = Token.asString(this.__resource.attrApiKeySecretArn);
     }
     return this._apiKeySecretArn;
@@ -394,11 +394,17 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
    * ARNs for {@link GatewayCredentialProvider.fromApiKeyIdentity} / {@link GatewayCredentialProvider.fromApiKeyIdentityArn}.
    */
   public bindForGatewayApiKeyTarget(): GatewayApiKeyIdentityBinding {
-    // apiKeySecretArn is always a CloudFormation GetAtt Token on concrete constructs.
-    // The missing-ARN guard lives in the Import class returned by fromApiKeyCredentialProviderAttributes.
+    const secretArn = this.apiKeySecretArn;
+    if (secretArn == null) {
+      throw new ValidationError(
+        lit`MissingApiKeySecretArn`,
+        'apiKeySecretArn is not available — the CloudFormation attribute has not resolved yet.',
+        this,
+      );
+    }
     return {
       providerArn: this.credentialProviderArn,
-      secretArn: this.apiKeySecretArn!,
+      secretArn,
     };
   }
 }

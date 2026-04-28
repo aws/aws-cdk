@@ -260,14 +260,14 @@ export class WorkloadIdentity extends WorkloadIdentityBase {
   private readonly _resource: CfnWorkloadIdentity;
 
   public get createdTime(): string | undefined {
-    if (!this._createdTime) {
+    if (this._createdTime === undefined) {
       this._createdTime = Token.asString(this._resource.attrCreatedTime);
     }
     return this._createdTime;
   }
 
   public get lastUpdatedTime(): string | undefined {
-    if (!this._lastUpdatedTime) {
+    if (this._lastUpdatedTime === undefined) {
       this._lastUpdatedTime = Token.asString(this._resource.attrLastUpdatedTime);
     }
     return this._lastUpdatedTime;

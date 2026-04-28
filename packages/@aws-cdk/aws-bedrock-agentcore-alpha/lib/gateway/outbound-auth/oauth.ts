@@ -1,4 +1,4 @@
-import { ArnFormat, Stack, Token } from 'aws-cdk-lib';
+import { Annotations, ArnFormat, Stack, Token } from 'aws-cdk-lib';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { ICredentialProviderConfig } from './credential-provider';
 import { CredentialProviderType } from './credential-provider';
@@ -137,14 +137,22 @@ export class OAuthCredentialProviderConfiguration implements ICredentialProvider
     // IAM Resource fields. When the caller supplies a literal ARN string (e.g. via
     // fromOauthIdentityArn) we can scope tightly; otherwise fall back to a
     // service-managed prefix wildcard.
-    const secretResourceArns = Token.isUnresolved(this.secretArn)
-      ? [stack.formatArn({
+    let secretResourceArns: string[];
+    if (Token.isUnresolved(this.secretArn)) {
+      Annotations.of(gateway).addWarningV2(
+        '@aws-cdk/aws-bedrock-agentcore-alpha:wildcardSecretArnGrant',
+        'The secret ARN is an unresolved token. Granting access using a wildcard prefix (bedrock-agentcore-identity!*). ' +
+        'To scope the grant to a specific secret, supply a literal secret ARN via fromOauthIdentityArn.',
+      );
+      secretResourceArns = [stack.formatArn({
         service: 'secretsmanager',
         resource: 'secret',
         resourceName: 'bedrock-agentcore-identity!*',
         arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-      })]
-      : [this.secretArn];
+      })];
+    } else {
+      secretResourceArns = [this.secretArn];
+    }
     const secretGrant = Grant.addToPrincipal({
       grantee: gateway.role,
       actions: [...GATEWAY_SECRETS_PERMS],
