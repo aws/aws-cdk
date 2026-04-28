@@ -299,4 +299,15 @@ describe('scalable target', () => {
       });
     }).toThrow(/You must supply at least one of minCapacity or maxCapacity, got/);
   });
+
+  test('throws when schedule expression is not a valid Application Auto Scaling format', () => {
+    const stack = new cdk.Stack();
+    const target = createScalableTarget(stack);
+    expect(() => {
+      target.scaleOnSchedule('ScaleUp', {
+        schedule: appscaling.Schedule.expression('30 3 * * *'),
+        minCapacity: 1,
+      });
+    }).toThrow(/Invalid schedule expression: "30 3 \* \* \*"/);
+  });
 });
