@@ -40,6 +40,8 @@ const SESSION_TIMEOUT_MIN = 1;
 const SESSION_TIMEOUT_MAX = 1440;
 const LOG_GROUPS_MIN_COUNT = 1;
 const LOG_GROUPS_MAX_COUNT = 5;
+const SERVICE_NAMES_MIN_COUNT = 1;
+const SERVICE_NAMES_MAX_COUNT = 1;
 const EVALUATOR_NAME_MIN_LENGTH = 1;
 const EVALUATOR_NAME_MAX_LENGTH = 48;
 const RATING_SCALE_MIN_OPTIONS = 1;
@@ -265,8 +267,13 @@ export function validateLogGroupNames(names: string[], _scope?: IConstruct): str
 export function validateServiceNames(names: string[], _scope?: IConstruct): string[] {
   const errors: string[] = [];
 
-  if (names == null || names.length < 1) {
-    errors.push(`At least 1 service name is required, got ${names?.length ?? 0}`);
+  if (names == null || names.length < SERVICE_NAMES_MIN_COUNT) {
+    errors.push(`At least ${SERVICE_NAMES_MIN_COUNT} service name is required, got ${names?.length ?? 0}`);
+    return errors;
+  }
+
+  if (names.length > SERVICE_NAMES_MAX_COUNT) {
+    errors.push(`At most ${SERVICE_NAMES_MAX_COUNT} service name is allowed, got ${names.length}`);
   }
 
   return errors;

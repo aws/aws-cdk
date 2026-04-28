@@ -11,7 +11,7 @@
  *  and limitations under the License.
  */
 
-import { App, Lazy, Stack, Tags } from 'aws-cdk-lib';
+import { App, Duration, Lazy, Stack, Tags } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import {
@@ -21,6 +21,7 @@ import {
   BuiltinEvaluator,
   ExecutionStatus,
   FilterOperator,
+  FilterValue,
   Runtime,
   AgentRuntimeArtifact,
 } from '../../../lib';
@@ -119,11 +120,11 @@ describe('OnlineEvaluationConfig', () => {
         filters: [
           {
             key: 'user.region',
-            operator: FilterOperator.EQUALS,
-            value: 'us-east-1',
+            operator: FilterOperator.EQUAL,
+            value: FilterValue.string('us-east-1'),
           },
         ],
-        sessionTimeoutMinutes: 30,
+        sessionTimeout: Duration.minutes(30),
       });
 
       const template = Template.fromStack(stack);
@@ -260,13 +261,13 @@ describe('OnlineEvaluationConfig', () => {
     test('creates CloudWatch Logs data source', () => {
       const dataSource = DataSourceConfig.fromCloudWatchLogs({
         logGroupNames: ['/aws/log-group-1', '/aws/log-group-2'],
-        serviceNames: ['service-1', 'service-2'],
+        serviceNames: ['service-1'],
       });
 
       expect(dataSource.bind()).toEqual({
         cloudWatchLogs: {
           logGroupNames: ['/aws/log-group-1', '/aws/log-group-2'],
-          serviceNames: ['service-1', 'service-2'],
+          serviceNames: ['service-1'],
         },
       });
     });
@@ -320,7 +321,7 @@ describe('OnlineEvaluationConfig', () => {
         agentRuntimeArtifact: AgentRuntimeArtifact.fromImageUri('123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest'),
       });
 
-      const dataSource = DataSourceConfig.fromAgentRuntimeEndpoint(runtime, 'PROD');
+      const dataSource = DataSourceConfig.fromAgentRuntimeEndpointName(runtime, 'PROD');
 
       const rendered = dataSource.bind();
       expect(rendered.cloudWatchLogs.serviceNames).toEqual(['test_agent.PROD']);
@@ -420,8 +421,8 @@ describe('OnlineEvaluationConfig', () => {
           }),
           filters: Array(6).fill({
             key: 'test',
-            operator: FilterOperator.EQUALS,
-            value: 'value',
+            operator: FilterOperator.EQUAL,
+            value: FilterValue.string('value'),
           }),
         });
       }).toThrow(/At most 5 filters are allowed/);
@@ -436,7 +437,7 @@ describe('OnlineEvaluationConfig', () => {
             logGroupNames: ['/aws/log-group'],
             serviceNames: ['service'],
           }),
-          sessionTimeoutMinutes: 0,
+          sessionTimeout: Duration.minutes(0),
         });
       }).toThrow(/at least 1 minute/);
     });
@@ -450,7 +451,7 @@ describe('OnlineEvaluationConfig', () => {
             logGroupNames: ['/aws/log-group'],
             serviceNames: ['service'],
           }),
-          sessionTimeoutMinutes: 1441,
+          sessionTimeout: Duration.minutes(1441),
         });
       }).toThrow(/at most 1440 minutes/);
     });
@@ -532,7 +533,7 @@ describe('OnlineEvaluationConfig', () => {
             logGroupNames: ['/aws/log-group'],
             serviceNames: ['service'],
           }),
-          sessionTimeoutMinutes: Lazy.number({ produce: () => 9999 }),
+          sessionTimeout: Duration.minutes(Lazy.number({ produce: () => 9999 })),
         });
       }).not.toThrow();
     });
@@ -562,6 +563,15 @@ describe('OnlineEvaluationConfig', () => {
           serviceNames: [],
         });
       }).toThrow(/At least 1 service name is required/);
+    });
+
+    test('throws error for too many service names', () => {
+      expect(() => {
+        DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/log-group'],
+          serviceNames: ['service-1', 'service-2'],
+        });
+      }).toThrow(/At most 1 service name is allowed/);
     });
   });
 

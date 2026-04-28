@@ -11,6 +11,7 @@
  *  and limitations under the License.
  */
 
+import type { Duration } from 'aws-cdk-lib';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 
 /**
@@ -19,131 +20,218 @@ import type * as iam from 'aws-cdk-lib/aws-iam';
  * These evaluators assess different aspects of agent performance
  * at various levels (session, trace, or tool call).
  */
-export enum BuiltinEvaluator {
+export class BuiltinEvaluator {
   /**
    * Evaluates whether the information in the agent's response is factually accurate.
    */
-  CORRECTNESS = 'Builtin.Correctness',
+  public static readonly CORRECTNESS = new BuiltinEvaluator('Builtin.Correctness');
 
   /**
    * Evaluates whether information in the response is supported by provided context/sources.
    */
-  FAITHFULNESS = 'Builtin.Faithfulness',
+  public static readonly FAITHFULNESS = new BuiltinEvaluator('Builtin.Faithfulness');
 
   /**
    * Evaluates from user's perspective how useful and valuable the agent's response is.
    */
-  HELPFULNESS = 'Builtin.Helpfulness',
+  public static readonly HELPFULNESS = new BuiltinEvaluator('Builtin.Helpfulness');
 
   /**
    * Evaluates whether the response appropriately addresses the user's query.
    */
-  RESPONSE_RELEVANCE = 'Builtin.ResponseRelevance',
+  public static readonly RESPONSE_RELEVANCE = new BuiltinEvaluator('Builtin.ResponseRelevance');
 
   /**
    * Evaluates whether the response is appropriately brief without missing key information.
    */
-  CONCISENESS = 'Builtin.Conciseness',
+  public static readonly CONCISENESS = new BuiltinEvaluator('Builtin.Conciseness');
 
   /**
    * Evaluates whether the response is logically structured and coherent.
    */
-  COHERENCE = 'Builtin.Coherence',
+  public static readonly COHERENCE = new BuiltinEvaluator('Builtin.Coherence');
 
   /**
    * Measures how well the agent follows the provided system instructions.
    */
-  INSTRUCTION_FOLLOWING = 'Builtin.InstructionFollowing',
+  public static readonly INSTRUCTION_FOLLOWING = new BuiltinEvaluator('Builtin.InstructionFollowing');
 
   /**
    * Detects when agent evades questions or directly refuses to answer.
    */
-  REFUSAL = 'Builtin.Refusal',
+  public static readonly REFUSAL = new BuiltinEvaluator('Builtin.Refusal');
 
   /**
    * Evaluates whether the conversation successfully meets the user's goals.
    */
-  GOAL_SUCCESS_RATE = 'Builtin.GoalSuccessRate',
+  public static readonly GOAL_SUCCESS_RATE = new BuiltinEvaluator('Builtin.GoalSuccessRate');
 
   /**
    * Evaluates whether the agent selected the appropriate tool for the task.
    */
-  TOOL_SELECTION_ACCURACY = 'Builtin.ToolSelectionAccuracy',
+  public static readonly TOOL_SELECTION_ACCURACY = new BuiltinEvaluator('Builtin.ToolSelectionAccuracy');
 
   /**
    * Evaluates how accurately the agent extracts parameters from user queries.
    */
-  TOOL_PARAMETER_ACCURACY = 'Builtin.ToolParameterAccuracy',
+  public static readonly TOOL_PARAMETER_ACCURACY = new BuiltinEvaluator('Builtin.ToolParameterAccuracy');
 
   /**
    * Evaluates whether the response contains harmful content.
    */
-  HARMFULNESS = 'Builtin.Harmfulness',
+  public static readonly HARMFULNESS = new BuiltinEvaluator('Builtin.Harmfulness');
 
   /**
    * Detects content that makes generalizations about individuals or groups.
    */
-  STEREOTYPING = 'Builtin.Stereotyping',
+  public static readonly STEREOTYPING = new BuiltinEvaluator('Builtin.Stereotyping');
+
+  /**
+   * The string value of the built-in evaluator.
+   */
+  public readonly value: string;
+
+  /**
+   * @param value - The evaluator identifier string
+   */
+  public constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * The execution status of an online evaluation configuration.
  */
-export enum ExecutionStatus {
+export class ExecutionStatus {
   /**
    * The evaluation is enabled and actively processing agent traces.
    */
-  ENABLED = 'ENABLED',
+  public static readonly ENABLED = new ExecutionStatus('ENABLED');
 
   /**
    * The evaluation is disabled and not processing agent traces.
    */
-  DISABLED = 'DISABLED',
+  public static readonly DISABLED = new ExecutionStatus('DISABLED');
+
+  /**
+   * The string value of the execution status.
+   */
+  public readonly value: string;
+
+  /**
+   * @param value - The execution status string
+   */
+  public constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
  * Filter operators for online evaluation filtering.
  */
-export enum FilterOperator {
+export class FilterOperator {
   /**
    * Exact equality comparison.
    */
-  EQUALS = 'Equals',
+  public static readonly EQUAL = new FilterOperator('Equals');
 
   /**
    * Not equal comparison.
    */
-  NOT_EQUALS = 'NotEquals',
+  public static readonly NOT_EQUAL = new FilterOperator('NotEquals');
 
   /**
    * Greater than comparison (numeric values).
    */
-  GREATER_THAN = 'GreaterThan',
+  public static readonly GREATER_THAN = new FilterOperator('GreaterThan');
 
   /**
    * Less than comparison (numeric values).
    */
-  LESS_THAN = 'LessThan',
+  public static readonly LESS_THAN = new FilterOperator('LessThan');
 
   /**
    * Greater than or equal comparison (numeric values).
    */
-  GREATER_THAN_OR_EQUAL = 'GreaterThanOrEqual',
+  public static readonly GREATER_THAN_OR_EQUAL = new FilterOperator('GreaterThanOrEqual');
 
   /**
    * Less than or equal comparison (numeric values).
    */
-  LESS_THAN_OR_EQUAL = 'LessThanOrEqual',
+  public static readonly LESS_THAN_OR_EQUAL = new FilterOperator('LessThanOrEqual');
 
   /**
    * String contains comparison.
    */
-  CONTAINS = 'Contains',
+  public static readonly CONTAINS = new FilterOperator('Contains');
 
   /**
    * String does not contain comparison.
    */
-  NOT_CONTAINS = 'NotContains',
+  public static readonly NOT_CONTAINS = new FilterOperator('NotContains');
+
+  /**
+   * The string value of the filter operator.
+   */
+  public readonly value: string;
+
+  /**
+   * @param value - The filter operator string
+   */
+  public constructor(value: string) {
+    this.value = value;
+  }
+}
+
+/**
+ * A typed filter value for online evaluation filtering.
+ *
+ * Use the static factory methods to create filter values:
+ * - `FilterValue.string()` for string comparisons
+ * - `FilterValue.number()` for numeric comparisons
+ * - `FilterValue.boolean()` for boolean comparisons
+ */
+export class FilterValue {
+  /**
+   * Creates a string filter value.
+   *
+   * @param value - The string value to compare against
+   */
+  public static string(value: string): FilterValue {
+    return new FilterValue({ stringValue: value });
+  }
+
+  /**
+   * Creates a numeric filter value.
+   *
+   * @param value - The numeric value to compare against
+   */
+  public static number(value: number): FilterValue {
+    return new FilterValue({ doubleValue: value });
+  }
+
+  /**
+   * Creates a boolean filter value.
+   *
+   * @param value - The boolean value to compare against
+   */
+  public static boolean(value: boolean): FilterValue {
+    return new FilterValue({ booleanValue: value });
+  }
+
+  private readonly filterValue: { stringValue?: string; doubleValue?: number; booleanValue?: boolean };
+
+  private constructor(filterValue: { stringValue?: string; doubleValue?: number; booleanValue?: boolean }) {
+    this.filterValue = filterValue;
+  }
+
+  /**
+   * Binds the filter value to produce the L1 property.
+   * @internal
+   */
+  public _bind(): { stringValue?: string; doubleValue?: number; booleanValue?: boolean } {
+    return this.filterValue;
+  }
 }
 
 /**
@@ -167,8 +255,11 @@ export interface FilterConfig {
 
   /**
    * The value to compare against using the specified operator.
+   *
+   * Use `FilterValue.string()`, `FilterValue.number()`, or `FilterValue.boolean()`
+   * to create typed filter values.
    */
-  readonly value: string | number | boolean;
+  readonly value: FilterValue;
 }
 
 /**
@@ -189,6 +280,9 @@ export interface CloudWatchLogsDataSourceConfig {
    *
    * For agents hosted on AgentCore Runtime, service name follows the format:
    * `<agent-runtime-name>.<agent-runtime-endpoint-name>`
+   *
+   * @minimum 1
+   * @maximum 1
    */
   readonly serviceNames: string[];
 }
@@ -244,14 +338,14 @@ export interface OnlineEvaluationBaseProps {
   readonly filters?: FilterConfig[];
 
   /**
-   * The number of minutes of inactivity after which an agent session
+   * The duration of inactivity after which an agent session
    * is considered complete and ready for evaluation.
    *
-   * @default 15
-   * @minimum 1
-   * @maximum 1440
+   * Must be between 1 minute and 1440 minutes (24 hours).
+   *
+   * @default Duration.minutes(15)
    */
-  readonly sessionTimeoutMinutes?: number;
+  readonly sessionTimeout?: Duration;
 
   /**
    * The execution status of the online evaluation configuration.
@@ -288,21 +382,33 @@ export interface DataSourceConfigBindResult {
  *
  * Determines what granularity of data the evaluator operates on.
  */
-export enum EvaluationLevel {
+export class EvaluationLevel {
   /**
    * Evaluates individual tool call invocations within a trace.
    */
-  TOOL_CALL = 'TOOL_CALL',
+  public static readonly TOOL_CALL = new EvaluationLevel('TOOL_CALL');
 
   /**
    * Evaluates a complete agent trace (a single request-response cycle).
    */
-  TRACE = 'TRACE',
+  public static readonly TRACE = new EvaluationLevel('TRACE');
 
   /**
    * Evaluates an entire agent session (multiple traces across a conversation).
    */
-  SESSION = 'SESSION',
+  public static readonly SESSION = new EvaluationLevel('SESSION');
+
+  /**
+   * The string value of the evaluation level.
+   */
+  public readonly value: string;
+
+  /**
+   * @param value - The evaluation level string
+   */
+  public constructor(value: string) {
+    this.value = value;
+  }
 }
 
 /**
@@ -363,7 +469,7 @@ export interface EvaluatorInferenceConfig {
   /**
    * The maximum number of tokens to generate in the model response.
    *
-   * @default - Service default
+   * @default - The foundation model's default maximum token limit is used
    */
   readonly maxTokens?: number;
 
@@ -372,7 +478,7 @@ export interface EvaluatorInferenceConfig {
    *
    * Higher values produce more diverse outputs. Range: 0.0 to 1.0.
    *
-   * @default - Service default
+   * @default - The foundation model's default temperature is used
    */
   readonly temperature?: number;
 
@@ -381,7 +487,7 @@ export interface EvaluatorInferenceConfig {
    *
    * Range: 0.0 to 1.0.
    *
-   * @default - Service default
+   * @default - The foundation model's default top-p value is used
    */
   readonly topP?: number;
 }

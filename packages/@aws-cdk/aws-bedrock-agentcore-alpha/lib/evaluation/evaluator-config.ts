@@ -61,7 +61,11 @@ export interface LlmAsAJudgeOptions {
   /**
    * Optional inference configuration parameters that control model behavior during evaluation.
    *
-   * @default - Service defaults
+   * When not specified, the foundation model uses its own default values for
+   * maxTokens, temperature, and topP.
+   *
+   * @default - The foundation model's default inference parameters are used
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/custom-evaluators.html
    */
   readonly inferenceConfig?: EvaluatorInferenceConfig;
 
@@ -89,9 +93,13 @@ export interface CodeBasedOptions {
   readonly lambdaFunction: lambda.IFunction;
 
   /**
-   * The timeout for the Lambda function invocation.
+   * The timeout for the Lambda function invocation during evaluation.
    *
-   * @default - Service default
+   * When not specified, the AgentCore evaluation service uses its default
+   * timeout for Lambda-based evaluators.
+   *
+   * @default - The AgentCore evaluation service's default Lambda timeout is used
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/custom-evaluators.html
    */
   readonly timeout?: Duration;
 }

@@ -2906,8 +2906,8 @@ The Online Evaluation construct enables continuous monitoring and assessment of 
 | `executionRole` | `iam.IRole` | No | The IAM role for evaluation. If not provided, a role will be created automatically |
 | `description` | `string` | No | Description of the evaluation configuration. Maximum 200 characters |
 | `samplingPercentage` | `number` | No | Percentage of traces to sample (0.01-100). Default: 10 |
-| `filters` | `FilterConfig[]` | No | Filters to determine which traces to evaluate. Maximum 5 |
-| `sessionTimeoutMinutes` | `number` | No | Minutes of inactivity before a session is considered complete (1-1440). Default: 15 |
+| `filters` | `FilterConfig[]` | No | Filters to determine which traces to evaluate. Use `FilterValue.string()`, `FilterValue.number()`, or `FilterValue.boolean()` for typed filter values. Maximum 5 |
+| `sessionTimeout` | `Duration` | No | Duration of inactivity before a session is considered complete (1-1440 minutes). Default: `Duration.minutes(15)` |
 | `tags` | `{ [key: string]: string }` | No | Tags for the evaluation configuration |
 
 ### Basic Online Evaluation Creation
@@ -3129,7 +3129,7 @@ const stagingEval = new agentcore.OnlineEvaluationConfig(this, 'StagingEval', {
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
   ],
-  dataSource: agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime, 'STAGING'),
+  dataSource: agentcore.DataSourceConfig.fromAgentRuntimeEndpointName(runtime, 'STAGING'),
 });
 ```
 
@@ -3148,7 +3148,7 @@ const evaluation = new agentcore.OnlineEvaluationConfig(this, 'CloudWatchEval', 
       '/aws/bedrock-agentcore/agent1',
       '/aws/bedrock-agentcore/agent2',
     ],
-    serviceNames: ['agent1.default', 'agent2.production'],
+    serviceNames: ['agent1.default'],
   }),
 });
 ```
@@ -3173,17 +3173,17 @@ const evaluation = new agentcore.OnlineEvaluationConfig(this, 'FilteredEval', {
   filters: [
     {
       key: 'user.region',
-      operator: agentcore.FilterOperator.EQUALS,
-      value: 'us-east-1',
+      operator: agentcore.FilterOperator.EQUAL,
+      value: agentcore.FilterValue.string('us-east-1'),
     },
     {
       key: 'session.duration',
       operator: agentcore.FilterOperator.GREATER_THAN,
-      value: 60,
+      value: agentcore.FilterValue.number(60),
     },
   ],
   // Consider sessions complete after 30 minutes of inactivity
-  sessionTimeoutMinutes: 30,
+  sessionTimeout: cdk.Duration.minutes(30),
 });
 ```
 

@@ -236,7 +236,7 @@ export class Evaluator extends EvaluatorBase {
     const resource = new bedrockagentcore.CfnEvaluator(this, 'Resource', {
       evaluatorName: props.evaluatorName,
       evaluatorConfig: props.evaluatorConfig._bind(),
-      level: props.level,
+      level: props.level.value,
       description: props.description,
     });
 

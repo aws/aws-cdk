@@ -44,7 +44,7 @@ export class EvaluatorReference {
    * const goalSuccess = agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.GOAL_SUCCESS_RATE);
    */
   public static builtin(evaluator: BuiltinEvaluator): EvaluatorReference {
-    return new EvaluatorReference(evaluator);
+    return new EvaluatorReference(evaluator.value);
   }
 
   /**

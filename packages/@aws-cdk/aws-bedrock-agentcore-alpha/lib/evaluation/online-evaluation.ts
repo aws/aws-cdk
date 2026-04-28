@@ -238,7 +238,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
     throwIfInvalid(validateEvaluators, props.evaluators, this);
     throwIfInvalid(validateSamplingPercentage, props.samplingPercentage, this);
     throwIfInvalid(validateFilters, props.filters, this);
-    throwIfInvalid(validateSessionTimeout, props.sessionTimeoutMinutes, this);
+    throwIfInvalid(validateSessionTimeout, props.sessionTimeout?.toMinutes(), this);
 
     this.onlineEvaluationConfigName = props.configName;
     this.executionRole = props.executionRole ?? this.createExecutionRole(props.dataSource);
@@ -251,7 +251,7 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       evaluationExecutionRoleArn: this.executionRole!.roleArn,
       rule: this.buildRuleConfig(props),
       description: props.description,
-      executionStatus: props.executionStatus,
+      executionStatus: props.executionStatus?.value,
     });
 
     // Ensure the execution role's policies are created before the L1 resource,
@@ -331,6 +331,9 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
       ],
     );
 
+    // logs:DescribeLogGroups does not support resource-level permissions.
+    // The resource must be '*' per the IAM service authorization reference.
+    // See: https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncloudwatchlogs.html
     role.addToPolicy(
       new iam.PolicyStatement({
         sid: 'CloudWatchLogDescribeStatement',
@@ -420,26 +423,15 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
         samplingPercentage: props.samplingPercentage ?? 10,
       },
       sessionConfig: {
-        sessionTimeoutMinutes: props.sessionTimeoutMinutes ?? 15,
+        sessionTimeoutMinutes: props.sessionTimeout?.toMinutes() ?? 15,
       },
       ...(props.filters && props.filters.length > 0 ? {
         filters: props.filters.map((f) => ({
           key: f.key,
-          operator: f.operator,
-          value: this.formatFilterValue(f.value),
+          operator: f.operator.value,
+          value: f.value._bind(),
         })),
       } : {}),
     };
-  }
-
-  private formatFilterValue(value: string | number | boolean): bedrockagentcore.CfnOnlineEvaluationConfig.FilterValueProperty {
-    if (typeof value === 'string') {
-      return { stringValue: value };
-    } else if (typeof value === 'number') {
-      return { doubleValue: value };
-    } else if (typeof value === 'boolean') {
-      return { booleanValue: value };
-    }
-    return { stringValue: String(value) };
   }
 }

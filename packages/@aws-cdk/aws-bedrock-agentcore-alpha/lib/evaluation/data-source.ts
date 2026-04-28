@@ -21,16 +21,17 @@ import type { IRuntimeEndpoint } from '../runtime/runtime-endpoint-base';
  *
  * Use the static factory methods to create data source configurations:
  * - `DataSourceConfig.fromAgentRuntimeEndpoint()` for AgentCore Runtime (recommended)
+ * - `DataSourceConfig.fromAgentRuntimeEndpointName()` for AgentCore Runtime using endpoint name string
  * - `DataSourceConfig.fromCloudWatchLogs()` for external agents or custom log groups
  *
  * @example
  * // AgentCore Runtime with default endpoint
- * const runtime = new agentcore.Runtime(this, 'Runtime', { ... });
+ * declare const runtime: agentcore.Runtime;
  * const dataSource = agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime);
  *
  * @example
  * // AgentCore Runtime with specific endpoint
- * const runtime = new agentcore.Runtime(this, 'Runtime', { ... });
+ * declare const runtime: agentcore.Runtime;
  * const endpoint = runtime.addEndpoint('PROD');
  * const dataSource = agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime, endpoint);
  *
@@ -73,41 +74,54 @@ export class DataSourceConfig {
    * It automatically derives the CloudWatch log group and service name from the runtime and endpoint.
    *
    * @param runtime - The AgentCore Runtime construct
-   * @param endpoint - The RuntimeEndpoint construct, or endpoint name string. Defaults to 'DEFAULT' if not provided.
+   * @param endpoint - The RuntimeEndpoint construct. Defaults to 'DEFAULT' endpoint if not provided.
    * @returns A DataSourceConfig instance
    *
    * @example
    * // Using default endpoint
-   * const runtime = new agentcore.Runtime(this, 'Runtime', {
-   *   runtimeName: 'my_agent',
-   *   agentRuntimeArtifact: ...,
-   * });
+   * declare const runtime: agentcore.Runtime;
    * const dataSource = agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime);
    *
    * @example
    * // Using a specific endpoint
-   * const runtime = new agentcore.Runtime(this, 'Runtime', { ... });
+   * declare const runtime: agentcore.Runtime;
    * const endpoint = runtime.addEndpoint('PROD');
    * const dataSource = agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime, endpoint);
-   *
-   * @example
-   * // Using endpoint name as string
-   * declare const runtime: agentcore.Runtime;
-   * const dataSource = agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime, 'PROD');
    */
   public static fromAgentRuntimeEndpoint(
     runtime: IBedrockAgentRuntime,
-    endpoint?: IRuntimeEndpoint | string,
+    endpoint?: IRuntimeEndpoint,
   ): DataSourceConfig {
-    let endpointName: string;
-    if (endpoint === undefined) {
-      endpointName = 'DEFAULT';
-    } else if (typeof endpoint === 'string') {
-      endpointName = endpoint;
-    } else {
-      endpointName = endpoint.endpointName;
-    }
+    const endpointName = endpoint?.endpointName ?? 'DEFAULT';
 
+    return DataSourceConfig.buildFromRuntime(runtime, endpointName);
+  }
+
+  /**
+   * Creates a data source configuration from an AgentCore Runtime and an endpoint name string.
+   *
+   * Use this method when you want to reference an endpoint by name without
+   * having a construct reference. For construct references, prefer `fromAgentRuntimeEndpoint()`.
+   *
+   * @param runtime - The AgentCore Runtime construct
+   * @param endpointName - The name of the runtime endpoint
+   * @returns A DataSourceConfig instance
+   *
+   * @example
+   * declare const runtime: agentcore.Runtime;
+   * const dataSource = agentcore.DataSourceConfig.fromAgentRuntimeEndpointName(runtime, 'PROD');
+   */
+  public static fromAgentRuntimeEndpointName(
+    runtime: IBedrockAgentRuntime,
+    endpointName: string,
+  ): DataSourceConfig {
+    return DataSourceConfig.buildFromRuntime(runtime, endpointName);
+  }
+
+  private static buildFromRuntime(
+    runtime: IBedrockAgentRuntime,
+    endpointName: string,
+  ): DataSourceConfig {
     const logGroupName = `/aws/bedrock-agentcore/runtimes/${runtime.agentRuntimeId}-${endpointName}`;
     const serviceName = `${runtime.agentRuntimeName}.${endpointName}`;
 
