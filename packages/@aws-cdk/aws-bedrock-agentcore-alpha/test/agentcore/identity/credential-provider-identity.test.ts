@@ -34,7 +34,7 @@ describe('ApiKeyCredentialProvider', () => {
     });
   });
 
-  test('grantRead combines resource and list permissions', () => {
+  test('grantRead scopes actions to provider ARN and parent resources', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -50,12 +50,15 @@ describe('ApiKeyCredentialProvider', () => {
 
     const template = Template.fromStack(stack);
     const policies = template.findResources('AWS::IAM::Policy');
-    expect(Object.keys(policies).length).toBeGreaterThan(0);
     const serialized = JSON.stringify(policies);
+    // Actions are present
     expect(serialized).toContain('bedrock-agentcore:GetApiKeyCredentialProvider');
     expect(serialized).toContain('bedrock-agentcore:ListApiKeyCredentialProviders');
-    expect(serialized).toContain('CredentialProviderArn');
-    expect(serialized).toContain('"*"');
+    // Parent resources are included (as Fn::Join with these path segments)
+    expect(serialized).toContain('token-vault/default');
+    expect(serialized).toContain('token-vault/default/apikeycredentialprovider');
+    // No wildcard '*' as a standalone Resource value
+    expect(serialized).not.toContain('"Resource":"*"');
   });
 
   test('grantUse includes Secrets Manager read on the credential secret', () => {
@@ -78,6 +81,9 @@ describe('ApiKeyCredentialProvider', () => {
       expect(serialized).toContain(action);
     }
     expect(serialized).toContain('secretsmanager');
+    // Workload identity directory resources required by data-plane actions
+    expect(serialized).toContain('workload-identity-directory/default');
+    expect(serialized).toContain('workload-identity-directory/default/workload-identity/*');
   });
 
   test('grantUse on imported provider omits Secrets Manager when secret ARN is unknown', () => {
@@ -184,6 +190,9 @@ describe('OAuth2CredentialProvider', () => {
     }
     expect(serialized).toContain('CredentialProviderArn');
     expect(serialized).toContain('secretsmanager');
+    // Workload identity directory resources required by data-plane actions
+    expect(serialized).toContain('workload-identity-directory/default');
+    expect(serialized).toContain('workload-identity-directory/default/workload-identity/*');
   });
 
   test('usingYandex synthesizes included config with client credentials only', () => {
@@ -394,8 +403,8 @@ describe('GatewayCredentialProvider from Token Vault constructs', () => {
   });
 });
 
-describe('grantFullAccess scopes list permissions to * and resource permissions to provider ARN', () => {
-  test('ApiKeyCredentialProvider grantFullAccess scopes list to * and others to resource ARN', () => {
+describe('grantFullAccess scopes all permissions to provider ARN and parent resources', () => {
+  test('ApiKeyCredentialProvider grantFullAccess includes parent resource ARNs', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -410,36 +419,16 @@ describe('grantFullAccess scopes list permissions to * and resource permissions 
     });
     provider.grantFullAccess(role);
 
-    const template = Template.fromStack(stack);
-
-    // List actions scoped to '*'
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: 'bedrock-agentcore:ListApiKeyCredentialProviders',
-            Resource: '*',
-          }),
-        ]),
-      }),
-    });
-
-    // Resource-scoped actions NOT on '*'
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: Match.arrayWith([
-              'bedrock-agentcore:GetApiKeyCredentialProvider',
-            ]),
-            Resource: Match.not('*'),
-          }),
-        ]),
-      }),
-    });
+    const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+    const serialized = JSON.stringify(policies);
+    expect(serialized).toContain('bedrock-agentcore:GetApiKeyCredentialProvider');
+    expect(serialized).toContain('bedrock-agentcore:ListApiKeyCredentialProviders');
+    expect(serialized).toContain('token-vault/default');
+    expect(serialized).toContain('token-vault/default/apikeycredentialprovider');
+    expect(serialized).not.toContain('"Resource":"*"');
   });
 
-  test('OAuth2CredentialProvider grantFullAccess scopes list to * and others to resource ARN', () => {
+  test('OAuth2CredentialProvider grantFullAccess includes parent resource ARNs', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -455,33 +444,13 @@ describe('grantFullAccess scopes list permissions to * and resource permissions 
     });
     provider.grantFullAccess(role);
 
-    const template = Template.fromStack(stack);
-
-    // List actions scoped to '*'
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: 'bedrock-agentcore:ListOauth2CredentialProviders',
-            Resource: '*',
-          }),
-        ]),
-      }),
-    });
-
-    // Resource-scoped actions NOT on '*'
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: Match.objectLike({
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: Match.arrayWith([
-              'bedrock-agentcore:GetOauth2CredentialProvider',
-            ]),
-            Resource: Match.not('*'),
-          }),
-        ]),
-      }),
-    });
+    const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+    const serialized = JSON.stringify(policies);
+    expect(serialized).toContain('bedrock-agentcore:GetOauth2CredentialProvider');
+    expect(serialized).toContain('bedrock-agentcore:ListOauth2CredentialProviders');
+    expect(serialized).toContain('token-vault/default');
+    expect(serialized).toContain('token-vault/default/oauth2credentialprovider');
+    expect(serialized).not.toContain('"Resource":"*"');
   });
 });
 

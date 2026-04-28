@@ -11,11 +11,83 @@
  *  and limitations under the License.
  */
 
+import { ArnFormat, Stack, Token } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { IConstruct } from 'constructs';
 
 /**
- * Grant read on a specific credential provider ARN and list permission on `*` (list APIs are account-scoped).
+ * Parent/collection resource ARN segments for Token Vault credential providers.
+ *
+ * Bedrock AgentCore uses a hierarchical authorization model where Get/List actions
+ * require IAM permission on the parent and collection resources in addition to the
+ * specific resource instance. For example, GetApiKeyCredentialProvider needs:
+ *   - token-vault/default                             (vault)
+ *   - token-vault/default/apikeycredentialprovider    (collection)
+ *   - token-vault/default/apikeycredentialprovider/*  (instance)
+ *
+ * @internal
+ */
+export const TOKEN_VAULT_API_KEY_PARENT_RESOURCES = [
+  'token-vault/default',
+  'token-vault/default/apikeycredentialprovider',
+] as const;
+
+/**
+ * @internal
+ */
+export const TOKEN_VAULT_OAUTH2_PARENT_RESOURCES = [
+  'token-vault/default',
+  'token-vault/default/oauth2credentialprovider',
+] as const;
+
+/**
+ * @internal
+ */
+export const WORKLOAD_IDENTITY_PARENT_RESOURCES = [
+  'workload-identity-directory/default',
+  'workload-identity-directory/default/workload-identity',
+] as const;
+
+/**
+ * Workload identity resource ARN segments required by data-plane actions
+ * (GetResourceApiKey, GetResourceOauth2Token, CompleteResourceTokenAuth).
+ *
+ * These actions require both the workload identity directory and a wildcard
+ * over workload identities because the specific identity is created dynamically
+ * by the gateway/service at runtime.
+ *
+ * @internal
+ */
+export const WORKLOAD_IDENTITY_USE_RESOURCES = [
+  'workload-identity-directory/default',
+  'workload-identity-directory/default/workload-identity/*',
+] as const;
+
+/**
+ * Build the full set of resource ARNs for an identity grant: the instance ARN
+ * plus all parent/collection ARNs that the service's authorization model requires.
+ *
+ * @internal
+ */
+export function buildIdentityResourceArns(
+  scope: IConstruct,
+  instanceArn: string,
+  parentResources: readonly string[],
+): string[] {
+  const stack = Stack.of(scope);
+  const parentArns = parentResources.map(resource =>
+    stack.formatArn({
+      service: 'bedrock-agentcore',
+      resource,
+      arnFormat: ArnFormat.NO_RESOURCE_NAME,
+    }),
+  );
+  return [instanceArn, ...parentArns];
+}
+
+/**
+ * Grant read and list permissions on a specific identity resource, including
+ * parent/collection ARNs required by the Bedrock AgentCore authorization model.
  *
  * @internal
  */
@@ -25,40 +97,50 @@ export function grantReadWithList(
   resourceArn: string,
   resourceReadActions: string[],
   listActions: string[],
+  parentResources: readonly string[],
 ): iam.Grant {
-  const resourceGrant = iam.Grant.addToPrincipal({
+  return iam.Grant.addToPrincipal({
     grantee,
-    actions: resourceReadActions,
-    resourceArns: [resourceArn],
+    actions: [...resourceReadActions, ...listActions],
+    resourceArns: buildIdentityResourceArns(scope, resourceArn, parentResources),
     scope,
   });
-  const listGrant = iam.Grant.addToPrincipal({
-    grantee,
-    actions: listActions,
-    resourceArns: ['*'],
-    scope,
-  });
-  return resourceGrant.combine(listGrant);
 }
 
 /**
- * Grants Secrets Manager read on the credential secret when an ARN is available (e.g. not omitted on import).
+ * Grants Secrets Manager actions on the credential secret when an ARN is available
+ * (e.g. not omitted on import). Used for both read (GetSecretValue) and write
+ * (PutSecretValue) grants.
+ *
+ * The CFN attribute for the secret ARN (e.g. `attrApiKeySecretArn`) resolves to an
+ * object `{ SecretArn: string }` at deploy time, not a plain string, so the Token
+ * cannot be placed directly in IAM Resource fields. When the secret ARN is unresolved
+ * (Token), we fall back to a service-managed prefix wildcard. When a literal ARN is
+ * supplied (e.g. via `fromApiKeyCredentialProviderAttributes`), we scope tightly.
  *
  * @internal
  */
-export function grantCredentialSecretRead(
+export function grantCredentialSecret(
   scope: IConstruct,
   grantee: iam.IGrantable,
   secretArn: string | undefined,
-  secretReadActions: string[],
+  secretActions: string[],
 ): iam.Grant | undefined {
   if (secretArn == null || secretArn === '') {
     return undefined;
   }
+  const secretResourceArns = Token.isUnresolved(secretArn)
+    ? [Stack.of(scope).formatArn({
+      service: 'secretsmanager',
+      resource: 'secret',
+      resourceName: 'bedrock-agentcore-identity!*',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    })]
+    : [secretArn];
   return iam.Grant.addToPrincipal({
     grantee,
-    actions: secretReadActions,
-    resourceArns: [secretArn],
+    actions: secretActions,
+    resourceArns: secretResourceArns,
     scope,
   });
 }

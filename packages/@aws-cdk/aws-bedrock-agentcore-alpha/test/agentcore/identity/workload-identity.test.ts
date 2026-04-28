@@ -58,7 +58,7 @@ describe('WorkloadIdentity', () => {
     });
   });
 
-  test('grantRead combines resource and list permissions', () => {
+  test('grantRead scopes actions to identity ARN and parent resources', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -77,12 +77,13 @@ describe('WorkloadIdentity', () => {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: 'bedrock-agentcore:GetWorkloadIdentity',
-            Resource: { 'Fn::GetAtt': [Match.anyValue(), 'WorkloadIdentityArn'] },
-          }),
-          Match.objectLike({
-            Action: 'bedrock-agentcore:ListWorkloadIdentities',
-            Resource: '*',
+            Action: Match.arrayWith([
+              'bedrock-agentcore:GetWorkloadIdentity',
+              'bedrock-agentcore:ListWorkloadIdentities',
+            ]),
+            Resource: Match.arrayWith([
+              { 'Fn::GetAtt': [Match.anyValue(), 'WorkloadIdentityArn'] },
+            ]),
           }),
         ]),
       },
@@ -109,7 +110,7 @@ describe('WorkloadIdentity', () => {
     }
   });
 
-  test('grantFullAccess scopes List to * and other actions to resource ARN', () => {
+  test('grantFullAccess scopes all actions to identity ARN and parent resources', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -130,20 +131,19 @@ describe('WorkloadIdentity', () => {
           Match.objectLike({
             Action: Match.arrayWith([
               'bedrock-agentcore:GetWorkloadIdentity',
+              'bedrock-agentcore:ListWorkloadIdentities',
               'bedrock-agentcore:CreateWorkloadIdentity',
             ]),
-            Resource: { 'Fn::GetAtt': [Match.anyValue(), 'WorkloadIdentityArn'] },
-          }),
-          Match.objectLike({
-            Action: 'bedrock-agentcore:ListWorkloadIdentities',
-            Resource: '*',
+            Resource: Match.arrayWith([
+              { 'Fn::GetAtt': [Match.anyValue(), 'WorkloadIdentityArn'] },
+            ]),
           }),
         ]),
       },
     });
   });
 
-  test('grantRead on imported construct uses literal ARN', () => {
+  test('grantRead on imported construct includes literal ARN and parent resources', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -159,21 +159,13 @@ describe('WorkloadIdentity', () => {
     });
     imported.grantRead(role);
 
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::IAM::Policy', {
-      PolicyDocument: {
-        Statement: Match.arrayWith([
-          Match.objectLike({
-            Action: 'bedrock-agentcore:GetWorkloadIdentity',
-            Resource: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:workload-identity-directory/default/workload-identity/existing',
-          }),
-          Match.objectLike({
-            Action: 'bedrock-agentcore:ListWorkloadIdentities',
-            Resource: '*',
-          }),
-        ]),
-      },
-    });
+    const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+    const serialized = JSON.stringify(policies);
+    expect(serialized).toContain('bedrock-agentcore:GetWorkloadIdentity');
+    expect(serialized).toContain('bedrock-agentcore:ListWorkloadIdentities');
+    expect(serialized).toContain('workload-identity-directory/default/workload-identity/existing');
+    expect(serialized).toContain('workload-identity-directory/default');
+    expect(serialized).not.toContain('"Resource":"*"');
   });
 
   test('fromWorkloadIdentityAttributes exposes ref shape', () => {

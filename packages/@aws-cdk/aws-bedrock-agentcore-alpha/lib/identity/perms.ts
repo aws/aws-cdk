@@ -26,6 +26,17 @@ export const TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS = [
 ] as const;
 
 /**
+ * Secrets Manager actions to write credential material for Token Vault providers.
+ *
+ * Create and Update control plane operations (e.g. CreateApiKeyCredentialProvider,
+ * UpdateApiKeyCredentialProvider) store/update the credential in Secrets Manager,
+ * requiring PutSecretValue on the backing secret.
+ */
+export const TOKEN_VAULT_CREDENTIAL_SECRET_WRITE_PERMS = [
+  'secretsmanager:PutSecretValue',
+] as const;
+
+/**
  * IAM actions for AgentCore API key credential providers (Token Vault).
  *
  * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
@@ -37,7 +48,7 @@ export namespace ApiKeyCredentialProviderIdentityPerms {
   export const READ_PERMS = ['bedrock-agentcore:GetApiKeyCredentialProvider'];
 
   /**
-   * List API key credential providers in the account (not scoped to a single provider ARN).
+   * List API key credential providers (resource-scoped per IAM service authorization reference).
    */
   export const LIST_PERMS = ['bedrock-agentcore:ListApiKeyCredentialProviders'];
 
@@ -74,7 +85,7 @@ export namespace OAuth2CredentialProviderIdentityPerms {
   export const READ_PERMS = ['bedrock-agentcore:GetOauth2CredentialProvider'];
 
   /**
-   * List OAuth2 credential providers in the account (not scoped to a single provider ARN).
+   * List OAuth2 credential providers (resource-scoped per IAM service authorization reference).
    */
   export const LIST_PERMS = ['bedrock-agentcore:ListOauth2CredentialProviders'];
 
@@ -114,7 +125,7 @@ export namespace WorkloadIdentityPerms {
   export const READ_PERMS = ['bedrock-agentcore:GetWorkloadIdentity'] as const;
 
   /**
-   * List workload identities in the account (not scoped to a single identity ARN).
+   * List workload identities (resource-scoped per IAM service authorization reference).
    */
   export const LIST_PERMS = ['bedrock-agentcore:ListWorkloadIdentities'] as const;
 

@@ -19,7 +19,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { grantReadWithList } from './grant-helpers';
+import { buildIdentityResourceArns, grantReadWithList, WORKLOAD_IDENTITY_PARENT_RESOURCES } from './grant-helpers';
 import { WorkloadIdentityPerms } from './perms';
 import {
   throwIfInvalid,
@@ -67,15 +67,14 @@ export interface IWorkloadIdentity extends IResource, iam.IGrantable, IWorkloadI
   readonly lastUpdatedTime?: string;
 
   /**
-   * Grants IAM actions on this workload identity's ARN to the given principal.
-   *
-   * Actions that require account-level scope (such as List actions) should use
-   * the dedicated grant helpers instead.
+   * Grants IAM actions on this workload identity, scoped to its ARN and the parent resources
+   * required by the Bedrock AgentCore authorization model.
    */
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Grant `GetWorkloadIdentity` on this identity and `ListWorkloadIdentities` for discovery.
+   * Grant `GetWorkloadIdentity` and `ListWorkloadIdentities`, scoped to this identity
+   * and parent resources required by the Bedrock AgentCore authorization model.
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
@@ -174,7 +173,7 @@ abstract class WorkloadIdentityBase extends Resource implements IWorkloadIdentit
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.workloadIdentityArn],
+      resourceArns: buildIdentityResourceArns(this, this.workloadIdentityArn, WORKLOAD_IDENTITY_PARENT_RESOURCES),
       scope: this,
     });
   }
@@ -189,6 +188,7 @@ abstract class WorkloadIdentityBase extends Resource implements IWorkloadIdentit
       this.workloadIdentityArn,
       [...WorkloadIdentityPerms.READ_PERMS],
       [...WorkloadIdentityPerms.LIST_PERMS],
+      WORKLOAD_IDENTITY_PARENT_RESOURCES,
     );
   }
 
@@ -203,19 +203,12 @@ abstract class WorkloadIdentityBase extends Resource implements IWorkloadIdentit
    * [disable-awslint:no-grants]
    */
   public grantFullAccess(grantee: iam.IGrantable): iam.Grant {
-    const resourceGrant = iam.Grant.addToPrincipal({
+    return iam.Grant.addToPrincipal({
       grantee,
-      actions: [...WorkloadIdentityPerms.READ_PERMS, ...WorkloadIdentityPerms.ADMIN_PERMS],
-      resourceArns: [this.workloadIdentityArn],
+      actions: [...WorkloadIdentityPerms.FULL_ACCESS_PERMS],
+      resourceArns: buildIdentityResourceArns(this, this.workloadIdentityArn, WORKLOAD_IDENTITY_PARENT_RESOURCES),
       scope: this,
     });
-    const listGrant = iam.Grant.addToPrincipal({
-      grantee,
-      actions: [...WorkloadIdentityPerms.LIST_PERMS],
-      resourceArns: ['*'],
-      scope: this,
-    });
-    return resourceGrant.combine(listGrant);
   }
 }
 

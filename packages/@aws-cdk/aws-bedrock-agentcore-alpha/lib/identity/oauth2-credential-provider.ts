@@ -24,8 +24,8 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { grantCredentialSecretRead, grantReadWithList } from './grant-helpers';
-import { OAuth2CredentialProviderIdentityPerms, TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS } from './perms';
+import { buildIdentityResourceArns, grantCredentialSecret, grantReadWithList, TOKEN_VAULT_OAUTH2_PARENT_RESOURCES, WORKLOAD_IDENTITY_USE_RESOURCES } from './grant-helpers';
+import { OAuth2CredentialProviderIdentityPerms, TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS, TOKEN_VAULT_CREDENTIAL_SECRET_WRITE_PERMS } from './perms';
 import {
   throwIfInvalid,
   validateCredentialProviderName,
@@ -146,7 +146,8 @@ export interface IOAuth2CredentialProvider extends IResource, iam.IGrantable, IO
   grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant;
 
   /**
-   * Grant `Get` on this provider and `List` for discovery (list is not resource-scoped in IAM).
+   * Grant `GetOauth2CredentialProvider` and `ListOauth2CredentialProviders`, scoped to this
+   * provider and parent resources required by the Bedrock AgentCore authorization model.
    */
   grantRead(grantee: iam.IGrantable): iam.Grant;
 
@@ -608,7 +609,7 @@ abstract class OAuth2CredentialProviderBase extends Resource implements IOAuth2C
     return iam.Grant.addToPrincipal({
       grantee,
       actions,
-      resourceArns: [this.credentialProviderArn],
+      resourceArns: buildIdentityResourceArns(this, this.credentialProviderArn, TOKEN_VAULT_OAUTH2_PARENT_RESOURCES),
       scope: this,
     });
   }
@@ -623,6 +624,7 @@ abstract class OAuth2CredentialProviderBase extends Resource implements IOAuth2C
       this.credentialProviderArn,
       OAuth2CredentialProviderIdentityPerms.READ_PERMS,
       OAuth2CredentialProviderIdentityPerms.LIST_PERMS,
+      TOKEN_VAULT_OAUTH2_PARENT_RESOURCES,
     );
   }
 
@@ -630,15 +632,29 @@ abstract class OAuth2CredentialProviderBase extends Resource implements IOAuth2C
    * [disable-awslint:no-grants]
    */
   public grantAdmin(grantee: iam.IGrantable): iam.Grant {
-    return this.grant(grantee, ...OAuth2CredentialProviderIdentityPerms.ADMIN_PERMS);
+    const bedrock = this.grant(grantee, ...OAuth2CredentialProviderIdentityPerms.ADMIN_PERMS);
+    const secret = grantCredentialSecret(
+      this,
+      grantee,
+      this.clientSecretArn,
+      [...TOKEN_VAULT_CREDENTIAL_SECRET_WRITE_PERMS],
+    );
+    return secret ? bedrock.combine(secret) : bedrock;
   }
 
   /**
    * [disable-awslint:no-grants]
    */
   public grantUse(grantee: iam.IGrantable): iam.Grant {
-    const bedrock = this.grant(grantee, ...OAuth2CredentialProviderIdentityPerms.USE_PERMS);
-    const secret = grantCredentialSecretRead(
+    const bedrock = iam.Grant.addToPrincipal({
+      grantee,
+      actions: [...OAuth2CredentialProviderIdentityPerms.USE_PERMS],
+      resourceArns: buildIdentityResourceArns(
+        this, this.credentialProviderArn, [...TOKEN_VAULT_OAUTH2_PARENT_RESOURCES, ...WORKLOAD_IDENTITY_USE_RESOURCES],
+      ),
+      scope: this,
+    });
+    const secret = grantCredentialSecret(
       this,
       grantee,
       this.clientSecretArn,
@@ -651,28 +667,19 @@ abstract class OAuth2CredentialProviderBase extends Resource implements IOAuth2C
    * [disable-awslint:no-grants]
    */
   public grantFullAccess(grantee: iam.IGrantable): iam.Grant {
-    const resourceGrant = iam.Grant.addToPrincipal({
+    const bedrock = iam.Grant.addToPrincipal({
       grantee,
-      actions: [
-        ...OAuth2CredentialProviderIdentityPerms.READ_PERMS,
-        ...OAuth2CredentialProviderIdentityPerms.ADMIN_PERMS,
-        ...OAuth2CredentialProviderIdentityPerms.USE_PERMS,
-      ],
-      resourceArns: [this.credentialProviderArn],
+      actions: [...OAuth2CredentialProviderIdentityPerms.FULL_ACCESS_PERMS],
+      resourceArns: buildIdentityResourceArns(
+        this, this.credentialProviderArn, [...TOKEN_VAULT_OAUTH2_PARENT_RESOURCES, ...WORKLOAD_IDENTITY_USE_RESOURCES],
+      ),
       scope: this,
     });
-    const listGrant = iam.Grant.addToPrincipal({
-      grantee,
-      actions: [...OAuth2CredentialProviderIdentityPerms.LIST_PERMS],
-      resourceArns: ['*'],
-      scope: this,
-    });
-    const bedrock = resourceGrant.combine(listGrant);
-    const secret = grantCredentialSecretRead(
+    const secret = grantCredentialSecret(
       this,
       grantee,
       this.clientSecretArn,
-      [...TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS],
+      [...TOKEN_VAULT_CREDENTIAL_SECRET_READ_PERMS, ...TOKEN_VAULT_CREDENTIAL_SECRET_WRITE_PERMS],
     );
     return secret ? bedrock.combine(secret) : bedrock;
   }
