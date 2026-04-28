@@ -11,6 +11,7 @@ import { AccountPrincipal } from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
+import * as s3files from '../../aws-s3files';
 import * as signer from '../../aws-signer';
 import * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
@@ -3409,6 +3410,71 @@ describe('function', () => {
         IpProtocol: 'tcp',
       });
     });
+
+    test('mount s3files filesystem', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const vpc = new ec2.Vpc(stack, 'Vpc', { maxAzs: 3, natGateways: 1 });
+      const bucket = new s3.Bucket(stack, 'Bucket');
+
+      const fileSystem = new s3files.CfnFileSystem(stack, 'S3FilesFs', {
+        bucket: bucket.bucketArn,
+        roleArn: 'arn:aws:iam::123456789012:role/S3FilesRole',
+      });
+
+      const sg = new ec2.SecurityGroup(stack, 'MountTargetSG', { vpc });
+
+      new s3files.CfnMountTarget(stack, 'MountTarget0', {
+        fileSystemId: fileSystem.attrFileSystemId,
+        subnetId: vpc.privateSubnets[0].subnetId,
+        securityGroups: [sg.securityGroupId],
+      });
+
+      const accessPoint = new s3files.CfnAccessPoint(stack, 'AccessPoint', {
+        fileSystemId: fileSystem.attrFileSystemId,
+      });
+
+      // WHEN — reflection auto-resolves fileSystem, mountTargets, and securityGroups
+      new lambda.Function(stack, 'MyFunction', {
+        vpc,
+        handler: 'index.handler',
+        runtime: lambda.Runtime.PYTHON_3_12,
+        code: lambda.Code.fromInline('def handler(event, context): pass'),
+        filesystem: lambda.FileSystem.fromS3FilesAccessPoint(accessPoint, '/mnt/data'),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+        FileSystemConfigs: [
+          {
+            Arn: {
+              'Fn::GetAtt': ['AccessPoint', 'AccessPointArn'],
+            },
+            LocalMountPath: '/mnt/data',
+          },
+        ],
+      });
+
+      // Verify IAM policies for s3files
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3files:ClientMount',
+              Resource: {
+                'Fn::GetAtt': ['AccessPoint', 'AccessPointArn'],
+              },
+            }),
+            Match.objectLike({
+              Action: ['s3files:ClientMount', 's3files:ClientWrite'],
+              Resource: {
+                Ref: 'S3FilesFs',
+              },
+            }),
+          ]),
+        },
+      });
+    });
   });
 
   describe('code config', () => {
@@ -5133,6 +5199,15 @@ describe('Lambda Function log group behavior', () => {
 });
 
 describe('telemetry metadata', () => {
+  beforeEach(() => {
+    // In case we didn't compile using jsii
+    if (!(lambda.Function as any).hasOwnProperty(JSII_RUNTIME_SYMBOL)) {
+      (lambda.Function as any)[JSII_RUNTIME_SYMBOL] = {
+        fqn: 'aws-cdk-lib.aws-lambda.Function',
+      };
+    }
+  });
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
@@ -5141,15 +5216,6 @@ describe('telemetry metadata', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, true);
     const stack = new cdk.Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),
@@ -5179,15 +5245,6 @@ describe('telemetry metadata', () => {
     const app = new cdk.App();
     app.node.setContext(cxapi.ENABLE_ADDITIONAL_METADATA_COLLECTION, false);
     const stack = new cdk.Stack(app);
-
-    const mockConstructor = {
-      [JSII_RUNTIME_SYMBOL]: {
-        fqn: 'aws-cdk-lib.aws-lambda.Function',
-      },
-    };
-    jest.spyOn(Object, 'getPrototypeOf').mockReturnValue({
-      constructor: mockConstructor,
-    });
 
     const fn = new lambda.Function(stack, 'Lambda', {
       code: lambda.Code.fromInline('foo'),

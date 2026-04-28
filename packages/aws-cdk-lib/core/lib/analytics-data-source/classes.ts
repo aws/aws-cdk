@@ -3645,6 +3645,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         },
+        'region': '*',
         'grants': '*'
       },
       'policyDocument': '*'
@@ -3690,6 +3691,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         },
+        'region': '*',
         'grants': '*'
       },
       'originEndpointName': '*',
@@ -8739,8 +8741,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -8771,6 +8771,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -8853,13 +8855,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'ManagedEc2EksComputeEnvironment': {
       'kubernetesNamespace': '*',
@@ -8940,8 +8936,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'allocationStrategy': 'AllocationStrategy',
       'spotBidPercentage': '*',
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -8972,6 +8966,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -9054,13 +9050,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'FargateComputeEnvironment': {
       'maxvCpus': '*',
