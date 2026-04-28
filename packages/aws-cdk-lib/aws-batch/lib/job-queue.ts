@@ -4,8 +4,8 @@ import { toISchedulingPolicy } from './private/ref-utils';
 import type { ISchedulingPolicy } from './scheduling-policy';
 import type { Duration, IResource } from '../../core';
 import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -273,7 +273,7 @@ export class JobQueue extends Resource implements IJobQueue {
     return new Import(scope, id);
   }
 
-  private readonly _computeEnvironments: ArrayBox<OrderedComputeEnvironment>;
+  private readonly _computeEnvironments: IArrayBox<OrderedComputeEnvironment>;
   public readonly priority: number;
   public readonly enabled?: boolean;
   private readonly _schedulingPolicy?: ISchedulingPolicyRef;
@@ -318,7 +318,7 @@ export class JobQueue extends Resource implements IJobQueue {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._computeEnvironments = Boxes.fromArray(props?.computeEnvironments ?? []);
+    this._computeEnvironments = Box.fromArray(props?.computeEnvironments ?? []);
     this.priority = props?.priority ?? 1;
     this.enabled = props?.enabled;
     this._schedulingPolicy = props?.schedulingPolicy;

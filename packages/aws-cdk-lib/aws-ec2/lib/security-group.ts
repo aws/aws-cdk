@@ -20,8 +20,8 @@ import {
   Token,
   ValidationError,
 } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -522,8 +522,8 @@ export class SecurityGroup extends SecurityGroupBase {
   public readonly allowAllIpv6Outbound: boolean;
 
   private readonly securityGroup: CfnSecurityGroup;
-  private readonly directIngressRules: ArrayBox<CfnSecurityGroup.IngressProperty>;
-  private readonly directEgressRules: ArrayBox<CfnSecurityGroup.EgressProperty>;
+  private readonly directIngressRules: IArrayBox<CfnSecurityGroup.IngressProperty>;
+  private readonly directEgressRules: IArrayBox<CfnSecurityGroup.EgressProperty>;
 
   /**
    * Whether to disable optimization for inline security group rules.
@@ -546,8 +546,8 @@ export class SecurityGroup extends SecurityGroupBase {
       !!props.disableInlineRules :
       !!this.node.tryGetContext(SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY);
 
-    this.directIngressRules = Boxes.fromArray<CfnSecurityGroup.IngressProperty>([]);
-    this.directEgressRules = Boxes.fromArray<CfnSecurityGroup.EgressProperty>([]);
+    this.directIngressRules = Box.fromArray([]);
+    this.directEgressRules = Box.fromArray([]);
 
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,

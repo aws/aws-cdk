@@ -7,8 +7,8 @@ import { renderAttributes } from './util';
 import type * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
@@ -319,7 +319,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * The JSON objects returned by the directly registered members of this target group
    */
-  private readonly _targetsJson: ArrayBox<CfnTargetGroup.TargetDescriptionProperty>;
+  private readonly _targetsJson: IArrayBox<CfnTargetGroup.TargetDescriptionProperty>;
 
   /**
    * The target group VPC
@@ -378,7 +378,7 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       );
     }
 
-    this._targetsJson = Boxes.fromArray<CfnTargetGroup.TargetDescriptionProperty>([]);
+    this._targetsJson = Box.fromArray([]);
 
     this.healthCheck = baseProps.healthCheck || {};
     this.vpc = baseProps.vpc;

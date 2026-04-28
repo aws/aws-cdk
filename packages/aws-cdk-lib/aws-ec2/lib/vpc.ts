@@ -73,8 +73,8 @@ import {
   UnscopedValidationError,
   ValidationError,
 } from '../../core';
-import type { Box } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -2171,7 +2171,7 @@ export class Subnet extends Resource implements ISubnet {
 
   private readonly _internetConnectivityEstablished = new DependencyGroup();
 
-  private _networkAcl: Box<INetworkAcl>;
+  private _networkAcl: IBox<INetworkAcl>;
 
   constructor(scope: Construct, id: string, props: SubnetProps) {
     super(scope, id);
@@ -2201,7 +2201,7 @@ export class Subnet extends Resource implements ISubnet {
 
     // subnet.attrNetworkAclAssociationId is the default ACL after the subnet
     // was just created. However, the ACL can be replaced at a later time.
-    this._networkAcl = Boxes.fromValue<INetworkAcl>(NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId));
+    this._networkAcl = Box.fromValue(NetworkAcl.fromNetworkAclId(this, 'Acl', subnet.attrNetworkAclAssociationId));
     // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
     this.subnetNetworkAclAssociationId = Token.asString(this._networkAcl.derive(acl => acl.networkAclRef.networkAclId));
     this.node.defaultChild = subnet;

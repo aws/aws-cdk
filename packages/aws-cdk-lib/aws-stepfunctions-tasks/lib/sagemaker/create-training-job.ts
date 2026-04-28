@@ -6,8 +6,8 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import { Duration, Size, Stack, Token, ValidationError } from '../../../core';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -176,7 +176,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
 
   private readonly vpc?: ec2.IVpc;
   private securityGroup?: ec2.ISecurityGroup;
-  private readonly _securityGroups: ArrayBox<ec2.ISecurityGroup>;
+  private readonly _securityGroups: IArrayBox<ec2.ISecurityGroup>;
   private readonly subnets?: string[];
   private readonly integrationPattern: sfn.IntegrationPattern;
   private _role?: iam.IRole;
@@ -185,7 +185,7 @@ export class SageMakerCreateTrainingJob extends sfn.TaskStateBase implements iam
   constructor(scope: Construct, id: string, private readonly props: SageMakerCreateTrainingJobProps) {
     super(scope, id, props);
 
-    this._securityGroups = Boxes.fromArray<ec2.ISecurityGroup>([], { omitEmpty: false });
+    this._securityGroups = Box.fromArray([], { omitEmpty: false });
 
     this.integrationPattern = props.integrationPattern || sfn.IntegrationPattern.REQUEST_RESPONSE;
     validatePatternSupported(this.integrationPattern, SageMakerCreateTrainingJob.SUPPORTED_INTEGRATION_PATTERNS);

@@ -10,8 +10,8 @@ import { ArnPrincipal } from './principals';
 import { AttachedPolicies } from './private/util';
 import type { IUser } from './user';
 import { Annotations, ArnFormat, Resource, Stack, Token } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -214,7 +214,7 @@ export class Group extends GroupBase {
     });
   }
 
-  private readonly _managedPolicies: ArrayBox<IManagedPolicy>;
+  private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly _path?: string;
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
@@ -224,7 +224,7 @@ export class Group extends GroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []]);
+    this._managedPolicies = Box.fromArray([...props.managedPolicies || []]);
     this._path = props.path;
 
     this._resource = new CfnGroup(this, 'Resource', {

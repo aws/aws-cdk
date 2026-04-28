@@ -37,8 +37,8 @@ import {
   Token,
   ValidationError,
 } from '../../core';
-import type { Box } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -377,7 +377,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
-  private readonly _webAclId: Box<string | undefined>;
+  private readonly _webAclId: IBox<string | undefined>;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -406,7 +406,7 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
-    this._webAclId = Boxes.fromValue<string | undefined>(props.webAclId);
+    this._webAclId = Box.fromValue(props.webAclId);
     if (props.webAclId) {
       this.validateWebAclId(props.webAclId);
     }

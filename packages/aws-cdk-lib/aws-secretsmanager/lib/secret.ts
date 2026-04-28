@@ -7,8 +7,8 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import type { IResolveContext, IResource, ResourceProps, SecretsManagerSecretOptions } from '../../core';
 import { ArnFormat, FeatureFlags, Fn, Lazy, RemovalPolicy, Resource, SecretValue, Stack, Token, TokenComparison, UnscopedValidationError, ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -668,7 +668,7 @@ export class Secret extends SecretBase {
    */
   public readonly excludeCharacters?: string;
 
-  private readonly _replicaRegions: ArrayBox<secretsmanager.CfnSecret.ReplicaRegionProperty>;
+  private readonly _replicaRegions: IArrayBox<secretsmanager.CfnSecret.ReplicaRegionProperty>;
 
   protected readonly autoCreatePolicy = true;
 
@@ -679,7 +679,7 @@ export class Secret extends SecretBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._replicaRegions = Boxes.fromArray<secretsmanager.CfnSecret.ReplicaRegionProperty>([]);
+    this._replicaRegions = Box.fromArray([]);
 
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&

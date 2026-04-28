@@ -35,8 +35,8 @@ import {
   FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -1263,8 +1263,8 @@ export class Table extends TableBase {
 
   private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
-  private readonly _globalSecondaryIndexes: ArrayBox<CfnTable.GlobalSecondaryIndexProperty>;
-  private readonly _localSecondaryIndexes: ArrayBox<CfnTable.LocalSecondaryIndexProperty>;
+  private readonly _globalSecondaryIndexes: IArrayBox<CfnTable.GlobalSecondaryIndexProperty>;
+  private readonly _localSecondaryIndexes: IArrayBox<CfnTable.LocalSecondaryIndexProperty>;
 
   /**
    * Schemas for the table and all of the indexes
@@ -1308,8 +1308,8 @@ export class Table extends TableBase {
       physicalName: props.tableName,
     });
 
-    this._globalSecondaryIndexes = Boxes.fromArray<CfnTable.GlobalSecondaryIndexProperty>([]);
-    this._localSecondaryIndexes = Boxes.fromArray<CfnTable.LocalSecondaryIndexProperty>([]);
+    this._globalSecondaryIndexes = Box.fromArray([]);
+    this._localSecondaryIndexes = Box.fromArray([]);
 
     if (!props?.partitionKey) {
       throw new ValidationError(lit`PartitionKeyRequired`, 'partitionKey is required for Table', this);

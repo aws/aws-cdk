@@ -6,8 +6,8 @@ import type { IJobDefinition, JobDefinitionProps } from './job-definition-base';
 import { baseJobDefinitionProperties, JobDefinitionBase } from './job-definition-base';
 import * as ec2 from '../../aws-ec2';
 import { ArnFormat, Stack, Token } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -152,7 +152,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
   public readonly propagateTags?: boolean;
 
   private readonly resource: CfnJobDefinition;
-  private _containers: ArrayBox<MultiNodeContainer>;
+  private _containers: IArrayBox<MultiNodeContainer>;
 
   public get containers(): MultiNodeContainer[] {
     return this._containers.get();
@@ -179,7 +179,7 @@ export class MultiNodeJobDefinition extends JobDefinitionBase implements IMultiN
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._containers = Boxes.fromArray(props?.containers ?? []);
+    this._containers = Box.fromArray(props?.containers ?? []);
     this.mainNode = props?.mainNode;
     this._instanceType = props?.instanceType;
     this.propagateTags = props?.propagateTags;

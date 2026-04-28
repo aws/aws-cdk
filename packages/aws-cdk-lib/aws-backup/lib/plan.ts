@@ -9,8 +9,8 @@ import type { IBackupVault } from './vault';
 import { BackupVault } from './vault';
 import type { IResource } from '../../core';
 import { ArnFormat, Resource, ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -161,7 +161,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     };
   }
 
-  private readonly _rules: ArrayBox<CfnBackupPlan.BackupRuleResourceTypeProperty>;
+  private readonly rules: IArrayBox<CfnBackupPlan.BackupRuleResourceTypeProperty>;
   private _backupVault?: IBackupVaultRef;
 
   constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
@@ -169,13 +169,13 @@ export class BackupPlan extends Resource implements IBackupPlan {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._rules = Boxes.fromArray<CfnBackupPlan.BackupRuleResourceTypeProperty>([]);
+    this.rules = Box.fromArray([]);
 
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
         advancedBackupSettings: this.advancedBackupSettings(props),
         backupPlanName: props.backupPlanName || id,
-        backupPlanRule: this._rules,
+        backupPlanRule: this.rules,
       },
     });
 
@@ -221,13 +221,13 @@ export class BackupPlan extends Resource implements IBackupPlan {
       vault = this._backupVault;
     }
 
-    this._rules.push({
+    this.rules.push({
       completionWindowMinutes: rule.props.completionWindow?.toMinutes(),
       lifecycle: (rule.props.deleteAfter || rule.props.moveToColdStorageAfter) && {
         deleteAfterDays: rule.props.deleteAfter?.toDays(),
         moveToColdStorageAfterDays: rule.props.moveToColdStorageAfter?.toDays(),
       },
-      ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this._rules.length}`,
+      ruleName: rule.props.ruleName ?? `${this.node.id}Rule${this.rules.length}`,
       scheduleExpression: rule.props.scheduleExpression?.expressionString,
       scheduleExpressionTimezone: rule.props.scheduleExpressionTimezone?.timezoneName,
       startWindowMinutes: rule.props.startWindow?.toMinutes(),
@@ -273,7 +273,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   }
 
   private validatePlan() {
-    if (this._rules.length === 0) {
+    if (this.rules.length === 0) {
       return ['A backup plan must have at least 1 rule.'];
     }
 

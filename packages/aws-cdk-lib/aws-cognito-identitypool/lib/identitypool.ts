@@ -6,8 +6,8 @@ import type { IRole, IRoleRef, IOIDCProviderRef, ISAMLProviderRef } from '../../
 import { Role, FederatedPrincipal } from '../../aws-iam';
 import type { IResource } from '../../core';
 import { Resource, Stack, ArnFormat, Token, ValidationError, UnscopedValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -462,7 +462,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
   /**
    * List of Identity Providers added in constructor for use with property overrides
    */
-  private readonly _cognitoIdentityProviders: ArrayBox<CfnIdentityPool.CognitoIdentityProviderProperty>;
+  private readonly _cognitoIdentityProviders: IArrayBox<CfnIdentityPool.CognitoIdentityProviderProperty>;
 
   constructor(scope: Construct, id: string, props: IdentityPoolProps = {}) {
     super(scope, id, {
@@ -472,7 +472,7 @@ export class IdentityPool extends Resource implements IIdentityPool {
     addConstructMetadata(this, props);
     const authProviders: IdentityPoolAuthenticationProviders = props.authenticationProviders || {};
     const providers = authProviders.userPools ? authProviders.userPools.map(userPool => userPool.bind(this, this)) : undefined;
-    this._cognitoIdentityProviders = Boxes.fromArray<CfnIdentityPool.CognitoIdentityProviderProperty>(providers || [], { omitEmpty: false });
+    this._cognitoIdentityProviders = Box.fromArray(providers || [], { omitEmpty: false });
     const openIdConnectProviderArns = authProviders.openIdConnectProviders ?
       authProviders.openIdConnectProviders.map(openIdProvider =>
         openIdProvider.oidcProviderRef.oidcProviderArn,

@@ -10,8 +10,8 @@ import type { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import type { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -217,8 +217,8 @@ export class VirtualNode extends VirtualNodeBase {
 
   private readonly serviceDiscoveryConfig?: ServiceDiscoveryConfig;
 
-  private readonly _backends: ArrayBox<CfnVirtualNode.BackendProperty>;
-  private readonly _listeners: ArrayBox<VirtualNodeListenerConfig>;
+  private readonly backends: IArrayBox<CfnVirtualNode.BackendProperty>;
+  private readonly listeners: IArrayBox<VirtualNodeListenerConfig>;
   private readonly resource: CfnVirtualNode;
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
@@ -228,8 +228,8 @@ export class VirtualNode extends VirtualNodeBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._backends = Boxes.fromArray<CfnVirtualNode.BackendProperty>([]);
-    this._listeners = Boxes.fromArray<VirtualNodeListenerConfig>([]);
+    this.backends = Box.fromArray<CfnVirtualNode.BackendProperty>([]);
+    this.listeners = Box.fromArray<VirtualNodeListenerConfig>([]);
 
     this.mesh = props.mesh;
     this.serviceDiscoveryConfig = props.serviceDiscovery?.bind(this);
@@ -243,8 +243,8 @@ export class VirtualNode extends VirtualNodeBase {
       meshName: this.mesh.meshName,
       meshOwner: renderMeshOwner(this.env.account, this.mesh.env.account),
       spec: {
-        backends: this._backends,
-        listeners: this._listeners.map(listener => listener.listener),
+        backends: this.backends,
+        listeners: this.listeners.map(listener => listener.listener),
         backendDefaults: props.backendDefaults !== undefined
           ? {
             clientPolicy: {
@@ -275,7 +275,7 @@ export class VirtualNode extends VirtualNodeBase {
     if (!this.serviceDiscoveryConfig) {
       throw new cdk.ValidationError(lit`ServiceDiscoveryRequired`, 'Service discovery information is required for a VirtualNode with a listener.', this);
     }
-    this._listeners.push(listener.bind(this));
+    this.listeners.push(listener.bind(this));
   }
 
   /**
@@ -283,7 +283,7 @@ export class VirtualNode extends VirtualNodeBase {
    */
   @MethodMetadata()
   public addBackend(backend: Backend) {
-    this._backends.push(backend.bind(this).virtualServiceBackend);
+    this.backends.push(backend.bind(this).virtualServiceBackend);
   }
 }
 

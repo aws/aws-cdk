@@ -12,8 +12,8 @@ import type * as secretsmanager from '../../aws-secretsmanager';
 import type * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -562,16 +562,16 @@ export class ContainerDefinition extends Construct {
    */
   public readonly pseudoTerminal?: boolean;
 
-  private readonly _mountPoints: ArrayBox<MountPoint>;
-  private readonly _portMappings: ArrayBox<PortMapping>;
-  private readonly _volumesFrom: ArrayBox<VolumeFrom>;
-  private readonly _ulimits: ArrayBox<Ulimit>;
-  private readonly _containerDependencies: ArrayBox<ContainerDependency>;
+  private readonly _mountPoints: IArrayBox<MountPoint>;
+  private readonly _portMappings: IArrayBox<PortMapping>;
+  private readonly _volumesFrom: IArrayBox<VolumeFrom>;
+  private readonly _ulimits: IArrayBox<Ulimit>;
+  private readonly _containerDependencies: IArrayBox<ContainerDependency>;
 
   /**
    * The configured container links
    */
-  private readonly _links: ArrayBox<string>;
+  private readonly _links: IArrayBox<string>;
 
   private readonly imageConfig: ContainerImageConfig;
 
@@ -601,12 +601,12 @@ export class ContainerDefinition extends Construct {
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
 
-    this._mountPoints = Boxes.fromArray<MountPoint>([]);
-    this._portMappings = Boxes.fromArray<PortMapping>([]);
-    this._volumesFrom = Boxes.fromArray<VolumeFrom>([]);
-    this._ulimits = Boxes.fromArray<Ulimit>([]);
-    this._containerDependencies = Boxes.fromArray<ContainerDependency>([]);
-    this._links = Boxes.fromArray<string>([]);
+    this._mountPoints = Box.fromArray([]);
+    this._portMappings = Box.fromArray([]);
+    this._volumesFrom = Box.fromArray([]);
+    this._ulimits = Box.fromArray([]);
+    this._containerDependencies = Box.fromArray([]);
+    this._links = Box.fromArray([]);
 
     this.imageConfig = props.image.bind(this, this);
     this.imageName = this.imageConfig.imageName;

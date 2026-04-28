@@ -6,8 +6,8 @@ import type { IBucket } from '../../../aws-s3';
 import type { IResource } from '../../../core';
 import { ArnFormat, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -200,7 +200,7 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   public readonly name: string;
-  private readonly _domainNameConfigurations: ArrayBox<CfnDomainName.DomainNameConfigurationProperty>;
+  private readonly domainNameConfigurations: IArrayBox<CfnDomainName.DomainNameConfigurationProperty>;
   private readonly resource: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
@@ -217,12 +217,12 @@ export class DomainName extends Resource implements IDomainName {
       throw new ValidationError(lit`OwnershipCertificateMtlsDomains`, 'ownership certificate can only be used with mtls domains', scope);
     }
 
-    this._domainNameConfigurations = Boxes.fromArray<CfnDomainName.DomainNameConfigurationProperty>([], { omitEmpty: false });
+    this.domainNameConfigurations = Box.fromArray([], { omitEmpty: false });
 
     const mtlsConfig = this.configureMTLS(props.mtls);
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
-      domainNameConfigurations: this._domainNameConfigurations,
+      domainNameConfigurations: this.domainNameConfigurations,
       mutualTlsAuthentication: mtlsConfig,
     };
     this.resource = new CfnDomainName(this, 'Resource', domainNameProps);
@@ -257,12 +257,12 @@ export class DomainName extends Resource implements IDomainName {
     };
 
     this.validateEndpointType(domainNameConfig.endpointType);
-    this._domainNameConfigurations.push(domainNameConfig);
+    this.domainNameConfigurations.push(domainNameConfig);
   }
 
   // validates that the new domain name configuration has a unique endpoint
   private validateEndpointType(endpointType: string | undefined) : void {
-    for (let config of this._domainNameConfigurations.get()) {
+    for (let config of this.domainNameConfigurations.get()) {
       if (endpointType && endpointType == config.endpointType) {
         throw new ValidationError(lit`EndpointType`, `an endpoint with type ${endpointType} already exists`, this);
       }

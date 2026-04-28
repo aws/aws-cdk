@@ -2,8 +2,8 @@ import type { Construct } from 'constructs';
 import { CfnSchedulingPolicy } from './batch.generated';
 import type { Duration, IResource } from '../../core';
 import { ArnFormat, Resource, Stack } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type {
@@ -224,7 +224,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
 
   public readonly computeReservation?: number;
   public readonly shareDecay?: Duration;
-  private readonly _shares: ArrayBox<Share>;
+  private readonly _shares: IArrayBox<Share>;
 
   private readonly resource: CfnSchedulingPolicy;
 
@@ -252,7 +252,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     addConstructMetadata(this, props);
     this.computeReservation = props?.computeReservation;
     this.shareDecay = props?.shareDecay;
-    this._shares = Boxes.fromArray(props?.shares ?? [], { omitEmpty: false });
+    this._shares = Box.fromArray(props?.shares ?? [], { omitEmpty: false });
     this.resource = new CfnSchedulingPolicy(this, 'Resource', {
       fairsharePolicy: {
         computeReservation: this.computeReservation,

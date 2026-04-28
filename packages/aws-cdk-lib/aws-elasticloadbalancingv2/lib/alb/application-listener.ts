@@ -13,8 +13,8 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import type { Duration } from '../../../core';
 import { Annotations, FeatureFlags, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -271,7 +271,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * ARNs of certificates added to this listener
    */
-  private readonly _certificateArns: ArrayBox<string>;
+  private readonly _certificateArns: IArrayBox<string>;
 
   /**
    * Listener protocol for this listener.
@@ -329,7 +329,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
     this.port = port;
-    this._certificateArns = Boxes.fromArray<string>([]);
+    this._certificateArns = Box.fromArray([]);
 
     // Attach certificates
     if (props.certificateArns && props.certificateArns.length > 0) {

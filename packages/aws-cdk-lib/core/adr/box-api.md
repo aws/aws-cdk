@@ -18,13 +18,13 @@ We need a mechanism that:
 
 ## Decision
 
-We introduce the **Box API** (`Boxes.fromValue`, `Boxes.fromArray`, `Boxes.combine`) as a replacement for `Lazy` in L2 constructs. Boxes are mutable, observable containers that implement `IResolvable` (and thus participate in CDK token resolution) while capturing stack traces at the correct points in time.
+We introduce the **Box API** (`Box.fromValue`, `Box.fromArray`, `Box.combine`) as a replacement for `Lazy` in L2 constructs. Boxes are mutable, observable containers that implement `IResolvable` (and thus participate in CDK token resolution) while capturing stack traces at the correct points in time.
 
 ### Box Types
 
-- **`Boxes.fromValue<A>(value)`** — A read/write box holding a single value. Calling `set(newValue)` replaces the value and captures a new stack trace at the call site.
-- **`Boxes.fromArray<A>(values)`** — An array box. Supports `push(item)` in addition to `set(newArray)`. Each `push` captures its own stack trace.
-- **`Boxes.combine(boxes, fn)`** — A read-only derived box that combines multiple boxes through a function. It collects and merges stack traces from all source boxes, ordered by a global sequence number.
+- **`Box.fromValue<A>(value)`** — A read/write box holding a single value. Calling `set(newValue)` replaces the value and captures a new stack trace at the call site.
+- **`Box.fromArray<A>(values)`** — An array box. Supports `push(item)` in addition to `set(newArray)`. Each `push` captures its own stack trace.
+- **`Box.combine(boxes, fn)`** — A read-only derived box that combines multiple boxes through a function. It collects and merges stack traces from all source boxes, ordered by a global sequence number.
 - **`box.derive(fn)`** — A read-only computed box that transforms the value of a single source box. It inherits the source's stack traces.
 
 ### How Boxes Replace Lazy
@@ -58,11 +58,11 @@ class MyL2 extends Resource {
 ```ts
 @noBoxStackTraces
 class MyL2 extends Resource {
-  private readonly _statements: ArrayBox<PolicyStatement>;
+  private readonly _statements: IArrayBox<PolicyStatement>;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    this._statements = Boxes.fromArray([]);
+    this._statements = Box.fromArray([]);
 
     new CfnResource(this, 'Resource', {
       policyDocument: Token.asAny(this._statements.derive(stmts => this.renderPolicy(stmts))),
@@ -90,8 +90,8 @@ The `@noBoxStackTraces` class decorator solves this by wrapping the constructor 
 class MyL2 extends Resource {
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    // Box.set() / Box.push() calls here do NOT capture stack traces
-    this.myBox = Boxes.fromValue('default');
+    // IBox.set() / IBox.push() calls here do NOT capture stack traces
+    this.myBox = Box.fromValue('default');
     this.myBox.set('initial value'); // No trace captured
   }
 
@@ -102,7 +102,7 @@ class MyL2 extends Resource {
 }
 ```
 
-Internally, the decorator calls `Boxes.disableStackTraceCollection()` before `super(...)` and `Boxes.enableStackTraceCollection()` in a `finally` block after construction completes. All L2 constructs that use Boxes should apply this decorator.
+Internally, the decorator calls `Box.disableStackTraceCollection()` before `super(...)` and `Box.enableStackTraceCollection()` in a `finally` block after construction completes. All L2 constructs that use Boxes should apply this decorator.
 
 ### Property Assignment Metadata: Connecting Boxes to CloudFormation Properties
 
@@ -120,7 +120,7 @@ The metadata is written during the `prepareApp` phase, which runs after all user
 1. **During `prepareApp`**, for each `CfnResource` in the construct tree, the framework calls `writePropertyAssignmentMetadataForConstruct`. This resolves the resource's CloudFormation template output (`_toCloudFormation()`) using a special `ITokenResolver` implementation: `PropertyAssignmentMetadataWriter`.
 
 2. **`PropertyAssignmentMetadataWriter`** extends `DefaultTokenResolver` and overrides `resolveToken`. When it encounters a token during resolution, it checks:
-   - Is the token a `Box`? (via `Boxes.isBox(t)`)
+   - Is the token a `Box`? (via `Box.isBox(t)`)
    - Is the token at a document path matching `Resources/<logicalId>/Properties/<propertyName>`?
    - Can the CDK property name (camelCase) be mapped to a CloudFormation property name (PascalCase)?
 

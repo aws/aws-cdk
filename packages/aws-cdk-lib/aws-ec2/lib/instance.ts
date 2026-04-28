@@ -31,8 +31,8 @@ import {
   Token,
   ValidationError,
 } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, md5hash } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
@@ -563,7 +563,7 @@ export class Instance extends Resource implements IInstance {
   public readonly instancePublicIp: string;
 
   private readonly securityGroup: ISecurityGroup;
-  private readonly _securityGroups: ArrayBox<ISecurityGroup>;
+  private readonly _securityGroups: IArrayBox<ISecurityGroup>;
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
@@ -593,7 +593,7 @@ export class Instance extends Resource implements IInstance {
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
-    this._securityGroups = Boxes.fromArray<ISecurityGroup>([this.securityGroup], { omitEmpty: false });
+    this._securityGroups = Box.fromArray([this.securityGroup], { omitEmpty: false });
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     if (props.instanceProfile && props.role) {

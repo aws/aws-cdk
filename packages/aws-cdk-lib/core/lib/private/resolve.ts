@@ -17,7 +17,7 @@ import {
 import type { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
 import { lit } from './literal-string';
-import { Boxes } from '../helpers-internal/boxes';
+import { Box } from '../helpers-internal/box';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
@@ -320,7 +320,7 @@ export class PropertyAssignmentMetadataWriter extends DefaultTokenResolver {
 
     const propertyName = propertyNameFromContext(context);
     const documentPathKey = context.documentPath.join('/');
-    if (Boxes.isBox(t) && propertyName && !this.seenDocumentPaths.has(documentPathKey)) {
+    if (Box.isBox(t) && propertyName && !this.seenDocumentPaths.has(documentPathKey)) {
       for (let stackTrace of t.getStackTraces()) {
         context.scope.node.addMetadata('aws:cdk:propertyAssignment', {
           propertyName,

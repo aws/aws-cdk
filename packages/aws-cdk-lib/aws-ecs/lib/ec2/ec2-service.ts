@@ -2,8 +2,8 @@ import type { Construct } from 'constructs';
 import * as ec2 from '../../../aws-ec2';
 import type * as elb from '../../../aws-elasticloadbalancing';
 import { Annotations, Lazy, Resource, Stack, Token, ValidationError } from '../../../core';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -173,8 +173,8 @@ export class Ec2Service extends BaseService implements IEc2Service {
     return fromServiceAttributes(scope, id, attrs);
   }
 
-  private constraints?: ArrayBox<CfnService.PlacementConstraintProperty>;
-  private strategies?: ArrayBox<CfnService.PlacementStrategyProperty>;
+  private constraints?: IArrayBox<CfnService.PlacementConstraintProperty>;
+  private strategies?: IArrayBox<CfnService.PlacementStrategyProperty>;
   private readonly daemon: boolean;
   private readonly availabilityZoneRebalancingEnabled: boolean;
 
@@ -297,7 +297,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     }
 
     if (!this.strategies) {
-      this.strategies = Boxes.fromArray([], { omitEmpty: false });
+      this.strategies = Box.fromArray([], { omitEmpty: false });
     }
     for (const strategy of newStrategies) {
       this.strategies.push(...strategy.toJson());
@@ -313,7 +313,7 @@ export class Ec2Service extends BaseService implements IEc2Service {
     if (this.constraints != null) {
       this.constraints.set([]);
     } else {
-      this.constraints = Boxes.fromArray([], { omitEmpty: false });
+      this.constraints = Box.fromArray([], { omitEmpty: false });
     }
     for (const constraint of constraints) {
       const items = constraint.toJson();

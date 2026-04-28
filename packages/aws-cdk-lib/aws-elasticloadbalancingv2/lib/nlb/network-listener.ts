@@ -7,8 +7,8 @@ import { NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
 import { Duration, Resource, Lazy, Token, FeatureFlags } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -205,7 +205,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * ARNs of certificates added to this listener
    */
-  private readonly _certificateArns: ArrayBox<string>;
+  private readonly _certificateArns: IArrayBox<string>;
 
   /**
    * the protocol of the listener
@@ -256,7 +256,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._certificateArns = Boxes.fromArray<string>([]);
+    this._certificateArns = Box.fromArray([]);
     this.loadBalancer = props.loadBalancer;
     this.protocol = proto;
 

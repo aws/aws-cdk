@@ -2,8 +2,8 @@ import { Construct } from 'constructs';
 import type { CfnTaskDefinition } from './ecs.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 
@@ -80,22 +80,22 @@ export class LinuxParameters extends Construct {
   /**
    * Capabilities to be added
    */
-  private readonly capAdd: ArrayBox<Capability>;
+  private readonly capAdd: IArrayBox<Capability>;
 
   /**
    * Capabilities to be dropped
    */
-  private readonly capDrop: ArrayBox<Capability>;
+  private readonly capDrop: IArrayBox<Capability>;
 
   /**
    * Device mounts
    */
-  private readonly devices: ArrayBox<Device>;
+  private readonly devices: IArrayBox<Device>;
 
   /**
    * TmpFs mounts
    */
-  private readonly tmpfs: ArrayBox<Tmpfs>;
+  private readonly tmpfs: IArrayBox<Tmpfs>;
 
   /**
    * Constructs a new instance of the LinuxParameters class.
@@ -105,10 +105,10 @@ export class LinuxParameters extends Construct {
 
     this.validateProps(props);
 
-    this.capAdd = Boxes.fromArray<Capability>([]);
-    this.capDrop = Boxes.fromArray<Capability>([]);
-    this.devices = Boxes.fromArray<Device>([]);
-    this.tmpfs = Boxes.fromArray<Tmpfs>([]);
+    this.capAdd = Box.fromArray([]);
+    this.capDrop = Box.fromArray([]);
+    this.devices = Box.fromArray([]);
+    this.tmpfs = Box.fromArray([]);
 
     this.sharedMemorySize = props.sharedMemorySize;
     this.initProcessEnabled = props.initProcessEnabled;

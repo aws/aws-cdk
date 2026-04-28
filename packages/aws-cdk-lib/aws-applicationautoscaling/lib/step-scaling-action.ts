@@ -2,8 +2,8 @@ import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './applicationautoscaling.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IScalableTargetRef } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
@@ -79,12 +79,12 @@ export class StepScalingAction extends Construct {
    */
   public readonly scalingPolicyArn: string;
 
-  private readonly adjustments: ArrayBox<CfnScalingPolicy.StepAdjustmentProperty>;
+  private readonly adjustments: IArrayBox<CfnScalingPolicy.StepAdjustmentProperty>;
 
   constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
-    this.adjustments = Boxes.fromArray<CfnScalingPolicy.StepAdjustmentProperty>([], { omitEmpty: false });
+    this.adjustments = Box.fromArray([], { omitEmpty: false });
 
     // Cloudformation requires either the ResourceId, ScalableDimension, and ServiceNamespace
     // properties, or the ScalingTargetId property, but not both.

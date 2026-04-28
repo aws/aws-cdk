@@ -25,8 +25,8 @@ import {
   ValidationError,
   UnscopedValidationError,
 } from '../../core';
-import type { Box } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -819,7 +819,7 @@ export class Repository extends RepositoryBase {
 
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
-  private readonly _policyDocument: Box<iam.PolicyDocument | undefined>;
+  private readonly _policyDocument: IBox<iam.PolicyDocument | undefined>;
   private readonly _resource: CfnRepository;
 
   @memoizedGetter
@@ -843,7 +843,7 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._policyDocument = Boxes.fromValue<iam.PolicyDocument | undefined>(undefined);
+    this._policyDocument = Box.fromValue(undefined);
 
     Repository.validateRepositoryName(this.physicalName);
     this.validateTagMutability(props.imageTagMutability, props.imageTagMutabilityExclusionFilters);

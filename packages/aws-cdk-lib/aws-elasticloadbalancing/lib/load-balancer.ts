@@ -8,8 +8,8 @@ import {
 import type { IResource } from '../../core';
 import { Duration, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -270,11 +270,11 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
 
   private readonly elb: CfnLoadBalancer;
   private readonly securityGroup: SecurityGroup;
-  private readonly _listeners: ArrayBox<CfnLoadBalancer.ListenersProperty>;
+  private readonly _listeners: IArrayBox<CfnLoadBalancer.ListenersProperty>;
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
-  private readonly _instanceIds: ArrayBox<string>;
+  private readonly _instanceIds: IArrayBox<string>;
 
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
@@ -284,8 +284,8 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
-    this._listeners = Boxes.fromArray<CfnLoadBalancer.ListenersProperty>([], { omitEmpty: false });
-    this._instanceIds = Boxes.fromArray<string>([]);
+    this._listeners = Box.fromArray([], { omitEmpty: false });
+    this._instanceIds = Box.fromArray([]);
 
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 

@@ -8,8 +8,8 @@ import type { Stage } from './stage';
 import { validateDouble, validateInteger } from './util';
 import type { IResource, Token } from '../../core';
 import { FeatureFlags, Names, Resource } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -253,7 +253,7 @@ export class UsagePlan extends UsagePlanBase {
    */
   public readonly usagePlanId: string;
 
-  private readonly _apiStages: ArrayBox<UsagePlanPerApiStage>;
+  private readonly apiStages: IArrayBox<UsagePlanPerApiStage>;
 
   constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
     super(scope, id);
@@ -261,17 +261,17 @@ export class UsagePlan extends UsagePlanBase {
     addConstructMetadata(this, props);
     let resource: CfnUsagePlan;
 
-    this._apiStages = Boxes.fromArray<UsagePlanPerApiStage>([], { omitEmpty: false });
+    this.apiStages = Box.fromArray<UsagePlanPerApiStage>([], { omitEmpty: false });
 
     resource = new CfnUsagePlan(this, 'Resource', {
-      apiStages: this._apiStages.derive(arr => this.renderApiStages(arr)),
+      apiStages: this.apiStages.derive(arr => this.renderApiStages(arr)),
       description: props.description,
       quota: this.renderQuota(props),
       throttle: this.renderThrottle(props.throttle),
       usagePlanName: props.name,
     });
 
-    this._apiStages.push(...(props.apiStages || []));
+    this.apiStages.push(...(props.apiStages || []));
 
     this.usagePlanId = resource.ref;
 
@@ -286,7 +286,7 @@ export class UsagePlan extends UsagePlanBase {
    */
   @MethodMetadata()
   public addApiStage(apiStage: UsagePlanPerApiStage) {
-    this._apiStages.push(apiStage);
+    this.apiStages.push(apiStage);
   }
 
   private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {

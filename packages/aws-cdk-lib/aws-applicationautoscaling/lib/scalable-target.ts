@@ -9,8 +9,8 @@ import * as iam from '../../aws-iam';
 import type { IResource, TimeZone } from '../../core';
 import { Resource, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -167,7 +167,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
   private readonly _scalableDimension: string;
   private readonly _serviceNamespace: string;
-  private readonly _actions: ArrayBox<CfnScalableTarget.ScheduledActionProperty>;
+  private readonly actions: IArrayBox<CfnScalableTarget.ScheduledActionProperty>;
 
   constructor(scope: Construct, id: string, props: ScalableTargetProps) {
     super(scope, id);
@@ -199,7 +199,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     this._scalableDimension = props.scalableDimension;
     this._serviceNamespace = props.serviceNamespace;
 
-    this._actions = Boxes.fromArray<CfnScalableTarget.ScheduledActionProperty>([]);
+    this.actions = Box.fromArray([]);
 
     const resource = new CfnScalableTarget(this, 'Resource', {
       maxCapacity: props.maxCapacity,
@@ -207,7 +207,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: this._actions,
+      scheduledActions: this.actions,
       serviceNamespace: props.serviceNamespace,
     });
 
@@ -234,7 +234,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     // add a warning on synth when minute is not defined in a cron schedule
     action.schedule._bind(this);
 
-    this._actions.push({
+    this.actions.push({
       scheduledActionName: id,
       schedule: action.schedule.expressionString,
       startTime: action.startTime,

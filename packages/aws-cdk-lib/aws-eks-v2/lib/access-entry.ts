@@ -4,8 +4,8 @@ import type { AccessEntryReference, IAccessEntryRef } from '../../aws-eks';
 import { CfnAccessEntry } from '../../aws-eks';
 import type { IResource, RemovalPolicy } from '../../core';
 import { Resource, Aws, ValidationError, Token } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -379,7 +379,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
   private resource: CfnAccessEntry;
   private cluster: ICluster;
   private principal: string;
-  private _accessPolicies: ArrayBox<IAccessPolicy>;
+  private _accessPolicies: IArrayBox<IAccessPolicy>;
   private readonly accessEntryType?: AccessEntryType;
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
@@ -389,7 +389,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     this.cluster = props.cluster;
     this.principal = props.principal;
-    this._accessPolicies = Boxes.fromArray<IAccessPolicy>(props.accessPolicies, { omitEmpty: false });
+    this._accessPolicies = Box.fromArray(props.accessPolicies, { omitEmpty: false });
     this.accessEntryType = props.accessEntryType;
 
     // Validate that certain access entry types cannot have access policies

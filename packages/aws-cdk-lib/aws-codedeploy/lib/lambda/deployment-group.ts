@@ -6,8 +6,8 @@ import { LambdaDeploymentConfig } from './deployment-config';
 import * as iam from '../../../aws-iam';
 import type * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
-import type { Box } from '../../../core/lib/helpers-internal';
-import { Boxes } from '../../../core/lib/helpers-internal';
+import type { IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -169,8 +169,8 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
   public readonly role: iam.IRole;
 
   private readonly alarms: IAlarmRef[];
-  private readonly _preHook: Box<lambda.IFunction | undefined>;
-  private readonly _postHook: Box<lambda.IFunction | undefined>;
+  private readonly _preHook: IBox<lambda.IFunction | undefined>;
+  private readonly _postHook: IBox<lambda.IFunction | undefined>;
   private readonly _deploymentConfig: IDeploymentConfigRef;
 
   constructor(scope: Construct, id: string, props: LambdaDeploymentGroupProps) {
@@ -182,8 +182,8 @@ export class LambdaDeploymentGroup extends DeploymentGroupBase implements ILambd
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._preHook = Boxes.fromValue<lambda.IFunction | undefined>(undefined);
-    this._postHook = Boxes.fromValue<lambda.IFunction | undefined>(undefined);
+    this._preHook = Box.fromValue(undefined);
+    this._postHook = Box.fromValue(undefined);
 
     this.role = this._role;
 

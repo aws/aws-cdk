@@ -7,8 +7,8 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -300,7 +300,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    * The SNS topic that deliver notifications to AWS Chatbot.
    * @attribute
    */
-  private readonly _notificationTopics: ArrayBox<sns.ITopic>;
+  private readonly notificationTopics: IArrayBox<sns.ITopic>;
 
   constructor(scope: Construct, id: string, props: SlackChannelConfigurationProps) {
     super(scope, id, {
@@ -315,14 +315,14 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
 
     this.grantPrincipal = this.role;
 
-    this._notificationTopics = Boxes.fromArray<sns.ITopic>(props.notificationTopics ?? []);
+    this.notificationTopics = Box.fromArray(props.notificationTopics ?? []);
 
     const configuration = new CfnSlackChannelConfiguration(this, 'Resource', {
       configurationName: props.slackChannelConfigurationName,
       iamRoleArn: this.role.roleArn,
       slackWorkspaceId: props.slackWorkspaceId,
       slackChannelId: props.slackChannelId,
-      snsTopicArns: cdk.Token.asList(this._notificationTopics.map(topic => topic.topicArn), { displayHint: 'snsTopicArns' }),
+      snsTopicArns: cdk.Token.asList(this.notificationTopics.map(topic => topic.topicArn), { displayHint: 'snsTopicArns' }),
       loggingLevel: props.loggingLevel?.toString(),
       guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
       userRoleRequired: props.userRoleRequired,
@@ -349,7 +349,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
    */
   @MethodMetadata()
   public addNotificationTopic(notificationTopic: sns.ITopic): void {
-    this._notificationTopics.push(notificationTopic);
+    this.notificationTopics.push(notificationTopic);
   }
 }
 

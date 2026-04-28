@@ -50,7 +50,7 @@ export interface IReadableBox<A> extends IResolvable {
  * replaces its stored stack traces with a single new trace captured at the call
  * site, so that the metadata points to the code that last changed the value.
  */
-export interface Box<A> extends IReadableBox<A> {
+export interface IBox<A> extends IReadableBox<A> {
   /**
    * Replaces the value held by this box.
    *
@@ -71,7 +71,7 @@ export interface Box<A> extends IReadableBox<A> {
  * individually, and the resulting metadata will contain one entry per `push` call
  * (plus one for the initial construction or last `set`, if any).
  */
-export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
+export interface IArrayBox<A> extends IBox<Array<A>>, Iterable<A> {
   /**
    * Returns the number of elements in the array.
    */
@@ -151,7 +151,7 @@ export interface ArrayBox<A> extends Box<Array<A>>, Iterable<A> {
  * Like `ArrayBox`, mutating methods (`put`, `delete`) *append* stack traces
  * rather than replacing them, so each mutation is tracked individually.
  */
-export interface MapBox<K, V> extends Box<Map<K, V>>, Iterable<[K, V]> {
+export interface IMapBox<K, V> extends IBox<Map<K, V>>, Iterable<[K, V]> {
   /**
    * Returns the number of entries in the map.
    */
@@ -210,6 +210,59 @@ export interface MapBox<K, V> extends Box<Map<K, V>>, Iterable<[K, V]> {
   forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void): void;
 }
 
+/**
+ * A mutable box specialized for sets, extending `Box<Set<A>>` with
+ * set-mutation methods.
+ *
+ * Like `ArrayBox`, mutating methods (`add`, `delete`) *append* stack traces
+ * rather than replacing them, so each mutation is tracked individually.
+ */
+export interface ISetBox<A> extends IBox<Set<A>>, Iterable<A> {
+  /**
+   * Returns the number of elements in the set.
+   */
+  readonly size: number;
+
+  /**
+   * Adds a value to the set and captures a stack trace for this mutation.
+   *
+   * @param value the value to add.
+   */
+  add(value: A): void;
+
+  /**
+   * Removes a value from the set and captures a stack trace for this mutation.
+   *
+   * @param value the value to remove.
+   * @returns `true` if the value existed and was removed, `false` otherwise.
+   */
+  delete(value: A): boolean;
+
+  /**
+   * Returns whether the set contains the given value.
+   *
+   * @param value the value to check.
+   */
+  has(value: A): boolean;
+
+  /**
+   * Returns an iterable of the set's values.
+   */
+  values(): IterableIterator<A>;
+
+  /**
+   * Returns an iterable of the set's [value, value] pairs (for compatibility with `Map`).
+   */
+  entries(): IterableIterator<[A, A]>;
+
+  /**
+   * Executes a callback for each value in the set.
+   *
+   * @param callbackfn a function called for each value.
+   */
+  forEach(callbackfn: (value: A, value2: A, set: Set<A>) => void): void;
+}
+
 type StackTrace = Array<string>;
 type OrderedStackTrace = { trace: StackTrace; seq: number };
 
@@ -246,7 +299,7 @@ let globalSeq = 0;
  * }
  * ```
  */
-export class Boxes {
+export class Box {
   /**
    * Creates a mutable box holding a single value.
    *
@@ -255,7 +308,7 @@ export class Boxes {
    *   Defaults to reference equality (`===`).
    * @returns a new `Box<A>`.
    */
-  public static fromValue<A>(value: A, options?: { equals?: (a: A, b: A) => boolean }): Box<A> {
+  public static fromValue<A>(value: A, options?: { equals?: (a: A, b: A) => boolean }): IBox<A> {
     return new State(value, options);
   }
 
@@ -302,7 +355,7 @@ export class Boxes {
    *   array is empty. Set to `false` to resolve to an empty array instead.
    * @returns a new `ArrayBox<A>`.
    */
-  public static fromArray<A>(as: Array<A>, options?: { omitEmpty?: boolean }): ArrayBox<A> {
+  public static fromArray<A>(as: Array<A>, options?: { omitEmpty?: boolean }): IArrayBox<A> {
     return new ArrayState(as, options?.omitEmpty ?? true);
   }
 
@@ -312,8 +365,18 @@ export class Boxes {
    * @param map the initial map contents.
    * @returns a new `MapBox<K, V>`.
    */
-  public static fromMap<K, V>(map: Map<K, V>): MapBox<K, V> {
+  public static fromMap<K, V>(map: Map<K, V>): IMapBox<K, V> {
     return new MapState(map);
+  }
+
+  /**
+   * Creates a mutable set box.
+   *
+   * @param set the initial set contents.
+   * @returns a new `SetBox<A>`.
+   */
+  public static fromSet<A>(set: Set<A>): ISetBox<A> {
+    return new SetState(set);
   }
 
   /**
@@ -405,7 +468,7 @@ class Computed<A, B> extends BaseReadableBox<B> {
   }
 }
 
-class State<A> extends BaseReadableBox<A> implements Box<A> {
+class State<A> extends BaseReadableBox<A> implements IBox<A> {
   protected orderedTraces: Array<OrderedStackTrace> = [];
   private readonly equals: (a: A, b: A) => boolean;
 
@@ -440,7 +503,7 @@ class State<A> extends BaseReadableBox<A> implements Box<A> {
   }
 }
 
-class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
+class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
   constructor(private array: Array<A>, private readonly omitEmptyFlag?: boolean) {
     super(array);
   }
@@ -505,7 +568,7 @@ class ArrayState<A> extends State<Array<A>> implements ArrayBox<A> {
   }
 }
 
-class MapState<K, V> extends State<Map<K, V>> implements MapBox<K, V> {
+class MapState<K, V> extends State<Map<K, V>> implements IMapBox<K, V> {
   constructor(private map: Map<K, V>) {
     super(map);
   }
@@ -562,5 +625,57 @@ class MapState<K, V> extends State<Map<K, V>> implements MapBox<K, V> {
 
   public [Symbol.iterator](): Iterator<[K, V]> {
     return this.map[Symbol.iterator]();
+  }
+}
+
+class SetState<A> extends State<Set<A>> implements ISetBox<A> {
+  constructor(private _set: Set<A>) {
+    super(_set);
+  }
+
+  public set(value: Set<A>): void {
+    super.set(value);
+    this._set = value;
+  }
+
+  public get size(): number {
+    return this._set.size;
+  }
+
+  public add(value: A): void {
+    this._set.add(value);
+    this.appendTrace(captureStackTrace(this.add.bind(this)));
+  }
+
+  public delete(value: A): boolean {
+    const result = this._set.delete(value);
+    this.appendTrace(captureStackTrace(this.delete.bind(this)));
+    return result;
+  }
+
+  public has(value: A): boolean {
+    return this._set.has(value);
+  }
+
+  public values(): IterableIterator<A> {
+    return this._set.values();
+  }
+
+  public entries(): IterableIterator<[A, A]> {
+    return this._set.entries();
+  }
+
+  public forEach(callbackfn: (value: A, value2: A, set: Set<A>) => void): void {
+    this._set.forEach(callbackfn);
+  }
+
+  private appendTrace(trace: StackTrace): void {
+    if (debugModeEnabled() && stackTraceCollectionEnabled) {
+      this.orderedTraces.push({ trace, seq: globalSeq++ });
+    }
+  }
+
+  public [Symbol.iterator](): Iterator<A> {
+    return this._set[Symbol.iterator]();
   }
 }

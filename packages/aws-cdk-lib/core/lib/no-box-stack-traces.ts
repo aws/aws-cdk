@@ -1,4 +1,4 @@
-import { Boxes } from './helpers-internal/boxes';
+import { Box } from './helpers-internal/box';
 
 type ArbitraryConstructor = (abstract new (...args: any[]) => {}) | (new (...args: any[]) => {});
 
@@ -38,11 +38,11 @@ type ArbitraryConstructor = (abstract new (...args: any[]) => {}) | (new (...arg
 export function noBoxStackTraces<T extends ArbitraryConstructor>(constructor: T): T {
   const WrappedClass = class extends constructor {
     constructor(...args: any[]) {
-      Boxes.disableStackTraceCollection();
+      Box.disableStackTraceCollection();
       try {
         super(...args);
       } finally {
-        Boxes.enableStackTraceCollection();
+        Box.enableStackTraceCollection();
       }
     }
   };

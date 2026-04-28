@@ -12,8 +12,8 @@ import type * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { ArrayBox, Box, IReadableBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import {
@@ -324,9 +324,9 @@ export class BucketDeployment extends Construct {
 
   private readonly cr: cdk.CustomResource;
   private _deployedBucket?: s3.IBucket;
-  private requestDestinationArn: Box<boolean> = Boxes.fromValue(false);
+  private requestDestinationArn: IBox<boolean> = Box.fromValue(false);
   private readonly destinationBucket: s3.IBucket;
-  private readonly sources: ArrayBox<SourceConfig>;
+  private readonly sources: IArrayBox<SourceConfig>;
 
   /**
    * Execution role of the Lambda function behind the custom CloudFormation resource of type `Custom::CDKBucketDeployment`.
@@ -414,7 +414,7 @@ export class BucketDeployment extends Construct {
     if (!handlerRole) { throw new ValidationError(lit`Lambda`, 'lambda.SingletonFunction should have created a Role', this); }
     this.handlerRole = handlerRole;
 
-    this.sources = Boxes.fromArray(
+    this.sources = Box.fromArray(
       props.sources.map((source: ISource) => source.bind(this, { handlerRole: this.handlerRole })),
       { omitEmpty: true },
     );

@@ -30,8 +30,8 @@ import {
   Token,
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
@@ -1458,9 +1458,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup?: ec2.ISecurityGroup;
-  private readonly _securityGroups?: ArrayBox<ec2.ISecurityGroup>;
-  private readonly _loadBalancerNames: ArrayBox<string>;
-  private readonly _targetGroupArns: ArrayBox<string>;
+  private readonly securityGroups?: IArrayBox<ec2.ISecurityGroup>;
+  private readonly loadBalancerNames: IArrayBox<string>;
+  private readonly targetGroupArns: IArrayBox<string>;
   private readonly groupMetrics: GroupMetrics[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
   private readonly launchTemplate?: ec2.LaunchTemplate;
@@ -1478,8 +1478,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     addConstructMetadata(this, props);
 
     this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
-    this._loadBalancerNames = Boxes.fromArray<string>([]);
-    this._targetGroupArns = Boxes.fromArray<string>([]);
+    this.loadBalancerNames = Box.fromArray<string>([]);
+    this.targetGroupArns = Box.fromArray<string>([]);
 
     if (props.initOptions && !props.init) {
       throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
@@ -1579,7 +1579,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         this.launchTemplate = launchTemplateFromConfig;
       } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-        this._securityGroups = Boxes.fromArray<ec2.ISecurityGroup>([this.securityGroup], { omitEmpty: false });
+        this.securityGroups = Box.fromArray([this.securityGroup], { omitEmpty: false });
 
         if (props.keyPair) {
           throw new ValidationError(lit`OnlyKeypairFeatureFlag`, 'Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set', this);
@@ -1589,7 +1589,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         const imageConfig = props.machineImage.getImage(this);
         this._userData = props.userData ?? imageConfig.userData;
         const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
-        const securityGroupsToken = Token.asList(this._securityGroups!.map(sg => sg.securityGroupId), { displayHint: 'securityGroupIds' });
+        const securityGroupsToken = Token.asList(this.securityGroups!.map(sg => sg.securityGroupId), { displayHint: 'securityGroupIds' });
 
         launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
           imageId: imageConfig.imageId,
@@ -1700,8 +1700,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
-      loadBalancerNames: Token.asList(this._loadBalancerNames, { displayHint: 'loadBalancerNames' }),
-      targetGroupArns: Token.asList(this._targetGroupArns, { displayHint: 'targetGroupArns' }),
+      loadBalancerNames: Token.asList(this.loadBalancerNames, { displayHint: 'loadBalancerNames' }),
+      targetGroupArns: Token.asList(this.targetGroupArns, { displayHint: 'targetGroupArns' }),
       notificationConfigurations: this.renderNotificationConfiguration(),
       metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
       vpcZoneIdentifier: subnetIds,
@@ -1757,10 +1757,10 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     if (FeatureFlags.of(this).isEnabled(AUTOSCALING_GENERATE_LAUNCH_TEMPLATE)) {
       this.launchTemplate?.addSecurityGroup(securityGroup);
     } else {
-      if (!this._securityGroups) {
+      if (!this.securityGroups) {
         throw new ValidationError(lit`CannotAddSecurityGroupsAuto`, 'You cannot add security groups when the Auto Scaling Group is created from a Launch Template.', this);
       }
-      this._securityGroups.push(securityGroup);
+      this.securityGroups.push(securityGroup);
     }
   }
 
@@ -1769,7 +1769,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public attachToClassicLB(loadBalancer: elb.LoadBalancer): void {
-    this._loadBalancerNames.push(loadBalancer.loadBalancerName);
+    this.loadBalancerNames.push(loadBalancer.loadBalancerName);
   }
 
   /**
@@ -1777,7 +1777,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public attachToApplicationTargetGroup(targetGroup: elbv2.IApplicationTargetGroup): elbv2.LoadBalancerTargetProps {
-    this._targetGroupArns.push(targetGroup.targetGroupArn);
+    this.targetGroupArns.push(targetGroup.targetGroupArn);
     if (targetGroup instanceof elbv2.ApplicationTargetGroup) {
       // Copy onto self if it's a concrete type. We need this for autoscaling
       // based on request count, which we cannot do with an imported TargetGroup.
@@ -1793,7 +1793,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public attachToNetworkTargetGroup(targetGroup: elbv2.INetworkTargetGroup): elbv2.LoadBalancerTargetProps {
-    this._targetGroupArns.push(targetGroup.targetGroupRef.targetGroupArn);
+    this.targetGroupArns.push(targetGroup.targetGroupRef.targetGroupArn);
     return { targetType: elbv2.TargetType.INSTANCE };
   }
 
@@ -2157,7 +2157,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   private validateTargetGroup(): string[] {
     const errors = new Array<string>();
-    if (this.hasCalledScaleOnRequestCount && this._targetGroupArns.length > 1) {
+    if (this.hasCalledScaleOnRequestCount && this.targetGroupArns.length > 1) {
       errors.push('Cannon use multiple target groups if `scaleOnRequestCount()` is being used.');
     }
 

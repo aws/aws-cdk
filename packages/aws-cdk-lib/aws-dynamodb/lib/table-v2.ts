@@ -44,8 +44,8 @@ import {
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { ArrayBox, MapBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -742,7 +742,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
-  private readonly _attributeDefinitions: ArrayBox<CfnGlobalTable.AttributeDefinitionProperty>;
+  private readonly _attributeDefinitions: IArrayBox<CfnGlobalTable.AttributeDefinitionProperty>;
   private readonly nonKeyAttributes = new Set<string>();
 
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
@@ -756,8 +756,8 @@ export class TableV2 extends TableBaseV2 {
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
 
-  private readonly globalSecondaryIndexes: MapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Boxes.fromMap(new Map());
-  private readonly localSecondaryIndexes: MapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Boxes.fromMap(new Map());
+  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap(new Map());
+  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap(new Map());
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
@@ -802,7 +802,7 @@ export class TableV2 extends TableBaseV2 {
     this.encryptionKey = this.encryption?.tableKey;
     this.configureReplicaKeys(this.encryption?.replicaKeyArns);
 
-    this._attributeDefinitions = Boxes.fromArray<CfnGlobalTable.AttributeDefinitionProperty>([], { omitEmpty: false });
+    this._attributeDefinitions = Box.fromArray([], { omitEmpty: false });
 
     // Only set up keys if not a replica - CloudFormation inherits keys from globalTableSourceArn
     this.addKey(props.partitionKey, HASH_KEY_TYPE);

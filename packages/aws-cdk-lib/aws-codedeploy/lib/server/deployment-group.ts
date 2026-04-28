@@ -10,8 +10,8 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -294,7 +294,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
    */
   public readonly role?: iam.IRole;
 
-  private readonly _autoScalingGroups: ArrayBox<autoscaling.IAutoScalingGroup>;
+  private readonly _autoScalingGroups: IArrayBox<autoscaling.IAutoScalingGroup>;
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: IAlarmRef[];
@@ -316,7 +316,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
-    this._autoScalingGroups = Boxes.fromArray<autoscaling.IAutoScalingGroup>(props.autoScalingGroups || []);
+    this._autoScalingGroups = Box.fromArray(props.autoScalingGroups || []);
     this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);

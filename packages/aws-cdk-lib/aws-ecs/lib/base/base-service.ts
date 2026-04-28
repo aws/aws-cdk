@@ -23,8 +23,8 @@ import {
   Token,
   ValidationError,
 } from '../../../core';
-import type { ArrayBox } from '../../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
@@ -786,13 +786,13 @@ export abstract class BaseService extends Resource
   /**
    * All volumes
    */
-  private readonly _volumes: ArrayBox<ServiceManagedVolume>;
+  private readonly _volumes: IArrayBox<ServiceManagedVolume>;
 
   /**
    * A deployment lifecycle hook runs custom logic at specific stages of the deployment process.
    * @default - none
    */
-  private readonly _lifecycleHooks: ArrayBox<IDeploymentLifecycleHookTarget>;
+  private readonly _lifecycleHooks: IArrayBox<IDeploymentLifecycleHookTarget>;
 
   @memoizedGetter
   public get serviceArn(): string {
@@ -830,8 +830,8 @@ export abstract class BaseService extends Resource
     }
 
     this.taskDefinition = taskDefinition;
-    this._volumes = Boxes.fromArray<ServiceManagedVolume>([]);
-    this._lifecycleHooks = Boxes.fromArray<IDeploymentLifecycleHookTarget>([]);
+    this._volumes = Box.fromArray([]);
+    this._lifecycleHooks = Box.fromArray([]);
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||

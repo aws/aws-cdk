@@ -2,8 +2,8 @@ import { Construct } from 'constructs';
 import { CfnScalingPolicy } from './autoscaling.generated';
 import type { Duration } from '../../core';
 import { Annotations, ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import type { IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
@@ -73,12 +73,12 @@ export class StepScalingAction extends Construct {
    */
   public readonly scalingPolicyArn: string;
 
-  private readonly adjustments: ArrayBox<CfnScalingPolicy.StepAdjustmentProperty>;
+  private readonly adjustments: IArrayBox<CfnScalingPolicy.StepAdjustmentProperty>;
 
   constructor(scope: Construct, id: string, props: StepScalingActionProps) {
     super(scope, id);
 
-    this.adjustments = Boxes.fromArray<CfnScalingPolicy.StepAdjustmentProperty>([], { omitEmpty: false });
+    this.adjustments = Box.fromArray([], { omitEmpty: false });
 
     // Specify cooldown property in StepScaling policy type is ineffective and may cause deployment failure
     // in certain regions. We can't simply remove the property since it break existing users. Since setting

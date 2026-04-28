@@ -11,8 +11,8 @@ import { ArnPrincipal } from './principals';
 import { AttachedPolicies, undefinedIfEmpty } from './private/util';
 import type { SecretValue } from '../../core';
 import { Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -290,7 +290,7 @@ export class User extends Resource implements IIdentity, IUser {
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly groups = new Array<any>();
-  private readonly _managedPolicies: ArrayBox<IManagedPolicy>;
+  private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
   private readonly _path?: string;
@@ -302,7 +302,7 @@ export class User extends Resource implements IIdentity, IUser {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._managedPolicies = Boxes.fromArray<IManagedPolicy>([...props.managedPolicies || []]);
+    this._managedPolicies = Box.fromArray([...props.managedPolicies || []]);
     this.permissionsBoundary = props.permissionsBoundary;
     this._path = props.path;
 

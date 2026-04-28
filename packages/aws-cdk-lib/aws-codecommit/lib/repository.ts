@@ -9,8 +9,8 @@ import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { IResource } from '../../core';
 import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
-import type { ArrayBox } from '../../core/lib/helpers-internal';
-import { Boxes, memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
@@ -593,7 +593,7 @@ export class Repository extends RepositoryBase {
   }
 
   private readonly resource: CfnRepository;
-  private readonly _triggers: ArrayBox<CfnRepository.RepositoryTriggerProperty>;
+  private readonly _triggers: IArrayBox<CfnRepository.RepositoryTriggerProperty>;
 
   @memoizedGetter
   public get repositoryArn(): string {
@@ -630,7 +630,7 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._triggers = Boxes.fromArray<CfnRepository.RepositoryTriggerProperty>([]);
+    this._triggers = Box.fromArray([]);
 
     this.resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
