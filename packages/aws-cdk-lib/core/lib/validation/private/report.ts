@@ -120,11 +120,11 @@ export class PolicyValidationReportFormatter {
     json.pluginReports.forEach(plugin => {
       output.push('');
       output.push(table([
-        [`Plugin: ${plugin.summary.pluginName}`],
+        [`Source: ${plugin.summary.pluginName}`],
         [`Version: ${plugin.version ?? 'N/A'}`],
         [`Status: ${plugin.summary.status}`],
       ], {
-        header: { content: 'Plugin Report' },
+        header: { content: 'Validation Report' },
         singleLine: true,
         columns: [{
           paddingLeft: 3,
@@ -180,7 +180,7 @@ export class PolicyValidationReportFormatter {
     output.push('Policy Validation Report Summary');
     output.push('');
     output.push(table([
-      ['Plugin', 'Status'],
+      ['Source', 'Status'],
       ...reps.map(rep => [rep.pluginName, rep.success ? 'success' : 'failure']),
     ], { }));
 
@@ -191,7 +191,7 @@ export class PolicyValidationReportFormatter {
     return {
       title: 'Validation Report',
       pluginReports: reps
-        .filter(rep => !rep.success)
+        .filter(rep => !rep.success || rep.violations.length > 0)
         .map(rep => ({
           version: rep.pluginVersion,
           summary: {

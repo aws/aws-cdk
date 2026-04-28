@@ -5,6 +5,7 @@ import type { IConstruct } from 'constructs';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
+import { iterateDfsPreorder } from './construct-iteration';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
@@ -109,11 +110,16 @@ const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
  * Collect annotation metadata (warnings and errors) from the construct tree
  * and convert them into a NamedValidationPluginReport that can be merged
  * into the same report pipeline as plugin violations.
+ *
+ * Unlike `visit()`, this walks the entire construct tree including across
+ * Stage boundaries. This is intentional: the validation report is a single
+ * global output (not per-stage), and a plugin registered at the App level
+ * sees templates from all stages. Annotations should have the same visibility.
  */
 function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport | undefined {
   const violations: PolicyViolation[] = [];
 
-  visit(root, 'pre', construct => {
+  for (const construct of iterateDfsPreorder(root)) {
     for (const entry of construct.node.metadata) {
       if (entry.type !== cxschema.ArtifactMetadataEntryType.WARN && entry.type !== cxschema.ArtifactMetadataEntryType.ERROR) {
         continue;
@@ -121,7 +127,7 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
 
       const message = entry.data as string;
       const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
-      const ruleName = extractRuleName(message);
+      const ruleName = extractRuleName(message, severity);
 
       // Find the nearest CfnResource to map back to a logical ID
       const resource = findNearestResource(construct);
@@ -139,6 +145,8 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
           const stack = Stack.of(construct);
           templatePath = stack.templateFile;
         } catch {
+          // Stack.of() throws for constructs not inside a Stack
+          // (e.g. attached directly to App or Stage)
           templatePath = 'N/A';
         }
       }
@@ -156,7 +164,7 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
         violatingResources: [violatingResource],
       });
     }
-  });
+  }
 
   if (violations.length === 0) {
     return undefined;
@@ -172,18 +180,23 @@ function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport 
 
 /**
  * Extract a rule name from an annotation message.
- * If the message contains an [ack: <id>] tag, use the id.
- * Otherwise, use a truncated version of the message.
+ *
+ * Annotations added via `addWarningV2` or `addInfoV2` include an `[ack: <id>]`
+ * tag in the message. When present, the id is used as the rule name — this is
+ * the deterministic, preferred path.
+ *
+ * Annotations added via the older `addWarning`, `addError`, or `addInfo` APIs
+ * do not include an ack tag. In that case, a generic identifier based on the
+ * severity is used (e.g. `aws-cdk:warning`, `aws-cdk:error`). These annotations
+ * cannot be acknowledged, so uniqueness of the rule name is not required. The
+ * full message is available in the violation's `description` field.
  */
-function extractRuleName(message: string): string {
+function extractRuleName(message: string, severity: string): string {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
   if (ackMatch) {
     return ackMatch[1];
   }
-  // Truncate long messages for use as rule names
-  // 80 chars is enough to identify the rule without cluttering the report
-  const maxLength = 80;
-  return message.length > maxLength ? `${message.substring(0, maxLength)}...` : message;
+  return `aws-cdk:${severity}`;
 }
 
 /**

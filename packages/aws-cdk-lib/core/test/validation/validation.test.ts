@@ -106,7 +106,7 @@ describe('validations', () => {
 Policy Validation Report Summary
 
 ╔══════════════╤═════════╗
-║ Plugin       │ Status  ║
+║ Source       │ Status  ║
 ╟──────────────┼─────────╢
 ║ test-plugin  │ success ║
 ╟──────────────┼─────────╢
@@ -844,7 +844,7 @@ Policy Validation Report Summary
       // Should show the annotation report
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
-      expect(output).toContain('annotation::my-lib:SomeWarning');
+      expect(output).toContain('my-lib:SomeWarning');
       expect(output).toContain('Policy Validation Successful!');
     });
 
@@ -919,7 +919,7 @@ Policy Validation Report Summary
       expect(output).toContain('test-plugin');
       expect(output).toContain('Construct Annotations');
       expect(output).toContain('plugin-rule');
-      expect(output).toContain('annotation::my-lib:StackWarning');
+      expect(output).toContain('my-lib:StackWarning');
     });
 
     test('annotation report with no plugins registered still produces output', () => {
@@ -954,7 +954,7 @@ Policy Validation Report Summary
 
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
-      expect(output).toContain('annotation::my-lib:OrphanWarning');
+      expect(output).toContain('my-lib:OrphanWarning');
     });
 
     test('Validations.of().addWarning appears in annotation report', () => {
@@ -1222,11 +1222,11 @@ interface ValidationReportData {
 
 function generateTable(pluginName: string, status: string, pluginVersion: string): string {
   return table([
-    [`Plugin: ${pluginName}`],
+    [`Source: ${pluginName}`],
     [`Version: ${pluginVersion}`],
     [`Status: ${status}`],
   ], {
-    header: { content: 'Plugin Report' },
+    header: { content: 'Validation Report' },
     singleLine: true,
     columns: [{
       paddingLeft: 3,
@@ -1242,7 +1242,7 @@ const validationReport = (data: ValidationReportData[]) => {
       return [
         expect.stringMatching(new RegExp('Validation Report')),
         expect.stringMatching(new RegExp('-----------------')),
-        expect.stringMatching(new RegExp(`Plugin: ${d.pluginName}`)),
+        expect.stringMatching(new RegExp(`Source: ${d.pluginName}`)),
         expect.stringMatching(new RegExp(`Version: ${d.version ?? 'N/A'}`)),
         expect.stringMatching(new RegExp(`Status: ${d.status}`)),
         expect.stringMatching(new RegExp('\\(Violations\\)')),
