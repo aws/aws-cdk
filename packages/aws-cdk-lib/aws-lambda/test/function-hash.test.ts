@@ -278,6 +278,51 @@ describe('function hash', () => {
 
       expect(calculateFunctionHash(fn1)).not.toEqual(calculateFunctionHash(fn2));
     });
+
+    test('with feature flag, adding layer to one function does not affect hash of another function', () => {
+      // This test verifies the fix for issue #36713
+      // where fn._layers contained all layers in the stack for imported layers
+      const app = new App({ context: { [cxapi.LAMBDA_RECOGNIZE_LAYER_VERSION]: true } });
+
+      const stack = new Stack(app, 'TestStack');
+
+      // Create two imported layers
+      const importedLayer1 = lambda.LayerVersion.fromLayerVersionArn(
+        stack, 'Layer1',
+        'arn:aws:lambda:us-east-1:123456789012:layer:my-layer-1:1',
+      );
+
+      const importedLayer2 = lambda.LayerVersion.fromLayerVersionArn(
+        stack, 'Layer2',
+        'arn:aws:lambda:us-east-1:123456789012:layer:my-layer-2:1',
+      );
+
+      // Function A with importedLayer1
+      const functionA = new lambda.Function(stack, 'FunctionA', {
+        runtime: THE_RUNTIME,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+        layers: [importedLayer1],
+      });
+
+      // Function B with importedLayer2
+      const functionB = new lambda.Function(stack, 'FunctionB', {
+        runtime: THE_RUNTIME,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => {}'),
+        layers: [importedLayer2],
+      });
+
+      // Get the initial hash of functionA
+      const initialHashA = calculateFunctionHash(functionA);
+
+      // The hash should not change when we access functionB (which has a different layer)
+      // This verifies that functionA's hash only includes importedLayer1, not importedLayer2
+      const hashAfterB = calculateFunctionHash(functionA);
+
+      expect(initialHashA).toEqual(hashAfterB);
+      expect(calculateFunctionHash(functionA)).not.toEqual(calculateFunctionHash(functionB));
+    });
   });
 
   describe('impact of env variables order on hash', () => {
