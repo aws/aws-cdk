@@ -585,7 +585,7 @@
     "DatabaseName": "integdb",
     "EnableHttpEndpoint": true,
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.7",
+    "EngineVersion": "17.9",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1340,7 +1340,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "46c12e1936b105919ea2f28aabd2fcd71c9af68ce59b8f8d3ae7fc9bdb87162c.zip"
+     "S3Key": "f02930a2a536676e9bf3aa876299ac1880466d9122a81e4236f2f4bda6a86c8a.zip"
     },
     "Environment": {
      "Variables": {

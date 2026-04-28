@@ -1,64 +1,69 @@
 name: Integration Test deployment (Auto)
 
-# Privileged workflow that runs integration tests when triggered by the
-# "Integration Test Auto Trigger" workflow. Uses workflow_run to run in the
-# base repo context with access to secrets, vars, and OIDC.
+# This workflow automatically runs integration tests when a PR with snapshot changes
+# is approved by a CDK team member. No manual approval required.
 #
-# SHADOW MODE: Failures don't block PR merges.
+# SHADOW MODE: This workflow is in shadow mode - failures don't block PR merges.
 # Once validated, this will replace the label-based workflow (integration-test-deployment.yml).
 
 on:
-  workflow_run:
-    workflows: ["Integration Test Auto Trigger"]
-    types:
-      - completed
+  pull_request_review:
+    types: [submitted]
 
-permissions:
-  actions: read # Required to download artifacts from the trigger workflow run
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
-  pr_info:
-    if: github.event.workflow_run.conclusion == 'success'
-    runs-on: ubuntu-latest
-    outputs:
-      pr_number: ${{ steps.pr_output.outputs.pr_number }}
-      head_sha: ${{ steps.pr_output.outputs.head_sha }}
-      base_sha: ${{ steps.pr_output.outputs.base_sha }}
-      reviewer: ${{ steps.pr_output.outputs.reviewer }}
-      has_context: ${{ steps.download.outcome == 'success' }}
-    steps:
-      - name: Download trigger context
-        id: download
-        uses: actions/download-artifact@v8
-        continue-on-error: true
-        with:
-          name: integ-test-trigger-context
-          path: trigger-context/
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
-
-      - name: Parse trigger context
-        if: steps.download.outcome == 'success'
-        id: pr_output
-        run: |
-          echo "pr_number=$(cat trigger-context/pr_number)" >> "$GITHUB_OUTPUT"
-          echo "head_sha=$(cat trigger-context/head_sha)" >> "$GITHUB_OUTPUT"
-          echo "base_sha=$(cat trigger-context/base_sha)" >> "$GITHUB_OUTPUT"
-          echo "reviewer=$(cat trigger-context/reviewer)" >> "$GITHUB_OUTPUT"
-
+  # Early validation: Check if approver is a CDK team member and PR has snapshot changes
   validate_approver:
-    needs: pr_info
-    if: needs.pr_info.outputs.has_context == 'true'
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     outputs:
-      is_member: ${{ steps.check_team.outputs.is_member }}
+      should_run: ${{ steps.check_team.outputs.is_member == 'true' && steps.check_snapshots.outputs.has_snapshots == 'true' }}
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
+      - name: Checkout for path filtering
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "lts/*"
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build deployment-integ
+        run: yarn --cwd tools/@aws-cdk/integration-test-deployment build
+
+      - name: Check for snapshot changes
+        id: check_snapshots
+        env:
+          TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
+          SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Reuses getChangedSnapshots() from utils.ts — single source of truth
+          if yarn --cwd tools/@aws-cdk/integration-test-deployment check-snapshots; then
+            echo "has_snapshots=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_snapshots=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check if approver is CDK team member
         id: check_team
+        if: steps.check_snapshots.outputs.has_snapshots == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
-          APPROVER: ${{ needs.pr_info.outputs.reviewer }}
+          APPROVER: ${{ github.event.review.user.login }}
         run: |
+          # Use gh CLI to check team membership (pre-installed in GitHub Actions runners)
+          # https://docs.github.com/en/rest/teams/members#get-team-membership-for-a-user
           if gh api "orgs/aws/teams/aws-cdk-team/memberships/${APPROVER}" --jq '.state' 2>/dev/null | grep -q "active"; then
             echo "${APPROVER} is an active CDK team member"
             echo "is_member=true" >> $GITHUB_OUTPUT
@@ -68,49 +73,29 @@ jobs:
           fi
 
   integration_test_deployment_auto:
-    needs: [pr_info, validate_approver]
-    if: needs.validate_approver.outputs.is_member == 'true'
+    needs: validate_approver
+    # Only run if approver is a CDK team member AND PR has snapshot changes
+    if: needs.validate_approver.outputs.should_run == 'true'
     runs-on: codebuild-aws-cdk-github-actions-deployment-integ-runner-${{ github.run_id }}-${{ github.run_attempt }}
-    timeout-minutes: 7200 # Maximum limit for self-hosted runners, job can still be limited by our runner timeout (which is set at 36 hours).
+    # No environment - runs automatically without manual approval
     # Shadow mode: workflow reports success even if tests fail
     continue-on-error: true
     name: 'Deploy integration test snapshots (Auto)'
-    # Cancel previous deployment for the same PR (uses artifact-sourced PR number, works for fork PRs)
-    concurrency:
-      group: integ-test-auto-${{ needs.pr_info.outputs.pr_number }}
-      cancel-in-progress: true
 
+    # Job-level permissions for least privilege
     permissions:
       id-token: write # Required for OIDC authentication with AWS Atmosphere
-      contents: read
-      checks: write # Required to report status back to PR via Checks API
+      pull-requests: read # Required to check PR reviews and labels
+      contents: read # Required to checkout code
 
     env:
       PR_BUILD: true
 
     steps:
-      - name: Create check run
-        id: create_check
-        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ needs.pr_info.outputs.head_sha }}
-        run: |
-          CHECK_ID=$(gh api -X POST \
-            -H "Accept: application/vnd.github+json" \
-            -f name="Integration Tests (Auto)" \
-            -f head_sha="${HEAD_SHA}" \
-            -f status="in_progress" \
-            -f 'output[title]=Integration tests running' \
-            -f 'output[summary]=Running integration tests for snapshot changes...' \
-            -f "details_url=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
-            --jq '.id' \
-            /repos/${{ github.repository }}/check-runs)
-          echo "check_id=$CHECK_ID" >> "$GITHUB_OUTPUT"
-
       - name: Checkout HEAD
         uses: actions/checkout@v6
         with:
-          ref: ${{ needs.pr_info.outputs.head_sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -158,41 +143,15 @@ jobs:
         run: npx lerna run build --scope="{@aws-cdk/*,@aws-cdk-testing/framework-integ}"
 
       - name: Run integration tests
-        id: run_tests
         run: yarn run atmosphere-integ-test
         env:
           CDK_ATMOSPHERE_ENDPOINT: ${{ vars.CDK_ATMOSPHERE_ENDPOINT }}
           CDK_ATMOSPHERE_POOL: ${{ vars.CDK_ATMOSPHERE_POOL }}
           CDK_ATMOSPHERE_OIDC_ROLE: ${{ vars.CDK_ATMOSPHERE_OIDC_ROLE }}
           CDK_ATMOSPHERE_BATCH_SIZE: ${{ vars.CDK_ATMOSPHERE_BATCH_SIZE }}
-          TARGET_BRANCH_COMMIT: ${{ needs.pr_info.outputs.base_sha }}
-          SOURCE_BRANCH_COMMIT: ${{ needs.pr_info.outputs.head_sha }}
+          TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
+          SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
+          # GitHub context for preflight check (validates CDK team membership)
           GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-          PR_NUMBER: ${{ needs.pr_info.outputs.pr_number }}
-
-      - name: Update check run
-        if: always() && steps.create_check.outputs.check_id
-        env:
-          GH_TOKEN: ${{ github.token }}
-          CHECK_ID: ${{ steps.create_check.outputs.check_id }}
-          TEST_OUTCOME: ${{ steps.run_tests.outcome }}
-          PR_NUMBER: ${{ needs.pr_info.outputs.pr_number }}
-          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-        run: |
-          if [ "$TEST_OUTCOME" = "success" ]; then
-            CONCLUSION="success"
-            TITLE="Integration tests passed"
-            SUMMARY="All integration tests passed for PR #${PR_NUMBER}."
-          else
-            CONCLUSION="failure"
-            TITLE="Integration tests failed"
-            SUMMARY="Integration tests failed for PR #${PR_NUMBER}. See [workflow run](${RUN_URL}) for details."
-          fi
-          gh api -X PATCH \
-            -H "Accept: application/vnd.github+json" \
-            -f status="completed" \
-            -f conclusion="$CONCLUSION" \
-            -f "output[title]=$TITLE" \
-            -f "output[summary]=$SUMMARY" \
-            /repos/${{ github.repository }}/check-runs/${CHECK_ID}
+          PR_NUMBER: ${{ github.event.pull_request.number }}

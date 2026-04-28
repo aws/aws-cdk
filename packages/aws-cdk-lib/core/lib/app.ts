@@ -127,6 +127,7 @@ export interface AppProps {
    * Validation plugins to run after synthesis
    *
    * @default - no validation plugins
+   * @deprecated Use `Validations.of(app).addPlugins()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 
@@ -185,12 +186,15 @@ export class App extends Stage {
   constructor(props: AppProps = {}) {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
-      policyValidationBeta1: props.policyValidationBeta1,
     });
 
     if (props.propertyInjectors) {
       const injectors = PropertyInjectors.of(this);
       injectors.add(...props.propertyInjectors);
+    }
+
+    if (props.policyValidationBeta1) {
+      this._addValidationPlugins(...props.policyValidationBeta1);
     }
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });

@@ -798,6 +798,10 @@ export class ResourceClass extends ClassType implements Referenceable {
         expr.lit('aws:cdk:cloudformation:type'),
         $E(expr.sym(this.symbol))[staticResourceTypeName()],
       ),
+      $inspector.addAttribute(
+        expr.lit('aws:cdk:cloudformation:logicalId'),
+        $E(expr.this_())._synthesizeLogicalId(),
+      ),
       $inspector.addAttribute(expr.lit('aws:cdk:cloudformation:props'), $E(expr.this_()).cfnProperties),
     );
   }
