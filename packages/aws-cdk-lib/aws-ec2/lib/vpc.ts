@@ -2771,7 +2771,6 @@ class ImportedSubnet extends Resource implements ISubnet, IPublicSubnet, IPrivat
 
   public get ipv4CidrBlock(): string {
     if (!this._ipv4CidrBlock) {
-      // tslint:disable-next-line: max-line-length
       throw new ValidationError(lit`CannotReferenceImportedSubnets`, 'You cannot reference an imported Subnet\'s IPv4 CIDR if it was not supplied. Add the ipv4CidrBlock when importing using Subnet.fromSubnetAttributes()', this);
     }
     return this._ipv4CidrBlock;

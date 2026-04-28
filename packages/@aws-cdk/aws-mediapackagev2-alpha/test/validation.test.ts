@@ -367,4 +367,60 @@ describe('Manifest Validation', () => {
       });
     }).toThrow(/Startover Window needs to be between 60-1209600 seconds/);
   });
+
+  test('throws on duplicate manifest names within same type', () => {
+    expect(() => {
+      new OriginEndpoint(stack, 'Endpoint', {
+        channel,
+        segment: Segment.cmaf(),
+        manifests: [
+          Manifest.hls({ manifestName: 'index' }),
+          Manifest.hls({ manifestName: 'index' }),
+        ],
+      });
+    }).toThrow(/Duplicate manifest names: \[index\]/);
+  });
+
+  test('throws on duplicate manifest names across different types', () => {
+    expect(() => {
+      new OriginEndpoint(stack, 'Endpoint', {
+        channel,
+        segment: Segment.cmaf(),
+        manifests: [
+          Manifest.hls({ manifestName: 'index' }),
+          Manifest.dash({ manifestName: 'index' }),
+        ],
+      });
+    }).toThrow(/Duplicate manifest names: \[index\]/);
+  });
+
+  test('reports all duplicate manifest names', () => {
+    expect(() => {
+      new OriginEndpoint(stack, 'Endpoint', {
+        channel,
+        segment: Segment.cmaf(),
+        manifests: [
+          Manifest.hls({ manifestName: 'index' }),
+          Manifest.hls({ manifestName: 'index2' }),
+          Manifest.dash({ manifestName: 'index' }),
+          Manifest.dash({ manifestName: 'dash1' }),
+          Manifest.dash({ manifestName: 'dash1' }),
+        ],
+      });
+    }).toThrow(/Duplicate manifest names: \[index, dash1\]/);
+  });
+
+  test('allows unique manifest names', () => {
+    expect(() => {
+      new OriginEndpoint(stack, 'Endpoint', {
+        channel,
+        segment: Segment.cmaf(),
+        manifests: [
+          Manifest.hls({ manifestName: 'hls-index' }),
+          Manifest.lowLatencyHLS({ manifestName: 'llhls-index' }),
+          Manifest.dash({ manifestName: 'dash-index' }),
+        ],
+      });
+    }).not.toThrow();
+  });
 });

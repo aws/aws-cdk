@@ -990,7 +990,7 @@
      "Ref": "dbClusterSubnets03B9B0E1"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.7",
+    "EngineVersion": "17.9",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -1028,38 +1028,15 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "dbClusterInstance1BCE092AC": {
+  "dbClusterwriterA3DC7D26": {
    "Type": "AWS::RDS::DBInstance",
    "Properties": {
     "DBClusterIdentifier": {
      "Ref": "dbClusterE86E47AE"
     },
     "DBInstanceClass": "db.t3.medium",
-    "DBSubnetGroupName": {
-     "Ref": "dbClusterSubnets03B9B0E1"
-    },
-    "Engine": "aurora-postgresql"
-   },
-   "DependsOn": [
-    "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
-    "vpcPrivateSubnet1RouteTableAssociation67945127",
-    "vpcPrivateSubnet2DefaultRouteB0E07F99",
-    "vpcPrivateSubnet2RouteTableAssociation007E94D3"
-   ],
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "dbClusterInstance20BA1ECD9": {
-   "Type": "AWS::RDS::DBInstance",
-   "Properties": {
-    "DBClusterIdentifier": {
-     "Ref": "dbClusterE86E47AE"
-    },
-    "DBInstanceClass": "db.t3.medium",
-    "DBSubnetGroupName": {
-     "Ref": "dbClusterSubnets03B9B0E1"
-    },
-    "Engine": "aurora-postgresql"
+    "Engine": "aurora-postgresql",
+    "PromotionTier": 0
    },
    "DependsOn": [
     "vpcPrivateSubnet1DefaultRoute1AA8E2E5",
@@ -1191,9 +1168,8 @@
     "TargetGroupName": "default"
    },
    "DependsOn": [
-    "dbClusterInstance1BCE092AC",
-    "dbClusterInstance20BA1ECD9",
-    "dbClusterE86E47AE"
+    "dbClusterE86E47AE",
+    "dbClusterwriterA3DC7D26"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1319,9 +1295,8 @@
     "TargetGroupName": "default"
    },
    "DependsOn": [
-    "dbClusterInstance1BCE092AC",
-    "dbClusterInstance20BA1ECD9",
-    "dbClusterE86E47AE"
+    "dbClusterE86E47AE",
+    "dbClusterwriterA3DC7D26"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -1506,7 +1481,7 @@
      "Ref": "dbClusterWithWriterAndReadersSubnetsD9FBAD2A"
     },
     "Engine": "aurora-postgresql",
-    "EngineVersion": "17.7",
+    "EngineVersion": "17.9",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

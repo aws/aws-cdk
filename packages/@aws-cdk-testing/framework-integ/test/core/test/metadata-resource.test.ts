@@ -1,7 +1,7 @@
 import { constructAnalyticsFromScope } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { localCdkVersion } from './util';
-import type { IPolicyValidationPluginBeta1, PolicyViolationBeta1, PolicyValidationPluginReportBeta1, IPolicyValidationContextBeta1 } from 'aws-cdk-lib/core';
-import { App, NestedStack, Stack, Stage } from 'aws-cdk-lib/core';
+import type { IPolicyValidationPlugin, PolicyViolation, PolicyValidationPluginReport, IPolicyValidationContext } from 'aws-cdk-lib/core';
+import { App, NestedStack, Stack, Stage, Validations } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 
 const JSII_RUNTIME_SYMBOL = Symbol.for('jsii.rtti');
@@ -105,9 +105,8 @@ describe('constructAnalyticsFromScope', () => {
   });
 
   test('return info from validator plugins', () => {
-    const validatedApp = new App({
-      policyValidationBeta1: [new FakePlugin('fake', [], '1.0.0', ['RULE_1', 'RULE_2'])],
-    });
+    const validatedApp = new App();
+    Validations.of(validatedApp).addPlugins(new FakePlugin('fake', [], '1.0.0', ['RULE_1', 'RULE_2']));
     const validatedStack = new Stack(validatedApp, 'ValidatedStack');
     const constructInfos = constructAnalyticsFromScope(validatedStack);
 
@@ -128,15 +127,15 @@ class TestConstruct extends Construct {
   private static readonly [JSII_RUNTIME_SYMBOL] = { fqn: '@aws-cdk/test.TestConstruct', version: localCdkVersion() };
 }
 
-class FakePlugin implements IPolicyValidationPluginBeta1 {
+class FakePlugin implements IPolicyValidationPlugin {
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolationBeta1[],
+    private readonly violations: PolicyViolation[],
     public readonly version?: string,
     public readonly ruleIds?: string []) {
   }
 
-  validate(_context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(_context: IPolicyValidationContext): PolicyValidationPluginReport {
     return {
       success: this.violations.length === 0,
       violations: this.violations,

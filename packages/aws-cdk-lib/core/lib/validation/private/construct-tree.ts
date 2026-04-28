@@ -1,3 +1,4 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
@@ -191,7 +192,7 @@ export class ConstructTree {
    * Returns a stack trace if stack trace information is found, or `undefined` if not.
    */
   private stackTrace(construct: IConstruct): string[] | undefined {
-    return construct?.node.metadata.find(meta => !!meta.trace)?.trace;
+    return construct?.node.metadata.find(meta => meta.type === ArtifactMetadataEntryType.CREATION_STACK)?.data;
   }
 
   /**

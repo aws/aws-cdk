@@ -49,6 +49,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_19,
   EngineVersion.OPENSEARCH_3_1,
   EngineVersion.OPENSEARCH_3_3,
+  EngineVersion.OPENSEARCH_3_5,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
