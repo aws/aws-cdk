@@ -5,22 +5,26 @@ import type { IConstruct } from 'constructs';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
+import { iterateDfsPreorder } from './construct-iteration';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
+import { CfnResource } from '../cfn-resource';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
-import type { IPolicyValidationPluginBeta1 } from '../validation';
+import type { IPolicyValidationPlugin } from '../validation';
+import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
 import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
+import * as cxschema from '../../../cloud-assembly-schema';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
@@ -98,13 +102,143 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 }
 
 /**
+ * The plugin name used for annotation-based violations in the validation report.
+ */
+const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
+
+/**
+ * Collect annotation metadata (warnings and errors) from the construct tree
+ * and convert them into a NamedValidationPluginReport that can be merged
+ * into the same report pipeline as plugin violations.
+ *
+ * Unlike `visit()`, this walks the entire construct tree including across
+ * Stage boundaries. This is intentional: the validation report is a single
+ * global output (not per-stage), and a plugin registered at the App level
+ * sees templates from all stages. Annotations should have the same visibility.
+ */
+function collectAnnotationReport(root: IConstruct): NamedValidationPluginReport | undefined {
+  const violations: PolicyViolation[] = [];
+
+  for (const construct of iterateDfsPreorder(root)) {
+    for (const entry of construct.node.metadata) {
+      if (entry.type !== cxschema.ArtifactMetadataEntryType.WARN && entry.type !== cxschema.ArtifactMetadataEntryType.ERROR) {
+        continue;
+      }
+
+      const message = entry.data as string;
+      const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
+      const ruleName = extractRuleName(message, severity);
+
+      // Find the nearest CfnResource to map back to a logical ID
+      const resource = findNearestResource(construct);
+      let resourceLogicalId: string;
+      let templatePath: string;
+
+      if (resource) {
+        const stack = Stack.of(resource);
+        resourceLogicalId = stack.resolve(resource.logicalId);
+        templatePath = path.join(stack.node.root.node.tryGetContext('outdir') ?? '', stack.templateFile);
+      } else {
+        // Construct is not associated with a CfnResource — use construct path as identifier
+        resourceLogicalId = construct.node.path;
+        try {
+          const stack = Stack.of(construct);
+          templatePath = stack.templateFile;
+        } catch {
+          // Stack.of() throws for constructs not inside a Stack
+          // (e.g. attached directly to App or Stage)
+          templatePath = 'N/A';
+        }
+      }
+
+      const violatingResource: PolicyViolatingResource = {
+        resourceLogicalId,
+        templatePath,
+        locations: [],
+      };
+
+      violations.push({
+        ruleName,
+        description: message,
+        severity,
+        violatingResources: [violatingResource],
+      });
+    }
+  }
+
+  if (violations.length === 0) {
+    return undefined;
+  }
+
+  const hasErrors = violations.some(v => v.severity === 'error');
+  return {
+    pluginName: ANNOTATION_PLUGIN_NAME,
+    success: !hasErrors,
+    violations,
+  };
+}
+
+/**
+ * Extract a rule name from an annotation message.
+ *
+ * Annotations added via `addWarningV2` or `addInfoV2` include an `[ack: <id>]`
+ * tag in the message. When present, the id is used as the rule name — this is
+ * the deterministic, preferred path.
+ *
+ * Annotations added via the older `addWarning`, `addError`, or `addInfo` APIs
+ * do not include an ack tag. In that case, a generic identifier based on the
+ * severity is used (e.g. `aws-cdk:warning`, `aws-cdk:error`). These annotations
+ * cannot be acknowledged, so uniqueness of the rule name is not required. The
+ * full message is available in the violation's `description` field.
+ */
+function extractRuleName(message: string, severity: string): string {
+  const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
+  if (ackMatch) {
+    return ackMatch[1];
+  }
+  return `aws-cdk:${severity}`;
+}
+
+/**
+ * Find the nearest CfnResource for a construct by checking itself,
+ * its default child, or walking up the tree.
+ */
+function findNearestResource(construct: IConstruct): CfnResource | undefined {
+  // Check if the construct itself is a CfnResource
+  if (CfnResource.isCfnResource(construct)) {
+    return construct;
+  }
+
+  // Check the default child
+  const defaultChild = construct.node.defaultChild;
+  if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
+    return defaultChild;
+  }
+
+  // Walk up the tree to find the nearest CfnResource
+  let current = construct.node.scope;
+  while (current) {
+    if (CfnResource.isCfnResource(current)) {
+      return current;
+    }
+    const dc = current.node.defaultChild;
+    if (dc && CfnResource.isCfnResource(dc)) {
+      return dc;
+    }
+    current = current.node.scope;
+  }
+
+  return undefined;
+}
+
+/**
  * Invoke validation plugins for all stages in an App.
  */
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
   let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
+  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
       for (const plugin of construct.policyValidationBeta1) {
@@ -146,6 +280,12 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     if (FileSystem.fingerprint(outdir) !== hash) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
+  }
+
+  // Collect annotation-based violations and merge into the report pipeline
+  const annotationReport = collectAnnotationReport(root);
+  if (annotationReport) {
+    reports.push(annotationReport);
   }
 
   if (reports.length > 0) {

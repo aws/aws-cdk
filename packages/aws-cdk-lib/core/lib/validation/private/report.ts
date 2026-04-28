@@ -8,7 +8,7 @@ import * as report from '../report';
 /**
  * Validation produced by the validation plugin, in construct terms.
  */
-export interface PolicyViolationConstructAware extends report.PolicyViolationBeta1 {
+export interface PolicyViolationConstructAware extends report.PolicyViolation {
   /**
    * The constructs violating this rule.
    */
@@ -18,7 +18,7 @@ export interface PolicyViolationConstructAware extends report.PolicyViolationBet
 /**
  * Construct violating a specific rule.
  */
-export interface ValidationViolatingConstruct extends report.PolicyViolatingResourceBeta1 {
+export interface ValidationViolatingConstruct extends report.PolicyViolatingResource {
   /**
    * The construct path as defined in the application.
    *
@@ -77,7 +77,7 @@ export interface PolicyValidationReportSummary {
   /**
    * The final status of the validation (pass/fail)
    */
-  readonly status: report.PolicyValidationReportStatusBeta1;
+  readonly status: report.PolicyValidationReportStatus;
 
   /**
    * The name of the plugin that created the report
@@ -96,7 +96,7 @@ export interface PolicyValidationReportSummary {
 /**
  * The report containing the name of the plugin that created it.
  */
-export interface NamedValidationPluginReport extends report.PolicyValidationPluginReportBeta1 {
+export interface NamedValidationPluginReport extends report.PolicyValidationPluginReport {
   /**
    * The name of the plugin that created the report
    */
@@ -120,11 +120,11 @@ export class PolicyValidationReportFormatter {
     json.pluginReports.forEach(plugin => {
       output.push('');
       output.push(table([
-        [`Plugin: ${plugin.summary.pluginName}`],
+        [`Source: ${plugin.summary.pluginName}`],
         [`Version: ${plugin.version ?? 'N/A'}`],
         [`Status: ${plugin.summary.status}`],
       ], {
-        header: { content: 'Plugin Report' },
+        header: { content: 'Validation Report' },
         singleLine: true,
         columns: [{
           paddingLeft: 3,
@@ -180,7 +180,7 @@ export class PolicyValidationReportFormatter {
     output.push('Policy Validation Report Summary');
     output.push('');
     output.push(table([
-      ['Plugin', 'Status'],
+      ['Source', 'Status'],
       ...reps.map(rep => [rep.pluginName, rep.success ? 'success' : 'failure']),
     ], { }));
 
@@ -191,12 +191,12 @@ export class PolicyValidationReportFormatter {
     return {
       title: 'Validation Report',
       pluginReports: reps
-        .filter(rep => !rep.success)
+        .filter(rep => !rep.success || rep.violations.length > 0)
         .map(rep => ({
           version: rep.pluginVersion,
           summary: {
             pluginName: rep.pluginName,
-            status: rep.success ? report.PolicyValidationReportStatusBeta1.SUCCESS : report.PolicyValidationReportStatusBeta1.FAILURE,
+            status: rep.success ? report.PolicyValidationReportStatus.SUCCESS : report.PolicyValidationReportStatus.FAILURE,
             metadata: rep.metadata,
           },
           violations: rep.violations.map(violation => ({
