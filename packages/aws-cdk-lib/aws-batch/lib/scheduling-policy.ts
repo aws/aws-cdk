@@ -252,7 +252,7 @@ export class FairshareSchedulingPolicy extends SchedulingPolicyBase implements I
     addConstructMetadata(this, props);
     this.computeReservation = props?.computeReservation;
     this.shareDecay = props?.shareDecay;
-    this._shares = Boxes.fromArray(props?.shares ?? []);
+    this._shares = Boxes.fromArray(props?.shares ?? [], { omitEmpty: false });
     this.resource = new CfnSchedulingPolicy(this, 'Resource', {
       fairsharePolicy: {
         computeReservation: this.computeReservation,
