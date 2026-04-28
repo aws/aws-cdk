@@ -65,6 +65,7 @@ export class PolicyStatement {
       notResources: ensureArrayOrUndefined(obj.NotResource),
       principals: obj.Principal ? [new JsonPrincipal(obj.Principal)] : undefined,
       notPrincipals: obj.NotPrincipal ? [new JsonPrincipal(obj.NotPrincipal)] : undefined,
+      skipSidValidation: obj.SkipSidValidation,
     });
 
     // validate that the PolicyStatement has the correct shape
@@ -91,9 +92,12 @@ export class PolicyStatement {
   private readonly _principals = new OrderedSet<IPrincipal>();
   private readonly _notPrincipals = new OrderedSet<IPrincipal>();
   private _frozen = false;
+  private readonly _skipSidValidation: boolean;
 
   constructor(props: PolicyStatementProps = {}) {
+    this._skipSidValidation = props.skipSidValidation ?? false;
     this._sid = props.sid;
+    this.validateStatementId(this._sid);
     this._effect = props.effect || Effect.ALLOW;
 
     this.addActions(...props.actions || []);
@@ -119,6 +123,7 @@ export class PolicyStatement {
    */
   public set sid(sid: string | undefined) {
     this.assertNotFrozen('sid');
+    this.validateStatementId(sid);
     this._sid = sid;
   }
 
@@ -234,7 +239,17 @@ export class PolicyStatement {
     }
   }
 
+  private validateStatementId(sid?: string) {
+    if (this._skipSidValidation) return;
+
+    if (sid !== undefined && !cdk.Token.isUnresolved(sid) && !/^[0-9A-Za-z]*$/.test(sid)) {
+      throw new UnscopedValidationError(`Statement ID (sid) must be alphanumeric. Got '${sid}'. The Sid element supports ASCII uppercase letters (A-Z), lowercase letters (a-z), and numbers (0-9).`);
+    }
+  }
+
   private validatePolicyActions(actions: string[]) {
+    if (this._skipSidValidation) return;
+
     // In case of an unresolved list of actions return early
     if (cdk.Token.isUnresolved(actions)) return;
     for (const action of actions || []) {
@@ -245,6 +260,8 @@ export class PolicyStatement {
   }
 
   private validatePolicyPrincipal(principal: IPrincipal) {
+    if (this._skipSidValidation) return;
+
     if (principal instanceof Group) {
       throw new UnscopedValidationError(lit`CannotUseGroupAsPrincipal`, 'Cannot use an IAM Group as the \'Principal\' or \'NotPrincipal\' in an IAM Policy');
     }
@@ -459,6 +476,7 @@ export class PolicyStatement {
       notResources: overrides.notResources ?? this.notResources,
 
       conditions: overrides.conditions ?? this.conditions,
+      skipSidValidation: overrides.skipSidValidation ?? this._skipSidValidation,
     });
   }
 
@@ -532,6 +550,8 @@ export class PolicyStatement {
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForAnyPolicy(): string[] {
+    if (this._skipSidValidation) return [];
+
     const errors = new Array<string>();
     if (this._action.length === 0 && this._notAction.length === 0) {
       errors.push('A PolicyStatement must specify at least one \'action\' or \'notAction\'.');
@@ -545,6 +565,8 @@ export class PolicyStatement {
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForResourcePolicy(): string[] {
+    if (this._skipSidValidation) return [];
+
     const errors = this.validateForAnyPolicy();
     if (this._principals.length === 0 && this._notPrincipals.length === 0) {
       errors.push('A PolicyStatement used in a resource-based policy must specify at least one IAM principal.');
@@ -558,6 +580,8 @@ export class PolicyStatement {
    * @returns An array of validation error messages, or an empty array if the statement is valid.
    */
   public validateForIdentityPolicy(): string[] {
+    if (this._skipSidValidation) return [];
+
     const errors = this.validateForAnyPolicy();
     if (this._principals.length > 0 || this._notPrincipals.length > 0) {
       errors.push('A PolicyStatement used in an identity-based policy cannot specify any IAM principals.');
@@ -799,6 +823,13 @@ export interface PolicyStatementProps {
    * @default Effect.ALLOW
    */
   readonly effect?: Effect;
+
+  /**
+   * Whether to skip validation of this policy statement
+   *
+   * @default false
+   */
+  readonly skipSidValidation?: boolean;
 }
 
 class JsonPrincipal extends PrincipalBase {

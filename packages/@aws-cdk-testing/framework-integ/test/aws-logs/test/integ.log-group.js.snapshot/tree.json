@@ -76,7 +76,7 @@
                       "Version": "2021-06-01",
                       "Statement": [
                         {
-                          "Sid": "audit-statement-cdk",
+                          "Sid": "auditStatementCdk",
                           "DataIdentifier": [
                             {
                               "Fn::Join": [
@@ -122,7 +122,7 @@
                           }
                         },
                         {
-                          "Sid": "redact-statement-cdk",
+                          "Sid": "redactStatementCdk",
                           "DataIdentifier": [
                             {
                               "Fn::Join": [
