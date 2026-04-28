@@ -45,7 +45,7 @@ export async function generateAll(options: MetricsGenerateOptions): Promise<Gene
       },
     ])),
     contributions: [{
-      barrelFile: 'metrics.ts',
+      barrelFile: 'index.ts',
       exportLines: ["export * from './metrics.generated';"],
       jsiircNamespace: 'metrics',
     }],

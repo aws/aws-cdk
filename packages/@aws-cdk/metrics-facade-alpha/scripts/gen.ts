@@ -58,10 +58,19 @@ async function ensureSubmodule(submodule: ModuleMapEntry, contributions: Submodu
   }
 
   const subModuleIndex = path.join(modulePath, 'index.ts');
-  const indexLines = [...barrels.keys()].map(barrel => {
+  const indexLines: string[] = [];
+
+  // Barrels targeting index.ts contribute their lines directly;
+  // other barrels get a namespace re-export in index.ts.
+  const indexBarrel = barrels.get('index.ts');
+  if (indexBarrel) {
+    indexLines.push(...indexBarrel.lines);
+    barrels.delete('index.ts');
+  }
+  for (const barrel of barrels.keys()) {
     const ns = path.basename(barrel, '.ts');
-    return `export * as ${ns} from './${ns}';`;
-  });
+    indexLines.push(`export * as ${ns} from './${ns}';`);
+  }
   await ensureFileContains(subModuleIndex, indexLines);
   await writeJsiiRc(jsiiRcPathFor(subModuleIndex), submodule.definition, { goPrefix: GO_PREFIX });
 

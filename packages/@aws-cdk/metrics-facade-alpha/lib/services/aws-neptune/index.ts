@@ -1,1 +1,1 @@
-export * as metrics from './metrics';
+export * from './metrics.generated';
