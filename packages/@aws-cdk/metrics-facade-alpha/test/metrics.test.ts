@@ -6,10 +6,10 @@ test('statistic can be overridden via MetricOptions', () => {
   });
 
   // Default statistic for Duration is Average
-  const defaultMetric = metrics.metricDuration();
+  const defaultMetric = metrics.duration();
   expect(defaultMetric.toMetricConfig().metricStat?.statistic).toEqual('Average');
 
   // Override statistic via MetricOptions
-  const overriddenMetric = metrics.metricDuration({ statistic: 'p99' });
+  const overriddenMetric = metrics.duration({ statistic: 'p99' });
   expect(overriddenMetric.toMetricConfig().metricStat?.statistic).toEqual('p99');
 });

@@ -54,35 +54,35 @@ class MetricsDashboard extends cdk.Stack {
       new cloudwatch.TextWidget({ markdown: '# Scoped Metrics (from L1 CfnFunction)', width: 24, height: 1 }),
     );
     dashboard.addWidgets(
-      new cloudwatch.GraphWidget({ title: 'L1 Invocations', left: [l1Metrics.metricInvocations()], width: 8 }),
-      new cloudwatch.GraphWidget({ title: 'L1 Duration', left: [l1Metrics.metricDuration()], width: 8 }),
-      new cloudwatch.GraphWidget({ title: 'L1 Errors', left: [l1Metrics.metricErrors()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'L1 Invocations', left: [l1Metrics.invocations()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'L1 Duration', left: [l1Metrics.duration()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'L1 Errors', left: [l1Metrics.errors()], width: 8 }),
     );
 
     dashboard.addWidgets(
       new cloudwatch.TextWidget({ markdown: '# Scoped Metrics (from L2 Function)', width: 24, height: 1 }),
     );
     dashboard.addWidgets(
-      new cloudwatch.GraphWidget({ title: 'L2 Invocations', left: [l2Metrics.metricInvocations()], width: 8 }),
-      new cloudwatch.GraphWidget({ title: 'L2 Throttles', left: [l2Metrics.metricThrottles()], width: 8 }),
-      new cloudwatch.GraphWidget({ title: 'L2 ConcurrentExecutions', left: [l2Metrics.metricConcurrentExecutions()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'L2 Invocations', left: [l2Metrics.invocations()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'L2 Throttles', left: [l2Metrics.throttles()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'L2 ConcurrentExecutions', left: [l2Metrics.concurrentExecutions()], width: 8 }),
     );
 
     dashboard.addWidgets(
       new cloudwatch.TextWidget({ markdown: '# Unscoped Metrics (explicit dimensions)', width: 24, height: 1 }),
     );
     dashboard.addWidgets(
-      new cloudwatch.GraphWidget({ title: 'ByFunctionName - Invocations', left: [unscopedByName.metricInvocations()], width: 8 }),
-      new cloudwatch.GraphWidget({ title: 'ByResource - Errors', left: [unscopedByResource.metricErrors()], width: 8 }),
-      new cloudwatch.GraphWidget({ title: 'Statistic Override (p99 Duration)', left: [l2Metrics.metricDuration({ statistic: 'p99' })], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'ByFunctionName - Invocations', left: [unscopedByName.invocations()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'ByResource - Errors', left: [unscopedByResource.errors()], width: 8 }),
+      new cloudwatch.GraphWidget({ title: 'Statistic Override (p99 Duration)', left: [l2Metrics.duration({ statistic: 'p99' })], width: 8 }),
     );
 
     dashboard.addWidgets(
       new cloudwatch.TextWidget({ markdown: '# Account-wide Metrics (empty dimension set)', width: 24, height: 1 }),
     );
     dashboard.addWidgets(
-      new cloudwatch.GraphWidget({ title: 'Account ConcurrentExecutions', left: [accountMetrics.metricConcurrentExecutions()], width: 12 }),
-      new cloudwatch.GraphWidget({ title: 'Account Invocations', left: [accountMetrics.metricInvocations()], width: 12 }),
+      new cloudwatch.GraphWidget({ title: 'Account ConcurrentExecutions', left: [accountMetrics.concurrentExecutions()], width: 12 }),
+      new cloudwatch.GraphWidget({ title: 'Account Invocations', left: [accountMetrics.invocations()], width: 12 }),
     );
   }
 }

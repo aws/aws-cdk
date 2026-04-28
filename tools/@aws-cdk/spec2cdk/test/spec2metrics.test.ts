@@ -68,7 +68,7 @@ test('generates metrics class with correct method names', () => {
 
   expect(rendered).toContain('class LambdaMetrics');
   expect(rendered).toContain('class FunctionNameMetrics');
-  expect(rendered).toContain('metricInvocations');
+  expect(rendered).toContain('invocations');
 });
 
 test('account-wide metrics with empty dimensions', () => {
@@ -92,7 +92,7 @@ test('account-wide metrics with empty dimensions', () => {
   const rendered = renderer.render(submodule.metricsModule!);
 
   expect(rendered).toContain('class AccountMetrics');
-  expect(rendered).toContain('metricConcurrentExecutions');
+  expect(rendered).toContain('concurrentExecutions');
 });
 
 test('factory method generation from resource', () => {

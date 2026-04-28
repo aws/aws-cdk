@@ -293,13 +293,19 @@ export function dimensionEnumMemberName(value: string): string {
 }
 
 /**
- * Convert a metric name to a method name like `metricInvocations`
+ * Convert a metric name to a camelCase method name like `invocations`.
+ *
+ * The method is already on a metrics class, so no `metric` prefix is added.
+ * Names that start with a digit are prefixed with `_` (e.g. `_4xxError`).
  */
 export function metricMethodName(name: string): string {
   const pascal = metricSanitizeName(name);
   // Normalize HTTP status code patterns after PascalCasing (e.g. 4Xx -> 4xx, 5Xx -> 5xx)
   const normalized = pascal.replace(/([2-5])xx/gi, '$1xx');
-  return `metric${normalized.replace(/^_/, '')}`;
+  const stripped = normalized.replace(/^_/, '');
+  const camel = stripped.charAt(0).toLowerCase() + stripped.slice(1);
+  // Prefix with _ when the name starts with a digit (invalid JS identifier)
+  return /^\d/.test(camel) ? `_${camel}` : camel;
 }
 
 /**
