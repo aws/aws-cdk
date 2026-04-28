@@ -1,16 +1,16 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "files": {
-    "2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf": {
+    "c500a1f0a40cf4e99c5ce5e815d1600f30f4ee612b99428d8b40e5fff641df56": {
       "displayName": "MultiAccountSourceStackV2 Template",
       "source": {
         "path": "MultiAccountSourceStackV2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-eu-west-1-f16a1f26": {
+        "12345678-eu-west-1-5cfbcbf0": {
           "bucketName": "cdk-hnb659fds-assets-12345678-eu-west-1",
-          "objectKey": "2f28ff3cdebecdbf1fc76afab289a9097c8f9b50ac7cc1ec04b3eb5e441e44cf.json",
+          "objectKey": "c500a1f0a40cf4e99c5ce5e815d1600f30f4ee612b99428d8b40e5fff641df56.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-eu-west-1"
         }
