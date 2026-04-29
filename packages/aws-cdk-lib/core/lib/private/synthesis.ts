@@ -7,12 +7,14 @@ import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
 import * as cxschema from '../../../cloud-assembly-schema';
+import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { CfnResource } from '../cfn-resource';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { FeatureFlags } from '../feature-flags';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
@@ -306,9 +308,13 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   }
 
   // Collect annotation-based violations and merge into the report pipeline
-  const annotationReport = collectAnnotationReport(root, assembly.directory);
-  if (annotationReport) {
-    reports.push(annotationReport);
+  // when the feature flag is enabled. When disabled, annotations are only
+  // displayed through the CLI's standard metadata output.
+  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
+    const annotationReport = collectAnnotationReport(root, assembly.directory);
+    if (annotationReport) {
+      reports.push(annotationReport);
+    }
   }
 
   if (reports.length > 0) {
