@@ -7,8 +7,11 @@ import type { IRestApi } from './restapi';
 import type { Stage } from './stage';
 import { validateDouble, validateInteger } from './util';
 import type { IResource, Token } from '../../core';
-import { FeatureFlags, Lazy, Names, Resource } from '../../core';
+import { FeatureFlags, Names, Resource } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { APIGATEWAY_USAGEPLANKEY_ORDERINSENSITIVE_ID } from '../../cx-api';
 
@@ -222,6 +225,7 @@ abstract class UsagePlanBase extends Resource implements IUsagePlan {
 }
 
 @propertyInjectable
+@noBoxStackTraces
 export class UsagePlan extends UsagePlanBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-apigateway.UsagePlan';
@@ -249,7 +253,7 @@ export class UsagePlan extends UsagePlanBase {
    */
   public readonly usagePlanId: string;
 
-  private readonly apiStages = new Array<UsagePlanPerApiStage>();
+  private readonly apiStages: IArrayBox<UsagePlanPerApiStage>;
 
   constructor(scope: Construct, id: string, props: UsagePlanProps = { }) {
     super(scope, id);
@@ -257,8 +261,10 @@ export class UsagePlan extends UsagePlanBase {
     addConstructMetadata(this, props);
     let resource: CfnUsagePlan;
 
+    this.apiStages = Box.fromArray<UsagePlanPerApiStage>([], { omitEmpty: false });
+
     resource = new CfnUsagePlan(this, 'Resource', {
-      apiStages: Lazy.any({ produce: () => this.renderApiStages(this.apiStages) }),
+      apiStages: this.apiStages.derive(arr => this.renderApiStages(arr)),
       description: props.description,
       quota: this.renderQuota(props),
       throttle: this.renderThrottle(props.throttle),
@@ -283,7 +289,7 @@ export class UsagePlan extends UsagePlanBase {
     this.apiStages.push(apiStage);
   }
 
-  private renderApiStages(apiStages: UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
+  private renderApiStages(apiStages: readonly UsagePlanPerApiStage[] | undefined): CfnUsagePlan.ApiStageProperty[] | undefined {
     if (apiStages && apiStages.length > 0) {
       const stages: CfnUsagePlan.ApiStageProperty[] = [];
       apiStages.forEach((apiStage: UsagePlanPerApiStage) => {

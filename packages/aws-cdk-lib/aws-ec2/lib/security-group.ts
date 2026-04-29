@@ -14,14 +14,16 @@ import type {
 import {
   Annotations,
   ContextProvider,
-  Lazy,
   Names,
   Resource,
   Stack,
   Token,
   ValidationError,
 } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type * as cxapi from '../../cx-api';
@@ -387,6 +389,7 @@ export interface SecurityGroupImportOptions {
  * ```
  */
 @propertyInjectable
+@noBoxStackTraces
 export class SecurityGroup extends SecurityGroupBase {
   /**
    * Uniquely identifies this class.
@@ -519,8 +522,8 @@ export class SecurityGroup extends SecurityGroupBase {
   public readonly allowAllIpv6Outbound: boolean;
 
   private readonly securityGroup: CfnSecurityGroup;
-  private readonly directIngressRules: CfnSecurityGroup.IngressProperty[] = [];
-  private readonly directEgressRules: CfnSecurityGroup.EgressProperty[] = [];
+  private readonly directIngressRules: IArrayBox<CfnSecurityGroup.IngressProperty>;
+  private readonly directEgressRules: IArrayBox<CfnSecurityGroup.EgressProperty>;
 
   /**
    * Whether to disable optimization for inline security group rules.
@@ -543,11 +546,14 @@ export class SecurityGroup extends SecurityGroupBase {
       !!props.disableInlineRules :
       !!this.node.tryGetContext(SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY);
 
+    this.directIngressRules = Box.fromArray([]);
+    this.directEgressRules = Box.fromArray([]);
+
     this.securityGroup = new CfnSecurityGroup(this, 'Resource', {
       groupName: this.physicalName,
       groupDescription,
-      securityGroupIngress: Lazy.any({ produce: () => this.directIngressRules }, { omitEmptyArray: true }),
-      securityGroupEgress: Lazy.any({ produce: () => this.directEgressRules }, { omitEmptyArray: true }),
+      securityGroupIngress: this.directIngressRules,
+      securityGroupEgress: this.directEgressRules,
       vpcId: props.vpc.vpcId,
     });
 
