@@ -886,7 +886,18 @@ describe('stack', () => {
       {
         Effect: 'Allow',
         Action: 'cloudformation:DescribeStacks',
-        Resource: '*',
+        Resource: {
+          'Fn::Join': [
+            '',
+            [
+              'arn:',
+              {
+                Ref: 'AWS::Partition',
+              },
+              ':cloudformation:us-east-1:111111111111:stack/Stack1/*',
+            ],
+          ],
+        },
       },
     ]);
     // Policy is attached to the role
