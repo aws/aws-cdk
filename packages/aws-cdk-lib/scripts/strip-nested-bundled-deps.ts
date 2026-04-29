@@ -28,16 +28,4 @@ function main() {
   }
 }
 
-function pathExistsSync(p: string) {
-  try {
-    fs.statSync(p);
-    return true;
-  } catch (e: any) {
-    if (e.code === 'ENOENT') {
-      return false;
-    }
-    throw e;
-  }
-}
-
 main();
