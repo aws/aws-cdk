@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { toCloudFormation } from './util';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { memoizedGetter } from '../lib/helpers-internal/memoize';

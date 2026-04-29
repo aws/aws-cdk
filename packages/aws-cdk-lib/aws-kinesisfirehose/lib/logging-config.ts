@@ -1,4 +1,4 @@
-import * as logs from '../../aws-logs';
+import type * as logs from '../../aws-logs';
 
 /**
  * Configuration interface for logging errors when data transformation or delivery fails.

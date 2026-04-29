@@ -1,9 +1,11 @@
-import { IResolvable } from 'aws-cdk-lib';
-import { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
-import { Grant, IRole } from 'aws-cdk-lib/aws-iam';
-import { ApiKeyCredentialProviderConfiguration, ApiKeyCredentialProviderProps } from './api-key';
+import type { IResolvable } from 'aws-cdk-lib';
+import type { CfnGatewayTarget } from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { Grant, IRole } from 'aws-cdk-lib/aws-iam';
+import type { ApiKeyCredentialProviderProps } from './api-key';
+import { ApiKeyCredentialProviderConfiguration } from './api-key';
 import { GatewayIamRoleCredentialProviderConfig } from './iam-role';
-import { OAuthConfiguration, OAuthCredentialProviderConfiguration } from './oauth';
+import type { OAuthConfiguration } from './oauth';
+import { OAuthCredentialProviderConfiguration } from './oauth';
 
 /******************************************************************************
  *                                 Enums

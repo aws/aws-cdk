@@ -6,17 +6,18 @@ import * as kms from '../../aws-kms';
 import * as logs from '../../aws-logs';
 import * as s3 from '../../aws-s3';
 import { Secret } from '../../aws-secretsmanager';
+import type { Stack } from '../../core';
 import * as cdk from '../../core';
-import { RemovalPolicy, Stack, Annotations as CoreAnnotations } from '../../core';
+import { RemovalPolicy, Annotations as CoreAnnotations } from '../../core';
 import {
   RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS,
   AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS,
 } from '../../cx-api';
+import type { IClusterEngine } from '../lib';
 import {
   AuroraMysqlEngineVersion, AuroraPostgresEngineVersion, CfnDBCluster, Credentials, DatabaseCluster,
   DatabaseClusterEngine, DatabaseClusterFromSnapshot, ParameterGroup, PerformanceInsightRetention, SubnetGroup, DatabaseSecret,
   DatabaseInstanceEngine, SqlServerEngineVersion, SnapshotCredentials, InstanceUpdateBehaviour, NetworkType, ClusterInstance, CaCertificate,
-  IClusterEngine,
   ClusterScalabilityType,
   ClusterScailabilityType,
   DBClusterStorageType,
@@ -1722,6 +1723,29 @@ describe('cluster new api', () => {
         ApplyImmediately: applyImmediately,
       });
     });
+  });
+});
+
+describe('instance', () => {
+  test('creating an CfnDBInstance does not throw any errors', () => {
+    // We want to make sure we are using the jsii compiled code
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const generated = require('../lib/rds.generated.js');
+
+    try {
+      process.env.JSII_DEPRECATED = 'fail';
+
+      const stack = testStack();
+      new generated.CfnDBInstance(stack, 'Instance', {
+        allowMajorVersionUpgrade: true,
+      });
+
+      // Since we didn't pass any deprecated property to the constructor,
+      // no error should be thrown.
+      expect(() => Template.fromStack(stack)).not.toThrow();
+    } finally {
+      delete process.env.JSII_DEPRECATED;
+    }
   });
 });
 

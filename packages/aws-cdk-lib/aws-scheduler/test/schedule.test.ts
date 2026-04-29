@@ -3,7 +3,8 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import { App, Stack, Duration } from '../../core';
-import { IScheduleTarget, Schedule, ScheduleTargetConfig, TimeWindow } from '../lib';
+import type { IScheduleTarget, ScheduleTargetConfig } from '../lib';
+import { Schedule, TimeWindow } from '../lib';
 import { ScheduleExpression } from '../lib/schedule-expression';
 
 class SomeLambdaTarget implements IScheduleTarget {

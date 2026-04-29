@@ -1,8 +1,9 @@
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { App, Aspects, CfnResource, RemovalPolicy, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Aspects, CfnResource, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import * as redshift from '../lib';
 
 class RedshiftEnv extends Stack {
@@ -73,17 +74,9 @@ const app = new App({
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
-  context: {
-    'availability-zones:account=123456789012:region=us-east-1': ['us-east-1a', 'us-east-1b', 'us-east-1c'],
-  },
 });
 
-const stack = new Stack(app, 'aws-cdk-redshift-cluster-database', {
-  env: {
-    account: '123456789012',
-    region: 'us-east-1',
-  },
-});
+const stack = new Stack(app, 'aws-cdk-redshift-cluster-database');
 
 const singleProviderRoleTestStack = new SingleProviderRoleStack(stack, 'single-provider-role-integ');
 

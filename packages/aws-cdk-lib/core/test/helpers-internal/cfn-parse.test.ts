@@ -1,5 +1,6 @@
 import { App, CfnResource, Stack } from '../../../core';
-import { CfnParser, ICfnFinder } from '../../../core/lib/helpers-internal/cfn-parse';
+import type { ICfnFinder } from '../../../core/lib/helpers-internal/cfn-parse';
+import { CfnParser } from '../../../core/lib/helpers-internal/cfn-parse';
 
 describe('cfn-parse', () => {
   let app: App;

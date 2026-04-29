@@ -28,49 +28,6 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
 
 ## Table of contents
 
-- [AgentCore Runtime](#agentcore-runtime)
-  - [Runtime Versioning](#runtime-versioning)
-  - [Runtime Endpoints](#runtime-endpoints)
-  - [AgentCore Runtime Properties](#agentcore-runtime-properties)
-  - [Runtime Endpoint Properties](#runtime-endpoint-properties)
-  - [Creating a Runtime](#creating-a-runtime)
-    - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
-    - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
-    - [Option 2: Use a local asset](#option-2-use-a-local-asset)
-- [Browser Custom tool](#browser)
-  - [Browser properties](#browser-properties)
-  - [Browser Network modes](#browser-network-modes)
-  - [Basic Browser Creation](#basic-browser-creation)
-  - [Browser IAM permissions](#browser-iam-permissions)
-- [Code Interpreter Custom tool](#code-interpreter)
-  - [Code Interpreter properties](#code-interpreter-properties)
-  - [Code Interpreter Network Modes](#code-interpreter-network-modes)
-  - [Basic Code Interpreter Creation](#basic-code-interpreter-creation)
-  - [Code Interpreter IAM permissions](#code-interpreter-iam-permissions)
-- [Gateway](#gateway)
-  - [Gateway Properties](#gateway-properties)
-  - [Basic Gateway Creation](#basic-gateway-creation)
-  - [Protocol configuration](#protocol-configuration)
-  - [Inbound authorization](#inbound-authorization)
-  - [Gateway with KMS Encryption](#gateway-with-kms-encryption)
-  - [Gateway with Custom Execution Role](#gateway-with-custom-execution-role)
-  - [Gateway IAM Permissions](#gateway-iam-permissions)
-- [Gateway Target](#gateway-target)
-  - [Gateway Target Properties](#gateway-target-properties)
-  - [Targets types](#targets-types)
-  - [Outbound auth](#outbound-auth)
-  - [Api schema](#api-schema-for-openapi-and-smithy-target)
-  - [Basic Gateway Target Creation](#basic-gateway-target-creation)
-    - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
-    - [Using static factory methods](#using-static-factory-methods)
-  - [Lambda Target with Tool Schema](#tools-schema-for-lambda-target)
-  - [Smithy Model Target with OAuth](#api-schema-for-openapi-and-smithy-target)
-  - [Gateway Target IAM Permissions](#gateway-target-iam-permissions)
-- [Memory](#memory)
-  - [Memory properties](#memory-properties)
-  - [Basic Memory Creation](#basic-memory-creation)
-  - [LTM Memory Extraction Stategies](#ltm-memory-extraction-stategies)
-  - [Memory Strategy Methods](#memory-strategy-methods)
 - [Amazon Bedrock AgentCore Construct Library](#amazon-bedrock-agentcore-construct-library)
   - [Table of contents](#table-of-contents)
   - [AgentCore Runtime](#agentcore-runtime)
@@ -81,6 +38,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Option 1: Use an existing image in ECR](#option-1-use-an-existing-image-in-ecr)
       - [Option 2: Use a local asset](#option-2-use-a-local-asset)
       - [Option 3: Use direct code deployment](#option-3-use-direct-code-deployment)
+      - [Option 4: Use an ECR container image URI](#option-4-use-an-ecr-container-image-uri)
     - [Granting Permissions to Invoke Bedrock Models or Inference Profiles](#granting-permissions-to-invoke-bedrock-models-or-inference-profiles)
     - [Runtime Versioning](#runtime-versioning)
       - [Managing Endpoints and Versions](#managing-endpoints-and-versions)
@@ -101,6 +59,10 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Public Network Mode (Default)](#public-network-mode-default)
       - [VPC Network Mode](#vpc-network-mode)
       - [Managing Security Groups with VPC Configuration](#managing-security-groups-with-vpc-configuration)
+    - [Runtime IAM Permissions](#runtime-iam-permissions)
+    - [Other configuration](#other-configuration)
+      - [Lifecycle configuration](#lifecycle-configuration)
+      - [Request header configuration](#request-header-configuration)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -110,6 +72,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Browser with Recording Configuration](#browser-with-recording-configuration)
     - [Browser with Custom Execution Role](#browser-with-custom-execution-role)
     - [Browser with S3 Recording and Permissions](#browser-with-s3-recording-and-permissions)
+    - [Browser with Browser signing](#browser-with-browser-signing)
     - [Browser IAM Permissions](#browser-iam-permissions)
   - [Code Interpreter](#code-interpreter)
     - [Code Interpreter Network Modes](#code-interpreter-network-modes)
@@ -120,6 +83,28 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Code Interpreter with Custom Execution Role](#code-interpreter-with-custom-execution-role)
     - [Code Interpreter IAM Permissions](#code-interpreter-iam-permissions)
     - [Code interpreter with tags](#code-interpreter-with-tags)
+  - [Gateway](#gateway)
+    - [Gateway Properties](#gateway-properties)
+    - [Basic Gateway Creation](#basic-gateway-creation)
+    - [Protocol configuration](#protocol-configuration)
+    - [Inbound authorization](#inbound-authorization)
+    - [Gateway with KMS Encryption](#gateway-with-kms-encryption)
+    - [Gateway with Custom Execution Role](#gateway-with-custom-execution-role)
+    - [Gateway IAM Permissions](#gateway-iam-permissions)
+  - [Gateway Target](#gateway-target)
+    - [Gateway Target Properties](#gateway-target-properties)
+    - [Targets types](#targets-types)
+    - [Understanding Tool Naming](#understanding-tool-naming)
+    - [Tools schema For Lambda target](#tools-schema-for-lambda-target)
+    - [Api schema For OpenAPI and Smithy target](#api-schema-for-openapi-and-smithy-target)
+    - [Outbound auth](#outbound-auth)
+    - [Basic Gateway Target Creation](#basic-gateway-target-creation)
+      - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
+      - [Using static factory methods](#using-static-factory-methods)
+    - [Advanced Usage: Direct Configuration for gateway target](#advanced-usage-direct-configuration-for-gateway-target)
+      - [Configuration Factory Methods](#configuration-factory-methods)
+      - [Example: Lambda Target with Custom Configuration](#example-lambda-target-with-custom-configuration)
+    - [Gateway Target IAM Permissions](#gateway-target-iam-permissions)
   - [Memory](#memory)
     - [Memory Properties](#memory-properties)
     - [Basic Memory Creation](#basic-memory-creation)
@@ -129,6 +114,14 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Memory with Custom Execution Role](#memory-with-custom-execution-role)
     - [Memory with self-managed Strategies](#memory-with-self-managed-strategies)
     - [Memory Strategy Methods](#memory-strategy-methods)
+  - [Policy](#policy)
+    - [PolicyEngine Properties](#policyengine-properties)
+    - [Policy Properties](#policy-properties)
+    - [Basic PolicyEngine and Policy Creation](#basic-policyengine-and-policy-creation)
+    - [Associating a Policy Engine with a Gateway](#associating-a-policy-engine-with-a-gateway)
+    - [Type-Safe Policy Builder](#type-safe-policy-builder)
+    - [PolicyEngine with KMS Encryption](#policyengine-with-kms-encryption)
+    - [Policy Validation Modes](#policy-validation-modes)
 
 ## AgentCore Runtime
 
@@ -242,6 +235,21 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromS3(
   agentcore.AgentCoreRuntime.PYTHON_3_12, 
   ['opentelemetry-instrument', 'main.py']
 );
+
+const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+});
+```
+
+Alternatively, you can use local code assets that will be automatically packaged and uploaded to a CDK-managed S3 bucket:
+
+```typescript fixture=default
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromCodeAsset({
+  path: path.join(__dirname, 'path/to/agent/code'),
+  runtime: agentcore.AgentCoreRuntime.PYTHON_3_12,
+  entrypoint: ['opentelemetry-instrument', 'main.py'],
+});
 
 const runtimeInstance = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
@@ -469,15 +477,33 @@ const repository = new ecr.Repository(this, "TestRepository", {
 });
 const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
 
+// Optional: Create custom claims for additional validation
+const customClaims = [
+  agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+];
+
 const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingCognito(
     userPool, // User Pool (required)
     [userPoolClient, anotherUserPoolClient], // User Pool Clients
+    ["audience1"], // Allowed Audiences (optional)
+    ["read", "write"], // Allowed Scopes (optional)
+    customClaims, // Custom claims (optional) - see Custom Claims Validation section
   ),
 });
 ```
+
+You can configure:
+
+- User Pool: The Cognito User Pool that issues JWT tokens
+- User Pool Clients: One or more Cognito User Pool App Clients that are allowed to access the runtime
+- Allowed audiences: Used to validate that the audiences specified in the Cognito token match or are a subset of the audiences specified in the AgentCore Runtime
+- Allowed scopes: Allow access only if the token contains at least one of the required scopes configured here
+- Custom claims: A set of rules to match specific claims in the incoming token against predefined values for validating JWT tokens
 
 #### JWT Authentication
 
@@ -495,12 +521,76 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
     "https://example.com/.well-known/openid-configuration",  // Discovery URL (required)
     ["client1", "client2"],  // Allowed Client IDs (optional)
-    ["audience1"]           // Allowed Audiences (optional)
+    ["audience1"],           // Allowed Audiences (optional)
+    ["read", "write"],       // Allowed Scopes (optional)
+    // Custom claims (optional) - see Custom Claims Validation section below
   ),
 });
 ```
 
+You can configure:
+
+- Discovery URL: Enter the Discovery URL from your identity provider (e.g. Okta, Cognito, etc.), typically found in that provider's documentation. This allows your Agent or Tool to fetch login, downstream resource token, and verification settings.
+- Allowed audiences: This is used to validate that the audiences specified for the OAuth token matches or are a subset of the audiences specified in the AgentCore Runtime.
+- Allowed clients: This is used to validate that the public identifier of the client, as specified in the authorization token, is allowed to access the AgentCore Runtime.
+- Allowed scopes: Allow access only if the token contains at least one of the required scopes configured here.
+- Custom claims: A set of rules to match specific claims in the incoming token against predefined values for validating JWT tokens.
+
 **Note**: The discovery URL must end with `/.well-known/openid-configuration`.
+
+##### Custom Claims Validation
+
+Custom claims allow you to validate additional fields in JWT tokens beyond the standard audience, client, and scope validations. You can create custom claims using the `RuntimeCustomClaim` class:
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+// String claim - validates that the claim exactly equals the specified value
+// Uses EQUALS operator automatically
+const departmentClaim = agentcore.RuntimeCustomClaim.withStringValue('department', 'engineering');
+
+// String array claim with CONTAINS operator (default)
+// Validates that the claim array contains a specific string value
+// IMPORTANT: CONTAINS requires exactly one value in the array parameter
+const rolesClaim = agentcore.RuntimeCustomClaim.withStringArrayValue('roles', ['admin']);
+
+// String array claim with CONTAINS_ANY operator
+// Validates that the claim array contains at least one of the specified values
+// Use this when you want to check for multiple possible values
+const permissionsClaim = agentcore.RuntimeCustomClaim.withStringArrayValue(
+  'permissions',
+  ['read', 'write'],
+  agentcore.CustomClaimOperator.CONTAINS_ANY
+);
+
+// Use custom claims in authorizer configuration
+const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
+  runtimeName: "myAgent",
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingJWT(
+    "https://example.com/.well-known/openid-configuration",
+    ["client1", "client2"],
+    ["audience1"],
+    ["read", "write"],
+    [departmentClaim, rolesClaim, permissionsClaim] // Custom claims
+  ),
+});
+```
+
+**Custom Claim Rules**:
+
+- **String claims**: Must use the `EQUALS` operator (automatically set). The claim value must exactly match the specified string.
+- **String array claims**: Can use `CONTAINS` (default) or `CONTAINS_ANY` operators:
+  - **`CONTAINS`**: Checks if the claim array contains a specific string value. **Requires exactly one value** in the array parameter. For example, `['admin']` will check if the token's claim array contains the string `'admin'`.
+  - **`CONTAINS_ANY`**: Checks if the claim array contains at least one of the provided string values. Use this when you want to validate against multiple possible values. For example, `['read', 'write']` will check if the token's claim array contains either `'read'` or `'write'`.
+
+**Example Use Cases**:
+
+- Use `CONTAINS` when you need to verify a user has a specific role: `RuntimeCustomClaim.withStringArrayValue('roles', ['admin'])`
+- Use `CONTAINS_ANY` when you need to verify a user has any of several permissions: `RuntimeCustomClaim.withStringArrayValue('permissions', ['read', 'write'], CustomClaimOperator.CONTAINS_ANY)`
 
 #### OAuth Authentication
 
@@ -516,8 +606,11 @@ const runtime = new agentcore.Runtime(this, "MyAgentRuntime", {
   runtimeName: "myAgent",
   agentRuntimeArtifact: agentRuntimeArtifact,
   authorizerConfiguration: agentcore.RuntimeAuthorizerConfiguration.usingOAuth(
-    "https://github.com/.well-known/openid-configuration",  
-    "oauth_client_123",  
+    "https://github.com/.well-known/openid-configuration",  // Discovery URL (required)
+    "oauth_client_123",  // OAuth Client ID (required)
+    ["audience1"],       // Allowed Audiences (optional)
+    ["openid", "profile"], // Allowed Scopes (optional)
+    // Custom claims (optional) - see Custom Claims Validation section
   ),
 });
 ```
@@ -712,6 +805,52 @@ new agentcore.Runtime(this, 'test-runtime', {
   requestHeaderConfiguration: {
     allowlistedHeaders: ['X-Amzn-Bedrock-AgentCore-Runtime-Custom-H1'],
   },
+});
+```
+
+#### Observability configuration
+
+The Runtime construct supports observability features including X-Ray tracing and logging to CloudWatch Logs, S3, or Kinesis Data Firehose. This allows you to monitor and debug your agent runtime invocations.
+
+You can configure:
+
+- tracingEnabled: Enable X-Ray tracing for the runtime
+- loggingConfigs: Send APPLICATION_LOGS (agent runtime invocations) and USAGE_LOGS (session-level resource consumption) to CloudWatch Logs, S3, or Kinesis Data Firehose
+
+For additional information, please refer to the [Set up logging and tracing for AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+// Create logging destinations
+const logGroup = new logs.LogGroup(this, 'RuntimeLogGroup');
+const logBucket = new s3.Bucket(this, 'RuntimeLogBucket');
+const firehoseStream = new firehose.DeliveryStream(this, 'RuntimeLogStream', {
+  destination: new firehose.S3Bucket(logBucket),
+});
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  tracingEnabled: true,
+  loggingConfigs: [
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.cloudWatchLogs(logGroup),
+    },
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.s3(logBucket),
+    },
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.firehose(firehoseStream),
+    },
+  ],
 });
 ```
 
@@ -1092,6 +1231,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 | `kmsKey` | `kms.IKey` | No | The AWS KMS key used to encrypt data associated with the gateway |
 | `role` | `iam.IRole` | No | The IAM role that provides permissions for the gateway to access AWS services. A new role will be created if not provided |
 | `tags` | `{ [key: string]: string }` | No | Tags for the gateway. A list of key:value pairs of tags to apply to this Gateway resource |
+| `policyEngineConfiguration` | `GatewayPolicyEngineConfig` | No | Associates a policy engine with this gateway. All agent requests are evaluated against the Cedar policies in the engine. The gateway role is automatically granted evaluate permissions. Default: no policy engine |
 
 ### Basic Gateway Creation
 
@@ -1132,21 +1272,33 @@ your AgentCore gateway. By default, if not provided, the construct will create a
 **JSON Web Token (JWT)** – A secure and compact token used for authorization. After creating the JWT, you specify it as the authorization
 configuration when you create the gateway. You can create a JWT with any of the identity providers at Provider setup and configuration.
 
-You can configure a custom authorization provider using the `inboundAuthorizer` property with `GatewayAuthorizer.usingCustomJwt()`.
+You can configure a custom authorization provider using the `authorizerConfiguration` property with `GatewayAuthorizer.usingCustomJwt()`.
 You need to specify an OAuth discovery server and client IDs/audiences when you create the gateway. You can specify the following:
 
 - Discovery Url — String that must match the pattern ^.+/\.well-known/openid-configuration$ for OpenID Connect discovery URLs
 - At least one of the below options depending on the chosen identity provider.
 - Allowed audiences — List of allowed audiences for JWT tokens
 - Allowed clients — List of allowed client identifiers
+- Allowed scopes — List of allowed scopes for JWT tokens
+- Custom claims — Optional custom claim validations (see Custom Claims Validation section below)
 
 ```typescript fixture=default
+
+// Optional: Create custom claims (CustomClaimOperator and GatewayCustomClaim from agentcore)
+const customClaims = [
+  agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+];
+
 const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
   authorizerConfiguration: agentcore.GatewayAuthorizer.usingCustomJwt({
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
+    customClaims: customClaims, // Optional custom claims
   }),
 });
 ```
@@ -1168,6 +1320,20 @@ const lambdaRole = new iam.Role(this, "LambdaRole", {
 gateway.grantInvoke(lambdaRole);
 ```
 
+**No Authorization** – Creates a gateway with no inbound authorization. This is useful for building public MCP servers,
+or when you want to skip gateway-level authentication and enforce tool execution-level authentication using Gateway Interceptors.
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.withNoAuth(),
+});
+```
+
+> **⚠️ Important:** Do not use No Authorization gateways for production workloads unless you have implemented all the security best practices. No Authorization gateways are most appropriate for testing and development purposes. See [Security Best Practices](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none) for required compensating controls.
+
+For more information, see [No Authorization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none).
+
 **Cognito with M2M (Machine-to-Machine) Authentication (Default)** – When no authorizer is specified, the construct automatically creates a Cognito User Pool configured for OAuth 2.0 client credentials flow. This enables machine-to-machine authentication suitable for AI agents and service-to-service communication.
 
 For more information, see [Setting up Amazon Cognito for Gateway inbound authorization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/identity-idp-cognito.html).
@@ -1186,6 +1352,31 @@ const userPoolClient = gateway.userPoolClient;
 const tokenEndpointUrl = gateway.tokenEndpointUrl;
 const oauthScopes = gateway.oauthScopes;
 // oauthScopes are in the format: ['{resourceServerId}/read', '{resourceServerId}/write']
+```
+
+**Using Cognito User Pool Explicitly with Custom Claims** – You can also use an existing Cognito User Pool with custom claims:
+
+```typescript fixture=default
+declare const userPool: cognito.UserPool;
+declare const userPoolClient: cognito.UserPoolClient;
+
+// Optional: Create custom claims (CustomClaimOperator and GatewayCustomClaim from agentcore)
+const customClaims = [
+  agentcore.GatewayCustomClaim.withStringValue('department', 'engineering'),
+  agentcore.GatewayCustomClaim.withStringArrayValue('roles', ['admin'], agentcore.CustomClaimOperator.CONTAINS),
+  agentcore.GatewayCustomClaim.withStringArrayValue('permissions', ['read', 'write'], agentcore.CustomClaimOperator.CONTAINS_ANY),
+];
+
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.usingCognito({
+    userPool: userPool,
+    allowedClients: [userPoolClient],
+    allowedAudiences: ["audience1"],
+    allowedScopes: ["read", "write"],
+    customClaims: customClaims, // Optional custom claims
+  }),
+});
 ```
 
 To authenticate with the gateway, request an access token using the client credentials flow and use it to call Gateway endpoints. For more information about the token endpoint, see [The token issuer endpoint](https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html).
@@ -1225,6 +1416,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
   kmsKey: encryptionKey,
   exceptionLevel: agentcore.GatewayExceptionLevel.DEBUG,
@@ -1255,6 +1447,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
   role: executionRole,
 });
@@ -1278,6 +1471,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
     discoveryUrl: "https://auth.example.com/.well-known/openid-configuration",
     allowedAudience: ["my-app"],
     allowedClients: ["my-client-id"],
+    allowedScopes: ["read", "write"],
   }),
 });
 
@@ -1310,7 +1504,7 @@ credential provider attached enabling you to securely access targets whether the
 | `gatewayTargetName` | `string` | No | The name of the gateway target. Valid characters are a-z, A-Z, 0-9, _ (underscore) and - (hyphen). If not provided, a unique name will be auto-generated |
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
-| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, or Smithy). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
+| `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, or API Gateway). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
 | `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. Use `GatewayCredentialProvider.fromApiKeyIdentityArn()`, `GatewayCredentialProvider.fromOauthIdentityArn()`, or `GatewayCredentialProvider.fromIamRole()` |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
@@ -1524,7 +1718,9 @@ You can create targets in two ways: using the static factory methods on `Gateway
 
 #### Using addTarget methods (Recommended)
 
-Below are the examples on how you can create Lambda , Smity and OpenAPI target using `addTarget` method.
+This approach is recommended for most use cases, especially when creating targets alongside the gateway. It provides a cleaner, more fluent API by eliminating the need to explicitly pass the gateway reference.
+
+Below are the examples on how you can create Lambda, Smithy, OpenAPI, MCP Server, and API Gateway targets using `addTarget` methods.
 
 ```typescript fixture=default
 // Create a gateway first
@@ -1669,9 +1865,36 @@ def handler(event, context):
 mcpTarget.grantSync(syncFunction);
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const api = new apigateway.RestApi(this, 'MyApi', {
+  restApiName: 'my-api',
+});
+
+// Uses IAM authorization for outbound auth by default
+const apiGatewayTarget = gateway.addApiGatewayTarget("MyApiGatewayTarget", {
+  restApi: api,
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET],
+      },
+    ],
+  },
+});
+```
+
 #### Using static factory methods
 
-Create Gateway target using static convienence method.
+Use static factory methods when working with imported gateways, creating targets in different constructs/stacks, or when you need more explicit control over the construct tree hierarchy.
+
+Create Gateway target using static convenience methods.
 
 - Lambda Target
 
@@ -1787,6 +2010,38 @@ const mcpTarget = agentcore.GatewayTarget.forMcpServer(this, "MyMcpServer", {
 });
 ```
 
+- API Gateway Target
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const api = new apigateway.RestApi(this, 'MyApi', {
+  restApiName: 'my-api',
+});
+
+// Create a gateway target using the static factory method
+const apiGatewayTarget = agentcore.GatewayTarget.forApiGateway(this, "MyApiGatewayTarget", {
+  gatewayTargetName: "my-api-gateway-target",
+  description: "Target for API Gateway REST API integration",
+  gateway: gateway,
+  restApi: api,
+  apiGatewayToolConfiguration: {
+    toolFilters: [
+      {
+        filterPath: "/pets/*",
+        methods: [agentcore.ApiGatewayHttpMethod.GET, agentcore.ApiGatewayHttpMethod.POST],
+      },
+    ],
+  },
+  metadataConfiguration: {
+    allowedRequestHeaders: ["X-User-Id"],
+    allowedQueryParameters: ["limit"],
+  },
+});
+```
+
 ### Advanced Usage: Direct Configuration for gateway target
 
 For advanced use cases where you need full control over the target configuration, you can create configurations manually using the static factory methods and use the GatewayTarget constructor directly.
@@ -1798,6 +2053,7 @@ Each target type has a corresponding configuration class with a static `create()
 - **Lambda**: `LambdaTargetConfiguration.create(lambdaFunction, toolSchema)`
 - **OpenAPI**: `OpenApiTargetConfiguration.create(apiSchema, validateSchema?)`
 - **Smithy**: `SmithyTargetConfiguration.create(smithyModel)`
+- **API Gateway**: `ApiGatewayTargetConfiguration.create(props)`
 
 #### Example: Lambda Target with Custom Configuration
 
@@ -1840,7 +2096,7 @@ const target = new agentcore.GatewayTarget(this, "AdvancedTarget", {
 });
 ```
 
-This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`) handle all of this internally.
+This approach gives you full control over the configuration but is typically not necessary for most use cases. The convenience methods (`GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`) handle all of this internally.
 
 ### Gateway Interceptors
 
@@ -2332,4 +2588,407 @@ const memory = new agentcore.Memory(this, "test-memory", {
 // Add strategies after instantiation
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
+```
+
+## Policy Engine
+
+A policy engine is a collection of policies that evaluates and authorizes agent tool calls. When associated with a gateway, the policy engine intercepts all agent requests and determines whether to allow or deny each action based on the defined policies.
+
+For more information, see the [Policy in Amazon Bedrock AgentCore documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html).
+
+### PolicyEngine Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `policyEngineName` | `string` | No | The name of the policy engine. Valid characters: a-z, A-Z, 0-9, _ (underscore). Must start with a letter, 1-48 characters. If not provided, a unique name will be auto-generated |
+| `description` | `string` | No | Optional description for the policy engine (max 4,096 characters). Default: no description |
+| `kmsKey` | `IKey` | No | Custom KMS key for encryption. **IMPORTANT**: Once set, cannot be changed (requires replacement). Must be symmetric ENCRYPT_DECRYPT key. If key becomes inaccessible, all authorization decisions will be DENIED. Default: AWS owned key |
+| `tags` | `{ [key: string]: string }` | No | Tags for the policy engine (max 50 tags). Default: no tags |
+
+### Understanding Cedar Policies in AgentCore
+
+Policies are constructed using [Cedar language](https://www.cedarpolicy.com/en/tutorial), an open source language for writing and enforcing authorization policies.
+Cedar policies in AgentCore follow a specific structure with three main components: **Principal**, **Action**, and **Resource**. Understanding how these components work together is critical for writing effective policies.
+
+#### Policy Structure
+
+Every Cedar policy has this basic structure:
+
+```cedar
+permit(              // or forbid
+  principal,         // Who is making the request
+  action,            // What operation they want to perform
+  resource           // What Gateway/tool they want to access
+)
+when {               // Optional conditions
+  // Additional constraints
+};
+```
+
+Example Policy
+
+```cedar
+permit(
+  principal,
+  action == AgentCore::Action::"ApplicationToolTarget___create_application",
+  resource == AgentCore::Gateway::"<gateway-arn>"
+) when {
+  context.input.coverage_amount <= 1000000
+};
+```
+
+### Basic PolicyEngine and Policy Creation
+
+Create a policy engine and add policies to it.
+
+#### Policy Engine Mode
+
+When associating a policy engine with a gateway, you can control the enforcement behavior using `PolicyEngineMode`:
+
+- `PolicyEngineMode.LOG_ONLY` (default) — evaluates actions and adds traces but does not enforce decisions. Use this mode for testing and validation before enabling enforcement.
+- `PolicyEngineMode.ENFORCE` — actively allows or denies agent operations based on Cedar policy evaluation.
+
+```typescript fixture=default
+
+// Create a Policy engine  
+const policyEngine = new agentcore.PolicyEngine(this, "MyPolicyEngine", {
+  policyEngineName: "my_policy_engine",
+  description: "Policy engine for access control",
+});
+
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  policyEngineConfiguration: {
+    policyEngine: policyEngine,
+    mode: agentcore.PolicyEngineMode.ENFORCE, // Default is LOG_ONLY
+  },
+});
+
+// Add policy to policy engine
+policyEngine.addPolicy("AllowAllActions", {
+  definition: `
+    permit(
+      principal,
+      action,
+      resource == AgentCore::Gateway::"${gateway.gatewayArn}"
+    );
+  `,
+  description: "Allow all actions on specific gateway (development)",
+  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS, // This will ignore all cedar warnings
+});
+
+// you can add multiple policies to the policy engine
+policyEngine.addPolicy("SpecificToolPolicy", {
+  definition: `
+    permit(
+      principal is AgentCore::OAuthUser,
+      action == AgentCore::Action::"WeatherTool__get_forecast",
+      resource == AgentCore::Gateway::"${gateway.gatewayArn}"
+    );
+  `,
+  description: "Allow specific weather tool access",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS, // This will fail policy creation for any cedar warning
+});
+```
+
+### Type-Safe Policy Builder
+
+For a more type-safe approach, use the `PolicyStatement` builder instead of writing raw Cedar syntax.
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const policyEngine = new agentcore.PolicyEngine(this, "MyPolicyEngine", {
+  policyEngineName: "my_policy_engine",
+});
+
+const allowAllPolicy = new agentcore.Policy(this, "AllowAllPolicy", {
+  policyEngine: policyEngine,
+  policyName: "allow_all",
+  statement: agentcore.PolicyStatement.permit()
+    .forAllPrincipals() // ** This will give overly permission to all principals
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),
+  description: "Allow all actions on specific gateway (development only)",
+  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal,
+//   action,
+//   resource == AgentCore::Gateway::"arn:aws:bedrock-agentcore:region:account:gateway/gateway-id"
+// );
+```
+
+#### Policy with Specific Actions
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow specific tool actions on specific gateway
+// Action names follow pattern: "ToolName__operation"
+policyEngine.addPolicy("SpecificToolPolicy", {
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser::your-client-id') 
+    .onActions([
+      'AgentCore::Action::WeatherTool__get_forecast',
+      'AgentCore::Action::WeatherTool__get_current',
+    ])
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),  
+  description: "Allow specific weather tool operations",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action in [
+//     AgentCore::Action::"WeatherTool__get_forecast",
+//     AgentCore::Action::"WeatherTool__get_current"
+//   ],
+//   resource == AgentCore::Gateway::"arn:aws:bedrock-agentcore:us-east-1:123:gateway/gw-123"
+// );
+```
+
+#### Policy with Conditions
+
+Use `when` clauses to add advanced conditions based on principal tags (from OAuth token) or context:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Policy with when conditions using principal tags
+const conditionalPolicy = new agentcore.Policy(this, "ConditionalPolicy", {
+  policyEngine: policyEngine,
+  policyName: "conditional_access",
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')  // Type constraint
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)  // Specific ARN
+    .when()
+      .principalAttribute('department').equalTo('Engineering')
+      .and()
+      .contextAttribute('input.priority').equalTo('high')
+      .done(),
+  description: "Allow engineers for high-priority requests",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action,
+//   resource == AgentCore::Gateway::"arn:..."
+// )
+// when {
+//   principal.department == "Engineering" && context.input.priority == "high"
+// };
+```
+
+#### Policy with Exclusions (unless)
+
+Use `unless` clauses to exclude specific conditions from a policy. The policy applies when the `unless` conditions are NOT met:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow access unless the user is suspended
+const policyWithUnless = new agentcore.Policy(this, "UnlessPolicy", {
+  policyEngine: policyEngine,
+  policyName: "unless_suspended",
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)
+    .unless()
+      .principalAttribute('suspended').equalTo(true)
+      .done(),
+  description: "Allow all actions unless user is suspended",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action,
+//   resource == AgentCore::Gateway::"arn:..."
+// )
+// unless {
+//   principal.suspended == true
+// };
+```
+
+You can combine `when` and `unless` clauses in the same policy:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow engineers unless they are on probation
+policyEngine.addPolicy("CombinedConditions", {
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)
+    .when()
+      .principalAttribute('department').equalTo('Engineering')
+      .done()
+    .unless()
+      .principalAttribute('status').equalTo('probation')
+      .done(),
+  description: "Allow engineers unless on probation",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+```
+
+#### Forbid (Deny) Policy
+
+Use `forbid` to explicitly deny access. Forbid policies override permit policies.
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Explicitly deny dangerous tool operations
+policyEngine.addPolicy("DenyDangerous", {
+  statement: agentcore.PolicyStatement.forbid()
+    .forAllPrincipals()
+    .onAction('AgentCore::Action::DeleteTool__delete_all')
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),
+  description: "Forbid delete_all operation for all users",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// forbid(
+//   principal,
+//   action == AgentCore::Action::"DeleteTool__delete_all",
+//   resource == AgentCore::Gateway::"arn:..."
+// );
+```
+
+#### Raw Cedar for Advanced Cases
+
+For advanced Cedar features not supported by the builder, use raw Cedar strings:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+
+// Option 1: Using definition property
+const advancedPolicy = new agentcore.Policy(this, "AdvancedPolicy", {
+  policyEngine: policyEngine,
+  definition: 'permit(principal, action, resource) when { context.custom > 10 };',
+  description: "Advanced policy with custom Cedar logic",
+});
+
+// Option 2: Using fromCedar() with statement property
+policyEngine.addPolicy("CustomPolicy", {
+  statement: agentcore.PolicyStatement.fromCedar(
+    'forbid(principal, action, resource) when { resource.confidential == true };'
+  ),
+  description: "Custom policy from Cedar string",
+});
+```
+
+**Note**: You must specify **either** `definition` (raw Cedar string) **or** `statement` (PolicyStatement builder), but not both.
+
+#### Accessing Policies on PolicyEngine
+
+You can access the list of policies added to a PolicyEngine using policyEngine.policies.
+
+### PolicyEngine with KMS Encryption
+
+Encrypt policy data with a custom KMS key.
+
+```typescript fixture=default
+// Create a custom KMS key
+const policyKey = new kms.Key(this, "PolicyEngineKey", {
+  enableKeyRotation: true,
+  description: "KMS key for policy engine encryption",
+});
+
+// Create policy engine with encryption
+const policyEngine = new agentcore.PolicyEngine(this, "EncryptedEngine", {
+  policyEngineName: "encrypted_engine",
+  description: "Policy engine with KMS encryption",
+  kmsKey: policyKey,
+});
+```
+
+### Importing Existing PolicyEngine
+
+Import an existing policy engine from its ARN:
+
+```typescript fixture=default
+const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
+  this,
+  "ImportedEngine",
+  {
+    policyEngineArn: "policy-engine-arn",
+    kmsKeyArn: "kms-arn",
+  }
+);
+
+// Use the imported engine
+const policy = new agentcore.Policy(this, "PolicyForImportedEngine", {
+  policyEngine: importedEngine,
+  definition: "permit(principal, action, resource);",
+});
+```
+
+### Importing Existing Policy
+
+Import an existing policy from its ARN:
+
+```typescript fixture=default
+const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
+  this,
+  "ImportedEngine",
+  {
+    policyEngineArn: "policy-engine/my-engine-id",
+  }
+);
+
+const importedPolicy = agentcore.Policy.fromPolicyAttributes(
+  this,
+  "ImportedPolicy",
+  {
+    policyArn: "my-policy-arn",
+    policyEngine: importedEngine,
+  }
+);
+
+// Grant permissions to the imported policy
+const role = new iam.Role(this, "PolicyRole", {
+  assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+});
+
+importedPolicy.grantRead(role);
+```
+
+### PolicyEngine IAM Permissions
+
+Grant various levels of access to policy engines:
+
+```typescript fixture=default
+const policyEngine = new agentcore.PolicyEngine(this, "MyEngine", {
+  policyEngineName: "my_engine",
+});
+
+const lambdaRole = new iam.Role(this, "LambdaRole", {
+  assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+});
+
+// Grant read permissions 
+policyEngine.grantRead(lambdaRole);
+
+// Grant evaluation permissions 
+policyEngine.grantEvaluate(lambdaRole);
+
 ```

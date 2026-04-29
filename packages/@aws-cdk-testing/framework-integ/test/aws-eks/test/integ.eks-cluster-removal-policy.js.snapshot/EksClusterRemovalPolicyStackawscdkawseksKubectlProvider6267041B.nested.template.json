@@ -38,14 +38,16 @@
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet1Subnet7CF01B26Ref"
+       "Ref": "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet1Subnet3F552771Ref"
       },
       {
-       "Ref": "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet2SubnetEAB03B98Ref"
+       "Ref": "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet2Subnet4FFDAC43Ref"
       }
      ]
     }
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "HandlerLogGroup50A7B41D": {
    "Type": "AWS::Logs::LogGroup",
@@ -63,8 +65,8 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AwsCliLayerF44AAF94": {
    "Type": "AWS::Lambda::LayerVersion",
@@ -73,10 +75,12 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
     },
     "Description": "/opt/awscli/aws"
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ProviderframeworkonEventServiceRole9FF04296": {
    "Type": "AWS::IAM::Role",
@@ -119,7 +123,9 @@
       ]
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133": {
    "Type": "AWS::IAM::Policy",
@@ -171,7 +177,9 @@
       "Ref": "ProviderframeworkonEventServiceRole9FF04296"
      }
     ]
-   }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ProviderframeworkonEvent83C1D0A7": {
    "Type": "AWS::Lambda::Function",
@@ -180,7 +188,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "39472b1c2875cf306d4ba429aeccdd34cb49bcf59dbde81f7e6b6cb9deac23a6.zip"
+     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (EksClusterRemovalPolicyStack/@aws-cdk--aws-eks.KubectlProvider/Provider)",
     "Environment": {
@@ -214,10 +222,10 @@
      ],
      "SubnetIds": [
       {
-       "Ref": "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet1Subnet7CF01B26Ref"
+       "Ref": "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet1Subnet3F552771Ref"
       },
       {
-       "Ref": "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet2SubnetEAB03B98Ref"
+       "Ref": "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet2Subnet4FFDAC43Ref"
       }
      ]
     }
@@ -225,7 +233,9 @@
    "DependsOn": [
     "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133",
     "ProviderframeworkonEventServiceRole9FF04296"
-   ]
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "ProviderframeworkonEventLogGroup683073A3": {
    "Type": "AWS::Logs::LogGroup",
@@ -243,8 +253,25 @@
     },
     "RetentionInDays": 731
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "referencetoEksClusterRemovalPolicyStackKubectlLayer5846BA58Ref": {
+   "Type": "String"
+  },
+  "referencetoEksClusterRemovalPolicyStackClusterKubectlHandlerRoleDA1C9C27Arn": {
+   "Type": "String"
+  },
+  "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet1Subnet3F552771Ref": {
+   "Type": "String"
+  },
+  "referencetoEksClusterRemovalPolicyStackVpcPrivateSubnet2Subnet4FFDAC43Ref": {
+   "Type": "String"
+  },
+  "referencetoEksClusterRemovalPolicyStackCluster93E70873ClusterSecurityGroupId": {
+   "Type": "String"
   }
  },
  "Outputs": {
@@ -255,23 +282,6 @@
      "Arn"
     ]
    }
-  }
- },
- "Parameters": {
-  "referencetoEksClusterRemovalPolicyStackKubectlLayer5846BA58Ref": {
-   "Type": "String"
-  },
-  "referencetoEksClusterRemovalPolicyStackClusterKubectlHandlerRoleDA1C9C27Arn": {
-   "Type": "String"
-  },
-  "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet1Subnet7CF01B26Ref": {
-   "Type": "String"
-  },
-  "referencetoEksClusterRemovalPolicyStackClusterDefaultVpcPrivateSubnet2SubnetEAB03B98Ref": {
-   "Type": "String"
-  },
-  "referencetoEksClusterRemovalPolicyStackCluster93E70873ClusterSecurityGroupId": {
-   "Type": "String"
   }
  }
 }

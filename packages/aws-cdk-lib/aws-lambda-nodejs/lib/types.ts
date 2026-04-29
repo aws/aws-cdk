@@ -1,4 +1,4 @@
-import { BundlingFileAccess, DockerImage, DockerRunOptions } from '../../core';
+import type { BundlingFileAccess, DockerImage, DockerRunOptions } from '../../core';
 
 /**
  * Bundling options

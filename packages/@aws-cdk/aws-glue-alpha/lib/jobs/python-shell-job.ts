@@ -1,10 +1,11 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Job, JobProps } from './job';
+import type { Construct } from 'constructs';
+import type { JobProps } from './job';
+import { Job } from './job';
 import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 
 /**

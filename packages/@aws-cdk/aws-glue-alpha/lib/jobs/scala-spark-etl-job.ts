@@ -1,12 +1,13 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { ValidationError } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Code } from '../code';
+import type { Construct } from 'constructs';
+import type { Code } from '../code';
 import { JobType, GlueVersion, JobLanguage, WorkerType } from '../constants';
-import { SparkJob, SparkJobProps } from './spark-job';
+import type { SparkJobProps } from './spark-job';
+import { SparkJob } from './spark-job';
 
 /**
  * Properties for creating a Scala Spark ETL job
@@ -90,7 +91,7 @@ export class ScalaSparkEtlJob extends SparkJob {
     };
 
     if ((!props.workerType && props.numberOfWorkers !== undefined) || (props.workerType && props.numberOfWorkers === undefined)) {
-      throw new ValidationError('Both workerType and numberOfWorkers must be set', this);
+      throw new ValidationError(lit`WorkerTypeAndNumberOfWorkersMustBothBeSet`, 'Both workerType and numberOfWorkers must be set', this);
     }
 
     this.resource = new CfnJob(this, 'Resource', {

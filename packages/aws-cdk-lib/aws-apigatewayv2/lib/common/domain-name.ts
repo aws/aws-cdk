@@ -1,14 +1,19 @@
-import { Construct } from 'constructs';
-import { IpAddressType } from './api';
-import { CfnDomainName, CfnDomainNameProps } from '.././index';
-import { IBucket } from '../../../aws-s3';
-import { ArnFormat, IResource, Lazy, Resource, Stack, Token } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IpAddressType } from './api';
+import type { CfnDomainNameProps } from '.././index';
+import { CfnDomainName } from '.././index';
+import type { IBucket } from '../../../aws-s3';
+import type { IResource } from '../../../core';
+import { ArnFormat, Resource, Stack, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { memoizedGetter } from '../../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
-import { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
+import type { ICertificateRef } from '../../../interfaces/generated/aws-certificatemanager-interfaces.generated';
+import type { DomainNameReference, IDomainNameRef } from '../apigatewayv2.generated';
 
 /**
  * The minimum version of the SSL protocol that you want API Gateway to use for HTTPS connections.
@@ -166,6 +171,7 @@ export interface MTLSConfig {
  * Custom domain resource for the API
  */
 @propertyInjectable
+@noBoxStackTraces
 export class DomainName extends Resource implements IDomainName {
   /**
    * Uniquely identifies this class.
@@ -194,7 +200,7 @@ export class DomainName extends Resource implements IDomainName {
   }
 
   public readonly name: string;
-  private readonly domainNameConfigurations: CfnDomainName.DomainNameConfigurationProperty[] = [];
+  private readonly domainNameConfigurations: IArrayBox<CfnDomainName.DomainNameConfigurationProperty>;
   private readonly resource: CfnDomainName;
 
   constructor(scope: Construct, id: string, props: DomainNameProps) {
@@ -203,18 +209,20 @@ export class DomainName extends Resource implements IDomainName {
     addConstructMetadata(this, props);
 
     if (props.domainName === '') {
-      throw new ValidationError('empty string for domainName not allowed', scope);
+      throw new ValidationError(lit`EmptyStringDomainNameAllowed`, 'empty string for domainName not allowed', scope);
     }
 
     // validation for ownership certificate
     if (props.ownershipCertificate && !props.mtls) {
-      throw new ValidationError('ownership certificate can only be used with mtls domains', scope);
+      throw new ValidationError(lit`OwnershipCertificateMtlsDomains`, 'ownership certificate can only be used with mtls domains', scope);
     }
+
+    this.domainNameConfigurations = Box.fromArray([], { omitEmpty: false });
 
     const mtlsConfig = this.configureMTLS(props.mtls);
     const domainNameProps: CfnDomainNameProps = {
       domainName: props.domainName,
-      domainNameConfigurations: Lazy.any({ produce: () => this.domainNameConfigurations }),
+      domainNameConfigurations: this.domainNameConfigurations,
       mutualTlsAuthentication: mtlsConfig,
     };
     this.resource = new CfnDomainName(this, 'Resource', domainNameProps);
@@ -254,9 +262,9 @@ export class DomainName extends Resource implements IDomainName {
 
   // validates that the new domain name configuration has a unique endpoint
   private validateEndpointType(endpointType: string | undefined) : void {
-    for (let config of this.domainNameConfigurations) {
+    for (let config of this.domainNameConfigurations.get()) {
       if (endpointType && endpointType == config.endpointType) {
-        throw new ValidationError(`an endpoint with type ${endpointType} already exists`, this);
+        throw new ValidationError(lit`EndpointType`, `an endpoint with type ${endpointType} already exists`, this);
       }
     }
   }

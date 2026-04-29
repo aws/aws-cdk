@@ -2,6 +2,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
+import { APPRUNNER_SUPPORTED_REGIONS } from './apprunner-supported-regions';
 import * as apprunner from '../lib';
 
 const app = new cdk.App();
@@ -45,6 +46,7 @@ new cdk.CfnOutput(stack, 'URL8', { value: `https://${service8.serviceUrl}` });
 
 new integ.IntegTest(app, 'AppRunnerSecretsManger', {
   testCases: [stack],
+  regions: APPRUNNER_SUPPORTED_REGIONS,
 });
 
 app.synth();

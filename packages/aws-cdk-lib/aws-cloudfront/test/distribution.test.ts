@@ -7,9 +7,12 @@ import * as kinesis from '../../aws-kinesis';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import { App, Aws, Duration, Stack, Token } from '../../core';
+import type {
+  CfnDistribution,
+  IOrigin,
+} from '../lib';
 import {
   AllowedMethods,
-  CfnDistribution,
   Distribution,
   Endpoint,
   Function,
@@ -17,7 +20,6 @@ import {
   FunctionEventType,
   GeoRestriction,
   HttpVersion,
-  IOrigin,
   LambdaEdgeEventType,
   PriceClass,
   RealtimeLogConfig,

@@ -1,12 +1,14 @@
 
+import type {
+  Expression,
+  IScope,
+} from '@cdklabs/typewriter';
 import {
   expr,
-  Expression,
   ObjectPropertyAccess,
   IsNotNullish,
   Type,
   ThingSymbol,
-  IScope,
   StructType,
   PrimitiveType,
   FreeFunction,
@@ -16,7 +18,7 @@ import {
 } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
 import { PropertyValidator } from './property-validator';
-import { TypeConverter } from './type-converter';
+import type { TypeConverter } from './type-converter';
 import { UnionOrdering } from './union-ordering';
 import { cfnParserNameFromType, cfnProducerNameFromType, cfnPropsValidatorNameFromType } from '../naming';
 

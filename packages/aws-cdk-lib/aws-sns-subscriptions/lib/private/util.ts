@@ -1,5 +1,6 @@
 import * as sns from '../../../aws-sns';
-import { ArnFormat, IResource, Token, Stack } from '../../../core';
+import type { IResource } from '../../../core';
+import { ArnFormat, Token, Stack } from '../../../core';
 
 export function regionFromArn(topic: sns.ITopic, resource: IResource): string | undefined {
   // no need to specify `region` for topics defined within the same stack.

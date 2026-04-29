@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "50.0.0",
   "files": {
     "f9e956fb5e2f791153ea7f9505e67fce8b218eac61d16971b414879ba0b5e11d": {
+      "displayName": "integ-apprunner-ip-address-type Template",
       "source": {
         "path": "integ-apprunner-ip-address-type.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-b2ec69c5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "f9e956fb5e2f791153ea7f9505e67fce8b218eac61d16971b414879ba0b5e11d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

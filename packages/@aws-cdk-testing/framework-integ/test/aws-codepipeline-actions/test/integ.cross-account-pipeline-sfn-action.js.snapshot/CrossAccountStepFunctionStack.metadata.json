@@ -1,0 +1,226 @@
+{
+  "/CrossAccountStepFunctionStack/CrossAccountStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definition": "*",
+        "stateMachineName": "*"
+      }
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CrossAccountRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CrossAccountStepFunctionStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CrossAccountStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CrossAccountStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountStateMachineA8361228"
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CrossAccountRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountRoleFACE29D1"
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CrossAccountRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleA1EF4B34"
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CrossAccountStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountStateMachineRoleBF02B6D5"
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CrossAccountRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossAccountRoleDefaultPolicy212A317F"
+    }
+  ],
+  "/CrossAccountStepFunctionStack/CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5-InvokeStepFunction-InvokeStateMachine-ActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CdkPipelineStepFunctionsActionStackCrossAccountStepFunctionsPipeline2E80B0A5InvokeStepFunctionInvokeStateMachineActionRoleDefaultPolicy71BB5A06"
+    }
+  ]
+}

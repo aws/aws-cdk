@@ -1,7 +1,8 @@
 import { InstanceType, Vpc, Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { AsgCapacityProvider, Cluster, ContainerImage, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
-import { App, Stack, CfnResource } from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { NetworkMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 

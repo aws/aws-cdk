@@ -1,10 +1,17 @@
-import { Construct, DependencyGroup, IConstruct, IDependable } from 'constructs';
-import { Protocol, TargetType } from './enums';
-import { Attributes, renderAttributes } from './util';
-import * as ec2 from '../../../aws-ec2';
+import type { IConstruct, IDependable } from 'constructs';
+import { Construct, DependencyGroup } from 'constructs';
+import type { Protocol } from './enums';
+import { TargetType } from './enums';
+import type { Attributes } from './util';
+import { renderAttributes } from './util';
+import type * as ec2 from '../../../aws-ec2';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
-import { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
 import { CfnTargetGroup } from '../elasticloadbalancingv2.generated';
 
 /**
@@ -231,6 +238,7 @@ export interface HealthCheck {
 /**
  * Define the target of a load balancer
  */
+@noBoxStackTraces
 export abstract class TargetGroupBase extends Construct implements ITargetGroup {
   /**
    * The ARN of the target group
@@ -286,7 +294,12 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * Health check for the members of this target group
    */
-  public healthCheck: HealthCheck;
+  public get healthCheck(): HealthCheck {
+    return this._healthCheck.get() as HealthCheck;
+  }
+  public set healthCheck(value: HealthCheck) {
+    this._healthCheck.set(value);
+  }
 
   /**
    * Default port configured for members of this target group
@@ -301,17 +314,25 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
   /**
    * The types of the directly registered members of this target group
    */
-  protected targetType?: TargetType;
+  protected get targetType(): TargetType | undefined {
+    return this._targetType.get() as TargetType | undefined;
+  }
+  protected set targetType(value: TargetType | undefined) {
+    this._targetType.set(value);
+  }
 
   /**
    * Attributes of this target group
    */
   private readonly attributes: Attributes = {};
 
+  private readonly _healthCheck: IBox<HealthCheck>;
+  private readonly _targetType: IBox<TargetType | undefined>;
+
   /**
    * The JSON objects returned by the directly registered members of this target group
    */
-  private readonly targetsJson = new Array<CfnTargetGroup.TargetDescriptionProperty>();
+  private readonly _targetsJson: IArrayBox<CfnTargetGroup.TargetDescriptionProperty>;
 
   /**
    * The target group VPC
@@ -370,36 +391,38 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       );
     }
 
-    this.healthCheck = baseProps.healthCheck || {};
+    this._targetsJson = Box.fromArray([]);
+
+    this._healthCheck = Box.fromValue<HealthCheck>(baseProps.healthCheck || {});
     this.vpc = baseProps.vpc;
-    this.targetType = baseProps.targetType;
+    this._targetType = Box.fromValue<TargetType | undefined>(baseProps.targetType);
 
     this.resource = new CfnTargetGroup(this, 'Resource', {
       name: baseProps.targetGroupName,
       targetGroupAttributes: cdk.Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
-      targetType: cdk.Lazy.string({ produce: () => this.targetType }),
-      targets: cdk.Lazy.any({ produce: () => this.targetsJson }, { omitEmptyArray: true }),
-      vpcId: cdk.Lazy.string({ produce: () => this.vpc && this.targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined }),
+      targetType: cdk.Token.asString(this._targetType),
+      targets: this._targetsJson,
+      vpcId: cdk.Token.asString(
+        Box.combine({ targetType: this._targetType }, ({ targetType }) =>
+          this.vpc && targetType !== TargetType.LAMBDA ? this.vpc.vpcId : undefined,
+        ),
+      ),
 
       // HEALTH CHECK
-      healthCheckEnabled: cdk.Lazy.any({ produce: () => this.healthCheck?.enabled }),
-      healthCheckIntervalSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck?.interval?.toSeconds(),
-      }),
-      healthCheckPath: cdk.Lazy.string({ produce: () => this.healthCheck?.path }),
-      healthCheckPort: cdk.Lazy.string({ produce: () => this.healthCheck?.port }),
-      healthCheckProtocol: cdk.Lazy.string({ produce: () => this.healthCheck?.protocol }),
-      healthCheckTimeoutSeconds: cdk.Lazy.number({
-        produce: () => this.healthCheck?.timeout?.toSeconds(),
-      }),
-      healthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.healthyThresholdCount }),
-      unhealthyThresholdCount: cdk.Lazy.number({ produce: () => this.healthCheck?.unhealthyThresholdCount }),
-      matcher: cdk.Lazy.any({
-        produce: () => this.healthCheck?.healthyHttpCodes !== undefined || this.healthCheck?.healthyGrpcCodes !== undefined ? {
-          grpcCode: this.healthCheck.healthyGrpcCodes,
-          httpCode: this.healthCheck.healthyHttpCodes,
+      healthCheckEnabled: this._healthCheck.derive(hc => hc?.enabled),
+      healthCheckIntervalSeconds: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.interval?.toSeconds())),
+      healthCheckPath: cdk.Token.asString(this._healthCheck.derive(hc => hc?.path)),
+      healthCheckPort: cdk.Token.asString(this._healthCheck.derive(hc => hc?.port)),
+      healthCheckProtocol: cdk.Token.asString(this._healthCheck.derive(hc => hc?.protocol)),
+      healthCheckTimeoutSeconds: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.timeout?.toSeconds())),
+      healthyThresholdCount: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.healthyThresholdCount)),
+      unhealthyThresholdCount: cdk.Token.asNumber(this._healthCheck.derive(hc => hc?.unhealthyThresholdCount)),
+      matcher: this._healthCheck.derive(hc =>
+        hc?.healthyHttpCodes !== undefined || hc?.healthyGrpcCodes !== undefined ? {
+          grpcCode: hc.healthyGrpcCodes,
+          httpCode: hc.healthyHttpCodes,
         } : undefined,
-      }),
+      ),
       ipAddressType: baseProps.ipAddressType,
 
       ...additionalProps,
@@ -440,18 +463,18 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
       switch (key) {
         case 'target_group_health.dns_failover.minimum_healthy_targets.count':
           if ((!Number.isInteger(+value) || +value < 1) && value !== 'off') {
-            throw new ValidationError(`${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
+            throw new ValidationError(lit`MustBeIntegerGreaterThan`, `${key} must be an integer greater than 0 or 'off'. Received: ${value}`, this);
           }
           break;
         case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.count':
           if (!Number.isInteger(+value) || +value < 1) {
-            throw new ValidationError(`${key} must be an integer greater than 0. Received: ${value}`, this);
+            throw new ValidationError(lit`MustBePositiveInteger`, `${key} must be an integer greater than 0. Received: ${value}`, this);
           }
           break;
         case 'target_group_health.dns_failover.minimum_healthy_targets.percentage':
         case 'target_group_health.unhealthy_state_routing.minimum_healthy_targets.percentage':
           if ((!Number.isInteger(+value) || +value < 1 || +value > 100) && value !== 'off') {
-            throw new ValidationError(`${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
+            throw new ValidationError(lit`MustBeIntegerOff`, `${key} must be an integer from 1 to 100 or 'off'. Received: ${value}`, this);
           }
           break;
         default:
@@ -467,23 +490,23 @@ export abstract class TargetGroupBase extends Construct implements ITargetGroup 
    */
   protected addLoadBalancerTarget(props: LoadBalancerTargetProps) {
     if (this.targetType !== undefined && this.targetType !== props.targetType) {
-      throw new ValidationError(`Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
+      throw new ValidationError(lit`AlreadyType`, `Already have a of type '${this.targetType}', adding '${props.targetType}'; make all targets the same type.`, this);
     }
     this.targetType = props.targetType;
 
-    if (this.targetType === TargetType.LAMBDA && this.targetsJson.length >= 1) {
-      throw new ValidationError('TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
+    if (this.targetType === TargetType.LAMBDA && this._targetsJson.length >= 1) {
+      throw new ValidationError(lit`TargetGroupContainOneTarget`, 'TargetGroup can only contain one LAMBDA target. Create a new TargetGroup.', this);
     }
 
     if (props.targetJson) {
-      this.targetsJson.push(props.targetJson);
+      this._targetsJson.push(props.targetJson);
     }
   }
 
   protected validateTargetGroup(): string[] {
     const ret = new Array<string>();
 
-    if (this.targetType === undefined && this.targetsJson.length === 0) {
+    if (this.targetType === undefined && this._targetsJson.length === 0) {
       cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:targetGroupSpecifyTargetTypeForEmptyTargetGroup', "When creating an empty TargetGroup, you should specify a 'targetType' (this warning may become an error in the future).");
     }
 

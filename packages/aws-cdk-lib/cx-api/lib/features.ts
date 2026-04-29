@@ -1,5 +1,6 @@
 /* eslint-disable @cdklabs/no-throw-default-error */
-import { FlagInfo, FlagType } from './private/flag-modeling';
+import type { FlagInfo } from './private/flag-modeling';
+import { FlagType } from './private/flag-modeling';
 
 ////////////////////////////////////////////////////////////////////////
 //
@@ -110,6 +111,7 @@ export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeli
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
+export const EKS_USE_NATIVE_OIDC_PROVIDER = '@aws-cdk/aws-eks:useNativeOidcProvider';
 export const ECS_PATTERNS_UNIQUE_TARGET_GROUP_ID = '@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId';
 export const EBS_DEFAULT_GP3 = '@aws-cdk/aws-ec2:ebsDefaultGp3Volume';
 export const ECS_REMOVE_DEFAULT_DEPLOYMENT_ALARM = '@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm';
@@ -148,6 +150,10 @@ export const S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT = '@aws-cdk/aws-s3:publicAccess
 export const USE_CDK_MANAGED_LAMBDA_LOGGROUP = '@aws-cdk/aws-lambda:useCdkManagedLogGroup';
 export const NETWORK_LOAD_BALANCER_WITH_SECURITY_GROUP_BY_DEFAULT = '@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault';
 export const STEPFUNCTIONS_TASKS_HTTPINVOKE_DYNAMIC_JSONPATH_ENDPOINT = '@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint';
+export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0';
+export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
+export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
+export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1146,6 +1152,24 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [EKS_USE_NATIVE_OIDC_PROVIDER]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider).',
+    detailsMd: `
+      When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OIDCProvider
+      CloudFormation resource instead of the custom resource provider for creating OIDC providers.
+
+			WARNING: Enabling this flag on a cluster with an existing OIDC provider created by the custom resource (iam.OpenIDConnectProvider)
+			will cause the OIDC provider to be replaced with the native resource, which may lead to disruption.
+
+			To migrate in place without disruption, follow the guide at: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-eks/README.md#migrating-from-the-deprecated-eksopenidconnectprovider-to-eksoidcprovidernative
+    `,
+    introducedIn: { v2: '2.237.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag to use the custom resource provider.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [EBS_DEFAULT_GP3]: {
     type: FlagType.ApiDefault,
     summary: 'When enabled, the default volume type of the EBS volume will be GP3',
@@ -1731,7 +1755,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     recommendedValue: true,
   },
 
-  //////////////////////////////////////////////////////////////////////
   [ROUTE53_PATTERNS_USE_DISTRIBUTION]: {
     type: FlagType.ApiDefault,
     summary: 'Use the `Distribution` resource instead of `CloudFrontWebDistribution`',
@@ -1742,6 +1765,77 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.233.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Define a `CloudFrontWebDistribution` explicitly',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use cloudfront-js-2.0 as the default runtime for CloudFront Functions',
+    detailsMd: `
+      When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default instead of cloudfront-js-1.0.
+      The runtime can still be configured explicitly using the \`runtime\` property.
+
+      If \`keyValueStore\` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.`,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ELB_USE_POST_QUANTUM_TLS_POLICY]: {
+    type: FlagType.ApiDefault,
+    summary: 'When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default',
+    detailsMd: `
+      When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+      \`sslPolicy\` will use the post-quantum cryptography policy
+      \`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09\` by default.
+
+      This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+      for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+      Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+      hybrid ML-KEM key exchange.
+
+      When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+      where \`RECOMMENDED_TLS\` (\`ELBSecurityPolicy-TLS13-1-2-2021-06\`) is used.
+    `,
+    introducedIn: { v2: '2.245.0' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.',
+  },
+
+  [AUTOMATIC_L1_TRAITS]: {
+    type: FlagType.ApiDefault,
+    summary: 'Automatically use the default L1 traits for L1 constructs`',
+    detailsMd: `
+      When enabled, the construct library will apply default L1 traits for types that
+      have no traits defined yet. Traits regulate behaviors such as how to create
+      resource policies, or how to find an encryption key for a given L1 construct.
+      `,
+    introducedIn: { v2: '2.239.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: true },
+    compatibilityWithOldBehaviorMd: 'Register traits explicitly for each resource type',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BATCH_DEFAULT_AL2023]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2',
+    detailsMd: `
+      When enabled, EC2 Batch compute environments (both ECS and EKS) that do not specify an \`imageType\`
+      will default to \`ECS_AL2023\` or \`EKS_AL2023\` instead of the deprecated \`ECS_AL2\` or \`EKS_AL2\`
+      (Amazon Linux 2, reaching EOL June 2026 for ECS; already EOL for EKS).
+
+      For EKS compute environments with a launch template, \`userdataType\` will automatically be set
+      to \`EKS_NODEADM\` when an AL2023 image type is used, as required by the AWS Batch API.
+
+      When disabled, the default \`imageType\` remains \`ECS_AL2\` / \`EKS_AL2\` for backward compatibility.`,
+    introducedIn: { v2: '2.249.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: `Explicitly set \`imageType\` to \`ECS_AL2\` or \`EKS_AL2\` in your compute environment images configuration.
+
+**Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.`,
   },
 };
 

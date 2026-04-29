@@ -1,9 +1,13 @@
+import type {
+  IResolvable,
+  IResolveContext,
+} from '../../core';
 import {
-  captureStackTrace, DefaultTokenResolver, IResolvable,
-  IResolveContext, Lazy, Stack, StringConcat, Token, Tokenization,
+  DefaultTokenResolver, Lazy, Stack, StringConcat, Token, Tokenization,
   UnscopedValidationError,
 } from '../../core';
-import { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
+import { lit } from '../../core/lib/private/literal-string';
+import type { IRuleRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
 /**
  * The input to send to the event target
@@ -170,7 +174,7 @@ export class FieldAwareEventInput extends RuleTargetInput {
 
         const key = keyForField(t);
         if (inputPathsMap[key] && inputPathsMap[key] !== t.path) {
-          throw new UnscopedValidationError(`Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
+          throw new UnscopedValidationError(lit`DuplicateInputPathKey`, `Single key '${key}' is used for two different JSON paths: '${t.path}' and '${inputPathsMap[key]}'`);
         }
         inputPathsMap[key] = t.path;
 
@@ -298,7 +302,7 @@ export class EventField implements IResolvable {
    * Human readable display hint about the event pattern
    */
   public readonly displayHint: string;
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
 
   /**
    *
@@ -307,7 +311,6 @@ export class EventField implements IResolvable {
   private constructor(public readonly path: string) {
     this.displayHint = this.path.replace(/^[^a-zA-Z0-9_-]+/, '').replace(/[^a-zA-Z0-9_-]/g, '-');
     Object.defineProperty(this, EVENT_FIELD_SYMBOL, { value: true });
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(_ctx: IResolveContext): any {

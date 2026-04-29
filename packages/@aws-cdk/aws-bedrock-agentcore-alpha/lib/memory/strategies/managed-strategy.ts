@@ -11,12 +11,13 @@
  *  and limitations under the License.
  */
 
-import { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
+import type { IBedrockInvokable } from '@aws-cdk/aws-bedrock-alpha';
 import { Arn, ArnFormat } from 'aws-cdk-lib';
-import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
-import { IConstruct } from 'constructs';
-import { MemoryStrategyCommonProps, IMemoryStrategy, MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
+import type * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import type { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { IConstruct } from 'constructs';
+import type { MemoryStrategyCommonProps, IMemoryStrategy } from '../memory-strategy';
+import { MemoryStrategyType, MEMORY_NAME_MIN_LENGTH, MEMORY_NAME_MAX_LENGTH } from '../memory-strategy';
 import { validateStringFieldLength, throwIfInvalid, validateFieldPattern } from '../validation-helpers';
 
 /******************************************************************************

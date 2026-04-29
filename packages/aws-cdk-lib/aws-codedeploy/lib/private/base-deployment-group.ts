@@ -1,11 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { validateName } from './utils';
 import * as iam from '../../../aws-iam';
 import { Resource, ArnFormat, Arn, Aws } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { DeploymentGroupReference, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
-import { CfnDeploymentGroup } from '../codedeploy.generated';
+import type { DeploymentGroupReference, IApplicationRef, IDeploymentConfigRef } from '../../../interfaces/generated/aws-codedeploy-interfaces.generated';
+import type { CfnDeploymentGroup } from '../codedeploy.generated';
 import { isIBindableDeploymentConfig } from './predefined-deployment-config';
 
 /**
@@ -32,11 +32,13 @@ export interface ImportedDeploymentGroupBaseProps {
 export class ImportedDeploymentGroupBase extends Resource {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ImportedDeploymentGroupBase';
+  public readonly applicationName: string;
   public readonly deploymentGroupName: string;
   public readonly deploymentGroupArn: string;
 
   public get deploymentGroupRef(): DeploymentGroupReference {
     return {
+      applicationName: this.applicationName,
       deploymentGroupName: this.deploymentGroupName,
     };
   }
@@ -56,6 +58,7 @@ export class ImportedDeploymentGroupBase extends Resource {
     super(scope, id, { environmentFromArn: deploymentGroupArn });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
+    this.applicationName = props.application.applicationRef.applicationName;
     this.deploymentGroupName = deploymentGroupName;
     this.deploymentGroupArn = deploymentGroupArn;
   }
@@ -102,6 +105,11 @@ export class DeploymentGroupBase extends Resource {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.DeploymentGroupBase';
   /**
+   * The name of the Application.
+   */
+  public readonly applicationName!: string;
+
+  /**
    * The name of the Deployment Group.
    */
   public readonly deploymentGroupName!: string;
@@ -116,6 +124,7 @@ export class DeploymentGroupBase extends Resource {
    */
   public get deploymentGroupRef(): DeploymentGroupReference {
     return {
+      applicationName: this.applicationName,
       deploymentGroupName: this.deploymentGroupName,
     };
   }
@@ -161,6 +170,7 @@ export class DeploymentGroupBase extends Resource {
    * @internal
    */
   protected _setNameAndArn(resource: CfnDeploymentGroup, application: IApplicationRef) {
+    (this as any).applicationName = application.applicationRef.applicationName;
     (this as any).deploymentGroupName = this.getResourceNameAttribute(resource.ref);
     (this as any).deploymentGroupArn = this.getResourceArnAttribute(this.stack.formatArn({
       service: 'codedeploy',

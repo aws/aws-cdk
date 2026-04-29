@@ -1,16 +1,17 @@
 import { Construct } from 'constructs';
 import { ExportReader } from './export-reader-provider';
-import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
+import type { CrossRegionExports, ExportWriterCRProps } from './types';
+import { SSM_EXPORT_PATH_PREFIX } from './types';
 import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
 import { CustomResource } from '../../custom-resource';
 import { CrossRegionSsmWriterProvider } from '../../dist/core/cross-region-ssm-writer-provider.generated';
 import { Lazy } from '../../lazy';
-import { Intrinsic } from '../../private/intrinsic';
+import type { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';
-import { Reference } from '../../reference';
+import type { Reference } from '../../reference';
 import { Stack } from '../../stack';
 import { Token } from '../../token';
-import { CustomResourceProviderOptions } from '../shared';
+import type { CustomResourceProviderOptions } from '../shared';
 
 /**
  * Properties for an ExportWriter

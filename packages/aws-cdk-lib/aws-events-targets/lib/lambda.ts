@@ -1,6 +1,7 @@
-import { addLambdaPermission, addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
-import * as events from '../../aws-events';
-import * as lambda from '../../aws-lambda';
+import type { TargetBaseProps } from './util';
+import { addLambdaPermission, addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig } from './util';
+import type * as events from '../../aws-events';
+import type * as lambda from '../../aws-lambda';
 
 /**
  * Customize the Lambda Event Target

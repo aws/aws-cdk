@@ -1,16 +1,17 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CustomerManagedEncryptionConfiguration } from './customer-managed-key-encryption-configuration';
-import { EncryptionConfiguration } from './encryption-configuration';
+import type { EncryptionConfiguration } from './encryption-configuration';
 import { buildEncryptionConfiguration } from './private/util';
 import { StatesMetrics } from './stepfunctions-canned-metrics.generated';
 import { CfnActivity } from './stepfunctions.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Lazy, Names, Resource, Stack } from '../../core';
+import type { IResource } from '../../core';
+import { ArnFormat, Lazy, Names, Resource, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { ActivityReference, IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
+import type { ActivityReference, IActivityRef } from '../../interfaces/generated/aws-stepfunctions-interfaces.generated';
 
 /**
  * Properties for defining a new Step Functions Activity

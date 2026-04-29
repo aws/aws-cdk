@@ -1,4 +1,5 @@
-import { TypeCoercionStateMachine, typeCoercionStateMachine } from './parameter-types';
+import type { TypeCoercionStateMachine } from './parameter-types';
+import { typeCoercionStateMachine } from './parameter-types';
 
 type ApiParameters = { [param: string]: any };
 

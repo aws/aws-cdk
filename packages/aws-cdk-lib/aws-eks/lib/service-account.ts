@@ -1,12 +1,14 @@
 import { Construct } from 'constructs';
-import { ICluster } from './cluster';
+import type { ICluster } from './cluster';
 import { CfnPodIdentityAssociation, FargateCluster } from './index';
 import { KubernetesManifest } from './k8s-manifest';
+import type { AddToPrincipalPolicyResult, IPrincipal, IRole, PrincipalPolicyFragment } from '../../aws-iam';
 import {
-  AddToPrincipalPolicyResult, IPrincipal, IRole, OpenIdConnectPrincipal, PolicyStatement, PrincipalPolicyFragment, Role,
+  OpenIdConnectPrincipal, PolicyStatement, Role,
   ServicePrincipal,
 } from '../../aws-iam';
-import { CfnJson, Names } from '../../core';
+import type { RemovalPolicy } from '../../core';
+import { CfnJson, Names, RemovalPolicies } from '../../core';
 
 /**
  * Enum representing the different identity types that can be used for a Kubernetes service account.
@@ -78,39 +80,31 @@ export interface ServiceAccountOptions {
    * @default IdentityType.IRSA
    */
   readonly identityType?: IdentityType;
-}
-export interface ServiceAccountOptions {
-  /**
-   * The name of the service account.
-   *
-   * The name of a ServiceAccount object must be a valid DNS subdomain name.
-   * https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-   * @default - If no name is given, it will use the id of the resource.
-   */
-  readonly name?: string;
 
   /**
-   * The namespace of the service account.
+   * The removal policy applied to the service account resources.
    *
-   * All namespace names must be valid RFC 1123 DNS labels.
-   * https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/#namespaces-and-dns
-   * @default "default"
+   * The removal policy controls what happens to the resources if they stop being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
    */
-  readonly namespace?: string;
+  readonly removalPolicy?: RemovalPolicy;
 
   /**
-   * Additional annotations of the service account.
+   * Overwrite existing service account.
    *
-   * @default - no additional annotations
-   */
-  readonly annotations?: {[key:string]: string};
-
-  /**
-   * Additional labels of the service account.
+   * If this is set, we will use `kubectl apply` instead of `kubectl create`
+   * when the service account is created. Otherwise, if there is already a service account
+   * in the cluster with the same name, the operation will fail.
    *
-   * @default - no additional labels
+   * @default false
    */
-  readonly labels?: {[key:string]: string};
+  readonly overwriteServiceAccount?: boolean;
 }
 
 /**
@@ -227,6 +221,7 @@ export class ServiceAccount extends Construct implements IPrincipal {
     // and since this stack inherintely depends on the cluster stack, we will have a circular dependency.
     new KubernetesManifest(this, `manifest-${id}ServiceAccountResource`, {
       cluster,
+      overwrite: props.overwriteServiceAccount,
       manifest: [{
         apiVersion: 'v1',
         kind: 'ServiceAccount',
@@ -244,6 +239,10 @@ export class ServiceAccount extends Construct implements IPrincipal {
         },
       }],
     });
+
+    if (props.removalPolicy) {
+      RemovalPolicies.of(this).apply(props.removalPolicy);
+    }
   }
 
   /**

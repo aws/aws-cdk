@@ -4,7 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as gamelift from '../lib';
 
 class TestStack extends cdk.Stack {
@@ -17,7 +17,7 @@ class TestStack extends cdk.Stack {
     });
 
     const fleet = new gamelift.BuildFleet(this, 'BuildFleet', {
-      fleetName: 'test-fleet',
+      fleetName: 'test-fleet-gsq',
       content: build,
       ingressRules: [{
         source: gamelift.Peer.anyIpv4(),
@@ -72,6 +72,7 @@ const app = new cdk.App();
 const stack = new TestStack(app, 'aws-gamelift-gameSessionQueue');
 new IntegTest(app, 'GameSessionQueue', {
   testCases: [stack],
+  regions: ['us-east-1', 'us-east-2', 'us-west-1', 'us-west-2', 'eu-west-1', 'eu-west-2', 'eu-central-1', 'ap-northeast-1', 'ap-southeast-1', 'ap-southeast-2', 'ca-central-1', 'sa-east-1'],
 });
 
 app.synth();
