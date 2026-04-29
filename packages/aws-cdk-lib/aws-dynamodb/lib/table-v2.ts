@@ -751,7 +751,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly maxReadRequestUnits?: number;
   private readonly maxWriteRequestUnits?: number;
 
-  private readonly replicaTables = new Map<string, ReplicaTableProps>();
+  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap(new Map());
   private readonly replicaKeys: { [region: string]: IKey } = {};
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
@@ -838,7 +838,7 @@ export class TableV2 extends TableBaseV2 {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this._attributeDefinitions,
-      replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
+      replicas: this.replicaTables.derive(_ => this.renderReplicaTables()),
       globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
       globalSecondaryIndexes: this.globalSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
@@ -848,8 +848,8 @@ export class TableV2 extends TableBaseV2 {
       writeOnDemandThroughputSettings: this.maxWriteRequestUnits
         ? { maxWriteRequestUnits: this.maxWriteRequestUnits }
         : undefined,
-      streamSpecification: Lazy.any(
-        { produce: () => props.dynamoStream ? { streamViewType: props.dynamoStream } : this.renderStreamSpecification() },
+      streamSpecification: this.replicaTables.derive(
+        _ => props.dynamoStream ? { streamViewType: props.dynamoStream } : this.renderStreamSpecification(),
       ),
       sseSpecification: this.encryption?._renderSseSpecification(),
       timeToLiveSpecification: props.timeToLiveAttribute
@@ -920,7 +920,7 @@ export class TableV2 extends TableBaseV2 {
     const replicaStreamArn = `${replicaArn}/stream/*`;
     this.replicaStreamArns.push(replicaStreamArn);
 
-    this.replicaTables.set(props.region, props);
+    this.replicaTables.put(props.region, props);
   }
 
   /**
