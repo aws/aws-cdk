@@ -158,6 +158,20 @@ export class WorkloadIdentityPerms {
   ];
 
   /**
+   * Data plane permissions to mint workload access tokens.
+   *
+   * These actions require both the workload identity ARN and the
+   * workload-identity-directory ARN as resource scope.
+   *
+   * @see https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazonbedrockagentcore.html
+   */
+  public static readonly USE_PERMS: string[] = [
+    'bedrock-agentcore:GetWorkloadAccessToken',
+    'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+    'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
+  ];
+
+  /**
    * All workload identity actions used by the L2 grant helpers.
    */
   public static readonly FULL_ACCESS_PERMS: string[] = [
@@ -165,6 +179,7 @@ export class WorkloadIdentityPerms {
       ...WorkloadIdentityPerms.READ_PERMS,
       ...WorkloadIdentityPerms.LIST_PERMS,
       ...WorkloadIdentityPerms.ADMIN_PERMS,
+      ...WorkloadIdentityPerms.USE_PERMS,
     ]),
   ];
 

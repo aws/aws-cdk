@@ -84,7 +84,13 @@ export interface IWorkloadIdentity extends IResource, iam.IGrantable, IWorkloadI
   grantAdmin(grantee: iam.IGrantable): iam.Grant;
 
   /**
-   * Grant read, list, and admin permissions.
+   * Grant data plane permissions to mint workload access tokens
+   * (`GetWorkloadAccessToken`, `GetWorkloadAccessTokenForJWT`, `GetWorkloadAccessTokenForUserId`).
+   */
+  grantUse(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Grant read, list, admin, and use permissions.
    */
   grantFullAccess(grantee: iam.IGrantable): iam.Grant;
 }
@@ -197,6 +203,13 @@ abstract class WorkloadIdentityBase extends Resource implements IWorkloadIdentit
    */
   public grantAdmin(grantee: iam.IGrantable): iam.Grant {
     return this.grant(grantee, ...WorkloadIdentityPerms.ADMIN_PERMS);
+  }
+
+  /**
+   * [disable-awslint:no-grants]
+   */
+  public grantUse(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...WorkloadIdentityPerms.USE_PERMS);
   }
 
   /**

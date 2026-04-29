@@ -110,7 +110,28 @@ describe('WorkloadIdentity', () => {
     }
   });
 
-  test('grantFullAccess scopes all actions to identity ARN and parent resources', () => {
+  test('grantUse grants data plane token-minting permissions', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const wi = new WorkloadIdentity(stack, 'Wi', {
+      workloadIdentityName: 'wi-use-test',
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    wi.grantUse(role);
+
+    const serialized = JSON.stringify(Template.fromStack(stack).findResources('AWS::IAM::Policy'));
+    for (const action of WorkloadIdentityPerms.USE_PERMS) {
+      expect(serialized).toContain(action);
+    }
+    expect(serialized).toContain('workload-identity-directory/default');
+  });
+
+  test('grantFullAccess scopes all actions including token-minting to identity ARN and parent resources', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app, 'Stack', {
       env: { account: '123456789012', region: 'us-east-1' },
@@ -133,6 +154,9 @@ describe('WorkloadIdentity', () => {
               'bedrock-agentcore:GetWorkloadIdentity',
               'bedrock-agentcore:ListWorkloadIdentities',
               'bedrock-agentcore:CreateWorkloadIdentity',
+              'bedrock-agentcore:GetWorkloadAccessToken',
+              'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
+              'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
             ]),
             Resource: Match.arrayWith([
               { 'Fn::GetAtt': [Match.anyValue(), 'WorkloadIdentityArn'] },
