@@ -7,9 +7,12 @@ import type { BasicTargetTrackingScalingPolicyProps } from './target-tracking-sc
 import { TargetTrackingScalingPolicy } from './target-tracking-scaling-policy';
 import * as iam from '../../aws-iam';
 import type { IResource, TimeZone } from '../../core';
-import { Lazy, Resource, withResolved } from '../../core';
+import { Resource, withResolved } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IScalableTargetRef, ScalableTargetReference } from '../../interfaces/generated/aws-applicationautoscaling-interfaces.generated';
@@ -100,6 +103,7 @@ export interface ScalableTargetAttributes {
  * Define a scalable target
  */
 @propertyInjectable
+@noBoxStackTraces
 export class ScalableTarget extends Resource implements IScalableTarget {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-applicationautoscaling.ScalableTarget';
@@ -163,7 +167,7 @@ export class ScalableTarget extends Resource implements IScalableTarget {
 
   private readonly _scalableDimension: string;
   private readonly _serviceNamespace: string;
-  private readonly actions = new Array<CfnScalableTarget.ScheduledActionProperty>();
+  private readonly actions: IArrayBox<CfnScalableTarget.ScheduledActionProperty>;
 
   constructor(scope: Construct, id: string, props: ScalableTargetProps) {
     super(scope, id);
@@ -195,13 +199,15 @@ export class ScalableTarget extends Resource implements IScalableTarget {
     this._scalableDimension = props.scalableDimension;
     this._serviceNamespace = props.serviceNamespace;
 
+    this.actions = Box.fromArray([]);
+
     const resource = new CfnScalableTarget(this, 'Resource', {
       maxCapacity: props.maxCapacity,
       minCapacity: props.minCapacity,
       resourceId: props.resourceId,
       roleArn: this.role.roleArn,
       scalableDimension: props.scalableDimension,
-      scheduledActions: Lazy.any({ produce: () => this.actions }, { omitEmptyArray: true }),
+      scheduledActions: this.actions,
       serviceNamespace: props.serviceNamespace,
     });
 
