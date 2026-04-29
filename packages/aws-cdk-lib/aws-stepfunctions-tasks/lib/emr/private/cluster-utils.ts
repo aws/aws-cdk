@@ -100,6 +100,7 @@ export function InstanceTypeConfigPropertyToJson(property: EmrCreateCluster.Inst
   if (property.priority !== undefined && !cdk.Token.isUnresolved(property.priority)) {
     if (property.priority < 0) {
       throw new UnscopedValidationError(
+        lit`PriorityMustBeNonNegative`,
         `priority must be a non-negative number, got ${property.priority}. ` +
         'Priority values start at 0 (highest priority) and are used with OnDemandAllocationStrategy.PRIORITIZED.',
       );
@@ -192,6 +193,7 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
 
   if (hasPriority && !isPrioritized) {
     throw new UnscopedValidationError(
+      lit`PriorityRequiresPrioritizedStrategy`,
       `Priority values are set on instance type configs, but allocation strategy is '${onDemandStrategy}'. ` +
       'Priority values only take effect with OnDemandAllocationStrategy.PRIORITIZED.',
     );
@@ -199,6 +201,7 @@ export function InstanceFleetConfigPropertyToJson(property: EmrCreateCluster.Ins
 
   if (isPrioritized && !hasPriority && property.instanceTypeConfigs?.length) {
     throw new UnscopedValidationError(
+      lit`PrioritizedStrategyRequiresPriorityValues`,
       'OnDemandAllocationStrategy.PRIORITIZED requires at least one instance type config to have a priority value set. ' +
       'See https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-instance-fleet.html',
     );
