@@ -107,7 +107,7 @@ export class GatewayIamRoleCredentialProviderConfig implements ICredentialProvid
     if (this.region !== undefined && this.service === undefined) {
       throw new UnscopedValidationError(
         lit`IamCredentialProviderServiceRequired`,
-        'service must be provided when region is specified for the IAM credential provider',
+        `service must be provided when region is specified for the IAM credential provider, got: region=${JSON.stringify(this.region)}`,
       );
     }
 
