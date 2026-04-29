@@ -9,7 +9,10 @@ import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import * as iam from '../../../aws-iam';
 import type * as kms from '../../../aws-kms';
 import * as cloudmap from '../../../aws-servicediscovery';
-import type { IResolvable, IResource } from '../../../core';
+import type {
+  IResolvable,
+  IResource,
+} from '../../../core';
 import {
   Annotations,
   Arn,
@@ -31,8 +34,14 @@ import * as cxapi from '../../../cx-api';
 import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
 import type { IAlternateTarget } from '../alternate-target-configuration';
-import type { LoadBalancerTargetOptions, TaskDefinition } from '../base/task-definition';
-import { NetworkMode, TaskDefinitionRevision } from '../base/task-definition';
+import type {
+  LoadBalancerTargetOptions,
+  TaskDefinition,
+} from '../base/task-definition';
+import {
+  NetworkMode,
+  TaskDefinitionRevision,
+} from '../base/task-definition';
 import type { CapacityProviderStrategy, ICluster } from '../cluster';
 import { Cluster, ExecuteCommandLogging } from '../cluster';
 import type { ContainerDefinition, Protocol } from '../container-definition';
@@ -748,7 +757,7 @@ export abstract class BaseService extends Resource
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected loadBalancers: IArrayBox<CfnService.LoadBalancerProperty> = Box.fromArray([], { omitEmpty: false });
+  private _loadBalancers: IArrayBox<CfnService.LoadBalancerProperty> = Box.fromArray([], { omitEmpty: false });
 
   /**
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
@@ -766,7 +775,7 @@ export abstract class BaseService extends Resource
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
-  protected serviceRegistries: IArrayBox<CfnService.ServiceRegistryProperty> = Box.fromArray([]);
+  private _serviceRegistries: IArrayBox<CfnService.ServiceRegistryProperty> = Box.fromArray([]);
 
   /**
    * The service connect configuration for this service.
@@ -801,6 +810,38 @@ export abstract class BaseService extends Resource
       resource: 'service',
       resourceName: `${this.cluster.clusterName}/${this.physicalName}`,
     });
+  }
+
+  /**
+   * The details of the service discovery registries to assign to this service.
+   * For more information, see Service Discovery.
+   */
+  protected set serviceRegistries(sr: CfnService.ServiceRegistryProperty[]) {
+    this._serviceRegistries.set(sr);
+  }
+
+  /**
+   * The details of the service discovery registries to assign to this service.
+   * For more information, see Service Discovery.
+   */
+  protected get serviceRegistries(): CfnService.ServiceRegistryProperty[] {
+    return this._serviceRegistries.getMutable();
+  }
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
+  public get loadBalancers(): Array<CfnService.LoadBalancerProperty> {
+    return this._loadBalancers.getMutable();
+  }
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
+  public set loadBalancers(value: Array<CfnService.LoadBalancerProperty>) {
+    this._loadBalancers.set(value);
   }
 
   @memoizedGetter
@@ -855,7 +896,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: this.loadBalancers.derive(lbs => lbs.length > 0 ? lbs : undefined),
+      loadBalancers: this._loadBalancers.derive(lbs => lbs.length > 0 ? lbs : undefined),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -1849,7 +1890,7 @@ export abstract class BaseService extends Resource
    *  healthCheckGracePeriod is not already set
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
-    return this.loadBalancers.derive(
+    return this._loadBalancers.derive(
       lbs => providedHealthCheckGracePeriod?.toSeconds() ?? (lbs.length > 0 ? 60 : undefined),
     );
   }
