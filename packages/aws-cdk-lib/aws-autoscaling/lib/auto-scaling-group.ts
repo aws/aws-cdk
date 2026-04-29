@@ -30,8 +30,10 @@ import {
   Token,
   Tokenization, UnscopedValidationError, ValidationError, withResolved,
 } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -1388,6 +1390,7 @@ abstract class AutoScalingGroupBase extends Resource implements IAutoScalingGrou
  * the Vpc default strategy if not specified.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class AutoScalingGroup extends AutoScalingGroupBase implements
   elb.ILoadBalancerTarget,
   ec2.IConnectable,
@@ -1455,9 +1458,9 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
 
   private readonly autoScalingGroup: CfnAutoScalingGroup;
   private readonly securityGroup?: ec2.ISecurityGroup;
-  private readonly securityGroups?: ec2.ISecurityGroup[];
-  private readonly loadBalancerNames: string[] = [];
-  private readonly targetGroupArns: string[] = [];
+  private readonly securityGroups?: IArrayBox<ec2.ISecurityGroup>;
+  private readonly loadBalancerNames: IArrayBox<string>;
+  private readonly targetGroupArns: IArrayBox<string>;
   private readonly groupMetrics: GroupMetrics[] = [];
   private readonly notifications: NotificationConfiguration[] = [];
   private readonly launchTemplate?: ec2.LaunchTemplate;
@@ -1475,6 +1478,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     addConstructMetadata(this, props);
 
     this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
+    this.loadBalancerNames = Box.fromArray<string>([]);
+    this.targetGroupArns = Box.fromArray<string>([]);
 
     if (props.initOptions && !props.init) {
       throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
@@ -1574,7 +1579,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         this.launchTemplate = launchTemplateFromConfig;
       } else {
         this._connections = new ec2.Connections({ securityGroups: [this.securityGroup] });
-        this.securityGroups = [this.securityGroup];
+        this.securityGroups = Box.fromArray([this.securityGroup], { omitEmpty: false });
 
         if (props.keyPair) {
           throw new ValidationError(lit`OnlyKeypairFeatureFlag`, 'Can only use \'keyPair\' when feature flag \'AUTOSCALING_GENERATE_LAUNCH_TEMPLATE\' is set', this);
@@ -1584,7 +1589,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         const imageConfig = props.machineImage.getImage(this);
         this._userData = props.userData ?? imageConfig.userData;
         const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
-        const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups!.map(sg => sg.securityGroupId) });
+        const securityGroupsToken = Token.asList(this.securityGroups!.map(sg => sg.securityGroupId), { displayHint: 'securityGroupIds' });
 
         launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {
           imageId: imageConfig.imageId,
@@ -1695,8 +1700,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       minSize: Tokenization.stringifyNumber(minCapacity),
       maxSize: Tokenization.stringifyNumber(maxCapacity),
       desiredCapacity: desiredCapacity !== undefined ? Tokenization.stringifyNumber(desiredCapacity) : undefined,
-      loadBalancerNames: Lazy.list({ produce: () => this.loadBalancerNames }, { omitEmpty: true }),
-      targetGroupArns: Lazy.list({ produce: () => this.targetGroupArns }, { omitEmpty: true }),
+      loadBalancerNames: Token.asList(this.loadBalancerNames, { displayHint: 'loadBalancerNames' }),
+      targetGroupArns: Token.asList(this.targetGroupArns, { displayHint: 'targetGroupArns' }),
       notificationConfigurations: this.renderNotificationConfiguration(),
       metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
       vpcZoneIdentifier: subnetIds,

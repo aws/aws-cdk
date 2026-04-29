@@ -7,7 +7,7 @@ import { RESOURCE_SYMBOL } from '../constants';
 import { MetadataType } from '../metadata-type';
 import type { Resource } from '../resource';
 import { Stage } from '../stage';
-import type { IPolicyValidationPluginBeta1 } from '../validation';
+import type { IPolicyValidationPlugin } from '../validation';
 import { ALLOWED_FQN_PREFIXES } from './constants';
 
 // These metadata types are always included
@@ -169,7 +169,7 @@ function addValidationPluginInfo(scope: IConstruct, allConstructInfos: Construct
  *
  * where <rule-ids> is a pipe-separated list of rule IDs.
  */
-function pluginFqn(plugin: IPolicyValidationPluginBeta1): string {
+function pluginFqn(plugin: IPolicyValidationPlugin): string {
   let components = [
     'policyValidation',
     plugin.name,

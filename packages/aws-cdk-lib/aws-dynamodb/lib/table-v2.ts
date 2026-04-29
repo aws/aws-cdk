@@ -6,22 +6,22 @@ import { CfnGlobalTable } from './dynamodb.generated';
 import type { TableEncryptionV2 } from './encryption';
 import type {
   Attribute,
+  ContributorInsightsSpecification,
+  GlobalTableSettingsReplicationMode,
+  KeySchema,
   LocalSecondaryIndexProps,
-  SecondaryIndexProps,
   PointInTimeRecoverySpecification,
+  SecondaryIndexProps,
   TableClass,
   WarmThroughput,
-  ContributorInsightsSpecification,
-  KeySchema,
-  GlobalTableSettingsReplicationMode,
 } from './shared';
 import {
   BillingMode,
+  MultiRegionConsistency,
+  parseKeySchema,
   ProjectionType,
   StreamViewType,
-  MultiRegionConsistency,
   validateContributorInsights,
-  parseKeySchema,
 } from './shared';
 import { TableGrants } from './table-grants';
 import type { ITableV2 } from './table-v2-base';
@@ -31,11 +31,9 @@ import { PolicyDocument } from '../../aws-iam';
 import type { IStream } from '../../aws-kinesis';
 import type { IKey } from '../../aws-kms';
 import { Key } from '../../aws-kms';
-import type {
-  CfnTag,
-  RemovalPolicy,
-} from '../../core';
+import type { CfnTag, RemovalPolicy } from '../../core';
 import {
+  Annotations,
   ArnFormat,
   FeatureFlags,
   Lazy,
@@ -44,11 +42,12 @@ import {
   TagManager,
   TagType,
   Token,
-  Annotations,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -599,6 +598,7 @@ export interface TableAttributesV2 {
  * A DynamoDB Table.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class TableV2 extends TableBaseV2 {
   /**
    * Uniquely identifies this class.
@@ -742,7 +742,7 @@ export class TableV2 extends TableBaseV2 {
   private readonly resource: CfnGlobalTable;
 
   private readonly keySchema: CfnGlobalTable.KeySchemaProperty[] = [];
-  private readonly attributeDefinitions: CfnGlobalTable.AttributeDefinitionProperty[] = [];
+  private readonly _attributeDefinitions: IArrayBox<CfnGlobalTable.AttributeDefinitionProperty>;
   private readonly nonKeyAttributes = new Set<string>();
 
   private readonly readProvisioning?: CfnGlobalTable.ReadProvisionedThroughputSettingsProperty;
@@ -751,13 +751,13 @@ export class TableV2 extends TableBaseV2 {
   private readonly maxReadRequestUnits?: number;
   private readonly maxWriteRequestUnits?: number;
 
-  private readonly replicaTables = new Map<string, ReplicaTableProps>();
+  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap(new Map());
   private readonly replicaKeys: { [region: string]: IKey } = {};
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
 
-  private readonly globalSecondaryIndexes = new Map<string, CfnGlobalTable.GlobalSecondaryIndexProperty>();
-  private readonly localSecondaryIndexes = new Map<string, CfnGlobalTable.LocalSecondaryIndexProperty>();
+  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap(new Map());
+  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap(new Map());
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
@@ -802,6 +802,8 @@ export class TableV2 extends TableBaseV2 {
     this.encryptionKey = this.encryption?.tableKey;
     this.configureReplicaKeys(this.encryption?.replicaKeyArns);
 
+    this._attributeDefinitions = Box.fromArray([], { omitEmpty: false });
+
     // Only set up keys if not a replica - CloudFormation inherits keys from globalTableSourceArn
     this.addKey(props.partitionKey, HASH_KEY_TYPE);
     if (props.sortKey) {
@@ -835,19 +837,19 @@ export class TableV2 extends TableBaseV2 {
     this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
       keySchema: this.keySchema,
-      attributeDefinitions: Lazy.any({ produce: () => this.attributeDefinitions }),
-      replicas: Lazy.any({ produce: () => this.renderReplicaTables() }),
+      attributeDefinitions: this._attributeDefinitions,
+      replicas: this.replicaTables.derive(_ => this.renderReplicaTables()),
       globalTableWitnesses: props.witnessRegion? [{ region: props.witnessRegion }] : undefined,
       multiRegionConsistency: props.multiRegionConsistency ? props.multiRegionConsistency : undefined,
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.renderGlobalIndexes() }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.any({ produce: () => this.renderLocalIndexes() }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: this.globalSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
+      localSecondaryIndexes: this.localSecondaryIndexes.derive(m => m.size > 0 ? Array.from(m.values()) : undefined),
       billingMode: this.billingMode,
       writeProvisionedThroughputSettings: this.writeProvisioning,
       writeOnDemandThroughputSettings: this.maxWriteRequestUnits
         ? { maxWriteRequestUnits: this.maxWriteRequestUnits }
         : undefined,
-      streamSpecification: Lazy.any(
-        { produce: () => props.dynamoStream ? { streamViewType: props.dynamoStream } : this.renderStreamSpecification() },
+      streamSpecification: this.replicaTables.derive(
+        _ => props.dynamoStream ? { streamViewType: props.dynamoStream } : this.renderStreamSpecification(),
       ),
       sseSpecification: this.encryption?._renderSseSpecification(),
       timeToLiveSpecification: props.timeToLiveAttribute
@@ -918,7 +920,7 @@ export class TableV2 extends TableBaseV2 {
     const replicaStreamArn = `${replicaArn}/stream/*`;
     this.replicaStreamArns.push(replicaStreamArn);
 
-    this.replicaTables.set(props.region, props);
+    this.replicaTables.put(props.region, props);
   }
 
   /**
@@ -932,7 +934,7 @@ export class TableV2 extends TableBaseV2 {
   public addGlobalSecondaryIndex(props: GlobalSecondaryIndexPropsV2) {
     this.validateGlobalSecondaryIndex(props);
     const globalSecondaryIndex = this.configureGlobalSecondaryIndex(props);
-    this.globalSecondaryIndexes.set(props.indexName, globalSecondaryIndex);
+    this.globalSecondaryIndexes.put(props.indexName, globalSecondaryIndex);
   }
 
   /**
@@ -946,7 +948,7 @@ export class TableV2 extends TableBaseV2 {
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     this.validateLocalSecondaryIndex(props);
     const localSecondaryIndex = this.configureLocalSecondaryIndex(props);
-    this.localSecondaryIndexes.set(props.indexName, localSecondaryIndex);
+    this.localSecondaryIndexes.put(props.indexName, localSecondaryIndex);
   }
 
   /**
@@ -1175,14 +1177,6 @@ export class TableV2 extends TableBaseV2 {
     return replicaTables;
   }
 
-  private renderGlobalIndexes() {
-    return Array.from(this.globalSecondaryIndexes.values());
-  }
-
-  private renderLocalIndexes() {
-    return Array.from(this.localSecondaryIndexes.values());
-  }
-
   private renderStreamSpecification(): CfnGlobalTable.StreamSpecificationProperty | undefined {
     return this.replicaTables.size > 0 ? { streamViewType: StreamViewType.NEW_AND_OLD_IMAGES } : undefined;
   }
@@ -1195,13 +1189,13 @@ export class TableV2 extends TableBaseV2 {
   private addAttributeDefinition(attribute: Attribute) {
     const { name, type } = attribute;
 
-    const existingAttributeDef = this.attributeDefinitions.find(def => def.attributeName === name);
+    const existingAttributeDef = this._attributeDefinitions.find(def => def.attributeName === name);
     if (existingAttributeDef && existingAttributeDef.attributeType !== type) {
       throw new ValidationError(lit`AttributeTypeConflict`, `Unable to specify ${name} as ${type} because it was already defined as ${existingAttributeDef.attributeType}`, this);
     }
 
     if (!existingAttributeDef) {
-      this.attributeDefinitions.push({ attributeName: name, attributeType: type });
+      this._attributeDefinitions.push({ attributeName: name, attributeType: type });
     }
   }
 

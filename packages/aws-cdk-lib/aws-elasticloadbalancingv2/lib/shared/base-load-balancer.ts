@@ -1,6 +1,5 @@
 import type { Construct, IDependable } from 'constructs';
 import { IpAddressType } from './enums';
-import type { Attributes } from './util';
 import { ifUndefined, mapTagMapToCxschema, renderAttributes } from './util';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -8,8 +7,10 @@ import { PolicyStatement, ServicePrincipal } from '../../../aws-iam';
 import type * as s3 from '../../../aws-s3';
 import * as cxschema from '../../../cloud-assembly-schema';
 import type { IResource } from '../../../core';
-import { CfnResource, ContextProvider, Lazy, Resource, Stack, Token } from '../../../core';
+import { CfnResource, ContextProvider, Resource, Stack, Token } from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import type { IMapBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
@@ -319,7 +320,7 @@ export abstract class BaseLoadBalancer extends Resource {
   /**
    * Attributes set on this load balancer
    */
-  private readonly attributes: Attributes = {};
+  private readonly attributes: IMapBox<string, string | undefined> = Box.fromMap(new Map());
 
   constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
     super(scope, id, {
@@ -375,7 +376,10 @@ export abstract class BaseLoadBalancer extends Resource {
         });
       }),
       scheme: internetFacing ? 'internet-facing' : 'internal',
-      loadBalancerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true }),
+      loadBalancerAttributes: this.attributes.derive(m => {
+        const ret = renderAttributes(Object.fromEntries(m));
+        return ret.length > 0 ? ret : undefined;
+      }),
       minimumLoadBalancerCapacity: baseProps.minimumCapacityUnit ? {
         capacityUnits: baseProps.minimumCapacityUnit,
       } : undefined,
@@ -466,7 +470,7 @@ export abstract class BaseLoadBalancer extends Resource {
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/application-load-balancers.html#load-balancer-attributes
    */
   public setAttribute(key: string, value: string | undefined) {
-    this.attributes[key] = value;
+    this.attributes.put(key, value);
   }
 
   /**

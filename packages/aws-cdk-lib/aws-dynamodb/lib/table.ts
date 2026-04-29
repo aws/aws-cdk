@@ -35,8 +35,10 @@ import {
   FeatureFlags,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { DYNAMODB_TABLE_RETAIN_TABLE_REPLICA } from '../../cx-api';
@@ -1141,6 +1143,7 @@ export abstract class TableBase extends Resource implements ITable, ITableRef, i
  * Provides a DynamoDB table.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Table extends TableBase {
   /**
    * Uniquely identifies this class.
@@ -1260,8 +1263,8 @@ export class Table extends TableBase {
 
   private readonly keySchema = new Array<CfnTable.KeySchemaProperty>();
   private readonly attributeDefinitions = new Array<CfnTable.AttributeDefinitionProperty>();
-  private readonly globalSecondaryIndexes = new Array<CfnTable.GlobalSecondaryIndexProperty>();
-  private readonly localSecondaryIndexes = new Array<CfnTable.LocalSecondaryIndexProperty>();
+  private readonly _globalSecondaryIndexes: IArrayBox<CfnTable.GlobalSecondaryIndexProperty>;
+  private readonly _localSecondaryIndexes: IArrayBox<CfnTable.LocalSecondaryIndexProperty>;
 
   /**
    * Schemas for the table and all of the indexes
@@ -1304,6 +1307,9 @@ export class Table extends TableBase {
     super(scope, id, {
       physicalName: props.tableName,
     });
+
+    this._globalSecondaryIndexes = Box.fromArray([]);
+    this._localSecondaryIndexes = Box.fromArray([]);
 
     if (!props?.partitionKey) {
       throw new ValidationError(lit`PartitionKeyRequired`, 'partitionKey is required for Table', this);
@@ -1353,8 +1359,8 @@ export class Table extends TableBase {
       tableName: this.physicalName,
       keySchema: this.keySchema,
       attributeDefinitions: this.attributeDefinitions,
-      globalSecondaryIndexes: Lazy.any({ produce: () => this.globalSecondaryIndexes }, { omitEmptyArray: true }),
-      localSecondaryIndexes: Lazy.any({ produce: () => this.localSecondaryIndexes }, { omitEmptyArray: true }),
+      globalSecondaryIndexes: this._globalSecondaryIndexes,
+      localSecondaryIndexes: this._localSecondaryIndexes,
       pointInTimeRecoverySpecification: pointInTimeRecoverySpecification,
       billingMode: this.billingMode === BillingMode.PAY_PER_REQUEST ? this.billingMode : undefined,
       provisionedThroughput: this.billingMode === BillingMode.PAY_PER_REQUEST ? undefined : {
@@ -1443,7 +1449,7 @@ export class Table extends TableBase {
 
     const contributorInsightsSpecification = this.validateCCI(props);
 
-    this.globalSecondaryIndexes.push({
+    this._globalSecondaryIndexes.push({
       contributorInsightsSpecification: contributorInsightsSpecification,
       indexName: props.indexName,
       keySchema: this.buildIndexKeySchema(normalizedSchema),
@@ -1475,7 +1481,7 @@ export class Table extends TableBase {
   @MethodMetadata()
   public addLocalSecondaryIndex(props: LocalSecondaryIndexProps) {
     // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Limits.html#limits-secondary-indexes
-    if (this.localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
+    if (this._localSecondaryIndexes.length >= MAX_LOCAL_SECONDARY_INDEX_COUNT) {
       throw new RangeError(`a maximum number of local secondary index per table is ${MAX_LOCAL_SECONDARY_INDEX_COUNT}`);
     }
 
@@ -1488,7 +1494,7 @@ export class Table extends TableBase {
 
     this.validateIndexName(props.indexName);
 
-    this.localSecondaryIndexes.push({
+    this._localSecondaryIndexes.push({
       indexName: props.indexName,
       keySchema: this.buildIndexKeySchema(normalizedSchema),
       projection: this.buildIndexProjection(props),
@@ -1650,7 +1656,7 @@ export class Table extends TableBase {
     if (!this.tablePartitionKey) {
       errors.push('a partition key must be specified');
     }
-    if (this.localSecondaryIndexes.length > 0 && !this.tableSortKey) {
+    if (this._localSecondaryIndexes.length > 0 && !this.tableSortKey) {
       errors.push('a sort key of the table must be specified to add local secondary indexes');
     }
 
@@ -1973,7 +1979,7 @@ export class Table extends TableBase {
    * Whether this table has indexes
    */
   protected get hasIndex(): boolean {
-    return this.globalSecondaryIndexes.length + this.localSecondaryIndexes.length > 0;
+    return this._globalSecondaryIndexes.length + this._localSecondaryIndexes.length > 0;
   }
 
   /**

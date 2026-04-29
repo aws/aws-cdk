@@ -10,7 +10,10 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP } from '../../../cx-api';
@@ -263,6 +266,7 @@ export interface ServerDeploymentGroupProps {
  * @resource AWS::CodeDeploy::DeploymentGroup
  */
 @propertyInjectable
+@noBoxStackTraces
 export class ServerDeploymentGroup extends DeploymentGroupBase implements IServerDeploymentGroup {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codedeploy.ServerDeploymentGroup';
@@ -290,7 +294,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
    */
   public readonly role?: iam.IRole;
 
-  private readonly _autoScalingGroups: autoscaling.IAutoScalingGroup[];
+  private readonly _autoScalingGroups: IArrayBox<autoscaling.IAutoScalingGroup>;
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
   private readonly alarms: IAlarmRef[];
@@ -312,7 +316,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this._deploymentConfig = this._bindDeploymentConfig(props.deploymentConfig || ServerDeploymentConfig.ONE_AT_A_TIME);
 
     this.role.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSCodeDeployRole'));
-    this._autoScalingGroups = props.autoScalingGroups || [];
+    this._autoScalingGroups = Box.fromArray(props.autoScalingGroups || []);
     this.installAgent = props.installAgent ?? true;
     this.codeDeployBucket = s3.Bucket.fromBucketName(this, 'Bucket', `aws-codedeploy-${cdk.Stack.of(this).region}`);
     this.loadBalancers = props.loadBalancers || (props.loadBalancer ? [props.loadBalancer]: undefined);
@@ -321,7 +325,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       throw new cdk.ValidationError(lit`LoadBalancersMustBeNonEmptyArray`, 'loadBalancers must be a non-empty array', this);
     }
 
-    for (const asg of this._autoScalingGroups) {
+    for (const asg of this._autoScalingGroups.get()) {
       this.addCodeDeployAgentInstallUserData(asg);
     }
 
@@ -335,7 +339,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       serviceRoleArn: this.role.roleArn,
       deploymentConfigName: props.deploymentConfig &&
         props.deploymentConfig.deploymentConfigRef.deploymentConfigName,
-      autoScalingGroups: cdk.Lazy.list({ produce: () => this._autoScalingGroups.map(asg => asg.autoScalingGroupName) }, { omitEmpty: true }),
+      autoScalingGroups: cdk.Token.asList(this._autoScalingGroups.map(asg => asg.autoScalingGroupName), { displayHint: 'autoScalingGroups' }),
       loadBalancerInfo: this.loadBalancersInfo(this.loadBalancers),
       deploymentStyle: this.loadBalancers === undefined
         ? undefined
@@ -391,7 +395,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   }
 
   public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
-    return this._autoScalingGroups.slice();
+    return this._autoScalingGroups.get().slice();
   }
 
   private addCodeDeployAgentInstallUserData(asg: autoscaling.IAutoScalingGroup): void {

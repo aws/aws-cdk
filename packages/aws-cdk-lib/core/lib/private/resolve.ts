@@ -2,11 +2,22 @@ import type { IConstruct } from 'constructs';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
 import { UnscopedValidationError } from '../errors';
-import type { IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions } from '../resolvable';
-import { DefaultTokenResolver, StringConcat } from '../resolvable';
+import type {
+  IFragmentConcatenator,
+  IPostProcessor,
+  IResolvable,
+  IResolveContext,
+  ITokenResolver,
+  ResolveChangeContextOptions,
+} from '../resolvable';
+import {
+  DefaultTokenResolver,
+  StringConcat,
+} from '../resolvable';
 import type { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
 import { lit } from './literal-string';
+import { Box } from '../helpers-internal/box';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
@@ -272,6 +283,55 @@ export function findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
   resolve(fn(), { scope, prefix: [], resolver, preparing: true });
 
   return resolver.tokens;
+}
+
+export function writePropertyAssignmentMetadataForConstruct(scope: IConstruct, fn: () => any, lookupTable: IPropertyNameLookupTable): void {
+  const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
+
+  resolve(fn(), { scope, prefix: [], resolver, preparing: true });
+}
+
+export interface IPropertyNameLookupTable {
+  cfnPropertyName(cdkPropertyName: string): string | undefined;
+}
+
+export class PropertyAssignmentMetadataWriter extends DefaultTokenResolver {
+  private readonly lookupTable: IPropertyNameLookupTable;
+  private readonly seenDocumentPaths = new Set<string>();
+
+  constructor(concat: IFragmentConcatenator, lookupTable: IPropertyNameLookupTable) {
+    super(concat);
+    this.lookupTable = lookupTable;
+  }
+
+  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
+    const result = super.resolveToken(t, context, postProcessor);
+    const lookupTable = this.lookupTable;
+
+    function propertyNameFromContext(ctx: IResolveContext): string | undefined {
+      const documentPath = ctx.documentPath;
+      // Expected pattern:
+      //  ["Resources", "${Token[...]}", "Properties", "assumeRolePolicyDocument"]
+      if (documentPath.length < 4 || documentPath[0] !== 'Resources' || documentPath[2] !== 'Properties') {
+        return undefined;
+      }
+      return lookupTable.cfnPropertyName(documentPath[3]);
+    }
+
+    const propertyName = propertyNameFromContext(context);
+    const documentPathKey = context.documentPath.join('/');
+    if (Box.isBox(t) && propertyName && !this.seenDocumentPaths.has(documentPathKey)) {
+      for (let stackTrace of t.getStackTraces()) {
+        context.scope.node.addMetadata('aws:cdk:propertyAssignment', {
+          propertyName,
+          stackTrace,
+        });
+        this.seenDocumentPaths.add(documentPathKey);
+      }
+    }
+
+    return result;
+  }
 }
 
 /**

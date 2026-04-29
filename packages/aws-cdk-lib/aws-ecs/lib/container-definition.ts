@@ -12,6 +12,9 @@ import type * as secretsmanager from '../../aws-secretsmanager';
 import type * as ssm from '../../aws-ssm';
 import * as cdk from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -457,6 +460,7 @@ export interface ContainerDefinitionProps extends ContainerDefinitionOptions {
  * A container definition is used in a task definition to describe the containers that are launched as part of a task.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class ContainerDefinition extends Construct {
   /**
    * Uniquely identifies this class.
@@ -473,28 +477,28 @@ export class ContainerDefinition extends Construct {
   /**
    * The mount points for data volumes in your container.
    */
-  public readonly mountPoints = new Array<MountPoint>();
+  public get mountPoints(): MountPoint[] { return this._mountPoints.getMutable(); }
 
   /**
    * The list of port mappings for the container. Port mappings allow containers to access ports
    * on the host container instance to send or receive traffic.
    */
-  public readonly portMappings = new Array<PortMapping>();
+  public get portMappings(): PortMapping[] { return this._portMappings.getMutable(); }
 
   /**
    * The data volumes to mount from another container in the same task definition.
    */
-  public readonly volumesFrom = new Array<VolumeFrom>();
+  public get volumesFrom(): VolumeFrom[] { return this._volumesFrom.getMutable(); }
 
   /**
    * An array of ulimits to set in the container.
    */
-  public readonly ulimits = new Array<Ulimit>();
+  public get ulimits(): Ulimit[] { return this._ulimits.getMutable(); }
 
   /**
    * An array dependencies defined for container startup and shutdown.
    */
-  public readonly containerDependencies = new Array<ContainerDependency>();
+  public get containerDependencies(): ContainerDependency[] { return this._containerDependencies.getMutable(); }
 
   /**
    * Specifies whether the container will be marked essential.
@@ -558,10 +562,16 @@ export class ContainerDefinition extends Construct {
    */
   public readonly pseudoTerminal?: boolean;
 
+  private readonly _mountPoints: IArrayBox<MountPoint>;
+  private readonly _portMappings: IArrayBox<PortMapping>;
+  private readonly _volumesFrom: IArrayBox<VolumeFrom>;
+  private readonly _ulimits: IArrayBox<Ulimit>;
+  private readonly _containerDependencies: IArrayBox<ContainerDependency>;
+
   /**
    * The configured container links
    */
-  private readonly links = new Array<string>();
+  private readonly _links: IArrayBox<string>;
 
   private readonly imageConfig: ContainerImageConfig;
 
@@ -590,6 +600,13 @@ export class ContainerDefinition extends Construct {
     this.memoryLimitSpecified = props.memoryLimitMiB !== undefined || props.memoryReservationMiB !== undefined;
     this.linuxParameters = props.linuxParameters;
     this.containerName = props.containerName ?? this.node.id;
+
+    this._mountPoints = Box.fromArray([]);
+    this._portMappings = Box.fromArray([]);
+    this._volumesFrom = Box.fromArray([]);
+    this._ulimits = Box.fromArray([]);
+    this._containerDependencies = Box.fromArray([]);
+    this._links = Box.fromArray([]);
 
     this.imageConfig = props.image.bind(this, this);
     this.imageName = this.imageConfig.imageName;
@@ -670,9 +687,9 @@ export class ContainerDefinition extends Construct {
       throw new ValidationError(lit`NetworkModeBridgeContainer`, 'You must use network mode Bridge to add container links.', this);
     }
     if (alias !== undefined) {
-      this.links.push(`${container.containerName}:${alias}`);
+      this._links.push(`${container.containerName}:${alias}`);
     } else {
-      this.links.push(`${container.containerName}`);
+      this._links.push(`${container.containerName}`);
     }
   }
 
@@ -680,7 +697,7 @@ export class ContainerDefinition extends Construct {
    * This method adds one or more mount points for data volumes to the container.
    */
   public addMountPoints(...mountPoints: MountPoint[]) {
-    this.mountPoints.push(...mountPoints);
+    this._mountPoints.push(...mountPoints);
   }
 
   /**
@@ -710,7 +727,7 @@ export class ContainerDefinition extends Construct {
    * This method adds one or more port mappings to the container.
    */
   public addPortMappings(...portMappings: PortMapping[]) {
-    this.portMappings.push(...portMappings.map(pm => {
+    this._portMappings.push(...portMappings.map(pm => {
       const portMap = new PortMap(this.taskDefinition.networkMode, pm);
       portMap.validate();
       const serviceConnect = new ServiceConnect(this.taskDefinition.networkMode, pm);
@@ -767,21 +784,21 @@ export class ContainerDefinition extends Construct {
    * This method adds one or more ulimits to the container.
    */
   public addUlimits(...ulimits: Ulimit[]) {
-    this.ulimits.push(...ulimits);
+    this._ulimits.push(...ulimits);
   }
 
   /**
    * This method adds one or more container dependencies to the container.
    */
   public addContainerDependencies(...containerDependencies: ContainerDependency[]) {
-    this.containerDependencies.push(...containerDependencies);
+    this._containerDependencies.push(...containerDependencies);
   }
 
   /**
    * This method adds one or more volumes to the container.
    */
   public addVolumesFrom(...volumesFrom: VolumeFrom[]) {
-    this.volumesFrom.push(...volumesFrom);
+    this._volumesFrom.push(...volumesFrom);
   }
 
   /**
@@ -933,7 +950,7 @@ export class ContainerDefinition extends Construct {
       credentialSpecs: this.credentialSpecs && this.credentialSpecs.map(renderCredentialSpec),
       cpu: this.props.cpu,
       disableNetworking: this.props.disableNetworking,
-      dependsOn: cdk.Lazy.any({ produce: () => this.containerDependencies.map(renderContainerDependency) }, { omitEmptyArray: true }),
+      dependsOn: this._containerDependencies.map(renderContainerDependency),
       dnsSearchDomains: this.props.dnsSearchDomains,
       dnsServers: this.props.dnsServers,
       dockerLabels: Object.keys(this.dockerLabels).length ? this.dockerLabels : undefined,
@@ -945,19 +962,19 @@ export class ContainerDefinition extends Construct {
       interactive: this.props.interactive,
       memory: this.props.memoryLimitMiB,
       memoryReservation: this.props.memoryReservationMiB,
-      mountPoints: cdk.Lazy.any({ produce: () => this.mountPoints.map(renderMountPoint) }, { omitEmptyArray: true }),
+      mountPoints: this._mountPoints.map(renderMountPoint),
       name: this.containerName,
-      portMappings: cdk.Lazy.any({ produce: () => this.portMappings.map(renderPortMapping) }, { omitEmptyArray: true }),
+      portMappings: this._portMappings.map(renderPortMapping),
       privileged: this.props.privileged,
       pseudoTerminal: this.props.pseudoTerminal,
       readonlyRootFilesystem: this.props.readonlyRootFilesystem,
       repositoryCredentials: this.imageConfig.repositoryCredentials,
       startTimeout: this.props.startTimeout && this.props.startTimeout.toSeconds(),
       stopTimeout: this.props.stopTimeout && this.props.stopTimeout.toSeconds(),
-      ulimits: cdk.Lazy.any({ produce: () => this.ulimits.map(renderUlimit) }, { omitEmptyArray: true }),
+      ulimits: this._ulimits.map(renderUlimit),
       user: this.props.user,
       versionConsistency: this.versionConsistency,
-      volumesFrom: cdk.Lazy.any({ produce: () => this.volumesFrom.map(renderVolumeFrom) }, { omitEmptyArray: true }),
+      volumesFrom: this._volumesFrom.map(renderVolumeFrom),
       workingDirectory: this.props.workingDirectory,
       logConfiguration: this.logDriverConfig,
       environment: this.environment && Object.keys(this.environment).length ? renderKV(this.environment, 'name', 'value') : undefined,
@@ -965,7 +982,7 @@ export class ContainerDefinition extends Construct {
       secrets: this.secrets.length ? this.secrets : undefined,
       extraHosts: this.props.extraHosts && renderKV(this.props.extraHosts, 'hostname', 'ipAddress'),
       healthCheck: this.props.healthCheck && renderHealthCheck(this, this.props.healthCheck),
-      links: cdk.Lazy.list({ produce: () => this.links }, { omitEmpty: true }),
+      links: cdk.Token.asList(this._links, { displayHint: 'links' }),
       linuxParameters: this.linuxParameters && this.linuxParameters.renderLinuxParameters(),
       resourceRequirements: (!this.props.gpuCount && this.inferenceAcceleratorResources.length == 0 ) ? undefined :
         renderResourceRequirements(this.props.gpuCount, this.inferenceAcceleratorResources),
