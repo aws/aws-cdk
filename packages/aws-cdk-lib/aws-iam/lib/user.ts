@@ -10,9 +10,11 @@ import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } 
 import { ArnPrincipal } from './principals';
 import { AttachedPolicies, MAX_POLICY_NAME_LEN, undefinedIfEmpty } from './private/util';
 import type { SecretValue } from '../../core';
-import { Arn, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Arn, ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { IAM_IMPORTED_USER_STACK_SAFE_DEFAULT_POLICY_NAME } from '../../cx-api';
@@ -155,6 +157,7 @@ export interface UserAttributes extends FromUserArnOptions {
  * Define a new IAM user
  */
 @propertyInjectable
+@noBoxStackTraces
 export class User extends Resource implements IIdentity, IUser {
   /**
    * Uniquely identifies this class.
@@ -311,7 +314,7 @@ export class User extends Resource implements IIdentity, IUser {
   public readonly policyFragment: PrincipalPolicyFragment;
 
   private readonly groups = new Array<any>();
-  private readonly managedPolicies = new Array<IManagedPolicy>();
+  private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
   private readonly _path?: string;
@@ -323,14 +326,14 @@ export class User extends Resource implements IIdentity, IUser {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.managedPolicies.push(...props.managedPolicies || []);
+    this._managedPolicies = Box.fromArray([...props.managedPolicies || []]);
     this.permissionsBoundary = props.permissionsBoundary;
     this._path = props.path;
 
     this._resource = new CfnUser(this, 'Resource', {
       userName: this.physicalName,
       groups: undefinedIfEmpty(() => this.groups),
-      managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn), { displayHint: 'managedPolicyArns' }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,
       loginProfile: this.parseLoginProfile(props),
@@ -364,8 +367,8 @@ export class User extends Resource implements IIdentity, IUser {
    */
   @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
-    if (this.managedPolicies.find(mp => mp === policy)) { return; }
-    this.managedPolicies.push(policy);
+    if (this._managedPolicies.find(mp => mp === policy)) { return; }
+    this._managedPolicies.push(policy);
   }
 
   /**
