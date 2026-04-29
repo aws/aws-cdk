@@ -104,7 +104,6 @@
   "license": "Apache-2.0",
   "bundleDependencies": [
     "@balena/dockerignore",
-    "@aws-cdk/cloud-assembly-api",
     "case",
     "fs-extra",
     "ignore",

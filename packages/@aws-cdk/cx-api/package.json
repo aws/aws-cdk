@@ -109,8 +109,7 @@
   ],
   "homepage": "https://github.com/aws/aws-cdk",
   "bundledDependencies": [
-    "semver",
-    "@aws-cdk/cloud-assembly-api"
+    "semver"
   ],
   "engines": {
     "node": ">= 20.0.0"
