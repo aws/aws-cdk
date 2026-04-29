@@ -85,6 +85,8 @@ export class CfnResource extends CfnRefElement {
    */
   private dependsOn: Set<CfnResource> | undefined;
 
+  protected readonly cfnPropertyNames: Record<string, string> = {};
+
   /**
    * Creates a resource construct.
    * @param cfnResourceType The CloudFormation type of this resource (e.g. AWS::DynamoDB::Table)
@@ -294,6 +296,10 @@ export class CfnResource extends CfnRefElement {
    */
   public addPropertyDeletionOverride(propertyPath: string) {
     this.addPropertyOverride(propertyPath, undefined);
+  }
+
+  public cfnPropertyName(cdkPropertyName: string): string | undefined {
+    return this.cfnPropertyNames[cdkPropertyName];
   }
 
   /**
