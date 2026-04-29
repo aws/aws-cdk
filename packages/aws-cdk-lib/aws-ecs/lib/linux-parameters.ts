@@ -2,6 +2,9 @@ import { Construct } from 'constructs';
 import type { CfnTaskDefinition } from './ecs.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 
 /**
@@ -52,6 +55,7 @@ export interface LinuxParametersProps {
 /**
  * Linux-specific options that are applied to the container.
  */
+@noBoxStackTraces
 export class LinuxParameters extends Construct {
   /**
    * Whether the init process is enabled
@@ -76,22 +80,22 @@ export class LinuxParameters extends Construct {
   /**
    * Capabilities to be added
    */
-  private readonly capAdd = new Array<Capability>();
+  private readonly capAdd: IArrayBox<Capability>;
 
   /**
    * Capabilities to be dropped
    */
-  private readonly capDrop = new Array<Capability>();
+  private readonly capDrop: IArrayBox<Capability>;
 
   /**
    * Device mounts
    */
-  private readonly devices = new Array<Device>();
+  private readonly devices: IArrayBox<Device>;
 
   /**
    * TmpFs mounts
    */
-  private readonly tmpfs = new Array<Tmpfs>();
+  private readonly tmpfs: IArrayBox<Tmpfs>;
 
   /**
    * Constructs a new instance of the LinuxParameters class.
@@ -100,6 +104,11 @@ export class LinuxParameters extends Construct {
     super(scope, id);
 
     this.validateProps(props);
+
+    this.capAdd = Box.fromArray([]);
+    this.capDrop = Box.fromArray([]);
+    this.devices = Box.fromArray([]);
+    this.tmpfs = Box.fromArray([]);
 
     this.sharedMemorySize = props.sharedMemorySize;
     this.initProcessEnabled = props.initProcessEnabled;
@@ -167,11 +176,11 @@ export class LinuxParameters extends Construct {
       maxSwap: this.maxSwap?.toMebibytes(),
       swappiness: this.swappiness,
       capabilities: {
-        add: cdk.Lazy.list({ produce: () => this.capAdd }, { omitEmpty: true }),
-        drop: cdk.Lazy.list({ produce: () => this.capDrop }, { omitEmpty: true }),
+        add: cdk.Token.asList(this.capAdd, { displayHint: 'capAdd' }),
+        drop: cdk.Token.asList(this.capDrop, { displayHint: 'capDrop' }),
       },
-      devices: cdk.Lazy.any({ produce: () => this.devices.map(renderDevice) }, { omitEmptyArray: true }),
-      tmpfs: cdk.Lazy.any({ produce: () => this.tmpfs.map(renderTmpfs) }, { omitEmptyArray: true }),
+      devices: this.devices.map(renderDevice),
+      tmpfs: this.tmpfs.map(renderTmpfs),
     };
   }
 }

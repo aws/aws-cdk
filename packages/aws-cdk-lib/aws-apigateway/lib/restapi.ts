@@ -26,21 +26,11 @@ import { UsagePlan } from './usage-plan';
 import * as cloudwatch from '../../aws-cloudwatch';
 import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import type {
-  IResource as IResourceBase,
-  Size,
-} from '../../core';
-import {
-  ArnFormat,
-  CfnOutput,
-  FeatureFlags,
-  Lazy,
-  RemovalPolicy,
-  Resource,
-  Stack,
-  Token,
-} from '../../core';
+import type { IResource as IResourceBase, Size } from '../../core';
+import { ArnFormat, CfnOutput, FeatureFlags, Lazy, RemovalPolicy, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { ISetBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -424,7 +414,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private _allowedVpcEndpoints: Set<ec2.IVPCEndpointRef> = new Set();
+  private allowedVpcEndpoints: ISetBox<ec2.IVPCEndpointRef> = Box.fromSet(new Set());
 
   protected resourcePolicy?: iam.PolicyDocument;
   protected cloudWatchAccount?: CfnAccount;
@@ -522,13 +512,11 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
    * @param vpcEndpoints the interface VPC endpoints to grant access to
    */
   public grantInvokeFromVpcEndpointsOnly(vpcEndpoints: ec2.IVpcEndpoint[]): void {
-    vpcEndpoints.forEach(endpoint => this._allowedVpcEndpoints.add(endpoint));
+    vpcEndpoints.forEach(endpoint => this.allowedVpcEndpoints.add(endpoint));
 
-    const endpoints = Lazy.list({
-      produce: () => {
-        return Array.from(this._allowedVpcEndpoints).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
-      },
-    });
+    const endpoints = Token.asList(this.allowedVpcEndpoints.derive(es => {
+      return Array.from(es).map(endpoint => endpoint.vpcEndpointRef.vpcEndpointId);
+    }));
 
     this.addToResourcePolicy(new iam.PolicyStatement({
       principals: [new iam.AnyPrincipal()],

@@ -37,7 +37,10 @@ import {
   Token,
   ValidationError,
 } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
@@ -306,6 +309,7 @@ export interface DistributionProps {
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Distribution extends Resource implements IDistribution {
   /**
    * Uniquely identifies this class.
@@ -373,7 +377,7 @@ export class Distribution extends Resource implements IDistribution {
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
-  private webAclId?: string;
+  private readonly _webAclId: IBox<string | undefined>;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -402,9 +406,9 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
+    this._webAclId = Box.fromValue(props.webAclId);
     if (props.webAclId) {
       this.validateWebAclId(props.webAclId);
-      this.webAclId = props.webAclId;
     }
 
     this.certificate = props.certificate;
@@ -435,7 +439,8 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: Lazy.string({ produce: () => this.webAclId }),
+        // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+        webAclId: Token.asString(this._webAclId),
       },
     });
 
@@ -708,11 +713,11 @@ export class Distribution extends Resource implements IDistribution {
    */
   @MethodMetadata()
   public attachWebAclId(webAclId: string) {
-    if (this.webAclId) {
+    if (this._webAclId.get()) {
       throw new ValidationError(lit`WebAclAlreadyAttachedToDistribution`, 'A WebACL has already been attached to this distribution', this);
     }
     this.validateWebAclId(webAclId);
-    this.webAclId = webAclId;
+    this._webAclId.set(webAclId);
   }
 
   private validateWebAclId(webAclId: string) {

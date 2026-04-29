@@ -14,9 +14,23 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import * as secretsmanager from '../../aws-secretsmanager';
-import type { Duration, IResource } from '../../core';
-import { Resource, Token, Annotations, RemovalPolicy, Stack, Lazy, FeatureFlags, ArnFormat } from '../../core';
+import type {
+  Duration,
+  IResource,
+} from '../../core';
+import {
+  Annotations,
+  ArnFormat,
+  FeatureFlags,
+  Lazy,
+  RemovalPolicy,
+  Resource,
+  Stack,
+  Token,
+} from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -570,7 +584,8 @@ export class ServerlessCluster extends ServerlessClusterNew {
   }
 
   public readonly clusterIdentifier: string;
-  public readonly clusterEndpoint: Endpoint;
+  // public readonly clusterEndpoint: Endpoint;
+  private readonly _clusterEndpoint: IBox<Endpoint>;
   public readonly clusterReadEndpoint: Endpoint;
 
   public readonly secret?: secretsmanager.ISecret;
@@ -608,7 +623,8 @@ export class ServerlessCluster extends ServerlessClusterNew {
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    // this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this._clusterEndpoint = Box.fromValue(new Endpoint(cluster.attrEndpointAddress, portAttribute));
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
@@ -616,6 +632,10 @@ export class ServerlessCluster extends ServerlessClusterNew {
     if (secret) {
       this.secret = secret.attach(this);
     }
+  }
+
+  public get clusterEndpoint(): Endpoint {
+    return this._clusterEndpoint.get();
   }
 
   /**
@@ -756,7 +776,7 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-rds.ServerlessClusterFromSnapshot';
 
   public readonly clusterIdentifier: string;
-  public readonly clusterEndpoint: Endpoint;
+  private readonly _clusterEndpoint: IBox<Endpoint>;
   public readonly clusterReadEndpoint: Endpoint;
   public readonly secret?: secretsmanager.ISecret;
 
@@ -793,7 +813,8 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
 
     // create a number token that represents the port of the cluster
     const portAttribute = Token.asNumber(cluster.attrEndpointPort);
-    this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    // this.clusterEndpoint = new Endpoint(cluster.attrEndpointAddress, portAttribute);
+    this._clusterEndpoint = Box.fromValue(new Endpoint(cluster.attrEndpointAddress, portAttribute));
     this.clusterReadEndpoint = new Endpoint(cluster.attrReadEndpointAddress, portAttribute);
 
     cluster.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
@@ -801,5 +822,9 @@ export class ServerlessClusterFromSnapshot extends ServerlessClusterNew {
     if (secret) {
       this.secret = secret.attach(this);
     }
+  }
+
+  public get clusterEndpoint(): Endpoint {
+    return this._clusterEndpoint.get();
   }
 }
