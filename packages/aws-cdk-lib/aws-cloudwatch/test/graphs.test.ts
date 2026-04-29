@@ -1,4 +1,5 @@
 import { Duration, Stack, UnscopedValidationError } from '../../core';
+import type { GraphWidgetProps } from '../lib';
 import {
   Alarm,
   AlarmWidget,
@@ -6,7 +7,6 @@ import {
   CustomWidget,
   GaugeWidget,
   GraphWidget,
-  GraphWidgetProps,
   GraphWidgetView,
   LegendPosition,
   LogQueryLanguage,
@@ -1111,9 +1111,6 @@ describe('Graphs', () => {
   });
 
   test('cannot specify an end without a start in GraphWidget', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     expect(() => {
       new GraphWidget({
@@ -1125,9 +1122,6 @@ describe('Graphs', () => {
   });
 
   test('cannot specify an end without a start in SingleValueWidget', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     expect(() => {
       new SingleValueWidget({
@@ -1138,9 +1132,6 @@ describe('Graphs', () => {
   });
 
   test('cannot specify an end without a start in GaugeWidget', () => {
-    // GIVEN
-    const stack = new Stack();
-
     // THEN
     expect(() => {
       new GaugeWidget({
@@ -1197,8 +1188,8 @@ describe('Graphs', () => {
   });
 
   describe('TableWidget', () => {
-    let stack;
-    let metric;
+    let stack: Stack;
+    let metric: Metric;
 
     beforeEach(() => {
       stack = new Stack();

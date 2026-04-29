@@ -1,6 +1,7 @@
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as cdk from 'aws-cdk-lib';
+import { Duration, Size } from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as actions from '../../lib';
 
 test('Default HTTPS action', () => {
@@ -157,5 +158,118 @@ test('can set http auth', () => {
         },
       ],
     },
+  });
+});
+
+describe('batchConfig', () => {
+  test('can set batch config', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topicRule = new iot.TopicRule(stack, 'TopicRule', {
+      sql: iot.IotSql.fromStringAsVer20160323(
+        "SELECT topic(2) as device_id FROM 'device/+/data'",
+      ),
+    });
+    const expectedUrl = 'https://example.com';
+
+    // WHEN
+    topicRule.addAction(
+      new actions.HttpsAction(expectedUrl, {
+        batchConfig: {
+          maxBatchOpenDuration: Duration.millis(100),
+          maxBatchSize: 5,
+          maxBatchSizeBytes: Size.kibibytes(1),
+        },
+      }),
+    );
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+      TopicRulePayload: {
+        Actions: [
+          {
+            Http: {
+              Url: expectedUrl,
+              EnableBatching: true,
+              BatchConfig: {
+                MaxBatchOpenMs: 100,
+                MaxBatchSize: 5,
+                MaxBatchSizeBytes: 1024,
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test('sets enableBatching to false when batchConfig is not provided', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const topicRule = new iot.TopicRule(stack, 'MyTopicRule', {
+      sql: iot.IotSql.fromStringAsVer20160323(
+        "SELECT topic(2) as device_id FROM 'device/+/data'",
+      ),
+    });
+    const expectedUrl = 'https://example.com';
+
+    // WHEN
+    topicRule.addAction(new actions.HttpsAction(expectedUrl));
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::IoT::TopicRule', {
+      TopicRulePayload: {
+        Actions: [
+          {
+            Http: {
+              Url: expectedUrl,
+              EnableBatching: false,
+            },
+          },
+        ],
+      },
+    });
+  });
+
+  test.each([1, 11])('throws if maxBatchSize is %i', (maxBatchSize) => {
+    // GIVEN
+    const expectedUrl = 'https://example.com';
+
+    // THEN
+    expect(() => {
+      new actions.HttpsAction(expectedUrl, {
+        batchConfig: {
+          maxBatchSize,
+        },
+      });
+    }).toThrow(`maxBatchSize must be between 2 and 10, got ${maxBatchSize}`);
+  });
+
+  test.each([Size.bytes(99), Size.kibibytes(129)])('throws if maxBatchSizeBytes is %s', (maxBatchSizeBytes) => {
+    // GIVEN
+    const expectedUrl = 'https://example.com';
+
+    // THEN
+    expect(() => {
+      new actions.HttpsAction(expectedUrl, {
+        batchConfig: {
+          maxBatchSizeBytes,
+        },
+      });
+    }).toThrow(`maxBatchSizeBytes must be between 100 bytes and 128 KiB, got ${maxBatchSizeBytes.toBytes()} bytes`);
+  });
+
+  test.each([Duration.millis(4), Duration.millis(201)])('throws if maxBatchOpenDuration is %s', (maxBatchOpenDuration) => {
+    // GIVEN
+    const expectedUrl = 'https://example.com';
+
+    // THEN
+    expect(() => {
+      new actions.HttpsAction(expectedUrl, {
+        batchConfig: {
+          maxBatchOpenDuration,
+        },
+      });
+    }).toThrow(`maxBatchOpenDuration must be between 5 ms and 200 ms, got ${maxBatchOpenDuration.toMilliseconds()} ms`);
   });
 });

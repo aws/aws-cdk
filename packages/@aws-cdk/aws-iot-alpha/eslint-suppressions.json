@@ -1,0 +1,22 @@
+{
+  "lib/audit-configuration.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  },
+  "lib/iot-sql.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  },
+  "lib/scheduled-audit.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 13
+    }
+  },
+  "lib/topic-rule.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 3
+    }
+  }
+}

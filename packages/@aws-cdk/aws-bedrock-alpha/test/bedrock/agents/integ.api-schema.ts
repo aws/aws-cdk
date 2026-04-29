@@ -4,13 +4,14 @@
 
 /// !cdk-integ aws-cdk-bedrock-api-schema-1
 
-import * as cdk from 'aws-cdk-lib';
+import * as path from 'path';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+import { BEDROCK_AGENT_INTEG_TEST_REGIONS } from './integ-tests-regions';
 import * as bedrock from '../../../bedrock';
-
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-bedrock-api-schema-1');
@@ -18,7 +19,7 @@ const stack = new cdk.Stack(app, 'aws-cdk-bedrock-api-schema-1');
 // Create Lambda functions for the action group executors
 // Create Lambda functions for the action group executors
 const assetActionGroupFunction = new lambda.Function(stack, 'AssetActionGroupFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -40,7 +41,7 @@ const assetActionGroupFunction = new lambda.Function(stack, 'AssetActionGroupFun
 });
 
 const inlineActionGroupFunction = new lambda.Function(stack, 'InlineActionGroupFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -62,7 +63,7 @@ const inlineActionGroupFunction = new lambda.Function(stack, 'InlineActionGroupF
 });
 
 const s3ActionGroupFunction = new lambda.Function(stack, 'S3ActionGroupFunction', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -89,7 +90,7 @@ const inlineActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(inlineA
 const s3ActionGroupExecutor = bedrock.ActionGroupExecutor.fromLambda(s3ActionGroupFunction);
 
 // Create an API schema from a local asset file
-const assetApiSchema = bedrock.ApiSchema.fromLocalAsset('test-schema.yaml');
+const assetApiSchema = bedrock.ApiSchema.fromLocalAsset(path.join(__dirname, 'test-schema.yaml'));
 
 // Create a simple inline API schema
 const inlineApiSchema = bedrock.ApiSchema.fromInline(`
@@ -198,6 +199,7 @@ agent.node.addDependency(schemaDeployment);
 
 new integ.IntegTest(app, 'BedrockApiSchema', {
   testCases: [stack],
+  regions: BEDROCK_AGENT_INTEG_TEST_REGIONS,
 });
 
 app.synth();

@@ -1,19 +1,24 @@
-import { Construct, DependencyGroup, IDependable } from 'constructs';
-import { AccessPoint, AccessPointOptions } from './access-point';
+import type { Construct, IDependable } from 'constructs';
+import { DependencyGroup } from 'constructs';
+import type { AccessPointOptions } from './access-point';
+import { AccessPoint } from './access-point';
 import { CfnFileSystem, CfnMountTarget } from './efs.generated';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import { ArnFormat, FeatureFlags, Lazy, Names, RemovalPolicy, Resource, Size, Stack, Tags, Token, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type { RemovalPolicy, Size } from '../../core';
+import { ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack, Tags, Token, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
+import type { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
 /**
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
  * or Archive storage.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
 export enum LifecyclePolicy {
 
@@ -141,7 +146,7 @@ export enum ReplicationOverwriteProtection {
 /**
  * Represents an Amazon EFS file system
  */
-export interface IFileSystem extends ec2.IConnectable, iam.IResourceWithPolicy {
+export interface IFileSystem extends IFileSystemRef, ec2.IConnectable, iam.IResourceWithPolicy {
   /**
    * The ID of the file system, assigned by Amazon EFS.
    *
@@ -368,7 +373,7 @@ export interface ReplicationConfigurationProps {
    *
    * @default - None
    */
-  readonly destinationFileSystem?: IFileSystem;
+  readonly destinationFileSystem?: IFileSystemRef;
 
   /**
    * AWS KMS key used to protect the encrypted file system.
@@ -445,7 +450,7 @@ export interface ExistingFileSystemProps {
   /**
    * The existing destination file system for the replication.
    */
-  readonly destinationFileSystem: IFileSystem;
+  readonly destinationFileSystem: IFileSystemRef;
 }
 
 /**
@@ -457,7 +462,7 @@ export abstract class ReplicationConfiguration {
    *
    * @param destinationFileSystem The existing destination file system for the replication
    */
-  public static existingFileSystem(destinationFileSystem: IFileSystem): ReplicationConfiguration {
+  public static existingFileSystem(destinationFileSystem: IFileSystemRef): ReplicationConfiguration {
     return new ExistingFileSystem({ destinationFileSystem });
   }
 
@@ -482,10 +487,21 @@ export abstract class ReplicationConfiguration {
     return new OneZoneFileSystem({ region, availabilityZone, kmsKey });
   }
 
+  private readonly _destinationFileSystem?: IFileSystemRef;
+
   /**
    * The existing destination file system for the replication.
    */
-  public readonly destinationFileSystem?: IFileSystem;
+  public get destinationFileSystem(): IFileSystem | undefined {
+    return this._destinationFileSystem ? toIFileSystem(this._destinationFileSystem) : undefined;
+  }
+
+  /**
+   * @internal
+   */
+  public get _destinationFileSystemRef(): IFileSystemRef | undefined {
+    return this._destinationFileSystem;
+  }
 
   /**
    * AWS KMS key used to protect the encrypted file system.
@@ -504,7 +520,7 @@ export abstract class ReplicationConfiguration {
   public readonly availabilityZone?: string;
 
   constructor(options: ReplicationConfigurationProps) {
-    this.destinationFileSystem = options.destinationFileSystem;
+    this._destinationFileSystem = options.destinationFileSystem;
     this.kmsKey = options.kmsKey;
     this.region = options.region;
     this.availabilityZone = options.availabilityZone;
@@ -567,6 +583,13 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    */
   public abstract readonly mountTargetsAvailable: IDependable;
 
+  public get fileSystemRef(): FileSystemReference {
+    return {
+      fileSystemId: this.fileSystemId,
+      fileSystemArn: this.fileSystemArn,
+    };
+  }
+
   /**
    * @internal
    */
@@ -583,6 +606,8 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   /**
    * Grant the actions defined in actions to the given grantee
    * on this File System resource.
+   *
+   * [disable-awslint:no-grants]
    *
    * @param grantee Principal to grant right to
    * @param actions The actions to grant
@@ -618,6 +643,9 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
 
   /**
    * Grant read permissions for this file system to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant read to
    */
   public grantRead(grantee: iam.IGrantable): iam.Grant {
@@ -630,6 +658,9 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
 
   /**
    * Grant read and write permissions for this file system to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant read and write to
    */
   public grantReadWrite(grantee: iam.IGrantable): iam.Grant {
@@ -645,6 +676,9 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
 
   /**
    * As root user, grant read and write permissions for this file system to an IAM principal.
+   *
+   * [disable-awslint:no-grants]
+   *
    * @param grantee The principal to grant root access to
    */
   public grantRootAccess(grantee: iam.IGrantable): iam.Grant {
@@ -742,21 +776,21 @@ export class FileSystem extends FileSystemBase {
     this.props = props;
 
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
-      throw new ValidationError('performanceMode MAX_IO is not supported for One Zone file systems.', this);
+      throw new ValidationError(lit`PerformanceModeSupportedOneZone`, 'performanceMode MAX_IO is not supported for One Zone file systems.', this);
     }
 
     if (props.oneZone) { this.oneZoneValidation(); }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
-      throw new ValidationError('Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED', this);
+      throw new ValidationError(lit`PropertyProvisionedThroughputPerSecond`, 'Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED', this);
     }
 
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
-      throw new ValidationError('ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO', this);
+      throw new ValidationError(lit`ThroughputModeSupportedFileSystems`, 'ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO', this);
     }
 
     if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-      throw new ValidationError('Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'', this);
+      throw new ValidationError(lit`CannotConfigureReplicationConfigurationReplication`, 'Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'', this);
     }
 
     // we explicitly use 'undefined' to represent 'false' to maintain backwards compatibility since
@@ -791,10 +825,10 @@ export class FileSystem extends FileSystemBase {
     const replicationConfiguration = props.replicationConfiguration ? {
       destinations: [
         {
-          fileSystemId: props.replicationConfiguration.destinationFileSystem?.fileSystemId,
+          fileSystemId: props.replicationConfiguration._destinationFileSystemRef?.fileSystemRef.fileSystemId,
           kmsKeyId: props.replicationConfiguration.kmsKey?.keyArn,
-          region: props.replicationConfiguration.destinationFileSystem ?
-            props.replicationConfiguration.destinationFileSystem.env.region :
+          region: props.replicationConfiguration._destinationFileSystemRef ?
+            props.replicationConfiguration._destinationFileSystemRef.env.region :
             (props.replicationConfiguration.region ?? Stack.of(this).region),
           availabilityZoneName: props.replicationConfiguration.availabilityZone,
         },
@@ -900,13 +934,13 @@ export class FileSystem extends FileSystemBase {
   private oneZoneValidation() {
     // validate when props.oneZone is enabled
     if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
-      throw new ValidationError('When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.', this);
+      throw new ValidationError(lit`OneZoneEnabledVpcSubnets`, 'When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.', this);
     }
     // when vpcSubnets.availabilityZones is defined
     if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
       // it has to be only one az
       if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
-        throw new ValidationError('When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.', this);
+        throw new ValidationError(lit`OneZoneEnabledVpcSubnets`, 'When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.', this);
       }
       // it has to be in availabilityZones
       // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
@@ -915,7 +949,7 @@ export class FileSystem extends FileSystemBase {
       if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
       this.props.vpc.availabilityZones.every(isNotDummy) &&
       !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
-        throw new ValidationError('vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.', this);
+        throw new ValidationError(lit`Vpcsubnets`, 'vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.', this);
       }
     }
   }
@@ -962,7 +996,7 @@ class ImportedFileSystem extends FileSystemBase {
     addConstructMetadata(this, attrs);
 
     if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
-      throw new ValidationError('One of fileSystemId or fileSystemArn, but not both, must be provided.', this);
+      throw new ValidationError(lit`OneFileSystemIdFile`, 'One of fileSystemId or fileSystemArn, but not both, must be provided.', this);
     }
 
     this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
@@ -974,7 +1008,7 @@ class ImportedFileSystem extends FileSystemBase {
     const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new ValidationError(`Invalid FileSystem Arn ${this.fileSystemArn}`, this);
+      throw new ValidationError(lit`InvalidFileSystemArn`, `Invalid FileSystem Arn ${this.fileSystemArn}`, this);
     }
 
     this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;
@@ -986,4 +1020,11 @@ class ImportedFileSystem extends FileSystemBase {
 
     this.mountTargetsAvailable = new DependencyGroup();
   }
+}
+
+function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
+  if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
+    throw new ValidationError(lit`FilesystemInstanceShouldImplement`, `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`, fileSystem as any);
+  }
+  return fileSystem as IFileSystem;
 }

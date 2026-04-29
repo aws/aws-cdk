@@ -3,7 +3,7 @@ import { AccountRootPrincipal, Role } from '../../aws-iam';
 import { Stack } from '../../core';
 import { ProfilingGroup, ComputePlatform } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('profiling group', () => {
   test('attach read permission to Profiling group via fromProfilingGroupArn', () => {

@@ -53,7 +53,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MyTriggerFunctionServiceRole1BB78C29"
@@ -69,7 +69,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176"
+     "Ref": "MyTriggerFunctionCurrentVersion61957CE1f17c1c09f1ce6b916e414b39b50d1e7d"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "120000",
@@ -81,7 +81,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MyTriggerFunctionCurrentVersion61957CE12b717c78220b5359f1feeee4ac371176": {
+  "MyTriggerFunctionCurrentVersion61957CE1f17c1c09f1ce6b916e414b39b50d1e7d": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -241,7 +241,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9c26b6db098782e57b9743bd698ea29ced24bca7524cd71f6f395a318d921897.zip"
+     "S3Key": "2fc279f22d70e9de93c69d6da451bbbe64a7387e0966682dd12d943c00a29321.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -252,15 +252,7 @@
       "Arn"
      ]
     },
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    }
+    "Runtime": "nodejs22.x"
    },
    "DependsOn": [
     "AWSCDKTriggerCustomResourceProviderCustomResourceProviderRoleE18FAF0A"
@@ -318,14 +310,14 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [
     "MyLambdaFunctionServiceRole313A4D46"
    ]
   },
-  "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e": {
+  "MyLambdaFunctionCurrentVersion4FAB80EC88e1a6555a4925fe10563117c573d2cf": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -346,7 +338,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e"
+     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC88e1a6555a4925fe10563117c573d2cf"
     },
     "InvocationType": "Event",
     "Timeout": "60000",
@@ -443,7 +435,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900
    },
    "DependsOn": [
@@ -451,7 +443,7 @@
     "MyAssertionLambdaFunctionServiceRole36146F3B"
    ]
   },
-  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6": {
+  "MyAssertionLambdaFunctionCurrentVersionF4FA4C80471a30c0d98c41fbae206f65480f88b6": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -472,7 +464,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80523df5fd8667e8600ae9661e9fe779a6"
+     "Ref": "MyAssertionLambdaFunctionCurrentVersionF4FA4C80471a30c0d98c41fbae206f65480f88b6"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "60000",
@@ -528,7 +520,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MySecondFunctionServiceRole5B930841"
@@ -544,7 +536,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23"
+     "Ref": "MySecondFunctionCurrentVersion7D497B5D521822ce335698d5cea3b86e1bc4c2e2"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "120000",
@@ -553,7 +545,7 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-  "MySecondFunctionCurrentVersion7D497B5D054029861f424b2f88575859bb7ebb23": {
+  "MySecondFunctionCurrentVersion7D497B5D521822ce335698d5cea3b86e1bc4c2e2": {
    "Type": "AWS::Lambda::Version",
    "Properties": {
     "FunctionName": {
@@ -574,7 +566,7 @@
      ]
     },
     "HandlerArn": {
-     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC179f87deb5063d4ec46ecac6b7f0c99e"
+     "Ref": "MyLambdaFunctionCurrentVersion4FAB80EC88e1a6555a4925fe10563117c573d2cf"
     },
     "InvocationType": "RequestResponse",
     "Timeout": "120000",
@@ -582,148 +574,6 @@
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isof-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-isof-south-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
-   }
   }
  },
  "Outputs": {

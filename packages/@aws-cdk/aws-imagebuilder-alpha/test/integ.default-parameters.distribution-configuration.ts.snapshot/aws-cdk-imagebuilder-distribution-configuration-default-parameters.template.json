@@ -1,0 +1,80 @@
+{
+ "Resources": {
+  "Repository22E53BBD": {
+   "Type": "AWS::ECR::Repository",
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "AMIDistributionConfigurationA286FE05": {
+   "Type": "AWS::ImageBuilder::DistributionConfiguration",
+   "Properties": {
+    "Distributions": [
+     {
+      "AmiDistributionConfiguration": {
+       "Name": "imagebuidler-{{ imagebuilder:buildDate }}"
+      },
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "Name": "aws-cdk-imagebuilder-distribution-configuration-default-parameters-amidistributionconfiguration-555e4adc"
+   }
+  },
+  "ContainerDistributionConfiguration18609EDB": {
+   "Type": "AWS::ImageBuilder::DistributionConfiguration",
+   "Properties": {
+    "Distributions": [
+     {
+      "ContainerDistributionConfiguration": {
+       "TargetRepository": {
+        "RepositoryName": {
+         "Ref": "Repository22E53BBD"
+        },
+        "Service": "ECR"
+       }
+      },
+      "Region": {
+       "Ref": "AWS::Region"
+      }
+     }
+    ],
+    "Name": "aws-cdk-imagebuilder-distribution-configuration-default-parameters-containerdistributionconfiguration-8914840a"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,7 @@
+{
+  "lib/environment.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 2
+    }
+  }
+}

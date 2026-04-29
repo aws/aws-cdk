@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cb440cfc27bed33481e27c112e5867ba204ce9d973f0324d76ce5690382380f7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/01b51c208e090a9777f653dcea38887a2ceb7097ffd5fb8f0c08a65ad2ac0d5f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -881,12 +881,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "NodeProxyAgentLayer924C1971"
-          }
-        ],
-        "/integ-eks-stack/@aws-cdk--aws-eks.ClusterResourceProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-eks-stack/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
@@ -1956,12 +1950,6 @@
             "data": "ProviderframeworkonEvent83C1D0A7"
           }
         ],
-        "/integ-eks-stack/@aws-cdk--aws-eks.KubectlProvider/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
-          }
-        ],
         "/integ-eks-stack/@aws-cdk--aws-eks.KubectlProvider/reference-to-integeksstackKubectlLayerF38DF1C2Ref": [
           {
             "type": "aws:cdk:logicalId",
@@ -2365,12 +2353,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "integeksstackClusterD08A1942AlbController441479B8"
-          }
-        ],
-        "/integ-eks-stack/LatestNodeRuntimeMap": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LatestNodeRuntimeMap"
           }
         ],
         "/integ-eks-stack/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [

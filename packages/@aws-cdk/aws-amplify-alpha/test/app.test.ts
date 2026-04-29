@@ -1,8 +1,8 @@
+import { SecretValue, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as codebuild from 'aws-cdk-lib/aws-codebuild';
 import * as codecommit from 'aws-cdk-lib/aws-codecommit';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { SecretValue, Stack } from 'aws-cdk-lib';
 import * as amplify from '../lib';
 
 let stack: Stack;

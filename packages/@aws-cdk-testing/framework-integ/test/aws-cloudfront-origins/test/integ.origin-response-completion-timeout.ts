@@ -13,7 +13,7 @@ const httpOrigin = new origins.HttpOrigin('example.com', {
 });
 
 const fn = new lambda.Function(stack, 'Function', {
-  runtime: lambda.Runtime.NODEJS_18_X,
+  runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200, body: "Hello from Lambda!" });'),
 });

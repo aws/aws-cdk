@@ -1,62 +1,31 @@
-import { ArnComponents, ArnFormat } from './arn';
+import { Construct } from 'constructs';
+import type { IConstruct, IMixin } from 'constructs';
+import type { ArnComponents } from './arn';
+import { Arn, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
 import { ValidationError } from './errors';
-import { IStringProducer, Lazy } from './lazy';
+import { memoizedGetter } from './helpers-internal/memoize';
+import type { IStringProducer } from './lazy';
+import { Lazy } from './lazy';
 import { generatePhysicalName, isGeneratedWhenNeededMarker } from './private/physical-name-generator';
 import { Reference } from './reference';
-import { RemovalPolicy } from './removal-policy';
-import { IResolveContext } from './resolvable';
+import type { RemovalPolicy } from './removal-policy';
+import type { IResolveContext } from './resolvable';
 import { Stack } from './stack';
 import { Token, Tokenization } from './token';
-
-// v2 - leave this as a separate section so it reduces merge conflicts when compat is removed
-// eslint-disable-next-line import/order
-import { Construct, IConstruct } from 'constructs';
-
-/**
- * Represents the environment a given resource lives in.
- * Used as the return value for the `IResource.env` property.
- */
-export interface ResourceEnvironment {
-  /**
-   * The AWS account ID that this resource belongs to.
-   * Since this can be a Token
-   * (for example, when the account is CloudFormation's AWS::AccountId intrinsic),
-   * make sure to use Token.compareStrings()
-   * instead of just comparing the values for equality.
-   */
-  readonly account: string;
-
-  /**
-   * The AWS region that this resource belongs to.
-   * Since this can be a Token
-   * (for example, when the region is CloudFormation's AWS::Region intrinsic),
-   * make sure to use Token.compareStrings()
-   * instead of just comparing the values for equality.
-   */
-  readonly region: string;
-}
+import type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
+import { withMixins } from './mixins/private/mixin-metadata';
+import { lit } from './private/literal-string';
 
 /**
- * Interface for the Resource construct.
+ * Interface for L2 Resource constructs.
  */
-export interface IResource extends IConstruct {
+export interface IResource extends IConstruct, IEnvironmentAware {
   /**
    * The stack in which this resource is defined.
    */
   readonly stack: Stack;
-
-  /**
-   * The environment this resource belongs to.
-   * For resources that are created and managed by the CDK
-   * (generally, those created by creating new class instances like Role, Bucket, etc.),
-   * this is always the same as the environment of the stack they belong to;
-   * however, for imported resources
-   * (those obtained from static methods like fromRoleArn, fromBucketName, etc.),
-   * that might be different than the stack they were imported into.
-   */
-  readonly env: ResourceEnvironment;
 
   /**
    * Apply the given removal policy to this resource
@@ -117,7 +86,7 @@ export interface ResourceProps {
 }
 
 /**
- * A construct which represents an AWS resource.
+ * An L2 construct which represents an AWS resource.
  */
 export abstract class Resource extends Construct implements IResource {
   /**
@@ -134,8 +103,76 @@ export abstract class Resource extends Construct implements IResource {
     return construct.node.defaultChild ? CfnResource.isCfnResource(construct.node.defaultChild) : false;
   }
 
-  public readonly stack: Stack;
-  public readonly env: ResourceEnvironment;
+  private readonly _allowCrossEnvironment: boolean;
+
+  /** Account given in the constructor, if any. Will be same as Stack if not supplied. */
+  private _customAccount: string | undefined;
+
+  /** Account given in the constructor, if any. Will be same as Stack if not supplied.*/
+  private _customRegion: string | undefined;
+
+  /** What we are doing for the physical name */
+  private _physicalNameMode: 'generate' | 'given-resolved' | 'deploy-time';
+  /** The physicalName supplied into the constructor */
+  private _givenPhysicalName: string | undefined;
+  /** The generated physical name, in case of cross-env access */
+  private _generatedPhysicalName: string | undefined;
+
+  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
+    super(scope, id);
+
+    if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
+      throw new ValidationError(lit`ConflictingEnvironmentOptions`, `Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`, this);
+    }
+
+    Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
+
+    const parsedArn = props.environmentFromArn ?
+      // Since we only want the region and account, NO_RESOURCE_NAME is good enough
+      Arn.split(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
+      : undefined;
+    this._customAccount = props.account ?? parsedArn?.account;
+    this._customRegion = props.region ?? parsedArn?.region;
+
+    this._givenPhysicalName = props.physicalName;
+
+    if (props.physicalName && isGeneratedWhenNeededMarker(props.physicalName)) {
+      // Auto-generate the physical name if there is cross-environment usage of the token
+      this._physicalNameMode = 'generate';
+      this._allowCrossEnvironment = true;
+    } else if (props.physicalName && !Token.isUnresolved(props.physicalName)) {
+      // Concrete value specified by the user, this is the physical name
+      this._physicalNameMode = 'given-resolved';
+      this._allowCrossEnvironment = true;
+    } else {
+      // One of:
+      //
+      // - undefined (means: deploy-time generated by CloudFormation); or
+      // - unresolved (means: some deploy-time value).
+      //
+      // In both cases we know the name and can return it, but we cannot use
+      // this for cross-env because there's no way to predict it at synth time.
+      this._physicalNameMode = 'deploy-time';
+      this._allowCrossEnvironment = false;
+    }
+  }
+
+  @memoizedGetter
+  public get stack(): Stack {
+    return Stack.of(this);
+  }
+
+  @memoizedGetter
+  public get env(): ResourceEnvironment {
+    return {
+      account: this._customAccount ?? this.stack.account,
+      region: this._customRegion ?? this.stack.region,
+    };
+  }
+
+  public with(...mixins: IMixin[]): IConstruct {
+    return withMixins(this, ...mixins);
+  }
 
   /**
    * Returns a string-encoded token that resolves to the physical name that
@@ -146,55 +183,19 @@ export abstract class Resource extends Construct implements IResource {
    * - `undefined`, when a name should be generated by CloudFormation
    * - a concrete name generated automatically during synthesis, in
    *   cross-environment scenarios.
-   *
    */
-  protected readonly physicalName: string;
-
-  private _physicalName: string | undefined;
-  private readonly _allowCrossEnvironment: boolean;
-
-  constructor(scope: Construct, id: string, props: ResourceProps = {}) {
-    super(scope, id);
-
-    if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
-      throw new ValidationError(`Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`, this);
+  @memoizedGetter
+  protected get physicalName(): string {
+    switch (this._physicalNameMode) {
+      case 'generate':
+        return Lazy.string({ produce: () => this._generatedPhysicalName });
+      case 'given-resolved':
+        // Will definitely be set
+        return this._givenPhysicalName!;
+      case 'deploy-time':
+        // May end up unset, in which case we escape `undefined` via a Token to satisfy TypeScript's typing.
+        return this._givenPhysicalName ?? Token.asString(undefined);
     }
-
-    Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
-
-    this.stack = Stack.of(this);
-
-    const parsedArn = props.environmentFromArn ?
-      // Since we only want the region and account, NO_RESOURCE_NAME is good enough
-      this.stack.splitArn(props.environmentFromArn, ArnFormat.NO_RESOURCE_NAME)
-      : undefined;
-    this.env = {
-      account: props.account ?? parsedArn?.account ?? this.stack.account,
-      region: props.region ?? parsedArn?.region ?? this.stack.region,
-    };
-
-    let physicalName = props.physicalName;
-
-    if (props.physicalName && isGeneratedWhenNeededMarker(props.physicalName)) {
-      // auto-generate only if cross-env is required
-      this._physicalName = undefined;
-      this._allowCrossEnvironment = true;
-      physicalName = Lazy.string({ produce: () => this._physicalName });
-    } else if (props.physicalName && !Token.isUnresolved(props.physicalName)) {
-      // concrete value specified by the user
-      this._physicalName = props.physicalName;
-      this._allowCrossEnvironment = true;
-    } else {
-      // either undefined (deploy-time) or has tokens, which means we can't use for cross-env
-      this._physicalName = props.physicalName;
-      this._allowCrossEnvironment = false;
-    }
-
-    if (physicalName === undefined) {
-      physicalName = Token.asString(undefined);
-    }
-
-    this.physicalName = physicalName;
   }
 
   /**
@@ -208,12 +209,12 @@ export abstract class Resource extends Construct implements IResource {
   public _enableCrossEnvironment(): void {
     if (!this._allowCrossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
-      throw new ValidationError(`Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
+      throw new ValidationError(lit`CannotUseCrossEnvironment`, `Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
         "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`", this);
     }
 
-    if (!this._physicalName) {
-      this._physicalName = this.generatePhysicalName();
+    if (this._physicalNameMode === 'generate' && !this._generatedPhysicalName) {
+      this._generatedPhysicalName = this.generatePhysicalName();
     }
   }
 
@@ -231,7 +232,7 @@ export abstract class Resource extends Construct implements IResource {
   public applyRemovalPolicy(policy: RemovalPolicy) {
     const child = this.node.defaultChild;
     if (!child || !CfnResource.isCfnResource(child)) {
-      throw new ValidationError('Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
+      throw new ValidationError(lit`CannotApplyRemovalPolicy`, 'Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
     }
     child.applyRemovalPolicy(policy);
   }

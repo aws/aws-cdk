@@ -9,6 +9,7 @@
     "packages/@aws-cdk-containers/*",
     "packages/@aws-cdk-testing/*",
     "packages/@aws-cdk/*/lambda-packages/*",
+    "tools/@aws-cdk/eslint-config",
     "tools/@aws-cdk/cdk-build-tools",
     "tools/@aws-cdk/user-input-gen",
     "tools/@aws-cdk/cdk-release",
@@ -21,6 +22,7 @@
     "tools/@aws-cdk/construct-metadata-updater",
     "tools/@aws-cdk/project-sync",
     "tools/@aws-cdk/integration-test-deployment",
+    "tools/@aws-cdk/enum-updater",
     "scripts/@aws-cdk/script-tests"
   ],
   "rejectCycles": true,

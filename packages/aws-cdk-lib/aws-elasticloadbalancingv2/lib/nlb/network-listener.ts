@@ -1,17 +1,26 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { NetworkListenerAction } from './network-listener-action';
 import { NetworkListenerCertificate } from './network-listener-certificate';
-import { INetworkLoadBalancer } from './network-load-balancer';
-import { INetworkLoadBalancerTarget, INetworkTargetGroup, NetworkTargetGroup } from './network-target-group';
+import type { INetworkLoadBalancer } from './network-load-balancer';
+import type { INetworkLoadBalancerTarget, INetworkTargetGroup } from './network-target-group';
+import { NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Resource, Lazy, Token } from '../../../core';
+import { Duration, Resource, Token, FeatureFlags } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { BaseListener, BaseListenerLookupOptions, IListener } from '../shared/base-listener';
-import { HealthCheck } from '../shared/base-target-group';
-import { AlpnPolicy, Protocol, SslPolicy } from '../shared/enums';
-import { IListenerCertificate } from '../shared/listener-certificate';
+import * as cxapi from '../../../cx-api';
+import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
+import type { BaseListenerLookupOptions, IListener } from '../shared/base-listener';
+import { BaseListener } from '../shared/base-listener';
+import type { HealthCheck } from '../shared/base-target-group';
+import type { AlpnPolicy } from '../shared/enums';
+import { Protocol, SslPolicy } from '../shared/enums';
+import type { IListenerCertificate } from '../shared/listener-certificate';
 import { validateNetworkProtocol } from '../shared/util';
 
 /**
@@ -125,6 +134,7 @@ export interface NetworkListenerLookupOptions extends BaseListenerLookupOptions 
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 @propertyInjectable
+@noBoxStackTraces
 export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * Uniquely identifies this class.
@@ -154,7 +164,14 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     });
 
     class LookedUp extends Resource implements INetworkListener {
+      public readonly isNetworkListener = true;
       public listenerArn = props.listenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new LookedUp(scope, id);
@@ -165,11 +182,20 @@ export class NetworkListener extends BaseListener implements INetworkListener {
    */
   public static fromNetworkListenerArn(scope: Construct, id: string, networkListenerArn: string): INetworkListener {
     class Import extends Resource implements INetworkListener {
+      public readonly isNetworkListener = true;
       public listenerArn = networkListenerArn;
+
+      public get listenerRef(): aws_elasticloadbalancingv2.ListenerReference {
+        return {
+          listenerArn: this.listenerArn,
+        };
+      }
     }
 
     return new Import(scope, id);
   }
+
+  public readonly isNetworkListener = true;
 
   /**
    * The load balancer this listener is attached to
@@ -179,7 +205,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   /**
    * ARNs of certificates added to this listener
    */
-  private readonly certificateArns: string[];
+  private readonly _certificateArns: IArrayBox<string>;
 
   /**
    * the protocol of the listener
@@ -193,29 +219,40 @@ export class NetworkListener extends BaseListener implements INetworkListener {
     validateNetworkProtocol(proto);
 
     if (proto === Protocol.TLS && certs.filter(v => v != null).length === 0) {
-      throw new ValidationError('When the protocol is set to TLS, you must specify certificates', scope);
+      throw new ValidationError(lit`TlsProtocolRequiresCertificates`, 'When the protocol is set to TLS, you must specify certificates', scope);
     }
 
     if (proto !== Protocol.TLS && certs.length > 0) {
-      throw new ValidationError('Protocol must be TLS when certificates have been specified', scope);
+      throw new ValidationError(lit`CertificatesRequireTlsProtocol`, 'Protocol must be TLS when certificates have been specified', scope);
     }
 
     if (proto !== Protocol.TLS && props.alpnPolicy) {
-      throw new ValidationError('Protocol must be TLS when alpnPolicy have been specified', scope);
+      throw new ValidationError(lit`AlpnPolicyRequiresTlsProtocol`, 'Protocol must be TLS when alpnPolicy have been specified', scope);
     }
+
+    // Apply post-quantum TLS policy when feature flag is enabled and no explicit policy is set
+    let sslPolicy = props.sslPolicy;
+    if (!sslPolicy && proto === Protocol.TLS &&
+        FeatureFlags.of(scope).isEnabled(cxapi.ELB_USE_POST_QUANTUM_TLS_POLICY)) {
+      sslPolicy = SslPolicy.TLS13_12_PQ;
+    }
+
+    const certificateArns = Box.fromArray<string>([]);
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
       port: props.port,
-      sslPolicy: props.sslPolicy,
-      certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
+      sslPolicy: sslPolicy,
+      certificates: certificateArns.derive(arns =>
+        arns.length === 0 ? undefined : arns.map(certificateArn => ({ certificateArn })),
+      ),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.certificateArns = [];
+    this._certificateArns = certificateArns;
     this.loadBalancer = props.loadBalancer;
     this.protocol = proto;
 
@@ -223,7 +260,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       this.addCertificates('DefaultCertificates', certs);
     }
     if (props.defaultAction && props.defaultTargetGroups) {
-      throw new ValidationError('Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
+      throw new ValidationError(lit`ConflictingDefaultActions`, 'Specify at most one of \'defaultAction\' and \'defaultTargetGroups\'', this);
     }
 
     if (props.defaultAction) {
@@ -236,17 +273,17 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 
     if (props.tcpIdleTimeout !== undefined && !Token.isUnresolved(props.tcpIdleTimeout)) {
       if (props.tcpIdleTimeout.toMilliseconds() < Duration.seconds(1).toMilliseconds()) {
-        throw new ValidationError(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`, this);
+        throw new ValidationError(lit`InvalidTcpIdleTimeout`, `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${props.tcpIdleTimeout.toMilliseconds()} milliseconds.`, this);
       }
 
       const tcpIdleTimeoutSeconds = props.tcpIdleTimeout.toSeconds();
 
       if (proto === Protocol.UDP) {
-        throw new ValidationError('\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.', this);
+        throw new ValidationError(lit`UdpProtocolNoTcpIdleTimeout`, '\`tcpIdleTimeout\` cannot be set when `protocol` is `Protocol.UDP`.', this);
       }
 
       if (tcpIdleTimeoutSeconds < 60 || tcpIdleTimeoutSeconds > 6000) {
-        throw new ValidationError(`\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`, this);
+        throw new ValidationError(lit`InvalidTcpIdleTimeoutRange`, `\`tcpIdleTimeout\` must be between 60 and 6000 seconds, got ${tcpIdleTimeoutSeconds} seconds.`, this);
       }
 
       this.setAttribute('tcp.idle_timeout.seconds', tcpIdleTimeoutSeconds.toString());
@@ -263,9 +300,9 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   @MethodMetadata()
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     const additionalCerts = [...certificates];
-    if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
+    if (this._certificateArns.length === 0 && additionalCerts.length > 0) {
       const first = additionalCerts.splice(0, 1)[0];
-      this.certificateArns.push(first.certificateArn);
+      this._certificateArns.push(first.certificateArn);
     }
     // Only one certificate can be specified per resource, even though
     // `certificates` is of type Array
@@ -317,8 +354,7 @@ export class NetworkListener extends BaseListener implements INetworkListener {
   @MethodMetadata()
   public addTargets(id: string, props: AddNetworkTargetsProps): NetworkTargetGroup {
     if (!this.loadBalancer.vpc) {
-      // eslint-disable-next-line max-len
-      throw new ValidationError('Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup', this);
+      throw new ValidationError(lit`VpcRequiredForAddTargets`, 'Can only call addTargets() when using a constructed Load Balancer or imported Load Balancer with specified VPC; construct a new TargetGroup and use addTargetGroup', this);
     }
 
     const group = new NetworkTargetGroup(this, id + 'Group', {
@@ -348,9 +384,22 @@ export class NetworkListener extends BaseListener implements INetworkListener {
 }
 
 /**
+ * Indicates that this resource can be referenced as an NLB Listener
+ */
+export interface INetworkListenerRef extends IListener {
+  /**
+   * Indicates that this is an NLB listener
+   *
+   * Will always return true, but is necessary to prevent accidental structural
+   * equality in TypeScript.
+   */
+  readonly isNetworkListener: boolean;
+}
+
+/**
  * Properties to reference an existing listener
  */
-export interface INetworkListener extends IListener {
+export interface INetworkListener extends IListener, INetworkListenerRef {
 }
 
 /**

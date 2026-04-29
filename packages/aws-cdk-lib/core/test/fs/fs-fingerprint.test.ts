@@ -45,10 +45,18 @@ describe('fs fingerprint', () => {
   });
 
   describe('directories', () => {
+    let outdir: string;
+    beforeEach(() => {
+      outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(outdir, { force: true, recursive: true });
+    });
+
     test('works on directories', () => {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
-      const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
       FileSystem.copyDirectory(srcdir, outdir);
 
       // WHEN
@@ -62,7 +70,6 @@ describe('fs fingerprint', () => {
     test('ignores requested files', () => {
       // GIVEN
       const srcdir = path.join(__dirname, 'fixtures', 'symlinks');
-      const outdir = fs.mkdtempSync(path.join(os.tmpdir(), 'copy-tests'));
       FileSystem.copyDirectory(srcdir, outdir);
 
       // WHEN

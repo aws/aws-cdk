@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/unbound-method */
+
 import * as child_process from 'child_process';
 import * as os from 'os';
 import * as path from 'path';
-import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { AssetHashType, BundlingFileAccess, DockerImage } from 'aws-cdk-lib';
+import { Architecture, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Bundling } from '../lib/bundling';
 import * as util from '../lib/util';
 
@@ -32,7 +32,7 @@ const entry = '/project/cmd/api';
 test('bundling', () => {
   Bundling.bundle({
     entry,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir,
     forcedDockerBundling: true,
@@ -73,7 +73,7 @@ test('bundling', () => {
 test('bundling with file as entry', () => {
   Bundling.bundle({
     entry: '/project/main.go',
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir,
   });
@@ -94,7 +94,7 @@ test('bundling with file as entry', () => {
 test('bundling with file in subdirectory as entry', () => {
   Bundling.bundle({
     entry: '/project/cmd/api/main.go',
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir,
   });
@@ -115,7 +115,7 @@ test('bundling with file in subdirectory as entry', () => {
 test('bundling with file other than main.go in subdirectory as entry', () => {
   Bundling.bundle({
     entry: '/project/cmd/api/api.go',
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir,
   });
@@ -137,7 +137,7 @@ test('go with Windows paths', () => {
   const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
   Bundling.bundle({
     entry: 'C:\\my-project\\cmd\\api',
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir: 'C:\\my-project\\go.mod',
     forcedDockerBundling: true,
@@ -157,7 +157,7 @@ test('go with Windows paths', () => {
 test('with Docker build args', () => {
   Bundling.bundle({
     entry,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir,
     forcedDockerBundling: true,
@@ -194,7 +194,7 @@ test('Local bundling', () => {
 
   expect(bundler.local).toBeDefined();
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingImage });
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.PROVIDED_AL2023.bundlingImage });
   expect(tryBundle).toBe(true);
 
   expect(spawnSyncMock).toHaveBeenCalledWith(
@@ -220,7 +220,7 @@ test('Incorrect go version', () => {
     architecture: Architecture.X86_64,
   });
 
-  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.GO_1_X.bundlingImage });
+  const tryBundle = bundler.local?.tryBundle('/outdir', { image: Runtime.PROVIDED_AL2023.bundlingImage });
 
   expect(tryBundle).toBe(false);
 });
@@ -229,7 +229,7 @@ test('Custom bundling docker image', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     dockerImage: DockerImage.fromRegistry('my-custom-image'),
@@ -246,7 +246,7 @@ test('Custom bundling docker image', () => {
 test('Go build flags can be passed', () => {
   Bundling.bundle({
     entry,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir,
     environment: {
@@ -278,7 +278,7 @@ test('Go build flags can be passed', () => {
 test('AssetHashType can be specified', () => {
   Bundling.bundle({
     entry,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     moduleDir,
     environment: {
@@ -341,7 +341,7 @@ test('Custom bundling entrypoint', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     entrypoint: ['/cool/entrypoint', '--cool-entrypoint-arg'],
@@ -359,7 +359,7 @@ test('Custom bundling volumes', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     volumes: [{ hostPath: '/host-path', containerPath: '/container-path' }],
@@ -377,7 +377,7 @@ test('Custom bundling volumesFrom', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     volumesFrom: ['777f7dc92da7'],
@@ -395,7 +395,7 @@ test('Custom bundling workingDirectory', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     workingDirectory: '/working-directory',
@@ -413,7 +413,7 @@ test('Custom bundling user', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     user: 'user:group',
@@ -431,7 +431,7 @@ test('Custom bundling securityOpt', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     securityOpt: 'no-new-privileges',
@@ -449,7 +449,7 @@ test('Custom bundling network', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     network: 'host',
@@ -467,7 +467,7 @@ test('Custom bundling file copy variant', () => {
   Bundling.bundle({
     entry,
     moduleDir,
-    runtime: Runtime.GO_1_X,
+    runtime: Runtime.PROVIDED_AL2023,
     architecture: Architecture.X86_64,
     forcedDockerBundling: true,
     bundlingFileAccess: BundlingFileAccess.VOLUME_COPY,

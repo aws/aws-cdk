@@ -1,6 +1,5 @@
 /// <reference path="../../../../../../../../../node_modules/aws-cdk-lib/custom-resources/lib/provider-framework/types.d.ts" />
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable no-console */
+
 import { S3 } from '@aws-sdk/client-s3';
 import * as api from './api';
 

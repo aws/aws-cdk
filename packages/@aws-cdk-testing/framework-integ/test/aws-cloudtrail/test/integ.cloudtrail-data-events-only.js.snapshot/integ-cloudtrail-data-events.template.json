@@ -42,14 +42,14 @@
     "Code": {
      "ZipFile": "exports.handler = {}"
     },
+    "Handler": "hello.handler",
     "Role": {
      "Fn::GetAtt": [
       "LambdaFunctionServiceRoleC555A460",
       "Arn"
      ]
     },
-    "Handler": "hello.handler",
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs20.x"
    },
    "DependsOn": [
     "LambdaFunctionServiceRoleC555A460"
@@ -153,10 +153,6 @@
   "Trail022F0CF2": {
    "Type": "AWS::CloudTrail::Trail",
    "Properties": {
-    "IsLogging": true,
-    "S3BucketName": {
-     "Ref": "TrailS30071F172"
-    },
     "EnableLogFileValidation": true,
     "EventSelectors": [
      {
@@ -201,7 +197,11 @@
      }
     ],
     "IncludeGlobalServiceEvents": true,
-    "IsMultiRegionTrail": true
+    "IsLogging": true,
+    "IsMultiRegionTrail": true,
+    "S3BucketName": {
+     "Ref": "TrailS30071F172"
+    }
    },
    "DependsOn": [
     "TrailS3PolicyE42170FE"

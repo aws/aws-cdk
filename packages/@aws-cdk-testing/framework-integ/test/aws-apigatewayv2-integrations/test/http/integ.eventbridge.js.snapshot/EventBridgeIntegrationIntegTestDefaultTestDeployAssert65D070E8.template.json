@@ -1,0 +1,164 @@
+{
+ "Resources": {
+  "HttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::ImportValue": "eventbridge-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+        },
+        "/default"
+       ]
+      ]
+     },
+     "fetchOptions": {
+      "body": "{\"Detail\":\"{\\\"message\\\":\\\"Hello World!\\\"}\",\"DetailType\":\"MyDetailType\",\"Source\":\"my.source\"}",
+      "method": "POST"
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"statusText\":\"OK\"}}",
+    "flattenResponse": "false",
+    "salt": "1768081337949"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Runtime": "nodejs22.x",
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+    },
+    "Timeout": 120,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "HttpApiCallcc4a8c701d93be2132c6720c662e4948": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        {
+         "Fn::ImportValue": "eventbridge-integration:ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+        },
+        "/put-events"
+       ]
+      ]
+     },
+     "fetchOptions": {
+      "body": "{\"Detail\":\"{\\\"message\\\":\\\"Hello Again!\\\"}\",\"DetailType\":\"MyDetailType\",\"Source\":\"my.source\"}",
+      "method": "POST"
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"status\":200,\"statusText\":\"OK\"}}",
+    "flattenResponse": "false",
+    "salt": "1768081337949"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "AssertionResultsHttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCallcc4a8c701d93be2132c6720c662e4948": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCallcc4a8c701d93be2132c6720c662e4948",
+     "assertion"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

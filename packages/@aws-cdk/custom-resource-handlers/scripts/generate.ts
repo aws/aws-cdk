@@ -1,7 +1,9 @@
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as esbuild from 'esbuild';
-import { config, ComponentProps } from '../lib/custom-resources-framework/config';
+import type { ComponentProps } from '../lib/custom-resources-framework/config';
+import { config } from '../lib/custom-resources-framework/config';
 import { HandlerFrameworkModule } from '../lib/custom-resources-framework/framework';
 
 const framework: { [fqn: string]: ComponentProps[] } = {};
@@ -84,9 +86,9 @@ async function minifyAndBundle(infile: string, outfile: string) {
       kind: 'error',
       color: true,
     });
-    // eslint-disable-next-line no-console
+
     console.log(messages.join('\n'));
-    // eslint-disable-next-line no-console
+
     console.log(`${messages.length} errors. For false positives, put '// esbuild-disable <code> - <motivation>' on the line before`);
     process.exitCode = 1;
   }
@@ -127,7 +129,6 @@ function ignoreWarnings(result: esbuild.BuildResult) {
 }
 
 main().catch((e) => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

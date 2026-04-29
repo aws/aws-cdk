@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
-import { toCloudFormation } from './util';
+import { flattenMeta, toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import { Fact, RegionInfo } from '../../region-info';
+import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString,
@@ -15,11 +16,7 @@ import {
   Aspects,
   Stage,
   TagManager,
-  Resource,
   TagType,
-  ITaggable,
-  ITaggableV2,
-  Token,
 } from '../lib';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
@@ -1836,7 +1833,6 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-      // eslint-disable-next-line max-len
     }).toThrow("'Stack1' depends on 'Stack2' (Stack1 -> Stack2.AWS::AccountId). Adding this dependency (Stack2 -> Stack1.AWS::AccountId) would create a cyclic reference.");
   });
 
@@ -2139,15 +2135,21 @@ describe('stack', () => {
 
     // THEN
     const asm = app.synth();
-    const expected = [
-      {
-        type: 'aws:cdk:stack-tags',
-        data: [{ key: 'foo', value: 'bar' }],
+    expect(flattenMeta(asm.getStackArtifact(stack1.artifactId).metadata)).toMatchObject({
+      '/stack1': {
+        'aws:cdk:stack-tags': [
+          [{ key: 'foo', value: 'bar' }],
+        ],
       },
-    ];
+    });
 
-    expect(asm.getStackArtifact(stack1.artifactId).manifest.metadata).toEqual({ '/stack1': expected });
-    expect(asm.getStackArtifact(stack2.artifactId).manifest.metadata).toEqual({ '/stack1/stack2': expected });
+    expect(flattenMeta(asm.getStackArtifact(stack2.artifactId).metadata)).toMatchObject({
+      '/stack1/stack2': {
+        'aws:cdk:stack-tags': [
+          [{ key: 'foo', value: 'bar' }],
+        ],
+      },
+    });
   });
 
   test('stack tags are reflected in the stack artifact properties', () => {
@@ -2193,13 +2195,12 @@ describe('stack', () => {
       const asm = app.synth();
 
       const stackArtifact = asm.getStackArtifact(stack.artifactId);
-      expect(stackArtifact.manifest.metadata).toEqual({
-        '/stack1': [
-          {
-            type: 'aws:cdk:stack-tags',
-            data: [{ key: 'foo', value: 'bar' }],
-          },
-        ],
+      expect(flattenMeta(stackArtifact.metadata)).toMatchObject({
+        '/stack1': {
+          'aws:cdk:stack-tags': [
+            [{ key: 'foo', value: 'bar' }],
+          ],
+        },
       });
       expect(stackArtifact.tags).toEqual({ foo: 'bar' });
     });
@@ -2256,7 +2257,7 @@ describe('stack', () => {
       stackTraces: false,
     });
 
-    const stack = new Stack(app, 'stack1', {
+    new Stack(app, 'stack1', {
       tags: {
         foo: Lazy.string({ produce: () => 'lazy' }),
       },
@@ -2264,12 +2265,13 @@ describe('stack', () => {
 
     const asm = app.synth();
     const stackArtifact = asm.stacks[0];
-    expect(stackArtifact.manifest.metadata?.['/stack1']).toEqual([
-      {
-        type: 'aws:cdk:warning',
-        data: expect.stringContaining('Ignoring stack tags that contain deploy-time values'),
+    expect(flattenMeta(stackArtifact.metadata)).toMatchObject({
+      '/stack1': {
+        'aws:cdk:warning': [
+          expect.stringContaining('Ignoring stack tags that contain deploy-time values'),
+        ],
       },
-    ]);
+    });
   });
 
   test('stack notification arns defaults to undefined', () => {
@@ -2487,6 +2489,18 @@ describe('stack', () => {
     const templateData = fs.readFileSync(artifact.templateFullPath, 'utf-8');
 
     expect(templateData).toMatch(/^{\"Resources\":{\"MyResource\":{\"Type\":\"MyResourceType\"}}/);
+  });
+
+  test('Stacks log their own creation stack trace', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+    const res = new CfnResource(stack, 'SomeCfnResource', {
+      type: 'Some::Resource',
+    });
+
+    // THEN
+    const metadata = res.node.metadata.find(m => m.type === 'aws:cdk:creationStack');
+    expect(metadata).toBeDefined();
   });
 });
 

@@ -3,6 +3,7 @@
 // module so we couldn't standardize the structs in the right way.
 
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Block device
@@ -30,7 +31,7 @@ export interface BlockDevice {
    * Amazon EC2 Auto Scaling launches a replacement instance if the instance fails the health check.
    *
    * @default true - device mapping is left untouched
-   * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to supress a mapping.
+   * @deprecated use `BlockDeviceVolume.noDevice()` as the volume to suppress a mapping.
    *
    */
   readonly mappingEnabled?: boolean;
@@ -71,7 +72,7 @@ export interface EbsDeviceOptionsBase {
 
   /**
    * The throughput that the volume supports, in MiB/s
-   * Takes a minimum of 125 and maximum of 1000.
+   * Takes a minimum of 125 and maximum of 2000.
    * @see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSVolumeTypes.html
    * @default - 125 MiB/s. Only valid on gp3 volumes.
    */
@@ -156,14 +157,14 @@ export class BlockDeviceVolume {
    */
   public static ephemeral(volumeIndex: number) {
     if (volumeIndex < 0) {
-      throw new UnscopedValidationError(`volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
+      throw new UnscopedValidationError(lit`VolumeIndexMustBeNonNegative`, `volumeIndex must be a number starting from 0, got "${volumeIndex}"`);
     }
 
     return new this(undefined, `ephemeral${volumeIndex}`);
   }
 
   /**
-   * Supresses a volume mapping
+   * Suppresses a volume mapping
    */
   public static noDevice() {
     return this._NO_DEVICE;

@@ -1,14 +1,15 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import * as path from 'path';
+/* eslint-disable import/no-extraneous-dependencies */
+import { MemberVisibility } from '@cdklabs/typewriter';
 
 /**
  * Handler framework runtimes used for code generation.
  */
 export enum Runtime {
   /**
-   * The NodeJs 18.x runtime
+   * The NodeJs 20.x runtime
    */
-  NODEJS_18_X = 'nodejs18.x',
+  NODEJS_20_X = 'nodejs20.x',
 
   /**
    * The Python 3.9 runtime
@@ -80,7 +81,7 @@ export interface ComponentProps {
   /**
    * The runtime that is compatible with the framework component's source code.
    *
-   * @default Runtime.NODEJS_18_X
+   * @default The latest NodeJS runtime in all regions (not necessarily the latest NodeJS runtime).
    */
   readonly runtime?: Runtime;
 
@@ -97,6 +98,13 @@ export interface ComponentProps {
    * @default true
    */
   readonly minifyAndBundle?: boolean;
+
+  /**
+   * Visibility for the constructor.
+   *
+   * @default MemberVisibility.Public
+   */
+  readonly constructorVisibility?: MemberVisibility;
 }
 
 export type HandlerFrameworkConfig = { [module: string]: { [identifier: string]: ComponentProps[] } };
@@ -215,6 +223,40 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+    ],
+  },
+  'aws-eks-v2': {
+    'kubectl-provider': [
+      {
+        type: ComponentType.FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'index.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'apply', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'get', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'helm', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'patch', '__init__.py'),
         runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },
@@ -341,6 +383,7 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.CUSTOM_RESOURCE_PROVIDER,
         sourceCode: path.resolve(__dirname, '..', 'core', 'cross-region-ssm-writer-handler', 'index.ts'),
+        constructorVisibility: MemberVisibility.Public,
       },
     ],
     'cross-region-ssm-reader-provider': [

@@ -1,7 +1,7 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrockAlpha from '../../../bedrock';
 
 describe('CrossRegionInferenceProfile', () => {

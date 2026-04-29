@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.proton"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.Proton"
+      "namespace": "Amazon.CDK.AWS.Proton"
     },
     "python": {
       "module": "aws_cdk.aws_proton"

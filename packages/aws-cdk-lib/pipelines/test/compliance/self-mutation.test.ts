@@ -1,7 +1,5 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { Match, Template } from '../../../assertions';
 import * as cb from '../../../aws-codebuild';
-import * as cp from '../../../aws-codepipeline';
 import { Stack, Stage } from '../../../core';
 import { CDKP_DEFAULT_CODEBUILD_IMAGE } from '../../lib/private/default-codebuild-image';
 import { PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline } from '../testhelpers';

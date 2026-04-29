@@ -1,5 +1,5 @@
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Stack } from 'aws-cdk-lib';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { IamUser, AccessControl, UserEngine } from '../lib';
 

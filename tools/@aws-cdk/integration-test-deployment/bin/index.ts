@@ -1,15 +1,15 @@
 #!/usr/bin/env node
-import { deployInegTestsWithAtmosphere } from '../lib/integration-test-runner';
+import { main } from '../lib/main';
 
-const endpoint = process.env.CDK_ATMOSPHERE_ENDPOINT;
-const pool = process.env.CDK_ATMOSPHERE_POOL;
-
-if (!endpoint) {
-  throw new Error('CDK_ATMOSPHERE_ENDPOINT environment variable is required');
-}
-
-if (!pool) {
-  throw new Error('CDK_ATMOSPHERE_POOL environment variable is required');
-}
-
-deployInegTestsWithAtmosphere({ endpoint, pool });
+main({
+  endpoint: process.env.CDK_ATMOSPHERE_ENDPOINT,
+  pool: process.env.CDK_ATMOSPHERE_POOL,
+  atmosphereRoleArn: process.env.CDK_ATMOSPHERE_OIDC_ROLE,
+  batchSize: process.env.CDK_ATMOSPHERE_BATCH_SIZE !== undefined ? Number.parseInt(process.env.CDK_ATMOSPHERE_BATCH_SIZE) : undefined,
+  githubToken: process.env.GITHUB_TOKEN,
+  githubRepository: process.env.GITHUB_REPOSITORY,
+  prNumber: process.env.PR_NUMBER,
+}).catch((e) => {
+  console.error(e);
+  process.exitCode = 1;
+});

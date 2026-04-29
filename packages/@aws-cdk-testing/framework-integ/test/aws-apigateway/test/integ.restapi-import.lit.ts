@@ -1,6 +1,8 @@
-import { App, CfnOutput, NestedStack, NestedStackProps, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-import { Deployment, Method, MockIntegration, PassthroughBehavior, RestApi, Stage } from 'aws-cdk-lib/aws-apigateway';
+import type { NestedStackProps } from 'aws-cdk-lib';
+import { App, CfnOutput, NestedStack, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
+import type { Method } from 'aws-cdk-lib/aws-apigateway';
+import { Deployment, MockIntegration, PassthroughBehavior, RestApi, Stage } from 'aws-cdk-lib/aws-apigateway';
 
 /**
  * This file showcases how to split up a RestApi's Resources and Methods across nested stacks.
