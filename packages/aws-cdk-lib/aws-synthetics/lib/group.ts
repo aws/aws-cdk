@@ -5,7 +5,7 @@ import { CfnGroup } from './synthetics.generated';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -182,6 +182,7 @@ export class Group extends cdk.Resource implements IGroup {
    *
    * @param canary The canary to add to the group [disable-awslint:prefer-ref-interface]
    */
+  @MethodMetadata()
   public addCanary(canary: ICanary): void {
     if (this._canaries.size >= 10) {
       throw new ValidationError(lit`TooManyCanaries`, 'A group can contain at most 10 canaries', this);
