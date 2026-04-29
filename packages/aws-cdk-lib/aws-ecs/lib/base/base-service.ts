@@ -926,7 +926,7 @@ export abstract class BaseService extends Resource
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
       networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: this.serviceRegistries,
+      serviceRegistries: this._serviceRegistries,
       serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
       volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
@@ -1819,7 +1819,7 @@ export abstract class BaseService extends Resource
       throw new ValidationError(lit`CannotClassicLoad`, 'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
     }
 
-    this.loadBalancers.push({
+    this._loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName,
       containerPort,
@@ -1839,7 +1839,7 @@ export abstract class BaseService extends Resource
     }
 
     const advancedConfiguration = alternateTarget?.bind(this);
-    this.loadBalancers.push({
+    this._loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
       containerPort,
@@ -1877,12 +1877,12 @@ export abstract class BaseService extends Resource
    * Associate Service Discovery (Cloud Map) service
    */
   private addServiceRegistry(registry: ServiceRegistry) {
-    if (this.serviceRegistries.length >= 1) {
+    if (this._serviceRegistries.length >= 1) {
       throw new ValidationError(lit`CannotAssociateGiven`, 'Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.', this);
     }
 
     const sr = this.renderServiceRegistry(registry);
-    this.serviceRegistries.push(sr);
+    this._serviceRegistries.push(sr);
   }
 
   /**
