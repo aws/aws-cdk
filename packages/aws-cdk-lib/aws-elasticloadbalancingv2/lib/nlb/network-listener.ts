@@ -5,7 +5,7 @@ import type { INetworkLoadBalancer } from './network-load-balancer';
 import type { INetworkLoadBalancerTarget, INetworkTargetGroup } from './network-target-group';
 import { NetworkTargetGroup } from './network-target-group';
 import * as cxschema from '../../../cloud-assembly-schema';
-import { Duration, Resource, Lazy, Token, FeatureFlags } from '../../../core';
+import { Duration, Resource, Token, FeatureFlags } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import type { IArrayBox } from '../../../core/lib/helpers-internal';
 import { Box } from '../../../core/lib/helpers-internal';
@@ -237,26 +237,22 @@ export class NetworkListener extends BaseListener implements INetworkListener {
       sslPolicy = SslPolicy.TLS13_12_PQ;
     }
 
+    const certificateArns = Box.fromArray<string>([]);
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
       protocol: proto,
       port: props.port,
       sslPolicy: sslPolicy,
-      // The value of certificates here is a parameter to the call to `super`. Therefore,
-      // we can't use `this` (because `this` can only be used after the call to `super`).
-      // So we are using Lazy to bridge from the box, allowing the code to compile, have
-      // deferred execution, and correct stack trace capture.
-      certificates: Lazy.any({
-        produce: () => this._certificateArns.length === 0
-          ? undefined
-          : this._certificateArns.get().map(certificateArn => ({ certificateArn })),
-      }),
+      certificates: certificateArns.derive(arns =>
+        arns.length === 0 ? undefined : arns.map(certificateArn => ({ certificateArn })),
+      ),
       alpnPolicy: props.alpnPolicy ? [props.alpnPolicy] : undefined,
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._certificateArns = Box.fromArray([]);
+    this._certificateArns = certificateArns;
     this.loadBalancer = props.loadBalancer;
     this.protocol = proto;
 
