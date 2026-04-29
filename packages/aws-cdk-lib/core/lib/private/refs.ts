@@ -81,10 +81,19 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
 
+    const producerStackArn = Stack.of(reference.target).formatArn({
+      service: 'cloudformation',
+      resource: 'stack',
+      resourceName: `${producer.stackName}/*`,
+      region: producerRegion,
+      account: producerAccount,
+    });
+
     return createGetStackOutput(reference, {
       consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
       producerAccount,
       producerRegion,
+      producerStackArn,
     });
   }
 
@@ -139,7 +148,17 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-    return createGetStackOutput(reference);
+    const producerStackArn = producer.formatArn({
+      service: 'cloudformation',
+      resource: 'stack',
+      resourceName: `${producer.stackName}/*`,
+      region: producerRegion,
+      account: producerAccount,
+    });
+
+    return createGetStackOutput(reference, {
+      producerStackArn,
+    });
   }
 
   // export the value through a cloudformation "export name" and use an
@@ -236,6 +255,7 @@ interface GetStackOutputOptions {
   consumerRoleArn?: string;
   producerRegion?: string;
   producerAccount?: string;
+  producerStackArn?: string;
 }
 
 function createGetStackOutput(reference: Reference, options: GetStackOutputOptions = {}): Intrinsic {
@@ -317,7 +337,7 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
               {
                 Effect: 'Allow',
                 Action: 'cloudformation:DescribeStacks',
-                Resource: '*',
+                Resource: options.producerStackArn,
               },
             ],
           },
