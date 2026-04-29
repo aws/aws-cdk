@@ -3645,6 +3645,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         },
+        'region': '*',
         'grants': '*'
       },
       'policyDocument': '*'
@@ -3690,6 +3691,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         },
+        'region': '*',
         'grants': '*'
       },
       'originEndpointName': '*',

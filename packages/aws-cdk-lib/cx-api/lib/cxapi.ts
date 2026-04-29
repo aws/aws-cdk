@@ -5,6 +5,11 @@ export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
+ * If this environment variable is set, error codes of CDK-specific errors will be written to it.
+ */
+export const ERRORFILE_ENV = 'CDK_ERROR_FILE';
+
+/**
  * The name of the temporary file where the context is stored.
  */
 export const CONTEXT_OVERFLOW_LOCATION_ENV = 'CONTEXT_OVERFLOW_LOCATION_ENV';
