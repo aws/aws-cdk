@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { testFixtureCluster } from './util';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Asset } from '../../aws-s3-assets';
 import * as cdk from '../../core';
 import { Duration } from '../../core';
@@ -102,6 +102,45 @@ describe('helm chart', () => {
             's3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/d65fbdc11b108e0386ed8577c454d4544f6d4e7960f84a0d2e211478d6324dbf.zip',
         },
       });
+    });
+
+    test('should add DependsOn from custom resource to IAM policy when chartAsset is used', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      const chartAsset = new Asset(stack, 'ChartAsset', {
+        path: path.join(__dirname, 'test-chart'),
+      });
+      new eks.HelmChart(stack, 'MyChart', { cluster, chartAsset });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResource(eks.HelmChart.RESOURCE_TYPE, {
+        DependsOn: Match.arrayWith([
+          Match.stringLikeRegexp('.*Policy.*'),
+        ]),
+      });
+    });
+
+    test('should not add DependsOn for IAM policy when using chart repository URL', () => {
+      // GIVEN
+      const { stack, cluster } = testFixtureCluster();
+
+      // WHEN
+      new eks.HelmChart(stack, 'MyChart', { cluster, chart: 'chart', repository: 'https://charts.example.com' });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      const resources = template.findResources(eks.HelmChart.RESOURCE_TYPE);
+      for (const logicalId of Object.keys(resources)) {
+        const resource = resources[logicalId];
+        if (resource.DependsOn) {
+          for (const dep of resource.DependsOn) {
+            expect(dep).not.toMatch(/.*Policy.*/);
+          }
+        }
+      }
     });
 
     test('should use the last 53 of the default release name', () => {
