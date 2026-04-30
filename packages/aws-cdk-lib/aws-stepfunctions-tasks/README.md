@@ -1020,6 +1020,33 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
 });
 ```
 
+You can use the prioritized allocation strategy to specify instance type priorities for On-Demand instances:
+
+```ts
+new tasks.EmrCreateCluster(this, 'PrioritizedAllocation', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.CORE,
+      instanceTypeConfigs: [{
+        instanceType: 'm5.large',
+        priority: 0, // Highest priority
+      }, {
+        instanceType: 'm5.xlarge',
+        priority: 1, // Lower priority
+      }],
+      launchSpecifications: {
+        onDemandSpecification: {
+          allocationStrategy: tasks.EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+        },
+      },
+      targetOnDemandCapacity: 2,
+    }],
+  },
+  name: 'PrioritizedCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
 You can [customize EBS root device volume](https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-custom-ami-root-volume-size.html).
 
 ```ts
