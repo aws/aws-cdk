@@ -330,6 +330,20 @@ describe('Job', () => {
         }),
       });
     });
+
+    test('should not set --extra-py-files when an empty array is provided', () => {
+      new glue.PythonShellJob(stack, 'PythonShellJobExtraPy', {
+        role,
+        script,
+        extraPythonFiles: [],
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        DefaultArguments: Match.not(Match.objectLike({
+          '--extra-py-files': Match.anyValue(),
+        })),
+      });
+    });
   });
 
   describe('Create Python Shell Job with job run queuing enabled', () => {
