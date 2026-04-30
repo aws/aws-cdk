@@ -121,15 +121,11 @@ describe('helm chart', () => {
 
       // THEN
       const template = Template.fromStack(stack);
-      const resources = template.findResources(eks.HelmChart.RESOURCE_TYPE);
-      for (const logicalId of Object.keys(resources)) {
-        const resource = resources[logicalId];
-        if (resource.DependsOn) {
-          for (const dep of resource.DependsOn) {
-            expect(dep).not.toMatch(/.*Policy.*/);
-          }
-        }
-      }
+      template.hasResource(eks.HelmChart.RESOURCE_TYPE, {
+        DependsOn: Match.not(Match.arrayWith([
+          Match.stringLikeRegexp('.*Policy.*'),
+        ])),
+      });
     });
 
     test('should use the last 53 of the default release name', () => {
