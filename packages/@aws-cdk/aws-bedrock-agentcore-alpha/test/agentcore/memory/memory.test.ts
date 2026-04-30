@@ -1087,6 +1087,192 @@ describe('Memory grant methods tests', () => {
   });
 });
 
+describe('Memory metric methods tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    memory = new Memory(stack, 'test-memory-metrics', {
+      memoryName: 'test_memory_metrics',
+      description: 'A test memory for testing metric methods',
+      expirationDuration: Duration.days(30),
+    });
+  });
+
+  test('Should create metric with custom name and dimensions', () => {
+    const metric = memory.metric('CustomMetric', { CustomDimension: 'value' });
+    expect(metric.metricName).toBe('CustomMetric');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.dimensions?.CustomDimension).toBe('value');
+    // Resource dimension is automatically added pointing to the memory ARN
+    expect(metric.dimensions?.Resource).toBeDefined();
+  });
+
+  test('Should create metricForApiOperation with Operation dimension', () => {
+    const metric = memory.metricForApiOperation('CustomMetric', 'CreateEvent');
+    expect(metric.metricName).toBe('CustomMetric');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+  });
+
+  test('Should create metricLatencyForApiOperation with Average statistic', () => {
+    const metric = memory.metricLatencyForApiOperation('CreateEvent');
+    expect(metric.metricName).toBe('Latency');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Average');
+    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+  });
+
+  test('Should create metricInvocationsForApiOperation with Sum statistic', () => {
+    const metric = memory.metricInvocationsForApiOperation('CreateEvent');
+    expect(metric.metricName).toBe('Invocations');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+  });
+
+  test('Should create metricErrorsForApiOperation with Sum statistic', () => {
+    const metric = memory.metricErrorsForApiOperation('CreateEvent');
+    expect(metric.metricName).toBe('Errors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+  });
+
+  test('Should create metricEventCreationCount metric with Event ItemType dimension', () => {
+    const metric = memory.metricEventCreationCount();
+    expect(metric.metricName).toBe('CreationCount');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.ItemType).toBe('Event');
+  });
+
+  test('Should create metricMemoryRecordCreationCount metric with MemoryRecordsExtracted ItemType dimension', () => {
+    const metric = memory.metricMemoryRecordCreationCount();
+    expect(metric.metricName).toBe('CreationCount');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.ItemType).toBe('MemoryRecordsExtracted');
+  });
+
+  test('Should override default statistic with custom props', () => {
+    const metric = memory.metricInvocationsForApiOperation('CreateEvent', { statistic: 'Average' });
+    expect(metric.metricName).toBe('Invocations');
+    expect(metric.statistic).toBe('Average');
+  });
+});
+
+describe('Memory.addMemoryStrategy behavior tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let memory: Memory;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+    memory = new Memory(stack, 'test-memory', {
+      memoryName: 'test_add_memory_strategy',
+      description: 'A test memory for addMemoryStrategy',
+      expirationDuration: Duration.days(30),
+    });
+  });
+
+  test('Should append the strategy to the memoryStrategies array', () => {
+    expect(memory.memoryStrategies).toHaveLength(0);
+
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSummarization());
+    expect(memory.memoryStrategies).toHaveLength(1);
+
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
+    expect(memory.memoryStrategies).toHaveLength(2);
+  });
+
+  test('Should include the added strategy in the rendered CloudFormation template', () => {
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: Match.arrayWith([
+        Match.objectLike({
+          SemanticMemoryStrategy: Match.objectLike({
+            Type: 'SEMANTIC',
+          }),
+        }),
+      ]),
+    });
+  });
+
+  test('Should not throw when the strategy grant returns undefined (built-in strategy without overrides)', () => {
+    // Built-in strategies without custom overrides have grant() returning undefined.
+    // addMemoryStrategy must handle this via the optional chain `grant?.applyBefore(...)`.
+    expect(() => {
+      memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSummarization());
+    }).not.toThrow();
+  });
+
+  test('Should grant model invoke permissions when strategy has custom overrides (grant returns defined)', () => {
+    // Custom strategy with both extraction and consolidation overrides — grant() returns a combined Grant
+    const customStrategy = MemoryStrategy.usingSemantic({
+      name: 'custom_semantic',
+      description: 'Custom strategy with model overrides',
+      namespaces: ['/strategies/{memoryStrategyId}/actors/{actorId}'],
+      customConsolidation: {
+        model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        appendToPrompt: 'custom consolidation',
+      },
+      customExtraction: {
+        model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+        appendToPrompt: 'custom extraction',
+      },
+    });
+
+    memory.addMemoryStrategy(customStrategy);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    // The execution role must have been granted bedrock:InvokeModel on the foundation model
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith(['bedrock:InvokeModel*']),
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should support adding multiple strategies of different types in sequence', () => {
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSummarization());
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
+    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInUserPreference());
+
+    expect(memory.memoryStrategies).toHaveLength(3);
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
+    const memoryResource = Object.values(memoryResources)[0];
+    expect(memoryResource.Properties.MemoryStrategies).toHaveLength(3);
+  });
+});
+
 describe('Memory strategy namespace validation tests', () => {
   beforeAll(() => {
     // No setup needed for these tests as they only test validation logic

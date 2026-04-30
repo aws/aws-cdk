@@ -11,15 +11,25 @@
  *  and limitations under the License.
  */
 
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Gateway } from '../../../lib';
 import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
-import { ApiSchema } from '../../../lib/gateway/targets/schema/api-schema';
-import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
+import {
+  ApiSchema,
+  S3ApiSchema,
+} from '../../../lib/gateway/targets/schema/api-schema';
+import {
+  AssetToolSchema,
+  S3ToolSchema,
+  SchemaDefinitionType,
+  ToolSchema,
+} from '../../../lib/gateway/targets/schema/tool-schema';
 import { GatewayTarget } from '../../../lib/gateway/targets/target';
 import {
   ApiGatewayTargetConfiguration,
@@ -805,6 +815,427 @@ describe('GatewayTarget Tests', () => {
       expect(target.gateway).toBe(gateway);
       expect(target.targetProtocolType).toBeDefined();
       expect(target.targetType).toBeDefined();
+    });
+  });
+});
+
+describe('ToolSchema asset and S3 tests', () => {
+  let stack: cdk.Stack;
+  const toolAssetPath = path.join(__dirname, 'schemas', 'tool', 'schema1.json');
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  describe('ToolSchema.fromLocalAsset', () => {
+    test('Should create an AssetToolSchema instance', () => {
+      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
+      expect(schema).toBeInstanceOf(AssetToolSchema);
+    });
+
+    test('bind should initialize the S3 asset and render should return S3 URI', () => {
+      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
+      schema.bind(stack);
+
+      const rendered = schema._render();
+      expect(rendered.s3).toBeDefined();
+      expect(rendered.s3.uri).toMatch(/^s3:\/\//);
+    });
+
+    test('_render should throw when called before bind', () => {
+      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
+      expect(() => schema._render()).toThrow(/must be bound to a scope before rendering/);
+    });
+
+    test('grantPermissionsToRole should throw when called before bind', () => {
+      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
+      const role = new iam.Role(stack, 'TestRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      });
+
+      expect(() => schema.grantPermissionsToRole(role)).toThrow(/must be bound to a scope before rendering/);
+    });
+
+    test('grantPermissionsToRole should grant read access to the S3 asset after bind', () => {
+      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
+      schema.bind(stack);
+      const role = new iam.Role(stack, 'TestRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      });
+
+      schema.grantPermissionsToRole(role);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: Match.arrayWith(['s3:GetObject*']),
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+    });
+
+    test('bind should be idempotent and reuse the same asset across multiple calls', () => {
+      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
+      schema.bind(stack);
+      const firstRender = schema._render();
+
+      schema.bind(stack);
+      const secondRender = schema._render();
+
+      expect(secondRender.s3.uri).toBe(firstRender.s3.uri);
+    });
+  });
+
+  describe('ToolSchema.fromS3File', () => {
+    test('Should create an S3ToolSchema instance', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
+      expect(schema).toBeInstanceOf(S3ToolSchema);
+    });
+
+    test('_render should return S3 URI without bucketOwner when not provided', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
+
+      const rendered = schema._render();
+      expect(rendered.s3).toBeDefined();
+      expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
+      expect(rendered.s3.bucketOwnerAccountId).toBeUndefined();
+    });
+
+    test('_render should include bucketOwnerAccountId when provided', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ToolSchema.fromS3File(bucket, 'schema.json', '987654321098');
+
+      const rendered = schema._render();
+      expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
+      expect(rendered.s3.bucketOwnerAccountId).toBe('987654321098');
+    });
+
+    test('bind should be a no-op and allow subsequent _render', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
+
+      expect(() => schema.bind(stack)).not.toThrow();
+      expect(schema._render().s3.uri).toBe('s3://my-bucket/schema.json');
+    });
+
+    test('grantPermissionsToRole should grant s3:GetObject on the object ARN', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
+      const role = new iam.Role(stack, 'TestRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      });
+
+      schema.grantPermissionsToRole(role);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3:GetObject',
+              Effect: 'Allow',
+              Resource: Match.objectLike({
+                'Fn::Join': Match.arrayWith([
+                  '',
+                  Match.arrayWith([Match.stringLikeRegexp(':s3:::my-bucket/schema.json')]),
+                ]),
+              }),
+            }),
+          ]),
+        },
+      });
+    });
+  });
+});
+
+describe('ApiSchema asset and S3 tests', () => {
+  let stack: cdk.Stack;
+  const apiAssetPath = path.join(__dirname, 'schemas', 'openapi', 'pet-api.json');
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+  });
+
+  describe('AssetApiSchema', () => {
+    test('_render should throw when called before bind', () => {
+      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
+      expect(() => schema._render()).toThrow(/must be bound to a scope before rendering/);
+    });
+
+    test('_render should return S3 URI after bind', () => {
+      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
+      schema.bind(stack);
+
+      const rendered = schema._render();
+      expect(rendered.s3).toBeDefined();
+      expect(rendered.s3.uri).toMatch(/^s3:\/\//);
+    });
+
+    test('grantPermissionsToRole should be a no-op when called before bind', () => {
+      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
+      const role = new iam.Role(stack, 'TestRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      });
+
+      // Does not throw — AssetApiSchema silently skips when asset isn't bound
+      expect(() => schema.grantPermissionsToRole(role)).not.toThrow();
+    });
+
+    test('grantPermissionsToRole should grant read access after bind', () => {
+      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
+      schema.bind(stack);
+      const role = new iam.Role(stack, 'TestRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      });
+
+      schema.grantPermissionsToRole(role);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: Match.arrayWith(['s3:GetObject*']),
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+    });
+  });
+
+  describe('S3ApiSchema', () => {
+    test('Should create an S3ApiSchema instance via factory', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ApiSchema.fromS3File(bucket, 'schema.json');
+      expect(schema).toBeInstanceOf(S3ApiSchema);
+    });
+
+    test('_render should return S3 URI without bucketOwner when not provided', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ApiSchema.fromS3File(bucket, 'schema.json');
+
+      const rendered = schema._render();
+      expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
+      expect(rendered.s3.bucketOwnerAccountId).toBeUndefined();
+    });
+
+    test('_render should include bucketOwnerAccountId when provided', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ApiSchema.fromS3File(bucket, 'schema.json', '987654321098');
+
+      const rendered = schema._render();
+      expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
+      expect(rendered.s3.bucketOwnerAccountId).toBe('987654321098');
+    });
+
+    test('grantPermissionsToRole should grant s3:GetObject on the object ARN', () => {
+      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      const schema = ApiSchema.fromS3File(bucket, 'schema.json');
+      const role = new iam.Role(stack, 'TestRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+      });
+
+      schema.grantPermissionsToRole(role);
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Action: 's3:GetObject',
+              Effect: 'Allow',
+            }),
+          ]),
+        },
+      });
+    });
+  });
+});
+
+describe('GatewayTargetBase grant methods and grantSync tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+  let target: GatewayTarget;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'TestStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    gateway = new Gateway(stack, 'TestGateway', { gatewayName: 'test-gateway' });
+
+    const fn = new lambda.Function(stack, 'TargetFunction', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => {}'),
+    });
+    const toolSchema = ToolSchema.fromInline([{
+      name: 'test_tool',
+      description: 'Test tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+    target = GatewayTarget.forLambda(stack, 'LambdaTarget', {
+      gateway: gateway,
+      gatewayTargetName: 'lambda-target',
+      lambdaFunction: fn,
+      toolSchema: toolSchema,
+    });
+  });
+
+  test('grant should grant custom actions scoped to the target ARN', () => {
+    const role = new iam.Role(stack, 'GrantRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const grant = target.grant(role, 'bedrock-agentcore:GetGatewayTarget', 'bedrock-agentcore:UpdateGatewayTarget');
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['bedrock-agentcore:GetGatewayTarget', 'bedrock-agentcore:UpdateGatewayTarget'],
+            Effect: 'Allow',
+            Resource: { Ref: Match.stringLikeRegexp('LambdaTarget.*') },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grantRead should grant GetGatewayTarget on target ARN and ListGatewayTargets on all resources', () => {
+    const role = new iam.Role(stack, 'GrantRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const grant = target.grantRead(role);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetGatewayTarget',
+            Effect: 'Allow',
+            Resource: { Ref: Match.stringLikeRegexp('LambdaTarget.*') },
+          }),
+          Match.objectLike({
+            Action: 'bedrock-agentcore:ListGatewayTargets',
+            Effect: 'Allow',
+            Resource: '*',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grantManage should grant Create, Update, and Delete actions on the target ARN', () => {
+    const role = new iam.Role(stack, 'GrantRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const grant = target.grantManage(role);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'bedrock-agentcore:CreateGatewayTarget',
+              'bedrock-agentcore:UpdateGatewayTarget',
+              'bedrock-agentcore:DeleteGatewayTarget',
+            ],
+            Effect: 'Allow',
+            Resource: { Ref: Match.stringLikeRegexp('LambdaTarget.*') },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grantSync should grant SynchronizeGatewayTargets on the gateway ARN', () => {
+    const role = new iam.Role(stack, 'SyncRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const grant = target.grantSync(role);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:SynchronizeGatewayTargets',
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('TestGateway.*'), 'GatewayArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Imported target via fromGatewayTargetAttributes should support grant methods', () => {
+    const importedArn = 'arn:aws:bedrock-agentcore:us-east-1:123456789012:gateway/test-gateway/target/imported';
+    const imported = GatewayTarget.fromGatewayTargetAttributes(stack, 'ImportedTarget', {
+      targetArn: importedArn,
+      targetId: 'imported-id',
+      gatewayTargetName: 'imported-target',
+      gateway: gateway,
+    });
+
+    const role = new iam.Role(stack, 'ImportedGrantRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    const grant = imported.grantRead(role);
+
+    expect(grant).toBeDefined();
+    expect(grant.success).toBe(true);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetGatewayTarget',
+            Effect: 'Allow',
+            Resource: importedArn,
+          }),
+          Match.objectLike({
+            Action: 'bedrock-agentcore:ListGatewayTargets',
+            Effect: 'Allow',
+            Resource: '*',
+          }),
+        ]),
+      },
     });
   });
 });

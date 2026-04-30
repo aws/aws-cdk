@@ -1362,6 +1362,48 @@ describe('BrowserCustom recording configuration with S3 location tests', () => {
   });
 });
 
+describe('BrowserCustom error metric methods tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let browser: BrowserCustom;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    browser = new BrowserCustom(stack, 'test-browser-error-metrics', {
+      browserCustomName: 'test_browser_error_metrics',
+      networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
+    });
+  });
+
+  test('Should create metricThrottlesForApiOperation with Sum statistic', () => {
+    const metric = browser.metricThrottlesForApiOperation('TestOperation');
+    expect(metric.metricName).toBe('Throttles');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('TestOperation');
+  });
+
+  test('Should create metricSystemErrorsForApiOperation with Sum statistic', () => {
+    const metric = browser.metricSystemErrorsForApiOperation('TestOperation');
+    expect(metric.metricName).toBe('SystemErrors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('TestOperation');
+  });
+
+  test('Should create metricUserErrorsForApiOperation with Sum statistic', () => {
+    const metric = browser.metricUserErrorsForApiOperation('TestOperation');
+    expect(metric.metricName).toBe('UserErrors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('TestOperation');
+  });
+});
+
 describe('BrowserCustom browser signing configuration tests', () => {
   let app: cdk.App;
   let stack: cdk.Stack;

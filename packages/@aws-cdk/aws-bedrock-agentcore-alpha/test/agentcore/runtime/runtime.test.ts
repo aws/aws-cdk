@@ -1315,6 +1315,105 @@ describe('Runtime addEndpoint tests', () => {
 
     expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
   });
+
+  test('Should set endpoint name on the CFN resource', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('my_endpoint');
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Name: 'my_endpoint',
+    });
+  });
+
+  test('Should set description on the endpoint when provided', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('test_endpoint', {
+      description: 'My endpoint description',
+    });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Description: 'My endpoint description',
+    });
+  });
+
+  test('Should fall back to the runtime\'s agentRuntimeVersion when version is not provided', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('test_endpoint');
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    // When options.version is omitted, the endpoint uses the runtime resource's AgentRuntimeVersion attribute
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      AgentRuntimeVersion: Match.objectLike({
+        'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('testruntime.*'), 'AgentRuntimeVersion']),
+      }),
+    });
+  });
+
+  test('Should use explicitly provided version over the default', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('test_endpoint', { version: '5' });
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      AgentRuntimeVersion: '5',
+    });
+  });
+
+  test('Should add multiple endpoints to the same runtime', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('endpoint_a');
+    runtime.addEndpoint('endpoint_b');
+    runtime.addEndpoint('endpoint_c');
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 3);
+  });
+
+  test('Should create a DependsOn from the endpoint to the runtime resource', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('dependent_endpoint');
+
+    app.synth();
+    const template = Template.fromStack(stack);
+    const endpoints = template.findResources('AWS::BedrockAgentCore::RuntimeEndpoint');
+    const endpointResource = Object.values(endpoints)[0];
+
+    expect(endpointResource.DependsOn).toBeDefined();
+    expect(endpointResource.DependsOn).toEqual(
+      expect.arrayContaining([expect.stringMatching(/testruntime.*/)]),
+    );
+  });
 });
 
 describe('Runtime with tags tests', () => {

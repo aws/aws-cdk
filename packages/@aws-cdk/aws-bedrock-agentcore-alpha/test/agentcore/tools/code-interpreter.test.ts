@@ -985,6 +985,48 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
   });
 });
 
+describe('CodeInterpreterCustom error metric methods tests', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let codeInterpreter: CodeInterpreterCustom;
+
+  beforeAll(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter-error-metrics', {
+      codeInterpreterCustomName: 'test_code_interpreter_error_metrics',
+      networkConfiguration: CodeInterpreterNetworkConfiguration.usingPublicNetwork(),
+    });
+  });
+
+  test('Should create metricThrottlesForApiOperation with Sum statistic', () => {
+    const metric = codeInterpreter.metricThrottlesForApiOperation('TestOperation');
+    expect(metric.metricName).toBe('Throttles');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('TestOperation');
+  });
+
+  test('Should create metricSystemErrorsForApiOperation with Sum statistic', () => {
+    const metric = codeInterpreter.metricSystemErrorsForApiOperation('TestOperation');
+    expect(metric.metricName).toBe('SystemErrors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('TestOperation');
+  });
+
+  test('Should create metricUserErrorsForApiOperation with Sum statistic', () => {
+    const metric = codeInterpreter.metricUserErrorsForApiOperation('TestOperation');
+    expect(metric.metricName).toBe('UserErrors');
+    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
+    expect(metric.statistic).toBe('Sum');
+    expect(metric.dimensions?.Operation).toBe('TestOperation');
+  });
+});
+
 describe('CodeInterpreter Optional Physical Names', () => {
   let stack: cdk.Stack;
 
