@@ -140,6 +140,14 @@ new sagemaker.Model(stack, 'NetworkIsolationModel', {
   networkIsolation: true,
 });
 
+new sagemaker.Model(stack, 'DirectInvocationModel', {
+  containers: [
+    { image: localImage, containerHostname: 'containerA' },
+    { image: localImage, modelData: localModelData, containerHostname: 'containerB' },
+  ],
+  inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+});
+
 new IntegTest(app, 'integtest-model', {
   testCases: [stack],
 });
