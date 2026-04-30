@@ -1,7 +1,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import type { CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import { CfnServerlessCache } from 'aws-cdk-lib/aws-elasticache';
-import type * as events from 'aws-cdk-lib/aws-events';
 import type * as kms from 'aws-cdk-lib/aws-kms';
 import type { Size } from 'aws-cdk-lib/core';
 import { ArnFormat, Stack, Lazy, ValidationError, Names, Token } from 'aws-cdk-lib/core';
@@ -78,11 +77,13 @@ export interface CacheUsageLimitsProperty {
  */
 export interface BackupSettings {
   /**
-   * Automated daily backup UTC time
+   * Automated daily backup time in UTC.
+   *
+   * Specify the time as `HH:MM`, for example `09:00`.
    *
    * @default - No automated backups
    */
-  readonly backupTime?: events.Schedule;
+  readonly backupTime?: string;
   /**
    * Number of days to retain backups (1-35)
    *
@@ -451,7 +452,7 @@ export class ServerlessCache extends ServerlessCacheBase {
       serverlessCacheName: this.serverlessCacheName,
       description: props.description,
       cacheUsageLimits: this.renderCacheUsageLimits(props.cacheUsageLimits),
-      dailySnapshotTime: props.backup?.backupTime ? this.formatBackupTime(props.backup.backupTime) : undefined,
+      dailySnapshotTime: props.backup?.backupTime,
       snapshotRetentionLimit: props.backup?.backupRetentionLimit,
       finalSnapshotName: props.backup?.backupNameBeforeDeletion,
       snapshotArnsToRestore: props.backup?.backupArnsToRestore,
@@ -553,6 +554,12 @@ export class ServerlessCache extends ServerlessCacheBase {
    * @param backup The backup settings to validate
    */
   private validateBackupSettings(backup?: BackupSettings): void {
+    if (!Token.isUnresolved(backup?.backupTime) && backup?.backupTime !== undefined) {
+      if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(backup.backupTime)) {
+        throw new ValidationError(lit`InvalidBackupTime`, 'Backup time must be in HH:MM UTC format.', this);
+      }
+    }
+
     if (!Token.isUnresolved(backup?.backupRetentionLimit) && backup?.backupRetentionLimit !== undefined) {
       const limit = backup.backupRetentionLimit;
       if (limit < 1 || limit > 35) {
@@ -674,27 +681,4 @@ export class ServerlessCache extends ServerlessCacheBase {
     }
   }
 
-  /**
-   * Format schedule to HH:MM format for daily backups
-   *
-   * @param schedule The schedule to format
-   * @returns Time string in HH:MM format
-   */
-  private formatBackupTime(schedule: events.Schedule): string {
-    const WILD_CARD = '*';
-    const [
-      minuteExpression, hourExpression,
-      dayExpression, monthExpression,
-      weekDayExpression, yearExpression,
-    ] = schedule.expressionString.substr(5).slice(0, -1).split(' ');
-
-    if (dayExpression != WILD_CARD || monthExpression != WILD_CARD || yearExpression != WILD_CARD || weekDayExpression != '?') {
-      throw new ValidationError(lit`UnsupportedBackupSchedule`, 'For now, only daily backup time is available (supports just hour and minute). Day, month, year, and weekDay are not allowed', this);
-    }
-
-    const hour = hourExpression == WILD_CARD ? '0' : hourExpression;
-    const minute = minuteExpression == WILD_CARD ? '0' : minuteExpression;
-
-    return `${hour.padStart(2, '0')}:${minute.padStart(2, '0')}`;
-  }
 }
