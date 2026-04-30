@@ -18,5 +18,6 @@ rule KINESIS_FIREHOSE_ENCRYPTION_ENABLED when %kinesis_firehose !empty {
         Properties.DeliveryStreamEncryptionConfigurationInput exists
         Properties.DeliveryStreamEncryptionConfigurationInput.KeyType exists
         Properties.DeliveryStreamEncryptionConfigurationInput.KeyType in ["AWS_OWNED_CMK", "CUSTOMER_MANAGED_CMK"]
+            <<##ERROR:Kinesis Firehose delivery stream must have encryption enabled. Set 'DeliveryStreamEncryptionConfigurationInput.KeyType' to 'AWS_OWNED_CMK' or 'CUSTOMER_MANAGED_CMK'.##>>
     }
 }

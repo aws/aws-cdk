@@ -4160,3 +4160,10 @@ removed:aws-cdk-lib.aws_iam.IEncryptedResource.stack
 # were not usable without the feature implementation.
 removed:aws-cdk-lib.aws_lambda.MetricType.ERRORCOUNT
 removed:aws-cdk-lib.aws_lambda.MetricType.KAFKAMETRICS
+
+# Never intended to be mutable, not usefully mutable
+removed-mutability:aws-cdk-lib.aws_s3.Bucket.grants
+removed-mutability:aws-cdk-lib.aws_s3.BucketBase.grants
+
+# Parameter was made optional in override but base class requires it (JSII5008). Method is @deprecated.
+new-argument:aws-cdk-lib.aws_events_targets.LogGroupTargetInput.fromObject

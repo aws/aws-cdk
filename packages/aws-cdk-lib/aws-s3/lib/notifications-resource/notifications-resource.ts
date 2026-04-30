@@ -4,6 +4,7 @@ import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { IBucket, EventType, NotificationKeyFilter } from '../bucket';
 import { Bucket } from '../bucket';
@@ -85,7 +86,7 @@ export class BucketNotifications extends Construct {
       resource.node.addDependency(...targetProps.dependencies);
     }
 
-    // based on the target type, add the the correct configurations array
+    // based on the target type, add the correct configurations array
     switch (targetProps.type) {
       case BucketNotificationDestinationType.LAMBDA:
         this.lambdaNotifications.push({ ...commonConfig, LambdaFunctionArn: targetProps.arn });
@@ -100,7 +101,7 @@ export class BucketNotifications extends Construct {
         break;
 
       default:
-        throw new ValidationError('Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type], this);
+        throw new ValidationError(lit`UnsupportedNotificationTargetType`, 'Unsupported notification target type:' + BucketNotificationDestinationType[targetProps.type], this);
     }
   }
 
@@ -138,8 +139,12 @@ export class BucketNotifications extends Construct {
         managed = false;
       }
 
-      // Add permissions for this bucket to the handler
-      this.addHandlerPermissions(handler, managed);
+      // Add permissions for this bucket to the handler via a dedicated policy.
+      // Each bucket gets its own IAM policy so that when a notification is removed,
+      // the policy is deleted (not updated), and CloudFormation correctly orders
+      // the custom resource deletion before the policy deletion.
+      // See https://github.com/aws/aws-cdk/issues/37667
+      const handlerPolicy = this.addHandlerPermissions(handler, managed);
 
       this.resource = new cdk.CfnResource(this, 'Resource', {
         type: 'Custom::S3BucketNotifications',
@@ -151,6 +156,11 @@ export class BucketNotifications extends Construct {
           SkipDestinationValidation: this.skipDestinationValidation,
         },
       });
+
+      // The custom resource must depend on its dedicated IAM policy so that
+      // on deletion, the custom resource is deleted first (handler still has
+      // permission), then the policy is deleted.
+      this.resource.node.addDependency(handlerPolicy);
 
       // Add dependency on bucket policy if it exists to avoid race conditions
       // S3 does not allow calling PutBucketPolicy and PutBucketNotification APIs at the same time
@@ -180,22 +190,27 @@ export class BucketNotifications extends Construct {
    * @param handler The notifications resource handler
    * @param managed Whether this is a managed (CDK-created) bucket
    */
-  private addHandlerPermissions(handler: NotificationsResourceHandler, managed: boolean): void {
-    // All buckets need PutBucketNotification to set/update notification configurations
-    handler.addToRolePolicy(new iam.PolicyStatement({
-      actions: ['s3:PutBucketNotification'],
-      resources: [this.bucket.bucketArn],
-    }));
+  private addHandlerPermissions(handler: NotificationsResourceHandler, managed: boolean): iam.Policy {
+    const statements = [
+      new iam.PolicyStatement({
+        actions: ['s3:PutBucketNotification'],
+        resources: [this.bucket.bucketArn],
+      }),
+    ];
 
     // Unmanaged (imported) buckets need GetBucketNotification to read existing configurations
     // before merging with new notifications. Managed buckets don't need this since CDK
     // controls their complete notification state from creation.
     if (!managed) {
-      handler.addToRolePolicy(new iam.PolicyStatement({
+      statements.push(new iam.PolicyStatement({
         actions: ['s3:GetBucketNotification'],
         resources: [this.bucket.bucketArn],
       }));
     }
+
+    const policy = new iam.Policy(this, 'HandlerPolicy', { statements });
+    handler.role.attachInlinePolicy(policy);
+    return policy;
   }
 }
 
@@ -210,12 +225,12 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
 
   for (const rule of filters) {
     if (!rule.suffix && !rule.prefix) {
-      throw new ValidationError('NotificationKeyFilter must specify `prefix` and/or `suffix`', scope);
+      throw new ValidationError(lit`NotificationKeyFilterMustSpecifyPrefixOrSuffix`, 'NotificationKeyFilter must specify `prefix` and/or `suffix`', scope);
     }
 
     if (rule.suffix) {
       if (hasSuffix) {
-        throw new ValidationError('Cannot specify more than one suffix rule in a filter.', scope);
+        throw new ValidationError(lit`CannotSpecifyMultipleSuffixRules`, 'Cannot specify more than one suffix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'suffix', Value: rule.suffix });
       hasSuffix = true;
@@ -223,7 +238,7 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
 
     if (rule.prefix) {
       if (hasPrefix) {
-        throw new ValidationError('Cannot specify more than one prefix rule in a filter.', scope);
+        throw new ValidationError(lit`CannotSpecifyMultiplePrefixRules`, 'Cannot specify more than one prefix rule in a filter.', scope);
       }
       renderedRules.push({ Name: 'prefix', Value: rule.prefix });
       hasPrefix = true;
