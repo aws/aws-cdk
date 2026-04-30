@@ -539,6 +539,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'description': '*'
     }
   },
+  '@aws-cdk.aws-dsql-alpha': {
+    'Cluster': {}
+  },
   '@aws-cdk.aws-ec2-alpha': {
     'IpamPool': {
       'ipamScopeId': '*',
@@ -21759,6 +21762,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'PublicHostedZone': {
       'caaAmazon': 'boolean',
+      'acceleratedRecoveryEnabled': 'boolean',
       'crossAccountZoneDelegationPrincipal': {
         'assumeRoleAction': '*',
         'policyFragment': '*',
@@ -23964,6 +23968,33 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'stackRegion': '*'
         }
       ]
+    },
+    'Group': {
+      'groupName': '*',
+      'canaries': {
+        'canaryId': '*',
+        'canaryName': '*',
+        'canaryArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'addCanary': [
+        {
+          'canaryId': '*',
+          'canaryName': '*',
+          'canaryArn': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      ]
     }
   },
   'aws-cdk-lib.core': {
@@ -24264,6 +24295,30 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'interceptorConfigurations': {
         'interceptionPoint': 'InterceptionPoint'
       },
+      'policyEngineConfiguration': {
+        'policyEngine': {
+          'policyEngineArn': '*',
+          'policyEngineId': '*',
+          'policyEngineName': '*',
+          'description': '*',
+          'kmsKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        'mode': '*'
+      },
       'addLambdaTarget': [
         '*',
         {
@@ -24476,6 +24531,59 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'PolicyEngine': {
+      'policyEngineName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'addPolicy': [
+        '*',
+        {
+          'definition': '*',
+          'statement': '*',
+          'policyName': '*',
+          'description': '*',
+          'validationMode': '*'
+        }
+      ]
+    },
+    'Policy': {
+      'policyName': '*',
+      'policyEngine': {
+        'policyEngineArn': '*',
+        'policyEngineId': '*',
+        'policyEngineName': '*',
+        'description': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*'
+        }
+      },
+      'definition': '*',
+      'statement': '*',
+      'description': '*',
+      'validationMode': '*'
+    },
     'RuntimeEndpoint': {
       'endpointName': '*',
       'agentRuntimeId': '*',
@@ -24514,6 +24622,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'lifecycleConfiguration': {
         'idleRuntimeSessionTimeout': '*'
+      },
+      'tracingEnabled': 'boolean',
+      'loggingConfigs': {
+        'logType': '*',
+        'destination': '*'
       },
       'addEndpoint': [
         '*',
@@ -27969,7 +28082,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
@@ -28226,7 +28343,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
@@ -28592,7 +28713,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
