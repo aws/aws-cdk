@@ -820,6 +820,52 @@ new agentcore.Runtime(this, 'test-runtime', {
 });
 ```
 
+#### Observability configuration
+
+The Runtime construct supports observability features including X-Ray tracing and logging to CloudWatch Logs, S3, or Kinesis Data Firehose. This allows you to monitor and debug your agent runtime invocations.
+
+You can configure:
+
+- tracingEnabled: Enable X-Ray tracing for the runtime
+- loggingConfigs: Send APPLICATION_LOGS (agent runtime invocations) and USAGE_LOGS (session-level resource consumption) to CloudWatch Logs, S3, or Kinesis Data Firehose
+
+For additional information, please refer to the [Set up logging and tracing for AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+// Create logging destinations
+const logGroup = new logs.LogGroup(this, 'RuntimeLogGroup');
+const logBucket = new s3.Bucket(this, 'RuntimeLogBucket');
+const firehoseStream = new firehose.DeliveryStream(this, 'RuntimeLogStream', {
+  destination: new firehose.S3Bucket(logBucket),
+});
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  tracingEnabled: true,
+  loggingConfigs: [
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.cloudWatchLogs(logGroup),
+    },
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.s3(logBucket),
+    },
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.firehose(firehoseStream),
+    },
+  ],
+});
+```
+
 ## Browser
 
 The Amazon Bedrock AgentCore Browser provides a secure, cloud-based browser that enables AI agents to interact with websites. It includes security features such as session isolation, built-in observability through live viewing, CloudTrail logging, and session replay capabilities.
@@ -2560,6 +2606,8 @@ memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
 
 A policy engine is a collection of policies that evaluates and authorizes agent tool calls. When associated with a gateway, the policy engine intercepts all agent requests and determines whether to allow or deny each action based on the defined policies.
 
+For more information, see the [Policy in Amazon Bedrock AgentCore documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html).
+
 ### PolicyEngine Properties
 
 | Name | Type | Required | Description |
@@ -2605,6 +2653,13 @@ permit(
 
 Create a policy engine and add policies to it.
 
+#### Policy Engine Mode
+
+When associating a policy engine with a gateway, you can control the enforcement behavior using `PolicyEngineMode`:
+
+- `PolicyEngineMode.LOG_ONLY` (default) — evaluates actions and adds traces but does not enforce decisions. Use this mode for testing and validation before enabling enforcement.
+- `PolicyEngineMode.ENFORCE` — actively allows or denies agent operations based on Cedar policy evaluation.
+
 ```typescript fixture=default
 
 // Create a Policy engine  
@@ -2617,6 +2672,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
   policyEngineConfiguration: {
     policyEngine: policyEngine,
+    mode: agentcore.PolicyEngineMode.ENFORCE, // Default is LOG_ONLY
   },
 });
 
@@ -2744,6 +2800,63 @@ const conditionalPolicy = new agentcore.Policy(this, "ConditionalPolicy", {
 // when {
 //   principal.department == "Engineering" && context.input.priority == "high"
 // };
+```
+
+#### Policy with Exclusions (unless)
+
+Use `unless` clauses to exclude specific conditions from a policy. The policy applies when the `unless` conditions are NOT met:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow access unless the user is suspended
+const policyWithUnless = new agentcore.Policy(this, "UnlessPolicy", {
+  policyEngine: policyEngine,
+  policyName: "unless_suspended",
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)
+    .unless()
+      .principalAttribute('suspended').equalTo(true)
+      .done(),
+  description: "Allow all actions unless user is suspended",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action,
+//   resource == AgentCore::Gateway::"arn:..."
+// )
+// unless {
+//   principal.suspended == true
+// };
+```
+
+You can combine `when` and `unless` clauses in the same policy:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow engineers unless they are on probation
+policyEngine.addPolicy("CombinedConditions", {
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)
+    .when()
+      .principalAttribute('department').equalTo('Engineering')
+      .done()
+    .unless()
+      .principalAttribute('status').equalTo('probation')
+      .done(),
+  description: "Allow engineers unless on probation",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
 ```
 
 #### Forbid (Deny) Policy
