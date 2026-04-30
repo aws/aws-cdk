@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.252.0](https://github.com/aws/aws-cdk/compare/v2.251.0...v2.252.0) (2026-04-29)
+
+
+### Features
+
+* **core:** `Validations` class now supports `addWarning`, `addError`, and `acknowledge` ([#37668](https://github.com/aws/aws-cdk/issues/37668)) ([5e8083c](https://github.com/aws/aws-cdk/commit/5e8083c79f2657fe2364a31ed3f26d0d88638920)), closes [aws/aws-cdk-rfcs#899](https://github.com/aws/aws-cdk-rfcs/issues/899)
+* **core:** add Box API for deferred values with accurate stack traces ([#37604](https://github.com/aws/aws-cdk/issues/37604)) ([d592a96](https://github.com/aws/aws-cdk/commit/d592a969caf30c2f62df99c9a269722ae528cd65))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** cannot be used as a `bundledDependency` ([#37726](https://github.com/aws/aws-cdk/issues/37726)) ([6ba0598](https://github.com/aws/aws-cdk/commit/6ba0598d0b1a099db9c74723ac2567cc947ad802)), closes [#37717](https://github.com/aws/aws-cdk/issues/37717)
+* **s3:** resolve S3 notification removal race condition ([#37708](https://github.com/aws/aws-cdk/issues/37708)) ([dc5be98](https://github.com/aws/aws-cdk/commit/dc5be981a9568a4bb60e47ec9106696650f0bfc8)), closes [#37667](https://github.com/aws/aws-cdk/issues/37667)
+
 ## [2.251.0](https://github.com/aws/aws-cdk/compare/v2.250.0...v2.251.0) (2026-04-24)
 
 
