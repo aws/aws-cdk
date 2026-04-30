@@ -292,6 +292,10 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
   private _validateHistoricalContextWindowSize = (historicalContextWindowSize: number): string[] => {
     let errors: string[] = [];
 
+    if (cdk.Token.isUnresolved(historicalContextWindowSize)) {
+      return errors;
+    }
+
     if (historicalContextWindowSize < HISTORICAL_CONTEXT_WINDOW_SIZE_MIN
         || historicalContextWindowSize > HISTORICAL_CONTEXT_WINDOW_SIZE_MAX) {
       errors.push(`Historical context window size must be between ${HISTORICAL_CONTEXT_WINDOW_SIZE_MIN} and ${HISTORICAL_CONTEXT_WINDOW_SIZE_MAX}, got ${historicalContextWindowSize}`);
@@ -309,7 +313,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     let errors: string[] = [];
 
     // Validate message-based trigger
-    if (triggerConditions.messageBasedTrigger !== undefined) {
+    if (triggerConditions.messageBasedTrigger !== undefined && !cdk.Token.isUnresolved(triggerConditions.messageBasedTrigger)) {
       if (triggerConditions.messageBasedTrigger < MESSAGE_BASED_TRIGGER_MIN
         || triggerConditions.messageBasedTrigger > MESSAGE_BASED_TRIGGER_MAX) {
         errors.push(`Message-based trigger must be between ${MESSAGE_BASED_TRIGGER_MIN} and ${MESSAGE_BASED_TRIGGER_MAX}, got ${triggerConditions.messageBasedTrigger}`);
@@ -317,7 +321,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     }
 
     // Validate time-based trigger
-    if (triggerConditions.timeBasedTrigger !== undefined) {
+    if (triggerConditions.timeBasedTrigger !== undefined && !triggerConditions.timeBasedTrigger.isUnresolved()) {
       const seconds = triggerConditions.timeBasedTrigger.toSeconds();
       if (seconds < TIME_BASED_TRIGGER_MIN || seconds > TIME_BASED_TRIGGER_MAX) {
         errors.push(`Time-based trigger must be between ${TIME_BASED_TRIGGER_MIN} and ${TIME_BASED_TRIGGER_MAX} seconds, got ${seconds}`);
@@ -325,7 +329,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     }
 
     // Validate token-based trigger
-    if (triggerConditions.tokenBasedTrigger !== undefined) {
+    if (triggerConditions.tokenBasedTrigger !== undefined && !cdk.Token.isUnresolved(triggerConditions.tokenBasedTrigger)) {
       if (triggerConditions.tokenBasedTrigger < TOKEN_BASED_TRIGGER_MIN || triggerConditions.tokenBasedTrigger > TOKEN_BASED_TRIGGER_MAX) {
         errors.push(`Token-based trigger must be between ${TOKEN_BASED_TRIGGER_MIN} and ${TOKEN_BASED_TRIGGER_MAX}, got ${triggerConditions.tokenBasedTrigger}`);
       }

@@ -1,28 +1,28 @@
 {
-  "version": "50.0.0",
+  "version": "48.0.0",
   "artifacts": {
-    "eventbridge-integration.assets": {
+    "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "eventbridge-integration.assets.json",
+        "file": "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "eventbridge-integration": {
+    "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "eventbridge-integration.template.json",
+        "templateFile": "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/46f393860d6615111e12fe61c5abfd71414301db7bc96438510b1d74d6506a17.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f53f3d58f01698f534025f858096fd8b96f12d5d405a83b5d7e78073793601e1.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "eventbridge-integration.assets"
+          "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,74 +31,21 @@
         }
       },
       "dependencies": [
-        "eventbridge-integration.assets"
+        "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet.assets"
       ],
       "metadata": {
-        "/eventbridge-integration/Bus": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/eventbridge-integration/Bus/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BusEA82B648"
-          }
-        ],
-        "/eventbridge-integration/Api": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/eventbridge-integration/Api/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApiF70053CD"
-          }
-        ],
-        "/eventbridge-integration/Api/DefaultStage": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/eventbridge-integration/Api/DefaultStage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApiDefaultStage189A7074"
-          }
-        ],
-        "/eventbridge-integration/Api/POST--default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/eventbridge-integration/Api/POST--default/InvokeRole": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "assumedBy": {
                 "principalAccount": "*",
                 "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPolicy": [
-                {}
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
               ]
             }
           },
@@ -127,13 +74,19 @@
             }
           }
         ],
-        "/eventbridge-integration/Api/POST--default/InvokeRole/Resource": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/ServiceRole/ImportServiceRole": [
           {
-            "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTdefaultInvokeRole9137E4F5"
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
           }
         ],
-        "/eventbridge-integration/Api/POST--default/InvokeRole/DefaultPolicy": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterServiceRole5251910D"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -163,37 +116,13 @@
             }
           }
         ],
-        "/eventbridge-integration/Api/POST--default/InvokeRole/DefaultPolicy/Resource": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3"
+            "data": "EmrCreateClusterServiceRoleDefaultPolicyA8B4FA32"
           }
         ],
-        "/eventbridge-integration/Api/POST--default/defaultIntegration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/eventbridge-integration/Api/POST--default/defaultIntegration/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTdefaultdefaultIntegration0355373B"
-          }
-        ],
-        "/eventbridge-integration/Api/POST--default/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTdefault1EEA0D1D"
-          }
-        ],
-        "/eventbridge-integration/Api/POST--put-events": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/eventbridge-integration/Api/POST--put-events/InvokeRole": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/InstanceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -206,9 +135,87 @@
           {
             "type": "aws:cdk:analytics:method",
             "data": {
-              "addToPolicy": [
+              "grantPassRole": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "grant": [
+                "*",
+                "*"
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/InstanceRole/ImportInstanceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/InstanceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterInstanceRoleC80466F5"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/EmrCreateCluster/InstanceProfile": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "EmrCreateClusterInstanceProfileC1729180"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/SM": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "definition": "*"
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
                 {}
               ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToRolePolicy": [
+                {}
+              ]
+            }
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/SM/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
             }
           },
           {
@@ -234,15 +241,45 @@
                 "*"
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
-        "/eventbridge-integration/Api/POST--put-events/InvokeRole/Resource": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/SM/Role/ImportRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/SM/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTputeventsInvokeRole8FCD4FCB"
+            "data": "SMRole49C19C48"
           }
         ],
-        "/eventbridge-integration/Api/POST--put-events/InvokeRole/DefaultPolicy": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/SM/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -270,75 +307,81 @@
                 {}
               ]
             }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
           }
         ],
-        "/eventbridge-integration/Api/POST--put-events/InvokeRole/DefaultPolicy/Resource": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/SM/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTputeventsInvokeRoleDefaultPolicy9BD97DC0"
+            "data": "SMRoleDefaultPolicy34CA15C7"
           }
         ],
-        "/eventbridge-integration/Api/POST--put-events/putEventsIntegration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/eventbridge-integration/Api/POST--put-events/putEventsIntegration/Resource": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/SM/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTputeventsputEventsIntegration2D9DDBF5"
+            "data": "SM934E715A"
           }
         ],
-        "/eventbridge-integration/Api/POST--put-events/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApiPOSTputevents205E0578"
-          }
-        ],
-        "/eventbridge-integration/Exports/Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiEndpoint\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
-          }
-        ],
-        "/eventbridge-integration/BootstrapVersion": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/eventbridge-integration/CheckBootstrapVersion": [
+        "/aws-cdk-emr-create-cluster-with-prioritized-instance-fleet/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "eventbridge-integration"
+      "displayName": "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet"
     },
-    "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8.assets": {
+    "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8.assets.json",
+        "file": "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8": {
+    "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8.template.json",
+        "templateFile": "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f62dae4733e10112350b586870216cd1c35f0297c884bf65347a028d1a3582b7.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8.assets"
+          "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -347,88 +390,23 @@
         }
       },
       "dependencies": [
-        "eventbridge-integration",
-        "EventBridgeIntegrationIntegTestDefaultTestDeployAssert65D070E8.assets"
+        "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105.assets"
       ],
       "metadata": {
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsHttpApiCall3b2b55b01e0d0125e9fd26855f7d21e2"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCallcc4a8c701d93be2132c6720c662e4948/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCallcc4a8c701d93be2132c6720c662e4948/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HttpApiCallcc4a8c701d93be2132c6720c662e4948"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/HttpApiCallcc4a8c701d93be2132c6720c662e4948/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsHttpApiCallcc4a8c701d93be2132c6720c662e4948"
-          }
-        ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+        "/EmrCreateClusterPrioritizedTest/DefaultTest/DeployAssert/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+        "/EmrCreateClusterPrioritizedTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "EventBridgeIntegrationIntegTest/DefaultTest/DeployAssert"
+      "displayName": "EmrCreateClusterPrioritizedTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -442,7 +420,6 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -461,7 +438,6 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
-            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -573,7 +549,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -759,6 +735,16 @@
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
           },
+          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
+            "userValue": false,
+            "recommendedValue": false,
+            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
+          },
+          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
+          },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
             "recommendedValue": true,
@@ -902,31 +888,10 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
-          },
-          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
-          },
-          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
-            "recommendedValue": true,
-            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
-            "unconfiguredBehavesLike": {
-              "v2": true
-            }
-          },
-          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
-          },
-          "@aws-cdk/aws-route53-patterns:useDistribution": {
-            "recommendedValue": true,
-            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1027.0"
 }
