@@ -1,11 +1,13 @@
 import type { Construct, IConstruct } from 'constructs';
-import type { IApplicationListener } from './application-listener';
+import { ApplicationListener, type IApplicationListener } from './application-listener';
 import type { IApplicationTargetGroup } from './application-target-group';
 import { Port } from '../../../aws-ec2';
 import type { Duration, SecretValue } from '../../../core';
 import { Token, Tokenization } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnListener, CfnListenerRule } from '../elasticloadbalancingv2.generated';
+import { ApplicationProtocol } from '../shared/enums';
 import type { IListenerAction } from '../shared/listener-action';
 
 /**
@@ -35,13 +37,29 @@ export class ListenerAction implements IListenerAction {
   }
 
   /**
+   * Authenticate using JWT validation
+   *
+   * You can configure ALB to verify JSON Web Tokens (JWT) provided by clients
+   * for secure service-to-service (S2S) or machine-to-machine (M2M) communications.
+   *
+   * ALB validates the token signature and requires mandatory claims: 'iss' (issuer)
+   * and 'exp' (expiration). Additionally, if present, ALB validates 'nbf' (not before)
+   * and 'iat' (issued at time) claims.
+   *
+   * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/listener-verify-jwt.html
+   */
+  public static authenticateJwt(options: AuthenticateJwtOptions): ListenerAction {
+    return new AuthenticateJwtAction(options);
+  }
+
+  /**
    * Forward to one or more Target Groups
    *
    * @see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-listeners.html#forward-actions
    */
   public static forward(targetGroups: IApplicationTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
-      throw new UnscopedValidationError('Need at least one targetGroup in a ListenerAction.forward()');
+      throw new UnscopedValidationError(lit`NeedLeastTargetgroupListeneraction`, 'Need at least one targetGroup in a ListenerAction.forward()');
     }
     if (targetGroups.length === 1 && options.stickinessDuration === undefined) {
       // Render a "simple" action for backwards compatibility with old templates
@@ -61,7 +79,7 @@ export class ListenerAction implements IListenerAction {
    */
   public static weightedForward(targetGroups: WeightedTargetGroup[], options: ForwardOptions = {}): ListenerAction {
     if (targetGroups.length === 0) {
-      throw new UnscopedValidationError('Need at least one targetGroup in a ListenerAction.weightedForward()');
+      throw new UnscopedValidationError(lit`NeedLeastTargetgroupListeneraction`, 'Need at least one targetGroup in a ListenerAction.weightedForward()');
     }
 
     return new TargetGroupListenerAction(targetGroups.map(g => g.targetGroup), {
@@ -115,10 +133,10 @@ export class ListenerAction implements IListenerAction {
    */
   public static redirect(options: RedirectOptions): ListenerAction {
     if ([options.host, options.path, options.port, options.protocol, options.query].findIndex(x => x !== undefined) === -1) {
-      throw new UnscopedValidationError('To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
+      throw new UnscopedValidationError(lit`PreventRedirectLoops`, 'To prevent redirect loops, set at least one of \'protocol\', \'host\', \'port\', \'path\', or \'query\'.');
     }
     if (options.path && !Token.isUnresolved(options.path) && !options.path.startsWith('/')) {
-      throw new UnscopedValidationError(`Redirect path must start with a \'/\', got: ${options.path}`);
+      throw new UnscopedValidationError(lit`RedirectPathStart`, `Redirect path must start with a \'/\', got: ${options.path}`);
     }
 
     return new ListenerAction({
@@ -202,7 +220,7 @@ export class ListenerAction implements IListenerAction {
    */
   protected addRuleAction(actionJson: CfnListenerRule.ActionProperty) {
     if (this._actionJson) {
-      throw new UnscopedValidationError('rule action is already set');
+      throw new UnscopedValidationError(lit`RuleActionAlready`, 'rule action is already set');
     }
     this._actionJson = actionJson;
   }
@@ -435,6 +453,37 @@ export interface AuthenticateOidcOptions {
 }
 
 /**
+ * Options for `ListenerAction.authenticateJwt()`
+ */
+export interface AuthenticateJwtOptions {
+  /**
+   * What action to execute next
+   *
+   * Multiple actions form a linked chain; the chain must always terminate in a
+   * (weighted)forward, fixedResponse or redirect action.
+   */
+  readonly next: ListenerAction;
+
+  /**
+   * The issuer of the JWT token
+   *
+   * This must be a full URL, including the HTTPS protocol, the domain, and the path.
+   *
+   * @example 'https://issuer.example.com'
+   */
+  readonly issuer: string;
+
+  /**
+   * The JWKS (JSON Web Key Set) endpoint URL
+   *
+   * The endpoint must be publicly accessible and return the public keys used to verify JWT signatures.
+   *
+   * @example 'https://issuer.example.com/jwks'
+   */
+  readonly jwksEndpoint: string;
+}
+
+/**
  * What to do with unauthenticated requests
  */
 export enum UnauthenticatedAction {
@@ -465,6 +514,42 @@ class TargetGroupListenerAction extends ListenerAction {
   public bind(_scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct) {
     for (const tg of this.targetGroups) {
       tg.registerListener(listener, associatingConstruct);
+    }
+  }
+}
+
+/**
+ * A Listener Action to authenticate with JWT
+ */
+class AuthenticateJwtAction extends ListenerAction {
+  constructor(options: AuthenticateJwtOptions) {
+    if (!Token.isUnresolved(options.jwksEndpoint)) {
+      if (!options.jwksEndpoint.startsWith('https://')) {
+        throw new UnscopedValidationError(lit`JwksEndpointMustUseHttps`, `JWKS endpoint must use HTTPS protocol, got: ${options.jwksEndpoint}`);
+      }
+      if (options.jwksEndpoint.length > 256) {
+        throw new UnscopedValidationError(lit`JwksEndpointTooLong`, `JWKS endpoint must be 256 characters or fewer, got ${options.jwksEndpoint.length} characters`);
+      }
+    }
+    if (!Token.isUnresolved(options.issuer) && options.issuer.length > 256) {
+      throw new UnscopedValidationError(lit`IssuerTooLong`, `Issuer must be 256 characters or fewer, got ${options.issuer.length} characters`);
+    }
+
+    super({
+      type: 'jwt-validation',
+      jwtValidationConfig: {
+        issuer: options.issuer,
+        jwksEndpoint: options.jwksEndpoint,
+      },
+    }, options.next);
+  }
+
+  public bind(scope: Construct, listener: IApplicationListener, associatingConstruct?: IConstruct): void {
+    super.bind(scope, listener, associatingConstruct);
+
+    // JWT authentication requires HTTPS listener
+    if (listener instanceof ApplicationListener && listener.protocol !== ApplicationProtocol.HTTPS) {
+      throw new UnscopedValidationError(lit`JwtRequiresHttps`, 'JWT authentication requires an HTTPS listener. Please use ApplicationProtocol.HTTPS for the listener protocol.');
     }
   }
 }

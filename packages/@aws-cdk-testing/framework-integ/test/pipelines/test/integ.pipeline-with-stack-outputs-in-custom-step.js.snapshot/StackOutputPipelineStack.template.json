@@ -925,7 +925,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "PipelineAppStageCustomFunctionServiceRole3CD45B89"

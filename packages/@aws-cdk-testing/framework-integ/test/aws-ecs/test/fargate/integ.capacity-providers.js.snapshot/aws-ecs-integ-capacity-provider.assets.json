@@ -1,13 +1,14 @@
 {
-  "version": "35.0.0",
+  "version": "48.0.0",
   "files": {
     "064031b8eeba7dde78a85feacb72f9e5ab67d38b441a379683d64f040bc7c5fa": {
+      "displayName": "aws-ecs-integ-capacity-provider Template",
       "source": {
         "path": "aws-ecs-integ-capacity-provider.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-a863a8f0": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "064031b8eeba7dde78a85feacb72f9e5ab67d38b441a379683d64f040bc7c5fa.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

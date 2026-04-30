@@ -5,8 +5,7 @@
    "Properties": {
     "BaseCapacity": 1,
     "ComputeType": "BUILD_GENERAL1_MEDIUM",
-    "EnvironmentType": "WINDOWS_SERVER_2022_CONTAINER",
-    "Name": "MyFleet"
+    "EnvironmentType": "WINDOWS_SERVER_2022_CONTAINER"
    }
   },
   "MyProjectRole9BBE5233": {
