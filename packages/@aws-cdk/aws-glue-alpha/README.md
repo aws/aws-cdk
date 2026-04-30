@@ -270,6 +270,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 declare const stack: cdk.Stack;
 declare const role: iam.IRole;
 declare const script: glue.Code;
+declare const extraPythonFile: glue.Code;
 new glue.PythonShellJob(stack, 'PythonShellJob', {
   jobName: 'PythonShellJobCustomName',
   description: 'This is a description',
@@ -277,6 +278,7 @@ new glue.PythonShellJob(stack, 'PythonShellJob', {
   maxCapacity: glue.MaxCapacity.DPU_1,
   role,
   script,
+  extraPythonFiles: [extraPythonFile],
   glueVersion: glue.GlueVersion.V2_0,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
