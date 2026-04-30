@@ -339,9 +339,9 @@ describe('Job', () => {
       });
 
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-        DefaultArguments: Match.not(Match.objectLike({
-          '--extra-py-files': Match.anyValue(),
-        })),
+        DefaultArguments: Match.objectLike({
+          '--extra-py-files': Match.absent(),
+        }),
       });
     });
   });
