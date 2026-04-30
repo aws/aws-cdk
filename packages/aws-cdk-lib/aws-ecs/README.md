@@ -522,6 +522,23 @@ const volume = {
 const container = fargateTaskDefinition.addVolume(volume);
 ```
 
+```ts
+const fargateTaskDefinition = new ecs.FargateTaskDefinition(this, 'TaskDef', {
+  memoryLimitMiB: 512,
+  cpu: 256,
+});
+const volume = {
+  // Use an S3 Files volume
+  name: "mydatavolume",
+  s3FilesVolumeConfiguration: {
+    fileSystemArn: "arn:aws:s3files:us-east-1:012345678901:file-system/fs-12345678",
+    // ... other options here ...
+  },
+};
+
+const container = fargateTaskDefinition.addVolume(volume);
+```
+
 > Note: ECS Anywhere doesn't support volume attachments in the task definition.
 
 To use a TaskDefinition that can be used with either Amazon EC2 or
