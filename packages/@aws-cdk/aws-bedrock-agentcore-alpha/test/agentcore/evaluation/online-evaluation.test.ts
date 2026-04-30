@@ -40,7 +40,7 @@ describe('OnlineEvaluationConfig', () => {
   describe('creation with minimal props', () => {
     test('creates OnlineEvaluationConfig with CloudWatch Logs data source', () => {
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'test_evaluation',
+        onlineEvaluationConfigName: 'test_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
@@ -87,7 +87,7 @@ describe('OnlineEvaluationConfig', () => {
       const endpoint = runtime.addEndpoint('DEFAULT');
 
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'test_evaluation',
+        onlineEvaluationConfigName: 'test_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.CORRECTNESS)],
         dataSource: DataSourceConfig.fromAgentRuntimeEndpoint(runtime, endpoint),
       });
@@ -104,7 +104,7 @@ describe('OnlineEvaluationConfig', () => {
       });
 
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'full_evaluation',
+        onlineEvaluationConfigName: 'full_evaluation',
         evaluators: [
           EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
           EvaluatorReference.builtin(BuiltinEvaluator.CORRECTNESS),
@@ -161,7 +161,7 @@ describe('OnlineEvaluationConfig', () => {
   describe('execution status', () => {
     test('creates OnlineEvaluationConfig with executionStatus DISABLED', () => {
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'disabled_evaluation',
+        onlineEvaluationConfigName: 'disabled_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
@@ -178,7 +178,7 @@ describe('OnlineEvaluationConfig', () => {
 
     test('creates OnlineEvaluationConfig with executionStatus ENABLED', () => {
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'enabled_evaluation',
+        onlineEvaluationConfigName: 'enabled_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
@@ -195,7 +195,7 @@ describe('OnlineEvaluationConfig', () => {
 
     test('does not include ExecutionStatus when not specified', () => {
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'no_status_evaluation',
+        onlineEvaluationConfigName: 'no_status_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
@@ -213,7 +213,7 @@ describe('OnlineEvaluationConfig', () => {
   describe('tag handling', () => {
     test('Tags.of() API propagates tags', () => {
       const evaluation = new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'taggable_test',
+        onlineEvaluationConfigName: 'taggable_test',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/log-group'],
@@ -333,7 +333,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for invalid config name - starts with number', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: '123invalid',
+          onlineEvaluationConfigName: '123invalid',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -346,7 +346,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for config name too long', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'a'.repeat(49),
+          onlineEvaluationConfigName: 'a'.repeat(49),
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -359,7 +359,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for empty evaluators array', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -372,7 +372,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for too many evaluators', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: Array(11).fill(EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)),
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -385,7 +385,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for invalid sampling percentage - too low', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -399,7 +399,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for invalid sampling percentage - too high', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -413,7 +413,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for too many filters', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -431,7 +431,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for invalid session timeout - too low', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -445,7 +445,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for invalid session timeout - too high', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -459,7 +459,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for description too long', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -473,7 +473,7 @@ describe('OnlineEvaluationConfig', () => {
     test('throws error for empty config name', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: '',
+          onlineEvaluationConfigName: '',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -486,7 +486,7 @@ describe('OnlineEvaluationConfig', () => {
     test('accepts token config name without validation', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: Lazy.string({ produce: () => 'resolved_later' }),
+          onlineEvaluationConfigName: Lazy.string({ produce: () => 'resolved_later' }),
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -499,7 +499,7 @@ describe('OnlineEvaluationConfig', () => {
     test('accepts token description without validation', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -513,7 +513,7 @@ describe('OnlineEvaluationConfig', () => {
     test('accepts token sampling percentage without validation', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -527,7 +527,7 @@ describe('OnlineEvaluationConfig', () => {
     test('accepts token session timeout without validation', () => {
       expect(() => {
         new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-          configName: 'test_evaluation',
+          onlineEvaluationConfigName: 'test_evaluation',
           evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
           dataSource: DataSourceConfig.fromCloudWatchLogs({
             logGroupNames: ['/aws/log-group'],
@@ -578,7 +578,7 @@ describe('OnlineEvaluationConfig', () => {
   describe('IAM role', () => {
     test('auto-creates execution role with required permissions', () => {
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'test_evaluation',
+        onlineEvaluationConfigName: 'test_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
@@ -644,7 +644,7 @@ describe('OnlineEvaluationConfig', () => {
       });
 
       const evaluation = new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'test_evaluation',
+        onlineEvaluationConfigName: 'test_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/log-group'],
@@ -657,10 +657,45 @@ describe('OnlineEvaluationConfig', () => {
     });
   });
 
+  describe('runtime data source IAM scoping', () => {
+    test('auto-created role gets correctly scoped log group ARNs with token runtime ID', () => {
+      const runtime = new Runtime(stack, 'TestRuntime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact: AgentRuntimeArtifact.fromImageUri('123456789012.dkr.ecr.us-east-1.amazonaws.com/my-agent:latest'),
+      });
+      const endpoint = runtime.addEndpoint('PROD');
+
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'test_evaluation',
+        evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
+        dataSource: DataSourceConfig.fromAgentRuntimeEndpoint(runtime, endpoint),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::IAM::Policy', {
+        PolicyDocument: {
+          Statement: Match.arrayWith([
+            Match.objectLike({
+              Sid: 'CloudWatchLogQueryStatement',
+              Action: Match.arrayWith(['logs:GetQueryResults', 'logs:StartQuery']),
+              Resource: Match.arrayWith([
+                {
+                  'Fn::Join': ['', Match.arrayWith([
+                    Match.stringLikeRegexp('.*:logs:.*:log-group:/aws/bedrock-agentcore/runtimes/'),
+                  ])],
+                },
+              ]),
+            }),
+          ]),
+        },
+      });
+    });
+  });
+
   describe('grant methods', () => {
     test('grant grants specified permissions', () => {
       const evaluation = new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'test_evaluation',
+        onlineEvaluationConfigName: 'test_evaluation',
         evaluators: [EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS)],
         dataSource: DataSourceConfig.fromCloudWatchLogs({
           logGroupNames: ['/aws/log-group'],

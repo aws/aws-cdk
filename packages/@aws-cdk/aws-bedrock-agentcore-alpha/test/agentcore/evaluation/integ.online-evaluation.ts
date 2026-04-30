@@ -37,7 +37,7 @@ const customEvaluator = new agentcore.Evaluator(stack, 'CustomEvaluator', {
 
 // Create an online evaluation configuration with built-in and custom evaluators
 new agentcore.OnlineEvaluationConfig(stack, 'BasicEvaluation', {
-  configName: 'integ_test_basic_eval',
+  onlineEvaluationConfigName: 'integ_test_basic_eval',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),

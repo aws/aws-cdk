@@ -94,7 +94,7 @@ export interface EvaluatorProps {
  *
  * // Use the custom evaluator in an online evaluation configuration
  * new agentcore.OnlineEvaluationConfig(this, 'MyEvaluation', {
- *   configName: 'my_evaluation',
+ *   onlineEvaluationConfigName: 'my_evaluation',
  *   evaluators: [
  *     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
  *     agentcore.EvaluatorReference.custom(evaluator),
@@ -224,17 +224,19 @@ export class Evaluator extends EvaluatorBase {
   public readonly updatedAt?: string;
 
   constructor(scope: Construct, id: string, props: EvaluatorProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.evaluatorName,
+    });
 
     addConstructMetadata(this, props);
 
     throwIfInvalid(validateEvaluatorName, props.evaluatorName, this);
     throwIfInvalid(validateDescription, props.description, this);
 
-    this.evaluatorName = props.evaluatorName;
+    this.evaluatorName = this.physicalName;
 
     const resource = new bedrockagentcore.CfnEvaluator(this, 'Resource', {
-      evaluatorName: props.evaluatorName,
+      evaluatorName: this.physicalName,
       evaluatorConfig: props.evaluatorConfig._bind(),
       level: props.level.value,
       description: props.description,

@@ -301,12 +301,15 @@ export interface OnlineEvaluationBaseProps {
    *
    * @pattern ^[a-zA-Z][a-zA-Z0-9_]{0,47}$
    */
-  readonly configName: string;
+  readonly onlineEvaluationConfigName: string;
 
   /**
    * The IAM role that provides permissions for the evaluation to access AWS services.
    *
-   * If not provided, a role will be created automatically with the required permissions.
+   * If not provided, a role will be created automatically with the required permissions
+   * including cross-region Bedrock model invocation (to support cross-region inference
+   * profiles). For strict cost controls or data residency compliance, provide a custom
+   * role with region-scoped permissions.
    *
    * @default - A new role will be created
    */

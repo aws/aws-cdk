@@ -72,7 +72,7 @@ export interface OnlineEvaluationConfigProps extends OnlineEvaluationBaseProps {
  * @example
  * // Basic usage with built-in evaluators
  * const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MyEvaluation', {
- *   configName: 'my_evaluation',
+ *   onlineEvaluationConfigName: 'my_evaluation',
  *   evaluators: [
  *     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
  *     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
@@ -229,23 +229,25 @@ export class OnlineEvaluationConfig extends OnlineEvaluationBase {
   public readonly grantPrincipal: iam.IPrincipal;
 
   constructor(scope: Construct, id: string, props: OnlineEvaluationConfigProps) {
-    super(scope, id);
+    super(scope, id, {
+      physicalName: props.onlineEvaluationConfigName,
+    });
 
     addConstructMetadata(this, props);
 
-    throwIfInvalid(validateConfigName, props.configName, this);
+    throwIfInvalid(validateConfigName, props.onlineEvaluationConfigName, this);
     throwIfInvalid(validateDescription, props.description, this);
     throwIfInvalid(validateEvaluators, props.evaluators, this);
     throwIfInvalid(validateSamplingPercentage, props.samplingPercentage, this);
     throwIfInvalid(validateFilters, props.filters, this);
     throwIfInvalid(validateSessionTimeout, props.sessionTimeout?.toMinutes(), this);
 
-    this.onlineEvaluationConfigName = props.configName;
+    this.onlineEvaluationConfigName = this.physicalName;
     this.executionRole = props.executionRole ?? this.createExecutionRole(props.dataSource);
     this.grantPrincipal = this.executionRole;
 
     const resource = new bedrockagentcore.CfnOnlineEvaluationConfig(this, 'Resource', {
-      onlineEvaluationConfigName: props.configName,
+      onlineEvaluationConfigName: this.physicalName,
       evaluators: props.evaluators.map((e) => e.bind()),
       dataSourceConfig: props.dataSource.bind(),
       evaluationExecutionRoleArn: this.executionRole!.roleArn,

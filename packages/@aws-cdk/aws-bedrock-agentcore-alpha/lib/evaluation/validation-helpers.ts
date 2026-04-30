@@ -360,10 +360,10 @@ export function validateCategoricalRatingScale(options: CategoricalRatingOption[
   }
 
   for (let i = 0; i < options.length; i++) {
-    if (!options[i].label || options[i].label.trim().length === 0) {
+    if (!Token.isUnresolved(options[i].label) && (!options[i].label || options[i].label.trim().length === 0)) {
       errors.push(`Categorical rating option at index ${i} must have a non-empty label`);
     }
-    if (!options[i].definition || options[i].definition.trim().length === 0) {
+    if (!Token.isUnresolved(options[i].definition) && (!options[i].definition || options[i].definition.trim().length === 0)) {
       errors.push(`Categorical rating option at index ${i} must have a non-empty definition`);
     }
   }
@@ -386,10 +386,10 @@ export function validateNumericalRatingScale(options: NumericalRatingOption[], _
   }
 
   for (let i = 0; i < options.length; i++) {
-    if (!options[i].label || options[i].label.trim().length === 0) {
+    if (!Token.isUnresolved(options[i].label) && (!options[i].label || options[i].label.trim().length === 0)) {
       errors.push(`Numerical rating option at index ${i} must have a non-empty label`);
     }
-    if (!options[i].definition || options[i].definition.trim().length === 0) {
+    if (!Token.isUnresolved(options[i].definition) && (!options[i].definition || options[i].definition.trim().length === 0)) {
       errors.push(`Numerical rating option at index ${i} must have a non-empty definition`);
     }
   }

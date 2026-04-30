@@ -338,7 +338,7 @@ describe('Evaluator', () => {
       });
 
       new OnlineEvaluationConfig(stack, 'TestEvaluation', {
-        configName: 'test_evaluation',
+        onlineEvaluationConfigName: 'test_evaluation',
         evaluators: [
           EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
           EvaluatorReference.custom(evaluator),
@@ -355,6 +355,32 @@ describe('Evaluator', () => {
           { EvaluatorId: 'Builtin.Helpfulness' },
           { EvaluatorId: { 'Fn::GetAtt': ['CustomEvaluator9FEA397A', 'EvaluatorId'] } },
         ]),
+      });
+    });
+  });
+
+  describe('EvaluatorReference.custom() with imported evaluator', () => {
+    test('imported evaluator resolves correctly in OnlineEvaluationConfig', () => {
+      const imported = Evaluator.fromEvaluatorId(stack, 'ImportedEvaluator', 'eval-abc123');
+
+      new OnlineEvaluationConfig(stack, 'TestEvaluation', {
+        onlineEvaluationConfigName: 'test_evaluation',
+        evaluators: [
+          EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          EvaluatorReference.custom(imported),
+        ],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+          serviceNames: ['my-agent.default'],
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        Evaluators: [
+          { EvaluatorId: 'Builtin.Helpfulness' },
+          { EvaluatorId: 'eval-abc123' },
+        ],
       });
     });
   });
@@ -593,6 +619,29 @@ describe('Evaluator', () => {
             { label: 'Pass', definition: 'Ok.' },
           ]),
         });
+      }).not.toThrow();
+    });
+
+    test('accepts Lazy.string for categorical rating scale label and definition', () => {
+      expect(() => {
+        EvaluatorRatingScale.categorical([
+          {
+            label: Lazy.string({ produce: () => 'lazy label' }),
+            definition: Lazy.string({ produce: () => 'lazy definition' }),
+          },
+        ]);
+      }).not.toThrow();
+    });
+
+    test('accepts Lazy.string for numerical rating scale label and definition', () => {
+      expect(() => {
+        EvaluatorRatingScale.numerical([
+          {
+            label: Lazy.string({ produce: () => 'lazy label' }),
+            definition: Lazy.string({ produce: () => 'lazy definition' }),
+            value: 1,
+          },
+        ]);
       }).not.toThrow();
     });
   });

@@ -3013,7 +3013,7 @@ The Online Evaluation construct enables continuous monitoring and assessment of 
 
 | Name | Type | Required | Description |
 |------|------|----------|-------------|
-| `configName` | `string` | Yes | The name of the online evaluation configuration. Must start with a letter and can contain a-z, A-Z, 0-9, _ (underscore). Maximum 48 characters |
+| `onlineEvaluationConfigName` | `string` | Yes | The name of the online evaluation configuration. Must start with a letter and can contain a-z, A-Z, 0-9, _ (underscore). Maximum 48 characters |
 | `evaluators` | `EvaluatorReference[]` | Yes | The list of built-in evaluators to apply during evaluation. Minimum 1, maximum 10 |
 | `dataSource` | `DataSourceConfig` | Yes | The data source configuration specifying where to read agent traces from |
 | `executionRole` | `iam.IRole` | No | The IAM role for evaluation. If not provided, a role will be created automatically |
@@ -3029,7 +3029,7 @@ Create an online evaluation configuration with built-in evaluators:
 
 ```typescript fixture=default
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MyEvaluation', {
-  configName: 'my_evaluation',
+  onlineEvaluationConfigName: 'my_evaluation',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
@@ -3069,7 +3069,7 @@ Amazon Bedrock AgentCore provides 13 built-in evaluators that assess different a
 
 ```typescript fixture=default
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ComprehensiveEval', {
-  configName: 'comprehensive_evaluation',
+  onlineEvaluationConfigName: 'comprehensive_evaluation',
   evaluators: [
     // Session level
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.GOAL_SUCCESS_RATE),
@@ -3178,7 +3178,7 @@ Custom evaluators are used in `OnlineEvaluationConfig` via `EvaluatorReference.c
 declare const customEvaluator: agentcore.Evaluator;
 
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MixedEvaluation', {
-  configName: 'mixed_evaluation',
+  onlineEvaluationConfigName: 'mixed_evaluation',
   evaluators: [
     // Built-in evaluators
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
@@ -3213,7 +3213,7 @@ const runtime = new agentcore.Runtime(this, 'MyRuntime', {
 
 // Using default endpoint (simplest)
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'RuntimeEval', {
-  configName: 'runtime_evaluation',
+  onlineEvaluationConfigName: 'runtime_evaluation',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
   ],
@@ -3229,7 +3229,7 @@ declare const runtime: agentcore.Runtime;
 // Using a specific endpoint construct
 const prodEndpoint = runtime.addEndpoint('PROD');
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ProdEval', {
-  configName: 'prod_evaluation',
+  onlineEvaluationConfigName: 'prod_evaluation',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
   ],
@@ -3238,7 +3238,7 @@ const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ProdEval', {
 
 // Or using endpoint name as string
 const stagingEval = new agentcore.OnlineEvaluationConfig(this, 'StagingEval', {
-  configName: 'staging_evaluation',
+  onlineEvaluationConfigName: 'staging_evaluation',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
   ],
@@ -3252,7 +3252,7 @@ For external agents or when you need to specify log groups directly:
 
 ```typescript fixture=default
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'CloudWatchEval', {
-  configName: 'cloudwatch_evaluation',
+  onlineEvaluationConfigName: 'cloudwatch_evaluation',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
   ],
@@ -3272,7 +3272,7 @@ Configure sampling percentage and filters to control which traces are evaluated:
 
 ```typescript fixture=default
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'FilteredEval', {
-  configName: 'filtered_evaluation',
+  onlineEvaluationConfigName: 'filtered_evaluation',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
   ],
@@ -3321,7 +3321,7 @@ executionRole.addToPolicy(new iam.PolicyStatement({
 }));
 
 const evaluation = new agentcore.OnlineEvaluationConfig(this, 'CustomRoleEval', {
-  configName: 'custom_role_evaluation',
+  onlineEvaluationConfigName: 'custom_role_evaluation',
   evaluators: [
     agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
   ],
