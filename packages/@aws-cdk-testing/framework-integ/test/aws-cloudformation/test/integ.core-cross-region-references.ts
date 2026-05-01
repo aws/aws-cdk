@@ -1,10 +1,11 @@
-import { IQueue, Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
+import type { IQueue } from 'aws-cdk-lib/aws-sqs';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, NestedStack, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
-import { Key } from "aws-cdk-lib/aws-kms";
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 // GIVEN
 const app = new App({
