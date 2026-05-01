@@ -24,6 +24,7 @@ export * from './runtime/inbound-auth/runtime-authorizer-configuration';
 export * from './runtime/runtime-endpoint-base';
 export * from './runtime/runtime-endpoint';
 export * from './runtime/runtime';
+export * from './runtime/observability';
 // Tools
 // ===================================
 export * from './tools/code-interpreter';
@@ -66,6 +67,19 @@ export * from './gateway/targets/target-configuration';
 export * from './gateway/targets/schema/base-schema';
 export * from './gateway/targets/schema/api-schema';
 export * from './gateway/targets/schema/tool-schema';
+
+// ===================================
+// Evaluation
+// ===================================
+export * from './evaluation/types';
+export * from './evaluation/perms';
+export * from './evaluation/evaluator';
+export * from './evaluation/evaluator-config';
+export * from './evaluation/evaluator-base';
+export * from './evaluation/custom-evaluator';
+export * from './evaluation/data-source';
+export * from './evaluation/online-evaluation-base';
+export * from './evaluation/online-evaluation';
 
 // ===================================
 // Policy

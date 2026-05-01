@@ -3,9 +3,11 @@ import type { ICluster } from './cluster';
 import type { AccessEntryReference, IAccessEntryRef } from '../../aws-eks';
 import { CfnAccessEntry } from '../../aws-eks';
 import type { IResource, RemovalPolicy } from '../../core';
-import { Resource, Aws, Lazy, ValidationError, Token } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Resource, Aws, ValidationError, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { MethodMetadata, addConstructMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -344,6 +346,7 @@ export interface AccessEntryProps {
  * @resource AWS::EKS::AccessEntry
  */
 @propertyInjectable
+@noBoxStackTraces
 export class AccessEntry extends Resource implements IAccessEntry {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks-v2.AccessEntry';
@@ -376,7 +379,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
   private resource: CfnAccessEntry;
   private cluster: ICluster;
   private principal: string;
-  private accessPolicies: IAccessPolicy[];
+  private _accessPolicies: IArrayBox<IAccessPolicy>;
   private readonly accessEntryType?: AccessEntryType;
 
   constructor(scope: Construct, id: string, props: AccessEntryProps ) {
@@ -386,7 +389,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     this.cluster = props.cluster;
     this.principal = props.principal;
-    this.accessPolicies = props.accessPolicies;
+    this._accessPolicies = Box.fromArray(props.accessPolicies, { omitEmpty: false });
     this.accessEntryType = props.accessEntryType;
 
     // Validate that certain access entry types cannot have access policies
@@ -396,15 +399,13 @@ export class AccessEntry extends Resource implements IAccessEntry {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
-      accessPolicies: Lazy.any({
-        produce: () => this.accessPolicies.map(p => ({
-          accessScope: {
-            type: p.accessScope.type,
-            namespaces: p.accessScope.namespaces,
-          },
-          policyArn: p.policy,
-        })),
-      }),
+      accessPolicies: this._accessPolicies.map(p => ({
+        accessScope: {
+          type: p.accessScope.type,
+          namespaces: p.accessScope.namespaces,
+        },
+        policyArn: p.policy,
+      })),
     });
 
     if (props.removalPolicy) {
@@ -435,7 +436,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     // Validate that restricted access entry types cannot have access policies
     this.validateAccessPoliciesForRestrictedTypes(newAccessPolicies, this.accessEntryType);
     // add newAccessPolicies to this.accessPolicies
-    this.accessPolicies.push(...newAccessPolicies);
+    this._accessPolicies.push(...newAccessPolicies);
   }
 
   public get accessEntryRef(): AccessEntryReference {

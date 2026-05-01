@@ -6,6 +6,8 @@ import * as cxschema from '../../../cloud-assembly-schema';
 import type { IResource } from '../../../core';
 import { Annotations, ContextProvider, Lazy, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { lit } from '../../../core/lib/private/literal-string';
 import type * as cxapi from '../../../cx-api';
 import type { aws_elasticloadbalancingv2 } from '../../../interfaces';
@@ -132,14 +134,16 @@ export abstract class BaseListener extends Resource implements IListener {
    */
   private readonly attributes: Attributes = {};
 
-  private defaultAction?: IListenerAction;
+  private readonly _defaultAction: IBox<IListenerAction | undefined>;
 
   constructor(scope: Construct, id: string, additionalProps: any) {
     super(scope, id);
 
+    this._defaultAction = Box.fromValue<IListenerAction | undefined>(undefined);
+
     const resource = new CfnListener(this, 'Resource', {
       ...additionalProps,
-      defaultActions: Lazy.any({ produce: () => this.defaultAction?.renderActions() ?? [] }),
+      defaultActions: this._defaultAction.derive(a => a?.renderActions() ?? []),
       listenerAttributes: Lazy.any({ produce: () => renderAttributes(this.attributes) }, { omitEmptyArray: true } ),
     });
 
@@ -167,7 +171,7 @@ export abstract class BaseListener extends Resource implements IListener {
    * Validate this listener
    */
   protected validateListener(): string[] {
-    if (!this.defaultAction) {
+    if (!this._defaultAction.get()) {
       return ['Listener needs at least one default action or target group (call addTargetGroups or addAction)'];
     }
     return [];
@@ -188,10 +192,10 @@ export abstract class BaseListener extends Resource implements IListener {
     //
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
-    if (this.defaultAction) {
+    if (this._defaultAction.get()) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:listenerExistingDefaultActionReplaced', 'A default Action already existed on this Listener and was replaced. Configure exactly one default Action.');
     }
 
-    this.defaultAction = action;
+    this._defaultAction.set(action);
   }
 }
