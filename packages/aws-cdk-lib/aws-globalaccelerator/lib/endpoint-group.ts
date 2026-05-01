@@ -4,6 +4,8 @@ import type { IEndpoint } from './endpoint';
 import * as ga from './globalaccelerator.generated';
 import type * as ec2 from '../../aws-ec2';
 import * as cdk from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IEndpointGroupRef, IListenerRef } from '../../interfaces/generated/aws-globalaccelerator-interfaces.generated';
@@ -186,7 +188,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * The array of the endpoints in this endpoint group
    */
-  protected readonly endpoints = new Array<IEndpoint>();
+  private readonly endpoints: IArrayBox<IEndpoint> = Box.fromArray([], { omitEmpty: false });
 
   public get endpointGroupRef(): ga.EndpointGroupReference {
     return {
@@ -201,8 +203,12 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
 
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerRef.listenerArn,
-      endpointGroupRegion: props.region ?? cdk.Lazy.string({ produce: () => this.firstEndpointRegion() }),
-      endpointConfigurations: cdk.Lazy.any({ produce: () => this.renderEndpoints() }, { omitEmptyArray: true }),
+      endpointGroupRegion: props.region ?? cdk.Token.asString(
+        this.endpoints.derive(_ => this.firstEndpointRegion()),
+      ),
+      endpointConfigurations: this.endpoints.derive(ep =>
+        ep.length === 0 ? undefined : ep.map(e => e.renderEndpointConfiguration()),
+      ),
       healthCheckIntervalSeconds: props.healthCheckInterval?.toSeconds({ integral: true }),
       healthCheckPath: props.healthCheckPath,
       healthCheckPort: props.healthCheckPort,
@@ -249,13 +255,6 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     return AcceleratorSecurityGroupPeer.fromVpc(this, id, vpc, this);
   }
 
-  private renderEndpoints() {
-    return this.endpoints.map(e => e.renderEndpointConfiguration());
-  }
-
-  /**
-   * Return the first (readable) region of the endpoints in this group
-   */
   private firstEndpointRegion() {
     for (const endpoint of this.endpoints) {
       if (endpoint.region) {

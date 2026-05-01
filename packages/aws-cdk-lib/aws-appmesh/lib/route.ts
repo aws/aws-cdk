@@ -7,7 +7,8 @@ import type { RouteSpec } from './route-spec';
 import type { IVirtualRouter } from './virtual-router';
 import { VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Token } from '../../core';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -140,7 +141,8 @@ export class Route extends cdk.Resource implements IRoute {
 
   constructor(scope: Construct, id: string, props: RouteProps) {
     super(scope, id, {
-      physicalName: props.routeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      physicalName: props.routeName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this))),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

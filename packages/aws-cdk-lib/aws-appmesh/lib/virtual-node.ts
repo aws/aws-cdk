@@ -10,6 +10,7 @@ import type { AccessLog, BackendDefaults, Backend } from './shared-interfaces';
 import type { VirtualNodeListener, VirtualNodeListenerConfig } from './virtual-node-listener';
 import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { Token } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -223,7 +224,8 @@ export class VirtualNode extends VirtualNodeBase {
 
   constructor(scope: Construct, id: string, props: VirtualNodeProps) {
     super(scope, id, {
-      physicalName: props.virtualNodeName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      physicalName: props.virtualNodeName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this))),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

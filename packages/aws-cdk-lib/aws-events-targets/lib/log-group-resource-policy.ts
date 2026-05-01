@@ -1,6 +1,8 @@
 import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import { Token } from '../../core';
+import { Box } from '../../core/lib/helpers-internal';
 import * as cr from '../../custom-resources';
 
 /**
@@ -32,7 +34,8 @@ export class LogGroupResourcePolicy extends cr.AwsCustomResource {
       statements: props.policyStatements,
     });
 
-    let policyName = props.policyName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) });
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+    let policyName = props.policyName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this)));
 
     super(scope, id, {
       resourceType: 'Custom::CloudwatchLogResourcePolicy',

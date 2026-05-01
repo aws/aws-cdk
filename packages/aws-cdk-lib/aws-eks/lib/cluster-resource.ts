@@ -7,7 +7,8 @@ import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
 import type { ArnComponents } from '../../core';
-import { CustomResource, Token, Stack, Lazy, ValidationError } from '../../core';
+import { CustomResource, Token, Stack, ValidationError } from '../../core';
+import { Box } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 
 export interface ClusterResourceProps {
@@ -159,20 +160,18 @@ export class ClusterResource extends Construct {
     // this role to manage all clusters in the account. this must be lazy since
     // `props.name` may contain a lazy value that conditionally resolves to a
     // physical name.
-    const resourceArns = Lazy.list({
-      produce: () => {
-        const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
-        return stack.resolve(props.name)
-          ? [arn, `${arn}/*`] // see https://github.com/aws/aws-cdk/issues/6060
-          : ['*'];
-      },
-    });
+    const resourceArns = Token.asList(Box.fromDeferredValue(() => {
+      const arn = stack.formatArn(clusterArnComponents(stack.resolve(props.name)));
+      return stack.resolve(props.name)
+        ? [arn, `${arn}/*`] // see https://github.com/aws/aws-cdk/issues/6060
+        : ['*'];
+    }));
 
-    const fargateProfileResourceArn = Lazy.string({
-      produce: () => stack.resolve(props.name)
+    const fargateProfileResourceArn = Token.asString(Box.fromDeferredValue(() =>
+      stack.resolve(props.name)
         ? stack.formatArn({ service: 'eks', resource: 'fargateprofile', resourceName: stack.resolve(props.name) + '/*' })
         : '*',
-    });
+    ));
 
     creationRole.addToPolicy(new iam.PolicyStatement({
       actions: [

@@ -1,6 +1,8 @@
 import type { IAlarmAction } from './alarm-action';
 import type { IResource } from '../../core';
 import { Resource } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import type { IAlarmRef, AlarmReference } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
@@ -44,9 +46,22 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   public abstract readonly alarmArn: string;
   public abstract readonly alarmName: string;
 
-  protected alarmActionArns?: string[];
-  protected insufficientDataActionArns?: string[];
-  protected okActionArns?: string[];
+  /** @internal */
+  protected readonly _alarmActionArns: IArrayBox<string> = Box.fromArray([]);
+  /** @internal */
+  protected readonly _insufficientDataActionArns: IArrayBox<string> = Box.fromArray([]);
+  /** @internal */
+  protected readonly _okActionArns: IArrayBox<string> = Box.fromArray([]);
+
+  protected get alarmActionArns(): string[] | undefined {
+    return this._alarmActionArns.length > 0 ? [...this._alarmActionArns] : undefined;
+  }
+  protected get insufficientDataActionArns(): string[] | undefined {
+    return this._insufficientDataActionArns.length > 0 ? [...this._insufficientDataActionArns] : undefined;
+  }
+  protected get okActionArns(): string[] | undefined {
+    return this._okActionArns.length > 0 ? [...this._okActionArns] : undefined;
+  }
 
   public get alarmRef(): AlarmReference {
     return {
@@ -68,11 +83,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
    * Typically SnsAction or AutoScalingAction.
    */
   public addAlarmAction(...actions: IAlarmAction[]) {
-    if (this.alarmActionArns === undefined) {
-      this.alarmActionArns = [];
-    }
-
-    this.alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+    this._alarmActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -81,11 +92,7 @@ export abstract class AlarmBase extends Resource implements IAlarm {
    * Typically SnsAction or AutoScalingAction.
    */
   public addInsufficientDataAction(...actions: IAlarmAction[]) {
-    if (this.insufficientDataActionArns === undefined) {
-      this.insufficientDataActionArns = [];
-    }
-
-    this.insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+    this._insufficientDataActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 
   /**
@@ -94,10 +101,6 @@ export abstract class AlarmBase extends Resource implements IAlarm {
    * Typically SnsAction or AutoScalingAction.
    */
   public addOkAction(...actions: IAlarmAction[]) {
-    if (this.okActionArns === undefined) {
-      this.okActionArns = [];
-    }
-
-    this.okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
+    this._okActionArns.push(...actions.map(a => a.bind(this, this).alarmActionArn));
   }
 }

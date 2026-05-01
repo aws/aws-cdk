@@ -6,7 +6,8 @@ import { renderMeshOwner } from './private/utils';
 import type { IVirtualGateway } from './virtual-gateway';
 import { VirtualGateway } from './virtual-gateway';
 import * as cdk from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Token } from '../../core';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -134,7 +135,8 @@ export class GatewayRoute extends cdk.Resource implements IGatewayRoute {
 
   constructor(scope: Construct, id: string, props: GatewayRouteProps) {
     super(scope, id, {
-      physicalName: props.gatewayRouteName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      physicalName: props.gatewayRouteName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this))),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

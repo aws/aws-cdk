@@ -8,7 +8,8 @@ import type { RouteBaseProps } from './route';
 import { Route } from './route';
 import { VirtualRouterListener } from './virtual-router-listener';
 import * as cdk from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Token } from '../../core';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -173,7 +174,8 @@ export class VirtualRouter extends VirtualRouterBase {
 
   constructor(scope: Construct, id: string, props: VirtualRouterProps) {
     super(scope, id, {
-      physicalName: props.virtualRouterName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      physicalName: props.virtualRouterName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this))),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

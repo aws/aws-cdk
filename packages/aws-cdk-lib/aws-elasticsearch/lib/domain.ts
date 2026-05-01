@@ -18,8 +18,8 @@ import { toILogGroup } from '../../aws-logs/lib/private/ref-utils';
 import * as route53 from '../../aws-route53';
 import * as secretsmanager from '../../aws-secretsmanager';
 import * as cdk from '../../core';
-import { ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Token, ValidationError } from '../../core';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -1595,7 +1595,8 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
       effect: iam.Effect.ALLOW,
       actions: ['es:ESHttp*'],
       principals: [new iam.AnyPrincipal()],
-      resources: [cdk.Lazy.string({ produce: () => `${this.domainArn}/*` })],
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      resources: [Token.asString(Box.fromDeferredValue(() => `${this.domainArn}/*`))],
     });
 
     const masterUserArn = props.fineGrainedAccessControl?.masterUserArn;

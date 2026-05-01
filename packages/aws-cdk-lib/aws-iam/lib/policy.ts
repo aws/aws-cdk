@@ -6,12 +6,15 @@ import { PolicyDocument } from './policy-document';
 import type { PolicyStatement } from './policy-statement';
 import type { AddToPrincipalPolicyResult, IGrantable, IPrincipal, PrincipalPolicyFragment } from './principals';
 import { ArnPrincipal } from './principals';
-import { generatePolicyName, undefinedIfEmpty } from './private/util';
+import { generatePolicyName } from './private/util';
 import type { IRole } from './role';
 import type { IUser } from './user';
 import type { IResource } from '../../core';
-import { Lazy, Resource, ValidationError } from '../../core';
+import { Token, Lazy, Resource, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -109,6 +112,7 @@ export interface PolicyProps {
  * in the IAM User Guide guide.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Policy extends Resource implements IPolicy, IGrantable {
   /**
    * Uniquely identifies this class.
@@ -139,9 +143,9 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   public readonly policyRef: PolicyReference;
 
   private readonly _policyName: string;
-  private readonly roles = new Array<IRole>();
-  private readonly users = new Array<IUser>();
-  private readonly groups = new Array<IGroup>();
+  private readonly roles: IArrayBox<IRole> = Box.fromArray<IRole>([]);
+  private readonly users: IArrayBox<IUser> = Box.fromArray<IUser>([]);
+  private readonly groups: IArrayBox<IGroup> = Box.fromArray<IGroup>([]);
   private readonly force: boolean;
   private referenceTaken = false;
 
@@ -176,9 +180,9 @@ export class Policy extends Resource implements IPolicy, IGrantable {
     const resource = new CfnPolicyConditional(this, 'Resource', {
       policyDocument: this.document,
       policyName: this.physicalName,
-      roles: undefinedIfEmpty(() => this.roles.map(r => r.roleName)),
-      users: undefinedIfEmpty(() => this.users.map(u => u.userName)),
-      groups: undefinedIfEmpty(() => this.groups.map(g => g.groupName)),
+      roles: Token.asList(this.roles.map(r => r.roleName)),
+      users: Token.asList(this.users.map(u => u.userName)),
+      groups: Token.asList(this.groups.map(g => g.groupName)),
     });
 
     this.policyRef = {

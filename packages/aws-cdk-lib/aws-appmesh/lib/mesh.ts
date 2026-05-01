@@ -9,7 +9,8 @@ import { VirtualNode } from './virtual-node';
 import type { VirtualRouterBaseProps } from './virtual-router';
 import { VirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Token } from '../../core';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -213,7 +214,8 @@ export class Mesh extends MeshBase {
 
   constructor(scope: Construct, id: string, props: MeshProps = {}) {
     super(scope, id, {
-      physicalName: props.meshName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      physicalName: props.meshName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this))),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

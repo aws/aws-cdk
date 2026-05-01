@@ -5,7 +5,10 @@ import * as iam from '../../aws-iam';
 import type * as route53 from '../../aws-route53';
 import * as cdk from '../../core';
 import { Token } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CertificateRequestCertificateRequestFunction } from '../../custom-resource-handlers/dist/aws-certificatemanager/certificate-request-provider.generated';
@@ -71,6 +74,7 @@ export interface DnsValidatedCertificateProps extends CertificateProps {
  * @deprecated use {@link Certificate} instead
  */
 @propertyInjectable
+@noBoxStackTraces
 export class DnsValidatedCertificate extends CertificateBase implements ICertificate, cdk.ITaggable {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.DnsValidatedCertificate';
@@ -83,10 +87,10 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
 
   public readonly tags: cdk.TagManager;
   protected readonly region?: string;
-  private normalizedZoneName: string;
-  private hostedZoneId: string;
-  private domainName: string;
-  private _removalPolicy?: cdk.RemovalPolicy;
+  private readonly normalizedZoneName: string;
+  private readonly hostedZoneId: string;
+  private readonly domainName: string;
+  private readonly removalPolicy: IBox<cdk.RemovalPolicy | undefined> = Box.fromValue(undefined);
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateProps) {
     super(scope, id);
@@ -157,7 +161,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         HostedZoneId: this.hostedZoneId,
         Region: props.region,
         Route53Endpoint: props.route53Endpoint,
-        RemovalPolicy: cdk.Lazy.any({ produce: () => this._removalPolicy }),
+        RemovalPolicy: this.removalPolicy,
         // Custom resources properties are always converted to strings; might as well be explicit here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
         Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
@@ -171,7 +175,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
 
   @MethodMetadata()
   public applyRemovalPolicy(policy: cdk.RemovalPolicy): void {
-    this._removalPolicy = policy;
+    this.removalPolicy.set(policy);
   }
 
   private validateDnsValidatedCertificate(): string[] {
