@@ -31,6 +31,7 @@
     "stripDeprecated": true,
     "compressAssembly": true,
     "pre": [
+      "ts-node ./scripts/strip-nested-bundled-deps.ts",
       "ts-node region-info/build-tools/generate-static-data.ts",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzf fixtures.tar.gz)",

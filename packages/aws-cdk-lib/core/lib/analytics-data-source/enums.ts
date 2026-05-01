@@ -109,6 +109,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ON_DEPLOYMENT_ROLLED_BACK",
     "AT_DEPLOYMENT_TICK"
   ],
+  "ActionScope": [
+    "all",
+    "specific"
+  ],
   "AdMarkerDash": [
     "BINARY",
     "XML"
@@ -1706,7 +1710,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "GatewayAuthorizerType": [
     "CUSTOM_JWT",
-    "AWS_IAM"
+    "AWS_IAM",
+    "NONE"
   ],
   "GatewayExceptionLevel": [
     "DEBUG"
@@ -3306,6 +3311,14 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "ALLOW",
     "REQUIRE"
   ],
+  "PolicyEffect": [
+    "permit",
+    "forbid"
+  ],
+  "PolicyValidationReportStatus": [
+    "success",
+    "failure"
+  ],
   "PolicyValidationReportStatusBeta1": [
     "success",
     "failure"
@@ -3360,6 +3373,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "PriceClass_100",
     "PriceClass_200",
     "PriceClass_All"
+  ],
+  "PrincipalScope": [
+    "all",
+    "specific"
   ],
   "PriorityType": [
     "LATENCY",
@@ -3590,6 +3607,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "resume-cluster",
     "failover-primary-compute"
   ],
+  "ResourceScope": [
+    "all",
+    "type",
+    "specific"
+  ],
   "ResourceToReplicateTags": [
     "lambda-function"
   ],
@@ -3788,6 +3810,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "AES256",
     "aws:kms",
     "aws:kms:dsse"
+  ],
+  "ServiceConnectAccessLogFormat": [
+    "TEXT",
+    "JSON"
   ],
   "ServiceIntegrationPattern": [
     "FIRE_AND_FORGET",
