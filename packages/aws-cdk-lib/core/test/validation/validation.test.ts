@@ -5,7 +5,6 @@ import { Construct } from 'constructs';
 import { table } from 'table';
 import * as core from '../../lib';
 import * as cxapi from '../../../cx-api';
-import type { PolicyValidationPluginReport, PolicyViolation } from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
 beforeEach(() => {
@@ -980,8 +979,10 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
       expect(output).toContain('my-lib:OrphanWarning');
-      // Without a CfnResource, resourceLogicalId falls back to construct path
-      expect(output).toContain('Resource ID: MyStack/Orphan');
+      // Construct path is provided directly
+      expect(output).toContain('Construct Path: MyStack/Orphan');
+      // Resource ID is N/A for annotation-sourced violations
+      expect(output).toContain('Resource ID: N/A');
       // templatePath should still resolve via Stack.of()
       expect(output).toContain('Template Path:');
       expect(output).toContain('MyStack.template.json');
@@ -1225,12 +1226,12 @@ Policy Validation Report Summary
 class FakePlugin implements core.IPolicyValidationPlugin {
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolation[],
+    private readonly violations: core.PolicyViolation[],
     public readonly version?: string,
     public readonly ruleIds?: string []) {
   }
 
-  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
+  validate(_context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
@@ -1242,7 +1243,7 @@ class FakePlugin implements core.IPolicyValidationPlugin {
 class RoguePlugin implements core.IPolicyValidationPlugin {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IPolicyValidationContext): PolicyValidationPluginReport {
+  validate(context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
@@ -1255,7 +1256,7 @@ class RoguePlugin implements core.IPolicyValidationPlugin {
 class BrokenPlugin implements core.IPolicyValidationPlugin {
   public readonly name = 'broken-plugin';
 
-  validate(_context: core.IPolicyValidationContext): PolicyValidationPluginReport {
+  validate(_context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
     throw new Error('Something went wrong');
   }
 }
