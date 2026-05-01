@@ -303,7 +303,34 @@ other.
 If the resources are in different regions or different accounts, it will
 synthesize templates AWS CloudFormation Outputs in the producer stack
 (without an `Export` attribute), and a `Fn::GetStackOutput` in the consuming
-stack.
+stack:
+
+```ts
+const stack1 = new Stack(app, 'Stack1', {
+  env: {
+    region: 'us-east-1',
+  },
+  crossRegionReferences: true,
+});
+const cert = new acm.Certificate(stack1, 'Cert', {
+  domainName: '*.example.com',
+  validation: acm.CertificateValidation.fromDns(route53.PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'Z0329774B51CGXTDQV3X')),
+});
+
+const stack2 = new Stack(app, 'Stack2', {
+  env: {
+    region: 'us-east-2',
+  },
+  crossRegionReferences: true,
+});
+new cloudfront.Distribution(stack2, 'Distribution', {
+  defaultBehavior: {
+    origin: new origins.HttpOrigin('example.com'),
+  },
+  domainNames: ['dev.example.com'],
+  certificate: cert,
+});
+```
 
 ### Removing automatic cross-stack references
 
