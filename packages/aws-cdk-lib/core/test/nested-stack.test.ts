@@ -4,10 +4,8 @@ import { readFileSync } from 'fs-extra';
 import { toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import type { CfnStack } from '../lib';
-import {
-  Stack, NestedStack, Resource, CfnResource, App, CfnOutput,
-} from '../lib';
-import { memoizedGetter } from '../lib/helpers-internal/memoize';
+import { App, CfnResource, NestedStack, Resource, Stack } from '../lib';
+import { memoizedGetter } from '../lib/helpers-internal';
 
 describe('nested-stack', () => {
   test('a nested-stack has a defaultChild', () => {
@@ -132,37 +130,29 @@ describe('nested-stack', () => {
         Resource2: {
           Properties: {
             Prop1: {
-              Ref: 'referencetoStack2ExportsReader861D07DCcdkexportsStack2Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'bermuda-triangle-1337',
+                OutputName: 'PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF',
+              },
             },
           },
           Type: 'My::Resource',
         },
       },
     });
-    const template2 = assembly.getStackByName(stack2.stackName).template;
-    expect(template2?.Resources).toMatchObject({
-      ExportsReader8B249524: {
-        DeletionPolicy: 'Delete',
-        Properties: {
-          ReaderProps: {
-            imports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E}}',
-            },
-            region: 'bermuda-triangle-42',
-            prefix: 'Stack2',
-          },
-          ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-              'Arn',
-            ],
-          },
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    expect(template1?.Outputs).toEqual({
+      PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF: {
+        Value: {
+          'Fn::GetAtt': [
+            'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
+            'Outputs.Stack1Nested1Resource178AEB067Ref',
+          ],
         },
-        Type: 'Custom::CrossRegionExportReader',
-        UpdateReplacePolicy: 'Delete',
       },
     });
-    const template1 = assembly.getStackByName(stack1.stackName).template;
+
     const nestedTemplate1 = JSON.parse(readFileSync(path.join(assembly.directory, `${nestedStack.artifactId}.nested.template.json`), 'utf8'));
     expect(nestedTemplate1?.Outputs).toEqual({
       Stack1Nested1Resource178AEB067Ref: {
@@ -171,61 +161,6 @@ describe('nested-stack', () => {
         },
       },
     });
-
-    expect(template1?.Resources).toMatchObject({
-      ExportsWriterbermudatriangle42E59594276156AC73: {
-        DeletionPolicy: 'Delete',
-        Properties: {
-          WriterProps: {
-            exports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': {
-                'Fn::GetAtt': [
-                  'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
-                  'Outputs.Stack1Nested1Resource178AEB067Ref',
-                ],
-              },
-            },
-            region: 'bermuda-triangle-42',
-          },
-          ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-              'Arn',
-            ],
-          },
-        },
-        Type: 'Custom::CrossRegionExportWriter',
-        UpdateReplacePolicy: 'Delete',
-      },
-    });
-  });
-
-  test('cannot create cross region references when crossRegionReferences=false', () => {
-    // GIVEN
-    const app = new App();
-    const stack1 = new Stack(app, 'Stack1', {
-      env: {
-        account: '123456789012',
-        region: 'bermuda-triangle-1337',
-      },
-    });
-    const stack2 = new Stack(app, 'Stack2', {
-      env: {
-        account: '123456789012',
-        region: 'bermuda-triangle-42',
-      },
-    });
-    const nestedStack = new NestedStack(stack1, 'MyNestedStack');
-
-    // WHEN
-    const myResource = new MyResource(nestedStack, 'MyResource');
-    new CfnOutput(stack2, 'Output', {
-      value: myResource.name,
-    });
-
-    // THEN
-    expect(() => toCloudFormation(stack2)).toThrow(
-      /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/);
   });
 
   test('requires bundling when root stack has exact match in BUNDLING_STACKS', () => {

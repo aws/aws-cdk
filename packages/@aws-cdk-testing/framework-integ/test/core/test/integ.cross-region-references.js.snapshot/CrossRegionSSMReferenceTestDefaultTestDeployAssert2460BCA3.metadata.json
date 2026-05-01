@@ -1,0 +1,62 @@
+{
+  "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cross-region-references.js:35:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CrossRegionSSMReferenceTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
