@@ -24,8 +24,6 @@ import { iterateDfsPreorder } from './construct-iteration';
 import { CfnResource } from '../cfn-resource';
 import { lit } from './literal-string';
 import type {
-  IPolicyRef,
-  IRoleRef,
   PolicyReference,
   RoleReference,
 } from '../../../interfaces/generated/aws-iam-interfaces.generated';
@@ -271,51 +269,41 @@ interface GetStackOutputRoleProps {
   readonly producerAccount?: string;
 }
 
-class GetStackOutputRole extends CfnResource implements IRoleRef {
-  private readonly roleName: string;
-  private readonly roleArn: string;
-
-  constructor(scope: Construct, id: string, props: GetStackOutputRoleProps) {
-    super(scope, id, {
-      type: 'AWS::IAM::Role',
-      properties: {
-        AssumeRolePolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Principal: {
-                AWS: props.consumerRoleArn,
-              },
-              Action: [
-                'sts:AssumeRole',
-              ],
+function createGetStackOutputRole(scope: Construct, id: string, props: GetStackOutputRoleProps): { resource: CfnResource; roleRef: RoleReference } {
+  const resource = new CfnResource(scope, id, {
+    type: 'AWS::IAM::Role',
+    properties: {
+      AssumeRolePolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Principal: {
+              AWS: props.consumerRoleArn,
             },
-          ],
-        },
+            Action: [
+              'sts:AssumeRole',
+            ],
+          },
+        ],
       },
-    });
-    this.roleName = Names.uniqueResourceName(this, {
-      maxLength: 64,
-    });
-    this.addPropertyOverride('RoleName', this.roleName);
+    },
+  });
+  const roleName = Names.uniqueResourceName(resource, {
+    maxLength: 64,
+  });
+  resource.addPropertyOverride('RoleName', roleName);
 
-    this.roleArn = Stack.of(scope).formatArn({
-      service: 'iam',
-      resource: 'role',
-      resourceName: this.roleName,
-      account: props.producerAccount,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-      region: '',
-    });
-  }
+  const roleArn = Stack.of(scope).formatArn({
+    service: 'iam',
+    resource: 'role',
+    resourceName: roleName,
+    account: props.producerAccount,
+    arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    region: '',
+  });
 
-  public get roleRef(): RoleReference {
-    return {
-      roleArn: this.roleArn,
-      roleName: this.roleName,
-    };
-  }
+  return { resource, roleRef: { roleArn, roleName } };
 }
 
 interface GetStackOutputPolicyProps {
@@ -323,37 +311,34 @@ interface GetStackOutputPolicyProps {
   readonly producerStackArn?: string;
 }
 
-class GetStackOutputPolicy extends CfnResource implements IPolicyRef {
-  private readonly policyName: string;
-  constructor(scope: Construct, id: string, props: GetStackOutputPolicyProps) {
-    super(scope, id, {
-      type: 'AWS::IAM::Policy',
-      properties: {
-        Roles: [Fn.ref(props.role.logicalId)],
-        PolicyDocument: {
-          Version: '2012-10-17',
-          Statement: [
-            {
-              Effect: 'Allow',
-              Action: 'cloudformation:DescribeStacks',
-              Resource: props.producerStackArn,
-            },
-          ],
-        },
+function createGetStackOutputPolicy(
+  scope: Construct,
+  id: string,
+  props: GetStackOutputPolicyProps,
+): { resource: CfnResource; policyRef: PolicyReference } {
+  const resource = new CfnResource(scope, id, {
+    type: 'AWS::IAM::Policy',
+    properties: {
+      Roles: [Fn.ref(props.role.logicalId)],
+      PolicyDocument: {
+        Version: '2012-10-17',
+        Statement: [
+          {
+            Effect: 'Allow',
+            Action: 'cloudformation:DescribeStacks',
+            Resource: props.producerStackArn,
+          },
+        ],
       },
-    });
+    },
+  });
 
-    this.policyName = Names.uniqueResourceName(this, {
-      maxLength: 128,
-    });
-    this.addPropertyOverride('PolicyName', this.policyName);
-  }
+  const policyName = Names.uniqueResourceName(resource, {
+    maxLength: 128,
+  });
+  resource.addPropertyOverride('PolicyName', policyName);
 
-  public get policyRef(): PolicyReference {
-    return {
-      policyId: this.policyName,
-    };
-  }
+  return { resource, policyRef: { policyId: policyName } };
 }
 
 function createGetStackOutput(reference: Reference, options: GetStackOutputOptions = {}): Intrinsic {
@@ -385,19 +370,20 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   let roleArn: string | undefined = undefined;
   if (options.consumerRoleArn) {
-    let role = scope.node.tryFindChild(roleId) as GetStackOutputRole;
-    if (role == null) {
-      role = new GetStackOutputRole(scope, roleId, {
+    let roleResource = scope.node.tryFindChild(roleId) as CfnResource;
+    if (roleResource == null) {
+      const { resource, roleRef } = createGetStackOutputRole(scope, roleId, {
         consumerRoleArn: options.consumerRoleArn,
         producerAccount: options.producerAccount,
       });
-      roleArn = role.roleRef.roleArn;
+      roleResource = resource;
+      roleArn = roleRef.roleArn;
     }
 
-    let policy = scope.node.tryFindChild(policyId) as GetStackOutputPolicy;
+    let policy = scope.node.tryFindChild(policyId) as CfnResource;
     if (policy == null) {
-      new GetStackOutputPolicy(scope, policyId, {
-        role,
+      createGetStackOutputPolicy(scope, policyId, {
+        role: roleResource,
         producerStackArn: options.producerStackArn,
       });
     }
