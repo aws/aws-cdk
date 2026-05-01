@@ -40,6 +40,8 @@ const workloadIdentity = new agentcore.WorkloadIdentity(stack, 'WorkloadIdentity
 
 // ===== Shared inline helpers =====
 // Embedded into every Lambda to avoid an external layer / asset.
+// - nameFromArn: extracts the resource name (last segment) from an ARN
+// - isAccessDenied: detects IAM permission errors in SDK responses
 
 const INLINE_HELPERS = `
   function nameFromArn(arn) {
@@ -58,7 +60,19 @@ const INLINE_HELPERS = `
   }
 `;
 
+// ===== Handler pattern =====
+// Each Lambda follows this structure:
+//   1. Import SDK client(s) and build probe commands
+//   2. Execute each probe command against the API
+//   3. Classify errors: AccessDenied → failure (missing permission), other → authorized but non-access error
+//   4. Return { results, failures, passed } — the integ assertion checks `passed: true`
+//
+// The read handler treats ALL errors as failures (any error means the grant is broken).
+// The admin and fullAccess handlers distinguish AccessDenied from service errors
+// (e.g., UpdateWorkloadIdentity may return a validation error even when IAM allows the call).
+
 // ===== 1. grantRead Lambda =====
+// Verifies read-only access: Get calls for each identity resource type.
 
 const readFn = new lambda.Function(stack, 'GrantReadFn', {
   functionName: 'integ-identity-grants-read',
@@ -108,6 +122,8 @@ oauthProvider.grantRead(readFn);
 workloadIdentity.grantRead(readFn);
 
 // ===== 2. grantAdmin Lambda =====
+// Verifies admin (write) access: Update calls for each identity resource type.
+// Non-AccessDenied errors are tolerated (e.g., validation errors from no-op updates).
 
 const adminFn = new lambda.Function(stack, 'GrantAdminFn', {
   functionName: 'integ-identity-grants-admin',
@@ -184,8 +200,11 @@ oauthProvider.grantAdmin(adminFn);
 workloadIdentity.grantAdmin(adminFn);
 
 // ===== 3. grantFullAccess Lambda =====
-// Tests read, admin, and use (data-plane) permissions in one function.
-// Mirrors the pattern from the proven local integration test.
+// Verifies combined read + admin + data-plane (use) access in a single function:
+//   - Mints a workload access token via the runtime SDK (data-plane)
+//   - Reads an API key provider and workload identity (control-plane)
+//   - Updates an OAuth provider (admin)
+//   - Retrieves a resource API key using the minted token (data-plane)
 
 const fullAccessFn = new lambda.Function(stack, 'GrantFullAccessFn', {
   functionName: 'integ-identity-grants-full-access',
@@ -290,8 +309,10 @@ const integTest = new integ.IntegTest(app, 'BedrockAgentCoreIdentityGrants', {
 });
 
 // Helper: invoke a Lambda and assert it reports no access-denied failures.
+// Each Lambda returns { passed: boolean, results: [...], failures: [...] }.
 // Lambda invoke returns Payload as a serialized JSON string; Match.serializedJson
 // instructs the assertion handler to parse it before matching.
+// Retries up to 10 min with 30s intervals to allow IAM policy propagation.
 function assertLambdaPasses(fn: lambda.Function) {
   const invoke = integTest.assertions.awsApiCall('Lambda', 'invoke', {
     FunctionName: fn.functionName,
