@@ -23,6 +23,12 @@ import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
 import { CfnResource } from '../cfn-resource';
 import { lit } from './literal-string';
+import type {
+  IPolicyRef,
+  IRoleRef,
+  PolicyReference,
+  RoleReference,
+} from '../../../interfaces/generated/aws-iam-interfaces.generated';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -70,7 +76,9 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     if (consumer.synthesizer.cloudFormationExecutionRole == null) {
       throw new UnscopedValidationError(lit`NoCfnExecutionRoleForCrossAccountRefs`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-        'Could not find a CloudFormation execution role for the consumer stack. Use a different stack synthesizer, such as DefaultStackSynthesizer.',
+        'Could not find a CloudFormation execution role for the consumer stack. Use a stack synthesizer that provides a ' +
+        'CloudFormation execution role, such as DefaultStackSynthesizer (that uses the role from the bootstrap stack), ' +
+        'or one that you can customize, such as BootstraplessSynthesizer.',
       );
     }
 
@@ -258,6 +266,96 @@ interface GetStackOutputOptions {
   producerStackArn?: string;
 }
 
+interface GetStackOutputRoleProps {
+  readonly consumerRoleArn: string;
+  readonly producerAccount?: string;
+}
+
+class GetStackOutputRole extends CfnResource implements IRoleRef {
+  private readonly roleName: string;
+  private readonly roleArn: string;
+
+  constructor(scope: Construct, id: string, props: GetStackOutputRoleProps) {
+    super(scope, id, {
+      type: 'AWS::IAM::Role',
+      properties: {
+        AssumeRolePolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Principal: {
+                AWS: props.consumerRoleArn,
+              },
+              Action: [
+                'sts:AssumeRole',
+              ],
+            },
+          ],
+        },
+      },
+    });
+    this.roleName = Names.uniqueResourceName(this, {
+      maxLength: 64,
+    });
+    this.addPropertyOverride('RoleName', this.roleName);
+
+    this.roleArn = Stack.of(scope).formatArn({
+      service: 'iam',
+      resource: 'role',
+      resourceName: this.roleName,
+      account: props.producerAccount,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+      region: '',
+    });
+  }
+
+  public get roleRef(): RoleReference {
+    return {
+      roleArn: this.roleArn,
+      roleName: this.roleName,
+    };
+  }
+}
+
+interface GetStackOutputPolicyProps {
+  readonly role: CfnResource;
+  readonly producerStackArn?: string;
+}
+
+class GetStackOutputPolicy extends CfnResource implements IPolicyRef {
+  private readonly policyName: string;
+  constructor(scope: Construct, id: string, props: GetStackOutputPolicyProps) {
+    super(scope, id, {
+      type: 'AWS::IAM::Policy',
+      properties: {
+        Roles: [Fn.ref(props.role.logicalId)],
+        PolicyDocument: {
+          Version: '2012-10-17',
+          Statement: [
+            {
+              Effect: 'Allow',
+              Action: 'cloudformation:DescribeStacks',
+              Resource: props.producerStackArn,
+            },
+          ],
+        },
+      },
+    });
+
+    this.policyName = Names.uniqueResourceName(this, {
+      maxLength: 128,
+    });
+    this.addPropertyOverride('PolicyName', this.policyName);
+  }
+
+  public get policyRef(): PolicyReference {
+    return {
+      policyId: this.policyName,
+    };
+  }
+}
+
 function createGetStackOutput(reference: Reference, options: GetStackOutputOptions = {}): Intrinsic {
   const exportingStack = Stack.of(reference.target);
 
@@ -287,66 +385,22 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   let roleArn: string | undefined = undefined;
   if (options.consumerRoleArn) {
-    let role = scope.node.tryFindChild(roleId) as CfnResource;
+    let role = scope.node.tryFindChild(roleId) as GetStackOutputRole;
     if (role == null) {
-      role = new CfnResource(scope, roleId, {
-        type: 'AWS::IAM::Role',
-        properties: {
-          AssumeRolePolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Principal: {
-                  AWS: options.consumerRoleArn,
-                },
-                Action: [
-                  'sts:AssumeRole',
-                ],
-              },
-            ],
-          },
-        },
+      role = new GetStackOutputRole(scope, roleId, {
+        consumerRoleArn: options.consumerRoleArn,
+        producerAccount: options.producerAccount,
       });
-      const roleName = Names.uniqueResourceName(role, {
-        maxLength: 64,
-      });
-      role.addPropertyOverride('RoleName', roleName);
+      roleArn = role.roleRef.roleArn;
     }
 
-    roleArn = exportingStack.formatArn({
-      service: 'iam',
-      resource: 'role',
-      resourceName: Names.uniqueResourceName(role, {
-        maxLength: 64,
-      }),
-      account: options.producerAccount,
-      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
-      region: '',
-    });
-
-    let policy = scope.node.tryFindChild(policyId) as CfnResource;
+    let policy = scope.node.tryFindChild(policyId) as GetStackOutputPolicy;
     if (policy == null) {
-      policy = new CfnResource(scope, policyId, {
-        type: 'AWS::IAM::Policy',
-        properties: {
-          Roles: [Fn.ref(role.logicalId)],
-          PolicyDocument: {
-            Version: '2012-10-17',
-            Statement: [
-              {
-                Effect: 'Allow',
-                Action: 'cloudformation:DescribeStacks',
-                Resource: options.producerStackArn,
-              },
-            ],
-          },
-        },
+      new GetStackOutputPolicy(scope, policyId, {
+        role,
+        producerStackArn: options.producerStackArn,
       });
     }
-    policy.addPropertyOverride('PolicyName', Names.uniqueResourceName(policy, {
-      maxLength: 128,
-    }));
   }
 
   return Tokenization.reverseCompleteString(
