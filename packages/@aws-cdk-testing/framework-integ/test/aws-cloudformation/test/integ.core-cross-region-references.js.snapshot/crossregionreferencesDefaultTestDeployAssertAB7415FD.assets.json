@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "b9a9dc34abb3bca713aef0427f2fbf4a6c947c4180480d46fb889a92c56f8bca": {
+    "82674c26c818de0f4097d110de7d366fa131fee72f460637bc6511f96f85b1ca": {
       "displayName": "crossregionreferencesDefaultTestDeployAssertAB7415FD Template",
       "source": {
         "path": "crossregionreferencesDefaultTestDeployAssertAB7415FD.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d4adac64": {
+        "current_account-current_region-ff1c2ad9": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "b9a9dc34abb3bca713aef0427f2fbf4a6c947c4180480d46fb889a92c56f8bca.json",
+          "objectKey": "82674c26c818de0f4097d110de7d366fa131fee72f460637bc6511f96f85b1ca.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

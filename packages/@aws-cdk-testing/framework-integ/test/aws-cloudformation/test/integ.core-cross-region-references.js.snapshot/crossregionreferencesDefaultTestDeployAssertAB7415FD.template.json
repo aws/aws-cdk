@@ -15,7 +15,7 @@
      "StackName": "\"cross-region-producer\""
     },
     "flattenResponse": "false",
-    "salt": "1774025008811"
+    "salt": "1777648462844"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -118,7 +118,7 @@
      "StackName": "\"cross-region-producer\""
     },
     "flattenResponse": "false",
-    "salt": "1774025008812"
+    "salt": "1777648462845"
    },
    "DependsOn": [
     "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
