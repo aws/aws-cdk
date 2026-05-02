@@ -1,11 +1,23 @@
-import type { Construct } from 'constructs';
-import type * as ec2 from '../../../aws-ec2';
-import * as iam from '../../../aws-iam';
-import * as sfn from '../../../aws-stepfunctions';
-import type { Size } from '../../../core';
-import { Stack, ValidationError, withResolved } from '../../../core';
-import { lit } from '../../../core/lib/private/literal-string';
-import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
+import type { Construct } from "constructs";
+import type * as ec2 from "../../../aws-ec2";
+import * as iam from "../../../aws-iam";
+import * as sfn from "../../../aws-stepfunctions";
+import type { Size } from "../../../core";
+import {
+  ArnFormat,
+  FeatureFlags,
+  Fn,
+  Stack,
+  ValidationError,
+  withResolved,
+} from "../../../core";
+import { lit } from "../../../core/lib/private/literal-string";
+import * as cxapi from "../../../cx-api";
+import {
+  integrationResourceArn,
+  isJsonPathOrJsonataExpression,
+  validatePatternSupported,
+} from "../private/task-utils";
 
 /**
  * The overrides that should be sent to a container.
@@ -157,17 +169,20 @@ interface BatchSubmitJobOptions {
 /**
  * Properties for BatchSubmitJob using JSONPath
  */
-export interface BatchSubmitJobJsonPathProps extends sfn.TaskStateJsonPathBaseProps, BatchSubmitJobOptions {}
+export interface BatchSubmitJobJsonPathProps
+  extends sfn.TaskStateJsonPathBaseProps, BatchSubmitJobOptions {}
 
 /**
  * Properties for BatchSubmitJob using JSONata
  */
-export interface BatchSubmitJobJsonataProps extends sfn.TaskStateJsonataBaseProps, BatchSubmitJobOptions {}
+export interface BatchSubmitJobJsonataProps
+  extends sfn.TaskStateJsonataBaseProps, BatchSubmitJobOptions {}
 
 /**
  * Properties for BatchSubmitJob
  */
-export interface BatchSubmitJobProps extends sfn.TaskStateBaseProps, BatchSubmitJobOptions {}
+export interface BatchSubmitJobProps
+  extends sfn.TaskStateBaseProps, BatchSubmitJobOptions {}
 
 /**
  * Task to submits an AWS Batch job from a job definition.
@@ -180,7 +195,11 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html
    */
-  public static jsonPath(scope: Construct, id: string, props: BatchSubmitJobJsonPathProps): BatchSubmitJob {
+  public static jsonPath(
+    scope: Construct,
+    id: string,
+    props: BatchSubmitJobJsonPathProps,
+  ): BatchSubmitJob {
     return new BatchSubmitJob(scope, id, props);
   }
 
@@ -189,62 +208,96 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
    *
    * @see https://docs.aws.amazon.com/step-functions/latest/dg/connect-batch.html
    */
-  public static jsonata(scope: Construct, id: string, props: BatchSubmitJobJsonataProps): BatchSubmitJob {
-    return new BatchSubmitJob(scope, id, { ...props, queryLanguage: sfn.QueryLanguage.JSONATA });
+  public static jsonata(
+    scope: Construct,
+    id: string,
+    props: BatchSubmitJobJsonataProps,
+  ): BatchSubmitJob {
+    return new BatchSubmitJob(scope, id, {
+      ...props,
+      queryLanguage: sfn.QueryLanguage.JSONATA,
+    });
   }
 
-  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] = [
-    sfn.IntegrationPattern.REQUEST_RESPONSE,
-    sfn.IntegrationPattern.RUN_JOB,
-  ];
+  private static readonly SUPPORTED_INTEGRATION_PATTERNS: sfn.IntegrationPattern[] =
+    [sfn.IntegrationPattern.REQUEST_RESPONSE, sfn.IntegrationPattern.RUN_JOB];
 
   protected readonly taskMetrics?: sfn.TaskMetricsConfig;
   protected readonly taskPolicies?: iam.PolicyStatement[];
 
   private readonly integrationPattern: sfn.IntegrationPattern;
 
-  constructor(scope: Construct, id: string, private readonly props: BatchSubmitJobProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    private readonly props: BatchSubmitJobProps,
+  ) {
     super(scope, id, props);
 
-    this.integrationPattern = props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
-    validatePatternSupported(this.integrationPattern, BatchSubmitJob.SUPPORTED_INTEGRATION_PATTERNS);
+    this.integrationPattern =
+      props.integrationPattern ?? sfn.IntegrationPattern.RUN_JOB;
+    validatePatternSupported(
+      this.integrationPattern,
+      BatchSubmitJob.SUPPORTED_INTEGRATION_PATTERNS,
+    );
 
     // validate arraySize limits
     withResolved(props.arraySize, (arraySize) => {
       if (arraySize !== undefined && (arraySize < 2 || arraySize > 10_000)) {
-        throw new ValidationError(lit`MustBeArraySizeBetween`, `arraySize must be between 2 and 10,000. Received ${arraySize}.`, this);
+        throw new ValidationError(
+          lit`MustBeArraySizeBetween`,
+          `arraySize must be between 2 and 10,000. Received ${arraySize}.`,
+          this,
+        );
       }
     });
 
     // validate dependency size
     if (props.dependsOn && props.dependsOn.length > 20) {
-      throw new ValidationError(lit`MustBeDependenciesLess`, `dependencies must be 20 or less. Received ${props.dependsOn.length}.`, this);
+      throw new ValidationError(
+        lit`MustBeDependenciesLess`,
+        `dependencies must be 20 or less. Received ${props.dependsOn.length}.`,
+        this,
+      );
     }
 
     // validate attempts
     withResolved(props.attempts, (attempts) => {
       if (attempts !== undefined && (attempts < 1 || attempts > 10)) {
-        throw new ValidationError(lit`MustBeAttemptsBetween`, `attempts must be between 1 and 10. Received ${attempts}.`, this);
+        throw new ValidationError(
+          lit`MustBeAttemptsBetween`,
+          `attempts must be between 1 and 10. Received ${attempts}.`,
+          this,
+        );
       }
     });
 
     // validate timeout
-    (props.timeout !== undefined || props.taskTimeout !== undefined) && withResolved(
-      props.timeout?.toSeconds(),
-      props.taskTimeout?.seconds, (timeout, taskTimeout) => {
-        const definedTimeout = timeout ?? taskTimeout;
-        if (definedTimeout && definedTimeout < 60) {
-          throw new ValidationError(lit`MustBeAttemptDurationGreater`, `attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`, this);
-        }
-      });
+    (props.timeout !== undefined || props.taskTimeout !== undefined) &&
+      withResolved(
+        props.timeout?.toSeconds(),
+        props.taskTimeout?.seconds,
+        (timeout, taskTimeout) => {
+          const definedTimeout = timeout ?? taskTimeout;
+          if (definedTimeout && definedTimeout < 60) {
+            throw new ValidationError(
+              lit`MustBeAttemptDurationGreater`,
+              `attempt duration must be greater than 60 seconds. Received ${definedTimeout} seconds.`,
+              this,
+            );
+          }
+        },
+      );
 
     // This is required since environment variables must not start with AWS_BATCH;
     // this naming convention is reserved for variables that are set by the AWS Batch service.
     if (props.containerOverrides?.environment) {
-      Object.keys(props.containerOverrides.environment).forEach(key => {
+      Object.keys(props.containerOverrides.environment).forEach((key) => {
         if (key.match(/^AWS_BATCH/)) {
-          throw new ValidationError(lit`InvalidEnvironmentVariableName`,
-            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`, this,
+          throw new ValidationError(
+            lit`InvalidEnvironmentVariableName`,
+            `Invalid environment variable name: ${key}. Environment variable names starting with 'AWS_BATCH' are reserved.`,
+            this,
           );
         }
       });
@@ -259,7 +312,10 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
    * @internal
    */
   protected _renderTask(topLevelQueryLanguage?: sfn.QueryLanguage): any {
-    const queryLanguage = sfn._getActualQueryLanguage(topLevelQueryLanguage, this.props.queryLanguage);
+    const queryLanguage = sfn._getActualQueryLanguage(
+      topLevelQueryLanguage,
+      this.props.queryLanguage,
+    );
 
     let timeout: number | undefined = undefined;
     if (this.props.timeout) {
@@ -271,71 +327,77 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     }
 
     return {
-      Resource: integrationResourceArn('batch', 'submitJob', this.integrationPattern),
-      ...this._renderParametersOrArguments({
-        JobDefinition: this.props.jobDefinitionArn,
-        JobName: this.props.jobName,
-        JobQueue: this.props.jobQueueArn,
-        Parameters: this.props.payload?.value,
-        ArrayProperties:
-          this.props.arraySize !== undefined
-            ? { Size: this.props.arraySize }
+      Resource: integrationResourceArn(
+        "batch",
+        "submitJob",
+        this.integrationPattern,
+      ),
+      ...this._renderParametersOrArguments(
+        {
+          JobDefinition: this.props.jobDefinitionArn,
+          JobName: this.props.jobName,
+          JobQueue: this.props.jobQueueArn,
+          Parameters: this.props.payload?.value,
+          ArrayProperties:
+            this.props.arraySize !== undefined
+              ? { Size: this.props.arraySize }
+              : undefined,
+
+          ContainerOverrides: this.props.containerOverrides
+            ? this.configureContainerOverrides(this.props.containerOverrides)
             : undefined,
 
-        ContainerOverrides: this.props.containerOverrides
-          ? this.configureContainerOverrides(this.props.containerOverrides)
-          : undefined,
-
-        DependsOn: this.props.dependsOn
-          ? this.props.dependsOn.map(jobDependency => ({
-            JobId: jobDependency.jobId,
-            Type: jobDependency.type,
-          }))
-          : undefined,
-
-        RetryStrategy:
-          this.props.attempts !== undefined
-            ? { Attempts: this.props.attempts }
+          DependsOn: this.props.dependsOn
+            ? this.props.dependsOn.map((jobDependency) => ({
+                JobId: jobDependency.jobId,
+                Type: jobDependency.type,
+              }))
             : undefined,
-        Tags: this.props.tags,
-        Timeout: timeout
-          ? { AttemptDurationSeconds: timeout }
-          : undefined,
-      }, queryLanguage),
+
+          RetryStrategy:
+            this.props.attempts !== undefined
+              ? { Attempts: this.props.attempts }
+              : undefined,
+          Tags: this.props.tags,
+          Timeout: timeout ? { AttemptDurationSeconds: timeout } : undefined,
+        },
+        queryLanguage,
+      ),
       TimeoutSeconds: undefined,
       TimeoutSecondsPath: undefined,
     };
   }
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
+    const useScopedPolicy = FeatureFlags.of(this).isEnabled(
+      cxapi.STEPFUNCTIONS_TASKS_SCOPED_SUBMIT_JOB_POLICY,
+    );
+
+    const jobDefinitionResource = isJsonPathOrJsonataExpression(
+      this.props.jobDefinitionArn,
+    )
+      ? "*"
+      : Stack.of(this).formatArn({
+          service: "batch",
+          resource: "job-definition",
+          resourceName: useScopedPolicy
+            ? `${this.extractJobDefName(this.props.jobDefinitionArn)}:*`
+            : "*",
+        });
+
     return [
-      // Resource level access control for job-definition requires revision which batch does not support yet
-      // Using the alternative permissions as mentioned here:
-      // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
-        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
-          Stack.of(this).formatArn({
-            service: 'batch',
-            resource: 'job-definition',
-            resourceName: '*',
-          }),
-          this.props.jobQueueArn,
-        ],
-        actions: ['batch:SubmitJob'],
-      }),
-      new iam.PolicyStatement({
-        resources: [
-          Stack.of(this).formatArn({
-            service: 'events',
-            resource: 'rule/StepFunctionsGetEventsForBatchJobsRule',
-          }),
-        ],
-        actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
+        resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn)
+          ? ["*"]
+          : [jobDefinitionResource, this.props.jobQueueArn],
+        actions: ["batch:SubmitJob"],
       }),
     ];
   }
 
-  private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
+  private configureContainerOverrides(
+    containerOverrides: BatchContainerOverrides,
+  ) {
     let environment;
     if (containerOverrides.environment) {
       environment = Object.entries(containerOverrides.environment).map(
@@ -348,28 +410,22 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
     let resources: Array<any> = [];
     if (containerOverrides.gpuCount) {
-      resources.push(
-        {
-          Type: 'GPU',
-          Value: `${containerOverrides.gpuCount}`,
-        },
-      );
+      resources.push({
+        Type: "GPU",
+        Value: `${containerOverrides.gpuCount}`,
+      });
     }
     if (containerOverrides.memory) {
-      resources.push(
-        {
-          Type: 'MEMORY',
-          Value: `${containerOverrides.memory.toMebibytes()}`,
-        },
-      );
+      resources.push({
+        Type: "MEMORY",
+        Value: `${containerOverrides.memory.toMebibytes()}`,
+      });
     }
     if (containerOverrides.vcpus) {
-      resources.push(
-        {
-          Type: 'VCPU',
-          Value: `${containerOverrides.vcpus}`,
-        },
-      );
+      resources.push({
+        Type: "VCPU",
+        Value: `${containerOverrides.vcpus}`,
+      });
     }
 
     return {
@@ -384,15 +440,35 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
     if (tags === undefined) return;
     const tagEntries = Object.entries(tags);
     if (tagEntries.length > 50) {
-      throw new ValidationError(lit`MaximumNumberEntries`, `Maximum tag number of entries is 50. Received ${tagEntries.length}.`, this);
+      throw new ValidationError(
+        lit`MaximumNumberEntries`,
+        `Maximum tag number of entries is 50. Received ${tagEntries.length}.`,
+        this,
+      );
     }
     for (const [key, value] of tagEntries) {
       if (key.length < 1 || key.length > 128) {
-        throw new ValidationError(lit`MustBeSizeBetween`, `Tag key size must be between 1 and 128, but got ${key.length}.`, this);
+        throw new ValidationError(
+          lit`MustBeSizeBetween`,
+          `Tag key size must be between 1 and 128, but got ${key.length}.`,
+          this,
+        );
       }
       if (value.length > 256) {
-        throw new ValidationError(lit`ValueMaximumSize`, `Tag value maximum size is 256, but got ${value.length}.`, this);
+        throw new ValidationError(
+          lit`ValueMaximumSize`,
+          `Tag value maximum size is 256, but got ${value.length}.`,
+          this,
+        );
       }
     }
+  }
+
+  private extractJobDefName(jobDefinitionArn: string): string {
+    const resourceName = Stack.of(this).splitArn(
+      jobDefinitionArn,
+      ArnFormat.SLASH_RESOURCE_NAME,
+    ).resourceName!;
+    return Fn.select(0, Fn.split(":", resourceName));
   }
 }
