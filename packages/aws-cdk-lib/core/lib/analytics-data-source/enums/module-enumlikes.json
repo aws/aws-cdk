@@ -62,6 +62,24 @@
       "NODEJS_22"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.ts": {
+    "PolicyEngineMode": [
+      "LOG_ONLY",
+      "ENFORCE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-types.ts": {
+    "PolicyValidationMode": [
+      "FAIL_ON_ANY_FINDINGS",
+      "IGNORE_ALL_FINDINGS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/observability.ts": {
+    "LogType": [
+      "APPLICATION_LOGS",
+      "USAGE_LOGS"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts": {
     "ParentActionGroupSignature": [
       "USER_INPUT",
@@ -154,6 +172,7 @@
       "ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_OPUS_4_7",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_OPUS_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
@@ -762,6 +781,7 @@
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_OPUS_4_7",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
@@ -2432,6 +2452,7 @@
       "RUBY_3_2",
       "RUBY_3_3",
       "RUBY_3_4",
+      "RUBY_4_0",
       "PROVIDED",
       "PROVIDED_AL2",
       "PROVIDED_AL2023",
@@ -2606,7 +2627,8 @@
       "OPENSEARCH_2_17",
       "OPENSEARCH_2_19",
       "OPENSEARCH_3_1",
-      "OPENSEARCH_3_3"
+      "OPENSEARCH_3_3",
+      "OPENSEARCH_3_5"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2700,6 +2722,7 @@
       "VER_2_12_3",
       "VER_2_12_4",
       "VER_2_12_5",
+      "VER_2_12_6",
       "VER_3_01_0",
       "VER_3_01_1",
       "VER_3_02_0",
@@ -2731,6 +2754,7 @@
       "VER_3_10_1",
       "VER_3_10_2",
       "VER_3_10_3",
+      "VER_3_10_4",
       "VER_3_11_0",
       "VER_3_11_1",
       "VER_3_12_0"
@@ -2830,6 +2854,7 @@
       "VER_14_18",
       "VER_14_19",
       "VER_14_20",
+      "VER_14_22",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2843,6 +2868,7 @@
       "VER_15_13",
       "VER_15_14",
       "VER_15_15",
+      "VER_15_17",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2866,7 +2892,8 @@
       "VER_17_4",
       "VER_17_5",
       "VER_17_6",
-      "VER_17_7"
+      "VER_17_7",
+      "VER_17_9"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -3285,6 +3312,7 @@
       "VER_16_10",
       "VER_16_11",
       "VER_16_12",
+      "VER_16_13",
       "VER_17",
       "VER_17_1",
       "VER_17_2",
