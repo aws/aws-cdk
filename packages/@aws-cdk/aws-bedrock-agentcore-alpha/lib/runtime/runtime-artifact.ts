@@ -156,7 +156,7 @@ class EcrImage extends AgentRuntimeArtifact {
 
 class AssetImage extends AgentRuntimeArtifact {
   private asset?: assets.DockerImageAsset;
-  private bound = false;
+  private boundRoles = new Set<string>();
 
   constructor(private readonly directory: string, private readonly options: assets.DockerImageAssetOptions = {}) {
     super();
@@ -171,10 +171,11 @@ class AssetImage extends AgentRuntimeArtifact {
       });
     }
 
-    // Grant permissions (only once)
-    if (!this.bound) {
+    // Grant permissions (only once per a given runtime role)
+    const curRoleArn = runtime.role.roleArn ;
+    if (! this.boundRoles.has(curRoleArn) ) {
       this.asset.repository.grantPull(runtime.role);
-      this.bound = true;
+      this.boundRoles.add(curRoleArn);
     }
   }
 

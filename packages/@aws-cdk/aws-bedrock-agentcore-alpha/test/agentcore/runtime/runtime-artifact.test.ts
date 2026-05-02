@@ -228,6 +228,36 @@ describe('AgentRuntimeArtifact tests', () => {
     }).toThrow(/There is already a Construct with name 'AgentRuntimeArtifact'/);
   });
 
+  test('fromAsset : If TWO or more Runtimes reference same artifact , then bind ECR permissions once per each of the Runtime role ', () => {
+    const testArtifactPath = path.join(__dirname, 'testArtifact');
+    const artifact = AgentRuntimeArtifact.fromAsset(testArtifactPath);
+
+    new Runtime(stack, 'Runtime_1', { runtimeName: 'runtime_1', agentRuntimeArtifact: artifact });
+    new Runtime(stack, 'Runtime_2', { runtimeName: 'runtime_2', agentRuntimeArtifact: artifact });
+
+    const template = Template.fromStack(stack);
+
+    const ecrStatement = Match.arrayWith([
+      Match.objectLike({
+        Action: Match.arrayWith([
+          'ecr:BatchGetImage',
+        ]),
+        Effect: 'Allow',
+      }),
+    ]);
+
+    // Both policies must contain ECR pull statements — one per runtime role
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: ecrStatement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime1ExecutionRole') }],
+    });
+
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: { Statement: ecrStatement },
+      Roles: [{ Ref: Match.stringLikeRegexp('Runtime2ExecutionRole') }],
+    });
+  });
+
   describe('fromCodeAsset', () => {
     test('Should create artifact from code asset', () => {
       const artifact = AgentRuntimeArtifact.fromCodeAsset({
