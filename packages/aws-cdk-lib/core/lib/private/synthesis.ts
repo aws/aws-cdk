@@ -15,7 +15,7 @@ import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
-import type { IPolicyValidationPluginBeta1 } from '../validation';
+import type { IPolicyValidationPlugin } from '../validation';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
 import { ConstructTree } from '../validation/private/construct-tree';
@@ -104,7 +104,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (!App.isApp(root)) return;
   let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
+  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
       for (const plugin of construct.policyValidationBeta1) {
@@ -121,7 +121,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   const reports: NamedValidationPluginReport[] = [];
   if (templatePathsByPlugin.size > 0) {
     // eslint-disable-next-line no-console
-    console.log('Performing Policy Validations\n');
+    console.error('Performing Policy Validations\n');
   }
 
   if (templatePathsByPlugin.size > 0) {
@@ -173,11 +173,11 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
       }
       // eslint-disable-next-line no-console
-      console.log(message);
+      console.error(message);
       process.exitCode = 1;
     } else {
       // eslint-disable-next-line no-console
-      console.log('Policy Validation Successful!');
+      console.error('Policy Validation Successful!');
     }
   }
 }

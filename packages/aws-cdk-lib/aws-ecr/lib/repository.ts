@@ -25,8 +25,10 @@ import {
   ValidationError,
   UnscopedValidationError,
 } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AutoDeleteImagesProvider } from '../../custom-resource-handlers/dist/aws-ecr/auto-delete-images-provider.generated';
@@ -657,6 +659,7 @@ export interface RepositoryAttributes {
  * Define an ECR repository
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Repository extends RepositoryBase {
   /**
    * Uniquely identifies this class.
@@ -816,7 +819,7 @@ export class Repository extends RepositoryBase {
 
   private readonly lifecycleRules = new Array<LifecycleRule>();
   private readonly registryId?: string;
-  private policyDocument?: iam.PolicyDocument;
+  private readonly _policyDocument: IBox<iam.PolicyDocument | undefined>;
   private readonly _resource: CfnRepository;
 
   @memoizedGetter
@@ -840,13 +843,15 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this._policyDocument = Box.fromValue(undefined);
+
     Repository.validateRepositoryName(this.physicalName);
     this.validateTagMutability(props.imageTagMutability, props.imageTagMutabilityExclusionFilters);
 
     this._resource = new CfnRepository(this, 'Resource', {
       repositoryName: this.physicalName,
       // It says "Text", but they actually mean "Object".
-      repositoryPolicyText: Lazy.any({ produce: () => this.policyDocument }),
+      repositoryPolicyText: this._policyDocument,
       lifecyclePolicy: Lazy.any({ produce: () => this.renderLifecyclePolicy() }),
       imageScanningConfiguration: props.imageScanOnPush !== undefined ? { scanOnPush: props.imageScanOnPush } : undefined,
       imageTagMutability: props.imageTagMutability,
@@ -873,7 +878,7 @@ export class Repository extends RepositoryBase {
       this.enableAutoDeleteImages();
     }
 
-    this.node.addValidation({ validate: () => this.policyDocument?.validateForResourcePolicy() ?? [] });
+    this.node.addValidation({ validate: () => this._policyDocument.get()?.validateForResourcePolicy() ?? [] });
   }
 
   /**
@@ -888,11 +893,11 @@ export class Repository extends RepositoryBase {
     if (statement.resources.length) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-ecr:noResourceStatements', 'ECR resource policy does not allow resource statements.');
     }
-    if (this.policyDocument === undefined) {
-      this.policyDocument = new iam.PolicyDocument();
+    if (this._policyDocument.get() === undefined) {
+      this._policyDocument.set(new iam.PolicyDocument());
     }
-    this.policyDocument.addStatements(statement);
-    return { statementAdded: true, policyDependable: this.policyDocument };
+    this._policyDocument.get()!.addStatements(statement);
+    return { statementAdded: true, policyDependable: this._policyDocument.get()! };
   }
 
   /**

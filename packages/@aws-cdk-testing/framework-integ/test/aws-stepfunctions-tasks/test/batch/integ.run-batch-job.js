@@ -36,28 +36,26 @@ class RunBatchStack extends cdk.Stack {
                 memory: cdk.Size.mebibytes(2048),
             }),
         });
-        const submitJob = new sfn.Task(this, 'Submit Job', {
-            task: new tasks.RunBatchJob({
-                jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
-                jobName: 'MyJob',
-                jobQueueArn: batchQueue.jobQueueArn,
-                containerOverrides: {
-                    environment: { key: 'value' },
-                    memory: 256,
-                    vcpus: 1,
-                },
-                payload: {
-                    foo: sfn.JsonPath.stringAt('$.bar'),
-                },
-                attempts: 3,
-                timeout: cdk.Duration.seconds(60),
+        const submitJob = new tasks.BatchSubmitJob(this, 'Submit Job', {
+            jobDefinitionArn: batchJobDefinition.jobDefinitionArn,
+            jobName: 'MyJob',
+            jobQueueArn: batchQueue.jobQueueArn,
+            containerOverrides: {
+                environment: { key: 'value' },
+                memory: cdk.Size.mebibytes(256),
+                vcpus: 1,
+            },
+            payload: sfn.TaskInput.fromObject({
+                foo: sfn.JsonPath.stringAt('$.bar'),
             }),
+            attempts: 3,
+            taskTimeout: sfn.Timeout.duration(cdk.Duration.seconds(60)),
         });
         const definition = new sfn.Pass(this, 'Start', {
             result: sfn.Result.fromObject({ bar: 'SomeValue' }),
         }).next(submitJob);
         const stateMachine = new sfn.StateMachine(this, 'StateMachine', {
-            definition,
+            definitionBody: sfn.DefinitionBody.fromChainable(definition),
         });
         new cdk.CfnOutput(this, 'JobQueueArn', {
             value: batchQueue.jobQueueArn,
