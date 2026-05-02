@@ -282,7 +282,7 @@ Two statements are required — one scoped to the bucket (for namespace / table 
 Splitting them keeps each action on the most specific resource ARN it actually applies to:
 
 ```ts
-declare const destination: TableBucket;
+declare const destination: ITableBucket;
 declare const sourceReplicationRole: iam.IRole;
 
 // Bucket-scope: allow replication role to create namespaces and tables
@@ -356,7 +356,7 @@ table.grantRead(new iam.AccountPrincipal(accountId));
 const role = new iam.Role(stack, 'MyRole', { assumedBy: new iam.ServicePrincipal('sample') });
 table.grantWrite(role);
 
-// Grant the user read and write permissions to the table 
+// Grant the user read and write permissions to the table
 table.grantReadWrite(new iam.User(stack, 'MyUser'));
 
 // Grant an account permissions to the table
