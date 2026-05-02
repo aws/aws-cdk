@@ -278,28 +278,70 @@ new TableBucket(scope, 'SourceByoRole', {
 
 #### Cross-Account Replication
 
-For cross-account replication, the destination table bucket must additionally
-grant the replication role access via a resource policy. CDK cannot do this
+For cross-account replication, the destination account must grant the source
+account's replication role access on the destination side. CDK cannot do this
 automatically because the destination typically lives in a separate stack or
-account. Add the grant on the destination side, for example:
+account. The required grants mirror the
+[official S3 Tables replication setup](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-replication-setting-up.html#s3-tables-replication-cross-account-policy):
+
+**1. Destination table bucket resource policy.** Two statements are required —
+one scoped to the bucket (for namespace / table creation), and one scoped to
+the bucket's tables (for data writes and maintenance). Splitting them keeps
+each action on the most specific resource ARN it actually applies to:
 
 ```ts
 declare const destination: TableBucket;
 declare const sourceReplicationRole: iam.IRole;
 
+// Bucket-scope: allow replication role to create namespaces and tables
 destination.addToResourcePolicy(new iam.PolicyStatement({
+    sid: 'AllowReplicationCreate',
     actions: [
         's3tables:CreateNamespace',
         's3tables:CreateTable',
-        's3tables:GetTableData',
+    ],
+    principals: [new iam.ArnPrincipal(sourceReplicationRole.roleArn)],
+    resources: [destination.tableBucketArn],
+}));
+
+// Table-scope: allow replication role to write table data and metadata
+destination.addToResourcePolicy(new iam.PolicyStatement({
+    sid: 'AllowReplicationWrite',
+    actions: [
         's3tables:PutTableData',
+        's3tables:GetTableData',
         's3tables:UpdateTableMetadataLocation',
         's3tables:PutTableMaintenanceConfiguration',
     ],
     principals: [new iam.ArnPrincipal(sourceReplicationRole.roleArn)],
-    resources: [destination.tableBucketArn, `${destination.tableBucketArn}/table/*`],
+    resources: [`${destination.tableBucketArn}/table/*`],
 }));
 ```
+
+**2. Destination KMS key policy (only when the destination bucket is
+KMS-encrypted).** The replication role needs `kms:Encrypt` in addition to
+`kms:Decrypt` and `kms:GenerateDataKey` on the destination key:
+
+```ts
+declare const destinationKey: kms.IKey;
+declare const sourceReplicationRole: iam.IRole;
+
+destinationKey.addToResourcePolicy(new iam.PolicyStatement({
+    sid: 'AllowReplicationEncrypt',
+    actions: [
+        'kms:Encrypt',
+        'kms:Decrypt',
+        'kms:GenerateDataKey',
+    ],
+    principals: [new iam.ArnPrincipal(sourceReplicationRole.roleArn)],
+    resources: ['*'],
+}));
+```
+
+> Note: when the destination `TableBucket` is created via CDK with KMS
+> encryption, the `maintenance.s3tables.amazonaws.com` service-principal grant
+> on the destination key is added automatically and does not need to be
+> repeated here.
 
 ### Enabling CloudWatch Request Metrics
 
