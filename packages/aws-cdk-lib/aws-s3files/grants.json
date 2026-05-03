@@ -1,0 +1,36 @@
+{
+  "resources": {
+    "FileSystem": {
+      "hasResourcePolicy": true,
+      "grants": {
+        "mount": {
+          "actions": [
+            "s3files:ClientMount"
+          ],
+          "docSummary": "Grant the ability to mount this file system"
+        },
+        "read": {
+          "actions": [
+            "s3files:ClientMount"
+          ],
+          "docSummary": "Grant read (mount) access to this file system"
+        },
+        "write": {
+          "actions": [
+            "s3files:ClientMount",
+            "s3files:ClientWrite"
+          ],
+          "docSummary": "Grant read/write access to this file system"
+        },
+        "rootAccess": {
+          "actions": [
+            "s3files:ClientMount",
+            "s3files:ClientWrite",
+            "s3files:ClientRootAccess"
+          ],
+          "docSummary": "Grant root-level access to this file system"
+        }
+      }
+    }
+  }
+}
