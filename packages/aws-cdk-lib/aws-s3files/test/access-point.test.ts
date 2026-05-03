@@ -67,7 +67,7 @@ describe('AccessPoint', () => {
     expect(() => new AccessPoint(stack, 'AP', {
       fileSystem,
       clientToken: 'x'.repeat(length),
-    })).toThrow(/clientToken/);
+    })).toThrow(`'clientToken' must be 1-64 characters long, got ${length}`);
   });
 
   test('addAccessPoint factory returns an AccessPoint', () => {
@@ -105,18 +105,20 @@ describe('AccessPoint.fromAccessPointAttributes', () => {
   });
 
   test('fails when neither id nor arn is provided', () => {
-    expect(() => AccessPoint.fromAccessPointAttributes(stack, 'Imported', {})).toThrow(/accessPointId.*accessPointArn/);
+    expect(() => AccessPoint.fromAccessPointAttributes(stack, 'Imported', {}))
+      .toThrow("Exactly one of 'accessPointId' or 'accessPointArn' must be provided.");
   });
 
   test('fails when both id and arn are provided', () => {
     expect(() => AccessPoint.fromAccessPointAttributes(stack, 'Imported', {
       accessPointId: 'fsap-1',
       accessPointArn: 'arn:aws:s3files:us-east-1:123456789012:access-point/fsap-1',
-    })).toThrow(/accessPointId.*accessPointArn/);
+    })).toThrow("Exactly one of 'accessPointId' or 'accessPointArn' must be provided.");
   });
 
   test('imported access points without fileSystem throw on access', () => {
     const ap = AccessPoint.fromAccessPointId(stack, 'Imported', 'fsap-1');
-    expect(() => ap.fileSystem).toThrow(/fileSystem/);
+    expect(() => ap.fileSystem)
+      .toThrow("fileSystem is only available when 'fromAccessPointAttributes()' is used and a fileSystem is provided.");
   });
 });

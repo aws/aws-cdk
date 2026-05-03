@@ -143,11 +143,17 @@ describe('FileSystem', () => {
       bucket,
       vpc,
       clientToken: 'x'.repeat(length),
-    })).toThrow(/clientToken/);
+    })).toThrow(`'clientToken' must be 1-64 characters long, got ${length}`);
   });
 
-  test.each(['/leading-slash', 'a'.repeat(1025)])('fails for invalid prefix %s', (prefix) => {
-    expect(() => new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix })).toThrow(/prefix/);
+  test('fails when prefix starts with /', () => {
+    expect(() => new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix: '/leading-slash' }))
+      .toThrow("'prefix' must not start with '/', got \"/leading-slash\"");
+  });
+
+  test('fails when prefix exceeds 1024 characters', () => {
+    expect(() => new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix: 'a'.repeat(1025) }))
+      .toThrow("'prefix' must be at most 1024 characters long, got 1025");
   });
 
   test('kmsKey adds key id and grants kms:Decrypt/GenerateDataKey', () => {
@@ -212,7 +218,7 @@ describe('FileSystem', () => {
         importDataRules: [],
         expirationDataRules: [{ afterLastAccess: Duration.days(1) }],
       },
-    })).toThrow(/importDataRules/);
+    })).toThrow("'synchronizationConfiguration.importDataRules' must contain at least one rule");
     expect(() => new FileSystem(stack, 'FileSystem2', {
       bucket,
       vpc,
@@ -220,7 +226,7 @@ describe('FileSystem', () => {
         importDataRules: [{ prefix: 'p', sizeLessThan: Size.mebibytes(1), trigger: ImportDataTrigger.ON_DEMAND }],
         expirationDataRules: [],
       },
-    })).toThrow(/expirationDataRules/);
+    })).toThrow("'synchronizationConfiguration.expirationDataRules' must contain at least one rule");
   });
 
   test('vpcSubnets controls mount target placement', () => {
@@ -349,13 +355,14 @@ describe('FileSystem.fromFileSystemAttributes', () => {
   });
 
   test('fails when neither id nor arn is provided', () => {
-    expect(() => FileSystem.fromFileSystemAttributes(stack, 'Imported', {})).toThrow(/fileSystemId.*fileSystemArn/);
+    expect(() => FileSystem.fromFileSystemAttributes(stack, 'Imported', {}))
+      .toThrow("Exactly one of 'fileSystemId' or 'fileSystemArn' must be provided.");
   });
 
   test('fails when both id and arn are provided', () => {
     expect(() => FileSystem.fromFileSystemAttributes(stack, 'Imported', {
       fileSystemId: 'fs-1',
       fileSystemArn: 'arn:aws:s3files:us-east-1:123456789012:file-system/fs-1',
-    })).toThrow(/fileSystemId.*fileSystemArn/);
+    })).toThrow("Exactly one of 'fileSystemId' or 'fileSystemArn' must be provided.");
   });
 });
