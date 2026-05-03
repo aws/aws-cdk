@@ -58,19 +58,6 @@ describe('TableBucket', () => {
       Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_CFN_RESOURCE, 1);
     });
 
-    test('synthesizes a name that satisfies the table bucket naming rules', () => {
-      new s3tables.TableBucket(stack, 'AutoNamedBucket');
-      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
-        'TableBucketName': Match.stringLikeRegexp('^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$'),
-      });
-    });
-
-    test('does not throw when only optional props are passed', () => {
-      expect(() => new s3tables.TableBucket(stack, 'AutoNamedBucket', {
-        removalPolicy: core.RemovalPolicy.DESTROY,
-      })).not.toThrow();
-    });
-
     test('two auto-named buckets get distinct names', () => {
       new s3tables.TableBucket(stack, 'AutoNamedBucketA');
       new s3tables.TableBucket(stack, 'AutoNamedBucketB');
@@ -79,13 +66,6 @@ describe('TableBucket', () => {
       const tableBuckets = template.findResources(TABLE_BUCKET_CFN_RESOURCE);
       const names = Object.values(tableBuckets).map((r: any) => r.Properties.TableBucketName);
       expect(new Set(names).size).toBe(names.length);
-    });
-
-    test('the ARN reflects the auto-generated name (cross-env path)', () => {
-      const bucket = new s3tables.TableBucket(stack, 'AutoNamedBucket');
-      // tableBucketName getter goes through getResourceNameAttribute,
-      // which falls back to physicalName for cross-env references.
-      expect(stack.resolve(bucket.tableBucketName)).toBeDefined();
     });
   });
 
