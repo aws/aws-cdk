@@ -53,9 +53,11 @@ describe('TableBucket', () => {
   });
 
   describe('created without tableBucketName', () => {
-    test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource with no props`, () => {
+    test(`creates a ${TABLE_BUCKET_CFN_RESOURCE} resource with a CDK-generated name`, () => {
       new s3tables.TableBucket(stack, 'AutoNamedBucket');
-      Template.fromStack(stack).resourceCountIs(TABLE_BUCKET_CFN_RESOURCE, 1);
+      Template.fromStack(stack).hasResourceProperties(TABLE_BUCKET_CFN_RESOURCE, {
+        'TableBucketName': 'autonamedbucket',
+      });
     });
 
     test('two auto-named buckets get distinct names', () => {
