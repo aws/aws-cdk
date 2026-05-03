@@ -39,6 +39,15 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
 });
 ```
 
+`tableBucketName` is optional. If you omit it, CDK generates a unique name from
+the stack name and the construct path that satisfies the
+[S3 Tables naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-buckets-naming.html#table-buckets-naming-rules).
+
+```ts
+// Let CDK generate the table bucket name
+const autoNamedTableBucket = new TableBucket(scope, 'AutoNamedTableBucket');
+```
+
 ### Define an S3 Tables Namespace
 
 ```ts
