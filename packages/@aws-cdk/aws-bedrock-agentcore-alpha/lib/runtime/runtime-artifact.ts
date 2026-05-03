@@ -131,17 +131,20 @@ export abstract class AgentRuntimeArtifact {
 }
 
 class EcrImage extends AgentRuntimeArtifact {
-  private bound = false;
+  private boundRoles = new Set<string>();
 
   constructor(private readonly repository: ecr.IRepository, private readonly tag: string) {
     super();
   }
 
   public bind(_scope: Construct, runtime: Runtime): void {
-    // Handle permissions (only once)
-    if (!this.bound && runtime.role) {
-      this.repository.grantPull(runtime.role);
-      this.bound = true;
+    if ( runtime.role ) {
+      // Handle permissions (only once per runtime role)
+      const curRoleArn = runtime.role.roleArn ;
+      if ( !this.boundRoles.has(curRoleArn) ) {
+        this.repository.grantPull( runtime.role ) ;
+        this.boundRoles.add(curRoleArn) ;
+      }
     }
   }
 
@@ -173,7 +176,7 @@ class AssetImage extends AgentRuntimeArtifact {
 
     // Grant permissions (only once per a given runtime role)
     const curRoleArn = runtime.role.roleArn ;
-    if (! this.boundRoles.has(curRoleArn) ) {
+    if ( !this.boundRoles.has(curRoleArn) ) {
       this.asset.repository.grantPull(runtime.role);
       this.boundRoles.add(curRoleArn);
     }
@@ -193,26 +196,29 @@ class AssetImage extends AgentRuntimeArtifact {
 }
 
 class S3Image extends AgentRuntimeArtifact {
-  private bound = false;
+  private boundRoles = new Set<string>() ;
 
   constructor(private readonly s3Location: s3.Location, private readonly runtime: AgentCoreRuntime, private readonly entrypoint: string[]) {
     super();
   }
 
   public bind(scope: Construct, runtime: Runtime): void {
-    // Handle permissions (only once)
-    if (!this.bound && runtime.role) {
-      if (!Token.isUnresolved(this.s3Location.bucketName)) {
-        Stack.of(scope).resolve(this.s3Location.bucketName);
+    if ( runtime.role ) {
+      // Handle permissions (only once per runtime role)
+      const curRoleArn = runtime.role.roleArn ;
+      if ( !this.boundRoles.has(curRoleArn) ) {
+        if (!Token.isUnresolved(this.s3Location.bucketName)) {
+          Stack.of(scope).resolve(this.s3Location.bucketName);
+        }
+        const bucket = s3.Bucket.fromBucketName(
+          scope,
+          `${this.s3Location.bucketName}CodeArchive`,
+          this.s3Location.bucketName,
+        );
+        // Ensure the policy is applied before the browser resource is created
+        bucket.grantRead(runtime.role);
+        this.boundRoles.add(curRoleArn);
       }
-      const bucket = s3.Bucket.fromBucketName(
-        scope,
-        `${this.s3Location.bucketName}CodeArchive`,
-        this.s3Location.bucketName,
-      );
-      // Ensure the policy is applied before the browser resource is created
-      bucket.grantRead(runtime.role);
-      this.bound = true;
     }
   }
 
@@ -236,7 +242,7 @@ class S3Image extends AgentRuntimeArtifact {
 
 class CodeAsset extends AgentRuntimeArtifact {
   private asset?: s3_assets.Asset;
-  private bound = false;
+  private boundRoles = new Set<string>() ;
   private readonly path: string;
   private readonly runtime: AgentCoreRuntime;
   private readonly entrypoint: string[];
@@ -260,12 +266,15 @@ class CodeAsset extends AgentRuntimeArtifact {
       });
     }
 
-    // Handle permissions (only once)
-    if (!this.bound && runtime.role) {
-      const bucket = this.asset.bucket;
-      // Ensure the policy is applied before the runtime resource is created
-      bucket.grantRead(runtime.role);
-      this.bound = true;
+    if ( runtime.role ) {
+      // Handle permissions (only once per runtime role)
+      const curRoleArn = runtime.role.roleArn ;
+      if ( !this.boundRoles.has(curRoleArn) ) {
+        const bucket = this.asset.bucket;
+        // Ensure the policy is applied before the runtime resource is created
+        bucket.grantRead(runtime.role);
+        this.boundRoles.add(curRoleArn);
+      }
     }
   }
 
