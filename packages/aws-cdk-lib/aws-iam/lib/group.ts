@@ -9,9 +9,11 @@ import type { AddToPrincipalPolicyResult, IPrincipal, PrincipalPolicyFragment } 
 import { ArnPrincipal } from './principals';
 import { AttachedPolicies } from './private/util';
 import type { IUser } from './user';
-import { Annotations, ArnFormat, Lazy, Resource, Stack } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Annotations, ArnFormat, Resource, Stack, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -140,6 +142,7 @@ abstract class GroupBase extends Resource implements IGroup {
  * @see https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Group extends GroupBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-iam.Group';
@@ -211,7 +214,7 @@ export class Group extends GroupBase {
     });
   }
 
-  private readonly managedPolicies: IManagedPolicy[] = [];
+  private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly _path?: string;
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
@@ -221,12 +224,12 @@ export class Group extends GroupBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.managedPolicies.push(...props.managedPolicies || []);
+    this._managedPolicies = Box.fromArray([...props.managedPolicies || []]);
     this._path = props.path;
 
     this._resource = new CfnGroup(this, 'Resource', {
       groupName: this.physicalName,
-      managedPolicyArns: Lazy.list({ produce: () => this.managedPolicies.map(p => p.managedPolicyArn) }, { omitEmpty: true }),
+      managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn), { displayHint: 'managedPolicyArns' }),
       path: props.path,
     });
 
@@ -241,14 +244,14 @@ export class Group extends GroupBase {
    */
   @MethodMetadata()
   public addManagedPolicy(policy: IManagedPolicy) {
-    if (this.managedPolicies.find(mp => mp === policy)) { return; }
-    this.managedPolicies.push(policy);
+    if (this._managedPolicies.find(mp => mp === policy)) { return; }
+    this._managedPolicies.push(policy);
     this.managedPoliciesExceededWarning();
   }
 
   private managedPoliciesExceededWarning() {
-    if (this.managedPolicies.length > 10) {
-      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:groupMaxPoliciesExceeded', `You added ${this.managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
+    if (this._managedPolicies.length > 10) {
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-iam:groupMaxPoliciesExceeded', `You added ${this._managedPolicies.length} to IAM Group ${this.physicalName}. The maximum number of managed policies attached to an IAM group is 10.`);
     }
   }
 }
