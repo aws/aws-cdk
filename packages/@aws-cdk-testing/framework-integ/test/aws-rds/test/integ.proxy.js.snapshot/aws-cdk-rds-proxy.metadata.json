@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:11:15)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:11:15)",
         "...node internals..."
       ]
     }
@@ -123,16 +123,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
-        "process.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "addBootstrapVersionRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -145,16 +145,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
-        "process.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "addBootstrapVersionRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -167,9 +167,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:768:29)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -310,9 +310,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:823:29)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -325,9 +325,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:826:29)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -340,9 +340,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Key (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
-        "new Key (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:13:16)",
+        "new Key (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:13:16)",
         "...node internals..."
       ]
     }
@@ -407,9 +407,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:735:30)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:735:30)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
         "...node internals..."
       ]
     }
@@ -500,9 +500,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:369:29)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:1)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:378:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:15)",
         "...node internals..."
       ]
     }
@@ -515,9 +515,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:404:38)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:1)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:413:38)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:15)",
         "...node internals..."
       ]
     }
@@ -593,9 +593,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:932:29)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:33:17)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:932:29)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:34:17)",
         "...node internals..."
       ]
     }
@@ -712,9 +712,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:932:29)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:52:37)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:932:29)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:53:37)",
         "...node internals..."
       ]
     }
@@ -818,9 +818,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:369:29)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:60:1)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:378:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:61:1)",
         "...node internals..."
       ]
     }
@@ -833,9 +833,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:404:38)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:60:1)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:413:38)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:61:1)",
         "...node internals..."
       ]
     }
@@ -848,17 +848,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -871,17 +872,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -894,17 +896,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -917,13 +920,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "WrappedClass.addDefaultInternetRoute (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -936,13 +939,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.addNatGateway (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -955,13 +958,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.addNatGateway (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -974,17 +977,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -997,17 +1001,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1020,17 +1025,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1530:13)",
-        "new PublicSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1042:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1043,13 +1049,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addDefaultInternetRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1301:27)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:833:3)",
+        "WrappedClass.addDefaultInternetRoute (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
         "Array.forEach (:)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:830:36)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1062,13 +1068,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1553:50)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.addNatGateway (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1081,13 +1087,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addNatGateway (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1551:25)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
-        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.addNatGateway (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1100,17 +1106,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1123,17 +1130,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1146,17 +1154,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1169,14 +1178,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.addRoute (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1189,17 +1198,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1262:28)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1212,17 +1222,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1281:27)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1235,17 +1246,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1286:32)",
-        "new Subnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1603:13)",
-        "new PrivateSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1049:4)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
         "Array.forEach (:)",
-        "WrappedClass.createSubnetResources (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1013:30)",
-        "WrappedClass.createSubnets (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:972:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:818:18)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.createSubnetResources (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1258,14 +1270,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addRoute (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1390:27)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "NatGatewayProvider.configureSubnet (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
-        "NatGatewayProvider.configureNat (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
-        "WrappedClass.createNatGateways (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:926:22)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:843:26)",
-        "new Vpc (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
+        "WrappedClass.addRoute (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:12:13)",
         "...node internals..."
       ]
     }
@@ -1278,13 +1290,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
-        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
-        "new DatabaseInstanceSource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
+        "new SubnetGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
+        "new DatabaseInstanceSource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
         "...node internals..."
       ]
     }
@@ -1297,13 +1309,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
-        "new DatabaseInstanceSource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseInstanceNew (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
+        "new DatabaseInstanceSource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
         "...node internals..."
       ]
     }
@@ -1316,19 +1329,19 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:96:13)",
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:441:23)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "Connections.allowDefaultPortFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
-        "ProxyTarget.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:207:38)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:362:50)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:1)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowDefaultPortFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
+        "ProxyTarget.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:215:38)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:371:50)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:15)",
         "...node internals..."
       ]
     }
@@ -1341,14 +1354,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:497:30)",
-        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
-        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "renderCredentials (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:733:64)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
+        "new DatabaseSecret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:733:64)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
         "...node internals..."
       ]
     }
@@ -1370,11 +1384,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:344:40)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:1)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:352:40)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:15)",
         "...node internals..."
       ]
     }
@@ -1425,11 +1439,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:356:17)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:1)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:364:17)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:15)",
         "...node internals..."
       ]
     }
@@ -1438,6 +1453,23 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "dbProxyProxySecurityGroupfrom00000IndirectPort7AF515D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowFromAnyIpv4 (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:200:14)",
+        "Connections.allowDefaultPortFromAnyIpv4 (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:238:14)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:33:19)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-rds-proxy/dbCluster/Subnets/Default": [
@@ -1448,12 +1480,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
-        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseClusterNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:334:52)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:33:17)",
+        "new SubnetGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:334:52)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:34:17)",
         "...node internals..."
       ]
     }
@@ -1466,12 +1498,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseClusterNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:341:13)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:33:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:341:13)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:34:17)",
         "...node internals..."
       ]
     }
@@ -1484,20 +1517,20 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:96:13)",
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:441:23)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "Connections.allowDefaultPortFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
-        "ProxyTarget.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:206:37)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:362:50)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:43:9)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowDefaultPortFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
+        "ProxyTarget.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:214:37)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:371:50)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:44:9)",
         "...node internals..."
       ]
     }
@@ -1510,20 +1543,20 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:96:13)",
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:441:23)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "Connections.allowDefaultPortFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
-        "ProxyTarget.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:206:37)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:362:50)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:47:9)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowDefaultPortFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
+        "ProxyTarget.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:214:37)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:371:50)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:48:9)",
         "...node internals..."
       ]
     }
@@ -1536,14 +1569,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:497:30)",
-        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
-        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "renderCredentials (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:929:64)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:33:17)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
+        "new DatabaseSecret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:929:64)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:34:17)",
         "...node internals..."
       ]
     }
@@ -1565,13 +1599,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new AuroraClusterInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
-        "new AuroraClusterInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "ClusterInstance.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
-        "WrappedClass._createInstances (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:485:37)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:33:17)",
+        "new AuroraClusterInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
+        "new AuroraClusterInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "ClusterInstance.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
+        "WrappedClass._createInstances (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:485:37)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:34:17)",
         "...node internals..."
       ]
     }
@@ -1639,10 +1673,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:369:29)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:43:9)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:378:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:44:9)",
         "...node internals..."
       ]
     }
@@ -1655,10 +1689,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:404:38)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:43:9)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:413:38)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:44:9)",
         "...node internals..."
       ]
     }
@@ -1726,10 +1760,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:369:29)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:47:9)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:378:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:48:9)",
         "...node internals..."
       ]
     }
@@ -1742,10 +1776,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:404:38)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:47:9)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:413:38)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:48:9)",
         "...node internals..."
       ]
     }
@@ -1758,12 +1792,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
-        "new SubnetGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseClusterNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:334:52)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:52:37)",
+        "new SubnetGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
+        "new SubnetGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:334:52)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:53:37)",
         "...node internals..."
       ]
     }
@@ -1776,12 +1810,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseClusterNew (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:341:13)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:52:37)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:341:13)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:917:13)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:53:37)",
         "...node internals..."
       ]
     }
@@ -1794,19 +1829,19 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:96:13)",
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:441:23)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "Connections.allowDefaultPortFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
-        "ProxyTarget.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:206:37)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:362:50)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:60:1)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowDefaultPortFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
+        "ProxyTarget.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:214:37)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:371:50)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:61:1)",
         "...node internals..."
       ]
     }
@@ -1819,20 +1854,20 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:96:13)",
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:441:23)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "Connections.allowDefaultPortFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
-        "ProxyTarget.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:206:37)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:362:50)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:65:29)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowDefaultPortFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
+        "ProxyTarget.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:214:37)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:371:50)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:66:29)",
         "...node internals..."
       ]
     }
@@ -1845,20 +1880,20 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:96:13)",
-        "WrappedClass.addIngressRule (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:441:23)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
-        "ReactiveList.forEachAndForever (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
-        "Connections.allowFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
-        "Connections.allowDefaultPortFrom (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
-        "ProxyTarget.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:206:37)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:362:50)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:69:29)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:98:13)",
+        "WrappedClass.addIngressRule (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:445:23)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:139:3)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:138:5)",
+        "ReactiveList.forEachAndForever (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:293:13)",
+        "Connections.allowFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:137:30)",
+        "Connections.allowDefaultPortFrom (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:220:14)",
+        "ProxyTarget.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:214:37)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:371:50)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:70:29)",
         "...node internals..."
       ]
     }
@@ -1871,14 +1906,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:497:30)",
-        "new Secret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
-        "new DatabaseSecret (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "renderCredentials (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:929:64)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:52:37)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseSecret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
+        "new DatabaseSecret (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "renderCredentials (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:929:64)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:53:37)",
         "...node internals..."
       ]
     }
@@ -1900,13 +1936,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new AuroraClusterInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
-        "new AuroraClusterInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "ClusterInstance.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
-        "WrappedClass._createInstances (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:485:37)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:52:37)",
+        "new AuroraClusterInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
+        "new AuroraClusterInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "ClusterInstance.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
+        "WrappedClass._createInstances (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:485:37)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:53:37)",
         "...node internals..."
       ]
     }
@@ -1919,15 +1955,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new AuroraClusterInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
-        "new AuroraClusterInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "ClusterInstance.bind (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
-        "/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:497: (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:497:4)",
+        "new AuroraClusterInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:303:30)",
+        "new AuroraClusterInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "ClusterInstance.bind (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:207:16)",
+        "/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:497: (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:497:4)",
         "Array.forEach (:)",
-        "WrappedClass._createInstances (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:496:31)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:52:37)",
+        "WrappedClass._createInstances (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:496:31)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:962:62)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:53:37)",
         "...node internals..."
       ]
     }
@@ -1995,10 +2031,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:369:29)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:65:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:378:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:66:29)",
         "...node internals..."
       ]
     }
@@ -2011,10 +2047,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:404:38)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:65:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:413:38)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:66:29)",
         "...node internals..."
       ]
     }
@@ -2082,10 +2118,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:369:29)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:69:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:378:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:70:29)",
         "...node internals..."
       ]
     }
@@ -2098,10 +2134,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:404:38)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:69:29)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:413:38)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:70:29)",
         "...node internals..."
       ]
     }
@@ -2114,11 +2150,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:344:40)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:60:1)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:352:40)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:61:1)",
         "...node internals..."
       ]
     }
@@ -2161,11 +2197,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:356:17)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:60:1)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:364:17)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:61:1)",
         "...node internals..."
       ]
     }
@@ -2178,12 +2215,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:687:32)",
-        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.attach (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:306:16)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/instance.js:752:38)",
-        "new DatabaseInstance (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
+        "new SecretTargetAttachment (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:690:32)",
+        "new SecretTargetAttachment (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:308:16)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:752:38)",
+        "new DatabaseInstance (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:14:20)",
         "...node internals..."
       ]
     }
@@ -2196,16 +2233,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grantRead (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:207:36)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:349:28)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:1)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grantRead (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:209:36)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:357:28)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:25:15)",
         "...node internals..."
       ]
     }
@@ -2218,12 +2255,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:687:32)",
-        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.attach (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:306:16)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:942:38)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:33:17)",
+        "new SecretTargetAttachment (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:690:32)",
+        "new SecretTargetAttachment (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:308:16)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:942:38)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:34:17)",
         "...node internals..."
       ]
     }
@@ -2236,12 +2273,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:344:40)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:43:9)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:352:40)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:44:9)",
         "...node internals..."
       ]
     }
@@ -2284,12 +2321,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:356:17)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:43:9)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:364:17)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:44:9)",
         "...node internals..."
       ]
     }
@@ -2302,12 +2340,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:344:40)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:47:9)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:352:40)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:48:9)",
         "...node internals..."
       ]
     }
@@ -2350,12 +2388,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:356:17)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:47:9)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:364:17)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:48:9)",
         "...node internals..."
       ]
     }
@@ -2368,12 +2407,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:687:32)",
-        "new SecretTargetAttachment (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.attach (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:306:16)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:942:38)",
-        "new DatabaseCluster (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:52:37)",
+        "new SecretTargetAttachment (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:690:32)",
+        "new SecretTargetAttachment (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.attach (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:308:16)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:942:38)",
+        "new DatabaseCluster (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:53:37)",
         "...node internals..."
       ]
     }
@@ -2386,12 +2425,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:344:40)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:65:29)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:352:40)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:66:29)",
         "...node internals..."
       ]
     }
@@ -2434,12 +2473,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:356:17)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:65:29)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:364:17)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:66:29)",
         "...node internals..."
       ]
     }
@@ -2452,12 +2492,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:344:40)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:69:29)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:352:40)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:70:29)",
         "...node internals..."
       ]
     }
@@ -2500,12 +2540,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:416:34)",
-        "new SecurityGroup (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:356:17)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:69:29)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:364:17)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:70:29)",
         "...node internals..."
       ]
     }
@@ -2518,16 +2559,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grantRead (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:207:36)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:349:28)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:60:1)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grantRead (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:209:36)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:357:28)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:61:1)",
         "...node internals..."
       ]
     }
@@ -2540,17 +2581,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grantRead (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:207:36)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:349:28)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:43:9)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grantRead (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:209:36)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:357:28)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:44:9)",
         "...node internals..."
       ]
     }
@@ -2563,17 +2604,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grantRead (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:207:36)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:349:28)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:47:9)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grantRead (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:209:36)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:357:28)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:48:9)",
         "...node internals..."
       ]
     }
@@ -2586,17 +2627,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grantRead (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:207:36)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:349:28)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:65:29)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grantRead (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:209:36)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:357:28)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:66:29)",
         "...node internals..."
       ]
     }
@@ -2609,17 +2650,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "Grant.addToPrincipalOrResource (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
-        "WrappedClass.grantRead (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:207:36)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/proxy.js:349:28)",
-        "new DatabaseProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addProxy (/workplace/leonmk/cdk/aws-cdk3/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
-        "<anonymous> (/workplace/leonmk/cdk/aws-cdk3/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:69:29)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grantRead (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:209:36)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/proxy.js:357:28)",
+        "new DatabaseProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/Users/dickson/Developer/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:181:16)",
+        "<anonymous> (/Users/dickson/Developer/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.proxy.js:70:29)",
         "...node internals..."
       ]
     }
