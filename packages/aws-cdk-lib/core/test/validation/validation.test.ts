@@ -1061,7 +1061,7 @@ Policy Validation Report Summary
       core.Validations.of(app).addPlugins(plugin);
 
       // THEN
-      expect(app.policyValidationBeta1).toContain(plugin);
+      expect(app.policyValidationBeta1.map(p => p.name)).toContain('test-plugin');
     });
 
     test('addPlugins from nested construct resolves to enclosing stage', () => {
@@ -1074,7 +1074,7 @@ Policy Validation Report Summary
       core.Validations.of(stack).addPlugins(plugin);
 
       // THEN - plugin is registered on the app (enclosing stage), not the stack
-      expect(app.policyValidationBeta1).toContain(plugin);
+      expect(app.policyValidationBeta1.map(p => p.name)).toContain('test-plugin');
     });
 
     test('throws when addPlugins called without enclosing stage', () => {
