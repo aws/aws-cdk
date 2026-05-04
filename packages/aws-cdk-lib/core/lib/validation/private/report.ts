@@ -155,9 +155,9 @@ export class PolicyValidationReportFormatter {
         for (const construct of constructs) {
           output.push('');
           output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
-          output.push(`    - Template Path: ${construct.templatePath}`);
+          output.push(`    - Template Path: ${construct.templatePath ?? 'N/A'}`);
           output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
-          output.push(`    - Resource ID: ${construct.resourceLogicalId}`);
+          output.push(`    - Resource ID: ${construct.resourceLogicalId ?? 'N/A'}`);
           if (construct.locations) {
             output.push('    - Template Locations:');
             for (const location of construct.locations) {
@@ -212,16 +212,22 @@ export class PolicyValidationReportFormatter {
             severity: violation.severity,
             violatingResources: violation.violatingResources,
             violatingConstructs: violation.violatingResources.map(resource => {
-              const constructPath = this.tree.getConstructByLogicalId(
-                path.basename(resource.templatePath),
-                resource.resourceLogicalId,
-              )?.node.path;
+              // Use constructPath from the input if provided (e.g. annotations),
+              // otherwise derive it from the logical ID via the construct tree.
+              const constructPath = resource.constructPath ?? (
+                resource.templatePath && resource.resourceLogicalId
+                  ? this.tree.getConstructByLogicalId(
+                    path.basename(resource.templatePath),
+                    resource.resourceLogicalId,
+                  )?.node.path
+                  : undefined
+              );
               return {
                 constructStack: constructPath ? this.reportTrace.formatJson(constructPath) : undefined,
                 constructPath: constructPath,
                 locations: resource.locations,
-                resourceLogicalId: resource.resourceLogicalId,
-                templatePath: resource.templatePath,
+                resourceLogicalId: resource.resourceLogicalId ?? 'N/A',
+                templatePath: resource.templatePath ?? 'N/A',
               };
             }),
           })),

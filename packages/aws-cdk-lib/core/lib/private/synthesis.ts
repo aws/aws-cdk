@@ -12,7 +12,6 @@ import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
-import { CfnResource } from '../cfn-resource';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
 import { FileSystem } from '../fs';
@@ -136,35 +135,16 @@ function collectAnnotationReport(root: IConstruct, outdir: string): NamedValidat
       const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
       const ruleName = extractRuleName(message, severity);
 
-      // Find the nearest CfnResource to map back to a logical ID
-      const resource = findNearestResource(construct);
-      let resourceLogicalId: string;
-      let templatePath: string;
-
-      if (resource) {
-        const stack = Stack.of(resource);
-        resourceLogicalId = stack.resolve(resource.logicalId);
-        templatePath = path.join(outdir, stack.templateFile);
-      } else {
-        // Construct is not associated with a CfnResource — use construct path as identifier
-        resourceLogicalId = construct.node.path;
-        try {
-          const stack = Stack.of(construct);
-          templatePath = path.join(outdir, stack.templateFile);
-        } catch (e: any) {
-          // Stack.of() throws when the construct is not inside a Stack
-          // (e.g. attached directly to App or Stage). Any other error
-          // is unexpected and should propagate.
-          if (e.message?.includes('should be created in the scope of a Stack')) {
-            templatePath = 'N/A';
-          } else {
-            throw e;
-          }
-        }
+      // Resolve template path if the construct is inside a Stack
+      let templatePath: string | undefined;
+      try {
+        templatePath = path.join(outdir, Stack.of(construct).templateFile);
+      } catch {
+        // Construct is not inside a Stack (e.g. attached to App or Stage)
       }
 
       const violatingResource: PolicyViolatingResource = {
-        resourceLogicalId,
+        constructPath: construct.node.path,
         templatePath,
         locations: [],
       };
@@ -222,38 +202,6 @@ function extractRuleName(message: string, severity: string): string {
     return ackMatch[1];
   }
   return `aws-cdk:${severity}`;
-}
-
-/**
- * Find the nearest CfnResource for a construct by checking itself,
- * its default child, or walking up the tree.
- */
-function findNearestResource(construct: IConstruct): CfnResource | undefined {
-  // Check if the construct itself is a CfnResource
-  if (CfnResource.isCfnResource(construct)) {
-    return construct;
-  }
-
-  // Check the default child
-  const defaultChild = construct.node.defaultChild;
-  if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
-    return defaultChild;
-  }
-
-  // Walk up the tree to find the nearest CfnResource
-  let current = construct.node.scope;
-  while (current) {
-    if (CfnResource.isCfnResource(current)) {
-      return current;
-    }
-    const dc = current.node.defaultChild;
-    if (dc && CfnResource.isCfnResource(dc)) {
-      return dc;
-    }
-    current = current.node.scope;
-  }
-
-  return undefined;
 }
 
 /**
