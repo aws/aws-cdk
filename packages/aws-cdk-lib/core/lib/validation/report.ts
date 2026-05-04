@@ -181,17 +181,8 @@ export interface PolicyViolationBeta1 {
 export interface PolicyViolatingResourceBeta1 {
   /**
    * The logical ID of the resource in the CloudFormation template.
-   *
-   * @default - no resource logical ID
    */
-  readonly resourceLogicalId?: string;
-
-  /**
-   * The construct path of the violating construct.
-   *
-   * @default - construct path is derived from the resource logical ID
-   */
-  readonly constructPath?: string;
+  readonly resourceLogicalId: string;
 
   /**
    * The locations in the CloudFormation template that pose the violations.
@@ -200,10 +191,8 @@ export interface PolicyViolatingResourceBeta1 {
 
   /**
    * The path to the CloudFormation template that contains this resource
-   *
-   * @default - no template path
    */
-  readonly templatePath?: string;
+  readonly templatePath: string;
 }
 
 /**

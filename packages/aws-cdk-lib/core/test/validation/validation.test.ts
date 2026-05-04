@@ -3,8 +3,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { table } from 'table';
-import * as core from '../../lib';
 import * as cxapi from '../../../cx-api';
+import * as core from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
 beforeEach(() => {
@@ -1223,15 +1223,15 @@ Policy Validation Report Summary
   });
 });
 
-class FakePlugin implements core.IPolicyValidationPlugin {
+class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
     public readonly name: string,
-    private readonly violations: core.PolicyViolation[],
+    private readonly violations: core.PolicyViolationBeta1[],
     public readonly version?: string,
     public readonly ruleIds?: string []) {
   }
 
-  validate(_context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
@@ -1240,10 +1240,10 @@ class FakePlugin implements core.IPolicyValidationPlugin {
   }
 }
 
-class RoguePlugin implements core.IPolicyValidationPlugin {
+class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
+  validate(context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
@@ -1253,10 +1253,10 @@ class RoguePlugin implements core.IPolicyValidationPlugin {
   }
 }
 
-class BrokenPlugin implements core.IPolicyValidationPlugin {
+class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'broken-plugin';
 
-  validate(_context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     throw new Error('Something went wrong');
   }
 }
