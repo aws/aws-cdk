@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:10:15)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:15)",
         "...node internals..."
       ]
     }
@@ -27,7 +27,8 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "autoDeleteObjects": true,
-        "removalPolicy": "destroy"
+        "removalPolicy": "destroy",
+        "versioned": true
       }
     }
   ],
@@ -45,6 +46,19 @@
     {
       "type": "aws:cdk:analytics:method",
       "data": "*"
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "vpc": "*",
+        "filesystem": "*",
+        "timeout": "*"
+      }
     }
   ],
   "/test-s3files-filesystem-integ/BootstrapVersion": [
@@ -101,7 +115,7 @@
       "data": [
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:729:29)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -244,7 +258,7 @@
       "data": [
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:784:29)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -259,7 +273,7 @@
       "data": [
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:787:29)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -284,7 +298,7 @@
         "WrappedClass.restrictDefaultSecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1031:97)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:853:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -303,7 +317,7 @@
         "WrappedClass.restrictDefaultSecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1031:97)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:853:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -318,7 +332,7 @@
       "data": [
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1103:30)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:16)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:13:16)",
         "...node internals..."
       ]
     },
@@ -361,7 +375,7 @@
         "WrappedClass.enableAutoDeleteObjects (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1821:22)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1175:22)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:16)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:13:16)",
         "...node internals..."
       ]
     }
@@ -384,7 +398,7 @@
         "WrappedClass.enableAutoDeleteObjects (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1821:22)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1175:22)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:16)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:13:16)",
         "...node internals..."
       ]
     }
@@ -458,7 +472,7 @@
       "data": [
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:200:30)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:16:20)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:18:20)",
         "...node internals..."
       ]
     }
@@ -481,7 +495,7 @@
       "data": [
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:234:37)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:16:20)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:18:20)",
         "...node internals..."
       ]
     }
@@ -496,7 +510,7 @@
       "data": [
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:234:37)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:16:20)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:18:20)",
         "...node internals..."
       ]
     }
@@ -505,6 +519,167 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*",
+        "allowAllOutbound": "*",
+        "allowAllIpv6Outbound": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEgressRule": [
+          "*",
+          {},
+          "*",
+          false
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "Ignoring Egress rule since 'allowAllOutbound' is set to true; To add customized rules, set allowAllOutbound=false on the SecurityGroup [ack: @aws-cdk/aws-ec2:ipv4IgnoreEgressRule]",
+      "trace": [
+        "Annotations.addMessage (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "WrappedClass.addEgressRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:413:49)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:77:31",
+        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:200:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:76:51",
+        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:200:13)",
+        "Connections.allowTo (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:75:30)",
+        "WrappedClass.configureVpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1087:38)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:622:33)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:27:21)",
+        "Module._compile (node:internal/modules/cjs/loader:1529:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1613:10)",
+        "Module.load (node:internal/modules/cjs/loader:1275:32)",
+        "Module._load (node:internal/modules/cjs/loader:1096:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTester30EA718A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:598:29)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/Exports/Output{\"Ref\":\"MountTester30EA718A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMountTester30EA718A7481FEEE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:991:13)",
+        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
+        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
+        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
+        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:151:92)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:83:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/Exports/Output{\"Fn::GetAtt\":[\"FileSystem8A8E25C0\",\"FileSystemId\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:991:13)",
+        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
+        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
+        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
+        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
+        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:151:92)",
+        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:83:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/Subnet": [
@@ -526,7 +701,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -550,7 +725,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -574,7 +749,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -593,7 +768,7 @@
         "Array.forEach (:)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:791:36)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -612,7 +787,7 @@
         "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:887:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:804:26)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -631,7 +806,7 @@
         "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:887:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:804:26)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -655,7 +830,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -679,7 +854,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -703,7 +878,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -722,7 +897,7 @@
         "Array.forEach (:)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:791:36)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -741,7 +916,7 @@
         "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:887:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:804:26)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -760,7 +935,7 @@
         "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:887:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:804:26)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -784,7 +959,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -808,7 +983,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -832,7 +1007,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -852,7 +1027,7 @@
         "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:887:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:804:26)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -876,7 +1051,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -900,7 +1075,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -924,7 +1099,7 @@
         "WrappedClass.createSubnets (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:933:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:779:18)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -944,7 +1119,7 @@
         "WrappedClass.createNatGateways (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:887:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:804:26)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -963,7 +1138,7 @@
         "WrappedClass.restrictDefaultSecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1050:13)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:853:22)",
         "new Vpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:11:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:13)",
         "...node internals..."
       ]
     }
@@ -982,7 +1157,7 @@
         "WrappedClass.enableAutoDeleteObjects (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1820:18)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1175:22)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:16)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:13:16)",
         "...node internals..."
       ]
     },
@@ -1011,7 +1186,7 @@
         "WrappedClass.enableAutoDeleteObjects (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1821:22)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1175:22)",
         "new Bucket (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:12:16)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:13:16)",
         "...node internals..."
       ]
     }
@@ -1029,7 +1204,7 @@
         "WrappedClass.createServiceRole (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:271:26)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:199:44)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:16:20)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:18:20)",
         "...node internals..."
       ]
     }
@@ -1101,7 +1276,7 @@
         "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:221:58)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:16:20)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:18:20)",
         "...node internals..."
       ]
     }
@@ -1118,7 +1293,98 @@
         "new AccessPoint (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addAccessPoint (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:248:20)",
         "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:20:12)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:22:32)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterServiceRoleA51AB6DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:391:34)",
+        "new Role (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:513:39)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterSecurityGroup393D8976"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:379:34)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureVpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1076:62)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:622:33)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterLogGroup5FBA55DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:514:29)",
+        "new LogGroup (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:682:34)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:27:21)",
         "...node internals..."
       ]
     }
@@ -1138,7 +1404,51 @@
         "WrappedClass.createServiceRole (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:290:18)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-s3files/lib/file-system.js:199:44)",
         "new FileSystem (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:16:20)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:18:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/FileSystem/AccessPoint/MountTargetSG0/from tests3filesfilesystemintegMountTesterSecurityGroup2874C60D:2049": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FileSystemAccessPointMountTargetSG0fromtests3filesfilesystemintegMountTesterSecurityGroup2874C60D2049F42B3EDE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "MutableImport.addIngressRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:85:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:100: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:100:3)",
+        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:200:13)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:99: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:99:5)",
+        "ReactiveList.forEachAndForever (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:200:13)",
+        "Connections.allowFrom (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:98:30)",
+        "Connections.allowTo (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/connections.js:83:31)",
+        "WrappedClass.configureVpc (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1087:38)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:622:33)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:27:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/test-s3files-filesystem-integ/MountTester/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MountTesterServiceRoleDefaultPolicy9CC96161"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
+        "new Policy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:443:42)",
+        "WrappedClass.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:532: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:532:3)",
+        "Array.forEach (:)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:531:37)",
+        "new Function (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:27:21)",
         "...node internals..."
       ]
     }
