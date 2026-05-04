@@ -1,4 +1,5 @@
 import type { Construct } from 'constructs';
+import type { DeploymentCircuitBreaker } from '../../../aws-ecs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import type { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
@@ -40,6 +41,13 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    * @default - 200%
    */
   readonly maxHealthyPercent?: number;
+
+  /**
+   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
+   * enabled.
+   * @default - disabled
+   */
+  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 /**
@@ -159,6 +167,7 @@ export class NetworkMultipleTargetGroupsFargateService extends NetworkMultipleTa
       enableExecuteCommand: props.enableExecuteCommand,
       minHealthyPercent: props.minHealthyPercent,
       maxHealthyPercent: props.maxHealthyPercent,
+      circuitBreaker: props.circuitBreaker,
     });
   }
 }
