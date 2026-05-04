@@ -137,7 +137,7 @@
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.1",
-    "@aws-cdk/aws-service-spec": "^0.1.176",
+    "@aws-cdk/aws-service-spec": "^0.1.178",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -264,6 +264,7 @@
     "./aws-ce": "./aws-ce/index.js",
     "./aws-certificatemanager": "./aws-certificatemanager/index.js",
     "./aws-chatbot": "./aws-chatbot/index.js",
+    "./aws-chime": "./aws-chime/index.js",
     "./aws-cleanrooms": "./aws-cleanrooms/index.js",
     "./aws-cleanroomsml": "./aws-cleanroomsml/index.js",
     "./aws-cloud9": "./aws-cloud9/index.js",
