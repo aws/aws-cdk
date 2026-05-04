@@ -808,6 +808,9 @@ const service = new ecs.FargateService(this, 'Service', {
   taskDefinition,
   desiredCount: 5,
   minHealthyPercent: 100,
+  circuitBreaker: {
+    enable: true,
+  },
 });
 ```
 
