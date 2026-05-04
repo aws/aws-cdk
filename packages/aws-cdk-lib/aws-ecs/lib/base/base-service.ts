@@ -942,6 +942,11 @@ export abstract class BaseService extends Resource
       Annotations.of(this)._addTrackableError(lit`CircuitBreakerRequiresEcsController`, 'Deployment circuit breaker requires the ECS deployment controller.');
     }
 
+    if (!props.circuitBreaker && this.isEcsDeploymentController) {
+      // If we *could* use a circuit breaker, then let's recommend users to do so. It makes detecting errors sooo much faster.
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:shouldUseCircuitBreaker', 'Enable the \'circuitBreaker\' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail).');
+    }
+
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
       throw new ValidationError(lit`RequiresDeploymentAlarmsRequires`, 'Deployment alarms requires the ECS deployment controller.', this);
     }
