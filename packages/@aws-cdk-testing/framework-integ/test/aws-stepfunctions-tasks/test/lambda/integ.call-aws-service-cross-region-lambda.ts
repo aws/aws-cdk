@@ -4,56 +4,15 @@ import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
-class TestStack extends cdk.Stack {
-  public readonly stateMachine: sfn.StateMachine;
-  constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
-    super(scope, id, props);
-    // Create a target Lambda function that returns JSON response
-    const targetLambda = new lambda.Function(this, 'TargetLambda', {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline(`
-        exports.handler = async (event) => {
-          console.log('Target Lambda received event:', JSON.stringify(event, null, 2));
-          
-          // Return a JSON response that should be properly serialized
-          return {
-            statusCode: 200,
-            body: {
-              status: 'success',
-              message: 'Hello from target Lambda',
-              receivedData: event
-            }
-          };
-        };
-      `),
-      description: 'Target Lambda function for CallAwsServiceCrossRegion testing',
-    });
-
-    // Create a cross-region Lambda invoke task using CallAwsServiceCrossRegion
-    const crossRegionInvokeTask = tasks.CallAwsServiceCrossRegion.jsonata(this, 'CrossRegionLambdaInvoke', {
-      service: 'lambda',
-      action: 'invoke',
-      region: this.region,
-      parameters: {
-        FunctionName: targetLambda.functionArn,
-        Payload: JSON.stringify({
-          hello: 'world',
-          testData: 'reproduction',
-        }),
-      },
-      iamResources: [targetLambda.functionArn],
-      iamAction: 'lambda:InvokeFunction',
-    });
-
-    // Create a Step Functions state machine to execute the cross-region task
-    this.stateMachine = new sfn.StateMachine(this, 'TestStateMachine', {
-      definitionBody: sfn.DefinitionBody.fromChainable(crossRegionInvokeTask),
-      timeout: cdk.Duration.minutes(5),
-      comment: 'State machine to reproduce issue 34768 - CallAwsServiceCrossRegion byte array bug',
-    });
-  }
-}
+/**
+ * This test verifies that CallAwsServiceCrossRegion correctly invokes a Lambda
+ * function and properly serializes the response as JSON (not as a byte array).
+ * See https://github.com/aws/aws-cdk/issues/34768
+ *
+ * The state machine uses CallAwsServiceCrossRegion with an explicit region
+ * parameter, which exercises the cross-region code path and verifies proper
+ * response deserialization.
+ */
 
 const app = new cdk.App({
   postCliContext: {
@@ -62,7 +21,47 @@ const app = new cdk.App({
   },
 });
 
-const stack = new TestStack(app, 'aws-stepfunctions-call-aws-service-cross-region-lambda-integ');
+const stack = new cdk.Stack(app, 'aws-sfn-call-aws-service-cross-region-lambda');
+
+// Target Lambda function
+const targetLambda = new lambda.Function(stack, 'TargetLambda', {
+  runtime: lambda.Runtime.NODEJS_20_X,
+  handler: 'index.handler',
+  code: lambda.Code.fromInline(`
+    exports.handler = async (event) => {
+      return {
+        statusCode: 200,
+        body: {
+          status: 'success',
+          message: 'Hello from target Lambda',
+          receivedData: event
+        }
+      };
+    };
+  `),
+});
+
+// Invoke Lambda using CallAwsServiceCrossRegion (exercises cross-region code path)
+// The region is set to us-east-1 explicitly to exercise the cross-region
+// serialization logic, which is where the byte array bug manifests.
+const crossRegionInvokeTask = tasks.CallAwsServiceCrossRegion.jsonata(
+  stack, 'CrossRegionLambdaInvoke', {
+    service: 'lambda',
+    action: 'invoke',
+    region: 'us-east-1',
+    parameters: {
+      FunctionName: targetLambda.functionArn,
+      Payload: JSON.stringify({ hello: 'world' }),
+    },
+    iamResources: [targetLambda.functionArn],
+    iamAction: 'lambda:InvokeFunction',
+  },
+);
+
+const stateMachine = new sfn.StateMachine(stack, 'TestStateMachine', {
+  definitionBody: sfn.DefinitionBody.fromChainable(crossRegionInvokeTask),
+  timeout: cdk.Duration.minutes(5),
+});
 
 const integ = new IntegTest(app, 'IntegTest', {
   testCases: [stack],
@@ -70,13 +69,13 @@ const integ = new IntegTest(app, 'IntegTest', {
 
 // Start the Step Functions execution
 const res = integ.assertions.awsApiCall('StepFunctions', 'startExecution', {
-  stateMachineArn: stack.stateMachine.stateMachineArn,
+  stateMachineArn: stateMachine.stateMachineArn,
 });
 
 const executionArn = res.getAttString('executionArn');
 
-// Describe the execution to see the output
-const describe = integ.assertions
+// Verify execution succeeds and output contains proper JSON (not byte array)
+integ.assertions
   .awsApiCall('StepFunctions', 'describeExecution', {
     executionArn,
   })
@@ -86,12 +85,9 @@ const describe = integ.assertions
   .waitForAssertions({
     totalTimeout: cdk.Duration.minutes(5),
     interval: cdk.Duration.seconds(10),
-  });
-
-// Verify that the output contains the expected Lambda response structure as JSON
-// This ensures the response is properly serialized as JSON, not as byte array
-describe.expect(ExpectedResult.objectLike({
-  output: Match.stringLikeRegexp('.*"statusCode":200.*"status":"success".*"message":"Hello from target Lambda".*'),
-}));
-
-app.synth();
+  })
+  .expect(ExpectedResult.objectLike({
+    output: Match.stringLikeRegexp(
+      '.*"statusCode":200.*"status":"success".*"message":"Hello from target Lambda".*',
+    ),
+  }));

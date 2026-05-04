@@ -1,28 +1,28 @@
 {
   "version": "52.0.0",
   "artifacts": {
-    "aws-stepfunctions-call-aws-service-cross-region-lambda-integ.assets": {
+    "aws-sfn-call-aws-service-cross-region-lambda.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-stepfunctions-call-aws-service-cross-region-lambda-integ.assets.json",
+        "file": "aws-sfn-call-aws-service-cross-region-lambda.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-stepfunctions-call-aws-service-cross-region-lambda-integ": {
+    "aws-sfn-call-aws-service-cross-region-lambda": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-stepfunctions-call-aws-service-cross-region-lambda-integ.template.json",
+        "templateFile": "aws-sfn-call-aws-service-cross-region-lambda.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/24f4d47d50e81f066c75ad6ba43c7cfb036c039467e0ba76377fae5bd066149a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1f9ff3ee0c1246f967678f9eed72621d12d4e000699ee8527bc1d82a70b10bad.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-stepfunctions-call-aws-service-cross-region-lambda-integ.assets"
+          "aws-sfn-call-aws-service-cross-region-lambda.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,21 +31,20 @@
         }
       },
       "dependencies": [
-        "aws-stepfunctions-call-aws-service-cross-region-lambda-integ.assets"
+        "aws-sfn-call-aws-service-cross-region-lambda.assets"
       ],
       "metadata": {
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TargetLambda": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TargetLambda": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "runtime": "*",
               "handler": "*",
-              "code": "*",
-              "description": "*"
+              "code": "*"
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TargetLambda/ServiceRole": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TargetLambda/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -61,19 +60,19 @@
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TargetLambda/ServiceRole/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TargetLambda/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetLambdaServiceRole567EC23E"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TargetLambda/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TargetLambda/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TargetLambdaE6C763FE"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CrossRegionLambdaInvoke/Handler": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionLambdaInvoke/Handler": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -104,7 +103,7 @@
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -123,7 +122,7 @@
             "data": 0
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -163,13 +162,13 @@
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -199,25 +198,24 @@
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TestStateMachine": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
               "definitionBody": "*",
-              "timeout": "*",
-              "comment": "*"
+              "timeout": "*"
             }
           },
           {
@@ -229,7 +227,7 @@
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TestStateMachine/Role": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": {
@@ -264,13 +262,13 @@
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TestStateMachine/Role/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestStateMachineRole2476F720"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TestStateMachine/Role/DefaultPolicy": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role/DefaultPolicy": [
           {
             "type": "aws:cdk:analytics:construct",
             "data": "*"
@@ -300,38 +298,38 @@
             }
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TestStateMachine/Role/DefaultPolicy/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role/DefaultPolicy/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestStateMachineRoleDefaultPolicyB28F488D"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/TestStateMachine/Resource": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "TestStateMachine3C216BE3"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/Exports/Output{\"Ref\":\"TestStateMachine3C216BE3\"}": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/Exports/Output{\"Ref\":\"TestStateMachine3C216BE3\"}": [
           {
             "type": "aws:cdk:logicalId",
             "data": "ExportsOutputRefTestStateMachine3C216BE323AC47AE"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/BootstrapVersion": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BootstrapVersion"
           }
         ],
-        "/aws-stepfunctions-call-aws-service-cross-region-lambda-integ/CheckBootstrapVersion": [
+        "/aws-sfn-call-aws-service-cross-region-lambda/CheckBootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
           }
         ]
       },
-      "displayName": "aws-stepfunctions-call-aws-service-cross-region-lambda-integ"
+      "displayName": "aws-sfn-call-aws-service-cross-region-lambda"
     },
     "IntegTestDefaultTestDeployAssertE3E7D2A4.assets": {
       "type": "cdk:asset-manifest",
@@ -350,7 +348,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5ea6f14866d336421fd0833bde56c42234424f7cacd314fcb78fcbe3dacc61bd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8a4afb7b56443e64439a8b35be1962d315b558b7a66f6f85117bcf73d29df0e5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -363,7 +361,7 @@
         }
       },
       "dependencies": [
-        "aws-stepfunctions-call-aws-service-cross-region-lambda-integ",
+        "aws-sfn-call-aws-service-cross-region-lambda",
         "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
       ],
       "metadata": {

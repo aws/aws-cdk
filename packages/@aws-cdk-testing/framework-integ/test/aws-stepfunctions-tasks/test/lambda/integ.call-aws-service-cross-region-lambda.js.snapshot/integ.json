@@ -3,7 +3,7 @@
   "testCases": {
     "IntegTest/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-call-aws-service-cross-region-lambda-integ"
+        "aws-sfn-call-aws-service-cross-region-lambda"
       ],
       "assertionStack": "IntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
