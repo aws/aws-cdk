@@ -214,7 +214,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
-      for (const plugin of construct.policyValidationBeta1) {
+      for (const plugin of construct._validationPlugins) {
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }

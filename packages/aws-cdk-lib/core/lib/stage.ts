@@ -231,6 +231,15 @@ export class Stage extends Construct {
   }
 
   /**
+   * Returns the raw validation plugins without Beta1 wrapping.
+   *
+   * @internal
+   */
+  public get _validationPlugins(): IPolicyValidationPlugin[] {
+    return [...this._policyValidation];
+  }
+
+  /**
    * The cloud assembly output directory.
    */
   public get outdir() {

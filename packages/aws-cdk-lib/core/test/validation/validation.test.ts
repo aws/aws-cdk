@@ -1220,6 +1220,83 @@ Policy Validation Report Summary
         core.Validations.of(construct).acknowledge({ id: '::foo', reason: 'reason' });
       }).toThrow(/Invalid validation rule ID '::foo'/);
     });
+
+    test('non-Beta1 plugin with constructPath runs through synth', () => {
+      // GIVEN - a plugin returning violations with optional fields (constructPath instead of resourceLogicalId)
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      // WHEN
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('non-beta1-plugin', [{
+        description: 'construct-level violation',
+        ruleName: 'construct-rule',
+        violatingResources: [{
+          constructPath: 'Default/Fake',
+          locations: ['Properties'],
+        }],
+      }]));
+      app.synth();
+
+      // THEN
+      expect(process.exitCode).toEqual(1);
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('non-beta1-plugin');
+      expect(output).toContain('construct-rule');
+      expect(output).toContain('Default/Fake');
+    });
+
+    test('non-Beta1 plugin accessed via policyValidationBeta1 getter has defaults for optional fields', () => {
+      // GIVEN - a plugin returning violations without resourceLogicalId or templatePath
+      const app = new core.App();
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('non-beta1-plugin', [{
+        description: 'test',
+        ruleName: 'test-rule',
+        violatingResources: [{
+          constructPath: 'Default/Foo',
+          locations: ['Props'],
+        }],
+      }]));
+
+      // WHEN - access via Beta1 getter
+      const beta1Plugins = app.policyValidationBeta1;
+      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'] });
+
+      // THEN - optional fields are filled with defaults
+      expect(report.violations[0].violatingResources[0].resourceLogicalId).toEqual('');
+      expect(report.violations[0].violatingResources[0].templatePath).toEqual('');
+    });
+
+    test('non-Beta1 plugin with all fields populated works identically to Beta1', () => {
+      // GIVEN - a non-Beta1 plugin that provides all fields (same as Beta1 would)
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('full-fields-plugin', [{
+        description: 'full violation',
+        ruleName: 'full-rule',
+        violatingResources: [{
+          resourceLogicalId: 'Fake',
+          templatePath: '/path/to/Default.template.json',
+          locations: ['Properties/Result'],
+        }],
+      }]));
+      app.synth();
+
+      // THEN
+      expect(process.exitCode).toEqual(1);
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('full-fields-plugin');
+      expect(output).toContain('full-rule');
+      expect(output).toContain('Resource ID: Fake');
+    });
   });
 });
 
@@ -1258,6 +1335,20 @@ class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
 
   validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     throw new Error('Something went wrong');
+  }
+}
+
+class FakeNonBeta1Plugin implements core.IPolicyValidationPlugin {
+  constructor(
+    public readonly name: string,
+    private readonly violations: core.PolicyViolation[],
+  ) {}
+
+  validate(_context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
+    return {
+      success: this.violations.length === 0,
+      violations: this.violations,
+    };
   }
 }
 
