@@ -70,6 +70,44 @@ describe('AccessPoint', () => {
     })).toThrow(`'clientToken' must be 1-64 characters long, got ${length}`);
   });
 
+  test('posixUser uid above 2^32-1 fails', () => {
+    expect(() => new AccessPoint(stack, 'AP', {
+      fileSystem,
+      posixUser: { uid: '4294967296', gid: '1000' },
+    })).toThrow("'posixUser.uid' must be 0..4294967295, got 4294967296");
+  });
+
+  test('posixUser non-numeric uid fails', () => {
+    expect(() => new AccessPoint(stack, 'AP', {
+      fileSystem,
+      posixUser: { uid: 'root', gid: '1000' },
+    })).toThrow("'posixUser.uid' must be a non-negative integer string, got \"root\"");
+  });
+
+  test('posixUser secondaryGids over 16 entries fails', () => {
+    expect(() => new AccessPoint(stack, 'AP', {
+      fileSystem,
+      posixUser: { uid: '1000', gid: '1000', secondaryGids: Array.from({ length: 17 }, (_, i) => `${i}`) },
+    })).toThrow("'posixUser.secondaryGids' must contain at most 16 entries, got 17");
+  });
+
+  test('createAcl invalid octal permissions fail', () => {
+    expect(() => new AccessPoint(stack, 'AP', {
+      fileSystem,
+      createAcl: { ownerUid: '1000', ownerGid: '1000', permissions: '8888' },
+    })).toThrow("'createAcl.permissions' must be a 3- or 4-digit octal string, got \"8888\"");
+  });
+
+  test('path without leading / fails', () => {
+    expect(() => new AccessPoint(stack, 'AP', { fileSystem, path: 'projects/a' }))
+      .toThrow("'path' must start with '/', got \"projects/a\"");
+  });
+
+  test('path deeper than four subdirectories fails', () => {
+    expect(() => new AccessPoint(stack, 'AP', { fileSystem, path: '/a/b/c/d/e' }))
+      .toThrow("'path' may have up to four subdirectories, got 5");
+  });
+
   test('addAccessPoint factory returns an AccessPoint', () => {
     const ap = fileSystem.addAccessPoint('AP', { path: '/data' });
 

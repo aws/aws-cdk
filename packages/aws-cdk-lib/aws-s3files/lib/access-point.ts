@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import type { IFileSystem } from './file-system';
+import { FILE_SYSTEM_SYMBOL } from './private/symbols';
 import { CfnAccessPoint } from './s3files.generated';
 import type { IResource } from '../../core';
 import { ArnFormat, Resource, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
@@ -7,6 +8,8 @@ import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-s3files-interfaces.generated';
+
+const POSIX_ID_MAX = 4294967295; // 2^32 - 1
 
 /**
  * Represents an S3 Files Access Point.
@@ -203,16 +206,7 @@ export class AccessPoint extends AccessPointBase {
     super(scope, id);
     addConstructMetadata(this, props);
 
-    const clientToken = props.clientToken;
-    if (clientToken !== undefined && !Token.isUnresolved(clientToken)) {
-      if (clientToken.length < 1 || clientToken.length > 64) {
-        throw new ValidationError(
-          lit`ClientTokenLength`,
-          `'clientToken' must be 1-64 characters long, got ${clientToken.length}`,
-          this,
-        );
-      }
-    }
+    this.validateProps(props);
 
     const resource = new CfnAccessPoint(this, 'Resource', {
       fileSystemId: extractFileSystemId(props.fileSystem),
@@ -229,12 +223,89 @@ export class AccessPoint extends AccessPointBase {
         gid: props.posixUser.gid,
         secondaryGids: props.posixUser.secondaryGids,
       } : undefined,
-      clientToken,
+      clientToken: props.clientToken,
     });
 
     this.accessPointId = resource.attrAccessPointId;
     this.accessPointArn = resource.attrAccessPointArn;
     this._fileSystem = props.fileSystem;
+  }
+
+  private validateProps(props: AccessPointProps): void {
+    if (props.clientToken !== undefined && !Token.isUnresolved(props.clientToken)) {
+      if (props.clientToken.length < 1 || props.clientToken.length > 64) {
+        throw new ValidationError(
+          lit`ClientTokenLength`,
+          `'clientToken' must be 1-64 characters long, got ${props.clientToken.length}`,
+          this,
+        );
+      }
+    }
+    if (props.posixUser) {
+      this.validatePosixId('posixUser.uid', props.posixUser.uid);
+      this.validatePosixId('posixUser.gid', props.posixUser.gid);
+      const secondaryGids = props.posixUser.secondaryGids;
+      if (secondaryGids && !Token.isUnresolved(secondaryGids)) {
+        if (secondaryGids.length > 16) {
+          throw new ValidationError(
+            lit`SecondaryGidsLength`,
+            `'posixUser.secondaryGids' must contain at most 16 entries, got ${secondaryGids.length}`,
+            this,
+          );
+        }
+        for (let i = 0; i < secondaryGids.length; i++) {
+          this.validatePosixId(`posixUser.secondaryGids[${i}]`, secondaryGids[i]);
+        }
+      }
+    }
+    if (props.createAcl) {
+      this.validatePosixId('createAcl.ownerUid', props.createAcl.ownerUid);
+      this.validatePosixId('createAcl.ownerGid', props.createAcl.ownerGid);
+      const permissions = props.createAcl.permissions;
+      if (!Token.isUnresolved(permissions) && !/^[0-7]{3,4}$/.test(permissions)) {
+        throw new ValidationError(
+          lit`InvalidPermissions`,
+          `'createAcl.permissions' must be a 3- or 4-digit octal string, got ${JSON.stringify(permissions)}`,
+          this,
+        );
+      }
+    }
+    if (props.path !== undefined && !Token.isUnresolved(props.path)) {
+      if (!props.path.startsWith('/')) {
+        throw new ValidationError(
+          lit`InvalidPath`,
+          `'path' must start with '/', got ${JSON.stringify(props.path)}`,
+          this,
+        );
+      }
+      const depth = props.path.split('/').filter(Boolean).length;
+      if (depth > 4) {
+        throw new ValidationError(
+          lit`PathDepth`,
+          `'path' may have up to four subdirectories, got ${depth}`,
+          this,
+        );
+      }
+    }
+  }
+
+  private validatePosixId(name: string, value: string): void {
+    if (Token.isUnresolved(value)) return;
+    if (!/^\d+$/.test(value)) {
+      throw new ValidationError(
+        lit`InvalidPosixId`,
+        `'${name}' must be a non-negative integer string, got ${JSON.stringify(value)}`,
+        this,
+      );
+    }
+    const numeric = Number(value);
+    if (numeric > POSIX_ID_MAX) {
+      throw new ValidationError(
+        lit`PosixIdRange`,
+        `'${name}' must be 0..${POSIX_ID_MAX}, got ${value}`,
+        this,
+      );
+    }
   }
 }
 
@@ -294,19 +365,23 @@ class ImportedAccessPoint extends AccessPointBase {
   }
 }
 
+function isIFileSystem(fs: IFileSystemRef): fs is IFileSystem {
+  return fs !== null && typeof fs === 'object' && (FILE_SYSTEM_SYMBOL in fs);
+}
+
 function extractFileSystemId(fs: IFileSystemRef): string {
-  if ('fileSystemId' in fs && typeof (fs as IFileSystem).fileSystemId === 'string') {
-    return (fs as IFileSystem).fileSystemId;
+  if (isIFileSystem(fs)) {
+    return fs.fileSystemId;
   }
   return Stack.of(fs as unknown as Construct).splitArn(fs.fileSystemRef.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 }
 
 function toIFileSystem(fs: IFileSystemRef): IFileSystem {
-  if (!('fileSystemId' in fs) || !('fileSystemArn' in fs)) {
+  if (!isIFileSystem(fs)) {
     throw new UnscopedValidationError(
       lit`FileSystemInstanceShouldImplement`,
-      `'fileSystem' must implement IFileSystem, got: ${fs.constructor.name}`,
+      `'fileSystem' must be a FileSystem L2 (created by 'new FileSystem(...)' or 'FileSystem.fromFileSystemAttributes(...)'), got: ${fs.constructor.name}`,
     );
   }
-  return fs as IFileSystem;
+  return fs;
 }

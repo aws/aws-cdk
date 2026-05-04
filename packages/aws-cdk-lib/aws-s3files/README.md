@@ -48,9 +48,9 @@ new s3files.FileSystem(this, 'FileSystem', {
 
 ## Limit the file system to a bucket prefix
 
-Use `prefix` to scope the file system to a key prefix within the bucket. Set
-`acceptBucketWarning` if the AWS service emits a warning that the bucket has properties
-that may incur additional cost or latency.
+Use `prefix` to scope the file system to a key prefix within the bucket. The prefix must
+be empty or end with `/`. Set `acceptBucketWarning` if the AWS service emits a warning
+that the bucket has properties that may incur additional cost or latency.
 
 ```ts
 declare const bucket: s3.IBucket;
@@ -59,7 +59,7 @@ declare const vpc: ec2.IVpc;
 new s3files.FileSystem(this, 'FileSystem', {
   bucket,
   vpc,
-  prefix: 'projects/team-a',
+  prefix: 'projects/team-a/',
   acceptBucketWarning: true,
 });
 ```
@@ -109,7 +109,9 @@ new s3files.FileSystem(this, 'FileSystem', {
 ## Encryption with a customer managed KMS key
 
 Provide a KMS key when the bucket is encrypted with SSE-KMS. The service role is granted
-`kms:Decrypt` and `kms:GenerateDataKey` scoped via the `kms:ViaService` condition.
+the KMS actions required by S3 Files (`kms:GenerateDataKey`, `kms:Encrypt`, `kms:Decrypt`,
+`kms:ReEncryptFrom`, `kms:ReEncryptTo`) scoped via `kms:ViaService` and the bucket-ARN
+encryption context.
 
 ```ts
 declare const bucket: s3.IBucket;

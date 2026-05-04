@@ -2,6 +2,7 @@ import { DependencyGroup } from 'constructs';
 import type { Construct, IDependable } from 'constructs';
 import type { AccessPointOptions } from './access-point';
 import { AccessPoint } from './access-point';
+import { FILE_SYSTEM_SYMBOL } from './private/symbols';
 import { FileSystemGrants } from './s3files-grants.generated';
 import { CfnFileSystem, CfnFileSystemPolicy, CfnMountTarget } from './s3files.generated';
 import * as ec2 from '../../aws-ec2';
@@ -14,8 +15,6 @@ import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-re
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-s3files-interfaces.generated';
-
-const FILE_SYSTEM_SYMBOL = Symbol.for('@aws-cdk/aws-s3files.FileSystem');
 
 /**
  * IP address type for an S3 Files mount target.
@@ -230,10 +229,8 @@ export interface FileSystemAttributes {
    * Security group attached to the imported file system.
    *
    * [disable-awslint:prefer-ref-interface]
-   *
-   * @default - imported file system will not be `IConnectable`
    */
-  readonly securityGroup?: ec2.ISecurityGroup;
+  readonly securityGroup: ec2.ISecurityGroup;
 
   /**
    * The file system's ID.
@@ -267,8 +264,11 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
     };
   }
 
+  private _grants?: FileSystemGrants;
+
   public get grants(): FileSystemGrants {
-    return FileSystemGrants.fromFileSystem(this);
+    this._grants ??= FileSystemGrants.fromFileSystem(this);
+    return this._grants;
   }
 
   /**
@@ -384,7 +384,7 @@ export class FileSystem extends FileSystemBase {
     this.role = props.role ?? this.createServiceRole(props);
 
     this._resource = new CfnFileSystem(this, 'Resource', {
-      bucket: props.bucket.bucketRef.bucketName,
+      bucket: props.bucket.bucketRef.bucketArn,
       roleArn: this.role.roleRef.roleArn,
       kmsKeyId: props.kmsKey?.keyRef.keyArn,
       prefix: props.prefix,
@@ -454,13 +454,6 @@ export class FileSystem extends FileSystemBase {
       }
     }
     if (prefix !== undefined && !Token.isUnresolved(prefix)) {
-      if (prefix.startsWith('/')) {
-        throw new ValidationError(
-          lit`InvalidPrefix`,
-          `'prefix' must not start with '/', got ${JSON.stringify(prefix)}`,
-          this,
-        );
-      }
       if (prefix.length > 1024) {
         throw new ValidationError(
           lit`PrefixLength`,
@@ -468,20 +461,10 @@ export class FileSystem extends FileSystemBase {
           this,
         );
       }
-    }
-    const sync = props.synchronizationConfiguration;
-    if (sync !== undefined) {
-      if (sync.importDataRules.length === 0) {
+      if (prefix !== '' && !prefix.endsWith('/')) {
         throw new ValidationError(
-          lit`SynchronizationConfigurationImportDataRules`,
-          "'synchronizationConfiguration.importDataRules' must contain at least one rule",
-          this,
-        );
-      }
-      if (sync.expirationDataRules.length === 0) {
-        throw new ValidationError(
-          lit`SynchronizationConfigurationExpirationDataRules`,
-          "'synchronizationConfiguration.expirationDataRules' must contain at least one rule",
+          lit`InvalidPrefix`,
+          `'prefix' must be empty or end with '/', got ${JSON.stringify(prefix)}`,
           this,
         );
       }
@@ -491,7 +474,7 @@ export class FileSystem extends FileSystemBase {
   private createServiceRole(props: FileSystemProps): iam.IRole {
     const stack = Stack.of(this);
     const role = new iam.Role(this, 'ServiceRole', {
-      assumedBy: new iam.ServicePrincipal('s3files.amazonaws.com', {
+      assumedBy: new iam.ServicePrincipal('elasticfilesystem.amazonaws.com', {
         conditions: {
           StringEquals: { 'aws:SourceAccount': stack.account },
           ArnLike: {
@@ -506,30 +489,86 @@ export class FileSystem extends FileSystemBase {
     });
 
     const bucketArn = props.bucket.bucketRef.bucketArn;
-    const prefix = props.prefix;
-    const objectsArn = prefix
-      ? `${bucketArn}/${prefix.replace(/\/$/, '')}/*`
-      : `${bucketArn}/*`;
+    const objectsArn = `${bucketArn}/*`;
+    const accountCondition = {
+      StringEquals: { 'aws:ResourceAccount': stack.account },
+    };
     role.addToPrincipalPolicy(new iam.PolicyStatement({
+      sid: 'S3BucketPermissions',
+      actions: ['s3:ListBucket', 's3:ListBucketVersions'],
+      resources: [bucketArn],
+      conditions: accountCondition,
+    }));
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      sid: 'S3ObjectPermissions',
       actions: [
+        's3:AbortMultipartUpload',
         's3:DeleteObject*',
-        's3:GetBucketLocation',
         's3:GetObject*',
-        's3:ListBucket',
+        's3:List*',
         's3:PutObject*',
       ],
-      resources: [bucketArn, objectsArn],
+      resources: [objectsArn],
+      conditions: accountCondition,
     }));
 
     if (props.kmsKey) {
       role.addToPrincipalPolicy(new iam.PolicyStatement({
-        actions: ['kms:Decrypt', 'kms:GenerateDataKey'],
+        sid: 'UseKmsKeyWithS3Files',
+        actions: [
+          'kms:GenerateDataKey',
+          'kms:Encrypt',
+          'kms:Decrypt',
+          'kms:ReEncryptFrom',
+          'kms:ReEncryptTo',
+        ],
         resources: [props.kmsKey.keyRef.keyArn],
         conditions: {
-          StringEquals: { 'kms:ViaService': `s3.${stack.region}.amazonaws.com` },
+          StringLike: {
+            'kms:ViaService': `s3.${stack.region}.amazonaws.com`,
+            'kms:EncryptionContext:aws:s3:arn': [bucketArn, objectsArn],
+          },
         },
       }));
     }
+
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      sid: 'EventBridgeManage',
+      actions: [
+        'events:DeleteRule',
+        'events:DisableRule',
+        'events:EnableRule',
+        'events:PutRule',
+        'events:PutTargets',
+        'events:RemoveTargets',
+      ],
+      resources: [stack.formatArn({
+        service: 'events',
+        region: '*',
+        account: '*',
+        resource: 'rule',
+        resourceName: 'DO-NOT-DELETE-S3-Files*',
+      })],
+      conditions: {
+        StringEquals: { 'events:ManagedBy': 'elasticfilesystem.amazonaws.com' },
+      },
+    }));
+    role.addToPrincipalPolicy(new iam.PolicyStatement({
+      sid: 'EventBridgeRead',
+      actions: [
+        'events:DescribeRule',
+        'events:ListRuleNamesByTarget',
+        'events:ListRules',
+        'events:ListTargetsByRule',
+      ],
+      resources: [stack.formatArn({
+        service: 'events',
+        region: '*',
+        account: '*',
+        resource: 'rule',
+        resourceName: '*',
+      })],
+    }));
     return role;
   }
 }
@@ -574,7 +613,7 @@ class ImportedFileSystem extends FileSystemBase {
     this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;
 
     this.connections = new ec2.Connections({
-      securityGroups: attrs.securityGroup ? [attrs.securityGroup] : [],
+      securityGroups: [attrs.securityGroup],
       defaultPort: ec2.Port.tcp(FileSystem.DEFAULT_PORT),
     });
     this.mountTargetsAvailable = new DependencyGroup();

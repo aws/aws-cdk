@@ -21,12 +21,12 @@ beforeEach(() => {
 });
 
 describe('FileSystem', () => {
-  test('default file system creates the L1 with bucket and a service role', () => {
+  test('default file system creates the L1 with bucket ARN and a service role', () => {
     new FileSystem(stack, 'FileSystem', { bucket, vpc });
 
     const t = Template.fromStack(stack);
     t.hasResourceProperties('AWS::S3Files::FileSystem', {
-      Bucket: { Ref: Match.stringLikeRegexp('^Bucket') },
+      Bucket: { 'Fn::GetAtt': [Match.stringLikeRegexp('^Bucket'), 'Arn'] },
       RoleArn: {
         'Fn::GetAtt': [Match.stringLikeRegexp('^FileSystemServiceRole'), 'Arn'],
       },
@@ -52,7 +52,7 @@ describe('FileSystem', () => {
     });
   });
 
-  test('default service role trusts s3files.amazonaws.com with confused-deputy conditions', () => {
+  test('default service role trusts elasticfilesystem.amazonaws.com with confused-deputy conditions', () => {
     new FileSystem(stack, 'FileSystem', { bucket, vpc });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Role', {
@@ -60,7 +60,7 @@ describe('FileSystem', () => {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'sts:AssumeRole',
-            Principal: { Service: 's3files.amazonaws.com' },
+            Principal: { Service: 'elasticfilesystem.amazonaws.com' },
             Condition: {
               StringEquals: { 'aws:SourceAccount': '123456789012' },
               ArnLike: {
@@ -75,19 +75,58 @@ describe('FileSystem', () => {
     });
   });
 
-  test('default service role grants read/write to the bucket', () => {
+  test('default service role grants S3 bucket-level access scoped to account', () => {
     new FileSystem(stack, 'FileSystem', { bucket, vpc });
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
+            Sid: 'S3BucketPermissions',
+            Action: ['s3:ListBucket', 's3:ListBucketVersions'],
+            Condition: { StringEquals: { 'aws:ResourceAccount': '123456789012' } },
+          }),
+          Match.objectLike({
+            Sid: 'S3ObjectPermissions',
             Action: [
+              's3:AbortMultipartUpload',
               's3:DeleteObject*',
-              's3:GetBucketLocation',
               's3:GetObject*',
-              's3:ListBucket',
+              's3:List*',
               's3:PutObject*',
+            ],
+            Condition: { StringEquals: { 'aws:ResourceAccount': '123456789012' } },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('default service role grants EventBridge management for elasticfilesystem rules', () => {
+    new FileSystem(stack, 'FileSystem', { bucket, vpc });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Sid: 'EventBridgeManage',
+            Action: [
+              'events:DeleteRule',
+              'events:DisableRule',
+              'events:EnableRule',
+              'events:PutRule',
+              'events:PutTargets',
+              'events:RemoveTargets',
+            ],
+            Condition: { StringEquals: { 'events:ManagedBy': 'elasticfilesystem.amazonaws.com' } },
+          }),
+          Match.objectLike({
+            Sid: 'EventBridgeRead',
+            Action: [
+              'events:DescribeRule',
+              'events:ListRuleNamesByTarget',
+              'events:ListRules',
+              'events:ListTargetsByRule',
             ],
           }),
         ]),
@@ -97,7 +136,7 @@ describe('FileSystem', () => {
 
   test('explicit role is used and no service role is created', () => {
     const role = new iam.Role(stack, 'CustomRole', {
-      assumedBy: new iam.ServicePrincipal('s3files.amazonaws.com'),
+      assumedBy: new iam.ServicePrincipal('elasticfilesystem.amazonaws.com'),
     });
 
     new FileSystem(stack, 'FileSystem', { bucket, vpc, role });
@@ -116,12 +155,12 @@ describe('FileSystem', () => {
     new FileSystem(stack, 'FileSystem', {
       bucket,
       vpc,
-      prefix: 'data/projects',
+      prefix: 'data/projects/',
       acceptBucketWarning: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3Files::FileSystem', {
-      Prefix: 'data/projects',
+      Prefix: 'data/projects/',
       AcceptBucketWarning: true,
     });
   });
@@ -146,17 +185,24 @@ describe('FileSystem', () => {
     })).toThrow(`'clientToken' must be 1-64 characters long, got ${length}`);
   });
 
-  test('fails when prefix starts with /', () => {
-    expect(() => new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix: '/leading-slash' }))
-      .toThrow("'prefix' must not start with '/', got \"/leading-slash\"");
+  test('fails when prefix does not end with /', () => {
+    expect(() => new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix: 'no-trailing-slash' }))
+      .toThrow("'prefix' must be empty or end with '/', got \"no-trailing-slash\"");
+  });
+
+  test('empty prefix is accepted', () => {
+    new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix: '' });
+    Template.fromStack(stack).hasResourceProperties('AWS::S3Files::FileSystem', {
+      Prefix: '',
+    });
   });
 
   test('fails when prefix exceeds 1024 characters', () => {
-    expect(() => new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix: 'a'.repeat(1025) }))
+    expect(() => new FileSystem(stack, 'FileSystem', { bucket, vpc, prefix: 'a'.repeat(1024) + '/' }))
       .toThrow("'prefix' must be at most 1024 characters long, got 1025");
   });
 
-  test('kmsKey adds key id and grants kms:Decrypt/GenerateDataKey', () => {
+  test('kmsKey adds key id and grants the full S3 Files KMS action set with conditions', () => {
     const key = new kms.Key(stack, 'Key');
 
     new FileSystem(stack, 'FileSystem', { bucket, vpc, kmsKey: key });
@@ -169,10 +215,19 @@ describe('FileSystem', () => {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: ['kms:Decrypt', 'kms:GenerateDataKey'],
+            Sid: 'UseKmsKeyWithS3Files',
+            Action: [
+              'kms:GenerateDataKey',
+              'kms:Encrypt',
+              'kms:Decrypt',
+              'kms:ReEncryptFrom',
+              'kms:ReEncryptTo',
+            ],
             Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('^Key'), 'Arn'] },
             Condition: {
-              StringEquals: { 'kms:ViaService': 's3.us-east-1.amazonaws.com' },
+              StringLike: Match.objectLike({
+                'kms:ViaService': 's3.us-east-1.amazonaws.com',
+              }),
             },
           }),
         ]),
@@ -208,25 +263,6 @@ describe('FileSystem', () => {
         }],
       },
     });
-  });
-
-  test('synchronizationConfiguration requires non-empty rules', () => {
-    expect(() => new FileSystem(stack, 'FileSystem1', {
-      bucket,
-      vpc,
-      synchronizationConfiguration: {
-        importDataRules: [],
-        expirationDataRules: [{ afterLastAccess: Duration.days(1) }],
-      },
-    })).toThrow("'synchronizationConfiguration.importDataRules' must contain at least one rule");
-    expect(() => new FileSystem(stack, 'FileSystem2', {
-      bucket,
-      vpc,
-      synchronizationConfiguration: {
-        importDataRules: [{ prefix: 'p', sizeLessThan: Size.mebibytes(1), trigger: ImportDataTrigger.ON_DEMAND }],
-        expirationDataRules: [],
-      },
-    })).toThrow("'synchronizationConfiguration.expirationDataRules' must contain at least one rule");
   });
 
   test('vpcSubnets controls mount target placement', () => {
@@ -322,8 +358,16 @@ describe('FileSystem', () => {
 });
 
 describe('FileSystem.fromFileSystemAttributes', () => {
+  let sg: ec2.SecurityGroup;
+  beforeEach(() => {
+    sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+  });
+
   test('imports by id and synthesizes ARN', () => {
-    const fs = FileSystem.fromFileSystemAttributes(stack, 'Imported', { fileSystemId: 'fs-12345678' });
+    const fs = FileSystem.fromFileSystemAttributes(stack, 'Imported', {
+      fileSystemId: 'fs-12345678',
+      securityGroup: sg,
+    });
 
     expect(stack.resolve(fs.fileSystemId)).toBe('fs-12345678');
     expect(stack.resolve(fs.fileSystemArn)).toEqual({
@@ -338,14 +382,14 @@ describe('FileSystem.fromFileSystemAttributes', () => {
   test('imports by ARN and parses out the id', () => {
     const fs = FileSystem.fromFileSystemAttributes(stack, 'Imported', {
       fileSystemArn: 'arn:aws:s3files:us-east-1:123456789012:file-system/fs-99999999',
+      securityGroup: sg,
     });
 
     expect(stack.resolve(fs.fileSystemId)).toBe('fs-99999999');
     expect(stack.resolve(fs.fileSystemArn)).toBe('arn:aws:s3files:us-east-1:123456789012:file-system/fs-99999999');
   });
 
-  test('imports respect the supplied security group', () => {
-    const sg = new ec2.SecurityGroup(stack, 'SG', { vpc });
+  test('imports use the supplied security group', () => {
     const fs = FileSystem.fromFileSystemAttributes(stack, 'Imported', {
       fileSystemId: 'fs-1',
       securityGroup: sg,
@@ -355,7 +399,7 @@ describe('FileSystem.fromFileSystemAttributes', () => {
   });
 
   test('fails when neither id nor arn is provided', () => {
-    expect(() => FileSystem.fromFileSystemAttributes(stack, 'Imported', {}))
+    expect(() => FileSystem.fromFileSystemAttributes(stack, 'Imported', { securityGroup: sg }))
       .toThrow("Exactly one of 'fileSystemId' or 'fileSystemArn' must be provided.");
   });
 
@@ -363,6 +407,7 @@ describe('FileSystem.fromFileSystemAttributes', () => {
     expect(() => FileSystem.fromFileSystemAttributes(stack, 'Imported', {
       fileSystemId: 'fs-1',
       fileSystemArn: 'arn:aws:s3files:us-east-1:123456789012:file-system/fs-1',
+      securityGroup: sg,
     })).toThrow("Exactly one of 'fileSystemId' or 'fileSystemArn' must be provided.");
   });
 });

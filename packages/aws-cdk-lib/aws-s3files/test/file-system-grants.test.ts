@@ -75,7 +75,11 @@ describe('FileSystemGrants', () => {
   });
 
   test('grants on imported file system fall back to addToPrincipal', () => {
-    const imported = FileSystem.fromFileSystemAttributes(stack, 'Imported', { fileSystemId: 'fs-12345678' });
+    const sg = new ec2.SecurityGroup(stack, 'ImportedSg', { vpc });
+    const imported = FileSystem.fromFileSystemAttributes(stack, 'Imported', {
+      fileSystemId: 'fs-12345678',
+      securityGroup: sg,
+    });
     const role = new iam.Role(stack, 'Grantee2', { assumedBy: new iam.AccountRootPrincipal() });
 
     FileSystemGrants.fromFileSystem(imported).read(role);
