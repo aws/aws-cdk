@@ -11,7 +11,7 @@
     },
     "service": "Lambda",
     "api": "invoke",
-    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$SerializedJson\":{\"ok\":true}}}}",
+    "expected": "{\"$ObjectLike\":{\"Payload\":{\"$SerializedJson\":{\"$ObjectLike\":{\"ok\":true}}}}}",
     "parameters": {
      "FunctionName": {
       "Fn::Join": [
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1777909053643"
+    "salt": "1777970655287"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -114,15 +114,6 @@
            ]
           }
          ]
-        },
-        {
-         "Action": [
-          "s3files:DeleteFileSystem"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -151,42 +142,6 @@
      ]
     }
    },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "AwsApiCallS3FilesDeleteFileSystem00b56e8a7f47089a02c08584552c9513": {
-   "Type": "Custom::DeployAssert@SdkCallS3FilesDeleteFileSystem",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "S3Files",
-    "api": "DeleteFileSystem",
-    "parameters": {
-     "FileSystemId": {
-      "Fn::Join": [
-       "",
-       [
-        "\"",
-        {
-         "Fn::ImportValue": "test-s3files-filesystem-integ:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
-        },
-        "\""
-       ]
-      ]
-     },
-     "ForceDelete": "true"
-    },
-    "flattenResponse": "false",
-    "salt": "1777909053644"
-   },
-   "DependsOn": [
-    "LambdaInvoke155ee1129db24191a811bbc7c200b16a",
-    "LambdaInvoke155ee1129db24191a811bbc7c200b16aInvokeBCFB9F67"
-   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }

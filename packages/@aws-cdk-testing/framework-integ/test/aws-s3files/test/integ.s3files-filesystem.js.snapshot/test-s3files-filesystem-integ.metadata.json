@@ -662,26 +662,6 @@
       ]
     }
   ],
-  "/test-s3files-filesystem-integ/Exports/Output{\"Fn::GetAtt\":[\"FileSystem8A8E25C0\",\"FileSystemId\"]}": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "Stack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:991:13)",
-        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
-        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
-        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
-        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:151:92)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:83:51)",
-        "...node internals..."
-      ]
-    }
-  ],
   "/test-s3files-filesystem-integ/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",

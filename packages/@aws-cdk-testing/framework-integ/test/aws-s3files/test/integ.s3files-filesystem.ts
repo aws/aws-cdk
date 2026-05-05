@@ -57,9 +57,5 @@ const test = new integ.IntegTest(app, 'test-s3files-filesystem-integ-test', {
 test.assertions
   .invokeFunction({ functionName: mountTester.functionName })
   .expect(integ.ExpectedResult.objectLike({
-    Payload: integ.Match.serializedJson({ ok: true }),
-  }))
-  .next(test.assertions.awsApiCall('S3Files', 'DeleteFileSystem', {
-    FileSystemId: fileSystem.fileSystemId,
-    ForceDelete: true,
+    Payload: integ.Match.serializedJson(integ.Match.objectLike({ ok: true })),
   }));

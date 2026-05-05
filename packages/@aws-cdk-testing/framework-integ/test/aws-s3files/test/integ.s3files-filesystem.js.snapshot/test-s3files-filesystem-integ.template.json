@@ -1231,17 +1231,6 @@
    "Export": {
     "Name": "test-s3files-filesystem-integ:ExportsOutputRefMountTester30EA718A7481FEEE"
    }
-  },
-  "ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B": {
-   "Value": {
-    "Fn::GetAtt": [
-     "FileSystem8A8E25C0",
-     "FileSystemId"
-    ]
-   },
-   "Export": {
-    "Name": "test-s3files-filesystem-integ:ExportsOutputFnGetAttFileSystem8A8E25C0FileSystemId8EC1E37B"
-   }
   }
  },
  "Parameters": {

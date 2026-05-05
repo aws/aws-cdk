@@ -150,12 +150,6 @@
       ]
     }
   ],
-  "/test-s3files-filesystem-integ-test/DefaultTest/DeployAssert/AwsApiCallS3FilesDeleteFileSystem00b56e8a7f47089a02c08584552c9513/Default": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
   "/test-s3files-filesystem-integ-test/DefaultTest/DeployAssert/LambdaInvoke155ee1129db24191a811bbc7c200b16a/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
@@ -171,24 +165,6 @@
         "new LambdaInvokeFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
         "DeployAssert.invokeFunction (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
         "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:52:6)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/test-s3files-filesystem-integ-test/DefaultTest/DeployAssert/AwsApiCallS3FilesDeleteFileSystem00b56e8a7f47089a02c08584552c9513/Default/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "AwsApiCallS3FilesDeleteFileSystem00b56e8a7f47089a02c08584552c9513"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:118:29)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsApiCall (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
-        "DeployAssert.awsApiCall (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3files/test/integ.s3files-filesystem.js:56:27)",
         "...node internals..."
       ]
     }
