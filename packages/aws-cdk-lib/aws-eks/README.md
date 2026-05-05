@@ -276,30 +276,43 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
-To define the maximum number of instances which can be simultaneously replaced in a node group during a version update you can set `maxUnavailable` or `maxUnavailablePercentage` options.
+##### Default AMI type (under feature flag)
 
-> For more details visit [Updating a managed node group](https://docs.aws.amazon.com/eks/latest/userguide/update-managed-node-group.html)
+By default, managed node groups that do not set `amiType` use `AL2_X86_64` (or `AL2_ARM_64` for
+ARM instances). Amazon Linux 2 EKS-optimized AMIs reached end of support on **November 26, 2025**. 
+AL2023 is the AWS-recommended default.
+
+New applications should enable the `@aws-cdk/aws-eks:defaultToAL2023` feature flag in `cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-eks:defaultToAL2023": true
+  }
+}
+```
+
+When the flag is enabled, the default AMI type for x86_64 instances becomes
+`AL2023_X86_64_STANDARD`, and for ARM instances it becomes `AL2023_ARM_64_STANDARD`. GPU
+instances continue to default to `AL2_X86_64_GPU` because AL2023 splits GPU support into
+separate NVIDIA and Neuron AMI variants — GPU users must pick a variant explicitly.
+
+**Migration for existing applications.** Enabling this flag on an existing app will cause
+managed node groups that previously defaulted to AL2 to be replaced with AL2023 on the next
+deploy, which terminates running pods. To roll out safely, pin every existing node group to its
+current AMI type first, and only then enable the flag:
 
 ```ts
 declare const cluster: eks.Cluster;
-cluster.addNodegroupCapacity('custom-node-group', {
+
+// Pin existing node groups to AL2 explicitly before enabling the flag.
+cluster.addNodegroupCapacity('workers', {
   instanceTypes: [new ec2.InstanceType('m5.large')],
-  maxSize: 5,
-  maxUnavailable: 2,
+  amiType: eks.NodegroupAmiType.AL2_X86_64,
 });
 ```
 
-```ts
-declare const cluster: eks.Cluster;
-cluster.addNodegroupCapacity('custom-node-group', {
-  instanceTypes: [new ec2.InstanceType('m5.large')],
-  maxUnavailablePercentage: 33,
-});
-```
-
-> **NOTE:** If you add instances with the inferentia class (`inf1` or `inf2`) or trainium class (`trn1`, `trn1n`, or `trn2`) 
-> the [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
-> will be automatically installed in the kubernetes cluster.
+Explicitly setting `amiType` will pin it — it is not affected by the feature flag.
 
 #### Node Groups with IPv6 Support
 

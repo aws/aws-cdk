@@ -556,9 +556,11 @@ export class Nodegroup extends Resource implements INodegroup {
        * Case 1: If launchTemplate is explicitly specified with custom AMI, we cannot specify amiType, or the node group deployment will fail.
        * As we don't know if the custom AMI is specified in the lauchTemplate, we just use props.amiType.
        *
-       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes and it could be either AL2 or Bottlerocket.
-       * To avoid breaking changes, we use possibleAmiTypes[0] if amiType is undefined and make sure AL2 is always the first element in possibleAmiTypes
-       * as AL2 is previously the `expectedAmi` and this avoids breaking changes.
+       * Case 2: If launchTemplate is not specified, we try to determine amiType from the instanceTypes and it could be either AL2, AL2023, or Bottlerocket.
+       * When `amiType` is undefined we fall back to `possibleAmiTypes[0]`. The first element
+       * depends on the `@aws-cdk/aws-eks:defaultToAL2023` feature flag: AL2 when the flag is
+       * off (default, for backwards compatibility), AL2023 when the flag is on. GPU instance types
+       * continue to use `AL2_X86_64_GPU` irrespective of the feature flag.
        *
        * That being said, users now either have to explicitly specify correct amiType or just leave it undefined.
        */
@@ -666,23 +668,39 @@ export class Nodegroup extends Resource implements INodegroup {
 }
 
 /**
- * AMI types of different architectures. Make sure AL2 is always the first element, which will be the default
+ * AMI types of different architectures. The first element is the default.
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
-const arm64AmiTypes: NodegroupAmiType[] = [
-  NodegroupAmiType.AL2_ARM_64,
-  NodegroupAmiType.AL2023_ARM_64_STANDARD,
-  NodegroupAmiType.BOTTLEROCKET_ARM_64,
-];
-const x8664AmiTypes: NodegroupAmiType[] = [
-  NodegroupAmiType.AL2_X86_64,
-  NodegroupAmiType.AL2023_X86_64_STANDARD,
-  NodegroupAmiType.BOTTLEROCKET_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
-  NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
-  NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
-];
+const arm64AmiTypes = (useAL2023: boolean): NodegroupAmiType[] => useAL2023 ?
+  [
+    NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    NodegroupAmiType.AL2_ARM_64,
+    NodegroupAmiType.BOTTLEROCKET_ARM_64,
+  ] :
+  [
+    NodegroupAmiType.AL2_ARM_64,
+    NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    NodegroupAmiType.BOTTLEROCKET_ARM_64,
+  ];
+const x8664AmiTypes = (useAL2023: boolean): NodegroupAmiType[] => useAL2023 ?
+  [
+    NodegroupAmiType.AL2023_X86_64_STANDARD,
+    NodegroupAmiType.AL2_X86_64,
+    NodegroupAmiType.BOTTLEROCKET_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+  ] :
+  [
+    NodegroupAmiType.AL2_X86_64,
+    NodegroupAmiType.AL2023_X86_64_STANDARD,
+    NodegroupAmiType.BOTTLEROCKET_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
+    NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
+    NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
+  ];
 const windowsAmiTypes: NodegroupAmiType[] = [
   NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
   NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
@@ -724,9 +742,11 @@ function getPossibleAmiTypes(scope: Construct, instanceTypes: InstanceType[]): N
   function typeToArch(instanceType: InstanceType): AmiArchitecture {
     return isGpuInstanceType(instanceType) ? 'GPU' : instanceType.architecture;
   }
+
+  const useAL2023 = FeatureFlags.of(scope).isEnabled(cxapi.EKS_DEFAULT_AL2023) ?? false;
   const archAmiMap = new Map<AmiArchitecture, NodegroupAmiType[]>([
-    [InstanceArchitecture.ARM_64, arm64AmiTypes],
-    [InstanceArchitecture.X86_64, x8664AmiTypes],
+    [InstanceArchitecture.ARM_64, arm64AmiTypes(useAL2023)],
+    [InstanceArchitecture.X86_64, x8664AmiTypes(useAL2023)],
     ['GPU', gpuAmiTypes],
   ]);
   const architectures: Set<AmiArchitecture> = new Set(instanceTypes.map(typeToArch));

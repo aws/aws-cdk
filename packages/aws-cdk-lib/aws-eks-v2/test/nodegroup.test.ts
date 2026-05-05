@@ -618,6 +618,90 @@ describe('node group', () => {
   });
 
   /**
+   * When EKS_DEFAULT_AL2023 feature flag is enabled and instanceTypes are x86_64,
+   * the amiType should be implicitly set as AL2023_x86_64_STANDARD.
+   */
+  test('amiType should be AL2023_x86_64_STANDARD when EKS_DEFAULT_AL2023 flag is enabled and instanceTypes is x86_64', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    stack.node.setContext(cxapi.EKS_DEFAULT_AL2023, true);
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      ...commonProps,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('m5.large'),
+        new ec2.InstanceType('c5.large'),
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2023_x86_64_STANDARD',
+    });
+  });
+
+  /**
+   * When EKS_DEFAULT_AL2023 feature flag is enabled and instanceTypes are ARM64,
+   * the amiType should be implicitly set as AL2023_ARM_64_STANDARD.
+   */
+  test('amiType should be AL2023_ARM_64_STANDARD when EKS_DEFAULT_AL2023 flag is enabled and instanceTypes is ARM_64', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    stack.node.setContext(cxapi.EKS_DEFAULT_AL2023, true);
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      ...commonProps,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('c6g.large'),
+        new ec2.InstanceType('t4g.large'),
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2023_ARM_64_STANDARD',
+    });
+  });
+
+  /**
+   * When EKS_DEFAULT_AL2023 feature flag is enabled and instanceTypes are GPU,
+   * the amiType should remain AL2_x86_64_GPU (GPU instances are excluded from the flag).
+   */
+  test('amiType should remain AL2_x86_64_GPU when EKS_DEFAULT_AL2023 flag is enabled and instanceTypes is GPU', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    stack.node.setContext(cxapi.EKS_DEFAULT_AL2023, true);
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      ...commonProps,
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [
+        new ec2.InstanceType('p3.large'),
+        new ec2.InstanceType('g3.large'),
+      ],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2_x86_64_GPU',
+    });
+  });
+
+  /**
    * When LaunchTemplate is undefined, amiType is AL2_x86_64 and instanceTypes are not x86_64,
    * we should throw an error.
    */
@@ -628,6 +712,7 @@ describe('node group', () => {
       vpc,
       ...commonProps,
     });
+
     // THEN
     expect(() => cluster.addNodegroupCapacity('ng', {
       amiType: NodegroupAmiType.AL2_X86_64,
