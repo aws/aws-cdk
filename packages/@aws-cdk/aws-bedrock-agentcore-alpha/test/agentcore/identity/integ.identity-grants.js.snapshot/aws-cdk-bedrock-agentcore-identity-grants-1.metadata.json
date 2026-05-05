@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:17:15)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:19:15)",
         "...node internals..."
       ]
     }
@@ -21,7 +21,7 @@
         "Annotations.addWarningV2 (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
         "grantCredentialSecret (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/grant-helpers.js:113:45)",
         "WrappedClass.grantAdmin (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:82:66)",
-        "Object.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:168:16)",
+        "Object.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:229:16)",
         "Module._compile (node:internal/modules/cjs/loader:1706:14)",
         "Object..js (node:internal/modules/cjs/loader:1839:10)",
         "Module.load (node:internal/modules/cjs/loader:1441:32)",
@@ -46,7 +46,7 @@
         "Annotations.addWarningV2 (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
         "grantCredentialSecret (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/grant-helpers.js:113:45)",
         "WrappedClass.grantAdmin (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:183:66)",
-        "Object.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:169:15)",
+        "Object.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:230:15)",
         "Module._compile (node:internal/modules/cjs/loader:1706:14)",
         "Object..js (node:internal/modules/cjs/loader:1839:10)",
         "Module.load (node:internal/modules/cjs/loader:1441:32)",
@@ -68,12 +68,20 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "functionName": "*",
         "runtime": "*",
         "handler": "*",
         "timeout": "*",
         "environment": "*",
         "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
       }
     },
     {
@@ -108,12 +116,20 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "functionName": "*",
         "runtime": "*",
         "handler": "*",
         "timeout": "*",
         "environment": "*",
         "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
       }
     },
     {
@@ -148,12 +164,20 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "functionName": "*",
         "runtime": "*",
         "handler": "*",
         "timeout": "*",
         "environment": "*",
         "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
       }
     },
     {
@@ -201,7 +225,7 @@
         "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
         "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
         "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:303:5)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
         "...node internals..."
       ]
     }
@@ -223,7 +247,7 @@
         "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
         "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
         "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:303:5)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
         "...node internals..."
       ]
     }
@@ -238,7 +262,7 @@
       "data": [
         "new ApiKeyCredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:220:31)",
         "new ApiKeyCredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:19:24)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:21:24)",
         "...node internals..."
       ]
     }
@@ -254,7 +278,7 @@
         "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:828:31)",
         "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "OAuth2CredentialProvider.usingGithub (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:312:20)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:24:58)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:26:58)",
         "...node internals..."
       ]
     }
@@ -269,7 +293,7 @@
       "data": [
         "new WorkloadIdentity (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/workload-identity.js:202:30)",
         "new WorkloadIdentity (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:30:26)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:32:26)",
         "...node internals..."
       ]
     }
@@ -340,7 +364,7 @@
       "data": [
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:680:29)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:53:16)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:194:16)",
         "...node internals..."
       ]
     }
@@ -435,7 +459,7 @@
       "data": [
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:680:29)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:99:17)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:214:17)",
         "...node internals..."
       ]
     }
@@ -530,7 +554,7 @@
       "data": [
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:680:29)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:174:22)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:234:22)",
         "...node internals..."
       ]
     }
@@ -558,7 +582,7 @@
         "prepareApp (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:34)",
         "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
         "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:303:5)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
         "...node internals..."
       ]
     }
@@ -578,7 +602,7 @@
         "prepareApp (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:34)",
         "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
         "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:303:5)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
         "...node internals..."
       ]
     }
@@ -598,7 +622,7 @@
         "prepareApp (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:34)",
         "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
         "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:303:5)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
         "...node internals..."
       ]
     }
@@ -615,7 +639,7 @@
         "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:595:39)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:53:16)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:194:16)",
         "...node internals..."
       ]
     }
@@ -678,7 +702,7 @@
         "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:764:34)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:53:16)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:194:16)",
         "...node internals..."
       ]
     }
@@ -695,7 +719,7 @@
         "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:595:39)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:99:17)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:214:17)",
         "...node internals..."
       ]
     }
@@ -774,7 +798,7 @@
         "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:764:34)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:99:17)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:214:17)",
         "...node internals..."
       ]
     }
@@ -791,7 +815,7 @@
         "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:595:39)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:174:22)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:234:22)",
         "...node internals..."
       ]
     }
@@ -870,7 +894,7 @@
         "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:764:34)",
         "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:174:22)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:234:22)",
         "...node internals..."
       ]
     }
@@ -890,7 +914,7 @@
         "Grant.addToPrincipal (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
         "grantReadWithList (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/grant-helpers.js:87:22)",
         "WrappedClass.grantRead (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:75:54)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:95:16)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:209:16)",
         "...node internals..."
       ]
     }
@@ -910,7 +934,7 @@
         "Grant.addToPrincipal (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
         "WrappedClass.grant (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:64:26)",
         "WrappedClass.grantAdmin (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:81:30)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:168:16)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:229:16)",
         "...node internals..."
       ]
     }
@@ -929,7 +953,7 @@
         "WrappedClass.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "Grant.addToPrincipal (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
         "WrappedClass.grantFullAccess (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:102:35)",
-        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:264:16)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:249:16)",
         "...node internals..."
       ]
     }

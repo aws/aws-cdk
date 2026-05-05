@@ -2,8 +2,10 @@
  * Integration test: Identity grant methods (grantRead, grantAdmin, grantFullAccess)
  * for WorkloadIdentity, ApiKeyCredentialProvider, and OAuth2CredentialProvider.
  *
- * Each Lambda function is granted a specific permission scope and then invoked to verify
- * that the IAM policies produced by the grant helpers actually allow the expected API calls.
+ * Each Lambda function is granted a specific permission scope and then invoked to run
+ * ALL probe categories (read, admin, use). The test verifies both positive access (granted
+ * actions succeed) and negative access (non-granted actions are denied), proving that
+ * grants are neither under- nor over-permissive.
  */
 
 /// !cdk-integ aws-cdk-bedrock-agentcore-identity-grants-1
@@ -39,9 +41,6 @@ const workloadIdentity = new agentcore.WorkloadIdentity(stack, 'WorkloadIdentity
 });
 
 // ===== Shared inline helpers =====
-// Embedded into every Lambda to avoid an external layer / asset.
-// - nameFromArn: extracts the resource name (last segment) from an ARN
-// - isAccessDenied: detects IAM permission errors in SDK responses
 
 const INLINE_HELPERS = `
   function nameFromArn(arn) {
@@ -56,26 +55,155 @@ const INLINE_HELPERS = `
   function isAccessDenied(error) {
     var message = error instanceof Error ? error.message : String(error);
     var name = typeof error === 'object' && error !== null && 'name' in error ? String(error.name) : '';
-    return name.includes('AccessDenied') || message.includes('AccessDenied') || message.includes('not authorized');
+    var httpStatus = typeof error === 'object' && error !== null && '$metadata' in error
+      ? (error.$metadata && error.$metadata.httpStatusCode) : 0;
+    return httpStatus === 403
+      || name.includes('AccessDenied')
+      || name.includes('Unauthorized')
+      || name.includes('Forbidden')
+      || message.includes('AccessDenied')
+      || message.includes('not authorized')
+      || message.includes('Not authorized');
   }
 `;
 
-// ===== Handler pattern =====
-// Each Lambda follows this structure:
-//   1. Import SDK client(s) and build probe commands
-//   2. Execute each probe command against the API
-//   3. Classify errors: AccessDenied → failure (missing permission), other → authorized but non-access error
-//   4. Return { results, failures, passed } — the integ assertion checks `passed: true`
+// ===== Unified handler body =====
+// All three Lambdas share this handler. Behavior is driven by the EXPECTED_DENIED
+// environment variable which lists probe categories that SHOULD be denied.
+// Categories: 'read', 'admin', 'use'
 //
-// The read handler treats ALL errors as failures (any error means the grant is broken).
-// The admin and fullAccess handlers distinguish AccessDenied from service errors
-// (e.g., UpdateWorkloadIdentity may return a validation error even when IAM allows the call).
+// The handler runs all probes and then verifies:
+//   - Every probe in an expected-denied category got AccessDenied
+//   - No probe in an allowed category got AccessDenied
+
+const INLINE_HANDLER_BODY = `
+  exports.handler = async () => {
+    try {
+      var controlSdk = await import('@aws-sdk/client-bedrock-agentcore-control');
+      var runtimeSdk = await import('@aws-sdk/client-bedrock-agentcore');
+      var controlClient = new controlSdk.BedrockAgentCoreControlClient({});
+      var runtimeClient = new runtimeSdk.BedrockAgentCoreClient({});
+
+      var apiKeyName = nameFromArn(process.env.API_KEY_PROVIDER_ARN);
+      var oauthName = nameFromArn(process.env.OAUTH_PROVIDER_ARN);
+      var workloadName = nameFromArn(process.env.WORKLOAD_IDENTITY_ARN);
+      var expectedDenied = JSON.parse(process.env.EXPECTED_DENIED || '[]');
+
+      var results = [];
+      var accessDenied = [];
+
+      // ---- Read probes ----
+      var readProbes = [
+        { category: 'read', type: 'read_api_key', cmd: new controlSdk.GetApiKeyCredentialProviderCommand({ name: apiKeyName }), client: controlClient },
+        { category: 'read', type: 'read_oauth', cmd: new controlSdk.GetOauth2CredentialProviderCommand({ name: oauthName }), client: controlClient },
+        { category: 'read', type: 'read_workload_identity', cmd: new controlSdk.GetWorkloadIdentityCommand({ name: workloadName }), client: controlClient },
+      ];
+
+      // ---- Admin probes ----
+      var adminProbes = [
+        { category: 'admin', type: 'admin_api_key', cmd: new controlSdk.UpdateApiKeyCredentialProviderCommand({ name: apiKeyName, apiKey: 'integ-placeholder-api-key' }), client: controlClient },
+        {
+          category: 'admin', type: 'admin_oauth',
+          cmd: new controlSdk.UpdateOauth2CredentialProviderCommand({
+            name: oauthName,
+            credentialProviderVendor: 'GithubOauth2',
+            oauth2ProviderConfigInput: { githubOauth2ProviderConfig: { clientId: 'integ-github-client-id', clientSecret: 'integ-github-client-secret' } },
+          }),
+          client: controlClient,
+        },
+        { category: 'admin', type: 'admin_workload_identity', cmd: new controlSdk.UpdateWorkloadIdentityCommand({ name: workloadName }), client: controlClient },
+      ];
+
+      // ---- Use probes ----
+      // GetWorkloadAccessToken first (needed to call GetResourceApiKey)
+      var workloadIdentityToken = '';
+      try {
+        var tokenResp = await runtimeClient.send(
+          new runtimeSdk.GetWorkloadAccessTokenCommand({ workloadName: workloadName })
+        );
+        workloadIdentityToken = tokenResp.workloadAccessToken || '';
+        results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'succeeded' });
+      } catch (error) {
+        if (isAccessDenied(error)) {
+          accessDenied.push({ category: 'use', type: 'use_get_workload_access_token' });
+        } else {
+          results.push({ category: 'use', type: 'use_get_workload_access_token', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });
+        }
+      }
+
+      // GetResourceApiKey - only attempt with a real token; with a placeholder token
+      // the service may return a validation error instead of AccessDenied, making the
+      // result ambiguous. When the token call was denied, we already know 'use' is denied.
+      if (workloadIdentityToken) {
+        try {
+          await runtimeClient.send(
+            new runtimeSdk.GetResourceApiKeyCommand({
+              resourceCredentialProviderName: apiKeyName,
+              workloadIdentityToken: workloadIdentityToken,
+            })
+          );
+          results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'succeeded' });
+        } catch (error) {
+          if (isAccessDenied(error)) {
+            accessDenied.push({ category: 'use', type: 'use_get_resource_api_key' });
+          } else {
+            results.push({ category: 'use', type: 'use_get_resource_api_key', status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });
+          }
+        }
+      }
+
+      // ---- Run read and admin probes ----
+      var allProbes = readProbes.concat(adminProbes);
+      for (var p of allProbes) {
+        try {
+          await p.client.send(p.cmd);
+          results.push({ category: p.category, type: p.type, status: 'succeeded' });
+        } catch (error) {
+          if (isAccessDenied(error)) {
+            accessDenied.push({ category: p.category, type: p.type });
+          } else {
+            results.push({ category: p.category, type: p.type, status: 'authorized_non_access_error', error: error instanceof Error ? error.name + ': ' + error.message : String(error) });
+          }
+        }
+      }
+
+      // ---- Determine pass/fail ----
+      // unexpectedDenied: probes that got AccessDenied but should NOT have been denied
+      var unexpectedDenied = accessDenied.filter(function(d) { return expectedDenied.indexOf(d.category) === -1; });
+      // overPermissive: probes in expected-denied categories that were NOT denied
+      // (succeeded or got a non-access error, meaning IAM allowed the call)
+      var overPermissive = results.filter(function(r) { return expectedDenied.indexOf(r.category) !== -1; });
+      // missingDenied: expected-denied categories where no probe was even attempted
+      // (should not happen unless probes array is misconfigured)
+      var deniedCategories = accessDenied.map(function(d) { return d.category; });
+      var attemptedCategories = results.map(function(r) { return r.category; }).concat(deniedCategories);
+      var missingDenied = expectedDenied.filter(function(cat) { return attemptedCategories.indexOf(cat) === -1; });
+
+      var passed = unexpectedDenied.length === 0 && overPermissive.length === 0 && missingDenied.length === 0;
+
+      if (!passed) {
+        console.error('GRANT TEST FAILED:', JSON.stringify({ unexpectedDenied: unexpectedDenied, overPermissive: overPermissive, missingDenied: missingDenied }));
+      }
+
+      return {
+        results: results,
+        accessDenied: accessDenied,
+        unexpectedDenied: unexpectedDenied,
+        overPermissive: overPermissive,
+        missingDenied: missingDenied,
+        passed: passed,
+      };
+    } catch (fatal) {
+      console.error('FATAL:', fatal);
+      return { results: [], accessDenied: [], unexpectedDenied: [], overPermissive: [], missingDenied: [], passed: false, fatalError: fatal instanceof Error ? fatal.message : String(fatal) };
+    }
+  };
+`;
 
 // ===== 1. grantRead Lambda =====
-// Verifies read-only access: Get calls for each identity resource type.
+// Verifies: read probes pass, admin and use probes are denied.
 
 const readFn = new lambda.Function(stack, 'GrantReadFn', {
-  functionName: 'integ-identity-grants-read',
   runtime: lambda.Runtime.NODEJS_22_X,
   handler: 'index.handler',
   timeout: cdk.Duration.seconds(120),
@@ -83,37 +211,11 @@ const readFn = new lambda.Function(stack, 'GrantReadFn', {
     API_KEY_PROVIDER_ARN: apiKeyProvider.credentialProviderArn,
     OAUTH_PROVIDER_ARN: oauthProvider.credentialProviderArn,
     WORKLOAD_IDENTITY_ARN: workloadIdentity.workloadIdentityArn,
+    EXPECTED_DENIED: JSON.stringify(['admin', 'use']),
   },
   code: lambda.Code.fromInline(`
     ${INLINE_HELPERS}
-
-    exports.handler = async () => {
-      try {
-        var sdk = await import('@aws-sdk/client-bedrock-agentcore-control');
-        var client = new sdk.BedrockAgentCoreControlClient({});
-        var results = [];
-        var failures = [];
-
-        var probes = [
-          { type: 'api_key_provider', cmd: new sdk.GetApiKeyCredentialProviderCommand({ name: nameFromArn(process.env.API_KEY_PROVIDER_ARN) }) },
-          { type: 'oauth_provider',   cmd: new sdk.GetOauth2CredentialProviderCommand({ name: nameFromArn(process.env.OAUTH_PROVIDER_ARN) }) },
-          { type: 'workload_identity', cmd: new sdk.GetWorkloadIdentityCommand({ name: nameFromArn(process.env.WORKLOAD_IDENTITY_ARN) }) },
-        ];
-
-        for (var p of probes) {
-          try {
-            await client.send(p.cmd);
-            results.push({ type: p.type, status: 'read_succeeded' });
-          } catch (error) {
-            failures.push({ type: p.type, error: error instanceof Error ? error.message : String(error) });
-          }
-        }
-
-        return { results: results, failures: failures, passed: failures.length === 0 };
-      } catch (fatal) {
-        return { results: [], failures: [{ type: 'fatal', error: fatal instanceof Error ? fatal.message : String(fatal) }], passed: false };
-      }
-    };
+    ${INLINE_HANDLER_BODY}
   `),
 });
 
@@ -122,11 +224,9 @@ oauthProvider.grantRead(readFn);
 workloadIdentity.grantRead(readFn);
 
 // ===== 2. grantAdmin Lambda =====
-// Verifies admin (write) access: Update calls for each identity resource type.
-// Non-AccessDenied errors are tolerated (e.g., validation errors from no-op updates).
+// Verifies: read and admin probes pass (ADMIN_PERMS includes Get*), use probes are denied.
 
 const adminFn = new lambda.Function(stack, 'GrantAdminFn', {
-  functionName: 'integ-identity-grants-admin',
   runtime: lambda.Runtime.NODEJS_22_X,
   handler: 'index.handler',
   timeout: cdk.Duration.seconds(120),
@@ -134,64 +234,11 @@ const adminFn = new lambda.Function(stack, 'GrantAdminFn', {
     API_KEY_PROVIDER_ARN: apiKeyProvider.credentialProviderArn,
     OAUTH_PROVIDER_ARN: oauthProvider.credentialProviderArn,
     WORKLOAD_IDENTITY_ARN: workloadIdentity.workloadIdentityArn,
+    EXPECTED_DENIED: JSON.stringify(['use']),
   },
   code: lambda.Code.fromInline(`
     ${INLINE_HELPERS}
-
-    exports.handler = async () => {
-      try {
-        var sdk = await import('@aws-sdk/client-bedrock-agentcore-control');
-        var client = new sdk.BedrockAgentCoreControlClient({});
-        var results = [];
-        var failures = [];
-
-        var probes = [
-          {
-            type: 'api_key_provider',
-            cmd: new sdk.UpdateApiKeyCredentialProviderCommand({
-              name: nameFromArn(process.env.API_KEY_PROVIDER_ARN),
-              apiKey: 'integ-placeholder-api-key',
-            }),
-          },
-          {
-            type: 'oauth_provider',
-            cmd: new sdk.UpdateOauth2CredentialProviderCommand({
-              name: nameFromArn(process.env.OAUTH_PROVIDER_ARN),
-              credentialProviderVendor: 'GithubOauth2',
-              oauth2ProviderConfigInput: {
-                githubOauth2ProviderConfig: {
-                  clientId: 'integ-github-client-id',
-                  clientSecret: 'integ-github-client-secret',
-                },
-              },
-            }),
-          },
-          {
-            type: 'workload_identity',
-            cmd: new sdk.UpdateWorkloadIdentityCommand({
-              name: nameFromArn(process.env.WORKLOAD_IDENTITY_ARN),
-            }),
-          },
-        ];
-
-        for (var p of probes) {
-          try {
-            await client.send(p.cmd);
-            results.push({ type: p.type, status: 'admin_succeeded' });
-          } catch (error) {
-            if (isAccessDenied(error)) {
-              failures.push({ type: p.type, error: error instanceof Error ? error.message : String(error) });
-            } else {
-              results.push({ type: p.type, status: 'admin_authorized_non_access_error', error: error instanceof Error ? error.message : String(error) });
-            }
-          }
-        }
-
-        return { results: results, failures: failures, passed: failures.length === 0 };
-      } catch (fatal) {
-        return { results: [], failures: [{ type: 'fatal', error: fatal instanceof Error ? fatal.message : String(fatal) }], passed: false };
-      }
-    };
+    ${INLINE_HANDLER_BODY}
   `),
 });
 
@@ -200,14 +247,9 @@ oauthProvider.grantAdmin(adminFn);
 workloadIdentity.grantAdmin(adminFn);
 
 // ===== 3. grantFullAccess Lambda =====
-// Verifies combined read + admin + data-plane (use) access in a single function:
-//   - Mints a workload access token via the runtime SDK (data-plane)
-//   - Reads an API key provider and workload identity (control-plane)
-//   - Updates an OAuth provider (admin)
-//   - Retrieves a resource API key using the minted token (data-plane)
+// Verifies: all probes pass, nothing is denied.
 
 const fullAccessFn = new lambda.Function(stack, 'GrantFullAccessFn', {
-  functionName: 'integ-identity-grants-full-access',
   runtime: lambda.Runtime.NODEJS_22_X,
   handler: 'index.handler',
   timeout: cdk.Duration.seconds(120),
@@ -215,85 +257,11 @@ const fullAccessFn = new lambda.Function(stack, 'GrantFullAccessFn', {
     API_KEY_PROVIDER_ARN: apiKeyProvider.credentialProviderArn,
     OAUTH_PROVIDER_ARN: oauthProvider.credentialProviderArn,
     WORKLOAD_IDENTITY_ARN: workloadIdentity.workloadIdentityArn,
+    EXPECTED_DENIED: JSON.stringify([]),
   },
   code: lambda.Code.fromInline(`
     ${INLINE_HELPERS}
-
-    exports.handler = async () => {
-      try {
-        var controlSdk = await import('@aws-sdk/client-bedrock-agentcore-control');
-        var runtimeSdk = await import('@aws-sdk/client-bedrock-agentcore');
-        var controlClient = new controlSdk.BedrockAgentCoreControlClient({});
-        var runtimeClient = new runtimeSdk.BedrockAgentCoreClient({});
-
-        var apiKeyName = nameFromArn(process.env.API_KEY_PROVIDER_ARN);
-        var oauthName  = nameFromArn(process.env.OAUTH_PROVIDER_ARN);
-        var workloadName = nameFromArn(process.env.WORKLOAD_IDENTITY_ARN);
-
-        var results = [];
-        var failures = [];
-
-        // Mint a workload access token (data-plane) — needed for credential retrieval probes
-        var workloadIdentityToken = '';
-        try {
-          var tokenResp = await runtimeClient.send(
-            new runtimeSdk.GetWorkloadAccessTokenCommand({ workloadName: workloadName }),
-          );
-          workloadIdentityToken = tokenResp.workloadAccessToken || '';
-          results.push({ type: 'use_get_workload_access_token', status: 'full_access_succeeded' });
-        } catch (tokenErr) {
-          if (isAccessDenied(tokenErr)) {
-            failures.push({ type: 'use_get_workload_access_token', error: tokenErr instanceof Error ? tokenErr.message : String(tokenErr) });
-          } else {
-            results.push({ type: 'use_get_workload_access_token', status: 'authorized_non_access_error', error: tokenErr instanceof Error ? tokenErr.message : String(tokenErr) });
-          }
-        }
-
-        var probes = [
-          { type: 'read_api_key',           cmd: new controlSdk.GetApiKeyCredentialProviderCommand({ name: apiKeyName }), client: controlClient },
-          { type: 'read_workload_identity', cmd: new controlSdk.GetWorkloadIdentityCommand({ name: workloadName }),       client: controlClient },
-          {
-            type: 'admin_oauth',
-            cmd: new controlSdk.UpdateOauth2CredentialProviderCommand({
-              name: oauthName,
-              credentialProviderVendor: 'GithubOauth2',
-              oauth2ProviderConfigInput: {
-                githubOauth2ProviderConfig: {
-                  clientId: 'integ-github-client-id',
-                  clientSecret: 'integ-github-client-secret',
-                },
-              },
-            }),
-            client: controlClient,
-          },
-          {
-            type: 'use_api_key',
-            cmd: new runtimeSdk.GetResourceApiKeyCommand({
-              resourceCredentialProviderName: apiKeyName,
-              workloadIdentityToken: workloadIdentityToken,
-            }),
-            client: runtimeClient,
-          },
-        ];
-
-        for (var p of probes) {
-          try {
-            await p.client.send(p.cmd);
-            results.push({ type: p.type, status: 'full_access_succeeded' });
-          } catch (error) {
-            if (isAccessDenied(error)) {
-              failures.push({ type: p.type, error: error instanceof Error ? error.message : String(error) });
-            } else {
-              results.push({ type: p.type, status: 'authorized_non_access_error', error: error instanceof Error ? error.message : String(error) });
-            }
-          }
-        }
-
-        return { results: results, failures: failures, passed: failures.length === 0 };
-      } catch (fatal) {
-        return { results: [], failures: [{ type: 'fatal', error: fatal instanceof Error ? fatal.message : String(fatal) }], passed: false };
-      }
-    };
+    ${INLINE_HANDLER_BODY}
   `),
 });
 
@@ -308,10 +276,9 @@ const integTest = new integ.IntegTest(app, 'BedrockAgentCoreIdentityGrants', {
   regions: ['us-east-1'],
 });
 
-// Helper: invoke a Lambda and assert it reports no access-denied failures.
-// Each Lambda returns { passed: boolean, results: [...], failures: [...] }.
-// Lambda invoke returns Payload as a serialized JSON string; Match.serializedJson
-// instructs the assertion handler to parse it before matching.
+// Helper: invoke a Lambda and assert it reports no unexpected access results.
+// Each Lambda returns { passed: boolean, ... } where passed means the actual
+// access/denial pattern matches the expected pattern for that permission level.
 // Retries up to 10 min with 30s intervals to allow IAM policy propagation.
 function assertLambdaPasses(fn: lambda.Function) {
   const invoke = integTest.assertions.awsApiCall('Lambda', 'invoke', {
