@@ -1,14 +1,14 @@
 import type { IEnvironmentAware } from 'aws-cdk-lib/core';
-import { Aws, ConstructSelector, Mixins, Names, Stack, Tags } from 'aws-cdk-lib/core';
+import { Aws, Names, Stack, Tags } from 'aws-cdk-lib/core';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import type { Construct, IConstruct } from 'constructs';
-import { tryFindBucketPolicyForBucket, tryFindKmsKeyConstruct, tryFindKmsKeyforBucket } from '../../mixins/private/reflections';
-import { AccountPrincipal, Effect, PolicyDocument, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import type { CfnKey, IKeyRef } from 'aws-cdk-lib/aws-kms';
+import type { Grant, IEncryptedResource } from 'aws-cdk-lib/aws-iam';
+import { AccountPrincipal, Effect, EncryptedResources, PolicyDocument, PolicyStatement, PrincipalWithConditions, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { CfnKey, KeyGrants, type IKeyRef } from 'aws-cdk-lib/aws-kms';
 import type { IBucketRef } from 'aws-cdk-lib/aws-lightsail';
 import type { IDeliveryStreamRef } from 'aws-cdk-lib/aws-kinesisfirehose';
-import * as xray from '../aws-xray/policy';
+import * as xray from './xray-policy';
 import { S3LogsDeliveryPermissionsVersion } from './logs-delivery';
 
 /**
@@ -91,7 +91,6 @@ export interface XRayDeliveryDestinationProps {
 export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
   private readonly bucket: IBucketRef;
   private readonly permissions: S3LogsDeliveryPermissionsVersion;
-  private readonly kmsKey: IKeyRef | undefined;
   private readonly sourceAccount: string | undefined;
 
   constructor(scope: Construct, id: string, props: S3DeliveryDestinationProps) {
@@ -106,124 +105,67 @@ export class S3DeliveryDestination extends logs.CfnDeliveryDestination {
     });
     this.bucket = props.bucket;
     this.permissions = props.permissionsVersion ? props.permissionsVersion : S3LogsDeliveryPermissionsVersion.V2;
-    this.kmsKey = props.encryptionKey;
     this.sourceAccount = props.sourceAccountId;
-    const bucketPolicy = this.getOrCreateBucketPolicy(scope);
-    this.grantLogsDelivery(bucketPolicy);
+    const bucketPolicy = this.grantLogsDelivery();
     this.node.addDependency(bucketPolicy);
 
-    const kmsKey = this.findEncryptionKey();
-    if (kmsKey) {
-      this.addToEncryptionKeyPolicy(kmsKey);
-    }
-  }
-
-  /**
-   * Gets or creates a bucket policy for the S3 destination Bucket.
-   * @param scope - The construct scope
-   * @returns The bucket policy
-   */
-  private getOrCreateBucketPolicy(scope: IConstruct): s3.CfnBucketPolicy {
-    const existingPolicy = tryFindBucketPolicyForBucket(this.bucket);
-
-    return existingPolicy ?? new s3.CfnBucketPolicy(scope, 'BucketPolicy', {
-      bucket: this.bucket.bucketRef.bucketName,
-      policyDocument: { // needed to create an empty policy document, otherwise a validation error is thrown
-        Version: '2012-10-17',
-        Statement: [],
-      },
-    });
+    this.addToEncryptionKeyPolicy(EncryptedResources.of(this.bucket));
   }
 
   /**
    * Grants permissions for log delivery to the bucket policy.
    * @param policy - The bucket policy
    */
-  private grantLogsDelivery(policy: s3.CfnBucketPolicy): void {
-    const stack = Stack.of(policy);
-    const account = this.sourceAccount ? this.sourceAccount : stack.account;
-
-    // always required permissions
-    const statements = [
-      new PolicyStatement({
-        effect: Effect.ALLOW,
-        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-        actions: ['s3:PutObject'],
-        resources: [`${this.bucket.bucketRef.bucketArn}/AWSLogs/${account}/*`],
-        conditions: {
-          StringEquals: {
-            's3:x-amz-acl': 'bucket-owner-full-control',
-            'aws:SourceAccount': account,
-          },
-          ArnLike: {
-            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${account}:delivery-source:*`,
-          },
-        },
-      }),
-    ];
-
-    if (this.permissions == 'V1') {
-      statements.push(new PolicyStatement({
-        effect: Effect.ALLOW,
-        principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-        actions: ['s3:GetBucketAcl', 's3:ListBucket'],
-        resources: [this.bucket.bucketRef.bucketArn],
-        conditions: {
-          StringEquals: {
-            'aws:SourceAccount': account,
-          },
-          ArnLike: {
-            'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${account}:*`,
-          },
-        },
-      }));
-    }
-
-    Mixins.of(policy, ConstructSelector.onlyItself())
-      .apply(new s3.mixins.BucketPolicyStatements(statements));
-  }
-
-  private findEncryptionKey(): CfnKey | undefined {
-    if (this.kmsKey) {
-      return tryFindKmsKeyConstruct(this.kmsKey);
-    }
-    return tryFindKmsKeyforBucket(this.bucket);
-  }
-
-  private addToEncryptionKeyPolicy(key: CfnKey) {
-    const existingKeyPolicy = key.keyPolicy;
-    const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
-    const account = this.sourceAccount ? this.sourceAccount : key.env.account;
-    const actions = this.sourceAccount ? ['kms:GenerateDataKey*'] : ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'];
-    const sid = 'AWS CDK: Allow Logs Delivery to use the key';
-    const keyStatement = new PolicyStatement({
-      sid,
-      effect: Effect.ALLOW,
-      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions,
-      resources: ['*'],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': [account],
-        },
-        ArnLike: {
-          'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${key.env.region}:${account}:${sourceArnPostfix}`],
-        },
+  private grantLogsDelivery(): Grant {
+    const account = this.sourceAccount ? this.sourceAccount : this.bucket.env.account;
+    const principal = new PrincipalWithConditions(new ServicePrincipal('delivery.logs.amazonaws.com'), {
+      StringEquals: {
+        's3:x-amz-acl': 'bucket-owner-full-control',
+        'aws:SourceAccount': account,
+      },
+      ArnLike: {
+        'aws:SourceArn': `arn:${Aws.PARTITION}:logs:${this.bucket.env.region}:${account}:delivery-source:*`,
       },
     });
-    if (!existingKeyPolicy) {
-      key.keyPolicy = new PolicyDocument({
-        statements: [keyStatement],
+    const bucketGrants = s3.BucketGrants.fromBucket(this.bucket).actionsOnObjectKeys(principal, `AWSLogs/${account}/*`, 's3:PutObject');
+
+    if (this.permissions == 'V1') {
+      const v1Principal = new PrincipalWithConditions(new ServicePrincipal('delivery.logs.amazonaws.com'), {
+        StringEquals: {
+          'aws:SourceAccount': account,
+        },
+        ArnLike: {
+          'aws:SourceArn': `arn:${Aws.PARTITION}:logs:${this.bucket.env.region}:${account}:*`,
+        },
       });
-      return;
-    }
-    // Check if a statement with this SID already exists
-    const hasDuplicateSid = existingKeyPolicy.statements.some((stmt: PolicyStatement) => stmt.sid === sid);
-    if (hasDuplicateSid) {
-      return;
+      s3.BucketGrants.fromBucket(this.bucket).actionsOnBucketAndObjectKeys(v1Principal, undefined, 's3:GetBucketAcl', 's3:ListBucket');
     }
 
-    existingKeyPolicy.addStatements(keyStatement);
+    return bucketGrants;
+  }
+
+  private addToEncryptionKeyPolicy(encryptedKey: IEncryptedResource | undefined) {
+    if (!encryptedKey) {
+      return;
+    }
+    const sourceArnPostfix = this.permissions === S3LogsDeliveryPermissionsVersion.V1 ? '*' : 'delivery-source:*';
+    const account = this.sourceAccount ? this.sourceAccount : encryptedKey.env.account;
+    const principal = new PrincipalWithConditions(new ServicePrincipal('delivery.logs.amazonaws.com'), {
+      StringEquals: {
+        'aws:SourceAccount': [account],
+      },
+      ArnLike: {
+        'aws:SourceArn': [`arn:${Aws.PARTITION}:logs:${encryptedKey.env.region}:${account}:${sourceArnPostfix}`],
+      },
+    },
+    );
+    const actions = this.sourceAccount ? ['kms:GenerateDataKey*'] : ['kms:Encrypt', 'kms:Decrypt', 'kms:ReEncrypt*', 'kms:GenerateDataKey*', 'kms:DescribeKey'];
+    if (encryptedKey instanceof CfnKey) {
+      const keyGrant = KeyGrants.fromKey(encryptedKey);
+      keyGrant.actions(principal, ...actions);
+    } else {
+      encryptedKey.grantOnKey(principal, ...actions);
+    }
   }
 }
 
@@ -261,49 +203,26 @@ export class CloudwatchDeliveryDestination extends logs.CfnDeliveryDestination {
     });
     this.logGroup = props.logGroup;
 
-    const logGroupPolicy = this.getOrCreateLogsResourcePolicy(scope);
-    this.grantLogsDelivery(logGroupPolicy);
-    this.node.addDependency(logGroupPolicy);
-  }
-
-  /**
-   * Gets or creates a singleton Logs Resource Policy.
-   * @param scope - The construct scope
-   * @returns The resource policy
-   */
-  private getOrCreateLogsResourcePolicy(scope: IConstruct): logs.ResourcePolicy {
-    const stack = Stack.of(scope);
-    const policyId = 'CdkLogGroupLogsDeliveryPolicy';
-
-    // Singleton policy per stack
-    const existingPolicy = stack.node.tryFindChild(policyId) as logs.ResourcePolicy;
-
-    return existingPolicy ?? new logs.ResourcePolicy(stack, policyId, {
-      resourcePolicyName: Names.uniqueResourceName(scope, { maxLength: 255 }),
-    });
+    const logPolicy = this.grantLogsDelivery();
+    this.node.addDependency(logPolicy);
   }
 
   /**
    * Grants permissions for log delivery to the resource policy.
    * @param policy - The resource policy
    */
-  private grantLogsDelivery(policy: logs.ResourcePolicy): void {
-    const stack = Stack.of(policy);
-
-    policy.document.addStatements(new PolicyStatement({
-      effect: Effect.ALLOW,
-      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions: ['logs:CreateLogStream', 'logs:PutLogEvents'],
-      resources: [`${this.logGroup.logGroupRef.logGroupArn}:log-stream:*`],
-      conditions: {
-        StringEquals: {
-          'aws:SourceAccount': stack.account,
-        },
-        ArnLike: {
-          'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
-        },
+  private grantLogsDelivery(): Grant {
+    const stack = Stack.of(this.logGroup);
+    const principal = new PrincipalWithConditions(new ServicePrincipal('delivery.logs.amazonaws.com'), {
+      StringEquals: {
+        'aws:SourceAccount': stack.account,
       },
-    }));
+      ArnLike: {
+        'aws:SourceArn': `arn:${stack.partition}:logs:${stack.region}:${stack.account}:*`,
+      },
+    });
+    const logGrants = logs.LogGroupGrants.fromLogGroup(this.logGroup);
+    return logGrants.write(principal);
   }
 }
 

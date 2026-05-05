@@ -760,7 +760,7 @@ aws-load-balancer-controller-76bd6c7586-fqxph   1/1     Running   0          109
 ...
 ```
 
-Every Kubernetes manifest that utilizes the ALB Controller is effectively dependant on the controller.
+Every Kubernetes manifest that utilizes the ALB Controller is effectively dependent on the controller.
 If the controller is deleted before the manifest, it might result in dangling ELB/ALB resources.
 Currently, the EKS construct library does not detect such dependencies, and they should be done explicitly.
 

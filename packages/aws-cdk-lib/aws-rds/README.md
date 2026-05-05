@@ -367,7 +367,7 @@ There are a couple of high level differences:
 With a provisioned writer and serverless v2 readers, some of the serverless
 readers will need to be configured to scale with the writer so they can act as
 failover targets. You will need to determine the correct capacity based on the
-provisioned instance type and it's utilization.
+provisioned instance type and its utilization.
 
 As an example, if the CPU utilization for a db.r6g.4xlarge (128 GB) instance
 stays at 10% most times, then the minimum ACUs may be set at 6.5 ACUs
@@ -1365,6 +1365,44 @@ new rds.DatabaseInstance(this, 'Database', {
 ```
 
 You cannot specify a parameter map and a parameter group at the same time.
+
+### Creating Standalone Parameter Groups
+
+In some scenarios, you may want to create a parameter group that exists independently
+of a database instance or cluster.
+
+By default, `ParameterGroup` uses a lazy creation pattern and only generates the
+CloudFormation resource when bound to an instance or cluster. To create a standalone 
+parameter group, use the static factory methods `forInstance()` or `forCluster()`:
+
+**For instance parameter group (AWS::RDS::DBParameterGroup):**
+
+```ts
+const parameterGroup = rds.ParameterGroup.forInstance(this, 'InstanceParameterGroup', {
+  engine: rds.DatabaseInstanceEngine.mysql({
+    version: rds.MysqlEngineVersion.VER_8_0_35,
+  }),
+  description: 'Parameter group for MySQL',
+  parameters: {
+    max_connections: '150',
+    slow_query_log: '1',
+  },
+});
+```
+
+**For cluster parameter group (AWS::RDS::DBClusterParameterGroup):**
+
+```ts
+const clusterParameterGroup = rds.ParameterGroup.forCluster(this, 'ClusterParameterGroup', {
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_3_04_0,
+  }),
+  description: 'Parameter group for Aurora MySQL',
+  parameters: {
+    aurora_parallel_query: '1',
+  },
+});
+```
 
 ## Serverless v1
 

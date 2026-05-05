@@ -1310,6 +1310,82 @@ describe('grants', () => {
       ]),
     });
   });
+
+  test('grant* with ServicePrincipal throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(() => table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('grant with ServicePrincipal throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(() => table.grant(new iam.ServicePrincipal('bedrock.amazonaws.com'), 'dynamodb:GetItem'))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('grant* with wrapped ServicePrincipal (withConditions) throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+
+    // THEN
+    expect(() => table.grantReadData(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test.each([
+    'redshift.amazonaws.com',
+    'replication.dynamodb.amazonaws.com',
+    'glue.amazonaws.com',
+  ])('grant* with allowlisted ServicePrincipal %s succeeds', (serviceName) => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const grant = table.grantReadWriteData(new iam.ServicePrincipal(serviceName));
+
+    // THEN
+    expect(grant.success).toBe(true);
+  });
+
+  test('grant* with wrapped allowlisted ServicePrincipal succeeds', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('redshift.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+    const grant = table.grantReadWriteData(principal);
+
+    // THEN
+    expect(grant.success).toBe(true);
+  });
 });
 
 describe('replica tables', () => {
@@ -3233,6 +3309,56 @@ test('Resource policy test', () => {
         },
       },
     ],
+  });
+});
+
+test('Resource policy is scoped to primary region only when resourcePolicyPerReplica feature flag is enabled', () => {
+  // GIVEN
+  const app = new App({
+    postCliContext: {
+      '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': true,
+    },
+  });
+  const stack = new Stack(app, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:*'],
+        principals: [new iam.AccountRootPrincipal()],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    resourcePolicy: doc,
+    replicas: [{
+      region: 'eu-west-2',
+    }],
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: Match.arrayWith([
+      Match.objectLike({
+        Region: 'eu-west-2',
+        ResourcePolicy: Match.absent(),
+      }),
+      Match.objectLike({
+        Region: 'eu-west-1',
+        ResourcePolicy: Match.objectLike({
+          PolicyDocument: Match.objectLike({
+            Statement: Match.arrayWith([
+              Match.objectLike({ Action: 'dynamodb:*' }),
+            ]),
+          }),
+        }),
+      }),
+    ]),
   });
 });
 

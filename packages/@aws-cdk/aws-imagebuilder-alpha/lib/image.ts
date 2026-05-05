@@ -3,7 +3,7 @@ import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnImage } from 'aws-cdk-lib/aws-imagebuilder';
 import type * as logs from 'aws-cdk-lib/aws-logs';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -364,7 +364,7 @@ export class Image extends ImageBase {
    */
   public static fromImageAttributes(scope: Construct, id: string, attrs: ImageAttributes): IImage {
     if (!attrs.imageArn && !attrs.imageName) {
-      throw new cdk.ValidationError('either imageArn or imageName is required', scope);
+      throw new cdk.ValidationError(lit`EitherImageArnOrImageNameRequired`, 'either imageArn or imageName is required', scope);
     }
 
     const imageArn =
@@ -479,7 +479,7 @@ export class Image extends ImageBase {
     } else if (recipe._isContainerRecipe()) {
       return recipe.containerRecipeVersion;
     } else {
-      throw new cdk.ValidationError('recipe must either be an image recipe or container recipe', this);
+      throw new cdk.ValidationError(lit`InvalidRecipeType`, 'recipe must either be an image recipe or container recipe', this);
     }
   }
 
@@ -496,7 +496,7 @@ export class Image extends ImageBase {
     } else if (recipe._isContainerRecipe()) {
       return this.resource.attrImageUri;
     } else {
-      throw new cdk.ValidationError('recipe must either be an image recipe or container recipe', this);
+      throw new cdk.ValidationError(lit`InvalidRecipeType`, 'recipe must either be an image recipe or container recipe', this);
     }
   }
 
@@ -513,11 +513,11 @@ export class Image extends ImageBase {
     }
 
     if (recipe._isImageRecipe() && recipe._isContainerRecipe()) {
-      throw new cdk.ValidationError('the recipe cannot be both an IImageRecipe and an IContainerRecipe', this);
+      throw new cdk.ValidationError(lit`RecipeCannotBeBothImageAndContainer`, 'the recipe cannot be both an IImageRecipe and an IContainerRecipe', this);
     }
 
     if (!recipe._isImageRecipe() && !recipe._isContainerRecipe()) {
-      throw new cdk.ValidationError('the recipe must either be an IImageRecipe or IContainerRecipe', this);
+      throw new cdk.ValidationError(lit`RecipeMustBeImageOrContainer`, 'the recipe must either be an IImageRecipe or IContainerRecipe', this);
     }
 
     const image = new CfnImage(this, 'Resource', {

@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "BedrockAgentCoreOnlineEvaluation/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-online-evaluation"
+      ],
+      "assertionStack": "BedrockAgentCoreOnlineEvaluation/DefaultTest/DeployAssert",
+      "assertionStackName": "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}
