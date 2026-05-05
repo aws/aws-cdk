@@ -149,7 +149,7 @@ function addValidationPluginInfo(scope: IConstruct, allConstructInfos: Construct
       done = true;
     }
     if (stage) {
-      allConstructInfos.push(...stage.policyValidationBeta1.map(
+      allConstructInfos.push(...stage._validationPlugins.map(
         plugin => {
           return {
             fqn: pluginFqn(plugin),
