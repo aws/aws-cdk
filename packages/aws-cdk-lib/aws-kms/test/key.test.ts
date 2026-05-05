@@ -1071,6 +1071,15 @@ test('multi-region primary key', () => {
 describe('imported keys', () => {
   test('throw an error when providing something that is not a valid key ARN', () => {
     const stack = new cdk.Stack();
+
+    expect(() => {
+      kms.Key.fromKeyArn(stack, 'Imported', 'arn:aws:smk:us-east-1:123456789012:key/keyId');
+    }).toThrow(/KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:smk:us-east-1:123456789012:key\/keyId'/);
+
+    expect(() => {
+      kms.Key.fromKeyArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:alias/aliasName');
+    }).toThrow(/KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:alias\/aliasName'/);
+
     expect(() => {
       kms.Key.fromKeyArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:key');
     }).toThrow(/KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key\/<keyId>', got: 'arn:aws:kms:us-east-1:123456789012:key'/);

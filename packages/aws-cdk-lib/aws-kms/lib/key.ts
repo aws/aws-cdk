@@ -604,8 +604,10 @@ export class Key extends KeyBase {
    * @param keyArn the ARN of an existing KMS key.
    */
   public static fromKeyArn(scope: Construct, id: string, keyArn: string): IKey {
-    const keyResourceName = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
-    if (!keyResourceName) {
+    const arnComponents = Stack.of(scope).splitArn(keyArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const keyResourceName = arnComponents.resourceName;
+
+    if ((arnComponents.service != 'kms') || (arnComponents.resource != 'key') || !keyResourceName) {
       throw new ValidationError(lit`MustBeFormatArnPartitionKmsRegionAccountKeyKeyid`, `KMS key ARN must be in the format 'arn:<partition>:kms:<region>:<account>:key/<keyId>', got: '${keyArn}'`, scope);
     }
 
