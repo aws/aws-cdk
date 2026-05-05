@@ -236,6 +236,14 @@ describe('CDK Include', () => {
     );
   });
 
+  test('can ingest a template using Fn::If as the Tags property, and output it unchanged', () => {
+    includeTestTemplate(stack, 'if-tags-property.json');
+
+    Template.fromStack(stack).templateMatches(
+      loadTestFileToJsObject('if-tags-property.json'),
+    );
+  });
+
   test('can ingest a UserData script, and output it unchanged', () => {
     includeTestTemplate(stack, 'user-data.json');
 
