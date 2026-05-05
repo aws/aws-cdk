@@ -2476,5 +2476,7 @@ that may use invalid SID characters.
 | (not in v1) |  |  |
 | V2NEXT | `false` | `true` |
 
+**Compatibility with old behavior:** Set this flag to `false` to disable SID validation and allow non-alphanumeric characters in PolicyStatement SIDs.
+
 
 <!-- END details -->

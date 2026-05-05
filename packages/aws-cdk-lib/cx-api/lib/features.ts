@@ -1469,6 +1469,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       When disabled, no SID validation occurs, maintaining backward compatibility with existing code
       that may use invalid SID characters.`,
+    compatibilityWithOldBehaviorMd: 'Set this flag to `false` to disable SID validation and allow non-alphanumeric characters in PolicyStatement SIDs.',
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
   },

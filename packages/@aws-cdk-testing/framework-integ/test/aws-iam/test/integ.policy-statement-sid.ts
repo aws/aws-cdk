@@ -25,7 +25,11 @@ class PolicyStatementSidStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  context: {
+    '@aws-cdk/aws-iam:policyStatementValidateSid': true,
+  },
+});
 new IntegTest(app, 'iam-policy-statement-sid', {
   testCases: [new PolicyStatementSidStack(app, 'PolicyStatementSidStack')],
   diffAssets: true,
