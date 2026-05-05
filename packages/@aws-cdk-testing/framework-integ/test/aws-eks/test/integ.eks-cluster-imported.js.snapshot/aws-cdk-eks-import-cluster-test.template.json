@@ -1066,7 +1066,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/2b7344bbbe59728a493d5f3ae6c5eaaa1bb0be7122a8d969afb6611a8b796b7c.json"
+       "/7594c633e47080a55d069e24c9fd8be2c03c90f1a329149e77800a11372c2d4e.json"
       ]
      ]
     }
@@ -1116,7 +1116,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/1e8514a1752335cf3c9e9e408635ab746d2fedd262162c8ea9e24c38309ad9dd.json"
+       "/a27739f63dddff40d470fd75a3dc050056101a0978354b2f74c2108a0733096e.json"
       ]
      ]
     }
@@ -1276,6 +1276,9 @@
     "Namespace": "default",
     "CreateNamespace": true
    },
+   "DependsOn": [
+    "ClusterKubectlHandlerRoleDefaultPolicyE44083DD"
+   ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },

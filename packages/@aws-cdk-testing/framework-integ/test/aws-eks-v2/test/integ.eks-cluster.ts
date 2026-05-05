@@ -359,7 +359,7 @@ const supportedRegions = [
 const app = new App({
   postCliContext: {
     [IAM_OIDC_REJECT_UNAUTHORIZED_CONNECTIONS]: false,
-    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: true,
     '@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy': true,
     '@aws-cdk/aws-lambda:useCdkManagedLogGroup': false,
   },
