@@ -4,8 +4,8 @@ import type { AliasReference, IAliasRef, KeyReference } from './kms.generated';
 import { CfnAlias } from './kms.generated';
 import * as iam from '../../aws-iam';
 import * as perms from './private/perms';
-import type { RemovalPolicy } from '../../core';
-import { FeatureFlags, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
+import type { ArnComponents, RemovalPolicy } from '../../core';
+import { Arn, ArnFormat, FeatureFlags, Resource, Stack, Token, Tokenization, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -246,83 +246,36 @@ export class Alias extends AliasBase {
    * @param aliasName The full name of the KMS Alias (e.g., 'alias/aws/s3', 'alias/myKeyAlias').
    */
   public static fromAliasName(scope: Construct, id: string, aliasName: string): IAlias {
-    class Import extends Resource implements IAlias {
-      public readonly keyArn = Stack.of(this).formatArn({ service: 'kms', resource: aliasName });
-      public readonly keyId = aliasName;
-      public readonly aliasName = aliasName;
-      public get aliasTargetKey(): IKey { throw new ValidationError(lit`CannotAccessAliasTargetKey`, 'Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().', this); }
-      public addAlias(_alias: string): Alias { throw new ValidationError(lit`CannotAddAliasToImported`, 'Cannot call addAlias on an Alias imported by Alias.fromAliasName().', this); }
-      public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
-        return { statementAdded: false };
-      }
+    const aliasArn = Stack.of(scope).formatArn({ service: 'kms', resource: aliasName });
+    return Alias.fromAliasArn(scope, id, aliasArn);
+  }
 
-      public get keyRef(): KeyReference {
-        return {
-          keyArn: this.keyArn,
-          keyId: this.keyId,
-        };
-      }
+  /**
+   * Import an existing KMS Alias defined outside the CDK app, by the alias ARN. This method should be used
+   * instead of 'fromAliasAttributes' when the underlying KMS Key ARN is not available.
+   * This Alias will not have a direct reference to the KMS Key, so addAlias method is not supported.
+   *
+   * If the `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal` feature flag is set to `true`,
+   * the grant* methods will use the kms:ResourceAliases condition to grant permissions to the specific alias name.
+   * They will only modify the principal policy, not the key resource policy.
+   * Without the feature flag `grant*` methods will be a no-op.
+   *
+   * @param scope The parent creating construct (usually `this`).
+   * @param id The construct's name.
+   * @param aliasArn The full ARN of the KMS Alias.
+   */
+  public static fromAliasArn(scope: Construct, id: string, aliasArn: string): IAlias {
+    const arnComponents = Stack.of(scope).splitArn(aliasArn, ArnFormat.SLASH_RESOURCE_NAME);
+    const aliasName = arnComponents.resourceName;
 
-      public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
-        if (!FeatureFlags.of(this).isEnabled(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL)) {
-          return iam.Grant.drop(grantee, '');
-        }
-        return iam.Grant.addToPrincipal({
-          grantee,
-          actions,
-          resourceArns: [Stack.of(scope).formatArn({
-            service: 'kms',
-            resource: 'key',
-            resourceName: '*',
-          })],
-          conditions: {
-            'ForAnyValue:StringEquals': {
-              'kms:ResourceAliases': this.aliasName,
-            },
-          },
-        });
-      }
-
-      public get aliasRef(): AliasReference {
-        return {
-          aliasName: this.aliasName,
-        };
-      }
-
-      public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
-      }
-
-      public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
-      }
-
-      public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS);
-      }
-
-      public grantSign(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.SIGN_ACTIONS);
-      }
-
-      public grantVerify(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.VERIFY_ACTIONS);
-      }
-
-      public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS);
-      }
-
-      public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
-      }
-
-      public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
-        return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
-      }
+    if ((arnComponents.service != 'kms') || (arnComponents.resource != 'alias') || !aliasName) {
+      throw new ValidationError(lit`MustBeFormatArnPartitionKmsRegionAccountAliasAliasName`, `KMS alias ARN must be in the format 'arn:<partition>:kms:<region>:<account>:alias/<aliasName>', got: '${aliasArn}'`, scope);
     }
 
-    return new Import(scope, id);
+    return new ReferencedAlias(scope, id, {
+      aliasName,
+      arnComponents
+    });
   }
 
   private readonly resource: CfnAlias;
@@ -396,3 +349,112 @@ export class Alias extends AliasBase {
   }
 }
 
+/**
+ * An instance of a referenced Key Alias
+ *
+ * An explicit class declaration to save memory; previously,
+ * `fromAliasName()` etc. used to declare an anonymous subclass of
+ * `AliasBase`, which would lead to a prototype and constructor for every
+ * invocation (but they are all the same).
+ *
+ * Use a single class instance.
+ */
+@propertyInjectable
+class ReferencedAlias extends AliasBase {
+  /** Uniquely identifies this class. */
+  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-kms.ReferencedAlias';
+
+  public readonly aliasName: string;
+
+  private readonly arnComponents: ArnComponents;
+
+  constructor(scope: Construct, id: string, props: {
+    aliasName: string,
+    arnComponents: ArnComponents
+  }) {
+    super(scope, id);
+
+    // Enhanced CDK Analytics Telemetry
+    addConstructMetadata(this, props);
+
+    this.aliasName = `alias/${props.aliasName}`;
+    this.arnComponents = props.arnComponents;
+  }
+
+  public get aliasTargetKey(): IKey {
+    throw new ValidationError(lit`CannotAccessAliasTargetKey`, 'Cannot access aliasTargetKey on an imported Alias.', this);
+  }
+
+  public addAlias(_alias: string): Alias {
+    throw new ValidationError(lit`CannotAddAliasToImported`, 'Cannot call addAlias on an imported Alias.', this);
+  }
+
+  public addToResourcePolicy(_statement: iam.PolicyStatement, _allowNoOp?: boolean): iam.AddToResourcePolicyResult {
+    return { statementAdded: false };
+  }
+
+  public get keyRef(): KeyReference {
+    return {
+      keyArn: this.aliasArn,
+      keyId: this.keyId,
+    };
+  }
+
+  public grant(grantee: iam.IGrantable, ...actions: string[]): iam.Grant {
+    if (!FeatureFlags.of(this).isEnabled(KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL)) {
+      return iam.Grant.drop(grantee, '');
+    }
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions,
+      resourceArns: [Arn.format({
+        ...this.arnComponents,
+        resource: 'key',
+        resourceName: '*',
+      })],
+      conditions: {
+        'ForAnyValue:StringEquals': {
+          'kms:ResourceAliases': this.aliasName,
+        },
+      },
+    });
+  }
+
+  public get aliasRef(): AliasReference {
+    return {
+      aliasName: this.aliasName,
+    };
+  }
+
+  public grantDecrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.DECRYPT_ACTIONS);
+  }
+
+  public grantEncrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.ENCRYPT_ACTIONS);
+  }
+
+  public grantEncryptDecrypt(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.DECRYPT_ACTIONS, ...perms.ENCRYPT_ACTIONS);
+  }
+
+  public grantSign(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.SIGN_ACTIONS);
+  }
+
+  public grantVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_ACTIONS);
+  }
+
+  public grantSignVerify(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.SIGN_ACTIONS, ...perms.VERIFY_ACTIONS);
+  }
+
+  public grantGenerateMac(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.GENERATE_HMAC_ACTIONS);
+  }
+
+  public grantVerifyMac(grantee: iam.IGrantable): iam.Grant {
+    return this.grant(grantee, ...perms.VERIFY_HMAC_ACTIONS);
+  }
+}
