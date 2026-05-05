@@ -790,12 +790,12 @@ describe('OAuth credential provider tests', () => {
   const secretArn = 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret';
 
   test('Should expose providerArn, secretArn, scopes, and customParameters from constructor props', () => {
-    const provider: any = GatewayCredentialProvider.fromOauthIdentityArn({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn,
       secretArn,
       scopes: ['openid', 'profile'],
       customParameters: { prompt: 'consent' },
-    });
+    }) as OAuthCredentialProviderConfiguration;
 
     expect(provider.providerArn).toBe(providerArn);
     expect(provider.secretArn).toBe(secretArn);
@@ -805,11 +805,11 @@ describe('OAuth credential provider tests', () => {
   });
 
   test('Should accept OAuth configuration without customParameters', () => {
-    const provider: any = GatewayCredentialProvider.fromOauthIdentityArn({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn,
       secretArn,
       scopes: ['openid'],
-    });
+    }) as OAuthCredentialProviderConfiguration;
 
     expect(provider.customParameters).toBeUndefined();
   });
@@ -822,16 +822,16 @@ describe('OAuth credential provider tests', () => {
     const role = new iam.Role(stack, 'TestRole', {
       assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
     });
-    const provider: any = GatewayCredentialProvider.fromOauthIdentityArn({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn,
       secretArn,
       scopes: ['openid'],
-    });
+    }) as OAuthCredentialProviderConfiguration;
 
     const grant = provider.grantNeededPermissionsToRole(role);
 
     expect(grant).toBeDefined();
-    expect(grant.success).toBe(true);
+    expect(grant!.success).toBe(true);
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::IAM::Policy', {
@@ -853,12 +853,12 @@ describe('OAuth credential provider tests', () => {
   });
 
   test('_render should include providerArn, scopes, and customParameters under oauthCredentialProvider', () => {
-    const provider: any = GatewayCredentialProvider.fromOauthIdentityArn({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn,
       secretArn,
       scopes: ['openid', 'profile'],
       customParameters: { prompt: 'consent' },
-    });
+    }) as OAuthCredentialProviderConfiguration;
 
     const rendered = provider._render();
 
@@ -875,11 +875,11 @@ describe('OAuth credential provider tests', () => {
   });
 
   test('_render should set customParameters to undefined when not provided', () => {
-    const provider: any = GatewayCredentialProvider.fromOauthIdentityArn({
+    const provider = GatewayCredentialProvider.fromOauthIdentityArn({
       providerArn,
       secretArn,
       scopes: ['openid'],
-    });
+    }) as OAuthCredentialProviderConfiguration;
 
     const rendered = provider._render();
 
@@ -1000,18 +1000,23 @@ describe('Gateway target convenience methods tests', () => {
   });
 
   describe('addLambdaTarget', () => {
-    test('Should create a Lambda target with default IAM role credentials', () => {
-      const fn = new lambda.Function(stack, 'Function', {
+    let fn: lambda.Function;
+    let toolSchema: ToolSchema;
+
+    beforeEach(() => {
+      fn = new lambda.Function(stack, 'Function', {
         runtime: lambda.Runtime.NODEJS_22_X,
         handler: 'index.handler',
         code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
       });
-      const toolSchema = ToolSchema.fromInline([{
+      toolSchema = ToolSchema.fromInline([{
         name: 'test_tool',
         description: 'Test tool',
         inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
       }]);
+    });
 
+    test('Should create a Lambda target with default IAM role credentials', () => {
       const target = gateway.addLambdaTarget('LambdaTarget', {
         gatewayTargetName: 'lambda-target',
         lambdaFunction: fn,
@@ -1033,16 +1038,6 @@ describe('Gateway target convenience methods tests', () => {
     });
 
     test('Should use provided credentials when supplied', () => {
-      const fn = new lambda.Function(stack, 'Function', {
-        runtime: lambda.Runtime.NODEJS_22_X,
-        handler: 'index.handler',
-        code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
-      });
-      const toolSchema = ToolSchema.fromInline([{
-        name: 'test_tool',
-        description: 'Test tool',
-        inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
-      }]);
       const creds = [GatewayCredentialProvider.fromIamRole()];
 
       const target = gateway.addLambdaTarget('LambdaTarget', {
@@ -1055,17 +1050,6 @@ describe('Gateway target convenience methods tests', () => {
     });
 
     test('Should set description when provided', () => {
-      const fn = new lambda.Function(stack, 'Function', {
-        runtime: lambda.Runtime.NODEJS_22_X,
-        handler: 'index.handler',
-        code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
-      });
-      const toolSchema = ToolSchema.fromInline([{
-        name: 'test_tool',
-        description: 'Test tool',
-        inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
-      }]);
-
       const target = gateway.addLambdaTarget('LambdaTarget', {
         gatewayTargetName: 'lambda-target',
         description: 'My Lambda target',

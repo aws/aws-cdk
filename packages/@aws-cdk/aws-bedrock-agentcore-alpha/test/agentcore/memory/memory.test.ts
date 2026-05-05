@@ -1204,7 +1204,6 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
   test('Should include the added strategy in the rendered CloudFormation template', () => {
     memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
 
-    app.synth();
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
       MemoryStrategies: Match.arrayWith([
@@ -1243,7 +1242,6 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
 
     memory.addMemoryStrategy(customStrategy);
 
-    app.synth();
     const template = Template.fromStack(stack);
     // The execution role must have been granted bedrock:InvokeModel on the foundation model
     template.hasResourceProperties('AWS::IAM::Policy', {
@@ -1265,7 +1263,6 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
 
     expect(memory.memoryStrategies).toHaveLength(3);
 
-    app.synth();
     const template = Template.fromStack(stack);
     const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
     const memoryResource = Object.values(memoryResources)[0];

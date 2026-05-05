@@ -1324,7 +1324,6 @@ describe('Runtime addEndpoint tests', () => {
 
     runtime.addEndpoint('my_endpoint');
 
-    app.synth();
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
       Name: 'my_endpoint',
@@ -1341,7 +1340,6 @@ describe('Runtime addEndpoint tests', () => {
       description: 'My endpoint description',
     });
 
-    app.synth();
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
       Description: 'My endpoint description',
@@ -1356,7 +1354,6 @@ describe('Runtime addEndpoint tests', () => {
 
     runtime.addEndpoint('test_endpoint');
 
-    app.synth();
     const template = Template.fromStack(stack);
     // When options.version is omitted, the endpoint uses the runtime resource's AgentRuntimeVersion attribute
     template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
@@ -1374,7 +1371,6 @@ describe('Runtime addEndpoint tests', () => {
 
     runtime.addEndpoint('test_endpoint', { version: '5' });
 
-    app.synth();
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
       AgentRuntimeVersion: '5',
@@ -1391,7 +1387,6 @@ describe('Runtime addEndpoint tests', () => {
     runtime.addEndpoint('endpoint_b');
     runtime.addEndpoint('endpoint_c');
 
-    app.synth();
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 3);
   });
@@ -1404,7 +1399,6 @@ describe('Runtime addEndpoint tests', () => {
 
     runtime.addEndpoint('dependent_endpoint');
 
-    app.synth();
     const template = Template.fromStack(stack);
     const endpoints = template.findResources('AWS::BedrockAgentCore::RuntimeEndpoint');
     const endpointResource = Object.values(endpoints)[0];
