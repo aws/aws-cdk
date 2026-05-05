@@ -39,6 +39,13 @@ const sampleTableBucket = new TableBucket(scope, 'ExampleTableBucket', {
 });
 ```
 
+When `tableBucketName` is omitted, CDK derives the name from the stack name and the
+construct path. Because the path is part of the input, the generated name is **not
+stable across stack or construct renames** — renaming or moving the construct will
+produce a different name and replace the bucket. If you need a fixed, predictable
+name (for example, to reference the bucket from outside CDK or across separate
+deployments), pass `tableBucketName` explicitly.
+
 ### Define an S3 Tables Namespace
 
 ```ts
