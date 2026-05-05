@@ -2,12 +2,9 @@ import type { Construct } from 'constructs';
 import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import type { IResource } from '../../core';
-import { RemovalPolicy, Resource } from '../../core';
+import { Lazy, RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { IMapBox } from '../../core/lib/helpers-internal';
-import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { aws_rds } from '../../interfaces';
@@ -117,7 +114,6 @@ export interface ParameterGroupProps {
  * @resource AWS::RDS::DBParameterGroup
  */
 @propertyInjectable
-@noBoxStackTraces
 export class ParameterGroup extends Resource implements IParameterGroup {
   /**
    * Uniquely identifies this class.
@@ -185,7 +181,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     return parameterGroup;
   }
 
-  private readonly parameters: IMapBox<string, string>;
+  private readonly parameters: { [key: string]: string };
   private readonly family: string;
   private readonly removalPolicy?: RemovalPolicy;
   private readonly description?: string;
@@ -206,7 +202,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     this.family = family;
     this.description = props.description;
     this.name = props.name;
-    this.parameters = Box.fromMap(new Map(Object.entries(props.parameters ?? {})));
+    this.parameters = props.parameters ?? {};
     this.removalPolicy = props.removalPolicy;
   }
 
@@ -232,7 +228,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    */
   @MethodMetadata()
   public addParameter(key: string, value: string): boolean {
-    this.parameters.put(key, value);
+    this.parameters[key] = value;
     return true;
   }
 
@@ -247,7 +243,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
         description: this.description || `Parameter group for ${this.family}`,
         family: this.family,
         dbParameterGroupName: this.name,
-        parameters: this.parameters.derive(m => m.size > 0 ? Object.fromEntries(m) : undefined),
+        parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }
 
@@ -269,7 +265,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
         description: this.description || `Cluster parameter group for ${this.family}`,
         family: this.family,
         dbClusterParameterGroupName: this.name,
-        parameters: this.parameters.derive(m => m.size > 0 ? Object.fromEntries(m) : undefined),
+        parameters: Lazy.any({ produce: () => this.parameters }),
       });
     }
 
