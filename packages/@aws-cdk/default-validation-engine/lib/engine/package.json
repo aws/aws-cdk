@@ -1,0 +1,9 @@
+{
+    "name": "@aws/cloudformation-validate-wasm",
+    "version": "1.0.0",
+    "description": "AWS CloudFormation Validate — WASM bindings for Node.js",
+    "author": "Amazon Web Services (AWS)",
+    "license": "Apache-2.0",
+    "main": "index.js",
+    "types": "index.d.ts"
+}

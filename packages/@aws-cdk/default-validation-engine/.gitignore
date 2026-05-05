@@ -1,0 +1,9 @@
+*.js
+!lib/engine/*.js
+*.d.ts
+!lib/engine/*.d.ts
+!lib/engine/*.wasm
+node_modules
+dist
+.jsii
+tsconfig.tsbuildinfo

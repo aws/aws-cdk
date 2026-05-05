@@ -1,0 +1,11 @@
+# Include compiled output and engine
+!lib/**/*.js
+!lib/**/*.d.ts
+!lib/engine/*.wasm
+
+# Exclude dev files
+*.ts
+!*.d.ts
+test/
+tsconfig.json
+tsconfig.tsbuildinfo

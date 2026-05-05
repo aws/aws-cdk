@@ -1049,6 +1049,52 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('my-lib:TestId (');
     });
+
+    test('plugin violations can be suppressed via Validations.acknowledge()', () => {
+      const app = new core.App({
+        context: annotationReportContext,
+        policyValidationBeta1: [
+          new FakePlugin('test-plugin', [{
+            description: 'S3 Bucket should have versioning enabled',
+            ruleName: 'default::S3_BUCKET_VERSIONING_ENABLED',
+            severity: 'error',
+            violatingResources: [{
+              locations: ['Properties/VersioningConfiguration'],
+              resourceLogicalId: 'MyBucket',
+              templatePath: '/path/to/Default.template.json',
+            }],
+          }, {
+            description: 'Unknown resource type',
+            ruleName: 'default::E9001',
+            severity: 'fatal',
+            violatingResources: [{
+              locations: [],
+              resourceLogicalId: 'BadResource',
+              templatePath: '/path/to/Default.template.json',
+            }],
+          }]),
+        ],
+      });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      // Suppress the error-level violation
+      core.Validations.of(stack).acknowledge({ id: 'default::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+
+      // The suppressed error should not appear
+      expect(output).not.toContain('default::S3_BUCKET_VERSIONING_ENABLED');
+
+      // Fatal violations cannot be suppressed
+      expect(output).toContain('default::E9001');
+      expect(output).toContain('Unknown resource type');
+    });
   });
 
   describe('Validations.of()', () => {
