@@ -78,6 +78,13 @@ export class PolicyDocument implements cdk.IResolvable {
     this.freezeStatements();
     this._maybeMergeStatements(context.scope);
 
+    // Validate statement SIDs if feature flag is enabled
+    if (cdk.FeatureFlags.of(context.scope).isEnabled(cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID)) {
+      for (const statement of this.statements) {
+        statement._validateSid();
+      }
+    }
+
     // In the previous implementation of 'merge', sorting of actions/resources on
     // a statement always happened, even  on singular statements. In the new
     // implementation of 'merge', sorting only happens when actually combining 2
