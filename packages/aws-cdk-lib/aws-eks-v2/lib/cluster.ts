@@ -295,6 +295,18 @@ export interface ClusterAttributes {
 }
 
 /**
+ * Configuration for provisioned control plane scaling.
+ */
+export interface ControlPlaneScalingConfig {
+  /**
+   * The tier for the control plane scaling configuration.
+   *
+   * @default "standard"
+   */
+  readonly tier?: string;
+}
+
+/**
  * Options for configuring an EKS cluster.
  */
 export interface ClusterCommonOptions {
@@ -449,6 +461,13 @@ export interface ClusterCommonOptions {
    * @default - none
    */
   readonly remotePodNetworks?: RemotePodNetwork[];
+
+  /**
+   * Configuration for provisioned control plane scaling.
+   *
+   * @default - No control plane scaling configuration
+   */
+  readonly controlPlaneScalingConfig?: ControlPlaneScalingConfig;
 
   /**
    * The removal policy applied to all CloudFormation resources created by this construct
@@ -1373,6 +1392,11 @@ export class Cluster extends ClusterBase {
       tags: Object.keys(props.tags ?? {}).map(k => ({ key: k, value: props.tags![k] })),
       logging: this.logging,
       bootstrapSelfManagedAddons: props.bootstrapSelfManagedAddons,
+      ...(props.controlPlaneScalingConfig ? {
+        controlPlaneScalingConfig: {
+          tier: props.controlPlaneScalingConfig.tier,
+        },
+      } : {}),
     });
 
     let kubectlSubnets = this._kubectlProviderOptions?.privateSubnets;

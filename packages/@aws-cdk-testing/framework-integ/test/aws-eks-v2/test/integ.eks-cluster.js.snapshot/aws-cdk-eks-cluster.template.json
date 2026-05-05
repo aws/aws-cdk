@@ -600,6 +600,9 @@
     "ComputeConfig": {
      "Enabled": false
     },
+    "ControlPlaneScalingConfig": {
+     "Tier": "standard"
+    },
     "EncryptionConfig": [
      {
       "Provider": {
@@ -4692,6 +4695,10 @@
      "Arn"
     ]
    }
+  },
+  "ControlPlaneScalingTier": {
+   "Description": "Control plane scaling tier configured",
+   "Value": "standard"
   },
   "ClusterEndpoint": {
    "Value": {

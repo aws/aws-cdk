@@ -174,12 +174,14 @@ class EksClusterStack extends Stack {
   }
 
   private assertSimpleHelmChart() {
-    // deploy metrics-server through a helm chart
-    // https://artifacthub.io/packages/helm/metrics-server/metrics-server
-    this.importedCluster.addHelmChart('dashboard', {
-      chart: 'metrics-server',
-      version: '3.12.2',
-      repository: 'https://kubernetes-sigs.github.io/metrics-server/',
+    // deploy a dashboard through a helm chart
+    // As Kubernetes dashboard is retired, we will use headlamp instead.
+    // See https://github.com/kubernetes-retired/dashboard?tab=readme-ov-file#important
+    this.cluster.addHelmChart('dashboard', {
+      chart: 'headlamp',
+      // https://kubernetes-sigs.github.io/headlamp/
+      version: '0.39.0',
+      repository: 'https://kubernetes-sigs.github.io/headlamp/',
     });
   }
 
