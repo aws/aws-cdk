@@ -41,13 +41,6 @@ export interface NetworkMultipleTargetGroupsFargateServiceProps extends NetworkM
    * @default - 200%
    */
   readonly maxHealthyPercent?: number;
-
-  /**
-   * Whether to enable the deployment circuit breaker. If this property is defined, circuit breaker will be implicitly
-   * enabled.
-   * @default - disabled
-   */
-  readonly circuitBreaker?: DeploymentCircuitBreaker;
 }
 
 /**
