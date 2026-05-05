@@ -211,7 +211,7 @@ test('imported alias by name - will throw an error when accessing the key', () =
 
   const myAlias = Alias.fromAliasName(stack, 'MyAlias', 'alias/myAlias');
 
-  expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an Alias imported by Alias.fromAliasName().');
+  expect(() => myAlias.aliasTargetKey).toThrow('Cannot access aliasTargetKey on an imported Alias.');
 });
 
 test('imported alias by name - grantDecrypt applies kms:ResourceAliases condition', () => {
