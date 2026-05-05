@@ -231,7 +231,11 @@ export class HostedZone extends Resource implements IHostedZone {
   /**
    * VPCs to which this hosted zone will be added
    */
-  private readonly vpcs: IArrayBox<CfnHostedZone.VPCProperty> = Box.fromArray([]);
+  private readonly _vpcs: IArrayBox<CfnHostedZone.VPCProperty> = Box.fromArray([]);
+
+  protected get vpcs(): CfnHostedZone.VPCProperty[] {
+    return [...this._vpcs.get()];
+  }
 
   /**
    * The key signing key used to sign the hosted zone.
@@ -257,7 +261,7 @@ export class HostedZone extends Resource implements IHostedZone {
       name: zoneName,
       hostedZoneConfig: props.comment ? { comment: props.comment } : undefined,
       queryLoggingConfig: props.queryLogsLogGroupArn ? { cloudWatchLogsLogGroupArn: props.queryLogsLogGroupArn } : undefined,
-      vpcs: this.vpcs,
+      vpcs: this._vpcs,
     });
 
     this.hostedZoneId = resource.ref;
@@ -282,7 +286,7 @@ export class HostedZone extends Resource implements IHostedZone {
    */
   @MethodMetadata()
   public addVpc(vpc: ec2.IVpc) {
-    this.vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
+    this._vpcs.push({ vpcId: vpc.vpcId, vpcRegion: vpc.env.region ?? Stack.of(vpc).region });
   }
 
   /**

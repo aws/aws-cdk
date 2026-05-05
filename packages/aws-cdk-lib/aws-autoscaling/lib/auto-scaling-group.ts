@@ -1480,7 +1480,15 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly _userData?: ec2.UserData;
   private readonly _role?: iam.IRole;
 
-  private readonly newInstancesProtectedFromScaleIn: IBox<boolean | undefined>;
+  private readonly _newInstancesProtectedFromScaleIn: IBox<boolean | undefined>;
+
+  protected get newInstancesProtectedFromScaleIn(): boolean | undefined {
+    return this._newInstancesProtectedFromScaleIn.get();
+  }
+
+  protected set newInstancesProtectedFromScaleIn(value: boolean | undefined) {
+    this._newInstancesProtectedFromScaleIn.set(value);
+  }
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id, {
@@ -1489,7 +1497,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.newInstancesProtectedFromScaleIn = Box.fromValue<boolean | undefined>(props.newInstancesProtectedFromScaleIn);
+    this._newInstancesProtectedFromScaleIn = Box.fromValue<boolean | undefined>(props.newInstancesProtectedFromScaleIn);
     this.loadBalancerNames = Box.fromArray<string>([]);
     this.targetGroupArns = Box.fromArray<string>([]);
 
@@ -1721,7 +1729,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       healthCheckType,
       healthCheckGracePeriod,
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
-      newInstancesProtectedFromScaleIn: this.newInstancesProtectedFromScaleIn,
+      newInstancesProtectedFromScaleIn: this._newInstancesProtectedFromScaleIn,
       terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
@@ -1857,7 +1865,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public protectNewInstancesFromScaleIn() {
-    this.newInstancesProtectedFromScaleIn.set(true);
+    this.newInstancesProtectedFromScaleIn = true;
   }
 
   /**
@@ -1865,7 +1873,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
    */
   @MethodMetadata()
   public areNewInstancesProtectedFromScaleIn(): boolean {
-    return this.newInstancesProtectedFromScaleIn.get() === true;
+    return this.newInstancesProtectedFromScaleIn === true;
   }
 
   /**

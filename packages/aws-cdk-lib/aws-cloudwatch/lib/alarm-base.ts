@@ -56,11 +56,20 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   protected get alarmActionArns(): string[] | undefined {
     return this._alarmActionArns.length > 0 ? [...this._alarmActionArns] : undefined;
   }
+  protected set alarmActionArns(value: string[] | undefined) {
+    this._alarmActionArns.set(value ?? []);
+  }
   protected get insufficientDataActionArns(): string[] | undefined {
     return this._insufficientDataActionArns.length > 0 ? [...this._insufficientDataActionArns] : undefined;
   }
+  protected set insufficientDataActionArns(value: string[] | undefined) {
+    this._insufficientDataActionArns.set(value ?? []);
+  }
   protected get okActionArns(): string[] | undefined {
     return this._okActionArns.length > 0 ? [...this._okActionArns] : undefined;
+  }
+  protected set okActionArns(value: string[] | undefined) {
+    this._okActionArns.set(value ?? []);
   }
 
   public get alarmRef(): AlarmReference {

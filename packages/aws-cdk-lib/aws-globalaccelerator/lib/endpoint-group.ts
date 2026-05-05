@@ -188,7 +188,11 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   /**
    * The array of the endpoints in this endpoint group
    */
-  private readonly endpoints: IArrayBox<IEndpoint> = Box.fromArray([], { omitEmpty: false });
+  private readonly _endpoints: IArrayBox<IEndpoint> = Box.fromArray([], { omitEmpty: false });
+
+  protected get endpoints(): IEndpoint[] {
+    return [...this._endpoints.get()];
+  }
 
   public get endpointGroupRef(): ga.EndpointGroupReference {
     return {
@@ -204,9 +208,9 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
     const resource = new ga.CfnEndpointGroup(this, 'Resource', {
       listenerArn: props.listener.listenerRef.listenerArn,
       endpointGroupRegion: props.region ?? cdk.Token.asString(
-        this.endpoints.derive(_ => this.firstEndpointRegion()),
+        this._endpoints.derive(_ => this.firstEndpointRegion()),
       ),
-      endpointConfigurations: this.endpoints.derive(ep =>
+      endpointConfigurations: this._endpoints.derive(ep =>
         ep.length === 0 ? undefined : ep.map(e => e.renderEndpointConfiguration()),
       ),
       healthCheckIntervalSeconds: props.healthCheckInterval?.toSeconds({ integral: true }),
@@ -234,7 +238,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
    */
   @MethodMetadata()
   public addEndpoint(endpoint: IEndpoint) {
-    this.endpoints.push(endpoint);
+    this._endpoints.push(endpoint);
   }
 
   /**
@@ -256,7 +260,7 @@ export class EndpointGroup extends cdk.Resource implements IEndpointGroup {
   }
 
   private firstEndpointRegion() {
-    for (const endpoint of this.endpoints) {
+    for (const endpoint of this._endpoints) {
       if (endpoint.region) {
         return endpoint.region;
       }

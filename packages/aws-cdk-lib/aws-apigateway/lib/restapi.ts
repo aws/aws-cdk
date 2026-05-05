@@ -418,6 +418,18 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
   private allowedVpcEndpoints: ISetBox<ec2.IVPCEndpointRef> = Box.fromSet(new Set());
 
   private readonly _resourcePolicy: IBox<iam.PolicyDocument | undefined> = Box.fromValue<iam.PolicyDocument | undefined>(undefined);
+
+  /**
+   * A policy document that contains the resource policy for this RestApi.
+   */
+  protected get resourcePolicy(): iam.PolicyDocument | undefined {
+    return this._resourcePolicy.get() as iam.PolicyDocument | undefined;
+  }
+
+  protected set resourcePolicy(value: iam.PolicyDocument | undefined) {
+    this._resourcePolicy.set(value);
+  }
+
   protected cloudWatchAccount?: CfnAccount;
 
   constructor(scope: Construct, id: string, props: RestApiBaseProps = { }) {
