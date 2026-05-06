@@ -1544,7 +1544,7 @@ export class Project extends ProjectBase {
       s3Config = {
         status: (s3Logs.enabled ?? true) ? 'ENABLED' : 'DISABLED',
         location: `${s3Logs.bucket.bucketName}` + (s3Logs.prefix ? `/${s3Logs.prefix}` : ''),
-        encryptionDisabled: s3Logs.encrypted,
+        encryptionDisabled: s3Logs.encrypted !== undefined ? !s3Logs.encrypted : undefined,
       };
       s3Logs.bucket?.grantWrite(this);
     }

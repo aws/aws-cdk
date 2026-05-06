@@ -13,3 +13,4 @@ export * from './property-reflection';
 export * from './traits';
 export { CfnPropsMixin, type CfnPropsMixinOptions } from './cfn-props-mixin';
 export * from '../private/literal-string';
+export * from './box';
