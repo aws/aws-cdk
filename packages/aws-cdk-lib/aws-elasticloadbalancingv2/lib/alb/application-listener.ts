@@ -11,7 +11,7 @@ import type { ListenerCondition } from './conditions';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import type { Duration } from '../../../core';
-import { Annotations, FeatureFlags, Lazy, Resource, Token } from '../../../core';
+import { Annotations, FeatureFlags, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import type { IArrayBox } from '../../../core/lib/helpers-internal';
 import { Box } from '../../../core/lib/helpers-internal';
@@ -298,17 +298,13 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       sslPolicy = SslPolicy.TLS13_12_PQ;
     }
 
+    const certificateArns = Box.fromArray<string>([]);
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      // The value of certificates here is a parameter to the call to `super`. Therefore,
-      // we can't use `this` (because `this` can only be used after the call to `super`).
-      // So we are using Lazy to bridge from the box, allowing the code to compile, have
-      // deferred execution, and correct stack trace capture.
-      certificates: Lazy.any({
-        produce: () => this._certificateArns.length === 0
-          ? undefined
-          : this._certificateArns.get().map(certificateArn => ({ certificateArn })),
-      }),
+      certificates: certificateArns.derive(arns =>
+        arns.length === 0 ? undefined : arns.map(certificateArn => ({ certificateArn })),
+      ),
       protocol,
       port,
       sslPolicy,
@@ -329,7 +325,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
     this.port = port;
-    this._certificateArns = Box.fromArray([]);
+    this._certificateArns = certificateArns;
 
     // Attach certificates
     if (props.certificateArns && props.certificateArns.length > 0) {

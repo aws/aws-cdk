@@ -6,7 +6,11 @@
     "Name": "integ-nested-parameter0",
     "Type": "String",
     "Value": {
-     "Ref": "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B"
+     "Fn::GetStackOutput": {
+      "StackName": "cross-region-producer",
+      "Region": "us-east-1",
+      "OutputName": "PublishOutputFnGetAttIntegQueue3A18718AQueueName0292941B"
+     }
     }
    }
   },
@@ -16,17 +20,13 @@
     "Name": "integ-nested-parameter1",
     "Type": "String",
     "Value": {
-     "Ref": "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E"
+     "Fn::GetStackOutput": {
+      "StackName": "cross-region-producer",
+      "Region": "us-east-1",
+      "OutputName": "PublishOutputFnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameCEDBD880"
+     }
     }
    }
-  }
- },
- "Parameters": {
-  "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegQueue3A18718AQueueName8D8D3C9B": {
-   "Type": "String"
-  },
-  "referencetocrossregionconsumerExportsReader5D0359E7cdkexportscrossregionconsumercrossregionproduceruseast1FnGetAttIntegNestedNestedStackIntegNestedNestedStackResource168C5881OutputscrossregionproducerIntegNestedNestedIntegQueueD686DB69QueueNameC1C9C99E": {
-   "Type": "String"
   }
  }
 }
