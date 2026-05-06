@@ -5,7 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as rds from '../../aws-rds';
 import { RemovalPolicy, Stack } from '../../core';
-import { BackupPlan, BackupResource, BackupSelection } from '../lib';
+import { BackupPlan, BackupResource, BackupSelection, TagOperation } from '../lib';
 
 let stack: Stack;
 let plan: BackupPlan;
@@ -41,18 +41,12 @@ test('create a selection', () => {
           'Arn',
         ],
       },
-      ListOfTags: [
-        {
-          ConditionKey: 'stage',
-          ConditionType: 'STRINGEQUALS',
-          ConditionValue: 'prod',
-        },
-        {
-          ConditionKey: 'cost center',
-          ConditionType: 'STRINGEQUALS',
-          ConditionValue: 'cloud',
-        },
-      ],
+      Conditions: {
+        StringEquals: [
+          { ConditionKey: 'stage', ConditionValue: 'prod' },
+          { ConditionKey: 'cost center', ConditionValue: 'cloud' },
+        ],
+      },
       Resources: [
         'arn1',
         'arn2',
@@ -76,6 +70,31 @@ test('create a selection', () => {
         ],
       },
     ],
+  });
+});
+
+test('create a selection with mixed tag operations', () => {
+  // WHEN
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromTag('env', 'prod', TagOperation.STRING_EQUALS),
+      BackupResource.fromTag('name', 'app-*', TagOperation.STRING_LIKE),
+      BackupResource.fromTag('temporary', 'true', TagOperation.STRING_NOT_EQUALS),
+      BackupResource.fromTag('name', 'test-*', TagOperation.STRING_NOT_LIKE),
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Conditions: {
+        StringEquals: [{ ConditionKey: 'env', ConditionValue: 'prod' }],
+        StringLike: [{ ConditionKey: 'name', ConditionValue: 'app-*' }],
+        StringNotEquals: [{ ConditionKey: 'temporary', ConditionValue: 'true' }],
+        StringNotLike: [{ ConditionKey: 'name', ConditionValue: 'test-*' }],
+      },
+    },
   });
 });
 
