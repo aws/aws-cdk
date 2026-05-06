@@ -1854,7 +1854,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Note: enabling this flag may cause annotations to appear twice — once in the CLI's
       standard output and once in the validation report — until the CLI is updated to
       consolidate both displays.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.253.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
   },
