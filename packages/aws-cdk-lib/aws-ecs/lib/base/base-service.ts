@@ -26,7 +26,7 @@ import {
   Token,
   ValidationError,
 } from '../../../core';
-import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -769,7 +769,14 @@ export abstract class BaseService extends Resource
    * The deployment alarms property - this will be rendered directly and lazily as the CfnService.alarms
    * property.
    */
-  protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
+  private readonly _deploymentAlarms: IBox<CfnService.DeploymentAlarmsProperty | undefined> = Box.fromValue(undefined);
+
+  protected get deploymentAlarms(): CfnService.DeploymentAlarmsProperty | undefined {
+    return this._deploymentAlarms.getMutable();
+  }
+  protected set deploymentAlarms(value: CfnService.DeploymentAlarmsProperty | undefined) {
+    this._deploymentAlarms.set(value);
+  }
 
   /**
    * The details of the service discovery registries to assign to this service.
@@ -904,7 +911,7 @@ export abstract class BaseService extends Resource
           enable: props.circuitBreaker.enable ?? true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
-        alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
+        alarms: this._deploymentAlarms,
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
         linearConfiguration: props.linearConfiguration ? {
