@@ -123,8 +123,29 @@ class ConditionExpression {
     private readonly value: string | number | boolean,
   ) {}
 
+  /**
+   * Check if a string value represents Cedar syntax rather than a string literal.
+   *
+   * Cedar syntax includes:
+   * - Built-in functions: ip(), decimal(), datetime(), duration()
+   * - Literal types: sets [...], records {...}
+   *
+   * These should NOT be wrapped in quotes in the final Cedar output.
+   */
+  private isCedarSyntax(value: string): boolean {
+    return (
+      value.startsWith('ip(') ||
+      value.startsWith('decimal(') ||
+      value.startsWith('datetime(') ||
+      value.startsWith('duration(') ||
+      // Literal types
+      value.startsWith('[') ||
+      value.startsWith('{')
+    );
+  }
+
   public toCedar(): string {
-    const formattedValue = typeof this.value === 'string' && !this.value.startsWith('ip(')
+    const formattedValue = typeof this.value === 'string' && !this.isCedarSyntax(this.value)
       ? `"${this.value}"`
       : this.value;
     return `${this.attribute} ${this.operator} ${formattedValue}`;
