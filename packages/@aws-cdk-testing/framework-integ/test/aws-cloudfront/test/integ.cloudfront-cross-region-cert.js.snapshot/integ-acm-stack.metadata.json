@@ -1,0 +1,35 @@
+{
+  "/integ-acm-stack/Cert": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "validation": "*"
+      }
+    }
+  ],
+  "/integ-acm-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-acm-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-acm-stack/Cert/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cert5C9FAEC1"
+    }
+  ],
+  "/integ-acm-stack/Publish/Output{\"Ref\":\"Cert5C9FAEC1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishOutputRefCert5C9FAEC1D9C13E8E"
+    }
+  ]
+}

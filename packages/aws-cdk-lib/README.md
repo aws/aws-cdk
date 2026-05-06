@@ -300,14 +300,10 @@ in the producing stack and an
 in the consuming stack to transfer that information from one stack to the
 other.
 
-## Accessing resources in a different stack and region
-
-> **This feature is currently experimental**
-
-You can enable the Stack property `crossRegionReferences`
-in order to access resources in a different stack *and* region. With this feature flag
-enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
-an ACM certificate in `us-east-1`.
+If the resources are in different regions or different accounts, it will
+synthesize templates AWS CloudFormation Outputs in the producer stack
+(without an `Export` attribute), and a `Fn::GetStackOutput` in the consuming
+stack:
 
 ```ts
 const stack1 = new Stack(app, 'Stack1', {
@@ -335,28 +331,6 @@ new cloudfront.Distribution(stack2, 'Distribution', {
   certificate: cert,
 });
 ```
-
-When the AWS CDK determines that the resource is in a different stack *and* is in a different
-region, it will "export" the value by creating a custom resource in the producing stack which
-creates SSM Parameters in the consuming region for each exported value. The parameters will be
-created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
-In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
-is used to reference the SSM parameter which was created.
-
-In order to mimic strong references, a Custom Resource is also created in the consuming
-stack which marks the SSM parameters as being "imported". When a parameter has been successfully
-imported, the producing stack cannot update the value.
-
-> [!NOTE]
-> As a consequence of this feature being built on a Custom Resource, we are restricted to a
-> CloudFormation response body size limitation of [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
-> To prevent deployment errors related to the Custom Resource Provider response body being too
-> large, we recommend limiting the use of nested stacks and minimizing the length of stack names.
-> Doing this will prevent SSM parameter names from becoming too long which will reduce the size of the
-> response body.
-
-See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/adr/cross-region-stack-references.md)
-for more details on this feature.
 
 ### Removing automatic cross-stack references
 
