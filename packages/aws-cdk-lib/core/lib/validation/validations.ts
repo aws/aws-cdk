@@ -130,6 +130,15 @@ export class Validations {
       // For now, all rules route to annotation acknowledgment.
       // Future validation types will be distinguished by their prefix.
       Annotations.of(this.scope).acknowledgeWarning(qualifiedId);
+
+      // Also acknowledge the unqualified ID if the ID doesn't already have a prefix.
+      // This allows acknowledging warnings added via Annotations.addWarningV2() directly
+      // with unqualified IDs (e.g., '@aws-cdk/aws-s3:bucketNotEncrypted').
+      const parts = rule.id.split('::');
+      if (parts.length === 1) {
+        // ID has no prefix, so also acknowledge the unqualified version
+        Annotations.of(this.scope).acknowledgeWarning(rule.id);
+      }
     }
   }
 
