@@ -7,6 +7,7 @@ import type { PermissionsBoundary } from './permissions-boundary';
 import { synthesize } from './private/synthesis';
 import { type IPropertyInjector, PropertyInjectors } from './prop-injectors';
 import type { IPolicyValidationPlugin, IPolicyValidationPluginBeta1 } from './validation';
+import { _toBeta1Plugin } from './validation';
 import * as public_cxapi from '../../cx-api';
 import { _convertCloudAssembly, _convertCloudAssemblyBuilder } from '../../cx-api';
 import { lit } from './private/literal-string';
@@ -185,7 +186,7 @@ export class Stage extends Construct {
    * @default - no validation plugins are used
    */
   public get policyValidationBeta1(): IPolicyValidationPluginBeta1[] {
-    return [...this._policyValidation];
+    return this._policyValidation.map(_toBeta1Plugin);
   }
 
   private readonly _policyValidation: IPolicyValidationPlugin[] = [];
@@ -227,6 +228,15 @@ export class Stage extends Construct {
    */
   public _addValidationPlugins(...plugins: IPolicyValidationPlugin[]): void {
     this._policyValidation.push(...plugins);
+  }
+
+  /**
+   * Returns the raw validation plugins without Beta1 wrapping.
+   *
+   * @internal
+   */
+  public get _validationPlugins(): IPolicyValidationPlugin[] {
+    return [...this._policyValidation];
   }
 
   /**

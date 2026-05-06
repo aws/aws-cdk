@@ -1,10 +1,11 @@
 import type { IQueue } from 'aws-cdk-lib/aws-sqs';
-import { Queue } from 'aws-cdk-lib/aws-sqs';
+import { Queue, QueueEncryption } from 'aws-cdk-lib/aws-sqs';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, Stack, NestedStack } from 'aws-cdk-lib';
-import { IntegTest, ExpectedResult, Match } from '@aws-cdk/integ-tests-alpha';
+import { App, NestedStack, Stack } from 'aws-cdk-lib';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import { Construct } from 'constructs';
+import { Key } from 'aws-cdk-lib/aws-kms';
 
 // GIVEN
 const app = new App({
@@ -21,8 +22,12 @@ class ProducerStack extends Stack {
       },
       crossRegionReferences: true,
     });
+    const key = new Key(this, 'Key');
     const nested = new NestedStack(this, 'IntegNested');
-    this.queue = new Queue(this, 'IntegQueue');
+    this.queue = new Queue(this, 'IntegQueue', {
+      encryption: QueueEncryption.KMS,
+      encryptionMasterKey: key,
+    });
     this.nestedQueue = new Queue(nested, 'NestedIntegQueue');
   }
 }

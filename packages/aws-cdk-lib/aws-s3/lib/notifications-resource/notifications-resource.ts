@@ -4,6 +4,9 @@ import { NotificationsResourceHandler } from './notifications-resource-handler';
 import * as iam from '../../../aws-iam';
 import * as cdk from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { IBucket, EventType, NotificationKeyFilter } from '../bucket';
@@ -43,11 +46,12 @@ interface NotificationsProps {
  * @see
  * https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket-notificationconfig.html
  */
+@noBoxStackTraces
 export class BucketNotifications extends Construct {
-  private eventBridgeEnabled = false;
-  private readonly lambdaNotifications = new Array<LambdaFunctionConfiguration>();
-  private readonly queueNotifications = new Array<QueueConfiguration>();
-  private readonly topicNotifications = new Array<TopicConfiguration>();
+  private readonly eventBridgeEnabled: IBox<boolean> = Box.fromValue(false);
+  private readonly lambdaNotifications: IArrayBox<LambdaFunctionConfiguration> = Box.fromArray([]);
+  private readonly queueNotifications: IArrayBox<QueueConfiguration> = Box.fromArray([]);
+  private readonly topicNotifications: IArrayBox<TopicConfiguration> = Box.fromArray([]);
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;
@@ -107,16 +111,21 @@ export class BucketNotifications extends Construct {
 
   public enableEventBridgeNotification() {
     this.createResourceOnce();
-    this.eventBridgeEnabled = true;
+    this.eventBridgeEnabled.set(true);
   }
 
-  private renderNotificationConfiguration(): NotificationConfiguration {
-    return {
-      EventBridgeConfiguration: this.eventBridgeEnabled ? {} : undefined,
-      LambdaFunctionConfigurations: this.lambdaNotifications.length > 0 ? this.lambdaNotifications : undefined,
-      QueueConfigurations: this.queueNotifications.length > 0 ? this.queueNotifications : undefined,
-      TopicConfigurations: this.topicNotifications.length > 0 ? this.topicNotifications : undefined,
-    };
+  private renderNotificationConfiguration() {
+    return Box.combine({
+      eventBridge: this.eventBridgeEnabled,
+      lambda: this.lambdaNotifications,
+      queue: this.queueNotifications,
+      topic: this.topicNotifications,
+    }, v => ({
+      EventBridgeConfiguration: v.eventBridge ? {} : undefined,
+      LambdaFunctionConfigurations: v.lambda.length > 0 ? v.lambda : undefined,
+      QueueConfigurations: v.queue.length > 0 ? v.queue : undefined,
+      TopicConfigurations: v.topic.length > 0 ? v.topic : undefined,
+    }));
   }
 
   /**
@@ -151,7 +160,7 @@ export class BucketNotifications extends Construct {
         properties: {
           ServiceToken: handler.functionArn,
           BucketName: this.bucket.bucketName,
-          NotificationConfiguration: cdk.Lazy.any({ produce: () => this.renderNotificationConfiguration() }),
+          NotificationConfiguration: this.renderNotificationConfiguration(),
           Managed: managed,
           SkipDestinationValidation: this.skipDestinationValidation,
         },
@@ -252,20 +261,11 @@ function renderFilters(filters: NotificationKeyFilter[], scope: BucketNotificati
   };
 }
 
-interface NotificationConfiguration {
-  EventBridgeConfiguration?: EventBridgeConfiguration;
-  LambdaFunctionConfigurations?: LambdaFunctionConfiguration[];
-  QueueConfigurations?: QueueConfiguration[];
-  TopicConfigurations?: TopicConfiguration[];
-}
-
 interface CommonConfiguration {
   Id?: string;
   Events: EventType[];
   Filter?: Filter;
 }
-
-interface EventBridgeConfiguration { }
 
 interface LambdaFunctionConfiguration extends CommonConfiguration {
   LambdaFunctionArn: string;

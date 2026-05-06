@@ -1,0 +1,32 @@
+{
+  "/integ-cloudfront-stack/Distro": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        },
+        "certificate": "*",
+        "domainNames": "*"
+      }
+    }
+  ],
+  "/integ-cloudfront-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-cloudfront-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-cloudfront-stack/Distro/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distro87EBE6BA"
+    }
+  ]
+}

@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.253.0](https://github.com/aws/aws-cdk/compare/v2.252.0...v2.253.0) (2026-05-06)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37753](https://github.com/aws/aws-cdk/issues/37753)) ([a661c2d](https://github.com/aws/aws-cdk/commit/a661c2ddee343a610b0ab312996ce34e6cacb571))
+* **apigatewayv2-integrations:** auto-include EventBusName in HttpEventBridgeIntegration default parameter mapping ([#36780](https://github.com/aws/aws-cdk/issues/36780)) ([9734bb4](https://github.com/aws/aws-cdk/commit/9734bb4382db1123b3c78ffea1130d702fb5a845)), closes [#36775](https://github.com/aws/aws-cdk/issues/36775)
+* **core:** add Fn::GetStackOutput for cross-region references ([#37724](https://github.com/aws/aws-cdk/issues/37724)) ([ffae861](https://github.com/aws/aws-cdk/commit/ffae8613d0f2dbb94ff7a2ea1e6cd53036bd9870))
+* **core:** integrate construct annotations into validation report ([#37712](https://github.com/aws/aws-cdk/issues/37712)) ([438bd0b](https://github.com/aws/aws-cdk/commit/438bd0b756603e60433c6bd9a080be7c234b1d56))
+* **synthetics:** add Playwright 5.1 and 6.0 runtimes ([#37665](https://github.com/aws/aws-cdk/issues/37665)) ([c1afb43](https://github.com/aws/aws-cdk/commit/c1afb43b16db8d4eeaeb4dda413fc64637b7e014))
+* emr instance fleet priority allocation ([#35731](https://github.com/aws/aws-cdk/issues/35731)) ([db1188a](https://github.com/aws/aws-cdk/commit/db1188a34b2ec4c37d6d9e5c44df65d784e9a5bf)), closes [#35710](https://github.com/aws/aws-cdk/issues/35710) [/github.com/aws/aws-cdk/blob/3ec6d06c7c58e4f14b3fb114d7c35dc6d01794d9/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emr/private/cluster-utils.ts#L91](https://github.com/aws//github.com/aws/aws-cdk/blob/3ec6d06c7c58e4f14b3fb114d7c35dc6d01794d9/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emr/private/cluster-utils.ts/issues/L91)
+
+
+### Bug Fixes
+
+* **cloudfront:** skip cachePolicyName length validation for unresolved tokens ([#37751](https://github.com/aws/aws-cdk/issues/37751)) ([3b96e97](https://github.com/aws/aws-cdk/commit/3b96e97af91701fc17e8c3ad35a8564d57085a9d)), closes [#23567](https://github.com/aws/aws-cdk/issues/23567) [#34102](https://github.com/aws/aws-cdk/issues/34102)
+* **cloudwatch:** remove false positive warning for CDK tokens in MathExpression ([#36882](https://github.com/aws/aws-cdk/issues/36882)) ([c29dc17](https://github.com/aws/aws-cdk/commit/c29dc17e770183ef1c83595bd6873b2fb3379d7f)), closes [#34977](https://github.com/aws/aws-cdk/issues/34977)
+* **codebuild:** correct S3 log encryption boolean inversion ([#37761](https://github.com/aws/aws-cdk/issues/37761)) ([4031918](https://github.com/aws/aws-cdk/commit/40319185dc645d2afc6acf1d25547a86250e97af))
+* **ecs:** enabling the circuitBreaker is not recommended loudly enough ([#37755](https://github.com/aws/aws-cdk/issues/37755)) ([a52af7d](https://github.com/aws/aws-cdk/commit/a52af7dc4eb79fc145181602e13c864dd61a197a))
+* **eks:** add dependency from HelmChart custom resource to s3 chartAsset IAM policy ([#37731](https://github.com/aws/aws-cdk/issues/37731)) ([99d0a5b](https://github.com/aws/aws-cdk/commit/99d0a5ba83771e46aca9971d00af027f42078f4a)), closes [#19880](https://github.com/aws/aws-cdk/issues/19880)
+
 ## [2.252.0](https://github.com/aws/aws-cdk/compare/v2.251.0...v2.252.0) (2026-04-29)
 
 

@@ -69,6 +69,19 @@ export * from './gateway/targets/schema/api-schema';
 export * from './gateway/targets/schema/tool-schema';
 
 // ===================================
+// Evaluation
+// ===================================
+export * from './evaluation/types';
+export * from './evaluation/perms';
+export * from './evaluation/evaluator';
+export * from './evaluation/evaluator-config';
+export * from './evaluation/evaluator-base';
+export * from './evaluation/custom-evaluator';
+export * from './evaluation/data-source';
+export * from './evaluation/online-evaluation-base';
+export * from './evaluation/online-evaluation';
+
+// ===================================
 // Policy
 // ===================================
 export * from './policy/perms';

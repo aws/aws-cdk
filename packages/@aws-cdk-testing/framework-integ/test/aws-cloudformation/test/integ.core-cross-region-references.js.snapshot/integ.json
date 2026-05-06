@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "testCases": {
     "cross-region-references/DefaultTest": {
       "stacks": [
@@ -11,5 +11,5 @@
       "assertionStackName": "crossregionreferencesDefaultTestDeployAssertAB7415FD"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1119.0"
 }

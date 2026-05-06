@@ -1543,6 +1543,40 @@ describe('SelfManagedMemoryStrategy unit tests', () => {
     }).toThrow('Token-based trigger must be between 100 and 500000, got 50');
   });
 
+  test('Should skip validation when historicalContextWindowSize is an unresolved token', () => {
+    const param = new cdk.CfnParameter(stack, 'WindowSize', { type: 'Number', default: 10 });
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'token_historical',
+        historicalContextWindowSize: param.valueAsNumber,
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: { bucketName: bucket.bucketName, objectKey: 'test/' },
+        },
+      });
+    }).not.toThrow();
+  });
+
+  test('Should skip validation when trigger conditions are unresolved tokens', () => {
+    const msgParam = new cdk.CfnParameter(stack, 'MsgTrigger', { type: 'Number', default: 5 });
+    const tokenParam = new cdk.CfnParameter(stack, 'TokenTrigger', { type: 'Number', default: 500 });
+    const timeParam = new cdk.CfnParameter(stack, 'TimeTrigger', { type: 'Number', default: 30 });
+    expect(() => {
+      MemoryStrategy.usingSelfManaged({
+        name: 'token_triggers',
+        invocationConfiguration: {
+          topic: topic,
+          s3Location: { bucketName: bucket.bucketName, objectKey: 'test/' },
+        },
+        triggerConditions: {
+          messageBasedTrigger: msgParam.valueAsNumber,
+          timeBasedTrigger: cdk.Duration.seconds(timeParam.valueAsNumber),
+          tokenBasedTrigger: tokenParam.valueAsNumber,
+        },
+      });
+    }).not.toThrow();
+  });
+
   test('Should validate multiple trigger conditions', () => {
     expect(() => {
       MemoryStrategy.usingSelfManaged({

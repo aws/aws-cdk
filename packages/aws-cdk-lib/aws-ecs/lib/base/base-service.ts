@@ -26,7 +26,7 @@ import {
   Token,
   ValidationError,
 } from '../../../core';
-import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
 import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -769,7 +769,14 @@ export abstract class BaseService extends Resource
    * The deployment alarms property - this will be rendered directly and lazily as the CfnService.alarms
    * property.
    */
-  protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
+  private readonly _deploymentAlarms: IBox<CfnService.DeploymentAlarmsProperty | undefined> = Box.fromValue(undefined);
+
+  protected get deploymentAlarms(): CfnService.DeploymentAlarmsProperty | undefined {
+    return this._deploymentAlarms.getMutable();
+  }
+  protected set deploymentAlarms(value: CfnService.DeploymentAlarmsProperty | undefined) {
+    this._deploymentAlarms.set(value);
+  }
 
   /**
    * The details of the service discovery registries to assign to this service.
@@ -904,7 +911,7 @@ export abstract class BaseService extends Resource
           enable: props.circuitBreaker.enable ?? true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
-        alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
+        alarms: this._deploymentAlarms,
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
         linearConfiguration: props.linearConfiguration ? {
@@ -940,6 +947,11 @@ export abstract class BaseService extends Resource
 
     if (props.circuitBreaker && !this.isEcsDeploymentController) {
       Annotations.of(this)._addTrackableError(lit`CircuitBreakerRequiresEcsController`, 'Deployment circuit breaker requires the ECS deployment controller.');
+    }
+
+    if (!props.circuitBreaker && this.isEcsDeploymentController) {
+      // If we *could* use a circuit breaker, then let's recommend users to do so. It makes detecting errors sooo much faster.
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:shouldUseCircuitBreaker', 'Enable the \'circuitBreaker\' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail).');
     }
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {

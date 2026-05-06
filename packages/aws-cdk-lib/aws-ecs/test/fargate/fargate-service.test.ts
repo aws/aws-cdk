@@ -3646,6 +3646,7 @@ describe('fargate service', () => {
         cluster,
         taskDefinition,
         minHealthyPercent: 50, // must be set to avoid warning causing test failure
+        circuitBreaker: {}, // Set to silence an unrelated warning
       });
 
       // WHEN

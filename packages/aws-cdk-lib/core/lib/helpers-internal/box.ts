@@ -78,6 +78,16 @@ export interface IBox<A> extends IReadableBox<A> {
    * @param a the new value.
    */
   set(a: A): void;
+
+  /**
+   * Applies a function to the current value and replaces it with the result.
+   *
+   * Equivalent to `box.set(fn(box.getMutable()))`. The same equality check
+   * and stack trace capture rules as `set` apply.
+   *
+   * @param fn a function that receives the current value and returns the new value.
+   */
+  update(fn: (a: A) => A): void;
 }
 
 /**
@@ -159,6 +169,16 @@ export interface IArrayBox<A> extends IBox<Array<A>>, Iterable<A> {
    * @returns a new read-only box holding the mapped array.
    */
   map<B>(fn: (a: A) => B): IReadableBox<Array<B>>;
+
+  /**
+   * Creates a derived read-only box containing only elements that satisfy the predicate.
+   *
+   * Shorthand for `this.derive(a => a.filter(fn))`.
+   *
+   * @param fn a predicate function called for each element.
+   * @returns a new read-only box holding the filtered array.
+   */
+  filter(fn: (a: A) => boolean): IReadableBox<Array<A>>;
 }
 
 /**
@@ -478,6 +498,24 @@ class Computed<A, B> extends BaseReadableBox<B> {
   }
 
   public resolve(context: IResolveContext): MakeReadonly<B> | undefined {
+    /*
+    We do this short-circuit here to match the CDK's convention that undefined means "omit this
+    CloudFormation property." Without it, every derive function would need to defensively handle
+    undefined inputs, and worse, it could produce incorrect CloudFormation output.
+
+    Consider, for example, an instance of IArrayBox. When the array is empty, ArrayState.resolve returns
+    undefined (because of omitEmpty). If a derived box then ran its transform on that undefined, it
+    might produce a non-undefined result — like an empty {} block — which could be invalid
+    CloudFormation. The short-circuit ensures that "no value" propagates cleanly through the entire
+    derivation chain: if the source has nothing, the derived box also has nothing, and the
+    CloudFormation property is omitted entirely.
+
+    It's essentially the same semantics as Optional.map() in Java or Option.map()
+    in Rust/Scala — if the container is empty, the mapping function is never called, and you get empty
+    back. The resolve path (used at synth time) treats undefined as the "empty" case, while get() (used
+    at runtime for imperative reads) does not short-circuit, since the caller explicitly wants the raw
+    value.
+     */
     const sourceResolved = this.source.resolve(context);
     if (sourceResolved === undefined) {
       return undefined;
@@ -524,6 +562,10 @@ class State<A> extends BaseReadableBox<A> implements IBox<A> {
     this.value = value;
   }
 
+  public update(fn: (a: A) => A): void {
+    this.set(fn(this.value));
+  }
+
   public getStackTraces(): Array<StackTrace> {
     return this.orderedTraces.map((t) => t.trace);
   }
@@ -552,12 +594,12 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public push(...items: A[]): void {
     this.array.push(...items);
-    this.appendTrace(captureStackTrace(this.push.bind(this)));
+    this.appendTrace(() => captureStackTrace(this.push.bind(this)));
   }
 
   public pop(): A | undefined {
     const result = this.array.pop();
-    this.appendTrace(captureStackTrace(this.pop.bind(this)));
+    this.appendTrace(() => captureStackTrace(this.pop.bind(this)));
     return result;
   }
 
@@ -575,13 +617,13 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public splice(start: number, deleteCount: number, ...items: A[]): A[] {
     const result = this.array.splice(start, deleteCount, ...items);
-    this.appendTrace(captureStackTrace(this.splice.bind(this)));
+    this.appendTrace(() => captureStackTrace(this.splice.bind(this)));
     return result;
   }
 
-  private appendTrace(trace: StackTrace): void {
+  private appendTrace(deferredTrace: () => StackTrace): void {
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
-      this.orderedTraces.push({ trace, seq: globalSeq++ });
+      this.orderedTraces.push({ trace: deferredTrace(), seq: globalSeq++ });
     }
   }
 
@@ -591,6 +633,10 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {
     return this.derive(arr => arr.map(fn));
+  }
+
+  public filter(fn: (a: A) => boolean): IReadableBox<Array<A>> {
+    return this.derive(arr => arr.filter(fn));
   }
 
   public [Symbol.iterator](): Iterator<A> {
@@ -614,12 +660,12 @@ class MapState<K, V> extends State<Map<K, V>> implements IMapBox<K, V> {
 
   public put(key: K, value: V): void {
     this.map.set(key, value);
-    this.appendTrace(captureStackTrace(this.put.bind(this)));
+    this.appendTrace(() => captureStackTrace(this.put.bind(this)));
   }
 
   public delete(key: K): boolean {
     const result = this.map.delete(key);
-    this.appendTrace(captureStackTrace(this.delete.bind(this)));
+    this.appendTrace(() => captureStackTrace(this.delete.bind(this)));
     return result;
   }
 
@@ -647,9 +693,9 @@ class MapState<K, V> extends State<Map<K, V>> implements IMapBox<K, V> {
     this.map.forEach(callbackfn);
   }
 
-  private appendTrace(trace: StackTrace): void {
+  private appendTrace(deferredTrace: () => StackTrace): void {
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
-      this.orderedTraces.push({ trace, seq: globalSeq++ });
+      this.orderedTraces.push({ trace: deferredTrace(), seq: globalSeq++ });
     }
   }
 
@@ -674,12 +720,12 @@ class SetState<A> extends State<Set<A>> implements ISetBox<A> {
 
   public add(value: A): void {
     this._set.add(value);
-    this.appendTrace(captureStackTrace(this.add.bind(this)));
+    this.appendTrace(() => captureStackTrace(this.add.bind(this)));
   }
 
   public delete(value: A): boolean {
     const result = this._set.delete(value);
-    this.appendTrace(captureStackTrace(this.delete.bind(this)));
+    this.appendTrace(() => captureStackTrace(this.delete.bind(this)));
     return result;
   }
 
@@ -699,9 +745,9 @@ class SetState<A> extends State<Set<A>> implements ISetBox<A> {
     this._set.forEach(callbackfn);
   }
 
-  private appendTrace(trace: StackTrace): void {
+  private appendTrace(deferredTrace: () => StackTrace): void {
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
-      this.orderedTraces.push({ trace, seq: globalSeq++ });
+      this.orderedTraces.push({ trace: deferredTrace(), seq: globalSeq++ });
     }
   }
 
