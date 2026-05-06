@@ -660,7 +660,6 @@ describe('Gateway grant methods tests', () => {
       },
     });
   });
-
 });
 
 describe('Gateway metric methods tests', () => {
@@ -810,7 +809,8 @@ describe('OAuth credential provider tests', () => {
       code: lambda.Code.fromInline('exports.handler = async () => ({});'),
     });
     toolSchema = ToolSchema.fromInline([{
-      name: 'tool', description: 'tool',
+      name: 'tool',
+      description: 'tool',
       inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
     }]);
   });
@@ -1155,7 +1155,6 @@ describe('Gateway target convenience methods tests', () => {
         ]),
       });
     });
-
   });
 
   describe('addMcpServerTarget', () => {

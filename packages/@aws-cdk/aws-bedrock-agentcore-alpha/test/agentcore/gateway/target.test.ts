@@ -1111,7 +1111,6 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
   });
 
   test('grantRead should grant GetGatewayTarget on target ARN and ListGatewayTargets on all resources', () => {
-
     target.grantRead(role);
 
     const template = Template.fromStack(stack);
@@ -1134,7 +1133,6 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
   });
 
   test('grantManage should grant Create, Update, and Delete actions on the target ARN', () => {
-
     target.grantManage(role);
 
     const template = Template.fromStack(stack);
@@ -1156,7 +1154,6 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
   });
 
   test('grantSync should grant SynchronizeGatewayTargets on the gateway ARN', () => {
-
     target.grantSync(role);
 
     const template = Template.fromStack(stack);
