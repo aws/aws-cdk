@@ -1,5 +1,4 @@
 import type { Construct } from 'constructs';
-import type { DeploymentCircuitBreaker } from '../../../aws-ecs';
 import { FargateService, FargateTaskDefinition } from '../../../aws-ecs';
 import type { NetworkTargetGroup } from '../../../aws-elasticloadbalancingv2';
 import { FeatureFlags, ValidationError } from '../../../core';
