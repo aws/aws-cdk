@@ -2,6 +2,7 @@ import * as bedrock from '@aws-cdk/aws-bedrock-alpha';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
@@ -1088,19 +1089,16 @@ describe('Memory grant methods tests', () => {
 });
 
 describe('Memory metric methods tests', () => {
-  let app: cdk.App;
   let stack: cdk.Stack;
   let memory: Memory;
 
-  beforeAll(() => {
-    app = new cdk.App();
-    stack = new cdk.Stack(app, 'test-stack', {
-      env: {
-        account: '123456789012',
-        region: 'us-east-1',
-      },
-    });
+  function alarmForMetric(id: string, metric: cloudwatch.Metric): void {
+    new cloudwatch.Alarm(stack, id, { metric, evaluationPeriods: 1, threshold: 1 });
+  }
 
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
     memory = new Memory(stack, 'test-memory-metrics', {
       memoryName: 'test_memory_metrics',
       description: 'A test memory for testing metric methods',
@@ -1109,65 +1107,110 @@ describe('Memory metric methods tests', () => {
   });
 
   test('Should create metric with custom name and dimensions', () => {
-    const metric = memory.metric('CustomMetric', { CustomDimension: 'value' });
-    expect(metric.metricName).toBe('CustomMetric');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.dimensions?.CustomDimension).toBe('value');
-    // Resource dimension is automatically added pointing to the memory ARN
-    expect(metric.dimensions?.Resource).toBeDefined();
+    alarmForMetric('CustomAlarm', memory.metric('CustomMetric', { CustomDimension: 'value' }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CustomMetric',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'CustomDimension', Value: 'value' }),
+        Match.objectLike({ Name: 'Resource' }),
+      ]),
+    });
   });
 
   test('Should create metricForApiOperation with Operation dimension', () => {
-    const metric = memory.metricForApiOperation('CustomMetric', 'CreateEvent');
-    expect(metric.metricName).toBe('CustomMetric');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+    alarmForMetric('OpAlarm', memory.metricForApiOperation('CustomMetric', 'CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CustomMetric',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
   });
 
   test('Should create metricLatencyForApiOperation with Average statistic', () => {
-    const metric = memory.metricLatencyForApiOperation('CreateEvent');
-    expect(metric.metricName).toBe('Latency');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Average');
-    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+    alarmForMetric('LatencyAlarm', memory.metricLatencyForApiOperation('CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
   });
 
   test('Should create metricInvocationsForApiOperation with Sum statistic', () => {
-    const metric = memory.metricInvocationsForApiOperation('CreateEvent');
-    expect(metric.metricName).toBe('Invocations');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
-    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+    alarmForMetric('InvocAlarm', memory.metricInvocationsForApiOperation('CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
   });
 
   test('Should create metricErrorsForApiOperation with Sum statistic', () => {
-    const metric = memory.metricErrorsForApiOperation('CreateEvent');
-    expect(metric.metricName).toBe('Errors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
-    expect(metric.dimensions?.Operation).toBe('CreateEvent');
+    alarmForMetric('ErrorsAlarm', memory.metricErrorsForApiOperation('CreateEvent'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Errors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'CreateEvent' }),
+      ]),
+    });
   });
 
   test('Should create metricEventCreationCount metric with Event ItemType dimension', () => {
-    const metric = memory.metricEventCreationCount();
-    expect(metric.metricName).toBe('CreationCount');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
-    expect(metric.dimensions?.ItemType).toBe('Event');
+    alarmForMetric('EventCountAlarm', memory.metricEventCreationCount());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CreationCount',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'ItemType', Value: 'Event' }),
+      ]),
+    });
   });
 
   test('Should create metricMemoryRecordCreationCount metric with MemoryRecordsExtracted ItemType dimension', () => {
-    const metric = memory.metricMemoryRecordCreationCount();
-    expect(metric.metricName).toBe('CreationCount');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
-    expect(metric.dimensions?.ItemType).toBe('MemoryRecordsExtracted');
+    alarmForMetric('RecordCountAlarm', memory.metricMemoryRecordCreationCount());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CreationCount',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'ItemType', Value: 'MemoryRecordsExtracted' }),
+      ]),
+    });
   });
 
   test('Should override default statistic with custom props', () => {
-    const metric = memory.metricInvocationsForApiOperation('CreateEvent', { statistic: 'Average' });
-    expect(metric.metricName).toBe('Invocations');
-    expect(metric.statistic).toBe('Average');
+    alarmForMetric('OverrideAlarm', memory.metricInvocationsForApiOperation('CreateEvent', { statistic: 'Average' }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Statistic: 'Average',
+    });
   });
 });
 

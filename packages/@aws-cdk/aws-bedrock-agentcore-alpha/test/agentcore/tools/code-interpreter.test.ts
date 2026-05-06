@@ -1,6 +1,7 @@
 import * as cdk from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CodeInterpreterNetworkConfiguration } from '../../../lib/network/network-configuration';
@@ -986,16 +987,16 @@ describe('CodeInterpreterCustom execution role edge cases', () => {
 });
 
 describe('CodeInterpreterCustom error metric methods tests', () => {
-  let app: cdk.App;
   let stack: cdk.Stack;
   let codeInterpreter: CodeInterpreterCustom;
 
-  beforeAll(() => {
-    app = new cdk.App();
-    stack = new cdk.Stack(app, 'test-stack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
+  function alarmForMetric(id: string, metric: cloudwatch.Metric): void {
+    new cloudwatch.Alarm(stack, id, { metric, evaluationPeriods: 1, threshold: 1 });
+  }
 
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
     codeInterpreter = new CodeInterpreterCustom(stack, 'test-code-interpreter-error-metrics', {
       codeInterpreterCustomName: 'test_code_interpreter_error_metrics',
       networkConfiguration: CodeInterpreterNetworkConfiguration.usingPublicNetwork(),
@@ -1003,27 +1004,45 @@ describe('CodeInterpreterCustom error metric methods tests', () => {
   });
 
   test('Should create metricThrottlesForApiOperation with Sum statistic', () => {
-    const metric = codeInterpreter.metricThrottlesForApiOperation('TestOperation');
-    expect(metric.metricName).toBe('Throttles');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
-    expect(metric.dimensions?.Operation).toBe('TestOperation');
+    alarmForMetric('ThrottlesAlarm', codeInterpreter.metricThrottlesForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Throttles',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
   });
 
   test('Should create metricSystemErrorsForApiOperation with Sum statistic', () => {
-    const metric = codeInterpreter.metricSystemErrorsForApiOperation('TestOperation');
-    expect(metric.metricName).toBe('SystemErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
-    expect(metric.dimensions?.Operation).toBe('TestOperation');
+    alarmForMetric('SysErrAlarm', codeInterpreter.metricSystemErrorsForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SystemErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
   });
 
   test('Should create metricUserErrorsForApiOperation with Sum statistic', () => {
-    const metric = codeInterpreter.metricUserErrorsForApiOperation('TestOperation');
-    expect(metric.metricName).toBe('UserErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
-    expect(metric.dimensions?.Operation).toBe('TestOperation');
+    alarmForMetric('UserErrAlarm', codeInterpreter.metricUserErrorsForApiOperation('TestOperation'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'UserErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Operation', Value: 'TestOperation' }),
+      ]),
+    });
   });
 });
 
