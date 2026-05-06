@@ -55,6 +55,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.AUTOMATIC_L1_TRAITS]: true,
     [feats.BATCH_DEFAULT_AL2023]: false,
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
+    [feats.DEFAULT_VALIDATION_ENGINE]: false,
 
   });
 });

@@ -155,6 +155,7 @@ export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancin
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
+export const DEFAULT_VALIDATION_ENGINE = '@aws-cdk/core:defaultValidationEngine';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1854,6 +1855,26 @@ export const FLAGS: Record<string, FlagInfo> = {
       Note: enabling this flag may cause annotations to appear twice — once in the CLI's
       standard output and once in the validation report — until the CLI is updated to
       consolidate both displays.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [DEFAULT_VALIDATION_ENGINE]: {
+    type: FlagType.VisibleContext,
+    summary: 'Run the default validation engine against synthesized CloudFormation templates',
+    detailsMd: `
+      When enabled, the built-in validation engine runs automatically after synthesis,
+      evaluating CloudFormation templates against hundreds of rules covering template
+      correctness, resource-specific checks, security, and best practices.
+
+      Findings are reported at three severity levels:
+      - Fatal: template will definitively fail CloudFormation deployment. Cannot be suppressed.
+      - Error: likely misconfigurations. Can be suppressed via \`Validations.of().acknowledge()\`.
+      - Warning: best practice recommendations. Can be suppressed.
+
+      When disabled, only user-registered validation plugins run.`,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
