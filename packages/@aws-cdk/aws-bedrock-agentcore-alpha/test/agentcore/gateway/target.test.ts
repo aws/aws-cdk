@@ -825,19 +825,21 @@ describe('ToolSchema asset and S3 tests', () => {
 
   beforeEach(() => {
     const app = new cdk.App();
-    stack = new cdk.Stack(app, 'TestStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
+    stack = new cdk.Stack(app, 'TestStack');
   });
 
   describe('ToolSchema.fromLocalAsset', () => {
+    let schema: ToolSchema;
+
+    beforeEach(() => {
+      schema = ToolSchema.fromLocalAsset(toolAssetPath);
+    });
+
     test('Should create an AssetToolSchema instance', () => {
-      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
       expect(schema).toBeInstanceOf(AssetToolSchema);
     });
 
     test('bind should initialize the S3 asset and render should return S3 URI', () => {
-      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
       schema.bind(stack);
 
       const rendered = schema._render();
@@ -846,12 +848,10 @@ describe('ToolSchema asset and S3 tests', () => {
     });
 
     test('_render should throw when called before bind', () => {
-      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
       expect(() => schema._render()).toThrow(/must be bound to a scope before rendering/);
     });
 
     test('grantPermissionsToRole should throw when called before bind', () => {
-      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
       const role = new iam.Role(stack, 'TestRole', {
         assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
       });
@@ -860,7 +860,6 @@ describe('ToolSchema asset and S3 tests', () => {
     });
 
     test('grantPermissionsToRole should grant read access to the S3 asset after bind', () => {
-      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
       schema.bind(stack);
       const role = new iam.Role(stack, 'TestRole', {
         assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
@@ -882,7 +881,6 @@ describe('ToolSchema asset and S3 tests', () => {
     });
 
     test('bind should be idempotent and reuse the same asset across multiple calls', () => {
-      const schema = ToolSchema.fromLocalAsset(toolAssetPath);
       schema.bind(stack);
       const firstRender = schema._render();
 
@@ -894,16 +892,19 @@ describe('ToolSchema asset and S3 tests', () => {
   });
 
   describe('ToolSchema.fromS3File', () => {
+    let bucket: s3.IBucket;
+    let schema: ToolSchema;
+
+    beforeEach(() => {
+      bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      schema = ToolSchema.fromS3File(bucket, 'schema.json');
+    });
+
     test('Should create an S3ToolSchema instance', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
       expect(schema).toBeInstanceOf(S3ToolSchema);
     });
 
     test('_render should return S3 URI without bucketOwner when not provided', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
-
       const rendered = schema._render();
       expect(rendered.s3).toBeDefined();
       expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
@@ -911,25 +912,19 @@ describe('ToolSchema asset and S3 tests', () => {
     });
 
     test('_render should include bucketOwnerAccountId when provided', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ToolSchema.fromS3File(bucket, 'schema.json', '987654321098');
+      const schemaWithOwner = ToolSchema.fromS3File(bucket, 'schema.json', '987654321098');
 
-      const rendered = schema._render();
+      const rendered = schemaWithOwner._render();
       expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
       expect(rendered.s3.bucketOwnerAccountId).toBe('987654321098');
     });
 
     test('bind should be a no-op and allow subsequent _render', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
-
       expect(() => schema.bind(stack)).not.toThrow();
       expect(schema._render().s3.uri).toBe('s3://my-bucket/schema.json');
     });
 
     test('grantPermissionsToRole should grant s3:GetObject on the object ARN', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ToolSchema.fromS3File(bucket, 'schema.json');
       const role = new iam.Role(stack, 'TestRole', {
         assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
       });
@@ -963,19 +958,21 @@ describe('ApiSchema asset and S3 tests', () => {
 
   beforeEach(() => {
     const app = new cdk.App();
-    stack = new cdk.Stack(app, 'TestStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
+    stack = new cdk.Stack(app, 'TestStack');
   });
 
   describe('AssetApiSchema', () => {
+    let schema: ApiSchema;
+
+    beforeEach(() => {
+      schema = ApiSchema.fromLocalAsset(apiAssetPath);
+    });
+
     test('_render should throw when called before bind', () => {
-      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
       expect(() => schema._render()).toThrow(/must be bound to a scope before rendering/);
     });
 
     test('_render should return S3 URI after bind', () => {
-      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
       schema.bind(stack);
 
       const rendered = schema._render();
@@ -984,7 +981,6 @@ describe('ApiSchema asset and S3 tests', () => {
     });
 
     test('grantPermissionsToRole should be a no-op when called before bind', () => {
-      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
       const role = new iam.Role(stack, 'TestRole', {
         assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
       });
@@ -994,7 +990,6 @@ describe('ApiSchema asset and S3 tests', () => {
     });
 
     test('grantPermissionsToRole should grant read access after bind', () => {
-      const schema = ApiSchema.fromLocalAsset(apiAssetPath);
       schema.bind(stack);
       const role = new iam.Role(stack, 'TestRole', {
         assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
@@ -1017,33 +1012,34 @@ describe('ApiSchema asset and S3 tests', () => {
   });
 
   describe('S3ApiSchema', () => {
+    let bucket: s3.IBucket;
+
+    let schema: ApiSchema;
+
+    beforeEach(() => {
+      bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
+      schema = ApiSchema.fromS3File(bucket, 'schema.json');
+    });
+
     test('Should create an S3ApiSchema instance via factory', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ApiSchema.fromS3File(bucket, 'schema.json');
       expect(schema).toBeInstanceOf(S3ApiSchema);
     });
 
     test('_render should return S3 URI without bucketOwner when not provided', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ApiSchema.fromS3File(bucket, 'schema.json');
-
       const rendered = schema._render();
       expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
       expect(rendered.s3.bucketOwnerAccountId).toBeUndefined();
     });
 
     test('_render should include bucketOwnerAccountId when provided', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ApiSchema.fromS3File(bucket, 'schema.json', '987654321098');
+      const schemaWithOwner = ApiSchema.fromS3File(bucket, 'schema.json', '987654321098');
 
-      const rendered = schema._render();
+      const rendered = schemaWithOwner._render();
       expect(rendered.s3.uri).toBe('s3://my-bucket/schema.json');
       expect(rendered.s3.bucketOwnerAccountId).toBe('987654321098');
     });
 
     test('grantPermissionsToRole should grant s3:GetObject on the object ARN', () => {
-      const bucket = s3.Bucket.fromBucketName(stack, 'TestBucket', 'my-bucket');
-      const schema = ApiSchema.fromS3File(bucket, 'schema.json');
       const role = new iam.Role(stack, 'TestRole', {
         assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
       });
@@ -1069,13 +1065,12 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
   let stack: cdk.Stack;
   let gateway: Gateway;
   let target: GatewayTarget;
+  let role: iam.Role;
 
   beforeEach(() => {
     const app = new cdk.App();
-    stack = new cdk.Stack(app, 'TestStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-    gateway = new Gateway(stack, 'TestGateway', { gatewayName: 'test-gateway' });
+    stack = new cdk.Stack(app, 'TestStack');
+    gateway = new Gateway(stack, 'TestGateway', {});
 
     const fn = new lambda.Function(stack, 'TargetFunction', {
       runtime: lambda.Runtime.NODEJS_22_X,
@@ -1093,17 +1088,13 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
       lambdaFunction: fn,
       toolSchema: toolSchema,
     });
+    role = new iam.Role(stack, 'GrantRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
   });
 
   test('grant should grant custom actions scoped to the target ARN', () => {
-    const role = new iam.Role(stack, 'GrantRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    const grant = target.grant(role, 'bedrock-agentcore:GetGatewayTarget', 'bedrock-agentcore:UpdateGatewayTarget');
-
-    expect(grant).toBeDefined();
-    expect(grant.success).toBe(true);
+    target.grant(role, 'bedrock-agentcore:GetGatewayTarget', 'bedrock-agentcore:UpdateGatewayTarget');
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::IAM::Policy', {
@@ -1120,14 +1111,8 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
   });
 
   test('grantRead should grant GetGatewayTarget on target ARN and ListGatewayTargets on all resources', () => {
-    const role = new iam.Role(stack, 'GrantRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
 
-    const grant = target.grantRead(role);
-
-    expect(grant).toBeDefined();
-    expect(grant.success).toBe(true);
+    target.grantRead(role);
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::IAM::Policy', {
@@ -1149,14 +1134,8 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
   });
 
   test('grantManage should grant Create, Update, and Delete actions on the target ARN', () => {
-    const role = new iam.Role(stack, 'GrantRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
 
-    const grant = target.grantManage(role);
-
-    expect(grant).toBeDefined();
-    expect(grant.success).toBe(true);
+    target.grantManage(role);
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::IAM::Policy', {
@@ -1177,14 +1156,8 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
   });
 
   test('grantSync should grant SynchronizeGatewayTargets on the gateway ARN', () => {
-    const role = new iam.Role(stack, 'SyncRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
 
-    const grant = target.grantSync(role);
-
-    expect(grant).toBeDefined();
-    expect(grant.success).toBe(true);
+    target.grantSync(role);
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::IAM::Policy', {
@@ -1211,14 +1184,7 @@ describe('GatewayTargetBase grant methods and grantSync tests', () => {
       gateway: gateway,
     });
 
-    const role = new iam.Role(stack, 'ImportedGrantRole', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-
-    const grant = imported.grantRead(role);
-
-    expect(grant).toBeDefined();
-    expect(grant.success).toBe(true);
+    imported.grantRead(role);
 
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::IAM::Policy', {

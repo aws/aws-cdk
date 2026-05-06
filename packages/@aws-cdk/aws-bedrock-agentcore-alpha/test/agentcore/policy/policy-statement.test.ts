@@ -388,47 +388,46 @@ describe('PolicyStatement Builder', () => {
 });
 
 describe('ConditionBuilder accessors', () => {
+  let builder: ConditionBuilder;
+
+  beforeEach(() => {
+    builder = new ConditionBuilder();
+  });
+
   test('principalAttribute should produce principal.<name> Cedar path', () => {
-    const builder = new ConditionBuilder();
     builder.principalAttribute('department').equalTo('Engineering');
 
     expect(builder._toCedar()).toBe('principal.department == "Engineering"');
   });
 
   test('resourceAttribute should produce resource.<name> Cedar path', () => {
-    const builder = new ConditionBuilder();
     builder.resourceAttribute('confidential').equalTo(true);
 
     expect(builder._toCedar()).toBe('resource.confidential == true');
   });
 
   test('contextAttribute should produce context.<name> Cedar path', () => {
-    const builder = new ConditionBuilder();
     builder.contextAttribute('environment').equalTo('prod');
 
     expect(builder._toCedar()).toBe('context.environment == "prod"');
   });
 
   test('principalAttribute should return an AttributeAccessor instance', () => {
-    const builder = new ConditionBuilder();
     const accessor = builder.principalAttribute('role');
     expect(accessor).toBeInstanceOf(AttributeAccessor);
   });
 
   test('resourceAttribute should return an AttributeAccessor instance', () => {
-    const builder = new ConditionBuilder();
     const accessor = builder.resourceAttribute('owner');
     expect(accessor).toBeInstanceOf(AttributeAccessor);
   });
 
   test('contextAttribute should return an AttributeAccessor instance', () => {
-    const builder = new ConditionBuilder();
     const accessor = builder.contextAttribute('sourceIp');
     expect(accessor).toBeInstanceOf(AttributeAccessor);
   });
 
   test('Should combine multiple attribute accessors with AND', () => {
-    const builder = new ConditionBuilder();
     builder
       .principalAttribute('department').equalTo('Engineering')
       .and()
@@ -442,7 +441,6 @@ describe('ConditionBuilder accessors', () => {
   });
 
   test('_toCedar should return empty string when no conditions have been added', () => {
-    const builder = new ConditionBuilder();
     expect(builder._toCedar()).toBe('');
   });
 });
@@ -496,36 +494,37 @@ describe('Comparison operators on ConditionalPolicyStatement (via .when())', () 
 });
 
 describe('Comparison operators on AttributeAccessor (direct ConditionBuilder usage)', () => {
+  let builder: ConditionBuilder;
+
+  beforeEach(() => {
+    builder = new ConditionBuilder();
+  });
+
   test('notEqualTo should produce != Cedar operator', () => {
-    const builder = new ConditionBuilder();
     builder.principalAttribute('role').notEqualTo('Guest');
 
     expect(builder._toCedar()).toBe('principal.role != "Guest"');
   });
 
   test('lessThanOrEqualTo should produce <= Cedar operator', () => {
-    const builder = new ConditionBuilder();
     builder.principalAttribute('accessLevel').lessThanOrEqualTo(3);
 
     expect(builder._toCedar()).toBe('principal.accessLevel <= 3');
   });
 
   test('greaterThanOrEqualTo should produce >= Cedar operator', () => {
-    const builder = new ConditionBuilder();
     builder.principalAttribute('accessLevel').greaterThanOrEqualTo(5);
 
     expect(builder._toCedar()).toBe('principal.accessLevel >= 5');
   });
 
   test('contains should produce Cedar contains operator', () => {
-    const builder = new ConditionBuilder();
     builder.resourceAttribute('tags').contains('public');
 
     expect(builder._toCedar()).toBe('resource.tags contains "public"');
   });
 
   test('All comparison operators should chain with AND into a single Cedar expression', () => {
-    const builder = new ConditionBuilder();
     builder
       .principalAttribute('role').notEqualTo('Guest')
       .and()

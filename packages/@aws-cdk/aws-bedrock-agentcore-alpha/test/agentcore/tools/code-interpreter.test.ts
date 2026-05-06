@@ -1003,7 +1003,7 @@ describe('CodeInterpreterCustom error metric methods tests', () => {
     });
   });
 
-  test('Should create metricThrottlesForApiOperation with Sum statistic', () => {
+  test('metricThrottlesForApiOperation() produces Throttles with Operation dimension', () => {
     alarmForMetric('ThrottlesAlarm', codeInterpreter.metricThrottlesForApiOperation('TestOperation'));
 
     const template = Template.fromStack(stack);
@@ -1017,7 +1017,7 @@ describe('CodeInterpreterCustom error metric methods tests', () => {
     });
   });
 
-  test('Should create metricSystemErrorsForApiOperation with Sum statistic', () => {
+  test('metricSystemErrorsForApiOperation() produces SystemErrors with Operation dimension', () => {
     alarmForMetric('SysErrAlarm', codeInterpreter.metricSystemErrorsForApiOperation('TestOperation'));
 
     const template = Template.fromStack(stack);
@@ -1031,7 +1031,7 @@ describe('CodeInterpreterCustom error metric methods tests', () => {
     });
   });
 
-  test('Should create metricUserErrorsForApiOperation with Sum statistic', () => {
+  test('metricUserErrorsForApiOperation() produces UserErrors with Operation dimension', () => {
     alarmForMetric('UserErrAlarm', codeInterpreter.metricUserErrorsForApiOperation('TestOperation'));
 
     const template = Template.fromStack(stack);

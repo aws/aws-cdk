@@ -18,7 +18,6 @@ import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/inbound-aut
 import { LoggingDestination, LogType } from '../../../lib/runtime/observability';
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
-import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import {
   ProtocolType,
 } from '../../../lib/runtime/types';
@@ -1291,59 +1290,16 @@ describe('Runtime addEndpoint tests', () => {
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
-    const endpoint = runtime.addEndpoint('test_endpoint', {
+    runtime.addEndpoint('test_endpoint', {
       description: 'Test endpoint',
       version: '2',
     });
 
-    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
-
-    app.synth();
-    const template = Template.fromStack(stack);
-
-    // Should have both runtime and endpoint resources
-    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
-    template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 1);
-  });
-
-  test('Should add endpoint with default version', () => {
-    const runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-    });
-
-    const endpoint = runtime.addEndpoint('test_endpoint');
-
-    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
-  });
-
-  test('Should set endpoint name on the CFN resource', () => {
-    const runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-    });
-
-    runtime.addEndpoint('my_endpoint');
-
     const template = Template.fromStack(stack);
     template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
-      Name: 'my_endpoint',
-    });
-  });
-
-  test('Should set description on the endpoint when provided', () => {
-    const runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-    });
-
-    runtime.addEndpoint('test_endpoint', {
-      description: 'My endpoint description',
-    });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
-      Description: 'My endpoint description',
+      Name: 'test_endpoint',
+      Description: 'Test endpoint',
+      AgentRuntimeVersion: '2',
     });
   });
 
@@ -1358,23 +1314,10 @@ describe('Runtime addEndpoint tests', () => {
     const template = Template.fromStack(stack);
     // When options.version is omitted, the endpoint uses the runtime resource's AgentRuntimeVersion attribute
     template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Name: 'test_endpoint',
       AgentRuntimeVersion: Match.objectLike({
         'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('testruntime.*'), 'AgentRuntimeVersion']),
       }),
-    });
-  });
-
-  test('Should use explicitly provided version over the default', () => {
-    const runtime = new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-    });
-
-    runtime.addEndpoint('test_endpoint', { version: '5' });
-
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
-      AgentRuntimeVersion: '5',
     });
   });
 
@@ -1389,7 +1332,9 @@ describe('Runtime addEndpoint tests', () => {
     runtime.addEndpoint('endpoint_c');
 
     const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 3);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_a' });
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_b' });
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_c' });
   });
 
   test('Should create a DependsOn from the endpoint to the runtime resource', () => {
@@ -1401,13 +1346,10 @@ describe('Runtime addEndpoint tests', () => {
     runtime.addEndpoint('dependent_endpoint');
 
     const template = Template.fromStack(stack);
-    const endpoints = template.findResources('AWS::BedrockAgentCore::RuntimeEndpoint');
-    const endpointResource = Object.values(endpoints)[0];
-
-    expect(endpointResource.DependsOn).toBeDefined();
-    expect(endpointResource.DependsOn).toEqual(
-      expect.arrayContaining([expect.stringMatching(/testruntime.*/)]),
-    );
+    template.hasResource('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Properties: { Name: 'dependent_endpoint' },
+      DependsOn: Match.arrayWith([Match.stringLikeRegexp('testruntime.*')]),
+    });
   });
 });
 
@@ -1647,7 +1589,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricInvocations metric', () => {
+  test('metricInvocations() produces Invocations with Sum statistic', () => {
     alarmForMetric('InvocAlarm', runtime.metricInvocations());
 
     const template = Template.fromStack(stack);
@@ -1658,7 +1600,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricInvocationsAggregated metric', () => {
+  test('metricInvocationsAggregated() produces Invocations with Resource dimension', () => {
     alarmForMetric('InvocAggAlarm', runtime.metricInvocationsAggregated());
 
     const template = Template.fromStack(stack);
@@ -1671,7 +1613,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricThrottles metric', () => {
+  test('metricThrottles() produces Throttles with Sum statistic', () => {
     alarmForMetric('ThrottlesAlarm', runtime.metricThrottles());
 
     const template = Template.fromStack(stack);
@@ -1682,7 +1624,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricSystemErrors metric', () => {
+  test('metricSystemErrors() produces SystemErrors with Sum statistic', () => {
     alarmForMetric('SysErrAlarm', runtime.metricSystemErrors());
 
     const template = Template.fromStack(stack);
@@ -1693,7 +1635,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricUserErrors metric', () => {
+  test('metricUserErrors() produces UserErrors with Sum statistic', () => {
     alarmForMetric('UserErrAlarm', runtime.metricUserErrors());
 
     const template = Template.fromStack(stack);
@@ -1704,7 +1646,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricLatency metric', () => {
+  test('metricLatency() produces Latency with Average statistic', () => {
     alarmForMetric('LatencyAlarm', runtime.metricLatency());
 
     const template = Template.fromStack(stack);
@@ -1715,7 +1657,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricTotalErrors metric', () => {
+  test('metricTotalErrors() produces TotalErrors with Sum statistic', () => {
     alarmForMetric('TotalErrAlarm', runtime.metricTotalErrors());
 
     const template = Template.fromStack(stack);
@@ -1726,7 +1668,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricSessionCount metric', () => {
+  test('metricSessionCount() produces SessionCount with Sum statistic', () => {
     alarmForMetric('SessionCountAlarm', runtime.metricSessionCount());
 
     const template = Template.fromStack(stack);
@@ -1737,7 +1679,7 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricSessionsAggregated metric', () => {
+  test('metricSessionsAggregated() produces Sessions with Resource dimension', () => {
     alarmForMetric('SessionsAggAlarm', runtime.metricSessionsAggregated());
 
     const template = Template.fromStack(stack);

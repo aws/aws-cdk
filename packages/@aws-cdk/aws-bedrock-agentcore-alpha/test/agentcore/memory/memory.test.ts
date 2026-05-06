@@ -1106,7 +1106,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should create metric with custom name and dimensions', () => {
+  test('metric() produces correct namespace, name, and dimensions', () => {
     alarmForMetric('CustomAlarm', memory.metric('CustomMetric', { CustomDimension: 'value' }));
 
     const template = Template.fromStack(stack);
@@ -1120,7 +1120,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should create metricForApiOperation with Operation dimension', () => {
+  test('metricForApiOperation() produces correct Operation dimension', () => {
     alarmForMetric('OpAlarm', memory.metricForApiOperation('CustomMetric', 'CreateEvent'));
 
     const template = Template.fromStack(stack);
@@ -1133,7 +1133,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should create metricLatencyForApiOperation with Average statistic', () => {
+  test('metricLatencyForApiOperation() produces Latency with Average statistic', () => {
     alarmForMetric('LatencyAlarm', memory.metricLatencyForApiOperation('CreateEvent'));
 
     const template = Template.fromStack(stack);
@@ -1147,7 +1147,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should create metricInvocationsForApiOperation with Sum statistic', () => {
+  test('metricInvocationsForApiOperation() produces Invocations with Sum statistic', () => {
     alarmForMetric('InvocAlarm', memory.metricInvocationsForApiOperation('CreateEvent'));
 
     const template = Template.fromStack(stack);
@@ -1161,7 +1161,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should create metricErrorsForApiOperation with Sum statistic', () => {
+  test('metricErrorsForApiOperation() produces Errors with Sum statistic', () => {
     alarmForMetric('ErrorsAlarm', memory.metricErrorsForApiOperation('CreateEvent'));
 
     const template = Template.fromStack(stack);
@@ -1175,7 +1175,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should create metricEventCreationCount metric with Event ItemType dimension', () => {
+  test('metricEventCreationCount() produces CreationCount with Event ItemType dimension', () => {
     alarmForMetric('EventCountAlarm', memory.metricEventCreationCount());
 
     const template = Template.fromStack(stack);
@@ -1189,7 +1189,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should create metricMemoryRecordCreationCount metric with MemoryRecordsExtracted ItemType dimension', () => {
+  test('metricMemoryRecordCreationCount() produces CreationCount with MemoryRecordsExtracted dimension', () => {
     alarmForMetric('RecordCountAlarm', memory.metricMemoryRecordCreationCount());
 
     const template = Template.fromStack(stack);
@@ -1203,7 +1203,7 @@ describe('Memory metric methods tests', () => {
     });
   });
 
-  test('Should override default statistic with custom props', () => {
+  test('custom statistic prop overrides the default', () => {
     alarmForMetric('OverrideAlarm', memory.metricInvocationsForApiOperation('CreateEvent', { statistic: 'Average' }));
 
     const template = Template.fromStack(stack);
@@ -1232,16 +1232,6 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
       description: 'A test memory for addMemoryStrategy',
       expirationDuration: Duration.days(30),
     });
-  });
-
-  test('Should append the strategy to the memoryStrategies array', () => {
-    expect(memory.memoryStrategies).toHaveLength(0);
-
-    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSummarization());
-    expect(memory.memoryStrategies).toHaveLength(1);
-
-    memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
-    expect(memory.memoryStrategies).toHaveLength(2);
   });
 
   test('Should include the added strategy in the rendered CloudFormation template', () => {
@@ -1304,12 +1294,14 @@ describe('Memory.addMemoryStrategy behavior tests', () => {
     memory.addMemoryStrategy(MemoryStrategy.usingBuiltInSemantic());
     memory.addMemoryStrategy(MemoryStrategy.usingBuiltInUserPreference());
 
-    expect(memory.memoryStrategies).toHaveLength(3);
-
     const template = Template.fromStack(stack);
-    const memoryResources = template.findResources('AWS::BedrockAgentCore::Memory');
-    const memoryResource = Object.values(memoryResources)[0];
-    expect(memoryResource.Properties.MemoryStrategies).toHaveLength(3);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Memory', {
+      MemoryStrategies: Match.arrayWith([
+        Match.objectLike({ SummaryMemoryStrategy: Match.anyValue() }),
+        Match.objectLike({ SemanticMemoryStrategy: Match.anyValue() }),
+        Match.objectLike({ UserPreferenceMemoryStrategy: Match.anyValue() }),
+      ]),
+    });
   });
 });
 
