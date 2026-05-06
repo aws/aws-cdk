@@ -29,6 +29,7 @@ import {
   Duration,
   FeatureFlags,
   Fn,
+  Lazy,
   PhysicalName,
   Resource,
   Stack,
@@ -1608,8 +1609,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
         // use delayed evaluation
         const imageConfig = props.machineImage.getImage(this);
         this._userData = props.userData ?? imageConfig.userData;
-        // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
-        const userDataToken = Token.asString(Box.fromDeferredValue(() => Fn.base64(this.userData!.render())));
+        const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData!.render()) });
         const securityGroupsToken = Token.asList(this.securityGroups!.map(sg => sg.securityGroupId), { displayHint: 'securityGroupIds' });
 
         launchConfig = new CfnLaunchConfiguration(this, 'LaunchConfig', {

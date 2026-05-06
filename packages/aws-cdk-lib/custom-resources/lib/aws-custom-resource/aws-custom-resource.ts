@@ -5,7 +5,6 @@ import * as iam from '../../../aws-iam';
 import type * as logs from '../../../aws-logs';
 import * as cdk from '../../../core';
 import { Annotations } from '../../../core';
-import { Box } from '../../../core/lib/helpers-internal';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { AwsCustomResourceSingletonFunction } from '../../../custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated';
@@ -657,7 +656,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   }
 
   private encodeJson(obj: any) {
-    return Box.fromDeferredValue(() => cdk.Stack.of(this).toJsonString(obj));
+    return cdk.Lazy.uncachedString({ produce: () => cdk.Stack.of(this).toJsonString(obj) });
   }
 }
 

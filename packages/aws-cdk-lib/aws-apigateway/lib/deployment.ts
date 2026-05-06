@@ -6,7 +6,7 @@ import type { Method } from './method';
 import type { IRestApi } from './restapi';
 import { RestApi, SpecRestApi, RestApiBase } from './restapi';
 import type { CfnResource } from '../../core';
-import { RemovalPolicy, Resource, Token } from '../../core';
+import { Lazy, RemovalPolicy, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box, md5hash } from '../../core/lib/helpers-internal';
@@ -110,8 +110,7 @@ export class Deployment extends Resource {
     }
 
     this.api = props.api;
-    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
-    this.deploymentId = Token.asString(Box.fromDeferredValue(() => this.resource.ref));
+    this.deploymentId = Lazy.string({ produce: () => this.resource.ref });
 
     if (props.api instanceof RestApiBase) {
       props.api._attachDeployment(this);

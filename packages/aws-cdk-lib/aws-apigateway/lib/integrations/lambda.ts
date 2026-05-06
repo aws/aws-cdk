@@ -1,8 +1,7 @@
 import { AwsIntegration } from './aws';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
-import { Annotations, Names, Token } from '../../../core';
-import { Box } from '../../../core/lib/helpers-internal';
+import { Annotations, Lazy, Names, Token } from '../../../core';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
 import { ResponseTransferMode } from '../integration';
 import type { Method } from '../method';
@@ -88,7 +87,7 @@ export class LambdaIntegration extends AwsIntegration {
       this.handler.addPermission(`ApiPermission.${desc}`, {
         principal,
         scope: method,
-        sourceArn: Token.asString(Box.fromDeferredValue(() => method.methodArn)),
+        sourceArn: Lazy.string({ produce: () => method.methodArn }),
       });
 
       // add permission to invoke from the console
@@ -109,7 +108,7 @@ export class LambdaIntegration extends AwsIntegration {
         this.handler.addPermission(apiScopedPermissionId, {
           principal,
           scope: method.api,
-          sourceArn: Token.asString(Box.fromDeferredValue(() => method.api.arnForExecuteApi())),
+          sourceArn: Lazy.string({ produce: () => method.api.arnForExecuteApi() }),
         });
       }
 

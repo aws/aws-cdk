@@ -7,8 +7,7 @@ import { renderMeshOwner } from './private/utils';
 import type { IVirtualNode } from './virtual-node';
 import type { IVirtualRouter } from './virtual-router';
 import * as cdk from '../../core';
-import { Token } from '../../core';
-import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -131,8 +130,7 @@ export class VirtualService extends cdk.Resource implements IVirtualService {
 
   constructor(scope: Construct, id: string, props: VirtualServiceProps) {
     super(scope, id, {
-      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
-      physicalName: props.virtualServiceName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this))),
+      physicalName: props.virtualServiceName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

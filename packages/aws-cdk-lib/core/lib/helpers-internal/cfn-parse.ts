@@ -19,6 +19,7 @@ import { CfnDeletionPolicy } from '../cfn-resource-policy';
 import type { CfnTag } from '../cfn-tag';
 import { UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
+import { Lazy } from '../lazy';
 import { CfnReference, ReferenceRendering } from '../private/cfn-reference';
 import { lit } from '../private/literal-string';
 import type { IResolvable } from '../resolvable';
@@ -26,7 +27,6 @@ import type { Validator } from '../runtime';
 import { Stack } from '../stack';
 import { isResolvableObject, Token } from '../token';
 import { undefinedIfAllValuesAreEmpty } from '../util';
-import { Box } from './box';
 
 /**
  * The class used as the intermediate result from the generated L1 methods
@@ -599,7 +599,7 @@ export class CfnParser {
         // as otherwise Fn.join() will try to concatenate
         // the non-token parts,
         // causing a diff with the original template
-        return Fn.join(value[0], Token.asList(Box.fromDeferredValue(() => value[1])));
+        return Fn.join(value[0], Lazy.list({ produce: () => value[1] }));
       }
       case 'Fn::Cidr': {
         const value = this.parseValue(object[key]);
@@ -829,7 +829,7 @@ export class CfnParser {
         // as Fn.valueOf() returns a string,
         // which is incorrect
         // (Fn::ValueOf can also return an array)
-        return Box.fromDeferredValue(() => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }));
+        return Lazy.any({ produce: () => ({ 'Fn::ValueOf': [param.logicalId, value[1]] }) });
       }
       default:
         // I don't want to hard-code the list of supported Rules-specific intrinsics in this function;

@@ -85,7 +85,10 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
    * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-certificatemanager-certificate.html#cfn-certificatemanager-certificate-tags
    */
 
-  public readonly tags: cdk.TagManager;
+  public get tags(): cdk.TagManager {
+    return this._tags.getMutable();
+  }
+  private readonly _tags: IBox<cdk.TagManager> = Box.fromValue(new cdk.TagManager(cdk.TagType.MAP, 'AWS::CertificateManager::Certificate'));
   protected readonly region?: string;
   private readonly normalizedZoneName: string;
   private readonly hostedZoneId: string;
@@ -116,7 +119,6 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
     }
     // Remove any `/hostedzone/` prefix from the Hosted Zone ID
     this.hostedZoneId = props.hostedZone.hostedZoneId.replace(/^\/hostedzone\//, '');
-    this.tags = new cdk.TagManager(cdk.TagType.MAP, 'AWS::CertificateManager::Certificate');
 
     let certificateTransparencyLoggingPreference: string | undefined;
     if (props.transparencyLoggingEnabled !== undefined) {
@@ -164,7 +166,7 @@ export class DnsValidatedCertificate extends CertificateBase implements ICertifi
         RemovalPolicy: this.removalPolicy,
         // Custom resources properties are always converted to strings; might as well be explicit here.
         CleanupRecords: props.cleanupRoute53Records ? 'true' : undefined,
-        Tags: cdk.Lazy.list({ produce: () => this.tags.renderTags() }),
+        Tags: this._tags.derive(tags => tags.renderTags()),
       },
     });
 

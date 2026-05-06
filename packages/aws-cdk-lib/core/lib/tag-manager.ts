@@ -1,7 +1,7 @@
 import { TagType } from './cfn-resource';
 import type { CfnTag } from './cfn-tag';
 import { UnscopedValidationError } from './errors';
-import { Box } from './helpers-internal';
+import { Lazy } from './lazy';
 import { lit } from './private/literal-string';
 import type { IResolvable } from './resolvable';
 
@@ -353,7 +353,7 @@ export class TagManager {
     this.parseExternalTags(initialTags);
     this.didHaveInitialTags = initialTags !== undefined;
 
-    this.renderedTags = Box.fromDeferredValue(() => this.renderTags());
+    this.renderedTags = Lazy.any({ produce: () => this.renderTags() });
   }
 
   /**

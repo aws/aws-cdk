@@ -2,8 +2,8 @@ import type { Construct } from 'constructs';
 import type { IAlarm, IAlarmRule } from './alarm-base';
 import { AlarmBase } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
-import { ArnFormat, Names, Stack, Duration, ValidationError, Token } from '../../core';
-import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
+import { ArnFormat, Names, Stack, Duration, ValidationError, Token, Lazy } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -135,8 +135,7 @@ export class CompositeAlarm extends AlarmBase {
 
   constructor(scope: Construct, id: string, props: CompositeAlarmProps) {
     super(scope, id, {
-      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
-      physicalName: props.compositeAlarmName ?? Token.asString(Box.fromDeferredValue(() => this.generateUniqueId())),
+      physicalName: props.compositeAlarmName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

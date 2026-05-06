@@ -8,13 +8,13 @@ import { Aws } from '../cfn-pseudo';
 import { CfnResource } from '../cfn-resource';
 import { AssumptionError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
+import { Lazy } from '../lazy';
 import type { Stack } from '../stack';
 import { Token } from '../token';
 import { lit } from './literal-string';
 import type { ConstructInfo } from './runtime-info';
 import type { ConstructAnalytics } from './stack-metadata';
 import { constructAnalyticsFromScope } from './stack-metadata';
-import { Box } from '../helpers-internal';
 
 /**
  * Construct that will render the metadata resource
@@ -28,7 +28,7 @@ export class MetadataResource extends Construct {
       const resource = new CfnResource(this, 'Default', {
         type: 'AWS::CDK::Metadata',
         properties: {
-          Analytics: Box.fromDeferredValue(() => formatAnalytics(constructAnalytics)),
+          Analytics: Lazy.string({ produce: () => formatAnalytics(constructAnalytics) }),
         },
       });
 

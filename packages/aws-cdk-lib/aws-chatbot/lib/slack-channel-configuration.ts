@@ -7,7 +7,6 @@ import * as iam from '../../aws-iam';
 import * as logs from '../../aws-logs';
 import type * as sns from '../../aws-sns';
 import * as cdk from '../../core';
-import { Token } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
@@ -325,10 +324,7 @@ export class SlackChannelConfiguration extends SlackChannelConfigurationBase {
       slackChannelId: props.slackChannelId,
       snsTopicArns: cdk.Token.asList(this.notificationTopics.map(topic => topic.topicArn), { displayHint: 'snsTopicArns' }),
       loggingLevel: props.loggingLevel?.toString(),
-      guardrailPolicies: Token.asList(Box.fromDeferredValue(() => {
-        const policies = props.guardrailPolicies?.map(policy => policy.managedPolicyArn);
-        return (policies?.length ?? 0) > 0 ? policies : undefined;
-      })),
+      guardrailPolicies: cdk.Lazy.list({ produce: () => props.guardrailPolicies?.map(policy => policy.managedPolicyArn) }, { omitEmpty: true } ),
       userRoleRequired: props.userRoleRequired,
     });
 

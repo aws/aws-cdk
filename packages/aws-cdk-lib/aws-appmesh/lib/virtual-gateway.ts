@@ -12,8 +12,7 @@ import type { VirtualGatewayListenerConfig } from './virtual-gateway-listener';
 import { VirtualGatewayListener } from './virtual-gateway-listener';
 import type * as iam from '../../aws-iam';
 import * as cdk from '../../core';
-import { Token } from '../../core';
-import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -209,8 +208,7 @@ export class VirtualGateway extends VirtualGatewayBase {
 
   constructor(scope: Construct, id: string, props: VirtualGatewayProps) {
     super(scope, id, {
-      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
-      physicalName: props.virtualGatewayName || Token.asString(Box.fromDeferredValue(() => cdk.Names.uniqueId(this))),
+      physicalName: props.virtualGatewayName || cdk.Lazy.string({ produce: () => cdk.Names.uniqueId(this) }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

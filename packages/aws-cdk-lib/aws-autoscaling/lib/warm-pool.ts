@@ -1,7 +1,6 @@
 import type { Construct } from 'constructs';
 import { CfnWarmPool } from './autoscaling.generated';
-import { Names, Resource, Token, ValidationError } from '../../core';
-import { Box } from '../../core/lib/helpers-internal';
+import { Lazy, Names, Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -65,8 +64,7 @@ export class WarmPool extends Resource {
 
   constructor(scope: Construct, id: string, props: WarmPoolProps) {
     super(scope, id, {
-      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
-      physicalName: Token.asString(Box.fromDeferredValue(() => Names.uniqueId(this))),
+      physicalName: Lazy.string({ produce: () => Names.uniqueId(this) }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

@@ -436,24 +436,6 @@ export class Box {
   public static enableStackTraceCollection(): void {
     stackTraceCollectionEnabled = true;
   }
-
-  /**
-   * Creates a read-only box whose value is computed lazily by invoking `fn` on every access.
-   *
-   * Unlike `fromValue`, the value is not stored — `fn` is called each time
-   * `get()` or `resolve()` is invoked. This is useful when the value depends
-   * on external state that may change between accesses, or when you want to
-   * defer computation until synthesis time.
-   *
-   * Because the box has no mutable state of its own, it never captures stack
-   * traces (`getStackTraces()` always returns an empty array).
-   *
-   * @param fn a function that produces the value on each access.
-   * @returns a new read-only `IReadableBox<A>`.
-   */
-  public static fromDeferredValue<A>(fn: () => A): IReadableBox<A> {
-    return new Deferred(fn);
-  }
 }
 
 abstract class BaseReadableBox<A> implements IReadableBox<A> {
@@ -771,31 +753,5 @@ class SetState<A> extends State<Set<A>> implements ISetBox<A> {
 
   public [Symbol.iterator](): Iterator<A> {
     return this._set[Symbol.iterator]();
-  }
-}
-
-class Deferred<A> implements IReadableBox<A> {
-  public readonly creationStack: string[] = [];
-
-  constructor(private readonly source: () => A) {
-  }
-  public derive<B>(fn: (a: MakeReadonly<A>) => B): IReadableBox<B> {
-    return new Computed(this, fn);
-  }
-
-  public get(): MakeReadonly<A> {
-    return this.source() as MakeReadonly<A>;
-  }
-
-  public getMutable(): A {
-    return this.source();
-  }
-
-  public getStackTraces(): Array<StackTrace> {
-    return [];
-  }
-
-  public resolve(_: IResolveContext): any {
-    return this.get();
   }
 }

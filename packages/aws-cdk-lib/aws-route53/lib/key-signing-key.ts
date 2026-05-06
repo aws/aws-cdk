@@ -4,8 +4,7 @@ import { CfnKeySigningKey } from './route53.generated';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { IResource } from '../../core';
-import { Resource, Names, Token } from '../../core';
-import { Box } from '../../core/lib/helpers-internal';
+import { Resource, Lazy, Names } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IKeySigningKeyRef, KeySigningKeyReference } from '../../interfaces/generated/aws-route53-interfaces.generated';
@@ -153,10 +152,9 @@ export class KeySigningKey extends Resource implements IKeySigningKey {
 
   constructor(scope: Construct, id: string, props: KeySigningKeyProps) {
     super(scope, id, {
-      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
-      physicalName: props.keySigningKeyName ?? Token.asString(Box.fromDeferredValue(() =>
-        Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
-      )),
+      physicalName: props.keySigningKeyName ?? Lazy.string({
+        produce: () => Names.uniqueResourceName(this, { maxLength: 128, allowedSpecialCharacters: '_' }),
+      }),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
