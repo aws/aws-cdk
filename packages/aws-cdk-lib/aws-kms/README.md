@@ -76,7 +76,7 @@ Note that a call to `.addToResourcePolicy(statement)` on `myKeyImported` will no
 an affect on the key's policy because it is not owned by your stack. The call
 will be a no-op.
 
-### Import key by alias
+### Import key by alias name
 
 If a Key has an associated Alias, the Alias can be imported by name and used in place
 of the Key as a reference. A common scenario for this is in referencing AWS managed keys.
@@ -95,6 +95,40 @@ Note that calls to `addToResourcePolicy` method on `myKeyAlias` will be a no-op,
 The grant methods (i.e., methods in `KeyGrants`) will not modify the key policy, as the imported alias does not have a reference to the underlying KMS Key.
 For the grant methods to modify the principal's IAM policy, the feature flag `@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal`
 must be set to `true`. By default, this flag is `false` and grant calls on an imported alias are a no-op.
+
+### Import key by alias ARN
+
+If the Alias to be imported resides in another **AWS** account or region then you need to use `Alias.fromAliasArn` instead of just `Alias.fromAliasName` in order to specify the correct values.
+A common scenario for this is granting access to a cross-account encrypted **Kinesis** `Stream`.
+
+```ts
+const streamArn = cdk.Stack.of(this).formatArn({
+  account: externalAccountId,
+  service: 'kinesis',
+  resource: 'stream',
+  resourceName: streamName,
+});
+
+const aliasArn = cdk.Stack.of(this).formatArn({
+  account: externalAccountId,
+  service: 'kms',
+  resource: 'alias',
+  resourceName: `${streamName}-key`,
+});
+
+const stream = kinesis.Stream.fromStreamAttributes(this, 'ExternalStream', {
+  streamArn,
+  encryptionKey: kms.Alias.fromAliasArn(this, 'ExternalStreamKey', aliasArn),
+});
+
+const lambdaRole = new iam.Role(this, 'LambdaRole', {
+  assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+  description: 'Role which allows a Lambda function to read data from the cross-account encrypted Kinesis stream',
+});
+
+// Allow the lambda function to read the cross-account encrypted Kinesis stream.
+stream.grantRead(lambdaRole);
+```
 
 ### Lookup key by alias
 
