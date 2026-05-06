@@ -572,6 +572,22 @@ test('imported alias by name - grant methods are no-op when feature flag disable
   Template.fromStack(stack).resourceCountIs('AWS::IAM::Policy', 0);
 });
 
+test('imported alias by ARN - throw an error when providing something that is not a valid alias ARN', () => {
+  const stack = new Stack();
+
+  expect(() => {
+    Alias.fromAliasArn(stack, 'Imported', 'arn:aws:smk:us-east-1:123456789012:alias/aliasName');
+  }).toThrow(/KMS alias ARN must be in the format 'arn:<partition>:kms:<region>:<account>:alias\/<aliasName>', got: 'arn:aws:smk:us-east-1:123456789012:alias\/aliasName'/);
+
+  expect(() => {
+    Alias.fromAliasArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:key/keyId');
+  }).toThrow(/KMS alias ARN must be in the format 'arn:<partition>:kms:<region>:<account>:alias\/<aliasName>', got: 'arn:aws:kms:us-east-1:123456789012:key\/keyId'/);
+
+  expect(() => {
+    Alias.fromAliasArn(stack, 'Imported', 'arn:aws:kms:us-east-1:123456789012:alias');
+  }).toThrow(/KMS alias ARN must be in the format 'arn:<partition>:kms:<region>:<account>:alias\/<aliasName>', got: 'arn:aws:kms:us-east-1:123456789012:alias'/);
+});
+
 test('fails if alias policy is invalid', () => {
   const app = new App();
   const stack = new Stack(app, 'my-stack');
