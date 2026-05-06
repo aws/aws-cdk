@@ -93,7 +93,10 @@ export class BackupSelection extends Resource implements iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
-  private listOfTags: CfnBackupSelection.ConditionResourceTypeProperty[] = [];
+  private stringEquals: CfnBackupSelection.ConditionParameterProperty[] = [];
+  private stringLike: CfnBackupSelection.ConditionParameterProperty[] = [];
+  private stringNotEquals: CfnBackupSelection.ConditionParameterProperty[] = [];
+  private stringNotLike: CfnBackupSelection.ConditionParameterProperty[] = [];
   private resources: string[] = [];
   private readonly backupableResourcesCollector = new BackupableResourcesCollector();
 
@@ -118,9 +121,26 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       backupSelection: {
         iamRoleArn: role.roleArn,
         selectionName: props.backupSelectionName || this.node.id,
-        listOfTags: Lazy.any({
-          produce: () => this.listOfTags,
-        }, { omitEmptyArray: true }),
+        // `conditions` is typed as `any` in the generated layer so CDK uses identity serialization
+        // (no camelCase→PascalCase key transformation). PascalCase keys are used here explicitly.
+        conditions: Lazy.any({
+          produce: () => {
+            const conds: any = {};
+            if (this.stringEquals.length > 0) {
+              conds.StringEquals = this.stringEquals.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
+            }
+            if (this.stringLike.length > 0) {
+              conds.StringLike = this.stringLike.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
+            }
+            if (this.stringNotEquals.length > 0) {
+              conds.StringNotEquals = this.stringNotEquals.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
+            }
+            if (this.stringNotLike.length > 0) {
+              conds.StringNotLike = this.stringNotLike.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
+            }
+            return Object.keys(conds).length > 0 ? conds : undefined;
+          },
+        }),
         resources: Lazy.list({
           produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
         }, { omitEmpty: true }),
@@ -137,11 +157,24 @@ export class BackupSelection extends Resource implements iam.IGrantable {
 
   private addResource(resource: BackupResource) {
     if (resource.tagCondition) {
-      this.listOfTags.push({
+      const param: CfnBackupSelection.ConditionParameterProperty = {
         conditionKey: resource.tagCondition.key,
-        conditionType: resource.tagCondition.operation || TagOperation.STRING_EQUALS,
         conditionValue: resource.tagCondition.value,
-      });
+      };
+      switch (resource.tagCondition.operation ?? TagOperation.STRING_EQUALS) {
+        case TagOperation.STRING_EQUALS:
+          this.stringEquals.push(param);
+          break;
+        case TagOperation.STRING_LIKE:
+          this.stringLike.push(param);
+          break;
+        case TagOperation.STRING_NOT_EQUALS:
+          this.stringNotEquals.push(param);
+          break;
+        case TagOperation.STRING_NOT_LIKE:
+          this.stringNotLike.push(param);
+          break;
+      }
     }
 
     if (resource.resource) {

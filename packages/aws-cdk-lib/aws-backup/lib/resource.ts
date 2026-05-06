@@ -10,14 +10,24 @@ import type { IFileSystemRef } from '../../interfaces/generated/aws-efs-interfac
  */
 export enum TagOperation {
   /**
-   * StringEquals
+   * StringEquals - exact match (case sensitive)
    */
   STRING_EQUALS = 'STRINGEQUALS',
 
   /**
-   * Dummy member
+   * StringLike - wildcard match using * anywhere in the string (case sensitive)
    */
-  DUMMY = 'dummy',
+  STRING_LIKE = 'STRINGLIKE',
+
+  /**
+   * StringNotEquals - negated exact match (case sensitive)
+   */
+  STRING_NOT_EQUALS = 'STRINGNOTEQUALS',
+
+  /**
+   * StringNotLike - negated wildcard match using * anywhere in the string (case sensitive)
+   */
+  STRING_NOT_LIKE = 'STRINGNOTLIKE',
 }
 
 /**
