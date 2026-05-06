@@ -138,7 +138,7 @@ export class Group extends cdk.Resource implements IGroup {
   }
 
   private readonly _resource: CfnGroup;
-  private readonly _canaries: ISetBox<ICanary> = Box.fromSet(new Set());
+  private readonly _canaries: ISetBox<ICanary> = Box.fromSet();
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id, {

@@ -231,7 +231,7 @@ export class HostedZone extends Resource implements IHostedZone {
   /**
    * VPCs to which this hosted zone will be added
    */
-  private readonly _vpcs: IArrayBox<CfnHostedZone.VPCProperty> = Box.fromArray([]);
+  private readonly _vpcs: IArrayBox<CfnHostedZone.VPCProperty> = Box.fromArray();
 
   protected get vpcs(): CfnHostedZone.VPCProperty[] {
     return [...this._vpcs.get()];
