@@ -273,6 +273,7 @@ export class Alias extends AliasBase {
     }
 
     return new ReferencedAlias(scope, id, {
+      aliasArn,
       aliasName,
       arnComponents
     });
@@ -369,10 +370,13 @@ class ReferencedAlias extends AliasBase {
   private readonly arnComponents: ArnComponents;
 
   constructor(scope: Construct, id: string, props: {
+    aliasArn: string;
     aliasName: string,
     arnComponents: ArnComponents
   }) {
-    super(scope, id);
+    super(scope, id, {
+      environmentFromArn: props.aliasArn,
+    });
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);

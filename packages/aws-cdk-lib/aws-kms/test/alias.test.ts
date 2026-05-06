@@ -588,6 +588,20 @@ test('imported alias by ARN - throw an error when providing something that is no
   }).toThrow(/KMS alias ARN must be in the format 'arn:<partition>:kms:<region>:<account>:alias\/<aliasName>', got: 'arn:aws:kms:us-east-1:123456789012:alias'/);
 });
 
+
+test('imported alias by ARN - from an alias in a different account and region - to take the alias account and region from the ARN', () => {
+  const stack = new Stack();
+
+  const alias = Alias.fromAliasArn(
+    stack,
+    'Imported',
+    'arn:aws:kms:alias-region:222222222222:alias/aliasName',
+  );
+
+  expect(alias.env.region).toBe('alias-region');
+  expect(alias.env.account).toBe('222222222222');
+});
+
 test('fails if alias policy is invalid', () => {
   const app = new App();
   const stack = new Stack(app, 'my-stack');
