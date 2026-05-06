@@ -392,7 +392,7 @@ export class Box {
    *   array is empty. Set to `false` to resolve to an empty array instead.
    * @returns a new `ArrayBox<A>`.
    */
-  public static fromArray<A>(as: Array<A>, options?: { omitEmpty?: boolean }): IArrayBox<A> {
+  public static fromArray<A>(as: Array<A> = [], options?: { omitEmpty?: boolean }): IArrayBox<A> {
     return new ArrayState(as, options?.omitEmpty ?? true);
   }
 
@@ -402,7 +402,7 @@ export class Box {
    * @param map the initial map contents.
    * @returns a new `MapBox<K, V>`.
    */
-  public static fromMap<K, V>(map: Map<K, V>): IMapBox<K, V> {
+  public static fromMap<K, V>(map: Map<K, V> = new Map()): IMapBox<K, V> {
     return new MapState(map);
   }
 
@@ -412,7 +412,7 @@ export class Box {
    * @param set the initial set contents.
    * @returns a new `SetBox<A>`.
    */
-  public static fromSet<A>(set: Set<A>): ISetBox<A> {
+  public static fromSet<A>(set: Set<A> = new Set()): ISetBox<A> {
     return new SetState(set);
   }
 

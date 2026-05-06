@@ -370,9 +370,9 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
-  private readonly additionalBehaviors: IArrayBox<CacheBehavior> = Box.fromArray([]);
+  private readonly additionalBehaviors: IArrayBox<CacheBehavior> = Box.fromArray();
   private readonly boundOrigins: IArrayBox<BoundOrigin> = Box.fromArray([], { omitEmpty: false });
-  private readonly originGroups: IArrayBox<CfnDistribution.OriginGroupProperty> = Box.fromArray([]);
+  private readonly originGroups: IArrayBox<CfnDistribution.OriginGroupProperty> = Box.fromArray();
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: ICertificateRef;
