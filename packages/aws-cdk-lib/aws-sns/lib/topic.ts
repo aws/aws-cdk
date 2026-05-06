@@ -315,7 +315,7 @@ export class Topic extends TopicBase {
 
   private readonly _resource: CfnTopic;
 
-  private readonly loggingConfigs: IArrayBox<LoggingConfig> = Box.fromArray<LoggingConfig>([]);
+  private readonly loggingConfigs: IArrayBox<LoggingConfig> = Box.fromArray();
 
   constructor(scope: Construct, id: string, props: TopicProps = {}) {
     super(scope, id, {

@@ -2355,12 +2355,12 @@ export class Bucket extends BucketBase {
   }
   private readonly accessControl: IBox<BucketAccessControl | undefined>;
   private readonly ownershipControls: IBox<CfnBucket.OwnershipControlsProperty | undefined>;
-  private readonly lifecycleRules: IArrayBox<LifecycleRule> = Box.fromArray([]);
+  private readonly lifecycleRules: IArrayBox<LifecycleRule> = Box.fromArray();
   private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
   private readonly eventBridgeEnabled?: boolean;
-  private readonly metrics: IArrayBox<BucketMetrics> = Box.fromArray([]);
-  private readonly cors: IArrayBox<CorsRule> = Box.fromArray([]);
-  private readonly inventories: IArrayBox<Inventory> = Box.fromArray([]);
+  private readonly metrics: IArrayBox<BucketMetrics> = Box.fromArray();
+  private readonly cors: IArrayBox<CorsRule> = Box.fromArray();
+  private readonly inventories: IArrayBox<Inventory> = Box.fromArray();
   private readonly _resource: CfnBucket;
   private readonly reflection: BucketReflection;
 
