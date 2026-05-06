@@ -313,7 +313,7 @@ export class User extends Resource implements IIdentity, IUser {
 
   public readonly policyFragment: PrincipalPolicyFragment;
 
-  private readonly groups = new Array<any>();
+  private readonly groups: IArrayBox<any> = Box.fromArray();
   private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
@@ -332,7 +332,7 @@ export class User extends Resource implements IIdentity, IUser {
 
     this._resource = new CfnUser(this, 'Resource', {
       userName: this.physicalName,
-      groups: undefinedIfEmpty(() => this.groups),
+      groups: Token.asList(this.groups),
       managedPolicyArns: Token.asList(this._managedPolicies.map(p => p.managedPolicyArn), { displayHint: 'managedPolicyArns' }),
       path: props.path,
       permissionsBoundary: this.permissionsBoundary ? this.permissionsBoundary.managedPolicyArn : undefined,

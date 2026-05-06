@@ -473,17 +473,17 @@ export class EcsRunTask extends sfn.TaskStateBase implements ec2.IConnectable {
     const subnetSelection = this.props.subnets ??
       { subnetType: this.props.assignPublicIp ? ec2.SubnetType.PUBLIC : ec2.SubnetType.PRIVATE_WITH_EGRESS };
 
+    // Make sure we have a security group if we're using AWSVPC networking
+    this.securityGroups = this.props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc })];
+    this.connections.addSecurityGroup(...this.securityGroups);
+
     this.networkConfiguration = {
       AwsvpcConfiguration: {
         AssignPublicIp: this.props.assignPublicIp ? (this.props.assignPublicIp ? 'ENABLED' : 'DISABLED') : undefined,
         Subnets: this.props.cluster.vpc.selectSubnets(subnetSelection).subnetIds,
-        SecurityGroups: cdk.Lazy.list({ produce: () => this.securityGroups?.map(sg => sg.securityGroupId) }),
+        SecurityGroups: this.securityGroups.map(sg => sg.securityGroupId),
       },
     };
-
-    // Make sure we have a security group if we're using AWSVPC networking
-    this.securityGroups = this.props.securityGroups ?? [new ec2.SecurityGroup(this, 'SecurityGroup', { vpc: this.props.cluster.vpc })];
-    this.connections.addSecurityGroup(...this.securityGroups);
   }
 
   private validateNoNetworkingProps() {

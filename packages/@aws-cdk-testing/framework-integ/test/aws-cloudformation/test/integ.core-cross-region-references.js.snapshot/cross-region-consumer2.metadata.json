@@ -1,0 +1,195 @@
+{
+  "/cross-region-consumer2": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:64:29)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:70:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/IntegNested": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ConsumerStack (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:41:24)",
+        "new TestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:64:29)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:70:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/IntegParameter0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/cross-region-consumer2/IntegParameter1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/cross-region-consumer2/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/IntegNested/IntegNestedParameter0": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/cross-region-consumer2/IntegNested/IntegNestedParameter1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parameterName": "*",
+        "stringValue": "*"
+      }
+    }
+  ],
+  "/cross-region-consumer2/IntegNested.NestedStack/IntegNested.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegNestedNestedStackIntegNestedNestedStackResource168C5881"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NestedStack (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:79:25)",
+        "new ConsumerStack (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:41:24)",
+        "new TestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:64:29)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:70:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/IntegParameter0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegParameter02A1817A4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.js:514:30)",
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:43: (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:43:1)",
+        "Array.forEach (:)",
+        "new ConsumerStack (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:42:22)",
+        "new TestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:64:29)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:70:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/IntegParameter1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegParameter1EDBEF1C6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.js:514:30)",
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:43: (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:43:1)",
+        "Array.forEach (:)",
+        "new ConsumerStack (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:42:22)",
+        "new TestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:64:29)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:70:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/IntegNested/IntegNestedParameter0/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegNestedParameter04B9B8A01"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.js:514:30)",
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:47: (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:47:1)",
+        "Array.forEach (:)",
+        "new ConsumerStack (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:42:22)",
+        "new TestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:64:29)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:70:19)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-consumer2/IntegNested/IntegNestedParameter1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegNestedParameter1DE6274D4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/aws-ssm/lib/parameter.js:514:30)",
+        "new StringParameter (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:47: (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:47:1)",
+        "Array.forEach (:)",
+        "new ConsumerStack (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:42:22)",
+        "new TestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:64:29)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:70:19)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

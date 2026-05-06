@@ -116,6 +116,7 @@ Flags come in three types:
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
 | [@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported users that depend on the stack the user is in. | V2.NEXT | fix |
 | [@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedgroupstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported groups that depend on the stack the group is in. | V2.NEXT | fix |
+| [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | V2NEXT | config |
 
 <!-- END table -->
 
@@ -214,6 +215,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-batch:defaultToAL2023": true,
     "@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName": true,
     "@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName": true
+    "@aws-cdk/core:annotationsInValidationReport": true
   }
 }
 ```
@@ -2470,6 +2472,22 @@ to overwrite permissions given to the group at a different place where it was im
 of a group using the same default policy name.
 
 This new implementation creates default policy names based on the constructs node path in their stack.
+### @aws-cdk/core:annotationsInValidationReport
+
+*Include construct annotations (warnings and errors) in the policy validation report*
+
+Flag type: Configuration option
+
+When enabled, construct annotations added via `Annotations.of()` or `Validations.of()`
+are collected post-synthesis and included in the policy validation report alongside
+plugin violations. Annotations appear under a "Construct Annotations" source entry.
+
+When disabled, annotations are only displayed through the CLI's standard metadata
+output (e.g. `[Warning at /path] message`) and do not appear in the validation report.
+
+Note: enabling this flag may cause annotations to appear twice — once in the CLI's
+standard output and once in the validation report — until the CLI is updated to
+consolidate both displays.
 
 
 | Since | Unset behaves like | Recommended value |

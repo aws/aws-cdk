@@ -86,4 +86,5 @@
   "@aws-cdk/aws-batch:defaultToAL2023": true,
   "@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName": true,
   "@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName": true
+  "@aws-cdk/core:annotationsInValidationReport": true
 }
