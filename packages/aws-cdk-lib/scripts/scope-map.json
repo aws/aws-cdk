@@ -332,6 +332,13 @@
       }
     ]
   },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
+      }
+    ]
+  },
   "aws-cleanrooms": {
     "scopes": [
       {
