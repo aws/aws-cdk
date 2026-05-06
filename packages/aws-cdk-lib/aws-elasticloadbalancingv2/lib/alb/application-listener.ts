@@ -298,7 +298,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       sslPolicy = SslPolicy.TLS13_12_PQ;
     }
 
-    const certificateArns = Box.fromArray<string>([]);
+    const certificateArns: IArrayBox<string> = Box.fromArray();
 
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,

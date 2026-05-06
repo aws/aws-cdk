@@ -97,7 +97,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
-  private readonly listOfTags: IArrayBox<CfnBackupSelection.ConditionResourceTypeProperty> = Box.fromArray([]);
+  private readonly listOfTags: IArrayBox<CfnBackupSelection.ConditionResourceTypeProperty> = Box.fromArray();
   private readonly resources: IArrayBox<string> = Box.fromArray([], { omitEmpty: false });
   private readonly backupableResourcesCollector = new BackupableResourcesCollector();
 

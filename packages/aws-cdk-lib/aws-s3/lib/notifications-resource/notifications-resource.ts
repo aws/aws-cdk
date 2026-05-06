@@ -49,9 +49,9 @@ interface NotificationsProps {
 @noBoxStackTraces
 export class BucketNotifications extends Construct {
   private readonly eventBridgeEnabled: IBox<boolean> = Box.fromValue(false);
-  private readonly lambdaNotifications: IArrayBox<LambdaFunctionConfiguration> = Box.fromArray([]);
-  private readonly queueNotifications: IArrayBox<QueueConfiguration> = Box.fromArray([]);
-  private readonly topicNotifications: IArrayBox<TopicConfiguration> = Box.fromArray([]);
+  private readonly lambdaNotifications: IArrayBox<LambdaFunctionConfiguration> = Box.fromArray();
+  private readonly queueNotifications: IArrayBox<QueueConfiguration> = Box.fromArray();
+  private readonly topicNotifications: IArrayBox<TopicConfiguration> = Box.fromArray();
   private resource?: cdk.CfnResource;
   private readonly bucket: IBucket;
   private readonly handlerRole?: iam.IRole;

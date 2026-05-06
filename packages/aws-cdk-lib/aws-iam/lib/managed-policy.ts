@@ -270,9 +270,9 @@ export class ManagedPolicy extends Resource implements IManagedPolicy, IGrantabl
 
   public readonly grantPrincipal: IPrincipal;
 
-  private readonly roles: IArrayBox<IRoleRef> = Box.fromArray<IRoleRef>([]);
-  private readonly users: IArrayBox<IUserRef> = Box.fromArray<IUserRef>([]);
-  private readonly groups: IArrayBox<IGroupRef> = Box.fromArray<IGroupRef>([]);
+  private readonly roles: IArrayBox<IRoleRef> = Box.fromArray();
+  private readonly users: IArrayBox<IUserRef> = Box.fromArray();
+  private readonly groups: IArrayBox<IGroupRef> = Box.fromArray();
   private readonly _precreatedPolicy?: IManagedPolicy;
 
   constructor(scope: Construct, id: string, props: ManagedPolicyProps = {}) {

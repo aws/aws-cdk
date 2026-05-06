@@ -1,11 +1,12 @@
 import { Construct } from 'constructs';
 import { ExportReader } from './export-reader-provider';
-import type { CrossRegionExports, ExportWriterCRProps } from './types';
+import type { ExportWriterCRProps } from './types';
 import { SSM_EXPORT_PATH_PREFIX } from './types';
 import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
 import { CustomResource } from '../../custom-resource';
 import { CrossRegionSsmWriterProvider } from '../../dist/core/cross-region-ssm-writer-provider.generated';
-import { Lazy } from '../../lazy';
+import type { IMapBox, ISetBox } from '../../helpers-internal';
+import { Box } from '../../helpers-internal';
 import type { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';
 import type { Reference } from '../../reference';
@@ -38,12 +39,12 @@ class CRProvider extends CrossRegionSsmWriterProvider {
     return provider;
   }
 
-  private readonly resourceArns = new Set<string>();
+  private readonly resourceArns: ISetBox<string> = Box.fromSet();
   constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {
     super(scope, id, props);
     this.addToRolePolicy({
       Effect: 'Allow',
-      Resource: Lazy.list({ produce: () => Array.from(this.resourceArns) }),
+      Resource: this.resourceArns.derive(Array.from),
       Action: [
         'ssm:DeleteParameters',
         'ssm:ListTagsForResource',
@@ -91,7 +92,7 @@ export class ExportWriter extends Construct {
         region: props.region,
       });
   }
-  private readonly _references: CrossRegionExports = {};
+  private readonly _references: IMapBox<string, any> = Box.fromMap();
   private readonly provider: CRProvider;
   constructor(scope: Construct, id: string, props: ExportWriterProps) {
     super(scope, id);
@@ -105,7 +106,7 @@ export class ExportWriter extends Construct {
 
     const properties: ExportWriterCRProps = {
       region: region,
-      exports: Lazy.any({ produce: () => this._references }),
+      exports: this._references.derive(m => Object.fromEntries(m)),
     };
     new CustomResource(this, 'Resource', {
       resourceType: resourceType,
@@ -133,7 +134,7 @@ export class ExportWriter extends Construct {
 
     const ref = new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
 
-    this._references[parameterName] = stack.resolve(reference.toString());
+    this._references.put(parameterName, stack.resolve(reference.toString()));
     return this.addToExportReader(parameterName, ref, importStack);
   }
 
