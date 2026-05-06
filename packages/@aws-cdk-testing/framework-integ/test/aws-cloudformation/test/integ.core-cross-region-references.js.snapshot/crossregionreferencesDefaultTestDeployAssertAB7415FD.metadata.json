@@ -1,0 +1,314 @@
+{
+  "/cross-region-references/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:72:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:83:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "DeployAssert.awsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:83:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
+        "recurse (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "invokeAspectsV2 (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
+        "synthesize (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
+        "App.synth (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "process.<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdeleteStacke9f2151ae7c85063016d04dca4a05a09"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:83:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/Users/otaviom/get-stack-output/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "DeployAssert.awsApiCall (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:85:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForRole0FD90858"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForFE8EC68F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/IsCompleteProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForIsCompleteProviderInvoke65C209A2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cross-region-references/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09/WaitFor/TimeoutProvider/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallCloudFormationdescribeStackse9f2151ae7c85063016d04dca4a05a09WaitForTimeoutProviderInvoke2965DD2A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "AssertionsProvider.grantInvoke (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
+        "new WaiterStateMachine (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
+        "AwsApiCall.waitForAssertions (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
+        "<anonymous> (/Users/otaviom/get-stack-output/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudformation/test/integ.core-cross-region-references.js:94:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

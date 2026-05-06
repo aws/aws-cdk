@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c": {
-      "displayName": "SmithyTarget1/Schema525d0ed87b97c616cc37c574f7ae2a2a",
+      "displayName": "SmithyTarget1/Schema395571ec96d778ed65dcfc0bb311cac5",
       "source": {
         "path": "asset.986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json",
         "packaging": "file"
@@ -16,7 +16,7 @@
       }
     },
     "bd751ca0191815215ea0c76c6bb6abc73eb405e0cb3ae2b8b6d599796c210c0b": {
-      "displayName": "LambdaTarget1/Schemaf4d08fca69f75f0b1ed246f105bcc8f9",
+      "displayName": "LambdaTarget1/Schema777f8da08a7a9b0241bc9c22a688a829",
       "source": {
         "path": "asset.bd751ca0191815215ea0c76c6bb6abc73eb405e0cb3ae2b8b6d599796c210c0b.json",
         "packaging": "file"
@@ -30,7 +30,7 @@
       }
     },
     "ef288645ce3db216180dc71c3cf4cb8a487430d0daf8e0340ed60550eb9aee04": {
-      "displayName": "LambdaTarget2/Schema3f6c887cba6df017847efa32c1a895ba",
+      "displayName": "LambdaTarget2/Schemaa1ef4b5eb5f588e022cd4f30814964ce",
       "source": {
         "path": "asset.ef288645ce3db216180dc71c3cf4cb8a487430d0daf8e0340ed60550eb9aee04.json",
         "packaging": "file"

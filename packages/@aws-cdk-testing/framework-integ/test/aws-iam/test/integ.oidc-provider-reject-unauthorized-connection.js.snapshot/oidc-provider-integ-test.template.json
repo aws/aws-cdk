@@ -9,7 +9,7 @@
       "Arn"
      ]
     },
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2",
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test2reject",
     "RejectUnauthorized": true,
     "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
@@ -96,7 +96,7 @@
      "foo",
      "bar"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3",
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test3reject",
     "RejectUnauthorized": true,
     "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
@@ -116,7 +116,7 @@
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1122",
      "aa00aa1122aa00aa1122aa00aa1122aa00aa1111"
     ],
-    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4",
+    "Url": "https://oidc.eks.us-east-1.amazonaws.com/id/test4reject",
     "RejectUnauthorized": true,
     "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },

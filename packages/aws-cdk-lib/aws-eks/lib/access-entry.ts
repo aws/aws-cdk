@@ -2,10 +2,13 @@ import type { Construct } from 'constructs';
 import type { ICluster } from './cluster';
 import type { AccessEntryReference, IAccessEntryRef } from './eks.generated';
 import { CfnAccessEntry } from './eks.generated';
-import type { IResource } from '../../core';
-import { Resource, Aws, Lazy, ValidationError, Token } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IResource, RemovalPolicy } from '../../core';
+import { Resource, Aws, ValidationError, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -319,6 +322,20 @@ export interface AccessEntryProps {
    * The Amazon Resource Name (ARN) of the principal (user or role) to associate the access entry with.
    */
   readonly principal: string;
+
+  /**
+   * The removal policy applied to the access entry.
+   *
+   * The removal policy controls what happens to the resource if it stops being managed by CloudFormation.
+   * This can happen in one of three situations:
+   *
+   * - The resource is removed from the template, so CloudFormation stops managing it
+   * - A change to the resource is made that requires it to be replaced, so CloudFormation stops managing it
+   * - The stack is deleted, so CloudFormation stops managing all resources in it
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: RemovalPolicy;
 }
 
 /**
@@ -329,6 +346,7 @@ export interface AccessEntryProps {
  * @implements {IAccessEntry}
  */
 @propertyInjectable
+@noBoxStackTraces
 export class AccessEntry extends Resource implements IAccessEntry {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-eks.AccessEntry';
@@ -363,7 +381,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
    */
   private cluster: ICluster;
   private principal: string;
-  private accessPolicies: IAccessPolicy[];
+  private _accessPolicies: IArrayBox<IAccessPolicy>;
   private readonly accessEntryType?: AccessEntryType;
   private readonly resource: CfnAccessEntry;
 
@@ -388,7 +406,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
 
     this.cluster = props.cluster;
     this.principal = props.principal;
-    this.accessPolicies = props.accessPolicies;
+    this._accessPolicies = Box.fromArray(props.accessPolicies, { omitEmpty: false });
     this.accessEntryType = props.accessEntryType;
 
     // Validate that certain access entry types cannot have access policies
@@ -398,17 +416,19 @@ export class AccessEntry extends Resource implements IAccessEntry {
       clusterName: this.cluster.clusterName,
       principalArn: this.principal,
       type: props.accessEntryType,
-      accessPolicies: Lazy.any({
-        produce: () => this.accessPolicies.map(p => ({
-          accessScope: {
-            type: p.accessScope.type,
-            namespaces: p.accessScope.namespaces,
-          },
-          policyArn: p.policy,
-        })),
-      }),
+      accessPolicies: this._accessPolicies.map(p => ({
+        accessScope: {
+          type: p.accessScope.type,
+          namespaces: p.accessScope.namespaces,
+        },
+        policyArn: p.policy,
+      })),
 
     });
+
+    if (props.removalPolicy) {
+      this.resource.applyRemovalPolicy(props.removalPolicy);
+    }
   }
   /**
    * Add the access policies for this entry.
@@ -419,7 +439,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     // Validate that restricted access entry types cannot have access policies
     this.validateAccessPoliciesForRestrictedTypes(newAccessPolicies, this.accessEntryType);
     // add newAccessPolicies to this.accessPolicies
-    this.accessPolicies.push(...newAccessPolicies);
+    this._accessPolicies.push(...newAccessPolicies);
   }
 
   /**
@@ -434,7 +454,7 @@ export class AccessEntry extends Resource implements IAccessEntry {
     const restrictedTypes = [AccessEntryType.EC2, AccessEntryType.HYBRID_LINUX, AccessEntryType.HYPERPOD_LINUX];
     if (accessEntryType && restrictedTypes.includes(accessEntryType) &&
         !Token.isUnresolved(accessPolicies) && accessPolicies.length > 0) {
-      throw new ValidationError(`Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
+      throw new ValidationError(lit`AccessEntryTypeCannot`, `Access entry type '${accessEntryType}' cannot have access policies attached. Use AccessEntryType.STANDARD for access entries that require policies.`, this);
     }
   }
 

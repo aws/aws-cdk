@@ -4,9 +4,11 @@ import { Column, Row } from './layout';
 import type { IVariable } from './variable';
 import type { IWidget } from './widget';
 import type { Duration } from '../../core';
-import { Lazy, Resource, Stack, Token, Annotations, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Resource, Stack, Token, Annotations, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -39,7 +41,7 @@ export interface DashboardProps {
 
   /**
    * Interval duration for metrics.
-   * You can specify defaultInterval with the relative time(eg. cdk.Duration.days(7)).
+   * You can specify defaultInterval with the relative time (e.g. cdk.Duration.days(7)).
    *
    * Both properties `defaultInterval` and `start` cannot be set at once.
    *
@@ -122,9 +124,9 @@ export class Dashboard extends Resource {
    */
   public readonly dashboardArn: string;
 
-  private readonly rows: IWidget[] = [];
+  private readonly rows: IArrayBox<IWidget> = Box.fromArray([], { omitEmpty: false });
 
-  private readonly variables: IVariable[] = [];
+  private readonly variables: IArrayBox<IVariable> = Box.fromArray([], { omitEmpty: false });
   private readonly resource: CfnDashboard;
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
@@ -137,7 +139,7 @@ export class Dashboard extends Resource {
     {
       const { dashboardName } = props;
       if (dashboardName && !Token.isUnresolved(dashboardName) && !dashboardName.match(/^[\w-]+$/)) {
-        throw new ValidationError([
+        throw new ValidationError(lit`InvalidDashboardName`, [
           `The value ${dashboardName} for field dashboardName contains invalid characters.`,
           'It can only contain alphanumerics, dash (-) and underscore (_).',
         ].join(' '), this);
@@ -145,28 +147,29 @@ export class Dashboard extends Resource {
     }
 
     if (props.start !== undefined && props.defaultInterval !== undefined) {
-      throw new ValidationError('both properties defaultInterval and start cannot be set at once', this);
+      throw new ValidationError(lit`BothPropertiesDefaultIntervalStart`, 'both properties defaultInterval and start cannot be set at once', this);
     }
 
     if (props.end !== undefined && props.start === undefined) {
-      throw new ValidationError('If you specify a value for end, you must also specify a value for start.', this);
+      throw new ValidationError(lit`SpecifyValue`, 'If you specify a value for end, you must also specify a value for start.', this);
     }
 
     const dashboard = new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
-      dashboardBody: Lazy.string({
-        produce: () => {
-          const column = new Column(...this.rows);
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      dashboardBody: Token.asString(
+        Box.combine({ rows: this.rows, variables: this.variables }, ({ rows, variables }) => {
+          const column = new Column(...rows);
           column.position(0, 0);
           return Stack.of(this).toJsonString({
             start: props.defaultInterval !== undefined ? `-${props.defaultInterval?.toIsoString()}` : props.start,
             end: props.defaultInterval !== undefined ? undefined : props.end,
             periodOverride: props.periodOverride,
             widgets: column.toJson(),
-            variables: this.variables.length > 0 ? this.variables.map(variable => variable.toJson()) : undefined,
+            variables: variables.length > 0 ? variables.map(variable => variable.toJson()) : undefined,
           });
-        },
-      }),
+        }),
+      ),
     });
 
     this.resource = dashboard;

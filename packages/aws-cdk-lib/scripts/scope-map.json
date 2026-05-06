@@ -241,6 +241,13 @@
       }
     ]
   },
+  "aws-bcmpricingcalculator": {
+    "scopes": [
+      {
+        "namespace": "AWS::BcmPricingCalculator"
+      }
+    ]
+  },
   "aws-bedrock": {
     "scopes": [
       {
@@ -255,6 +262,13 @@
       }
     ]
   },
+  "aws-bedrockmantle": {
+    "scopes": [
+      {
+        "namespace": "AWS::BedrockMantle"
+      }
+    ]
+  },
   "aws-billing": {
     "scopes": [
       {
@@ -266,6 +280,13 @@
     "scopes": [
       {
         "namespace": "AWS::BillingConductor"
+      }
+    ]
+  },
+  "aws-braket": {
+    "scopes": [
+      {
+        "namespace": "AWS::Braket"
       }
     ]
   },
@@ -456,6 +477,13 @@
       }
     ]
   },
+  "aws-computeoptimizer": {
+    "scopes": [
+      {
+        "namespace": "AWS::ComputeOptimizer"
+      }
+    ]
+  },
   "aws-config": {
     "scopes": [
       {
@@ -575,6 +603,13 @@
       }
     ]
   },
+  "aws-directconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::DirectConnect"
+      }
+    ]
+  },
   "aws-directoryservice": {
     "scopes": [
       {
@@ -691,6 +726,13 @@
     "scopes": [
       {
         "namespace": "AWS::Elasticsearch"
+      }
+    ]
+  },
+  "aws-elementalinference": {
+    "scopes": [
+      {
+        "namespace": "AWS::ElementalInference"
       }
     ]
   },
@@ -901,6 +943,13 @@
     "scopes": [
       {
         "namespace": "AWS::InspectorV2"
+      }
+    ]
+  },
+  "aws-interconnect": {
+    "scopes": [
+      {
+        "namespace": "AWS::Interconnect"
       }
     ]
   },
@@ -1306,6 +1355,13 @@
       }
     ]
   },
+  "aws-novaact": {
+    "scopes": [
+      {
+        "namespace": "AWS::NovaAct"
+      }
+    ]
+  },
   "aws-oam": {
     "scopes": [
       {
@@ -1558,6 +1614,13 @@
       }
     ]
   },
+  "aws-route53globalresolver": {
+    "scopes": [
+      {
+        "namespace": "AWS::Route53GlobalResolver"
+      }
+    ]
+  },
   "aws-route53profiles": {
     "scopes": [
       {
@@ -1611,6 +1674,13 @@
     "scopes": [
       {
         "namespace": "AWS::S3Express"
+      }
+    ]
+  },
+  "aws-s3files": {
+    "scopes": [
+      {
+        "namespace": "AWS::S3Files"
       }
     ]
   },
@@ -1679,6 +1749,13 @@
     "scopes": [
       {
         "namespace": "AWS::SecretsManager"
+      }
+    ]
+  },
+  "aws-securityagent": {
+    "scopes": [
+      {
+        "namespace": "AWS::SecurityAgent"
       }
     ]
   },
@@ -1857,6 +1934,13 @@
     "scopes": [
       {
         "namespace": "AWS::Transfer"
+      }
+    ]
+  },
+  "aws-uxc": {
+    "scopes": [
+      {
+        "namespace": "AWS::UXC"
       }
     ]
   },

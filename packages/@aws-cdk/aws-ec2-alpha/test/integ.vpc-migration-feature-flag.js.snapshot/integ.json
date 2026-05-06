@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "VpcMigrationFeatureFlagTest/DefaultTest": {
       "stacks": [
@@ -10,5 +10,6 @@
       "assertionStack": "VpcMigrationFeatureFlagTest/DefaultTest/DeployAssert",
       "assertionStackName": "VpcMigrationFeatureFlagTestDefaultTestDeployAssertD39E876C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1033.0"
 }

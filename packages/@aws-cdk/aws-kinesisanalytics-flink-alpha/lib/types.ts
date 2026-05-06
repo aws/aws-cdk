@@ -51,16 +51,36 @@ export interface PropertyGroups {
  * Available Flink runtimes for Kinesis Analytics.
  */
 export class Runtime {
-  /** Flink Version 1.6 */
+  /**
+   * Flink Version 1.6
+   *
+   * @deprecated Apache Flink 1.6 is deprecated by Amazon Managed Service for Apache Flink. Use {@link FLINK_1_20} or later.
+   * @see https://docs.aws.amazon.com/managed-flink/latest/java/release-version-list.html
+   */
   public static readonly FLINK_1_6 = Runtime.of('FLINK-1_6');
 
-  /** Flink Version 1.8 */
+  /**
+   * Flink Version 1.8
+   *
+   * @deprecated Apache Flink 1.8 is deprecated by Amazon Managed Service for Apache Flink. Use {@link FLINK_1_20} or later.
+   * @see https://docs.aws.amazon.com/managed-flink/latest/java/release-version-list.html
+   */
   public static readonly FLINK_1_8 = Runtime.of('FLINK-1_8');
 
-  /** Flink Version 1.11 */
+  /**
+   * Flink Version 1.11
+   *
+   * @deprecated Apache Flink 1.11 is deprecated by Amazon Managed Service for Apache Flink. Use {@link FLINK_1_20} or later.
+   * @see https://docs.aws.amazon.com/managed-flink/latest/java/release-version-list.html
+   */
   public static readonly FLINK_1_11 = Runtime.of('FLINK-1_11');
 
-  /** Flink Version 1.13 */
+  /**
+   * Flink Version 1.13
+   *
+   * @deprecated Apache Flink 1.13 is deprecated by Amazon Managed Service for Apache Flink. Use {@link FLINK_1_20} or later.
+   * @see https://docs.aws.amazon.com/managed-flink/latest/java/release-version-list.html
+   */
   public static readonly FLINK_1_13 = Runtime.of('FLINK-1_13');
 
   /** Flink Version 1.15 */

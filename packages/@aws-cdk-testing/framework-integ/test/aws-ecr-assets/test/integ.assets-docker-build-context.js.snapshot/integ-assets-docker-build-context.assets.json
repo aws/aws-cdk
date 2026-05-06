@@ -1,0 +1,37 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "fd3ef8d77693a6339ca951518c027f236606fc59890dba9515b60cf1496c9e5c": {
+      "displayName": "integ-assets-docker-build-context Template",
+      "source": {
+        "path": "integ-assets-docker-build-context.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-4c9b0647": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "fd3ef8d77693a6339ca951518c027f236606fc59890dba9515b60cf1496c9e5c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {
+    "21592aa0c60f855735949fa2ddd50ccfe5c2662eea8c60a4c95742dbc5aa3206": {
+      "displayName": "DockerImageWithBuildContext",
+      "source": {
+        "directory": "asset.21592aa0c60f855735949fa2ddd50ccfe5c2662eea8c60a4c95742dbc5aa3206",
+        "dockerBuildContexts": {
+          "mycontext": "/Users/jacsteve/test/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecr-assets/test/demo-image-build-context/context"
+        }
+      },
+      "destinations": {
+        "current_account-current_region-f88152a7": {
+          "repositoryName": "cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}",
+          "imageTag": "21592aa0c60f855735949fa2ddd50ccfe5c2662eea8c60a4c95742dbc5aa3206",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-image-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  }
+}

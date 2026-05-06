@@ -5,6 +5,7 @@ import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import { KubectlV33Layer } from '@aws-cdk/lambda-layer-kubectl-v33';
 import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 import type { Construct } from 'constructs';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
@@ -19,10 +20,22 @@ const versionMap: { [key: string]: new (scope: Construct, id: string) => lambda.
   '1.32': KubectlV32Layer,
   '1.33': KubectlV33Layer,
   '1.34': KubectlV34Layer,
+  '1.35': KubectlV35Layer,
 };
 
+const sortedVersions = Object.keys(versionMap).sort((a, b) => parseFloat(a) - parseFloat(b));
+
+/**
+ * Returns the N latest version strings from the versionMap (default 2).
+ * e.g. ['1.34', '1.35'] for the latest two.
+ */
+export function getLatestVersions(count = 2): string[] {
+  return sortedVersions.slice(-count);
+}
+
 export function getClusterVersionConfig(scope: Construct, version?: eks.KubernetesVersion) {
-  const _version = version ?? eks.KubernetesVersion.V1_32;
+  const latestVersion = sortedVersions[sortedVersions.length - 1];
+  const _version = version ?? eks.KubernetesVersion.of(latestVersion);
   return {
     version: _version,
     // Crazy type-casting is required because KubectlLayer peer depends on

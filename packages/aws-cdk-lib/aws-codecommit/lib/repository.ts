@@ -8,9 +8,12 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { IResource } from '../../core';
-import { ArnFormat, Lazy, Resource, Stack, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { ArnFormat, Resource, Stack, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -137,7 +140,7 @@ export interface IRepository extends IResource, notifications.INotificationRuleS
    * events specified by you are emitted. Similar to `onEvent` API.
    *
    * You can also use the methods to define rules for the specific event emitted.
-   * eg: `notifyOnPullRequstCreated`.
+   * e.g. `notifyOnPullRequestCreated`.
    *
    * @returns CodeStar Notifications rule associated with this repository.
    */
@@ -375,6 +378,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.pull()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPull(grantee: iam.IGrantable) {
@@ -382,6 +388,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.pullPush()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPullPush(grantee: iam.IGrantable) {
@@ -389,6 +398,9 @@ abstract class RepositoryBase extends Resource implements IRepository {
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.read()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
@@ -534,6 +546,7 @@ export interface RepositoryProps {
  * Provides a CodeCommit Repository.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Repository extends RepositoryBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-codecommit.Repository';
@@ -580,7 +593,7 @@ export class Repository extends RepositoryBase {
   }
 
   private readonly resource: CfnRepository;
-  private readonly triggers = new Array<CfnRepository.RepositoryTriggerProperty>();
+  private readonly _triggers: IArrayBox<CfnRepository.RepositoryTriggerProperty>;
 
   @memoizedGetter
   public get repositoryArn(): string {
@@ -617,10 +630,12 @@ export class Repository extends RepositoryBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this._triggers = Box.fromArray([]);
+
     this.resource = new CfnRepository(this, 'Resource', {
       repositoryName: props.repositoryName,
       repositoryDescription: props.description,
-      triggers: Lazy.any({ produce: () => this.triggers }, { omitEmptyArray: true }),
+      triggers: this._triggers,
       code: (props.code?.bind(this))?.code,
       kmsKeyId: props.kmsKey?.keyRef.keyArn,
     });
@@ -646,11 +661,11 @@ export class Repository extends RepositoryBase {
       name = this.node.path + '/' + arn;
     }
 
-    if (this.triggers.find(prop => prop.name === name)) {
-      throw new ValidationError(`Unable to set repository trigger named ${name} because trigger names must be unique`, this);
+    if (this._triggers.find(prop => prop.name === name)) {
+      throw new ValidationError(lit`UnableSetRepositoryTriggerNamed`, `Unable to set repository trigger named ${name} because trigger names must be unique`, this);
     }
 
-    this.triggers.push({
+    this._triggers.push({
       destinationArn: arn,
       name,
       customData,
