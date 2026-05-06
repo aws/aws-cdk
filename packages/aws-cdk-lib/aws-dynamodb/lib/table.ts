@@ -1309,8 +1309,8 @@ export class Table extends TableBase {
       physicalName: props.tableName,
     });
 
-    this._globalSecondaryIndexes = Box.fromArray([]);
-    this._localSecondaryIndexes = Box.fromArray([]);
+    this._globalSecondaryIndexes = Box.fromArray();
+    this._localSecondaryIndexes = Box.fromArray();
     this._hasIndexBox = Box.combine(
       { gsi: this._globalSecondaryIndexes, lsi: this._localSecondaryIndexes },
       ({ gsi, lsi }) => gsi.length + lsi.length > 0,

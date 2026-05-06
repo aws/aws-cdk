@@ -415,7 +415,7 @@ export abstract class RestApiBase extends Resource implements IRestApi, iam.IRes
 
   private _latestDeployment?: Deployment;
   private _domainName?: DomainName;
-  private allowedVpcEndpoints: ISetBox<ec2.IVPCEndpointRef> = Box.fromSet(new Set());
+  private allowedVpcEndpoints: ISetBox<ec2.IVPCEndpointRef> = Box.fromSet();
 
   private readonly _resourcePolicy: IBox<iam.PolicyDocument | undefined> = Box.fromValue<iam.PolicyDocument | undefined>(undefined);
 

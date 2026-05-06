@@ -1474,7 +1474,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly securityGroups?: IArrayBox<ec2.ISecurityGroup>;
   private readonly loadBalancerNames: IArrayBox<string>;
   private readonly targetGroupArns: IArrayBox<string>;
-  private readonly groupMetrics: IArrayBox<GroupMetrics> = Box.fromArray<GroupMetrics>([]);
+  private readonly groupMetrics: IArrayBox<GroupMetrics> = Box.fromArray();
   private readonly notifications: NotificationConfiguration[] = [];
   private readonly launchTemplate?: ec2.LaunchTemplate;
   private readonly _connections?: ec2.Connections;
@@ -1499,8 +1499,8 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     addConstructMetadata(this, props);
 
     this._newInstancesProtectedFromScaleIn = Box.fromValue<boolean | undefined>(props.newInstancesProtectedFromScaleIn);
-    this.loadBalancerNames = Box.fromArray<string>([]);
-    this.targetGroupArns = Box.fromArray<string>([]);
+    this.loadBalancerNames = Box.fromArray();
+    this.targetGroupArns = Box.fromArray();
 
     if (props.initOptions && !props.init) {
       throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
