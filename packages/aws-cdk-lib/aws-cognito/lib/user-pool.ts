@@ -21,7 +21,10 @@ import type * as lambda from '../../aws-lambda';
 import type { IResource, RemovalPolicy } from '../../core';
 import { ArnFormat, Duration, Lazy, Names, Resource, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IUserPoolIdentityProviderRef, IUserPoolRef, UserPoolReference } from '../../interfaces/generated/aws-cognito-interfaces.generated';
@@ -1078,6 +1081,7 @@ abstract class UserPoolBase extends Resource implements IUserPool {
  * Define a Cognito User Pool
  */
 @propertyInjectable
+@noBoxStackTraces
 export class UserPool extends UserPoolBase {
   /**
    * Uniquely identifies this class.
@@ -1149,7 +1153,7 @@ export class UserPool extends UserPoolBase {
    */
   public readonly userPoolProviderUrl: string;
 
-  private triggers: CfnUserPool.LambdaConfigProperty = {};
+  private readonly triggers: IBox<CfnUserPool.LambdaConfigProperty>;
   private emailConfiguration: UserPoolEmailConfig | undefined;
 
   constructor(scope: Construct, id: string, props: UserPoolProps = {}) {
@@ -1159,9 +1163,11 @@ export class UserPool extends UserPoolBase {
 
     const signIn = this.signInConfiguration(props);
 
+    this.triggers = Box.fromValue<CfnUserPool.LambdaConfigProperty>({});
+
     if (props.customSenderKmsKey) {
       const kmsKey = props.customSenderKmsKey;
-      (this.triggers as any).kmsKeyId = kmsKey.keyRef.keyArn;
+      this.triggers.update(t => ({ ...t, kmsKeyId: kmsKey.keyRef.keyArn }));
     }
 
     if (props.lambdaTriggers) {
@@ -1170,24 +1176,27 @@ export class UserPool extends UserPoolBase {
         switch (t) {
           case 'customSmsSender':
           case 'customEmailSender':
-            if (!this.triggers.kmsKeyId) {
+            if (!this.triggers.get().kmsKeyId) {
               throw new ValidationError(lit`SpecifyKeyCustomSmsSender`, 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
             }
             trigger = props.lambdaTriggers[t];
             const version = 'V1_0';
             if (trigger !== undefined) {
               this.addLambdaPermission(trigger as lambda.IFunction, t);
-              (this.triggers as any)[t] = {
-                lambdaArn: trigger.functionArn,
-                lambdaVersion: version,
-              };
+              this.triggers.update(triggers => ({
+                ...triggers,
+                [t]: {
+                  lambdaArn: trigger!.functionArn,
+                  lambdaVersion: version,
+                },
+              }));
             }
             break;
           default:
             trigger = props.lambdaTriggers[t] as lambda.IFunction | undefined;
             if (trigger !== undefined) {
               this.addLambdaPermission(trigger as lambda.IFunction, t);
-              (this.triggers as any)[t] = (trigger as lambda.IFunction).functionArn;
+              this.triggers.update(triggers => ({ ...triggers, [t]: (trigger as lambda.IFunction).functionArn }));
             }
             break;
         }
@@ -1256,7 +1265,7 @@ export class UserPool extends UserPoolBase {
       usernameAttributes: signIn.usernameAttrs,
       aliasAttributes: signIn.aliasAttrs,
       autoVerifiedAttributes: signIn.autoVerifyAttrs,
-      lambdaConfig: Lazy.any({ produce: () => undefinedIfNoKeys(this.triggers) }),
+      lambdaConfig: this.triggers.derive(undefinedIfNoKeys),
       smsAuthenticationMessage: this.mfaMessage(props),
       smsConfiguration: this.smsConfiguration(props),
       adminCreateUserConfig,
@@ -1299,7 +1308,7 @@ export class UserPool extends UserPoolBase {
    */
   @MethodMetadata()
   public addTrigger(operation: UserPoolOperation, fn: lambda.IFunction, lambdaVersion?: LambdaVersion): void {
-    if (operation.operationName in this.triggers) {
+    if (operation.operationName in this.triggers.get()) {
       throw new ValidationError(lit`TriggerOperation`, `A trigger for the operation ${operation.operationName} already exists.`, this);
     }
     if (
@@ -1314,22 +1323,28 @@ export class UserPool extends UserPoolBase {
     switch (operation.operationName) {
       case 'customEmailSender':
       case 'customSmsSender':
-        if (!this.triggers.kmsKeyId) {
+        if (!this.triggers.get().kmsKeyId) {
           throw new ValidationError(lit`SpecifyKeyCustomSmsSender`, 'you must specify a KMS key if you are using customSmsSender or customEmailSender.', this);
         }
-        (this.triggers as any)[operation.operationName] = {
-          lambdaArn: fn.functionArn,
-          lambdaVersion: LambdaVersion.V1_0,
-        };
+        this.triggers.update(t => ({
+          ...t,
+          [operation.operationName]: {
+            lambdaArn: fn.functionArn,
+            lambdaVersion: LambdaVersion.V1_0,
+          },
+        }));
         break;
       case 'preTokenGenerationConfig':
-        (this.triggers as any)[operation.operationName] = {
-          lambdaArn: fn.functionArn,
-          lambdaVersion: lambdaVersion ?? LambdaVersion.V1_0,
-        };
+        this.triggers.update(t => ({
+          ...t,
+          [operation.operationName]: {
+            lambdaArn: fn.functionArn,
+            lambdaVersion: lambdaVersion ?? LambdaVersion.V1_0,
+          },
+        }));
         break;
       default:
-        (this.triggers as any)[operation.operationName] = fn.functionArn;
+        this.triggers.update(t => ({ ...t, [operation.operationName]: fn.functionArn }));
     }
   }
 

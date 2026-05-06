@@ -26,11 +26,21 @@ import {
   Annotations,
   Aspects,
   Aws,
-  Duration, FeatureFlags, Fn, Lazy, PhysicalName, Resource, Stack, Tags,
+  Duration,
+  FeatureFlags,
+  Fn,
+  Lazy,
+  PhysicalName,
+  Resource,
+  Stack,
+  Tags,
   Token,
-  Tokenization, UnscopedValidationError, ValidationError, withResolved,
+  Tokenization,
+  UnscopedValidationError,
+  ValidationError,
+  withResolved,
 } from '../../core';
-import type { IArrayBox } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
@@ -38,7 +48,10 @@ import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { AUTOSCALING_GENERATE_LAUNCH_TEMPLATE } from '../../cx-api';
-import type { AutoScalingGroupReference, IAutoScalingGroupRef } from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
+import type {
+  AutoScalingGroupReference,
+  IAutoScalingGroupRef,
+} from '../../interfaces/generated/aws-autoscaling-interfaces.generated';
 
 /**
  * Name tag constant
@@ -1461,14 +1474,22 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
   private readonly securityGroups?: IArrayBox<ec2.ISecurityGroup>;
   private readonly loadBalancerNames: IArrayBox<string>;
   private readonly targetGroupArns: IArrayBox<string>;
-  private readonly groupMetrics: GroupMetrics[] = [];
+  private readonly groupMetrics: IArrayBox<GroupMetrics> = Box.fromArray<GroupMetrics>([]);
   private readonly notifications: NotificationConfiguration[] = [];
   private readonly launchTemplate?: ec2.LaunchTemplate;
   private readonly _connections?: ec2.Connections;
   private readonly _userData?: ec2.UserData;
   private readonly _role?: iam.IRole;
 
-  protected newInstancesProtectedFromScaleIn?: boolean;
+  private readonly _newInstancesProtectedFromScaleIn: IBox<boolean | undefined>;
+
+  protected get newInstancesProtectedFromScaleIn(): boolean | undefined {
+    return this._newInstancesProtectedFromScaleIn.get();
+  }
+
+  protected set newInstancesProtectedFromScaleIn(value: boolean | undefined) {
+    this._newInstancesProtectedFromScaleIn.set(value);
+  }
 
   constructor(scope: Construct, id: string, props: AutoScalingGroupProps) {
     super(scope, id, {
@@ -1477,7 +1498,7 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this.newInstancesProtectedFromScaleIn = props.newInstancesProtectedFromScaleIn;
+    this._newInstancesProtectedFromScaleIn = Box.fromValue<boolean | undefined>(props.newInstancesProtectedFromScaleIn);
     this.loadBalancerNames = Box.fromArray<string>([]);
     this.targetGroupArns = Box.fromArray<string>([]);
 
@@ -1703,12 +1724,12 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
       loadBalancerNames: Token.asList(this.loadBalancerNames, { displayHint: 'loadBalancerNames' }),
       targetGroupArns: Token.asList(this.targetGroupArns, { displayHint: 'targetGroupArns' }),
       notificationConfigurations: this.renderNotificationConfiguration(),
-      metricsCollection: Lazy.any({ produce: () => this.renderMetricsCollection() }),
+      metricsCollection: this.groupMetrics.derive(gm => this.renderMetricsCollection(gm)),
       vpcZoneIdentifier: subnetIds,
       healthCheckType,
       healthCheckGracePeriod,
       maxInstanceLifetime: this.maxInstanceLifetime ? this.maxInstanceLifetime.toSeconds() : undefined,
-      newInstancesProtectedFromScaleIn: Lazy.any({ produce: () => this.newInstancesProtectedFromScaleIn }),
+      newInstancesProtectedFromScaleIn: this._newInstancesProtectedFromScaleIn,
       terminationPolicies: terminationPolicies.length === 0 ? undefined : terminationPolicies,
       defaultInstanceWarmup: props.defaultInstanceWarmup?.toSeconds(),
       capacityRebalance: props.capacityRebalance,
@@ -2067,12 +2088,13 @@ export class AutoScalingGroup extends AutoScalingGroupBase implements
     }));
   }
 
-  private renderMetricsCollection(): CfnAutoScalingGroup.MetricsCollectionProperty[] | undefined {
-    if (this.groupMetrics.length === 0) {
+  private renderMetricsCollection(groupMetrics?: readonly GroupMetrics[]): CfnAutoScalingGroup.MetricsCollectionProperty[] | undefined {
+    const metrics = groupMetrics ?? this.groupMetrics.get();
+    if (metrics.length === 0) {
       return undefined;
     }
 
-    return this.groupMetrics.map(group => ({
+    return metrics.map(group => ({
       granularity: '1Minute',
       metrics: group._metrics?.size !== 0 ? [...group._metrics].map(m => m.name) : undefined,
     }));

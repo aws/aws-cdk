@@ -1,6 +1,9 @@
 import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import * as cr from '../../custom-resources';
 
 /**
@@ -34,10 +37,12 @@ export interface OpenSearchAccessPolicyProps {
 /**
  * Creates LogGroup resource policies.
  */
+@noBoxStackTraces
 export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
-  private accessPolicyStatements: iam.PolicyStatement[] = [];
+  private readonly accessPolicyStatements: IArrayBox<iam.PolicyStatement>;
 
   constructor(scope: Construct, id: string, props: OpenSearchAccessPolicyProps) {
+    const accessPolicyStatements = Box.fromArray<iam.PolicyStatement>([]);
     super(scope, id, {
       resourceType: 'Custom::OpenSearchAccessPolicy',
       installLatestAwsSdk: false,
@@ -46,13 +51,13 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
         service: 'OpenSearch',
         parameters: {
           DomainName: props.domainName,
-          AccessPolicies: cdk.Lazy.string({
-            produce: () => JSON.stringify(
+          AccessPolicies: cdk.Token.asString(
+            Box.combine({ stmts: accessPolicyStatements }, ({ stmts }) => JSON.stringify(
               new iam.PolicyDocument({
-                statements: this.accessPolicyStatements,
+                statements: [...stmts],
               }).toJSON(),
-            ),
-          }),
+            )),
+          ),
         },
         // this is needed to limit the response body, otherwise it exceeds the CFN 4k limit
         // If verbose output is actively disabled it will only output specific fields
@@ -62,6 +67,7 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
       policy: cr.AwsCustomResourcePolicy.fromStatements([new iam.PolicyStatement({ actions: ['es:UpdateDomainConfig'], resources: [props.domainArn] })]),
     });
 
+    this.accessPolicyStatements = accessPolicyStatements;
     this.addAccessPolicies(...props.accessPolicies);
   }
 
@@ -69,6 +75,8 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
    * Add policy statements to the domain access policy
    */
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
-    this.accessPolicyStatements.push(...accessPolicyStatements);
+    for (const stmt of accessPolicyStatements) {
+      this.accessPolicyStatements.push(stmt);
+    }
   }
 }

@@ -5,10 +5,12 @@ import { TopicBase } from './topic-base';
 import type { IRoleRef } from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
 import { Key } from '../../aws-kms';
-import { ArnFormat, Lazy, Names, Stack, Token } from '../../core';
+import { ArnFormat, Names, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { memoizedGetter, Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -244,6 +246,7 @@ export interface TopicAttributes {
  * A new SNS topic
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Topic extends TopicBase {
   /**
    * Uniquely identifies this class.
@@ -312,7 +315,7 @@ export class Topic extends TopicBase {
 
   private readonly _resource: CfnTopic;
 
-  private readonly loggingConfigs: LoggingConfig[] = [];
+  private readonly loggingConfigs: IArrayBox<LoggingConfig> = Box.fromArray<LoggingConfig>([]);
 
   constructor(scope: Construct, id: string, props: TopicProps = {}) {
     super(scope, id, {
@@ -381,7 +384,7 @@ export class Topic extends TopicBase {
       contentBasedDeduplication: props.contentBasedDeduplication,
       fifoTopic: props.fifo,
       signatureVersion: props.signatureVersion,
-      deliveryStatusLogging: Lazy.any({ produce: () => this.renderLoggingConfigs() }, { omitEmptyArray: true }),
+      deliveryStatusLogging: this.loggingConfigs.derive(cfgs => this.renderLoggingConfigs(cfgs)),
       tracingConfig: props.tracingConfig,
       fifoThroughputScope: props.fifoThroughputScope,
     });
@@ -396,7 +399,7 @@ export class Topic extends TopicBase {
     }
   }
 
-  private renderLoggingConfigs(): CfnTopic.LoggingConfigProperty[] {
+  private renderLoggingConfigs(loggingConfigs?: readonly LoggingConfig[]): CfnTopic.LoggingConfigProperty[] {
     const renderLoggingConfig = (spec: LoggingConfig): CfnTopic.LoggingConfigProperty => {
       if (spec.successFeedbackSampleRate !== undefined) {
         const rate = spec.successFeedbackSampleRate;
@@ -412,7 +415,7 @@ export class Topic extends TopicBase {
       };
     };
 
-    return this.loggingConfigs.map(renderLoggingConfig);
+    return (loggingConfigs ?? this.loggingConfigs.get()).map(renderLoggingConfig);
   }
 
   /**

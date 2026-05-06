@@ -6,8 +6,14 @@ import type { CfnMapping } from '../cfn-mapping';
 import { Aws } from '../cfn-pseudo';
 import type { CfnResource } from '../cfn-resource';
 import type {
-  CfnAutoScalingReplacingUpdate, CfnAutoScalingRollingUpdate, CfnAutoScalingScheduledAction, CfnCodeDeployLambdaAliasUpdate,
-  CfnCreationPolicy, CfnResourceAutoScalingCreationPolicy, CfnResourceSignal, CfnUpdatePolicy,
+  CfnAutoScalingReplacingUpdate,
+  CfnAutoScalingRollingUpdate,
+  CfnAutoScalingScheduledAction,
+  CfnCodeDeployLambdaAliasUpdate,
+  CfnCreationPolicy,
+  CfnResourceAutoScalingCreationPolicy,
+  CfnResourceSignal,
+  CfnUpdatePolicy,
 } from '../cfn-resource-policy';
 import { CfnDeletionPolicy } from '../cfn-resource-policy';
 import type { CfnTag } from '../cfn-tag';

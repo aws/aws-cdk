@@ -48,6 +48,43 @@ describe('Boxes', () => {
       }
     });
 
+    test('update() applies the function and replaces the value', () => {
+      const box = Box.fromValue(2);
+      box.update(n => n + 1);
+      expect(box.get()).toBe(3);
+    });
+
+    test('update() is a no-op when result equals current value', () => {
+      const previousDebugMode = process.env.CDK_DEBUG;
+      try {
+        process.env.CDK_DEBUG = '1';
+        const box = Box.fromValue(5);
+        const tracesAfterInit = box.getStackTraces();
+        box.update(n => n); // identity — same value
+        expect(box.get()).toBe(5);
+        expect(box.getStackTraces()).toEqual(tracesAfterInit);
+      } finally {
+        process.env.CDK_DEBUG = previousDebugMode;
+      }
+    });
+
+    test('update() respects custom equality function', () => {
+      const box = Box.fromValue({ id: 1, name: 'a' }, {
+        equals: (a, b) => a.id === b.id,
+      });
+      box.update(v => ({ ...v, name: 'b' })); // same id — no-op
+      expect(box.get()).toEqual({ id: 1, name: 'a' });
+
+      box.update(v => ({ ...v, id: 2 })); // different id — updates
+      expect(box.get()).toEqual({ id: 2, name: 'a' });
+    });
+
+    test('update() works on array boxes', () => {
+      const box = Box.fromArray([1, 2, 3]);
+      box.update(arr => arr.filter(x => x > 1));
+      expect(box.get()).toEqual([2, 3]);
+    });
+
     test('set() uses custom equality function', () => {
       const previousDebugMode = process.env.CDK_DEBUG;
       try {

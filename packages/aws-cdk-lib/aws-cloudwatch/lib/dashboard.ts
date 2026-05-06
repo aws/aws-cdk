@@ -4,8 +4,9 @@ import { Column, Row } from './layout';
 import type { IVariable } from './variable';
 import type { IWidget } from './widget';
 import type { Duration } from '../../core';
-import { Lazy, Resource, Stack, Token, Annotations, ValidationError } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import { Resource, Stack, Token, Annotations, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -123,9 +124,9 @@ export class Dashboard extends Resource {
    */
   public readonly dashboardArn: string;
 
-  private readonly rows: IWidget[] = [];
+  private readonly rows: IArrayBox<IWidget> = Box.fromArray([], { omitEmpty: false });
 
-  private readonly variables: IVariable[] = [];
+  private readonly variables: IArrayBox<IVariable> = Box.fromArray([], { omitEmpty: false });
   private readonly resource: CfnDashboard;
 
   constructor(scope: Construct, id: string, props: DashboardProps = {}) {
@@ -155,19 +156,20 @@ export class Dashboard extends Resource {
 
     const dashboard = new CfnDashboard(this, 'Resource', {
       dashboardName: this.physicalName,
-      dashboardBody: Lazy.string({
-        produce: () => {
-          const column = new Column(...this.rows);
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      dashboardBody: Token.asString(
+        Box.combine({ rows: this.rows, variables: this.variables }, ({ rows, variables }) => {
+          const column = new Column(...rows);
           column.position(0, 0);
           return Stack.of(this).toJsonString({
             start: props.defaultInterval !== undefined ? `-${props.defaultInterval?.toIsoString()}` : props.start,
             end: props.defaultInterval !== undefined ? undefined : props.end,
             periodOverride: props.periodOverride,
             widgets: column.toJson(),
-            variables: this.variables.length > 0 ? this.variables.map(variable => variable.toJson()) : undefined,
+            variables: variables.length > 0 ? variables.map(variable => variable.toJson()) : undefined,
           });
-        },
-      }),
+        }),
+      ),
     });
 
     this.resource = dashboard;

@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnKey } from '../../aws-kms';
 import * as cdk from '../../core';
+import { Tags } from '../../core';
 import * as cxapi from '../../cx-api';
 import * as s3 from '../lib';
 import { BucketGrants, CfnBucket } from '../lib';
@@ -3632,10 +3633,12 @@ describe('bucket', () => {
     const stack = new cdk.Stack();
 
     // WHEN
-    new s3.Bucket(stack, 'AccessLogs', {
+    const bucket = new s3.Bucket(stack, 'AccessLogs', {
       bucketName: 'mylogbucket',
       accessControl: s3.BucketAccessControl.PRIVATE,
     });
+
+    Tags.of(bucket).add('foo', 'bar');
 
     // Logging bucket has ACL enabled when feature flag is not set
     Template.fromStack(stack).hasResourceProperties('AWS::S3::Bucket', {
@@ -3650,16 +3653,19 @@ describe('bucket', () => {
     const app = new cdk.App();
     const stack = new cdk.Stack(app);
 
-    // WHEN
-    new s3.Bucket(stack, 'AccessLogs', {
-      bucketName: 'mylogbucket',
-      accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
-      objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
-    });
-
-    // THEN
+    // Error is thrown at construction time because `ownershipControls` is a
+    // separate eagerly-assigned Box (not derived from `accessControl`). It
+    // must be a separate Box because Computed.resolve() short-circuits when
+    // the source resolves to `undefined` — if it were derived from
+    // `accessControl`, the derive function would never run when
+    // `accessControl` is undefined, which would break `allowLogDelivery`
+    // (it needs to set ownershipControls even when accessControl is unset).
     expect(() => {
-      app.synth();
+      new s3.Bucket(stack, 'AccessLogs', {
+        bucketName: 'mylogbucket',
+        accessControl: s3.BucketAccessControl.LOG_DELIVERY_WRITE,
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+      });
     }).toThrow(/objectOwnership must be set to \"ObjectWriter\" when accessControl is \"LogDeliveryWrite\"/);
   });
 
@@ -3760,7 +3766,8 @@ describe('bucket', () => {
     new s3.Bucket(stack, 'MyBucket', {
       objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
     });
-    Template.fromStack(stack).templateMatches({
+    const template1 = Template.fromStack(stack);
+    template1.templateMatches({
       'Resources': {
         'MyBucketF68F3FF0': {
           'Type': 'AWS::S3::Bucket',
