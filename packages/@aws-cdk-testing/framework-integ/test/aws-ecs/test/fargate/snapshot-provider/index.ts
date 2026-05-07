@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { EC2Client, CreateSnapshotCommand, DeleteSnapshotCommand, DescribeSnapshotsCommand } from '@aws-sdk/client-ec2';
 import type { CloudFormationCustomResourceEvent } from 'aws-lambda';
 import * as https from 'https';
