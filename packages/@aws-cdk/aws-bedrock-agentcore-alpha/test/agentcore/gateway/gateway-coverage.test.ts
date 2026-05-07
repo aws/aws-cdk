@@ -353,36 +353,46 @@ describe('Gateway Coverage Tests', () => {
     const template = Template.fromStack(stack);
 
     // Statement 1: GetWorkloadAccessToken scoped to workload-identity-directory
+    // Statement 1: GetWorkloadAccessToken scoped to directory and identity wildcard
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:GetWorkloadAccessToken',
             Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default'])] }, // directory ARN (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default)
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default/workload-identity/my-gateway-*'])] }, // identity wildcard scoped to gateway name (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default/workload-identity/my-gateway-*)
+            ],
           }),
         ]),
       },
     });
 
-    // Statement 2: GetResourceApiKey scoped to token vault and provider ARN
+    // Statement 2: GetResourceApiKey scoped to token vault, provider, directory, and identity
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:GetResourceApiKey',
             Effect: 'Allow',
+            Resource: Match.arrayWith([
+              { 'Fn::Join': ['', Match.arrayWith([':token-vault/default'])] }, // token vault ARN (arn:*:bedrock-agentcore:*:*:token-vault/default)
+              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Key.*'), 'CredentialProviderArn']) }, // the API key provider
+            ]),
           }),
         ]),
       },
     });
 
-    // Statement 3: Secrets Manager scoped to bedrock-agentcore-identity prefix
+    // Statement 3: Secrets Manager scoped to service-managed secret prefix
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'secretsmanager:GetSecretValue',
             Effect: 'Allow',
+            Resource: { 'Fn::Join': ['', Match.arrayWith([':secret:bedrock-agentcore-identity!*'])] }, // wildcard for CDK-created provider secrets (arn:*:secretsmanager:*:*:secret:bedrock-agentcore-identity!*)
           }),
         ]),
       },
@@ -412,49 +422,61 @@ describe('Gateway Coverage Tests', () => {
 
     const template = Template.fromStack(stack);
 
-    // Statement 1: GetWorkloadAccessToken + ForJWT + ForUserId
+    // Statement 1: GetWorkloadAccessToken + ForJWT + ForUserId scoped to directory
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: Match.arrayWith(['bedrock-agentcore:GetWorkloadAccessToken']),
             Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default'])] }, // directory ARN (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default)
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default/workload-identity/my-gateway-*'])] }, // identity wildcard scoped to gateway name (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default/workload-identity/my-gateway-*)
+            ],
           }),
         ]),
       },
     });
 
-    // Statement 2: CompleteResourceTokenAuth
+    // Statement 2: CompleteResourceTokenAuth scoped to token vault and provider
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:CompleteResourceTokenAuth',
             Effect: 'Allow',
+            Resource: Match.arrayWith([
+              { 'Fn::Join': ['', Match.arrayWith([':token-vault/default'])] }, // token vault ARN (arn:*:bedrock-agentcore:*:*:token-vault/default)
+              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gh.*'), 'CredentialProviderArn']) }, // the OAuth provider
+            ]),
           }),
         ]),
       },
     });
 
-    // Statement 3: GetResourceOauth2Token
+    // Statement 3: GetResourceOauth2Token scoped to provider
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:GetResourceOauth2Token',
             Effect: 'Allow',
+            Resource: Match.arrayWith([
+              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gh.*'), 'CredentialProviderArn']) }, // the OAuth provider
+            ]),
           }),
         ]),
       },
     });
 
-    // Statement 4: Secrets Manager
+    // Statement 4: Secrets Manager scoped to service-managed secret prefix
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'secretsmanager:GetSecretValue',
             Effect: 'Allow',
+            Resource: { 'Fn::Join': ['', Match.arrayWith([':secret:bedrock-agentcore-identity!*'])] }, // wildcard for CDK-created provider secrets (arn:*:secretsmanager:*:*:secret:bedrock-agentcore-identity!*)
           }),
         ]),
       },
