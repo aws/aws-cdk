@@ -4,9 +4,9 @@ import { AlarmBase } from './alarm-base';
 import { CfnAlarm } from './cloudwatch.generated';
 import { ArnFormat, Lazy, Stack, Token, ValidationError } from '../../core';
 import type { Duration } from '../../core';
-import { lit } from '../../core/lib/private/literal-string';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
