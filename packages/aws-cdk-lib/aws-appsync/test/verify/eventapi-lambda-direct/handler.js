@@ -1,1 +1,0 @@
-"use strict";exports.handler=async context=>{if(context.info.operation==="PUBLISH")return{events:context.events.map(ev=>({id:ev.id,payload:{...ev.payload,with:`hello world from ${ev.id}`}}))};if(context.info.operation!=="SUBSCRIBE")throw new Error("Unknown operation")};

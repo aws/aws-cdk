@@ -1,6 +1,0 @@
-{
-  "extends": "./testtsconfig.json",
-  "compilerOptions": {
-    "target": "ES2022"
-  }
-}

@@ -1,7 +1,0 @@
-{
-  "Resources": {
-    "CustomResource": {
-      "Type": "AWS::CustomResource::Type"
-    }
-  }
-}
