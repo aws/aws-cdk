@@ -1,19 +1,32 @@
 {
-  "name": "@aws-cdk/default-validation-engine",
+  "name": "@aws-cdk/validation-engine",
   "version": "0.0.0",
   "private": false,
-  "description": "Default validation engine for AWS CDK - validates CloudFormation templates against hundreds of rules",
+  "description": "CloudFormation template validation engine for AWS CDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "jsii": {
+    "tsconfig": "tsconfig.json",
+    "outdir": "dist",
+    "targets": {},
+    "metadata": {
+      "jsii": {
+        "rosetta": {
+          "strict": false
+        }
+      }
+    },
+    "validateTsconfig": "minimal"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/aws/aws-cdk.git",
-    "directory": "packages/@aws-cdk/default-validation-engine"
+    "directory": "packages/@aws-cdk/validation-engine"
   },
   "scripts": {
-    "build": "tsc --build",
-    "watch": "tsc --build --watch",
-    "test": "jest --passWithNoTests --updateSnapshot",
+    "build": "cdk-build",
+    "watch": "cdk-watch",
+    "test": "cdk-test",
     "package": "cdk-package",
     "build+test": "yarn build && yarn test"
   },
@@ -30,15 +43,10 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@aws-cdk/cdk-build-tools": "0.0.0",
+    "@aws-cdk/pkglint": "0.0.0",
     "@types/jest": "^29.5.14",
-    "aws-cdk-lib": "0.0.0",
-    "constructs": "^10.5.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "typescript": "~5.8"
-  },
-  "peerDependencies": {
-    "aws-cdk-lib": "^0.0.0"
+    "jest": "^29.7.0"
   },
   "engines": {
     "node": ">= 20.0.0"
