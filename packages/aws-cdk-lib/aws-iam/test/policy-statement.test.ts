@@ -1,6 +1,5 @@
 import * as cdk from '../../core';
 import { Stack } from '../../core';
-import * as cxapi from '../../cx-api';
 import { AnyPrincipal, Group, PolicyDocument, PolicyStatement, Effect } from '../lib';
 
 describe('IAM policy statement', () => {
@@ -264,91 +263,60 @@ describe('IAM policy statement', () => {
   });
 
   describe('SID validation', () => {
-    test('does not validate when feature flag is disabled', () => {
-      const app = new cdk.App();
-      const stack = new Stack(app, 'Stack');
-      const doc = new PolicyDocument();
-      doc.addStatements(new PolicyStatement({
-        sid: 'Invalid-SID-With-Dashes',
-        actions: ['s3:GetObject'],
-        resources: ['*'],
-      }));
-
-      expect(() => stack.resolve(doc)).not.toThrow();
-    });
-
-    test('validates alphanumeric SID when feature flag is enabled', () => {
-      const app = new cdk.App({
-        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
-      });
-      const stack = new Stack(app, 'Stack');
-      const doc = new PolicyDocument();
-      doc.addStatements(new PolicyStatement({
+    test('validates alphanumeric SID for identity policies', () => {
+      const statement = new PolicyStatement({
         sid: 'ValidSID123',
         actions: ['s3:GetObject'],
         resources: ['*'],
-      }));
+      });
 
-      expect(() => stack.resolve(doc)).not.toThrow();
+      expect(statement.validateForIdentityPolicy()).toEqual([]);
     });
 
-    test('throws error for invalid SID when feature flag is enabled', () => {
-      const app = new cdk.App({
-        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
-      });
-      const stack = new Stack(app, 'Stack');
-      const doc = new PolicyDocument();
-      doc.addStatements(new PolicyStatement({
+    test('fails for non-alphanumeric SID in identity policies', () => {
+      const statement = new PolicyStatement({
         sid: 'Invalid-SID',
         actions: ['s3:GetObject'],
         resources: ['*'],
-      }));
+      });
 
-      expect(() => stack.resolve(doc)).toThrow(/Statement ID \(sid\) must be alphanumeric/);
+      expect(statement.validateForIdentityPolicy()).toEqual([
+        "Statement ID (sid) 'Invalid-SID' must be alphanumeric (A-Z, a-z, 0-9) when used in an identity-based policy. See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_sid.html",
+      ]);
     });
 
-    test('allows empty SID', () => {
-      const app = new cdk.App({
-        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
-      });
-      const stack = new Stack(app, 'Stack');
-      const doc = new PolicyDocument();
-      doc.addStatements(new PolicyStatement({
-        sid: '',
+    test('does not validate SID characters for resource policies', () => {
+      const statement = new PolicyStatement({
+        sid: 'Allowed SID for resource policy.',
         actions: ['s3:GetObject'],
         resources: ['*'],
-      }));
+        principals: [new AnyPrincipal()],
+      });
 
-      expect(() => stack.resolve(doc)).not.toThrow();
+      expect(statement.validateForResourcePolicy()).toEqual([]);
     });
 
-    test('allows undefined SID', () => {
-      const app = new cdk.App({
-        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
-      });
-      const stack = new Stack(app, 'Stack');
-      const doc = new PolicyDocument();
-      doc.addStatements(new PolicyStatement({
+    test.each([
+      ['empty', ''],
+      ['undefined', undefined],
+    ])('allows %s SID in identity policies', (_description, sid) => {
+      const statement = new PolicyStatement({
+        sid,
         actions: ['s3:GetObject'],
         resources: ['*'],
-      }));
+      });
 
-      expect(() => stack.resolve(doc)).not.toThrow();
+      expect(statement.validateForIdentityPolicy()).toEqual([]);
     });
 
-    test('allows tokens in SID', () => {
-      const app = new cdk.App({
-        context: { [cxapi.IAM_POLICY_STATEMENT_VALIDATE_SID]: true },
-      });
-      const stack = new Stack(app, 'Stack');
-      const doc = new PolicyDocument();
-      doc.addStatements(new PolicyStatement({
+    test('allows tokens in identity policy SID', () => {
+      const statement = new PolicyStatement({
         sid: cdk.Fn.ref('SomeParameter'),
         actions: ['s3:GetObject'],
         resources: ['*'],
-      }));
+      });
 
-      expect(() => stack.resolve(doc)).not.toThrow();
+      expect(statement.validateForIdentityPolicy()).toEqual([]);
     });
   });
 });
