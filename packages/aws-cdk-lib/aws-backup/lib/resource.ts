@@ -132,7 +132,11 @@ export class BackupResource {
   }
 
   /**
-   * A tag condition
+   * A tag condition.
+   *
+   * @deprecated Use `tagConditions` on `BackupSelectionOptions` instead.
+   * Tag conditions apply globally to all resources in a selection — this method
+   * can mislead callers into thinking the condition is scoped to a single ARN.
    */
   public static fromTag(key: string, value: string, operation?: TagOperation) {
     return new BackupResource(undefined, {
