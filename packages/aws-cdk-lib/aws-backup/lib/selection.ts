@@ -4,8 +4,11 @@ import { BackupableResourcesCollector } from './backupable-resources-collector';
 import type { BackupResource, TagCondition } from './resource';
 import { TagOperation } from './resource';
 import * as iam from '../../aws-iam';
-import { Lazy, Resource, Aspects } from '../../core';
+import { Resource, Aspects, Token } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IBackupPlanRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
@@ -82,6 +85,7 @@ export interface BackupSelectionProps extends BackupSelectionOptions {
  * A backup selection
  */
 @propertyInjectable
+@noBoxStackTraces
 export class BackupSelection extends Resource implements iam.IGrantable {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-backup.BackupSelection';
@@ -104,11 +108,11 @@ export class BackupSelection extends Resource implements iam.IGrantable {
    */
   public readonly grantPrincipal: iam.IPrincipal;
 
-  private stringEquals: CfnBackupSelection.ConditionParameterProperty[] = [];
-  private stringLike: CfnBackupSelection.ConditionParameterProperty[] = [];
-  private stringNotEquals: CfnBackupSelection.ConditionParameterProperty[] = [];
-  private stringNotLike: CfnBackupSelection.ConditionParameterProperty[] = [];
-  private resources: string[] = [];
+  private readonly stringEquals: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
+  private readonly stringLike: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
+  private readonly stringNotEquals: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
+  private readonly stringNotLike: IArrayBox<CfnBackupSelection.ConditionParameterProperty> = Box.fromArray([]);
+  private readonly resources: IArrayBox<string> = Box.fromArray([], { omitEmpty: false });
   private readonly backupableResourcesCollector = new BackupableResourcesCollector();
 
   constructor(scope: Construct, id: string, props: BackupSelectionProps) {
@@ -134,27 +138,29 @@ export class BackupSelection extends Resource implements iam.IGrantable {
         selectionName: props.backupSelectionName || this.node.id,
         // `conditions` is typed as `any` in the generated layer so CDK uses identity serialization
         // (no camelCase→PascalCase key transformation). PascalCase keys are used here explicitly.
-        conditions: Lazy.any({
-          produce: () => {
-            const conds: any = {};
-            if (this.stringEquals.length > 0) {
-              conds.StringEquals = this.stringEquals.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
-            }
-            if (this.stringLike.length > 0) {
-              conds.StringLike = this.stringLike.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
-            }
-            if (this.stringNotEquals.length > 0) {
-              conds.StringNotEquals = this.stringNotEquals.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
-            }
-            if (this.stringNotLike.length > 0) {
-              conds.StringNotLike = this.stringNotLike.map(p => ({ ConditionKey: p.conditionKey, ConditionValue: p.conditionValue }));
-            }
+        conditions: Box.combine(
+          {
+            se: this.stringEquals,
+            sl: this.stringLike,
+            sne: this.stringNotEquals,
+            snl: this.stringNotLike,
+          },
+          ({ se, sl, sne, snl }) => {
+            const conds: Record<string, Array<{ ConditionKey: string; ConditionValue: string }>> = {};
+            if (se.length > 0) conds.StringEquals = se.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
+            if (sl.length > 0) conds.StringLike = sl.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
+            if (sne.length > 0) conds.StringNotEquals = sne.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
+            if (snl.length > 0) conds.StringNotLike = snl.map(p => ({ ConditionKey: p.conditionKey!, ConditionValue: p.conditionValue! }));
             return Object.keys(conds).length > 0 ? conds : undefined;
           },
-        }),
-        resources: Lazy.list({
-          produce: () => [...this.resources, ...this.backupableResourcesCollector.resources],
-        }, { omitEmpty: true }),
+        ),
+        resources: Token.asList(
+          this.resources.derive(r => {
+            const all = [...r, ...this.backupableResourcesCollector.resources];
+            return all.length > 0 ? all : undefined;
+          }),
+          { displayHint: 'resources' },
+        ),
       },
     });
 
@@ -205,7 +211,7 @@ export class BackupSelection extends Resource implements iam.IGrantable {
       });
       // Cannot push `this.backupableResourcesCollector.resources` to
       // `this.resources` here because it has not been evaluated yet.
-      // Will be concatenated to `this.resources` in a `Lazy.list`
+      // Will be concatenated to `this.resources` in the derive() call
       // in the constructor instead.
     }
   }

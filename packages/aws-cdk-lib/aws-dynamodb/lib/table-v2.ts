@@ -36,7 +36,6 @@ import {
   Annotations,
   ArnFormat,
   FeatureFlags,
-  Lazy,
   PhysicalName,
   Stack,
   TagManager,
@@ -44,7 +43,7 @@ import {
   Token,
 } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox, IMapBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
@@ -751,13 +750,13 @@ export class TableV2 extends TableBaseV2 {
   private readonly maxReadRequestUnits?: number;
   private readonly maxWriteRequestUnits?: number;
 
-  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap(new Map());
+  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap();
   private readonly replicaKeys: { [region: string]: IKey } = {};
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
 
-  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap(new Map());
-  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap(new Map());
+  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap();
+  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
@@ -1396,7 +1395,13 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   /**
    * @attribute
    */
-  public resourcePolicy?: PolicyDocument;
+  public get resourcePolicy(): PolicyDocument | undefined {
+    return this._resourcePolicy.getMutable();
+  }
+  public set resourcePolicy(value: PolicyDocument | undefined) {
+    this._resourcePolicy.set(value);
+  }
+  private readonly _resourcePolicy: IBox<PolicyDocument | undefined>;
 
   /**
    * Grants for this table
@@ -1435,7 +1440,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this.region = this.stack.region;
     this._hasIndex = props.grantIndexPermissions ?? true;
 
-    this.resourcePolicy = props.resourcePolicy;
+    this._resourcePolicy = Box.fromValue<PolicyDocument | undefined>(props.resourcePolicy);
 
     this.encryptionKey = props.encryption?.tableKey;
 
@@ -1449,7 +1454,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
           { streamArn: props.kinesisStream.streamArn } : undefined,
         contributorInsightsSpecification: props.contributorInsightsSpecification,
         pointInTimeRecoverySpecification: props.pointInTimeRecoverySpecification,
-        resourcePolicy: Lazy.any({ produce: () => this.resourcePolicy ? { policyDocument: this.resourcePolicy } : undefined }),
+        resourcePolicy: this._resourcePolicy.derive(rp => rp ? { policyDocument: rp } : undefined),
         sseSpecification: props.encryption?._renderReplicaSseSpecification(this, this.stack.region),
         tags: props.tags,
         globalTableSettingsReplicationMode: props.globalTableSettingsReplicationMode,
