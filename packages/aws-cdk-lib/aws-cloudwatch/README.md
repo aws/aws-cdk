@@ -505,6 +505,28 @@ When creating an anomaly detection alarm, you must use one of the following comp
 
 For more information on anomaly detection in CloudWatch, see the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Anomaly_Detection.html).
 
+## PromQL Alarms
+
+PromQL alarms allow you to create CloudWatch alarms using PromQL query expressions. This is useful when working with Prometheus-compatible metrics in CloudWatch.
+
+```ts
+new cloudwatch.PromQLAlarm(this, 'PromQLAlarm', {
+  alarmName: 'HighCpuUsage',
+  alarmDescription: 'Alarm when CPU usage exceeds 90%',
+  query: 'cpu_usage > 90',
+  evaluationInterval: 60,
+  pendingPeriod: 300,
+  recoveryPeriod: 300,
+});
+```
+
+The key properties for PromQL alarms are:
+
+- `query`: The PromQL query expression to evaluate.
+- `evaluationInterval`: How often (in seconds) the alarm is evaluated.
+- `pendingPeriod`: The number of seconds the alarm condition must persist before triggering.
+- `recoveryPeriod`: The number of seconds the recovery condition must persist before the alarm recovers.
+
 ## Dashboards
 
 Dashboards are set of Widgets stored server-side which can be accessed quickly
