@@ -570,10 +570,6 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
-          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
-            "recommendedValue": true,
-            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
-          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",

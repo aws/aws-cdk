@@ -19,8 +19,6 @@ import {
 import { PolicyEngineMode } from '../../../lib/gateway/gateway';
 import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
 import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
-import { GatewayCredentialProvider } from '../../../lib/gateway/outbound-auth/credential-provider';
-import { ApiSchema } from '../../../lib/gateway/targets/schema/api-schema';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
 import { ApiGatewayHttpMethod } from '../../../lib/gateway/targets/target-configuration';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
