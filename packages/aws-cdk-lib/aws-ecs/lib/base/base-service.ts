@@ -763,7 +763,14 @@ export abstract class BaseService extends Resource
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
+  private readonly _networkConfigurationBox: IBox<CfnService.NetworkConfigurationProperty | undefined> = Box.fromValue(undefined);
+
+  protected get networkConfiguration(): CfnService.NetworkConfigurationProperty | undefined {
+    return this._networkConfigurationBox.getMutable();
+  }
+  protected set networkConfiguration(value: CfnService.NetworkConfigurationProperty | undefined) {
+    this._networkConfigurationBox.set(value);
+  }
 
   /**
    * The deployment alarms property - this will be rendered directly and lazily as the CfnService.alarms
@@ -782,13 +789,12 @@ export abstract class BaseService extends Resource
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
-  private _serviceRegistries: IArrayBox<CfnService.ServiceRegistryProperty> = Box.fromArray([]);
+  private _serviceRegistries: IArrayBox<CfnService.ServiceRegistryProperty> = Box.fromArray();
 
   /**
    * The service connect configuration for this service.
-   * @internal
    */
-  protected _serviceConnectConfig?: CfnService.ServiceConnectConfigurationProperty;
+  private readonly _serviceConnectConfig: IBox<CfnService.ServiceConnectConfigurationProperty | undefined> = Box.fromValue(undefined);
 
   /**
    * Whether this service is using the ECS deployment controller.
@@ -878,8 +884,8 @@ export abstract class BaseService extends Resource
     }
 
     this.taskDefinition = taskDefinition;
-    this._volumes = Box.fromArray([]);
-    this._lifecycleHooks = Box.fromArray([]);
+    this._volumes = Box.fromArray();
+    this._lifecycleHooks = Box.fromArray();
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -932,9 +938,9 @@ export abstract class BaseService extends Resource
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
+      networkConfiguration: this._networkConfigurationBox,
       serviceRegistries: this._serviceRegistries,
-      serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
+      serviceConnectConfiguration: this._serviceConnectConfig,
       volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
     });
@@ -947,6 +953,11 @@ export abstract class BaseService extends Resource
 
     if (props.circuitBreaker && !this.isEcsDeploymentController) {
       Annotations.of(this)._addTrackableError(lit`CircuitBreakerRequiresEcsController`, 'Deployment circuit breaker requires the ECS deployment controller.');
+    }
+
+    if (!props.circuitBreaker && this.isEcsDeploymentController) {
+      // If we *could* use a circuit breaker, then let's recommend users to do so. It makes detecting errors sooo much faster.
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:shouldUseCircuitBreaker', 'Enable the \'circuitBreaker\' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail).');
     }
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
@@ -1193,7 +1204,7 @@ export abstract class BaseService extends Resource
    * Enable Service Connect on this service.
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
-    if (this._serviceConnectConfig) {
+    if (this._serviceConnectConfig.get() !== undefined) {
       throw new ValidationError(lit`ServiceConnectConfigurationCannot`, 'Service connect configuration cannot be specified more than once.', this);
     }
 
@@ -1256,7 +1267,7 @@ export abstract class BaseService extends Resource
       logConfig = cfg.logDriver.bind(this, this.taskDefinition.defaultContainer);
     }
 
-    this._serviceConnectConfig = {
+    this._serviceConnectConfig.set({
       enabled: true,
       logConfiguration: logConfig,
       namespace: namespace,
@@ -1265,7 +1276,7 @@ export abstract class BaseService extends Resource
         format: cfg.accessLogConfiguration.format,
         includeQueryParameters: cfg.accessLogConfiguration.includeQueryParameters ? 'ENABLED' : 'DISABLED',
       } : undefined,
-    };
+    });
   }
 
   /**
@@ -1779,7 +1790,7 @@ export abstract class BaseService extends Resource
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
-        securityGroups: Lazy.list({ produce: () => [securityGroup!.securityGroupId] }),
+        securityGroups: [securityGroup!.securityGroupId],
       },
     };
   }

@@ -750,13 +750,13 @@ export class TableV2 extends TableBaseV2 {
   private readonly maxReadRequestUnits?: number;
   private readonly maxWriteRequestUnits?: number;
 
-  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap(new Map());
+  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap();
   private readonly replicaKeys: { [region: string]: IKey } = {};
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
 
-  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap(new Map());
-  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap(new Map());
+  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap();
+  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;

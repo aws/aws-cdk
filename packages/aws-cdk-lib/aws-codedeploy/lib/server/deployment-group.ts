@@ -297,7 +297,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
   private readonly _autoScalingGroups: IArrayBox<autoscaling.IAutoScalingGroup>;
   private readonly installAgent: boolean;
   private readonly codeDeployBucket: s3.IBucket;
-  private readonly alarms: IAlarmRef[];
+  private readonly alarms: IArrayBox<IAlarmRef>;
   private readonly loadBalancers?: LoadBalancer[];
 
   constructor(scope: Construct, id: string, props: ServerDeploymentGroupProps = {}) {
@@ -329,7 +329,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
       this.addCodeDeployAgentInstallUserData(asg);
     }
 
-    this.alarms = props.alarms || [];
+    this.alarms = Box.fromArray(props.alarms || [], { omitEmpty: false });
 
     const removeAlarmsFromDeploymentGroup = cdk.FeatureFlags.of(this).isEnabled(CODEDEPLOY_REMOVE_ALARMS_FROM_DEPLOYMENT_GROUP);
 
@@ -348,15 +348,13 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
         },
       ec2TagSet: this.ec2TagSet(props.ec2InstanceTags),
       onPremisesTagSet: this.onPremiseTagSet(props.onPremiseInstanceTags),
-      alarmConfiguration: cdk.Lazy.any({
-        produce: () => renderAlarmConfiguration({
-          alarms: this.alarms,
-          ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
-          removeAlarms: removeAlarmsFromDeploymentGroup,
-          ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
-        }),
-      }),
-      autoRollbackConfiguration: cdk.Lazy.any({ produce: () => renderAutoRollbackConfiguration(this, this.alarms, props.autoRollback) }),
+      alarmConfiguration: this.alarms.derive(alarms => renderAlarmConfiguration({
+        alarms: [...alarms],
+        ignorePollAlarmFailure: props.ignorePollAlarmsFailure,
+        removeAlarms: removeAlarmsFromDeploymentGroup,
+        ignoreAlarmConfiguration: props.ignoreAlarmConfiguration,
+      })),
+      autoRollbackConfiguration: this.alarms.derive(alarms => renderAutoRollbackConfiguration(this, [...alarms], props.autoRollback)),
       terminationHookEnabled: props.terminationHook,
     });
 
