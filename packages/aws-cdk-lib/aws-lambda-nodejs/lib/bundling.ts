@@ -322,6 +322,7 @@ export class Bundling implements cdk.BundlingOptions {
     inputDir: string,
     outputDir: string,
     pathJoin: (...parts: string[]) => string,
+    entryPath: string,
   ): string[] {
     if (this.bundler === BundlerType.ROLLDOWN) {
       const configPath = this.relativeConfigFilePath;
@@ -330,10 +331,18 @@ export class Bundling implements cdk.BundlingOptions {
       }
       return [
         '-c', pathJoin(inputDir, configPath),
+        '--cwd', inputDir,
+        '--input', entryPath,
         '--dir', outputDir,
+        '--entry-file-names', 'index.js',
       ];
     }
-    return this.buildEsbuildArgs(scope, inputDir, outputDir, pathJoin);
+    return [
+      '--bundle',
+      entryPath,
+      ...this.buildEsbuildArgs(scope, inputDir, outputDir, pathJoin),
+      ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
+    ];
   }
 
   private buildEsbuildArgs(
@@ -546,12 +555,8 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     // 3. Bundler (esbuild or rolldown)
-    const bundlerArgs: string[] = [
-      ...this.buildBundlerArgs(scope, options.inputDir, options.outputDir, options.pathJoin),
-      ...this.bundler === BundlerType.ESBUILD && this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
-    ];
-    const bundleFlags = this.bundler === BundlerType.ESBUILD ? ['--bundle'] : [];
-    steps.push({ type: 'spawn', command: [...options.bundlerRunner, ...bundleFlags, entryPath, ...bundlerArgs] });
+    const bundlerArgs = this.buildBundlerArgs(scope, options.inputDir, options.outputDir, options.pathJoin, entryPath);
+    steps.push({ type: 'spawn', command: [...options.bundlerRunner, ...bundlerArgs] });
 
     // 4-5. Node modules installation
     if (this.props.nodeModules) {

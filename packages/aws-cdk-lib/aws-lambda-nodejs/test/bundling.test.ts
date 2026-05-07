@@ -1666,7 +1666,7 @@ describe('rolldown bundling', () => {
       bundling: expect.objectContaining({
         command: [
           'bash', '-c',
-          "'rolldown' '/asset-input/lib/handler.ts' '-c' '/asset-input/rolldown.config.mts' '--dir' '/asset-output'",
+          "'rolldown' '-c' '/asset-input/rolldown.config.mts' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'",
         ],
       }),
     });
@@ -1696,7 +1696,7 @@ describe('rolldown bundling', () => {
       bundling: expect.objectContaining({
         command: [
           'bash', '-c',
-          "'rolldown' '/asset-input/lib/handler.ts' '-c' '/asset-input/config/rolldown.config.mts' '--dir' '/asset-output'",
+          "'rolldown' '-c' '/asset-input/config/rolldown.config.mts' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'",
         ],
       }),
     });
@@ -1742,7 +1742,7 @@ describe('rolldown bundling', () => {
       bundling: expect.objectContaining({
         command: [
           'bash', '-c',
-          `'rolldown' '/asset-input/lib/handler.ts' '-c' '/asset-input/rolldown.config${ext}' '--dir' '/asset-output'`,
+          `'rolldown' '-c' '/asset-input/rolldown.config${ext}' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'`,
         ],
       }),
     });
@@ -1765,7 +1765,7 @@ describe('rolldown bundling', () => {
       bundling: expect.objectContaining({
         command: [
           'bash', '-c',
-          "'rolldown' '/asset-input/lib/handler.ts' '-c' '/asset-input/rolldown.config.mts' '--dir' '/asset-output'",
+          "'rolldown' '-c' '/asset-input/rolldown.config.mts' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'",
         ],
       }),
     });
@@ -1795,7 +1795,7 @@ describe('rolldown bundling', () => {
       bundling: expect.objectContaining({
         command: [
           'bash', '-c',
-          `'rolldown' '/asset-input/lib/handler.ts' '-c' '/asset-input/${relative}' '--dir' '/asset-output'`,
+          `'rolldown' '-c' '/asset-input/${relative}' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'`,
         ],
       }),
     });
