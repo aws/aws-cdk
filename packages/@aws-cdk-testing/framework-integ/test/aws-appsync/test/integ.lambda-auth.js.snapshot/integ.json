@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "52.0.0",
   "testCases": {
     "GraphQlApiLambdaAuth/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "GraphQlApiLambdaAuth/DefaultTest/DeployAssert",
       "assertionStackName": "GraphQlApiLambdaAuthDefaultTestDeployAssert3A9D82EA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

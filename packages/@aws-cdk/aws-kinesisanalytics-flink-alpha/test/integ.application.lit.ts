@@ -8,10 +8,6 @@ const app = new core.App();
 const stack = new core.Stack(app, 'FlinkAppTest');
 
 const flinkRuntimes = [
-  flink.Runtime.FLINK_1_6,
-  flink.Runtime.FLINK_1_8,
-  flink.Runtime.FLINK_1_11,
-  flink.Runtime.FLINK_1_13,
   flink.Runtime.FLINK_1_15,
   flink.Runtime.FLINK_1_18,
   flink.Runtime.FLINK_1_19,

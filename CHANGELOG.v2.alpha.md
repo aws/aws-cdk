@@ -2,6 +2,81 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.253.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.252.0-alpha.0...v2.253.0-alpha.0) (2026-05-06)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add OnlineEvaluationConfig and Evaluator L2 constructs ([#37615](https://github.com/aws/aws-cdk/issues/37615)) ([c13de04](https://github.com/aws/aws-cdk/commit/c13de04223e32272b0c6c6dd4e2fca8e300fafa8)), closes [#37614](https://github.com/aws/aws-cdk/issues/37614)
+* **glue-alpha:** add extraPythonFiles support to PythonShellJob ([#37130](https://github.com/aws/aws-cdk/issues/37130)) ([c9c6f9c](https://github.com/aws/aws-cdk/commit/c9c6f9c1b7c12722d18a45bf8a02c09672f8720d)), closes [#34448](https://github.com/aws/aws-cdk/issues/34448)
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** self-managed memory strategy validation throws on unresolved tokens ([#37691](https://github.com/aws/aws-cdk/issues/37691)) ([7956537](https://github.com/aws/aws-cdk/commit/79565376cdb642d821625fe10ae5916e7d2e64fe)), closes [#37197](https://github.com/aws/aws-cdk/issues/37197)
+
+## [2.252.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.251.0-alpha.0...v2.252.0-alpha.0) (2026-04-29)
+
+## [2.251.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.250.0-alpha.0...v2.251.0-alpha.0) (2026-04-24)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add L2 constructs for policy and policy engine  ([#37238](https://github.com/aws/aws-cdk/issues/37238)) ([1e89e7e](https://github.com/aws/aws-cdk/commit/1e89e7e921a9946cb9c23f967c6b7a33a6048de4))
+* **bedrock-agentcore-alpha:** add observability configuration for Runtime ([#36689](https://github.com/aws/aws-cdk/issues/36689)) ([34b43aa](https://github.com/aws/aws-cdk/commit/34b43aabe2c3a946ba286812b402ce946222d820)), closes [#36596](https://github.com/aws/aws-cdk/issues/36596)
+* **bedrock-agentcore-alpha:** support No Authorization for AgentCore Gateway ([#36610](https://github.com/aws/aws-cdk/issues/36610)) ([f20bd8e](https://github.com/aws/aws-cdk/commit/f20bd8e43700877f7166cdac3cd994876963bc67))
+* **dsql-alpha:** initial L2 construct ([#34599](https://github.com/aws/aws-cdk/issues/34599)) ([be1a458](https://github.com/aws/aws-cdk/commit/be1a45861a5138b6e397cf076e39dfe0a18d4e99)), closes [#34593](https://github.com/aws/aws-cdk/issues/34593)
+
+## [2.250.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.249.0-alpha.0...v2.250.0-alpha.0) (2026-04-14)
+
+## [2.249.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.248.0-alpha.0...v2.249.0-alpha.0) (2026-04-10)
+
+## [2.248.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.247.0-alpha.0...v2.248.0-alpha.0) (2026-04-02)
+
+## [2.247.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.246.0-alpha.0...v2.247.0-alpha.0) (2026-04-02)
+
+
+### Features
+
+* **mediapackagev2-alpha:** new L2 construct ([#37279](https://github.com/aws/aws-cdk/issues/37279)) ([7debfb9](https://github.com/aws/aws-cdk/commit/7debfb9c5e807fac5df6e9e0ea3097d72325ffbc))
+
+## [2.246.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.245.0-alpha.0...v2.246.0-alpha.0) (2026-03-31)
+
+## [2.245.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.244.0-alpha.0...v2.245.0-alpha.0) (2026-03-27)
+
+
+### Features
+
+* **s3tables-alpha:** add support for partition spec, sort order, and table properties ([#36811](https://github.com/aws/aws-cdk/issues/36811)) ([2696cd1](https://github.com/aws/aws-cdk/commit/2696cd16e8e2edc8d40f1443b9c87eb6171e5d1f))
+* **s3tables-alpha:** add metrics configuration support for TableBucket ([#37275](https://github.com/aws/aws-cdk/issues/37275)) ([e8786f5](https://github.com/aws/aws-cdk/commit/e8786f5d782d906971f933a2d6d432309d5384d7))
+* **s3tables-alpha:** implement ITaggableV2 on TableBucket and Table L2 constructs ([#37277](https://github.com/aws/aws-cdk/issues/37277)) ([69c8944](https://github.com/aws/aws-cdk/commit/69c8944ea3f4abf0f4218af2fc42c8e862e8cad3)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
+## [2.244.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.243.0-alpha.0...v2.244.0-alpha.0) (2026-03-19)
+
+
+### Bug Fixes
+
+* **kinesisanalytics-flink-alpha:** mark deprecated flink runtimes as deprecated ([#37155](https://github.com/aws/aws-cdk/issues/37155)) ([0a89447](https://github.com/aws/aws-cdk/commit/0a894472650bb1a2c41050ae2b00581fb937c924))
+
+## [2.243.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.242.0-alpha.0...v2.243.0-alpha.0) (2026-03-11)
+
+## [2.242.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.241.0-alpha.0...v2.242.0-alpha.0) (2026-03-10)
+
+
+### Features
+
+* **mixins-preview:** allow passing resource objects into properties in CFN Property mixins ([#37148](https://github.com/aws/aws-cdk/issues/37148)) ([f238629](https://github.com/aws/aws-cdk/commit/f2386291a50961660135b6d13b576a3744fa5ecf))
+* **mixins-preview:** generate EventBridge pattern for all events ([#37081](https://github.com/aws/aws-cdk/issues/37081)) ([f30e836](https://github.com/aws/aws-cdk/commit/f30e8360112c724ce386f26d7d2bf10d6a58e479))
+* **mixins-preview:** support custom merge strategies via IMergeStrategy ([#37170](https://github.com/aws/aws-cdk/issues/37170)) ([0dec011](https://github.com/aws/aws-cdk/commit/0dec0113c45f5808e2afd45ac5be1d044e577a4b))
+
+## [2.241.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.240.0-alpha.0...v2.241.0-alpha.0) (2026-03-02)
+
+
+### Features
+
+* **mixins-preview:** add `recordFields` and `outputFormat` to Vended Logs Mixin ([#37042](https://github.com/aws/aws-cdk/issues/37042)) ([dd94c31](https://github.com/aws/aws-cdk/commit/dd94c312ae77cd9b51cbf6d544c85a2af6a7cdc8))
+* **mixins-preview:** cross account delivery destinations ([#36827](https://github.com/aws/aws-cdk/issues/36827)) ([a759eb6](https://github.com/aws/aws-cdk/commit/a759eb69d560ff039d09d62e91627bb267a664e5))
+
 ## [2.240.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.239.0-alpha.0...v2.240.0-alpha.0) (2026-02-23)
 
 ## [2.239.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.238.0-alpha.0...v2.239.0-alpha.0) (2026-02-19)

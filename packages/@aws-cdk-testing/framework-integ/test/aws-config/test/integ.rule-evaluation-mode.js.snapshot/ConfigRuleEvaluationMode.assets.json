@@ -1,15 +1,30 @@
 {
-  "version": "36.0.0",
+  "version": "52.0.0",
   "files": {
-    "cd5d1281320457bd3bdf9cec55c92e3a307cde74cabf41ffc7b171bdd983a792": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "ConfigRuleEvaluationMode/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-094cbf39": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "808d4734269eb351da36e9ae14ccc4609fb8ec34a576b163a18ba7056f73faa0": {
+      "displayName": "ConfigRuleEvaluationMode Template",
       "source": {
         "path": "ConfigRuleEvaluationMode.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-eab4dc12": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "cd5d1281320457bd3bdf9cec55c92e3a307cde74cabf41ffc7b171bdd983a792.json",
+          "objectKey": "808d4734269eb351da36e9ae14ccc4609fb8ec34a576b163a18ba7056f73faa0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

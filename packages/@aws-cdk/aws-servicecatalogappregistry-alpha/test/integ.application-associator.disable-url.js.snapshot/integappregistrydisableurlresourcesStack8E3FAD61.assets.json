@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "a696fcf319000f85d9e4f6f18b544f3226d3ee0d7517f63dc0fd208815a7ea84": {
+      "displayName": "integappregistrydisableurlresourcesStack8E3FAD61 Template",
+      "source": {
+        "path": "integappregistrydisableurlresourcesStack8E3FAD61.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-02ca770f": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a696fcf319000f85d9e4f6f18b544f3226d3ee0d7517f63dc0fd208815a7ea84.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

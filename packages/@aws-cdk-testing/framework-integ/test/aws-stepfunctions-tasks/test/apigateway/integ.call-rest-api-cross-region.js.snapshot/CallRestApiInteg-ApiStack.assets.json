@@ -1,31 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "52.0.0",
   "files": {
-    "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b": {
-      "displayName": "CallRestApiInteg-ApiStack/Custom::CrossRegionExportWriterCustomResourceProvider Code",
-      "source": {
-        "path": "asset.bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b",
-        "packaging": "zip"
-      },
-      "destinations": {
-        "current_account-us-west-2": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "bbfb567dc956ce71e67ac1f96589821990e2ca48307b93a577bbb345d2de441b.zip",
-          "region": "us-west-2",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
-        }
-      }
-    },
-    "5c1f78c55b9210d063edace24da5ce2f77ec7da1b7b27e73b38d497f1612ece4": {
+    "eccd672ddc9ab97f2794dde32d6a0ec7620c327bd340ab71e7cf020d526f0693": {
       "displayName": "CallRestApiInteg-ApiStack Template",
       "source": {
         "path": "CallRestApiInteg-ApiStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-west-2": {
+        "current_account-us-west-2-ed01091f": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "5c1f78c55b9210d063edace24da5ce2f77ec7da1b7b27e73b38d497f1612ece4.json",
+          "objectKey": "eccd672ddc9ab97f2794dde32d6a0ec7620c327bd340ab71e7cf020d526f0693.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }

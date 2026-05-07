@@ -81,7 +81,7 @@
     "aws-cdk-lib": "0.0.0",
     "@aws-cdk/aws-bedrock-alpha": "0.0.0",
     "@aws-cdk/cdk-build-tools": "0.0.0",
-    "@aws-cdk/integ-runner": "^2.196.1",
+    "@aws-cdk/integ-runner": "^2.197.1",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/integ-tests-alpha": "0.0.0",
     "@types/jest": "^29.5.14",
@@ -95,7 +95,7 @@
     "@aws-cdk/aws-bedrock-alpha": "0.0.0"
   },
   "engines": {
-    "node": ">= 18.0.0"
+    "node": ">= 20.0.0"
   },
   "stability": "experimental",
   "maturity": "experimental",
@@ -150,6 +150,7 @@
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.MemoryProps.kmsKey",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.AgentRuntimeAttributes.securityGroups",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeProps.executionRole",
+      "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.OnlineEvaluationConfigProps.executionRole",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IBedrockAgentRuntime",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.IBrowserCustom",
       "interface-extends-ref:@aws-cdk/aws-bedrock-agentcore-alpha.ICodeInterpreterCustom",
