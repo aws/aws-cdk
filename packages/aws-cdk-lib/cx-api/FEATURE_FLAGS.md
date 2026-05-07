@@ -114,6 +114,7 @@ Flags come in three types:
 | [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2\_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | 2.245.0 | new default |
 | [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
+| [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 
 <!-- END table -->
 
@@ -209,7 +210,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-patterns:useDistribution": true,
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
     "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
-    "@aws-cdk/aws-batch:defaultToAL2023": true
+    "@aws-cdk/aws-batch:defaultToAL2023": true,
+    "@aws-cdk/core:annotationsInValidationReport": true
   }
 }
 ```
@@ -2434,6 +2436,30 @@ When disabled, the default `imageType` remains `ECS_AL2` / `EKS_AL2` for backwar
 **Compatibility with old behavior:** Explicitly set `imageType` to `ECS_AL2` or `EKS_AL2` in your compute environment images configuration.
 
 **Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.
+
+
+### @aws-cdk/core:annotationsInValidationReport
+
+*Include construct annotations (warnings and errors) in the policy validation report*
+
+Flag type: Configuration option
+
+When enabled, construct annotations added via `Annotations.of()` or `Validations.of()`
+are collected post-synthesis and included in the policy validation report alongside
+plugin violations. Annotations appear under a "Construct Annotations" source entry.
+
+When disabled, annotations are only displayed through the CLI's standard metadata
+output (e.g. `[Warning at /path] message`) and do not appear in the validation report.
+
+Note: enabling this flag may cause annotations to appear twice — once in the CLI's
+standard output and once in the validation report — until the CLI is updated to
+consolidate both displays.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.253.0 | `false` | `true` |
 
 
 <!-- END details -->
