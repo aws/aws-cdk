@@ -1,0 +1,154 @@
+{
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383Invoke42FF4B85"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeec8ae1d1a74c1e6701caf81677da8383"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aaInvokeEA6B1443"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke2611b17e8a75a257ff7c40d9f87106aaInvokeBD1C7D20"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke2611b17e8a75a257ff7c40d9f87106aa"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokee20a34fe5c5b9c1e65e9e2af78c6f3bd/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokee20a34fe5c5b9c1e65e9e2af78c6f3bd/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokee20a34fe5c5b9c1e65e9e2af78c6f3bdInvoke961CF306"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokee20a34fe5c5b9c1e65e9e2af78c6f3bd/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokee20a34fe5c5b9c1e65e9e2af78c6f3bd"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokeec8ae1d1a74c1e6701caf81677da8383/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeec8ae1d1a74c1e6701caf81677da8383"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke30f1d61e8a120d8c2c11dd75daf571aa"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke2611b17e8a75a257ff7c40d9f87106aa"
+    }
+  ],
+  "/RubyRuntimeTest/DefaultTest/DeployAssert/LambdaInvokee20a34fe5c5b9c1e65e9e2af78c6f3bd/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokee20a34fe5c5b9c1e65e9e2af78c6f3bd"
+    }
+  ]
+}

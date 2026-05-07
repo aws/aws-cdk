@@ -3,6 +3,7 @@ import type { ParallelProps } from './states/parallel';
 import { Parallel } from './states/parallel';
 import type { State } from './states/state';
 import type { IChainable, INextable } from './types';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * A collection of states to chain onto
@@ -58,7 +59,7 @@ export class Chain implements IChainable {
    */
   public next(next: IChainable): Chain {
     if (this.endStates.length === 0) {
-      throw new UnscopedValidationError('CannotChainToLastState', `Cannot add to chain: last state in chain (${this.lastAdded.id}) does not allow it`);
+      throw new UnscopedValidationError(lit`CannotChainToLastState`, `Cannot add to chain: last state in chain (${this.lastAdded.id}) does not allow it`);
     }
 
     for (const endState of this.endStates) {

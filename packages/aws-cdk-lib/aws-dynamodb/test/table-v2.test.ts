@@ -1310,6 +1310,82 @@ describe('grants', () => {
       ]),
     });
   });
+
+  test('grant* with ServicePrincipal throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(() => table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('grant with ServicePrincipal throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(() => table.grant(new iam.ServicePrincipal('bedrock.amazonaws.com'), 'dynamodb:GetItem'))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('grant* with wrapped ServicePrincipal (withConditions) throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+
+    // THEN
+    expect(() => table.grantReadData(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test.each([
+    'redshift.amazonaws.com',
+    'replication.dynamodb.amazonaws.com',
+    'glue.amazonaws.com',
+  ])('grant* with allowlisted ServicePrincipal %s succeeds', (serviceName) => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const grant = table.grantReadWriteData(new iam.ServicePrincipal(serviceName));
+
+    // THEN
+    expect(grant.success).toBe(true);
+  });
+
+  test('grant* with wrapped allowlisted ServicePrincipal succeeds', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('redshift.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+    const grant = table.grantReadWriteData(principal);
+
+    // THEN
+    expect(grant.success).toBe(true);
+  });
 });
 
 describe('replica tables', () => {

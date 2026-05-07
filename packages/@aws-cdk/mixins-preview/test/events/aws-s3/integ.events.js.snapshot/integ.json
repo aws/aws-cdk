@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "testCases": {
     "Bucket-Test/DefaultTest": {
       "stacks": [
@@ -12,5 +12,5 @@
       "assertionStackName": "BucketTestDefaultTestDeployAssert4091776C"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1119.0"
 }

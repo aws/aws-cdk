@@ -1,6 +1,7 @@
 import type { Construct } from 'constructs';
 import { ValidationError } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import { ImportedTaskDefinition } from '../../lib/base/_imported-task-definition';
 import type {
@@ -99,6 +100,6 @@ export class ExternalTaskDefinition extends TaskDefinition implements IExternalT
    */
   @MethodMetadata()
   public addInferenceAccelerator(_inferenceAccelerator: InferenceAccelerator) {
-    throw new ValidationError('CannotInferenceAccelerators', 'Cannot use inference accelerators on tasks that run on External service', this);
+    throw new ValidationError(lit`CannotInferenceAccelerators`, 'Cannot use inference accelerators on tasks that run on External service', this);
   }
 }

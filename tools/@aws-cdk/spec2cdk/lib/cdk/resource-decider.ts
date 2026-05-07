@@ -106,7 +106,7 @@ export class ResourceDecider {
       },
       cfnName,
       initializer: resolverResult.resolver,
-      cfnValueToRender: { [resolverResult.name]: $this[resolverResult.name] },
+      cfnValueToRender: { [resolverResult.name]: $this[`_${resolverResult.name}`] },
     });
   }
 
@@ -233,7 +233,7 @@ export class ResourceDecider {
             expr.object({ tagPropertyName: expr.lit(originalName) }),
           ),
         cfnValueToRender: {
-          [originalName]: $this.cdkTagManager.renderTags($this[originalName]),
+          [originalName]: $this.cdkTagManager.renderTags($this[`_${originalName}`]),
         },
       },
       {

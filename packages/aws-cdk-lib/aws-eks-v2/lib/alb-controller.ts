@@ -9,6 +9,7 @@ import * as iam from '../../aws-iam';
 // v2 - keep this import as a separate section to reduce merge conflict when forward merging with the v2 branch.
 // eslint-disable-next-line
 import { Aws, Duration, Names, RemovalPolicy, Stack, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Controller version.
@@ -356,7 +357,7 @@ export class AlbController extends Construct {
     });
 
     if (props.version.custom && !props.policy) {
-      throw new ValidationError('AlbControllerOptionsPolicyRequired', "'albControllerOptions.policy' is required when using a custom controller version", this);
+      throw new ValidationError(lit`AlbControllerOptionsPolicyRequired`, "'albControllerOptions.policy' is required when using a custom controller version", this);
     }
 
     // https://kubernetes-sigs.github.io/aws-load-balancer-controller/v2.2/deploy/installation/#iam-permissions

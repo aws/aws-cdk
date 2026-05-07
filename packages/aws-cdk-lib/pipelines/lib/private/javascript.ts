@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 export function addAll<A>(into: Set<A>, from: Iterable<A>) {
   for (const x of from) {
@@ -28,7 +29,7 @@ export function* enumerate<A>(xs: Iterable<A>): IterableIterator<[number, A]> {
 }
 
 export function expectProp<A extends object, B extends keyof A>(obj: A, key: B): NonNullable<A[B]> {
-  if (!obj[key]) { throw new UnscopedValidationError('ExpectingSet', `Expecting '${String(key)}' to be set!`); }
+  if (!obj[key]) { throw new UnscopedValidationError(lit`ExpectingSet`, `Expecting '${String(key)}' to be set!`); }
   return obj[key] as any;
 }
 

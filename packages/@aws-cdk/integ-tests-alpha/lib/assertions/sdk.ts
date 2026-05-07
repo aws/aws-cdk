@@ -56,7 +56,7 @@ export class AwsApiCall extends ApiCallBase {
   /**
    * access the AssertionsProvider for the waiter state machine.
    * This can be used to add additional IAM policies
-   * the the provider role policy
+   * the provider role policy
    *
    * @example
    * declare const apiCall: AwsApiCall;

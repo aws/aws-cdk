@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties required for setting up a daily automatic backup time.
@@ -61,10 +62,10 @@ export class DailyAutomaticBackupStartTime {
    */
   private validate(hour: number, minute: number) {
     if (!Number.isInteger(hour) || hour < 0 || hour > 23) {
-      throw new UnscopedValidationError('DailyAutomaticBackupStartTimeHourMustBeInteger', `dailyAutomaticBackupStartTime hour must be an integer between 0 and 24. received: ${hour}`);
+      throw new UnscopedValidationError(lit`DailyAutomaticBackupStartTimeHourMustBeInteger`, `dailyAutomaticBackupStartTime hour must be an integer between 0 and 24. received: ${hour}`);
     }
     if (!Number.isInteger(minute) || minute < 0 || minute > 59) {
-      throw new UnscopedValidationError('DailyAutomaticBackupStartTimeMinuteMustBeInteger', `dailyAutomaticBackupStartTime minute must be an integer between 0 and 59. received: ${minute}`);
+      throw new UnscopedValidationError(lit`DailyAutomaticBackupStartTimeMinuteMustBeInteger`, `dailyAutomaticBackupStartTime minute must be an integer between 0 and 59. received: ${minute}`);
     }
   }
 }

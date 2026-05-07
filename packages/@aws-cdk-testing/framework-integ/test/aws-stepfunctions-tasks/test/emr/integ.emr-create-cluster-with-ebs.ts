@@ -64,7 +64,7 @@ const step = new EmrCreateCluster(stack, 'EmrCreateCluster', {
 });
 
 const sm = new sfn.StateMachine(stack, 'SM', {
-  definition: step,
+  definitionBody: sfn.DefinitionBody.fromChainable(step),
 });
 
 const integTest = new IntegTest(app, 'emr-create-cluster-ebs-integ', {

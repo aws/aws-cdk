@@ -3,6 +3,7 @@ import { PolicyStatement, deriveEstimateSizeOptions } from './policy-statement';
 import { mergeStatements } from './private/merge-statements';
 import { PostProcessPolicyDocument } from './private/postprocess-policy-document';
 import * as cdk from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -55,19 +56,18 @@ export class PolicyDocument implements cdk.IResolvable {
     const newPolicyDocument = new PolicyDocument();
     const statement = obj.Statement ?? [];
     if (statement && !Array.isArray(statement)) {
-      throw new cdk.UnscopedValidationError('StatementMustBeArray', 'Statement must be an array');
+      throw new cdk.UnscopedValidationError(lit`StatementMustBeArray`, 'Statement must be an array');
     }
     newPolicyDocument.addStatements(...obj.Statement.map((s: any) => PolicyStatement.fromJson(s)));
     return newPolicyDocument;
   }
 
-  public readonly creationStack: string[];
+  public readonly creationStack: string[] = ['Token stack traces are no longer captured'];
   private readonly statements = new Array<PolicyStatement>();
   private readonly autoAssignSids: boolean;
   private readonly minimize?: boolean;
 
   constructor(props: PolicyDocumentProps = {}) {
-    this.creationStack = cdk.captureStackTrace();
     this.autoAssignSids = !!props.assignSids;
     this.minimize = props.minimize;
 

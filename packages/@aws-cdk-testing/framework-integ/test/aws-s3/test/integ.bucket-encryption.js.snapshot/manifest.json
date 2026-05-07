@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-cdk-s3-bucket-encryption.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2c1dec48edca2a03e6b55980afeb421a925bec294fff39eebe0c12eab3b5e004.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/cbea4ea1adbc153382a370bace930485325d99cf4ed380890d834ff30c002432.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,96 +33,7 @@
       "dependencies": [
         "aws-cdk-s3-bucket-encryption.assets"
       ],
-      "metadata": {
-        "/aws-cdk-s3-bucket-encryption/MyDSSEBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "encryption": "DSSE_MANAGED",
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MyDSSEBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyDSSEBucket8A2A1D0C"
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MySSES3Bucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "encryption": "S3_MANAGED",
-              "bucketKeyEnabled": true,
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MySSES3Bucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySSES3Bucket6973690D"
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MyKMSBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "encryption": "KMS",
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MyKMSBucket/Key": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "enableKeyRotation": true
-            }
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MyKMSBucket/Key/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyKMSBucketKey9CACDA9E"
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MyKMSBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyKMSBucketDF8715AC"
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MySSECBlockedBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "encryption": "UNENCRYPTED",
-              "removalPolicy": "destroy"
-            }
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/MySSECBlockedBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MySSECBlockedBucket184125AB"
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-s3-bucket-encryption/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-s3-bucket-encryption.metadata.json",
       "displayName": "aws-cdk-s3-bucket-encryption"
     },
     "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F.assets": {
@@ -157,20 +68,7 @@
       "dependencies": [
         "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F.assets"
       ],
-      "metadata": {
-        "/IntegTestDSSEBucket/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/IntegTestDSSEBucket/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "IntegTestDSSEBucketDefaultTestDeployAssert56801A2F.metadata.json",
       "displayName": "IntegTestDSSEBucket/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -471,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -668,8 +567,17 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
           },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
@@ -682,5 +590,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1108.0"
 }
