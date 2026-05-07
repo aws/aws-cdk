@@ -1,7 +1,7 @@
 import type { Construct } from 'constructs';
 import { CfnBackupSelection } from './backup.generated';
 import { BackupableResourcesCollector } from './backupable-resources-collector';
-import type { BackupResource } from './resource';
+import type { BackupResource, TagCondition } from './resource';
 import { TagOperation } from './resource';
 import * as iam from '../../aws-iam';
 import { Lazy, Resource, Aspects } from '../../core';
@@ -55,6 +55,17 @@ export interface BackupSelectionOptions {
    * @default false
    */
   readonly allowRestores?: boolean;
+
+  /**
+   * Tag conditions that apply to all resources in this selection.
+   * All conditions use AND logic — a resource must satisfy every condition to be selected.
+   *
+   * This is the preferred way to add tag-based filtering. Unlike `BackupResource.fromTag()`,
+   * it makes clear that tag conditions are selection-wide and not scoped to a single ARN.
+   *
+   * @default - no tag conditions
+   */
+  readonly tagConditions?: TagCondition[];
 }
 
 /**
@@ -153,28 +164,35 @@ export class BackupSelection extends Resource implements iam.IGrantable {
     for (const resource of props.resources) {
       this.addResource(resource);
     }
+    for (const condition of props.tagConditions ?? []) {
+      this.addTagCondition(condition);
+    }
+  }
+
+  private addTagCondition(condition: TagCondition) {
+    const param: CfnBackupSelection.ConditionParameterProperty = {
+      conditionKey: condition.key,
+      conditionValue: condition.value,
+    };
+    switch (condition.operation ?? TagOperation.STRING_EQUALS) {
+      case TagOperation.STRING_EQUALS:
+        this.stringEquals.push(param);
+        break;
+      case TagOperation.STRING_LIKE:
+        this.stringLike.push(param);
+        break;
+      case TagOperation.STRING_NOT_EQUALS:
+        this.stringNotEquals.push(param);
+        break;
+      case TagOperation.STRING_NOT_LIKE:
+        this.stringNotLike.push(param);
+        break;
+    }
   }
 
   private addResource(resource: BackupResource) {
     if (resource.tagCondition) {
-      const param: CfnBackupSelection.ConditionParameterProperty = {
-        conditionKey: resource.tagCondition.key,
-        conditionValue: resource.tagCondition.value,
-      };
-      switch (resource.tagCondition.operation ?? TagOperation.STRING_EQUALS) {
-        case TagOperation.STRING_EQUALS:
-          this.stringEquals.push(param);
-          break;
-        case TagOperation.STRING_LIKE:
-          this.stringLike.push(param);
-          break;
-        case TagOperation.STRING_NOT_EQUALS:
-          this.stringNotEquals.push(param);
-          break;
-        case TagOperation.STRING_NOT_LIKE:
-          this.stringNotLike.push(param);
-          break;
-      }
+      this.addTagCondition(resource.tagCondition);
     }
 
     if (resource.resource) {

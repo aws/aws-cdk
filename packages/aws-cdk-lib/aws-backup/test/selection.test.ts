@@ -5,7 +5,7 @@ import * as ec2 from '../../aws-ec2';
 import * as efs from '../../aws-efs';
 import * as rds from '../../aws-rds';
 import { RemovalPolicy, Stack } from '../../core';
-import { BackupPlan, BackupResource, BackupSelection, TagOperation } from '../lib';
+import { BackupPlan, BackupResource, BackupSelection, TagCondition, TagOperation } from '../lib';
 
 let stack: Stack;
 let plan: BackupPlan;
@@ -94,6 +94,41 @@ test('create a selection with mixed tag operations', () => {
         StringNotEquals: [{ ConditionKey: 'temporary', ConditionValue: 'true' }],
         StringNotLike: [{ ConditionKey: 'name', ConditionValue: 'test-*' }],
       },
+    },
+  });
+});
+
+test('create a selection using tagConditions on options', () => {
+  // WHEN
+  const conditions: TagCondition[] = [
+    { key: 'stage', value: 'prod' },
+    { key: 'cost center', value: 'cloud', operation: TagOperation.STRING_EQUALS },
+    { key: 'name', value: 'app-*', operation: TagOperation.STRING_LIKE },
+  ];
+
+  new BackupSelection(stack, 'Selection', {
+    backupPlan: plan,
+    resources: [
+      BackupResource.fromArn('arn1'),
+      BackupResource.fromArn('arn2'),
+    ],
+    tagConditions: conditions,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Backup::BackupSelection', {
+    BackupSelection: {
+      Conditions: {
+        StringEquals: [
+          { ConditionKey: 'stage', ConditionValue: 'prod' },
+          { ConditionKey: 'cost center', ConditionValue: 'cloud' },
+        ],
+        StringLike: [
+          { ConditionKey: 'name', ConditionValue: 'app-*' },
+        ],
+      },
+      Resources: ['arn1', 'arn2'],
+      SelectionName: 'Selection',
     },
   });
 });
