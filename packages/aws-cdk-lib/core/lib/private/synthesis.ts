@@ -142,11 +142,10 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     plugins.push({ plugin, templatePaths: paths });
   }
 
-  // 2. Default validation engine (if installed and enabled)
+  // 2. Default validation engine (if enabled)
   if (FeatureFlags.of(root).isEnabled(cxapi.DEFAULT_VALIDATION_ENGINE) && allTemplatePaths.length > 0) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { DefaultValidationPlugin } = require('@aws-cdk/default-validation-engine');
+      const { DefaultValidationPlugin } = require('./default-validation-plugin');
       plugins.push({ plugin: new DefaultValidationPlugin(), templatePaths: allTemplatePaths });
     } catch (e: any) {
       if (e.code !== 'MODULE_NOT_FOUND') throw e;
