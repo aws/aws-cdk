@@ -164,6 +164,21 @@ new batch.ManagedEc2EcsComputeEnvironment(this, 'myEc2ComputeEnv', {
 });
 ```
 
+If your image needs GPU resources, specify `ECS_AL2023_NVIDIA`:
+
+```ts
+declare const vpc: ec2.IVpc;
+
+new batch.ManagedEc2EcsComputeEnvironment(this, 'myGpuComputeEnv', {
+  vpc,
+  images: [
+    {
+      imageType: batch.EcsMachineImageType.ECS_AL2023_NVIDIA,
+    },
+  ],
+});
+```
+
 #### Allocation Strategies
 
 | Allocation Strategy           | Optimized for              | Downsides                     |

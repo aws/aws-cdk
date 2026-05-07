@@ -2,6 +2,132 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.253.0](https://github.com/aws/aws-cdk/compare/v2.252.0...v2.253.0) (2026-05-06)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37753](https://github.com/aws/aws-cdk/issues/37753)) ([a661c2d](https://github.com/aws/aws-cdk/commit/a661c2ddee343a610b0ab312996ce34e6cacb571))
+* **apigatewayv2-integrations:** auto-include EventBusName in HttpEventBridgeIntegration default parameter mapping ([#36780](https://github.com/aws/aws-cdk/issues/36780)) ([9734bb4](https://github.com/aws/aws-cdk/commit/9734bb4382db1123b3c78ffea1130d702fb5a845)), closes [#36775](https://github.com/aws/aws-cdk/issues/36775)
+* **core:** add Fn::GetStackOutput for cross-region references ([#37724](https://github.com/aws/aws-cdk/issues/37724)) ([ffae861](https://github.com/aws/aws-cdk/commit/ffae8613d0f2dbb94ff7a2ea1e6cd53036bd9870))
+* **core:** integrate construct annotations into validation report ([#37712](https://github.com/aws/aws-cdk/issues/37712)) ([438bd0b](https://github.com/aws/aws-cdk/commit/438bd0b756603e60433c6bd9a080be7c234b1d56))
+* **synthetics:** add Playwright 5.1 and 6.0 runtimes ([#37665](https://github.com/aws/aws-cdk/issues/37665)) ([c1afb43](https://github.com/aws/aws-cdk/commit/c1afb43b16db8d4eeaeb4dda413fc64637b7e014))
+* emr instance fleet priority allocation ([#35731](https://github.com/aws/aws-cdk/issues/35731)) ([db1188a](https://github.com/aws/aws-cdk/commit/db1188a34b2ec4c37d6d9e5c44df65d784e9a5bf)), closes [#35710](https://github.com/aws/aws-cdk/issues/35710) [/github.com/aws/aws-cdk/blob/3ec6d06c7c58e4f14b3fb114d7c35dc6d01794d9/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emr/private/cluster-utils.ts#L91](https://github.com/aws//github.com/aws/aws-cdk/blob/3ec6d06c7c58e4f14b3fb114d7c35dc6d01794d9/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/emr/private/cluster-utils.ts/issues/L91)
+
+
+### Bug Fixes
+
+* **cloudfront:** skip cachePolicyName length validation for unresolved tokens ([#37751](https://github.com/aws/aws-cdk/issues/37751)) ([3b96e97](https://github.com/aws/aws-cdk/commit/3b96e97af91701fc17e8c3ad35a8564d57085a9d)), closes [#23567](https://github.com/aws/aws-cdk/issues/23567) [#34102](https://github.com/aws/aws-cdk/issues/34102)
+* **cloudwatch:** remove false positive warning for CDK tokens in MathExpression ([#36882](https://github.com/aws/aws-cdk/issues/36882)) ([c29dc17](https://github.com/aws/aws-cdk/commit/c29dc17e770183ef1c83595bd6873b2fb3379d7f)), closes [#34977](https://github.com/aws/aws-cdk/issues/34977)
+* **codebuild:** correct S3 log encryption boolean inversion ([#37761](https://github.com/aws/aws-cdk/issues/37761)) ([4031918](https://github.com/aws/aws-cdk/commit/40319185dc645d2afc6acf1d25547a86250e97af))
+* **ecs:** enabling the circuitBreaker is not recommended loudly enough ([#37755](https://github.com/aws/aws-cdk/issues/37755)) ([a52af7d](https://github.com/aws/aws-cdk/commit/a52af7dc4eb79fc145181602e13c864dd61a197a))
+* **eks:** add dependency from HelmChart custom resource to s3 chartAsset IAM policy ([#37731](https://github.com/aws/aws-cdk/issues/37731)) ([99d0a5b](https://github.com/aws/aws-cdk/commit/99d0a5ba83771e46aca9971d00af027f42078f4a)), closes [#19880](https://github.com/aws/aws-cdk/issues/19880)
+
+## [2.252.0](https://github.com/aws/aws-cdk/compare/v2.251.0...v2.252.0) (2026-04-29)
+
+
+### Features
+
+* **core:** `Validations` class now supports `addWarning`, `addError`, and `acknowledge` ([#37668](https://github.com/aws/aws-cdk/issues/37668)) ([5e8083c](https://github.com/aws/aws-cdk/commit/5e8083c79f2657fe2364a31ed3f26d0d88638920)), closes [aws/aws-cdk-rfcs#899](https://github.com/aws/aws-cdk-rfcs/issues/899)
+* **core:** add Box API for deferred values with accurate stack traces ([#37604](https://github.com/aws/aws-cdk/issues/37604)) ([d592a96](https://github.com/aws/aws-cdk/commit/d592a969caf30c2f62df99c9a269722ae528cd65))
+
+
+### Bug Fixes
+
+* **aws-cdk-lib:** cannot be used as a `bundledDependency` ([#37726](https://github.com/aws/aws-cdk/issues/37726)) ([6ba0598](https://github.com/aws/aws-cdk/commit/6ba0598d0b1a099db9c74723ac2567cc947ad802)), closes [#37717](https://github.com/aws/aws-cdk/issues/37717)
+* **s3:** resolve S3 notification removal race condition ([#37708](https://github.com/aws/aws-cdk/issues/37708)) ([dc5be98](https://github.com/aws/aws-cdk/commit/dc5be981a9568a4bb60e47ec9106696650f0bfc8)), closes [#37667](https://github.com/aws/aws-cdk/issues/37667)
+
+## [2.251.0](https://github.com/aws/aws-cdk/compare/v2.250.0...v2.251.0) (2026-04-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: SourceSecurityGroup attribute removed.
+aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: PolicyItem type removed.
+aws-elasticloadbalancing: AWS::ElasticLoadBalancing::LoadBalancer: SourceSecurityGroup type removed.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37684](https://github.com/aws/aws-cdk/issues/37684)) ([9e6c2ef](https://github.com/aws/aws-cdk/commit/9e6c2efc42b72115414b5874cc77900de4ba13a5))
+* **lambda:** add ruby 4.0 runtime ([#37650](https://github.com/aws/aws-cdk/issues/37650)) ([04d4337](https://github.com/aws/aws-cdk/commit/04d4337b1d104d9f32e76109675f968da082781c))
+* update L1 CloudFormation resource definitions ([#37644](https://github.com/aws/aws-cdk/issues/37644)) ([e64f943](https://github.com/aws/aws-cdk/commit/e64f943fec033f404a4830133aa916ebaf0cc2aa))
+* **core:** `Validations` class is the new way to add validation plugins to CDK Apps ([#37611](https://github.com/aws/aws-cdk/issues/37611)) ([95696b4](https://github.com/aws/aws-cdk/commit/95696b463de0df91fb8d50b15add5200ac6818c1)), closes [#37613](https://github.com/aws/aws-cdk/issues/37613)
+* **core:** graduate `policyValidationBeta1` interfaces to `policyValidation` ([#37613](https://github.com/aws/aws-cdk/issues/37613)) ([8c613cf](https://github.com/aws/aws-cdk/commit/8c613cf291eda9920165585bda06c55ef28667bc))
+* **ecs:** support for service connect access log configuration ([#36067](https://github.com/aws/aws-cdk/issues/36067)) ([5ad1c06](https://github.com/aws/aws-cdk/commit/5ad1c06e196b9f3bfec2bc79c9d7aa85af366ee0))
+* **route53:** accelerated recovery for public hosted zone ([#36358](https://github.com/aws/aws-cdk/issues/36358)) ([f1b7b03](https://github.com/aws/aws-cdk/commit/f1b7b03e3f65253fed5d934fc2f1d1ea08e3e2fc))
+* **synthetics:** support canary group  ([#35689](https://github.com/aws/aws-cdk/issues/35689)) ([20ccd31](https://github.com/aws/aws-cdk/commit/20ccd310789828854b85faadb603466ac405e695)), closes [#34043](https://github.com/aws/aws-cdk/issues/34043)
+
+
+### Bug Fixes
+
+* **core:** `Stage.policyValidationBeta1` is mutable ([#37612](https://github.com/aws/aws-cdk/issues/37612)) ([3c1faf1](https://github.com/aws/aws-cdk/commit/3c1faf13b325587971a461d1837734b09c92909d))
+* **core:** construct creation stack traces are implicit ([#37643](https://github.com/aws/aws-cdk/issues/37643)) ([5635c20](https://github.com/aws/aws-cdk/commit/5635c208a465772bacb9ea087af98e4e668b9125))
+* **core:** synth output is not valid YAML when using policy validation ([#37597](https://github.com/aws/aws-cdk/issues/37597)) ([927dd60](https://github.com/aws/aws-cdk/commit/927dd60d6bdab7a57a5b14bd8f0e7df6fe7cfdce)), closes [#25331](https://github.com/aws/aws-cdk/issues/25331)
+* **core:** token stack traces expensively clutter --debug mode ([#37642](https://github.com/aws/aws-cdk/issues/37642)) ([498c546](https://github.com/aws/aws-cdk/commit/498c5469f8f132103e16fdb89bd5cf17b1f84dbd))
+* **core:** tree metadata does not contain logical ID ([#37630](https://github.com/aws/aws-cdk/issues/37630)) ([284ab23](https://github.com/aws/aws-cdk/commit/284ab2367e8fe891fdf4cb2d5a193a695fc1bc49))
+* **ec2:** fixing vpc endpoint for eu-isoe-west-1 region ([#37596](https://github.com/aws/aws-cdk/issues/37596)) ([555c930](https://github.com/aws/aws-cdk/commit/555c930e3d3eb7248fc695c853ce50c06cd246bd)), closes [#31690](https://github.com/aws/aws-cdk/issues/31690)
+* **events-targets:** make LogGroupTargetInput extend RuleTargetInput for JSII compatibility ([#37451](https://github.com/aws/aws-cdk/issues/37451)) ([46dbc7a](https://github.com/aws/aws-cdk/commit/46dbc7abc92ceb84e5271698f5281941d8324769)), closes [#36733](https://github.com/aws/aws-cdk/issues/36733)
+* **lambda:** add `Token.isUnresolved` checks to provisioned poller config validation ([#37197](https://github.com/aws/aws-cdk/issues/37197)) ([667ed30](https://github.com/aws/aws-cdk/commit/667ed3019a02564c88fa2b8f7fe56bd46b760c67))
+* **stepfunctions-tasks:** warn when CallAwsServiceCrossRegion endpoint is resolved from state input ([#37646](https://github.com/aws/aws-cdk/issues/37646)) ([9fdf590](https://github.com/aws/aws-cdk/commit/9fdf5907b12713b62190de4f5ad7c79b97b3a7a4))
+
+## [2.250.0](https://github.com/aws/aws-cdk/compare/v2.249.0...v2.250.0) (2026-04-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-emr: AWS::EMR::Cluster: MonitoringConfiguration property removed.
+aws-emr: AWS::EMR::Cluster: CloudWatchLogConfiguration type removed.
+aws-emr: AWS::EMR::Cluster: EMRConfiguration type removed.
+aws-emr: AWS::EMR::Cluster: MonitoringConfiguration type removed.
+
+### Features
+
+* **s3files:** s3Files Lambda L1 integration ([#37547](https://github.com/aws/aws-cdk/issues/37547)) ([af41262](https://github.com/aws/aws-cdk/commit/af41262a657e9533abcf07c98d0d2c4fad5e35f0))
+* update L1 CloudFormation resource definitions ([#37582](https://github.com/aws/aws-cdk/issues/37582)) ([c99ce64](https://github.com/aws/aws-cdk/commit/c99ce64b7715f7bd40b09e08ecf5b05666a5f525))
+* **mediapackagev2:** add region attribute on mediapackagev2 resources and extra naming validation ([#37526](https://github.com/aws/aws-cdk/issues/37526)) ([112ed67](https://github.com/aws/aws-cdk/commit/112ed67da18a43019a17f330ec6db399cd7d64d0))
+
+
+### Bug Fixes
+
+* **eks-v2:** respect securityGroup(s) in KubectlProviderOptions ([#37247](https://github.com/aws/aws-cdk/issues/37247)) ([4c530fa](https://github.com/aws/aws-cdk/commit/4c530fa49bbf4b1956f7ebf92b7b517ff668dfdb)), closes [#36653](https://github.com/aws/aws-cdk/issues/36653)
+* **lambda-nodejs:** if entry path is not under project root, bundling in Docker fails in an unclear way ([#37572](https://github.com/aws/aws-cdk/issues/37572)) ([73662df](https://github.com/aws/aws-cdk/commit/73662dfdece2e9bacf0afcd8f40ae07b48ed7891))
+
+## [2.249.0](https://github.com/aws/aws-cdk/compare/v2.248.0...v2.249.0) (2026-04-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* L1 resources are automatically generated from
+public CloudFormation Resource Schemas. They are built to closely
+reflect the real state of CloudFormation. Sometimes these updates can
+contain changes that are incompatible with previous types, but more
+accurately reflect reality. In this release we have changed:
+
+aws-appstream: AWS::AppStream::Stack: Id attribute removed.
+aws-appsync: AWS::AppSync::GraphQLApi: LogConfig.CloudWatchLogsRoleArn
+property is now required.
+aws-appsync: AWS::AppSync::GraphQLApi: LogConfig.FieldLogLevel property
+is now required.
+aws-kafkaconnect: AWS::KafkaConnect::Connector:
+ProvisionedCapacity.McuCount property is now required.
+
+### Features
+
+* **batch:** add AL2023 image types and default to AL2023 (under feature flag) ([#37539](https://github.com/aws/aws-cdk/issues/37539)) ([6c1251c](https://github.com/aws/aws-cdk/commit/6c1251c5b18b99a31b6973d3877907f93b5130f0)), closes [#35839](https://github.com/aws/aws-cdk/issues/35839) [#37205](https://github.com/aws/aws-cdk/issues/37205)
+* update L1 CloudFormation resource definitions ([f28bb0e](https://github.com/aws/aws-cdk/commit/f28bb0ea65e6cd777299e14c364d33f8cd4a7af9))
+* update L1 CloudFormation resource definitions ([#37530](https://github.com/aws/aws-cdk/issues/37530)) ([117562c](https://github.com/aws/aws-cdk/commit/117562c3545720a5ed5127ecadae02787241b483))
+* **core:** add source tracing for L1 construct property mutations ([#37543](https://github.com/aws/aws-cdk/issues/37543)) ([8f38378](https://github.com/aws/aws-cdk/commit/8f3837807ef5d06d249c59cf9a567a71a4d4cc8d))
+
+
+### Bug Fixes
+
+* ensure issues created outside templates receive needs-triage label ([#37505](https://github.com/aws/aws-cdk/issues/37505)) ([58cb92a](https://github.com/aws/aws-cdk/commit/58cb92a30fb3c3984f9360a39cce3dbdf46999e9)), closes [#37454](https://github.com/aws/aws-cdk/issues/37454) [Abogical/aws-cdk#24](https://github.com/Abogical/aws-cdk/issues/24)
+* include cfn-property-mixins in spec-update workflow gen step ([e847c52](https://github.com/aws/aws-cdk/commit/e847c52d750089aa0213f620fc55de70fc06b3cd)), closes [#36300](https://github.com/aws/aws-cdk/issues/36300)
+
 ## [2.248.0](https://github.com/aws/aws-cdk/compare/v2.247.0...v2.248.0) (2026-04-02)
 
 
