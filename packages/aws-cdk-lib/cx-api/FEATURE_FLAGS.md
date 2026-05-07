@@ -117,6 +117,7 @@ Flags come in three types:
 | [@aws-cdk/aws-iam:importedUserStackSafeDefaultPolicyName](#aws-cdkaws-iamimporteduserstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported users that depend on the stack the user is in. | V2.NEXT | fix |
 | [@aws-cdk/aws-iam:importedGroupStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedgroupstacksafedefaultpolicyname) | Enable this feature to create default policy names for imported groups that depend on the stack the group is in. | V2.NEXT | fix |
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | V2NEXT | config |
+| [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 
 <!-- END table -->
 
@@ -2494,6 +2495,7 @@ consolidate both displays.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | V2.NEXT | `false` | `true` |
+| 2.253.0 | `false` | `true` |
 
 
 <!-- END details -->
