@@ -79,6 +79,21 @@ test('deploy from local directory asset', () => {
   });
 });
 
+test('empty sources array is preserved', () => {
+  const app = new cdk.App();
+  const stack = new cdk.Stack(app);
+  const bucket = new s3.Bucket(stack, 'Dest');
+
+  new s3deploy.BucketDeployment(stack, 'EmptyDeployment', {
+    destinationBucket: bucket,
+    sources: [],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('Custom::CDKBucketDeployment', {
+    SourceBucketNames: [],
+  });
+});
+
 test('deploy with configured log retention', () => {
   // GIVEN
   const stack = new cdk.Stack();
