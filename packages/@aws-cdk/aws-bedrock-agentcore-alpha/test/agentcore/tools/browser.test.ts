@@ -1375,7 +1375,6 @@ describe('BrowserCustom error metric methods tests', () => {
     const app = new cdk.App();
     stack = new cdk.Stack(app, 'test-stack');
     browser = new BrowserCustom(stack, 'test-browser-error-metrics', {
-      browserCustomName: 'test_browser_error_metrics',
       networkConfiguration: BrowserNetworkConfiguration.usingPublicNetwork(),
     });
   });
