@@ -1,9 +1,47 @@
 import type { BundlingFileAccess, DockerImage, DockerRunOptions } from '../../core';
 
 /**
+ * Selects which bundler `NodejsFunction` uses.
+ */
+export enum BundlerType {
+  /** esbuild (default). */
+  ESBUILD = 'esbuild',
+  /** Rolldown, configured via a user-authored `rolldown.config.{mts,mjs,ts,cts,js,cjs}`. */
+  ROLLDOWN = 'rolldown',
+}
+
+/**
  * Bundling options
  */
 export interface BundlingOptions extends DockerRunOptions {
+  /**
+   * Which bundler to use. When set to `BundlerType.ROLLDOWN`, rolldown
+   * is configured through a user-authored `rolldown.config.{mts,mjs,ts,cts,js,cjs}`
+   * and the esbuild-specific fields on this interface (minify, sourceMap,
+   * target, format, loader, externalModules, etc.) are not supported.
+   *
+   * @default BundlerType.ESBUILD
+   */
+  readonly bundler?: BundlerType;
+
+  /**
+   * Path to the rolldown config file. Only used when `bundler` is
+   * `BundlerType.ROLLDOWN`. Must live under `projectRoot`. Any of the
+   * extensions supported by rolldown (`.mts`, `.mjs`, `.ts`, `.cts`,
+   * `.js`, `.cjs`) are accepted.
+   *
+   * @default - `rolldown.config.{mts,mjs,ts,cts,js,cjs}` in the project root
+   */
+  readonly rolldownConfigFile?: string;
+
+  /**
+   * Version of rolldown to install in the Docker bundling image. Only
+   * used when `bundler` is `BundlerType.ROLLDOWN`.
+   *
+   * @default - a pinned default
+   */
+  readonly rolldownVersion?: string;
+
   /**
    * Whether to minify files when bundling.
    *

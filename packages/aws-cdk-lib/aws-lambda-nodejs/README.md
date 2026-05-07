@@ -452,3 +452,25 @@ export class ExampleStack extends Stack {
 ```
 
 where the `build-output` would be a directory that contains an `index.js` file with an exported `handler` function.
+
+## Bundling with Rolldown
+
+`NodejsFunction` can bundle with [Rolldown](https://rolldown.rs/) instead
+of esbuild. Set `bundling.bundler` to `BundlerType.ROLLDOWN`.
+
+Rolldown is configured through a `rolldown.config.{mts,mjs,ts,cts,js,cjs}` file that you author yourself — CDK does not re-expose rolldown's config options as props. The construct handles entry resolution, Docker orchestration, `nodeModules` install, and asset hashing, and invokes rolldown as `rolldown <entry> -c <rolldownConfigFile> --dir <outputDir>`.
+
+By default the construct looks for `rolldown.config.<ext>` in the project root, trying `.mts`, `.mjs`, `.ts`, `.cts`, `.js`, and `.cjs` in that order. Your config must output `index.js` (or `index.mjs` for ESM) so the default `index.handler` entry point resolves.
+
+```ts
+new nodejs.NodejsFunction(this, 'MyFunction', {
+  entry: '/path/to/handler.ts',
+  bundling: {
+    bundler: nodejs.BundlerType.ROLLDOWN,
+    rolldownConfigFile: '/path/to/rolldown.config.mts', // optional; any of .mts/.mjs/.ts/.cts/.js/.cjs
+  },
+});
+```
+
+esbuild-specific options on `BundlingOptions` (`minify`, `sourceMap`, `target`, `format`, `externalModules`, etc.) are not supported with rolldown, set them in your `rolldown.config` instead. Passing any of them throws at synth time. When you use `nodeModules` to install dependencies into the asset, you must also mark those packages as external in your rolldown config; CDK does not manage externalization for the rolldown path.
+

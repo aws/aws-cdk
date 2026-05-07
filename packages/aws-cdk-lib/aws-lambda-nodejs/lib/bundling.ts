@@ -5,7 +5,7 @@ import type { IConstruct } from 'constructs';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
-import { OutputFormat, SourceMapMode } from './types';
+import { BundlerType, OutputFormat, SourceMapMode } from './types';
 import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isSdkV2Runtime } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
@@ -16,6 +16,17 @@ import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
 const ESBUILD_DEFAULT_VERSION = '0.21';
+const ROLLDOWN_MAJOR_VERSION = '1';
+const ROLLDOWN_DEFAULT_VERSION = '1.0.0';
+const ROLLDOWN_CONFIG_BASENAME = 'rolldown.config';
+const ROLLDOWN_CONFIG_EXTENSIONS = ['.mts', '.mjs', '.ts', '.cts', '.js', '.cjs'] as const;
+
+const ESBUILD_ONLY_FIELDS = [
+  'minify', 'sourceMap', 'sourceMapMode', 'sourcesContent', 'target', 'format',
+  'loader', 'keepNames', 'tsconfig', 'metafile', 'banner', 'footer', 'define',
+  'mainFields', 'inject', 'externalModules', 'bundleAwsSDK', 'charset',
+  'esbuildVersion', 'esbuildArgs', 'logLevel',
+] as const satisfies readonly (keyof BundlingOptions)[];
 
 /**
  * Bundling properties
@@ -59,11 +70,11 @@ export interface BundlingProps extends BundlingOptions {
 }
 
 /**
- * Bundling with esbuild
+ * Bundling with esbuild or rolldown.
  */
 export class Bundling implements cdk.BundlingOptions {
   /**
-   * esbuild bundled Lambda asset code
+   * Bundled Lambda asset code
    */
   public static bundle(scope: IConstruct, options: BundlingProps): AssetCode {
     return Code.fromAsset(options.projectRoot, {
@@ -77,12 +88,55 @@ export class Bundling implements cdk.BundlingOptions {
     this.esbuildInstallation = undefined;
   }
 
+  public static clearRolldownInstallationCache(): void {
+    this.rolldownInstallation = undefined;
+  }
+
   public static clearTscInstallationCache(): void {
     this.tscInstallation = undefined;
   }
 
   private static esbuildInstallation?: PackageInstallation;
+  private static rolldownInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
+
+  private static resolveRolldownConfig(scope: IConstruct, projectRoot: string, configFile?: string): string {
+    if (configFile) {
+      const absolute = path.resolve(configFile);
+      const relative = path.relative(projectRoot, absolute);
+      if (relative.startsWith('..') || path.isAbsolute(relative)) {
+        throw new ValidationError(
+          lit`PathNotUnderRoot`,
+          `rolldownConfigFile (${absolute}) should be under projectRoot (${projectRoot})`,
+          scope,
+        );
+      }
+      if (!fs.existsSync(absolute)) {
+        throw new ValidationError(
+          lit`RolldownConfigFileMissing`,
+          `Rolldown config file not found at ${absolute}.`,
+          scope,
+        );
+      }
+      return absolute;
+    }
+
+    for (const ext of ROLLDOWN_CONFIG_EXTENSIONS) {
+      const candidate = path.join(projectRoot, `${ROLLDOWN_CONFIG_BASENAME}${ext}`);
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+
+    const attempted = ROLLDOWN_CONFIG_EXTENSIONS
+      .map(ext => `${ROLLDOWN_CONFIG_BASENAME}${ext}`)
+      .join(', ');
+    throw new ValidationError(
+      lit`RolldownConfigFileMissing`,
+      `Rolldown config file not found in ${projectRoot}. Looked for: ${attempted}. Create one or set \`rolldownConfigFile\` to its path.`,
+      scope,
+    );
+  }
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -98,17 +152,36 @@ export class Bundling implements cdk.BundlingOptions {
   public readonly local?: cdk.ILocalBundling;
   public readonly bundlingFileAccess?: cdk.BundlingFileAccess;
 
+  private readonly bundler: BundlerType;
   private readonly projectRoot: string;
   private readonly relativeEntryPath: string;
   private readonly relativeTsconfigPath?: string;
   private readonly relativeDepsLockFilePath: string;
+  private readonly relativeConfigFilePath?: string;
   private readonly externals: string[];
   private readonly packageManager: PackageManager;
 
   constructor(scope: IConstruct, private readonly props: BundlingProps) {
+    this.bundler = props.bundler ?? BundlerType.ESBUILD;
+
+    if (this.bundler === BundlerType.ROLLDOWN) {
+      const setFields = ESBUILD_ONLY_FIELDS.filter(k => props[k] !== undefined);
+      if (setFields.length) {
+        throw new ValidationError(
+          lit`EsbuildOptionsWithRolldown`,
+          `The following bundling options are not supported with rolldown; configure them in your rolldown.config instead: ${setFields.join(', ')}`,
+          scope,
+        );
+      }
+    }
+
     this.packageManager = PackageManager.fromLockFile(props.depsLockFilePath, props.logLevel);
 
-    Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
+    if (this.bundler === BundlerType.ROLLDOWN) {
+      Bundling.rolldownInstallation = Bundling.rolldownInstallation ?? PackageInstallation.detect('rolldown');
+    } else {
+      Bundling.esbuildInstallation = Bundling.esbuildInstallation ?? PackageInstallation.detect('esbuild');
+    }
     Bundling.tscInstallation = Bundling.tscInstallation ?? PackageInstallation.detect('typescript');
 
     this.projectRoot = props.projectRoot;
@@ -123,73 +196,83 @@ export class Bundling implements cdk.BundlingOptions {
       throw new ValidationError(lit`PathNotUnderRoot`, `depsLockFilePath (${props.depsLockFilePath}) should be under projectRoot (${this.projectRoot})`, scope);
     }
 
-    if (props.tsconfig) {
-      this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
-    }
-
     if (props.preCompilation && !/\.tsx?$/.test(props.entry)) {
       throw new ValidationError(lit`PreCompilationTypescriptFiles`, 'preCompilation can only be used with typescript files', scope);
     }
 
-    if (props.format === OutputFormat.ESM && !isEsmRuntime(props.runtime)) {
-      throw new ValidationError(lit`ScriptModuleOutputFormatSupported`, `ECMAScript module output format is not supported by the ${props.runtime.name} runtime`, scope);
+    if (this.bundler === BundlerType.ROLLDOWN) {
+      const absoluteConfig = Bundling.resolveRolldownConfig(scope, props.projectRoot, props.rolldownConfigFile);
+      this.relativeConfigFilePath = path.relative(props.projectRoot, absoluteConfig);
+      this.externals = [];
+    } else {
+      if (props.tsconfig) {
+        this.relativeTsconfigPath = path.relative(this.projectRoot, path.resolve(props.tsconfig));
+      }
+
+      if (props.format === OutputFormat.ESM && !isEsmRuntime(props.runtime)) {
+        throw new ValidationError(lit`ScriptModuleOutputFormatSupported`, `ECMAScript module output format is not supported by the ${props.runtime.name} runtime`, scope);
+      }
+
+      /**
+       * For Lambda runtime that uses AWS SDK v3, we need to remove both `aws-sdk/*` modules
+       * and `smithy/*` modules to prevent version mismatches. Hide it behind feature flag
+       * to make sure no breaking change is introduced.
+       *
+       * Issue reference: https://github.com/aws/aws-cdk/issues/31610#issuecomment-2389983347
+       */
+      const sdkV3Externals = cdk.FeatureFlags.of(scope).isEnabled(LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES) ?
+        ['@aws-sdk/*', '@smithy/*'] : ['@aws-sdk/*'];
+      // Modules to externalize when using a constant known version of the runtime.
+      // Mark aws-sdk as external by default (available in the runtime)
+      const isV2Runtime = isSdkV2Runtime(props.runtime);
+      const versionedExternals = isV2Runtime ? ['aws-sdk'] : sdkV3Externals;
+      // Don't automatically externalize any dependencies when using a `latest` runtime which may
+      // update versions in the future.
+      // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
+      // include in the bundle asset
+      const defaultExternals = props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
+
+      const externals = props.externalModules ?? defaultExternals;
+
+      // warn users if they are using a runtime that does not support sdk v2
+      // and the sdk is not explicitly bundled
+      if (externals.length && isV2Runtime) {
+        cdk.Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage', 'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.');
+      }
+
+      // Warn users if they are trying to rely on global versions of the SDK that aren't available in
+      // their environment.
+      if (isV2Runtime && externals.some((pkgName) => pkgName.startsWith('@aws-sdk/'))) {
+        cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime', 'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.');
+      } else if (!isV2Runtime && externals.includes('aws-sdk')) {
+        cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime', 'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.');
+      }
+
+      // Warn users if they are using a runtime that may change and are excluding any dependencies from
+      // bundling.
+      if (externals.length && props.runtime?.isVariable) {
+        cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:variableRuntimeExternals', 'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.');
+      }
+
+      this.externals = [
+        ...externals,
+        ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
+      ];
     }
-
-    /**
-     * For Lambda runtime that uses AWS SDK v3, we need to remove both `aws-sdk/*` modules
-     * and `smithy/*` modules to prevent version mismatches. Hide it behind feature flag
-     * to make sure no breaking change is introduced.
-     *
-     * Issue reference: https://github.com/aws/aws-cdk/issues/31610#issuecomment-2389983347
-     */
-    const sdkV3Externals = cdk.FeatureFlags.of(scope).isEnabled(LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES) ?
-      ['@aws-sdk/*', '@smithy/*'] : ['@aws-sdk/*'];
-    // Modules to externalize when using a constant known version of the runtime.
-    // Mark aws-sdk as external by default (available in the runtime)
-    const isV2Runtime = isSdkV2Runtime(props.runtime);
-    const versionedExternals = isV2Runtime ? ['aws-sdk'] : sdkV3Externals;
-    // Don't automatically externalize any dependencies when using a `latest` runtime which may
-    // update versions in the future.
-    // Don't automatically externalize aws sdk if `bundleAwsSDK` is true so it can be
-    // include in the bundle asset
-    const defaultExternals = props.runtime?.isVariable || props.bundleAwsSDK ? [] : versionedExternals;
-
-    const externals = props.externalModules ?? defaultExternals;
-
-    // warn users if they are using a runtime that does not support sdk v2
-    // and the sdk is not explicitly bundled
-    if (externals.length && isV2Runtime) {
-      cdk.Annotations.of(scope).addWarningV2('aws-cdk-lib/aws-lambda-nodejs:runtimeUpdateSdkV2Breakage', 'Be aware that the NodeJS runtime of Node 16 will be deprecated by Lambda on June 12, 2024. Lambda runtimes Node 18 and higher include SDKv3 and not SDKv2. Updating your Lambda runtime will require bundling the SDK, or updating all SDK calls in your handler code to use SDKv3 (which is not a trivial update). Please account for this added complexity and update as soon as possible.');
-    }
-
-    // Warn users if they are trying to rely on global versions of the SDK that aren't available in
-    // their environment.
-    if (isV2Runtime && externals.some((pkgName) => pkgName.startsWith('@aws-sdk/'))) {
-      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV3NotInRuntime', 'If you are relying on AWS SDK v3 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 18 or higher.');
-    } else if (!isV2Runtime && externals.includes('aws-sdk')) {
-      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:sdkV2NotInRuntime', 'If you are relying on AWS SDK v2 to be present in the Lambda environment already, please explicitly configure a NodeJS runtime of Node 16 or lower.');
-    }
-
-    // Warn users if they are using a runtime that may change and are excluding any dependencies from
-    // bundling.
-    if (externals.length && props.runtime?.isVariable) {
-      cdk.Annotations.of(scope).addWarningV2('@aws-cdk/aws-lambda-nodejs:variableRuntimeExternals', 'When using NODEJS_LATEST the runtime version may change as new runtimes are released, this may affect the availability of packages shipped with the environment. Ensure that any external dependencies are available through layers or specify a specific runtime version.');
-    }
-
-    this.externals = [
-      ...externals,
-      ...props.nodeModules ?? [], // Mark the modules that we are going to install as externals also
-    ];
 
     // Docker bundling
-    const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
+    const shouldBuildImage = props.forceDockerBundling || !this.localInstallation();
+    const bundlerVersionBuildArg: { [key: string]: string } = this.bundler === BundlerType.ROLLDOWN
+      ? { ROLLDOWN_VERSION: props.rolldownVersion ?? ROLLDOWN_DEFAULT_VERSION }
+      : { ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_DEFAULT_VERSION };
+
     this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'),
       {
         buildArgs: {
           ...props.buildArgs ?? {},
           // If runtime isn't passed use regional default, lowest common denominator is node18
           IMAGE: props.runtime.bundlingImage.image,
-          ESBUILD_VERSION: props.esbuildVersion ?? ESBUILD_DEFAULT_VERSION,
+          ...bundlerVersionBuildArg,
         },
         platform: props.architecture.dockerPlatform,
         network: props.network,
@@ -199,14 +282,14 @@ export class Bundling implements cdk.BundlingOptions {
     const bundlingCommand = this.createBundlingCommand(scope, {
       inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: cdk.AssetStaging.BUNDLING_OUTPUT_DIR,
-      esbuildRunner: 'esbuild', // esbuild is installed globally in the docker image
+      bundlerRunner: this.bundlerBinary(), // bundler is installed globally in the docker image
       tscRunner: 'tsc', // tsc is installed globally in the docker image
       osPlatform: 'linux', // linux docker image
     });
     this.command = props.command ?? ['bash', '-c', bundlingCommand];
     this.environment = props.environment;
     // Bundling sets the working directory to cdk.AssetStaging.BUNDLING_INPUT_DIR
-    // and we want to force npx to use the globally installed esbuild.
+    // and we want to force npx to use the globally installed bundler.
     this.workingDirectory = props.workingDirectory ?? '/';
     this.entrypoint = props.entrypoint;
     this.volumes = props.volumes;
@@ -222,10 +305,37 @@ export class Bundling implements cdk.BundlingOptions {
     }
   }
 
+  private bundlerBinary(): string {
+    return this.bundler === BundlerType.ROLLDOWN ? 'rolldown' : 'esbuild';
+  }
+
+  private localInstallation(): PackageInstallation | undefined {
+    return this.bundler === BundlerType.ROLLDOWN ? Bundling.rolldownInstallation : Bundling.esbuildInstallation;
+  }
+
   /**
-   * Builds the raw esbuild CLI arguments as an array of strings.
+   * Builds bundler CLI arguments as an array of strings.
    * No shell quoting — callers apply their own formatting.
    */
+  private buildBundlerArgs(
+    scope: IConstruct,
+    inputDir: string,
+    outputDir: string,
+    pathJoin: (...parts: string[]) => string,
+  ): string[] {
+    if (this.bundler === BundlerType.ROLLDOWN) {
+      const configPath = this.relativeConfigFilePath;
+      if (!configPath) {
+        throw new AssumptionError(lit`RolldownConfigPathUnresolved`, 'Rolldown config path was not resolved during construction');
+      }
+      return [
+        '-c', pathJoin(inputDir, configPath),
+        '--dir', outputDir,
+      ];
+    }
+    return this.buildEsbuildArgs(scope, inputDir, outputDir, pathJoin);
+  }
+
   private buildEsbuildArgs(
     scope: IConstruct,
     inputDir: string,
@@ -272,7 +382,7 @@ export class Bundling implements cdk.BundlingOptions {
       inputDir: options.inputDir,
       outputDir: options.outputDir,
       pathJoin,
-      esbuildRunner: [options.esbuildRunner],
+      bundlerRunner: [options.bundlerRunner],
       tscRunner: options.tscRunner ? [options.tscRunner] : undefined,
       createFileOps: (deps) => this.dockerFileOps(osCommand, pathJoin, options, deps),
     });
@@ -358,26 +468,39 @@ export class Bundling implements cdk.BundlingOptions {
 
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
     const cwd = this.projectRoot;
+    const binary = this.bundlerBinary();
+    const majorVersion = this.bundler === BundlerType.ROLLDOWN ? ROLLDOWN_MAJOR_VERSION : ESBUILD_MAJOR_VERSION;
 
     return {
       tryBundle: (outputDir: string) => {
-        if (!Bundling.esbuildInstallation) {
-          process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
+        const installation = this.localInstallation();
+        if (!installation) {
+          process.stderr.write(`${binary} cannot run locally. Switching to Docker bundling.\n`);
           return false;
         }
 
-        if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
-          throw new ValidationError(lit`ExpectedEsbuildVersion`, `Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
+        if (!installation.version.startsWith(`${majorVersion}.`)) {
+          if (this.bundler === BundlerType.ROLLDOWN) {
+            throw new ValidationError(
+              lit`ExpectedRolldownVersion`,
+              `Expected rolldown version ${majorVersion}.x but got ${installation.version}`,
+              scope,
+            );
+          }
+          throw new ValidationError(
+            lit`ExpectedEsbuildVersion`,
+            `Expected esbuild version ${majorVersion}.x but got ${installation.version}`,
+            scope,
+          );
         }
 
-        const esbuild = Bundling.esbuildInstallation!;
         const tsc = Bundling.tscInstallation;
 
         const steps = this.createBundlingSteps(scope, {
           inputDir: cwd,
           outputDir,
           pathJoin: (...args: string[]) => path.join(...args),
-          esbuildRunner: esbuild.isWorkspacePackage ? this.packageManager.runBinCommand('esbuild') : ['esbuild'],
+          bundlerRunner: installation.isWorkspacePackage ? this.packageManager.runBinCommand(binary) : [binary],
           tscRunner: tsc && (tsc.isWorkspacePackage ? this.packageManager.runBinCommand('tsc') : ['tsc']),
           createFileOps: (deps) => this.localFileOps(outputDir, deps),
         });
@@ -422,12 +545,13 @@ export class Bundling implements cdk.BundlingOptions {
       entryPath = entryPath.replace(/\.ts(x?)$/, '.js$1');
     }
 
-    // 3. Esbuild
-    const esbuildArgs: string[] = [
-      ...this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, options.pathJoin),
-      ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
+    // 3. Bundler (esbuild or rolldown)
+    const bundlerArgs: string[] = [
+      ...this.buildBundlerArgs(scope, options.inputDir, options.outputDir, options.pathJoin),
+      ...this.bundler === BundlerType.ESBUILD && this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
     ];
-    steps.push({ type: 'spawn', command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs] });
+    const bundleFlags = this.bundler === BundlerType.ESBUILD ? ['--bundle'] : [];
+    steps.push({ type: 'spawn', command: [...options.bundlerRunner, ...bundleFlags, entryPath, ...bundlerArgs] });
 
     // 4-5. Node modules installation
     if (this.props.nodeModules) {
@@ -525,7 +649,7 @@ type BundlingStep =
 interface BundlingCommandOptions {
   readonly inputDir: string;
   readonly outputDir: string;
-  readonly esbuildRunner: string;
+  readonly bundlerRunner: string;
   readonly tscRunner?: string;
   readonly osPlatform: NodeJS.Platform;
 }
@@ -547,8 +671,8 @@ interface StepBuilderOptions {
   readonly outputDir: string;
   /** Platform-aware path join */
   readonly pathJoin: (...parts: string[]) => string;
-  /** The esbuild command as an argv array */
-  readonly esbuildRunner: string[];
+  /** The bundler command as an argv array */
+  readonly bundlerRunner: string[];
   /** The tsc command as an argv array, or undefined if not available */
   readonly tscRunner?: string[];
   /** Produces steps for nodeModules file operations (differs between local and Docker) */
