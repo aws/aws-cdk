@@ -1,0 +1,34 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "aacfeb7bc87d1de64aa107694452f75f5ff3503eef44ec9eee9dfceb9f0dd77c": {
+      "displayName": "rolldown-handler/Code",
+      "source": {
+        "path": "asset.aacfeb7bc87d1de64aa107694452f75f5ff3503eef44ec9eee9dfceb9f0dd77c",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-56704663": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "aacfeb7bc87d1de64aa107694452f75f5ff3503eef44ec9eee9dfceb9f0dd77c.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "6e95405b97e534d9cec0761a1ba9f38ace646bea0abfbf495e4ae3d45c70c5ee": {
+      "displayName": "cdk-integ-lambda-nodejs-rolldown Template",
+      "source": {
+        "path": "cdk-integ-lambda-nodejs-rolldown.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-173512f5": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "6e95405b97e534d9cec0761a1ba9f38ace646bea0abfbf495e4ae3d45c70c5ee.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
