@@ -941,7 +941,7 @@ export class Function extends FunctionBase {
   protected readonly canCreatePermissions = true;
 
   /** @internal */
-  public readonly _layers: IArrayBox<ILayerVersion> = Box.fromArray([]);
+  public readonly _layers: IArrayBox<ILayerVersion> = Box.fromArray();
 
   /** @internal */
   public _logRetention?: logs.LogRetention;
@@ -972,7 +972,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private readonly environment: IMapBox<string, EnvironmentConfig> = Box.fromMap(new Map());
+  private readonly environment: IMapBox<string, EnvironmentConfig> = Box.fromMap();
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;

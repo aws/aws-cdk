@@ -47,11 +47,11 @@ export abstract class AlarmBase extends Resource implements IAlarm {
   public abstract readonly alarmName: string;
 
   /** @internal */
-  protected readonly _alarmActionArns: IArrayBox<string> = Box.fromArray([]);
+  protected readonly _alarmActionArns: IArrayBox<string> = Box.fromArray();
   /** @internal */
-  protected readonly _insufficientDataActionArns: IArrayBox<string> = Box.fromArray([]);
+  protected readonly _insufficientDataActionArns: IArrayBox<string> = Box.fromArray();
   /** @internal */
-  protected readonly _okActionArns: IArrayBox<string> = Box.fromArray([]);
+  protected readonly _okActionArns: IArrayBox<string> = Box.fromArray();
 
   protected get alarmActionArns(): string[] | undefined {
     return this._alarmActionArns.length > 0 ? [...this._alarmActionArns] : undefined;
