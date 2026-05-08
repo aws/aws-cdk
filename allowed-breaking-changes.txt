@@ -4167,3 +4167,6 @@ removed-mutability:aws-cdk-lib.aws_s3.BucketBase.grants
 
 # Parameter was made optional in override but base class requires it (JSII5008). Method is @deprecated.
 new-argument:aws-cdk-lib.aws_events_targets.LogGroupTargetInput.fromObject
+
+# This interface is new; its not depended on yet
+weakened:aws-cdk-lib.PolicyViolatingResource

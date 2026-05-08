@@ -154,6 +154,7 @@ export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront
 export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
+export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1836,6 +1837,26 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: `Explicitly set \`imageType\` to \`ECS_AL2\` or \`EKS_AL2\` in your compute environment images configuration.
 
 **Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.`,
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ANNOTATIONS_IN_VALIDATION_REPORT]: {
+    type: FlagType.VisibleContext,
+    summary: 'Include construct annotations (warnings and errors) in the policy validation report',
+    detailsMd: `
+      When enabled, construct annotations added via \`Annotations.of()\` or \`Validations.of()\`
+      are collected post-synthesis and included in the policy validation report alongside
+      plugin violations. Annotations appear under a "Construct Annotations" source entry.
+
+      When disabled, annotations are only displayed through the CLI's standard metadata
+      output (e.g. \`[Warning at /path] message\`) and do not appear in the validation report.
+
+      Note: enabling this flag may cause annotations to appear twice — once in the CLI's
+      standard output and once in the validation report — until the CLI is updated to
+      consolidate both displays.`,
+    introducedIn: { v2: '2.253.0' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
