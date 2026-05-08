@@ -54,7 +54,6 @@ describe('IamUser', () => {
           'on ~app:* +@read +@write',
         ),
         engine: UserEngine.REDIS,
-        userName: 'test-user', // This matches userId but will be overridden anyway
       });
 
       const template = Template.fromStack(stack);
@@ -91,7 +90,6 @@ describe('IamUser', () => {
     test('exposes correct properties', () => {
       const user = new IamUser(stack, 'TestUser', {
         userId: 'test-user-id',
-        userName: 'test-user-id',
         engine: UserEngine.VALKEY,
         accessControl: AccessControl.fromAccessString('on ~app:* +@read'),
       });
