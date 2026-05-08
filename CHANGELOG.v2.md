@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.253.1](https://github.com/aws/aws-cdk/compare/v2.253.0...v2.253.1) (2026-05-08)
+
+
+### Bug Fixes
+
+* **core:** "exports cannot be updated" for cross-region references ([#37790](https://github.com/aws/aws-cdk/issues/37790)) ([b0c00e2](https://github.com/aws/aws-cdk/commit/b0c00e2b1fde5da462d4fd848610f59e78b482ba))
+* **s3deploy:** empty sources leads to deployment error ([#37786](https://github.com/aws/aws-cdk/issues/37786)) ([f61656a](https://github.com/aws/aws-cdk/commit/f61656a3a408b0b50d79f43cdf18d0f5801e9a43))
+
 ## [2.253.0](https://github.com/aws/aws-cdk/compare/v2.252.0...v2.253.0) (2026-05-06)
 
 
