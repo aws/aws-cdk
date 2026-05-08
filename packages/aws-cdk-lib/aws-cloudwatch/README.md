@@ -514,9 +514,9 @@ new cloudwatch.PromQLAlarm(this, 'PromQLAlarm', {
   alarmName: 'HighCpuUsage',
   alarmDescription: 'Alarm when CPU usage exceeds 90%',
   query: 'cpu_usage > 90',
-  evaluationInterval: cdk.Duration.seconds(60),
-  pendingPeriod: cdk.Duration.seconds(300),
-  recoveryPeriod: cdk.Duration.seconds(300),
+  evaluationInterval: Duration.seconds(60),
+  pendingPeriod: Duration.seconds(300),
+  recoveryPeriod: Duration.seconds(300),
 });
 ```
 
