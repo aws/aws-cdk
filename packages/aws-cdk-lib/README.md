@@ -332,7 +332,7 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 
 ### Cross-stack reference strength
 
-The context key `@aws-cdk/core:crossStackReferenceStrength` controls the mechanism used for
+The context key `@aws-cdk/core:defaultCrossStackReferences` controls the mechanism used for
 cross-region references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
 
 **Strong references** (default) use a pair of Custom Resources (ExportWriter/ExportReader) that
@@ -354,7 +354,7 @@ Configure the reference strength in your `cdk.json`:
 ```json
 {
   "context": {
-    "@aws-cdk/core:crossStackReferenceStrength": "strong"
+    "@aws-cdk/core:defaultCrossStackReferences": "strong"
   }
 }
 ```
@@ -387,7 +387,7 @@ problem:
 ```json
 {
   "context": {
-    "@aws-cdk/core:crossStackReferenceStrength": "both"
+    "@aws-cdk/core:defaultCrossStackReferences": "both"
   }
 }
 ```
@@ -401,7 +401,7 @@ the ExportReader custom resource.
 ```json
 {
   "context": {
-    "@aws-cdk/core:crossStackReferenceStrength": "weak"
+    "@aws-cdk/core:defaultCrossStackReferences": "weak"
   }
 }
 ```

@@ -96,7 +96,7 @@ describe('nested-stack', () => {
 
   test('can create cross region references when crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'weak' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', {
       env: {
         account: '123456789012',

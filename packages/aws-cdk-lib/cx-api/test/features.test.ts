@@ -47,7 +47,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
     [feats.ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER]: false,
     [feats.AUTOMATIC_L1_TRAITS]: true,
-    [feats.CROSS_STACK_REFERENCE_STRENGTH]: 'strong',
+    [feats.DEFAULT_CROSS_STACK_REFERENCES]: 'strong',
     [feats.BATCH_DEFAULT_AL2023]: false,
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
 

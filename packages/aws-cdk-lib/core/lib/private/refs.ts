@@ -3,7 +3,7 @@
 // ----------------------------------------------------
 
 import type { IConstruct } from 'constructs';
-import { Construct, Node } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
@@ -33,19 +33,20 @@ import type {
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
-type CrossStackReferenceStrength = 'strong' | 'weak' | 'both';
+const CROSS_STACK_REFERENCE_VALUES = ['strong', 'weak', 'both'] as const;
+type CrossStackReferenceStrength = (typeof CROSS_STACK_REFERENCE_VALUES)[number];
 
 function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStrength {
-  const value = Node.of(scope).tryGetContext(cxapi.CROSS_STACK_REFERENCE_STRENGTH);
+  const value = scope.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES);
   if (value === undefined || value === null) {
     return 'strong';
   }
-  if (value === 'strong' || value === 'weak' || value === 'both') {
+  if (CROSS_STACK_REFERENCE_VALUES.includes(value)) {
     return value;
   }
   throw new UnscopedValidationError(
     lit`InvalidCrossStackReferenceStrength`,
-    `Invalid value for ${cxapi.CROSS_STACK_REFERENCE_STRENGTH}: "${value}". Must be "strong", "weak", or "both".`,
+    `Invalid value for ${cxapi.DEFAULT_CROSS_STACK_REFERENCES}: "${value}". Must be "strong", "weak", or "both".`,
   );
 }
 
@@ -93,10 +94,9 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
     if (strength === 'strong') {
       Annotations.of(consumer).addWarningV2(
-        '@aws-cdk/core:crossAccountStrongRefsNotSupported',
-        `Stack "${consumer.node.path}" references ${renderReference(reference)} in stack "${producer.node.path}". ` +
-        'Strong cross-account references are not supported. Set the context key ' +
-        `"${cxapi.CROSS_STACK_REFERENCE_STRENGTH}" to "weak" or "both" to use Fn::GetStackOutput for cross-account references.`,
+        '@aws-cdk/core:crossAccountRefsAreAlwaysWeak',
+        'Strong references requested, but cross-account references can only be weak. ' +
+        `Acknowledge this warning or set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "weak" to remove this message.`,
       );
       // Fall through to weak behavior since strong is not possible for cross-account
     }

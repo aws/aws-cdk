@@ -4,7 +4,7 @@ import * as ssm from 'aws-cdk-lib/aws-ssm';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App({
-  context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'strong' },
+  context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' },
 });
 
 const producingStack = new cdk.Stack(app, 'CrossRegionRefProducerInteg', {

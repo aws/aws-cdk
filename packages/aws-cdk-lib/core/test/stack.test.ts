@@ -742,7 +742,7 @@ describe('stack', () => {
 
   test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'weak' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -827,7 +827,7 @@ describe('stack', () => {
 
   test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'weak' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -930,7 +930,7 @@ describe('stack', () => {
 
   test('cross region stack references with multiple stacks and multiple regions, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'weak' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1076,7 +1076,7 @@ describe('stack', () => {
 
   test('cross-region strong references use ExportWriter/ExportReader', () => {
     // GIVEN - strength is explicitly 'strong'
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'strong' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1112,7 +1112,7 @@ describe('stack', () => {
 
   test('cross-region both references generate ExportWriter AND Fn::GetStackOutput', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'both' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1154,7 +1154,7 @@ describe('stack', () => {
 
   test('cross-account strong references emit warning and use Fn::GetStackOutput', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'strong' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
     const producer = new Stack(app, 'Stack1', {
       env: { region: 'us-east-1', account: '111111111111' },
     });
@@ -1179,12 +1179,12 @@ describe('stack', () => {
 
     // THEN - warning emitted
     const warnings = consumer.node.metadata.filter(m => m.type === 'aws:cdk:warning');
-    expect(warnings.some(w => w.data.includes('Strong cross-account references are not supported'))).toBe(true);
+    expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
   });
 
   test('same-region weak references emit warning and use Fn::ImportValue', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'weak' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1210,7 +1210,7 @@ describe('stack', () => {
 
   test('invalid cross stack reference strength throws', () => {
     // GIVEN
-    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'invalid' } });
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'invalid' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1946,7 +1946,7 @@ describe('stack', () => {
     }).not.toThrow();
 
     const warnings = stack2.node.metadata.filter(m => m.type === 'aws:cdk:warning');
-    expect(warnings.some(w => w.data.includes('Strong cross-account references are not supported'))).toBe(true);
+    expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
   });
 
   test('urlSuffix does not imply a stack dependency', () => {
