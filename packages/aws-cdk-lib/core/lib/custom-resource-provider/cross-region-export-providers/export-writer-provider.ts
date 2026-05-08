@@ -129,13 +129,27 @@ export class ExportWriter extends Construct {
    * @returns a reference to the reader custom resource
    */
   public exportValue(exportName: string, reference: Reference, importStack: Stack): Intrinsic {
-    const stack = Stack.of(this);
-    const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
+    const parameterName = this.registerExport(exportName, reference, importStack);
 
     const ref = new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
-
-    this._references.put(parameterName, stack.resolve(reference.toString()));
     return this.addToExportReader(parameterName, ref, importStack);
+  }
+
+  /**
+   * Register a reference with the writer without creating an ExportReader in the consumer stack.
+   * Used during the "both" transitional state where the producer still writes to SSM
+   * but the consumer reads via Fn::GetStackOutput instead of the ExportReader.
+   */
+  public exportValueWriteOnly(exportName: string, reference: Reference, importStack: Stack): void {
+    this.registerExport(exportName, reference, importStack);
+  }
+
+  private registerExport(exportName: string, reference: Reference, importStack: Stack): string {
+    const stack = Stack.of(this);
+    const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
+    this._references.put(parameterName, stack.resolve(reference.toString()));
+    this.addRegionToPolicy(importStack.region);
+    return parameterName;
   }
 
   /**

@@ -96,7 +96,7 @@ describe('nested-stack', () => {
 
   test('can create cross region references when crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', {
       env: {
         account: '123456789012',
@@ -132,34 +132,15 @@ describe('nested-stack', () => {
         Resource2: {
           Properties: {
             Prop1: {
-              Ref: 'referencetoStack2ExportsReader861D07DCcdkexportsStack2Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'bermuda-triangle-1337',
+                OutputName: 'PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF',
+              },
             },
           },
           Type: 'My::Resource',
         },
-      },
-    });
-    const template2 = assembly.getStackByName(stack2.stackName).template;
-    expect(template2?.Resources).toMatchObject({
-      ExportsReader8B249524: {
-        DeletionPolicy: 'Delete',
-        Properties: {
-          ReaderProps: {
-            imports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': '{{resolve:ssm:/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E}}',
-            },
-            region: 'bermuda-triangle-42',
-            prefix: 'Stack2',
-          },
-          ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-              'Arn',
-            ],
-          },
-        },
-        Type: 'Custom::CrossRegionExportReader',
-        UpdateReplacePolicy: 'Delete',
       },
     });
     const template1 = assembly.getStackByName(stack1.stackName).template;
@@ -172,35 +153,19 @@ describe('nested-stack', () => {
       },
     });
 
-    expect(template1?.Resources).toMatchObject({
-      ExportsWriterbermudatriangle42E59594276156AC73: {
-        DeletionPolicy: 'Delete',
-        Properties: {
-          WriterProps: {
-            exports: {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E': {
-                'Fn::GetAtt': [
-                  'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
-                  'Outputs.Stack1Nested1Resource178AEB067Ref',
-                ],
-              },
-            },
-            region: 'bermuda-triangle-42',
-          },
-          ServiceToken: {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-              'Arn',
-            ],
-          },
+    expect(template1?.Outputs).toMatchObject({
+      PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF: {
+        Value: {
+          'Fn::GetAtt': [
+            'Nested1NestedStackNested1NestedStackResourceCD0AD36B',
+            'Outputs.Stack1Nested1Resource178AEB067Ref',
+          ],
         },
-        Type: 'Custom::CrossRegionExportWriter',
-        UpdateReplacePolicy: 'Delete',
       },
     });
   });
 
-  test('cannot create cross region references when crossRegionReferences=false', () => {
+  test('cross region references require explicit physical name on nested stack resources', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', {
@@ -224,7 +189,7 @@ describe('nested-stack', () => {
     });
 
     // THEN
-    expect(() => toCloudFormation(stack2)).toThrow(
+    expect(() => app.synth()).toThrow(
       /Cannot use resource 'Stack1\/MyNestedStack\/MyResource' in a cross-environment fashion/);
   });
 
