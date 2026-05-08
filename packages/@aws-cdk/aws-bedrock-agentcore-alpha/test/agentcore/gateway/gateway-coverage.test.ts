@@ -4,6 +4,8 @@
 
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
@@ -15,16 +17,59 @@ import {
   OAuth2CredentialProvider,
 } from '../../../lib';
 import { PolicyEngineMode } from '../../../lib/gateway/gateway';
+import { LambdaInterceptor } from '../../../lib/gateway/interceptor';
+import { ApiKeyCredentialLocation } from '../../../lib/gateway/outbound-auth/api-key';
 import { ToolSchema, SchemaDefinitionType } from '../../../lib/gateway/targets/schema/tool-schema';
+import { ApiGatewayHttpMethod } from '../../../lib/gateway/targets/target-configuration';
 import { PolicyEngine } from '../../../lib/policy/policy-engine';
+
+/**
+ * Helper: wraps a Metric in a minimal Alarm so we can assert on the
+ * synthesized CloudWatch::Alarm template properties.
+ */
+function alarmForMetric(stack: cdk.Stack, id: string, metric: cloudwatch.Metric): void {
+  new cloudwatch.Alarm(stack, id, {
+    metric,
+    evaluationPeriods: 1,
+    threshold: 1,
+  });
+}
 
 describe('Gateway Coverage Tests', () => {
   let stack: cdk.Stack;
 
   beforeEach(() => {
     const app = new cdk.App();
-    stack = new cdk.Stack(app, 'TestStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
+    stack = new cdk.Stack(app, 'TestStack');
+  });
+
+  test('Should create a ServiceRole when no custom role is provided', () => {
+    new Gateway(stack, 'Gateway');
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should use the provided role and not create a ServiceRole', () => {
+    const role = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    new Gateway(stack, 'Gateway', { role });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      RoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('CustomRole.*'), 'Arn'] },
     });
   });
 
@@ -35,13 +80,11 @@ describe('Gateway Coverage Tests', () => {
     });
 
     new Gateway(stack, 'Gateway', {
-      gatewayName: 'test-gateway',
       kmsKey: key,
       role: role,
     });
 
     const template = Template.fromStack(stack);
-    // Verify that KMS permissions are granted to the role
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
@@ -51,6 +94,7 @@ describe('Gateway Coverage Tests', () => {
           }),
         ]),
       },
+      Roles: Match.arrayWith([{ Ref: Match.stringLikeRegexp('Role.*') }]),
     });
   });
 
@@ -60,7 +104,6 @@ describe('Gateway Coverage Tests', () => {
     });
 
     new Gateway(stack, 'Gateway', {
-      gatewayName: 'test-gateway',
       policyEngineConfiguration: { policyEngine },
     });
 
@@ -86,7 +129,6 @@ describe('Gateway Coverage Tests', () => {
     });
 
     new Gateway(stack, 'Gateway2', {
-      gatewayName: 'test-gateway-2',
       policyEngineConfiguration: {
         policyEngine,
         mode: PolicyEngineMode.ENFORCE,
@@ -174,7 +216,7 @@ describe('Gateway Coverage Tests', () => {
   });
 
   test('Should pass credentialProviderConfigurations when provided to Lambda target', () => {
-    const gateway = new Gateway(stack, 'Gateway', { gatewayName: 'test-gateway' });
+    const gateway = new Gateway(stack, 'Gateway', {});
 
     const fn = new lambda.Function(stack, 'Function', {
       runtime: lambda.Runtime.NODEJS_22_X,
@@ -190,13 +232,18 @@ describe('Gateway Coverage Tests', () => {
 
     const creds = [GatewayCredentialProvider.fromIamRole()];
 
-    const target = gateway.addLambdaTarget('Target', {
+    gateway.addLambdaTarget('Target', {
       lambdaFunction: fn,
       toolSchema: toolSchema,
       credentialProviderConfigurations: creds,
     });
 
-    expect(target.credentialProviderConfigurations).toEqual(creds);
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+      CredentialProviderConfigurations: Match.arrayWith([
+        Match.objectLike({ CredentialProviderType: 'GATEWAY_IAM_ROLE' }),
+      ]),
+    });
   });
 
   const minimalOpenApiSchema = ApiSchema.fromInline(
@@ -336,60 +383,46 @@ describe('Gateway Coverage Tests', () => {
     const template = Template.fromStack(stack);
 
     // Statement 1: GetWorkloadAccessToken scoped to workload-identity-directory
+    // Statement 1: GetWorkloadAccessToken scoped to directory and identity wildcard
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:GetWorkloadAccessToken',
-            Resource: Match.arrayWith([
-              Match.objectLike({
-                'Fn::Join': Match.arrayWith([Match.arrayWith([
-                  Match.stringLikeRegexp('.*bedrock-agentcore.*workload-identity-directory/default'),
-                ])]),
-              }),
-              Match.objectLike({
-                'Fn::Join': Match.arrayWith([Match.arrayWith([
-                  Match.stringLikeRegexp('.*workload-identity-directory/default/workload-identity/my-gateway-\\*'),
-                ])]),
-              }),
-            ]),
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default'])] }, // directory ARN (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default)
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default/workload-identity/my-gateway-*'])] }, // identity wildcard scoped to gateway name (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default/workload-identity/my-gateway-*)
+            ],
           }),
         ]),
       },
     });
 
-    // Statement 2: GetResourceApiKey scoped to token vault, provider ARN, directory, and identity wildcard
+    // Statement 2: GetResourceApiKey scoped to token vault, provider, directory, and identity
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:GetResourceApiKey',
+            Effect: 'Allow',
             Resource: Match.arrayWith([
-              Match.objectLike({
-                'Fn::Join': Match.arrayWith([Match.arrayWith([
-                  Match.stringLikeRegexp('.*bedrock-agentcore.*token-vault/default'),
-                ])]),
-              }),
-              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Key.*'), 'CredentialProviderArn']) },
+              { 'Fn::Join': ['', Match.arrayWith([':token-vault/default'])] }, // token vault ARN (arn:*:bedrock-agentcore:*:*:token-vault/default)
+              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Key.*'), 'CredentialProviderArn']) }, // the API key provider
             ]),
           }),
         ]),
       },
     });
 
-    // Statement 3: Secrets Manager scoped to bedrock-agentcore-identity prefix wildcard
-    // (CDK-created providers use a wildcard because the CFN attribute ApiKeySecretArn
-    // returns an object, not a plain string ARN that can be placed in IAM Resource fields)
+    // Statement 3: Secrets Manager scoped to service-managed secret prefix
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'secretsmanager:GetSecretValue',
-            Resource: Match.objectLike({
-              'Fn::Join': Match.arrayWith([Match.arrayWith([
-                Match.stringLikeRegexp('.*secretsmanager.*secret:bedrock-agentcore-identity!\\*'),
-              ])]),
-            }),
+            Effect: 'Allow',
+            Resource: { 'Fn::Join': ['', Match.arrayWith([':secret:bedrock-agentcore-identity!*'])] }, // wildcard for CDK-created provider secrets (arn:*:secretsmanager:*:*:secret:bedrock-agentcore-identity!*)
           }),
         ]),
       },
@@ -424,67 +457,56 @@ describe('Gateway Coverage Tests', () => {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
-            Action: Match.arrayWith([
-              'bedrock-agentcore:GetWorkloadAccessToken',
-              'bedrock-agentcore:GetWorkloadAccessTokenForJWT',
-              'bedrock-agentcore:GetWorkloadAccessTokenForUserId',
-            ]),
-            Resource: Match.arrayWith([
-              Match.objectLike({
-                'Fn::Join': Match.arrayWith([Match.arrayWith([
-                  Match.stringLikeRegexp('.*bedrock-agentcore.*workload-identity-directory/default'),
-                ])]),
-              }),
-            ]),
+            Action: Match.arrayWith(['bedrock-agentcore:GetWorkloadAccessToken']),
+            Effect: 'Allow',
+            Resource: [
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default'])] }, // directory ARN (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default)
+              { 'Fn::Join': ['', Match.arrayWith([':workload-identity-directory/default/workload-identity/my-gateway-*'])] }, // identity wildcard scoped to gateway name (arn:*:bedrock-agentcore:*:*:workload-identity-directory/default/workload-identity/my-gateway-*)
+            ],
           }),
         ]),
       },
     });
 
-    // Statement 2: CompleteResourceTokenAuth scoped to token vault, provider, directory, identity
+    // Statement 2: CompleteResourceTokenAuth scoped to token vault and provider
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:CompleteResourceTokenAuth',
+            Effect: 'Allow',
             Resource: Match.arrayWith([
-              Match.objectLike({
-                'Fn::Join': Match.arrayWith([Match.arrayWith([
-                  Match.stringLikeRegexp('.*bedrock-agentcore.*token-vault/default'),
-                ])]),
-              }),
-              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gh.*'), 'CredentialProviderArn']) },
+              { 'Fn::Join': ['', Match.arrayWith([':token-vault/default'])] }, // token vault ARN (arn:*:bedrock-agentcore:*:*:token-vault/default)
+              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gh.*'), 'CredentialProviderArn']) }, // the OAuth provider
             ]),
           }),
         ]),
       },
     });
 
-    // Statement 3: GetResourceOauth2Token scoped to token vault, provider, directory, identity
+    // Statement 3: GetResourceOauth2Token scoped to provider
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'bedrock-agentcore:GetResourceOauth2Token',
+            Effect: 'Allow',
             Resource: Match.arrayWith([
-              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gh.*'), 'CredentialProviderArn']) },
+              { 'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('Gh.*'), 'CredentialProviderArn']) }, // the OAuth provider
             ]),
           }),
         ]),
       },
     });
 
-    // Statement 4: Secrets Manager scoped to bedrock-agentcore-identity prefix wildcard
+    // Statement 4: Secrets Manager scoped to service-managed secret prefix
     template.hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
         Statement: Match.arrayWith([
           Match.objectLike({
             Action: 'secretsmanager:GetSecretValue',
-            Resource: Match.objectLike({
-              'Fn::Join': Match.arrayWith([Match.arrayWith([
-                Match.stringLikeRegexp('.*secretsmanager.*secret:bedrock-agentcore-identity!\\*'),
-              ])]),
-            }),
+            Effect: 'Allow',
+            Resource: { 'Fn::Join': ['', Match.arrayWith([':secret:bedrock-agentcore-identity!*'])] }, // wildcard for CDK-created provider secrets (arn:*:secretsmanager:*:*:secret:bedrock-agentcore-identity!*)
           }),
         ]),
       },
@@ -531,6 +553,689 @@ describe('Gateway Coverage Tests', () => {
           }),
         ]),
       },
+    });
+  });
+});
+
+describe('Gateway grant methods tests', () => {
+  const GATEWAY_LOGICAL_ID = 'testgateway.*';
+
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+  let grantee: iam.Role;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    gateway = new Gateway(stack, 'test-gateway', {});
+    grantee = new iam.Role(stack, 'TestRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+  });
+
+  test('Should grant custom actions to IAM principal scoped to gateway ARN', () => {
+    gateway.grant(grantee, 'bedrock-agentcore:GetGateway', 'bedrock-agentcore:ListGatewayTargets');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['bedrock-agentcore:GetGateway', 'bedrock-agentcore:ListGatewayTargets'],
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp(GATEWAY_LOGICAL_ID), 'GatewayArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant read permissions with Get on gateway ARN and List on all resources', () => {
+    gateway.grantRead(grantee);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['bedrock-agentcore:GetGatewayTarget', 'bedrock-agentcore:GetGateway'],
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp(GATEWAY_LOGICAL_ID), 'GatewayArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: ['bedrock-agentcore:ListGateways', 'bedrock-agentcore:ListGatewayTargets'],
+            Effect: 'Allow',
+            Resource: '*',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant manage permissions with Create, Update, and Delete actions scoped to gateway ARN', () => {
+    gateway.grantManage(grantee);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: Match.arrayWith([
+              'bedrock-agentcore:CreateGateway',
+              'bedrock-agentcore:CreateGatewayTarget',
+              'bedrock-agentcore:UpdateGateway',
+              'bedrock-agentcore:UpdateGatewayTarget',
+              'bedrock-agentcore:DeleteGateway',
+              'bedrock-agentcore:DeleteGatewayTarget',
+            ]),
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp(GATEWAY_LOGICAL_ID), 'GatewayArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should grant invoke permission scoped to gateway ARN', () => {
+    gateway.grantInvoke(grantee);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:InvokeGateway',
+            Effect: 'Allow',
+            Resource: Match.objectLike({
+              'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp(GATEWAY_LOGICAL_ID), 'GatewayArn']),
+            }),
+          }),
+        ]),
+      },
+    });
+  });
+});
+
+describe('Gateway metric methods tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    gateway = new Gateway(stack, 'test-gateway-metrics', {});
+  });
+
+  test('metric() produces correct namespace, name, and dimensions', () => {
+    const metric = gateway.metric('CustomMetric', { CustomDimension: 'value' });
+    alarmForMetric(stack, 'CustomAlarm', metric);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'CustomMetric',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'CustomDimension', Value: 'value' }),
+        Match.objectLike({ Name: 'Resource' }),
+      ]),
+    });
+  });
+
+  test('metricInvocations() produces Invocations with Sum statistic', () => {
+    alarmForMetric(stack, 'InvocationsAlarm', gateway.metricInvocations());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
+  });
+
+  test('metricThrottles() produces Throttles with Sum statistic', () => {
+    alarmForMetric(stack, 'ThrottlesAlarm', gateway.metricThrottles());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Throttles',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
+  });
+
+  test('metricSystemErrors() produces SystemErrors with Sum statistic', () => {
+    alarmForMetric(stack, 'SystemErrorsAlarm', gateway.metricSystemErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SystemErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
+  });
+
+  test('metricUserErrors() produces UserErrors with Sum statistic', () => {
+    alarmForMetric(stack, 'UserErrorsAlarm', gateway.metricUserErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'UserErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
+  });
+
+  test('metricLatency() produces Latency with Average statistic', () => {
+    alarmForMetric(stack, 'LatencyAlarm', gateway.metricLatency());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+    });
+  });
+
+  test('metricDuration() produces Duration with Average statistic', () => {
+    alarmForMetric(stack, 'DurationAlarm', gateway.metricDuration());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Duration',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+    });
+  });
+
+  test('metricTargetExecutionTime() produces TargetExecutionTime with Average statistic', () => {
+    alarmForMetric(stack, 'TargetExecAlarm', gateway.metricTargetExecutionTime());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'TargetExecutionTime',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+    });
+  });
+
+  test('metricTargetType() produces TargetType with dimension and Sum statistic', () => {
+    alarmForMetric(stack, 'TargetTypeAlarm', gateway.metricTargetType('Lambda'));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'TargetType',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'TargetType', Value: 'Lambda' }),
+      ]),
+    });
+  });
+
+  test('custom statistic prop overrides the default', () => {
+    alarmForMetric(stack, 'CustomStatAlarm', gateway.metricInvocations({ statistic: 'Average' }));
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+    });
+  });
+});
+
+describe('OAuth credential provider tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+  let fn: lambda.Function;
+  let toolSchema: ToolSchema;
+
+  const providerArn = 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/oauth2credentialprovider/test';
+  const secretArn = 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test-secret';
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    gateway = new Gateway(stack, 'Gateway', {});
+    fn = new lambda.Function(stack, 'Fn', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({});'),
+    });
+    toolSchema = ToolSchema.fromInline([{
+      name: 'tool',
+      description: 'tool',
+      inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+    }]);
+  });
+
+  test('Should render OAuth credential provider in GatewayTarget template with scopes and customParameters', () => {
+    gateway.addLambdaTarget('Target', {
+      lambdaFunction: fn,
+      toolSchema,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn,
+          secretArn,
+          scopes: ['openid', 'profile'],
+          customParameters: { prompt: 'consent' },
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+      CredentialProviderConfigurations: Match.arrayWith([
+        Match.objectLike({
+          CredentialProviderType: 'OAUTH',
+          CredentialProvider: {
+            OauthCredentialProvider: {
+              ProviderArn: providerArn,
+              Scopes: ['openid', 'profile'],
+              CustomParameters: { prompt: 'consent' },
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('Should render OAuth credential provider without customParameters when not provided', () => {
+    gateway.addLambdaTarget('Target', {
+      lambdaFunction: fn,
+      toolSchema,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn,
+          secretArn,
+          scopes: ['openid'],
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+      CredentialProviderConfigurations: Match.arrayWith([
+        Match.objectLike({
+          CredentialProviderType: 'OAUTH',
+          CredentialProvider: {
+            OauthCredentialProvider: {
+              ProviderArn: providerArn,
+              Scopes: ['openid'],
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('Should grant OAuth and Secrets Manager permissions to gateway role', () => {
+    gateway.addLambdaTarget('Target', {
+      lambdaFunction: fn,
+      toolSchema,
+      credentialProviderConfigurations: [
+        GatewayCredentialProvider.fromOauthIdentityArn({
+          providerArn,
+          secretArn,
+          scopes: ['openid'],
+        }),
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'bedrock-agentcore:GetResourceOauth2Token',
+            Effect: 'Allow',
+            Resource: Match.arrayWith([providerArn]),
+          }),
+        ]),
+      },
+    });
+  });
+});
+
+describe('LambdaInterceptor tests', () => {
+  let stack: cdk.Stack;
+  let fn: lambda.Function;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    fn = new lambda.Function(stack, 'Interceptor', {
+      runtime: lambda.Runtime.NODEJS_22_X,
+      handler: 'index.handler',
+      code: lambda.Code.fromInline('exports.handler = async () => ({});'),
+    });
+  });
+
+  test('forRequest interceptor renders with REQUEST interception point and grants lambda:InvokeFunction', () => {
+    new Gateway(stack, 'test-gateway', {
+      interceptorConfigurations: [LambdaInterceptor.forRequest(fn)],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['REQUEST'],
+          InputConfiguration: { PassRequestHeaders: false },
+        }),
+      ]),
+    });
+    template.hasResourceProperties('AWS::IAM::Policy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: 'lambda:InvokeFunction',
+            Effect: 'Allow',
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('forResponse interceptor renders with RESPONSE interception point', () => {
+    new Gateway(stack, 'test-gateway', {
+      interceptorConfigurations: [LambdaInterceptor.forResponse(fn)],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InterceptionPoints: ['RESPONSE'],
+        }),
+      ]),
+    });
+  });
+
+  test('passRequestHeaders=true renders in the template', () => {
+    new Gateway(stack, 'test-gateway', {
+      interceptorConfigurations: [LambdaInterceptor.forRequest(fn, { passRequestHeaders: true })],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InputConfiguration: { PassRequestHeaders: true },
+        }),
+      ]),
+    });
+  });
+
+  test('passRequestHeaders defaults to false when not specified', () => {
+    new Gateway(stack, 'test-gateway', {
+      interceptorConfigurations: [LambdaInterceptor.forRequest(fn)],
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      InterceptorConfigurations: Match.arrayWith([
+        Match.objectLike({
+          InputConfiguration: { PassRequestHeaders: false },
+        }),
+      ]),
+    });
+  });
+});
+
+/**
+ * ApiKeyCredentialLocation is a pure value-object factory that configures
+ * how API key credentials are sent (header vs query parameter). It does not
+ * produce CFN resources on its own — it only renders when attached to a
+ * GatewayTarget's credential provider. We test the factory output directly
+ * because there is no template to assert against at this level.
+ */
+describe('ApiKeyCredentialLocation.queryParameter tests', () => {
+  test('Should default credentialParameterName to "api_key" and leave credentialPrefix undefined', () => {
+    const location = ApiKeyCredentialLocation.queryParameter();
+
+    expect(location.credentialLocationType).toBe('QUERY_PARAMETER');
+    expect(location.credentialParameterName).toBe('api_key');
+    expect(location.credentialPrefix).toBeUndefined();
+  });
+
+  test('Should accept custom credentialParameterName and credentialPrefix', () => {
+    const location = ApiKeyCredentialLocation.queryParameter({
+      credentialParameterName: 'myKey',
+      credentialPrefix: 'Key-',
+    });
+
+    expect(location.credentialLocationType).toBe('QUERY_PARAMETER');
+    expect(location.credentialParameterName).toBe('myKey');
+    expect(location.credentialPrefix).toBe('Key-');
+  });
+});
+
+describe('Gateway target convenience methods tests', () => {
+  let stack: cdk.Stack;
+  let gateway: Gateway;
+
+  beforeEach(() => {
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
+    gateway = new Gateway(stack, 'test-gateway', {});
+  });
+
+  describe('addLambdaTarget', () => {
+    let fn: lambda.Function;
+    let toolSchema: ToolSchema;
+
+    beforeEach(() => {
+      fn = new lambda.Function(stack, 'Function', {
+        runtime: lambda.Runtime.NODEJS_22_X,
+        handler: 'index.handler',
+        code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
+      });
+      toolSchema = ToolSchema.fromInline([{
+        name: 'test_tool',
+        description: 'Test tool',
+        inputSchema: { type: SchemaDefinitionType.OBJECT, properties: {} },
+      }]);
+    });
+
+    test('Should create a Lambda target with name and description', () => {
+      gateway.addLambdaTarget('LambdaTarget', {
+        gatewayTargetName: 'lambda-target',
+        description: 'My Lambda target',
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'lambda-target',
+        Description: 'My Lambda target',
+      });
+    });
+
+    test('Should use default IAM role credentials when none provided', () => {
+      gateway.addLambdaTarget('LambdaTarget', {
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        CredentialProviderConfigurations: Match.arrayWith([
+          Match.objectLike({ CredentialProviderType: 'GATEWAY_IAM_ROLE' }),
+        ]),
+      });
+    });
+
+    test('Should use provided credentials when supplied', () => {
+      gateway.addLambdaTarget('LambdaTarget', {
+        lambdaFunction: fn,
+        toolSchema: toolSchema,
+        credentialProviderConfigurations: [
+          GatewayCredentialProvider.fromOauthIdentityArn({
+            providerArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/default/oauth2credentialprovider/test',
+            secretArn: 'arn:aws:secretsmanager:us-east-1:123456789012:secret:test',
+            scopes: ['openid'],
+          }),
+        ],
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        CredentialProviderConfigurations: Match.arrayWith([
+          Match.objectLike({ CredentialProviderType: 'OAUTH' }),
+        ]),
+      });
+    });
+  });
+
+  describe('addOpenApiTarget', () => {
+    test('Should create an OpenAPI target with inline schema', () => {
+      const apiSchema = ApiSchema.fromInline(JSON.stringify({
+        openapi: '3.0.0',
+        info: { title: 'Test API', version: '1.0.0' },
+        servers: [{ url: 'https://api.example.com' }],
+        paths: {
+          '/test': {
+            get: {
+              operationId: 'getTest',
+              responses: { 200: { description: 'OK' } },
+            },
+          },
+        },
+      }));
+
+      gateway.addOpenApiTarget('OpenApiTarget', {
+        gatewayTargetName: 'openapi-target',
+        apiSchema: apiSchema,
+        validateOpenApiSchema: false,
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'openapi-target',
+        TargetConfiguration: {
+          Mcp: {
+            OpenApiSchema: {
+              InlinePayload: Match.stringLikeRegexp('openapi.*3\\.0\\.0'),
+            },
+          },
+        },
+        CredentialProviderConfigurations: Match.arrayWith([
+          Match.objectLike({ CredentialProviderType: 'GATEWAY_IAM_ROLE' }),
+        ]),
+      });
+    });
+  });
+
+  describe('addSmithyTarget', () => {
+    test('Should create a Smithy target with default IAM role credentials', () => {
+      gateway.addSmithyTarget('SmithyTarget', {
+        gatewayTargetName: 'smithy-target',
+        smithyModel: ApiSchema.fromInline('{}'),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'smithy-target',
+        TargetConfiguration: {
+          Mcp: {
+            SmithyModel: { InlinePayload: '{}' },
+          },
+        },
+        CredentialProviderConfigurations: Match.arrayWith([
+          Match.objectLike({ CredentialProviderType: 'GATEWAY_IAM_ROLE' }),
+        ]),
+      });
+    });
+  });
+
+  describe('addMcpServerTarget', () => {
+    test('Should create an MCP server target with required credentials', () => {
+      gateway.addMcpServerTarget('McpTarget', {
+        gatewayTargetName: 'mcp-target',
+        endpoint: 'https://mcp-server.example.com',
+        credentialProviderConfigurations: [GatewayCredentialProvider.fromIamRole()],
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'mcp-target',
+        TargetConfiguration: {
+          Mcp: {
+            McpServer: { Endpoint: 'https://mcp-server.example.com' },
+          },
+        },
+        CredentialProviderConfigurations: Match.arrayWith([
+          Match.objectLike({ CredentialProviderType: 'GATEWAY_IAM_ROLE' }),
+        ]),
+      });
+    });
+
+    test('Should treat empty credentialProviderConfigurations array as no credentials', () => {
+      gateway.addMcpServerTarget('McpTarget', {
+        endpoint: 'https://mcp-server.example.com',
+        credentialProviderConfigurations: [],
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        CredentialProviderConfigurations: Match.absent(),
+      });
+    });
+  });
+
+  describe('addApiGatewayTarget', () => {
+    test('Should create an API Gateway target with tool configuration', () => {
+      const restApi = new apigateway.RestApi(stack, 'RestApi', {
+        restApiName: 'test-api',
+        deployOptions: { stageName: 'prod' },
+      });
+      restApi.root.addResource('test').addMethod('GET');
+
+      gateway.addApiGatewayTarget('ApiGwTarget', {
+        gatewayTargetName: 'apigw-target',
+        restApi: restApi,
+        stage: 'prod',
+        apiGatewayToolConfiguration: {
+          toolFilters: [
+            {
+              filterPath: '/test',
+              methods: [ApiGatewayHttpMethod.GET],
+            },
+          ],
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::GatewayTarget', {
+        Name: 'apigw-target',
+        TargetConfiguration: {
+          Mcp: {
+            ApiGateway: {
+              Stage: 'prod',
+              ApiGatewayToolConfiguration: {
+                ToolFilters: [
+                  { FilterPath: '/test', Methods: ['GET'] },
+                ],
+              },
+            },
+          },
+        },
+      });
     });
   });
 });
