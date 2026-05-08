@@ -280,12 +280,6 @@ Use `disableAutoValidation` to turn the feature on or off for this configuration
 new ses.ConfigurationSet(this, 'NoAutoValidation', {
   disableAutoValidation: true,
 });
-
-// Explicitly enable Auto Validation even when it is disabled at the account level.
-// Threshold falls back to the SES default unless `autoValidationThreshold` is also set.
-new ses.ConfigurationSet(this, 'ForceAutoValidation', {
-  disableAutoValidation: false,
-});
 ```
 
 ### Email identity
