@@ -1,7 +1,8 @@
 import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
 import type { IResource } from 'aws-cdk-lib/core';
-import { ArnFormat, Resource, Stack, Lazy } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { ArnFormat, Resource, Stack } from 'aws-cdk-lib/core';
+import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Box, memoizedGetter, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -78,6 +79,7 @@ export interface TopicRuleProps {
  * Defines an AWS IoT Rule in this stack.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class TopicRule extends Resource implements ITopicRule {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.TopicRule';
@@ -105,7 +107,7 @@ export class TopicRule extends Resource implements ITopicRule {
     });
   }
 
-  private readonly actions: CfnTopicRule.ActionProperty[] = [];
+  private readonly actions: IArrayBox<CfnTopicRule.ActionProperty>;
   private readonly resource: CfnTopicRule;
 
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
@@ -115,12 +117,13 @@ export class TopicRule extends Resource implements ITopicRule {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.actions = Box.fromArray([], { omitEmpty: false });
     const sqlConfig = props.sql.bind(this);
 
     this.resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
-        actions: Lazy.any({ produce: () => this.actions }),
+        actions: this.actions,
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
         description: props.description,
         errorAction: props.errorAction?._bind(this).configuration,
