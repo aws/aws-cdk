@@ -7,6 +7,8 @@ import type { Duration } from 'aws-cdk-lib';
 
 /**
  * Protocol configuration for Agent Runtime
+ * 
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.html#cfn-bedrockagentcore-runtime-protocolconfiguration
  */
 export enum ProtocolType {
   /**
