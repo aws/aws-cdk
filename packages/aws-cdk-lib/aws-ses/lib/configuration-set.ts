@@ -373,17 +373,9 @@ function renderValidationOptions(
     return undefined;
   }
 
-  if (disabled === true) {
-    return {
-      conditionThreshold: {
-        conditionThresholdEnabled: 'DISABLED',
-      },
-    };
-  }
-
   return {
     conditionThreshold: {
-      conditionThresholdEnabled: 'ENABLED',
+      conditionThresholdEnabled: disabled === true ? 'DISABLED' : 'ENABLED',
       overallConfidenceThreshold: threshold !== undefined ? {
         confidenceVerdictThreshold: threshold,
       } : undefined,
