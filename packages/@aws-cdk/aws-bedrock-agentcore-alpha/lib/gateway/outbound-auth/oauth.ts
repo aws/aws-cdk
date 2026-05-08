@@ -1,8 +1,9 @@
-import type { IRole } from 'aws-cdk-lib/aws-iam';
-import { Grant, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { Annotations, ArnFormat, Stack, Token } from 'aws-cdk-lib';
+import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { ICredentialProviderConfig } from './credential-provider';
 import { CredentialProviderType } from './credential-provider';
-import { GATEWAY_OAUTH_PERMS, GATEWAY_WORKLOAD_IDENTITY_PERMS, GATEWAY_SECRETS_PERMS } from '../perms';
+import type { IGateway } from '../gateway-base';
+import { GATEWAY_OAUTH_PERMS, GATEWAY_OAUTH_COMPLETE_AUTH_PERMS, GATEWAY_WORKLOAD_IDENTITY_OAUTH_PERMS, GATEWAY_SECRETS_PERMS } from '../perms';
 
 /******************************************************************************
  *                                OAuth
@@ -86,28 +87,79 @@ export class OAuthCredentialProviderConfiguration implements ICredentialProvider
   }
 
   /**
-   * Grant the needed permissions to the role for OAuth authentication
+   * Grant the needed permissions to the gateway role for OAuth authentication.
+   *
+   * Produces four scoped IAM statements matching the console-generated policy:
+   * 1. `GetWorkloadAccessToken[ForJWT|ForUserId]` on the workload identity directory ARNs
+   * 2. `CompleteResourceTokenAuth` on the token vault, credential provider, directory, and identity ARNs
+   * 3. `GetResourceOauth2Token` on the token vault, credential provider, directory, and identity ARNs
+   * 4. `secretsmanager:GetSecretValue` on the specific credential secret ARN
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-outbound-auth.html
    */
-  grantNeededPermissionsToRole(role: IRole): Grant | undefined {
-    const statements = [
-      new PolicyStatement({
-        actions: [
-          ...GATEWAY_OAUTH_PERMS,
-          ...GATEWAY_WORKLOAD_IDENTITY_PERMS,
-        ],
-        resources: [this.providerArn],
-      }),
-      new PolicyStatement({
-        actions: GATEWAY_SECRETS_PERMS,
-        resources: [this.secretArn],
-      }),
-    ];
-
-    return Grant.addToPrincipal({
-      grantee: role,
-      actions: statements.flatMap(s => s.actions),
-      resourceArns: statements.flatMap(s => s.resources),
+  grantNeededPermissionsToRole(gateway: IGateway): Grant | undefined {
+    const stack = Stack.of(gateway);
+    const directoryArn = stack.formatArn({
+      service: 'bedrock-agentcore',
+      resource: 'workload-identity-directory',
+      resourceName: 'default',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
     });
+    const identityWildcardArn = `${directoryArn}/workload-identity/${gateway.name}-*`;
+    const tokenVaultArn = stack.formatArn({
+      service: 'bedrock-agentcore',
+      resource: 'token-vault',
+      resourceName: 'default',
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+    const credentialAndIdentityArns = [tokenVaultArn, this.providerArn, directoryArn, identityWildcardArn];
+
+    const workloadIdentityGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_WORKLOAD_IDENTITY_OAUTH_PERMS],
+      resourceArns: [directoryArn, identityWildcardArn],
+      scope: gateway,
+    });
+    const completeAuthGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_OAUTH_COMPLETE_AUTH_PERMS],
+      resourceArns: credentialAndIdentityArns,
+      scope: gateway,
+    });
+    const oauthGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_OAUTH_PERMS],
+      resourceArns: credentialAndIdentityArns,
+      scope: gateway,
+    });
+    // The CFN attribute ClientSecretArn is an object { SecretArn: string }, not a
+    // plain string, so the Token resolves to an object which cannot be placed in
+    // IAM Resource fields. When the caller supplies a literal ARN string (e.g. via
+    // fromOauthIdentityArn) we can scope tightly; otherwise fall back to a
+    // service-managed prefix wildcard.
+    let secretResourceArns: string[];
+    if (Token.isUnresolved(this.secretArn)) {
+      Annotations.of(gateway).addWarningV2(
+        '@aws-cdk/aws-bedrock-agentcore-alpha:wildcardSecretArnGrant',
+        'The secret ARN is an unresolved token. Granting access using a wildcard prefix (bedrock-agentcore-identity!*). ' +
+        'To scope the grant to a specific secret, supply a literal secret ARN via fromOauthIdentityArn.',
+      );
+      secretResourceArns = [stack.formatArn({
+        service: 'secretsmanager',
+        resource: 'secret',
+        resourceName: 'bedrock-agentcore-identity!*',
+        arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+      })];
+    } else {
+      secretResourceArns = [this.secretArn];
+    }
+    const secretGrant = Grant.addToPrincipal({
+      grantee: gateway.role,
+      actions: [...GATEWAY_SECRETS_PERMS],
+      resourceArns: secretResourceArns,
+      scope: gateway,
+    });
+    return workloadIdentityGrant.combine(completeAuthGrant).combine(oauthGrant).combine(secretGrant);
   }
 
   /**

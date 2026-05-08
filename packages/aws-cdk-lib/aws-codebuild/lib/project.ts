@@ -1133,14 +1133,14 @@ export class Project extends ProjectBase {
       throw new ValidationError(lit`ProjectSSourceNosource`, "If the Project's source is NoSource, you need to provide a concrete buildSpec", this);
     }
 
-    this._secondarySources = Box.fromArray<CfnProject.SourceProperty>([]);
-    this._secondarySourceVersions = Box.fromArray<CfnProject.ProjectSourceVersionProperty>([]);
-    this._fileSystemLocations = Box.fromArray<CfnProject.ProjectFileSystemLocationProperty>([]);
+    this._secondarySources = Box.fromArray();
+    this._secondarySourceVersions = Box.fromArray();
+    this._fileSystemLocations = Box.fromArray();
     for (const secondarySource of props.secondarySources || []) {
       this.addSecondarySource(secondarySource);
     }
 
-    this._secondaryArtifacts = Box.fromArray<CfnProject.ArtifactsProperty>([]);
+    this._secondaryArtifacts = Box.fromArray();
     for (const secondaryArtifact of props.secondaryArtifacts || []) {
       this.addSecondaryArtifact(secondaryArtifact);
     }

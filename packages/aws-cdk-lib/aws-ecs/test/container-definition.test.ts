@@ -34,6 +34,32 @@ describe('container definition', () => {
       });
     });
 
+    test('container without optional array props omits those properties', () => {
+      // GIVEN
+      const stack = new cdk.Stack();
+      const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TaskDef');
+
+      new ecs.ContainerDefinition(stack, 'Container', {
+        image: ecs.ContainerImage.fromRegistry('/aws/aws-example-app'),
+        taskDefinition,
+        memoryLimitMiB: 2048,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::ECS::TaskDefinition', {
+        ContainerDefinitions: [
+          Match.objectLike({
+            MountPoints: Match.absent(),
+            PortMappings: Match.absent(),
+            VolumesFrom: Match.absent(),
+            Ulimits: Match.absent(),
+            DependsOn: Match.absent(),
+            Links: Match.absent(),
+          }),
+        ],
+      });
+    });
+
     describe('PortMap validates', () => {
       test('throws when PortMapping.name is empty string.', () => {
         // GIVEN

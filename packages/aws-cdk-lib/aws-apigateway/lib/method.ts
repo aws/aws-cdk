@@ -188,7 +188,7 @@ export class Method extends Resource {
    */
   public readonly api: IRestApi;
 
-  private readonly methodResponses: IArrayBox<MethodResponse> = Box.fromArray([]);
+  private readonly methodResponses: IArrayBox<MethodResponse> = Box.fromArray();
 
   constructor(scope: Construct, id: string, props: MethodProps) {
     super(scope, id);
