@@ -1140,6 +1140,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   protected readonly sourceCfnProps: CfnDBInstanceProps;
   protected readonly instanceType: ec2.InstanceType;
 
+  protected manageMasterUserPassword?: boolean;
+
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
@@ -1218,6 +1220,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    *                if you want to override the defaults
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddSingleUserRotation`, 'Cannot add single user rotation for an instance without secret.', this);
     }
@@ -1241,6 +1246,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    * Adds the multi user rotation to this instance.
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddMultiUserRotation`, 'Cannot add multi user rotation for an instance without secret.', this);
     }
@@ -1369,6 +1377,8 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     if (props.manageMasterUserPassword) {
       validateManagedPasswordCredentials(this, props.credentials);
     }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
 
     // Prepare credential-specific configuration
     let secret: secretsmanager.ISecret | undefined;

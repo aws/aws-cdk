@@ -2060,6 +2060,91 @@ describe('cluster new api', () => {
       });
     });
   });
+
+  describe('manageMasterUserPassword rotation conflict', () => {
+    test('addRotationSingleUser throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      expect(() => cluster.addRotationSingleUser()).toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationMultiUser throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        manageMasterUserPassword: true,
+      });
+      const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+      // THEN
+      expect(() => cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) }))
+        .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationSingleUser on DatabaseClusterFromSnapshot throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+      });
+
+      // THEN
+      expect(() => cluster.addRotationSingleUser()).toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\./);
+    });
+
+    test('addRotationMultiUser on DatabaseClusterFromSnapshot throws when manageMasterUserPassword is enabled', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        manageMasterUserPassword: true,
+      });
+      const userSecret = new DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+      // THEN
+      expect(() => cluster.addRotationMultiUser('user', { secret: userSecret.attach(cluster) }))
+        .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\./);
+    });
+
+    test('addRotationSingleUser works when manageMasterUserPassword is not enabled (regression)', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.AURORA_MYSQL,
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // WHEN - should not throw
+      cluster.addRotationSingleUser();
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::RotationSchedule', 1);
+    });
+  });
 });
 
 describe('instance', () => {

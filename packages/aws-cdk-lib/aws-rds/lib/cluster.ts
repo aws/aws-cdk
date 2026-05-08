@@ -811,6 +811,7 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
 
   protected hasServerlessInstance?: boolean;
   protected enableDataApi?: boolean;
+  protected manageMasterUserPassword?: boolean;
 
   constructor(scope: Construct, id: string, props: DatabaseClusterBaseProps) {
     super(scope, id);
@@ -1242,6 +1243,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * See [Single user rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-one-user-one-password)
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddSingleUserRotationWithoutSecret`, 'Cannot add a single user rotation for a cluster without a secret.', this);
     }
@@ -1266,6 +1270,9 @@ abstract class DatabaseClusterNew extends DatabaseClusterBase {
    * See [Alternating users rotation strategy](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets_strategies.html#rotating-secrets-two-users)
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddMultiUserRotationWithoutSecret`, 'Cannot add a multi user rotation for a cluster without a secret.', this);
     }
@@ -1498,6 +1505,8 @@ export class DatabaseCluster extends DatabaseClusterNew {
     if (props.manageMasterUserPassword) {
       validateManagedPasswordCredentials(this, props.credentials);
     }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
 
     const canHaveCredentials = props.replicationSourceIdentifier === undefined;
 
@@ -1744,6 +1753,8 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     if (props.manageMasterUserPassword) {
       validateManagedPasswordSnapshotCredentials(this, props.snapshotCredentials);
     }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
 
     const deprecatedCredentials = !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
       ? renderCredentials(this, props.engine, props.credentials)
