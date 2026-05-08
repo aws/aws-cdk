@@ -9,7 +9,7 @@ import type { NetworkType } from './instance';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
 import { DATA_API_ACTIONS } from './perms';
-import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials, validateManagedPasswordCredentials } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, renderSnapshotCredentials, validateManagedPasswordCredentials, validateManagedPasswordSnapshotCredentials } from './private/util';
 import type { BackupProps, Credentials, InstanceProps, RotationSingleUserOptions, RotationMultiUserOptions, SnapshotCredentials, EngineLifecycleSupport } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -1738,6 +1738,11 @@ export class DatabaseClusterFromSnapshot extends DatabaseClusterNew {
     }
     if (!props.credentials && !props.snapshotCredentials) {
       Annotations.of(this).addWarningV2('@aws-cdk/aws-rds:generatedCredsNotApplied', 'Generated credentials will not be applied to cluster. Use `snapshotCredentials` instead. `addRotationSingleUser()` and `addRotationMultiUser()` cannot be used on this cluster.');
+    }
+
+    // Validate manageMasterUserPassword conflicts with unsupported snapshotCredentials properties
+    if (props.manageMasterUserPassword) {
+      validateManagedPasswordSnapshotCredentials(this, props.snapshotCredentials);
     }
 
     const deprecatedCredentials = !FeatureFlags.of(this).isEnabled(cxapi.RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS)
