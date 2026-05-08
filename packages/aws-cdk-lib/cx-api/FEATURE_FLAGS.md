@@ -115,6 +115,7 @@ Flags come in three types:
 | [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
+| [@aws-cdk/core:crossStackReferenceStrength](#aws-cdkcorecrossstackreferencestrength) | Controls whether cross-stack references are strong, weak, or both | V2NEXT | config |
 
 <!-- END table -->
 
@@ -211,7 +212,8 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
     "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
     "@aws-cdk/aws-batch:defaultToAL2023": true,
-    "@aws-cdk/core:annotationsInValidationReport": true
+    "@aws-cdk/core:annotationsInValidationReport": true,
+    "@aws-cdk/core:crossStackReferenceStrength": "weak"
   }
 }
 ```
@@ -261,6 +263,7 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
 | [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
 | [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | new default |  | `false` | `true` |
+| [@aws-cdk/core:crossStackReferenceStrength](#aws-cdkcorecrossstackreferencestrength) | Controls whether cross-stack references are strong, weak, or both | config |  | `false` | `"strong"` |
 
 <!-- END diff -->
 
@@ -2460,6 +2463,34 @@ consolidate both displays.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.253.0 | `false` | `true` |
+
+
+### @aws-cdk/core:crossStackReferenceStrength
+
+*Controls whether cross-stack references are strong, weak, or both*
+
+Flag type: Configuration option
+
+Controls the strength of cross-stack references. Accepted values are `"strong"`,
+`"weak"`, and `"both"`.
+
+- `"strong"` (default): Cross-stack references use mechanisms that prevent
+  the producing stack from being deleted while consumers exist (e.g. Fn::ImportValue
+  for same-region, ExportWriter/ExportReader for cross-region).
+- `"weak"`: Cross-stack references use Fn::GetStackOutput which allows the
+  producing stack to be deleted independently of consumers.
+- `"both"`: A transitional state that generates both strong and weak references.
+  The producer exposes both export mechanisms, but the consumer only uses the weak
+  form. This allows migrating from strong to weak references without deployment
+  failures caused by the deadly embrace problem.
+
+Migration path: set to `"both"` and deploy, then set to `"weak"` and deploy again.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `"strong"` | `"weak"` |
 
 
 <!-- END details -->

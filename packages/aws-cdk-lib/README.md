@@ -302,19 +302,14 @@ other.
 
 ## Accessing resources in a different stack and region
 
-> **This feature is currently experimental**
-
-You can enable the Stack property `crossRegionReferences`
-in order to access resources in a different stack *and* region. With this feature flag
-enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
-an ACM certificate in `us-east-1`.
+You can access resources in a different stack and region. For example, you can create
+a CloudFront distribution in `us-east-2` that references an ACM certificate in `us-east-1`.
 
 ```ts
 const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',
   },
-  crossRegionReferences: true,
 });
 const cert = new acm.Certificate(stack1, 'Cert', {
   domainName: '*.example.com',
@@ -325,7 +320,6 @@ const stack2 = new Stack(app, 'Stack2', {
   env: {
     region: 'us-east-2',
   },
-  crossRegionReferences: true,
 });
 new cloudfront.Distribution(stack2, 'Distribution', {
   defaultBehavior: {
@@ -336,27 +330,84 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 });
 ```
 
-When the AWS CDK determines that the resource is in a different stack *and* is in a different
-region, it will "export" the value by creating a custom resource in the producing stack which
-creates SSM Parameters in the consuming region for each exported value. The parameters will be
-created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
-In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
-is used to reference the SSM parameter which was created.
+### Cross-stack reference strength
 
-In order to mimic strong references, a Custom Resource is also created in the consuming
-stack which marks the SSM parameters as being "imported". When a parameter has been successfully
-imported, the producing stack cannot update the value.
+The context key `@aws-cdk/core:crossStackReferenceStrength` controls the mechanism used for
+cross-region references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
+
+**Strong references** (default) use a pair of Custom Resources (ExportWriter/ExportReader) that
+write values to SSM Parameters in the consuming region. This prevents the producing stack from
+being deleted while consumers exist, at the cost of additional infrastructure (Lambda functions,
+IAM roles, SSM parameters).
+
+**Weak references** use `Fn::GetStackOutput`, a CloudFormation intrinsic that reads an output
+directly from the producing stack. This is simpler (no extra infrastructure), but the producing
+stack can be deleted independently of its consumers.
+
+**Both** is a transitional state used during migration from strong to weak. The producer keeps
+the ExportWriter (so it continues writing to SSM), and also adds an Output. The consumer switches
+to `Fn::GetStackOutput`. This ensures the consumer is no longer dependent on the ExportReader
+before the ExportWriter is removed.
+
+Configure the reference strength in your `cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:crossStackReferenceStrength": "strong"
+  }
+}
+```
 
 > [!NOTE]
-> As a consequence of this feature being built on a Custom Resource, we are restricted to a
-> CloudFormation response body size limitation of [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
-> To prevent deployment errors related to the Custom Resource Provider response body being too
-> large, we recommend limiting the use of nested stacks and minimizing the length of stack names.
-> Doing this will prevent SSM parameter names from becoming too long which will reduce the size of the
-> response body.
+> When using `"strong"` references, the feature is built on Custom Resources, which are restricted
+> to a CloudFormation response body size limitation of
+> [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
+> To prevent deployment errors, we recommend limiting the use of nested stacks and minimizing
+> the length of stack names.
 
-See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/adr/cross-region-stack-references.md)
-for more details on this feature.
+The full behavior is summarized in the following table:
+
+|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                       |
+|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| Same account and region    | Generates a `Fn::ImportValue` reference           | Not yet implemented. Will use strong                                                         | Not yet implemented. Will use strong                            |
+| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                      |
+| Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
+
+
+### Migrating from strong to weak references
+
+If you have existing stacks deployed with strong references and want to switch to weak
+references, you must do so in two deployments to avoid the
+[deadly embrace](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html)
+problem:
+
+**DEPLOYMENT 1**: set the flag to `"both"` and deploy.
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:crossStackReferenceStrength": "both"
+  }
+}
+```
+
+This adds `Fn::GetStackOutput` references in the consumers (weak) while keeping the
+ExportWriter in the producer (strong). After this deployment, consumers no longer depend on
+the ExportReader custom resource.
+
+**DEPLOYMENT 2**: set the flag to `"weak"` and deploy.
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:crossStackReferenceStrength": "weak"
+  }
+}
+```
+
+This removes the ExportWriter/ExportReader infrastructure entirely. All references now use
+the lightweight `Fn::GetStackOutput` mechanism.
 
 ### Removing automatic cross-stack references
 

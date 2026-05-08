@@ -155,6 +155,7 @@ export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancin
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
+export const CROSS_STACK_REFERENCE_STRENGTH = '@aws-cdk/core:crossStackReferenceStrength';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1857,6 +1858,30 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.253.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CROSS_STACK_REFERENCE_STRENGTH]: {
+    type: FlagType.VisibleContext,
+    summary: 'Controls whether cross-stack references are strong, weak, or both',
+    detailsMd: `
+      Controls the strength of cross-stack references. Accepted values are \`"strong"\`,
+      \`"weak"\`, and \`"both"\`.
+
+      - \`"strong"\` (default): Cross-stack references use mechanisms that prevent
+        the producing stack from being deleted while consumers exist (e.g. Fn::ImportValue
+        for same-region, ExportWriter/ExportReader for cross-region).
+      - \`"weak"\`: Cross-stack references use Fn::GetStackOutput which allows the
+        producing stack to be deleted independently of consumers.
+      - \`"both"\`: A transitional state that generates both strong and weak references.
+        The producer exposes both export mechanisms, but the consumer only uses the weak
+        form. This allows migrating from strong to weak references without deployment
+        failures caused by the deadly embrace problem.
+
+      Migration path: set to \`"both"\` and deploy, then set to \`"weak"\` and deploy again.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: 'weak',
+    unconfiguredBehavesLike: { v2: 'strong' },
   },
 };
 

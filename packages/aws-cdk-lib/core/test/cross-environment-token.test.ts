@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { toCloudFormation } from './util';
+import * as cxapi from '../../cx-api';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
@@ -189,7 +190,7 @@ describe('cross environment', () => {
 
   test('can reference a deploy-time physical name across regions, when crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', {
       env: {
         account: '123456789012',
@@ -216,36 +217,21 @@ describe('cross environment', () => {
     const template1 = assembly.getStackByName(stack1.stackName).template;
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    expect(template1?.Resources).toMatchObject({
-      'ExportsWriterbermudatriangle42E59594276156AC73': {
-        'DeletionPolicy': 'Delete',
-        'Properties': {
-          'WriterProps': {
-            'exports': {
-              '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887': {
-                'Ref': 'MyResource6073B41F',
-              },
-            },
-            'region': 'bermuda-triangle-42',
-          },
-          'ServiceToken': {
-            'Fn::GetAtt': [
-              'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-              'Arn',
-            ],
-          },
+    expect(template1?.Outputs).toMatchObject({
+      PublishOutputRefMyResource6073B41FD9DD038E: {
+        Value: {
+          Ref: 'MyResource6073B41F',
         },
-        'Type': 'Custom::CrossRegionExportWriter',
-        'UpdateReplacePolicy': 'Delete',
       },
     });
     expect(template2?.Outputs).toEqual({
-      'Output': {
-        'Value': {
-          'Fn::GetAtt': [
-            'ExportsReader8B249524',
-            '/cdk/exports/Stack2/Stack1bermudatriangle1337RefMyResource6073B41F66B72887',
-          ],
+      Output: {
+        Value: {
+          'Fn::GetStackOutput': {
+            StackName: 'Stack1',
+            Region: 'bermuda-triangle-1337',
+            OutputName: 'PublishOutputRefMyResource6073B41FD9DD038E',
+          },
         },
       },
     });
