@@ -3,32 +3,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
         "...node internals..."
       ]
     }
   ],
   "/VectorBucketIntegTest/PlainBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/VectorBucketIntegTest/Key": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "removalPolicy": "destroy"
-      }
-    }
-  ],
-  "/VectorBucketIntegTest/EncryptedBucket": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    }
-  ],
-  "/VectorBucketIntegTest/Index": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -93,6 +73,26 @@
       }
     }
   ],
+  "/VectorBucketIntegTest/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/VectorBucketIntegTest/EncryptedBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/VectorBucketIntegTest/Index": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
   "/VectorBucketIntegTest/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
@@ -110,7 +110,7 @@
         "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -132,7 +132,7 @@
         "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -147,8 +147,8 @@
       "data": [
         "new VectorBucket (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-bucket.js:272:29)",
         "new VectorBucket (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:15:28)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:16:28)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
         "...node internals..."
       ]
     }
@@ -157,54 +157,6 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
-    }
-  ],
-  "/VectorBucketIntegTest/Key/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "Key961B73FD"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Key (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
-        "new Key (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:24:20)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/VectorBucketIntegTest/EncryptedBucket/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "EncryptedBucket6730B3DC"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new VectorBucket (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-bucket.js:272:29)",
-        "new VectorBucket (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:25:32)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/VectorBucketIntegTest/Index/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "Index4A79713B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new VectorIndex (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-index.js:278:29)",
-        "new VectorIndex (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:31:28)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
-        "...node internals..."
-      ]
     }
   ],
   "/VectorBucketIntegTest/Consumer/Resource": [
@@ -217,8 +169,8 @@
       "data": [
         "new Role (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:40:26)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:20:25)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
         "...node internals..."
       ]
     }
@@ -277,6 +229,54 @@
       }
     }
   ],
+  "/VectorBucketIntegTest/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Key961B73FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:28:20)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTest/EncryptedBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EncryptedBucket6730B3DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VectorBucket (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-bucket.js:272:29)",
+        "new VectorBucket (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:29:32)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/VectorBucketIntegTest/Index/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Index4A79713B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VectorIndex (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-index.js:278:29)",
+        "new VectorIndex (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:35:28)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
+        "...node internals..."
+      ]
+    }
+  ],
   "/VectorBucketIntegTest/Exports/Output{\"Fn::GetAtt\":[\"PlainBucket9A5027E6\",\"VectorBucketArn\"]}": [
     {
       "type": "aws:cdk:logicalId",
@@ -292,7 +292,7 @@
         "prepareApp (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -312,7 +312,7 @@
         "prepareApp (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -332,7 +332,7 @@
         "prepareApp (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -352,7 +352,7 @@
         "prepareApp (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -368,8 +368,8 @@
         "new VectorBucketPolicy (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-bucket-policy.js:91:30)",
         "new VectorBucketPolicy (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToResourcePolicy (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-bucket.js:69:39)",
-        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:19:26)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:23:26)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
         "...node internals..."
       ]
     }
@@ -391,8 +391,8 @@
         "Grant.addToPrincipalOrResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
         "WrappedClass.grant (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-bucket.js:99:33)",
         "WrappedClass.grantReadWrite (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/lib/vector-bucket.js:95:21)",
-        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:43:30)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:48:15)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:44:30)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
         "...node internals..."
       ]
     }

@@ -6,7 +6,7 @@
         "new DeployAssert (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
         "new IntegTestCase (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:49:15)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:50:15)",
         "...node internals..."
       ]
     }
@@ -30,7 +30,7 @@
         "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -54,7 +54,7 @@
         "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -90,7 +90,7 @@
         "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -109,7 +109,7 @@
         "new AssertionsProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
         "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:52:18)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:53:18)",
         "...node internals..."
       ]
     }
@@ -128,7 +128,7 @@
         "new AssertionsProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
         "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:52:18)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:53:18)",
         "...node internals..."
       ]
     }
@@ -164,7 +164,7 @@
         "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -200,7 +200,7 @@
         "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -236,7 +236,7 @@
         "invokeAspectsV2 (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
         "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
         "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:84:5)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -254,7 +254,7 @@
         "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
         "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:52:18)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:53:18)",
         "...node internals..."
       ]
     }
@@ -272,7 +272,7 @@
         "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
         "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:59:18)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:60:18)",
         "...node internals..."
       ]
     }
@@ -290,7 +290,7 @@
         "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
         "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:69:18)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:70:18)",
         "...node internals..."
       ]
     }
@@ -308,7 +308,7 @@
         "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new AwsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
         "DeployAssert.awsApiCall (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:74:18)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-s3vectors-alpha/test/integration/integ.vector-bucket.js:75:18)",
         "...node internals..."
       ]
     }

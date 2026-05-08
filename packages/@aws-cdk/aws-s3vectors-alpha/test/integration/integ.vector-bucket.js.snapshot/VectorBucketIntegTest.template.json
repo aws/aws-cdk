@@ -18,19 +18,9 @@
        "Effect": "Allow",
        "Principal": {
         "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
+         "Fn::GetAtt": [
+          "Consumer8D6BE417",
+          "Arn"
          ]
         }
        },
@@ -51,81 +41,6 @@
      ]
     }
    }
-  },
-  "Key961B73FD": {
-   "Type": "AWS::KMS::Key",
-   "Properties": {
-    "KeyPolicy": {
-     "Statement": [
-      {
-       "Action": "kms:*",
-       "Effect": "Allow",
-       "Principal": {
-        "AWS": {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":root"
-          ]
-         ]
-        }
-       },
-       "Resource": "*"
-      }
-     ],
-     "Version": "2012-10-17"
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "EncryptedBucket6730B3DC": {
-   "Type": "AWS::S3Vectors::VectorBucket",
-   "Properties": {
-    "EncryptionConfiguration": {
-     "KmsKeyArn": {
-      "Fn::GetAtt": [
-       "Key961B73FD",
-       "Arn"
-      ]
-     },
-     "SseType": "aws:kms"
-    },
-    "VectorBucketName": "integ-vb-encrypted"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
-  },
-  "Index4A79713B": {
-   "Type": "AWS::S3Vectors::Index",
-   "Properties": {
-    "DataType": "float32",
-    "Dimension": 1024,
-    "DistanceMetric": "cosine",
-    "IndexName": "integ-example-index",
-    "MetadataConfiguration": {
-     "NonFilterableMetadataKeys": [
-      "source",
-      "author"
-     ]
-    },
-    "VectorBucketArn": {
-     "Fn::GetAtt": [
-      "EncryptedBucket6730B3DC",
-      "VectorBucketArn"
-     ]
-    }
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "Consumer8D6BE417": {
    "Type": "AWS::IAM::Role",
@@ -223,6 +138,81 @@
      }
     ]
    }
+  },
+  "Key961B73FD": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptedBucket6730B3DC": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "EncryptionConfiguration": {
+     "KmsKeyArn": {
+      "Fn::GetAtt": [
+       "Key961B73FD",
+       "Arn"
+      ]
+     },
+     "SseType": "aws:kms"
+    },
+    "VectorBucketName": "integ-vb-encrypted"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Index4A79713B": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1024,
+    "DistanceMetric": "cosine",
+    "IndexName": "integ-example-index",
+    "MetadataConfiguration": {
+     "NonFilterableMetadataKeys": [
+      "source",
+      "author"
+     ]
+    },
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "EncryptedBucket6730B3DC",
+      "VectorBucketArn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {

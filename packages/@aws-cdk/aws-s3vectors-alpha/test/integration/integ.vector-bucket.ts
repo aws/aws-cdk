@@ -10,6 +10,7 @@ class TestStack extends core.Stack {
   public readonly encryptedBucket: s3vectors.VectorBucket;
   public readonly vectorIndex: s3vectors.VectorIndex;
   public readonly key: kms.IKey;
+  public readonly consumer: iam.Role;
 
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
@@ -19,9 +20,13 @@ class TestStack extends core.Stack {
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
+    this.consumer = new iam.Role(this, 'Consumer', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
     this.plainBucket.addToResourcePolicy(new iam.PolicyStatement({
       actions: ['s3vectors:GetVectorBucket'],
-      principals: [new iam.AccountPrincipal(this.account)],
+      principals: [new iam.ArnPrincipal(this.consumer.roleArn)],
       resources: [this.plainBucket.vectorBucketArn],
     }));
 
@@ -43,11 +48,8 @@ class TestStack extends core.Stack {
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
-    const consumer = new iam.Role(this, 'Consumer', {
-      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-    });
-    this.encryptedBucket.grantReadWrite(consumer, '*');
-    this.vectorIndex.grantReadWrite(consumer);
+    this.encryptedBucket.grantReadWrite(this.consumer, '*');
+    this.vectorIndex.grantReadWrite(this.consumer);
   }
 }
 
@@ -94,5 +96,3 @@ integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetIndexCommand', {
     distanceMetric: 'cosine',
   },
 }));
-
-app.synth();
