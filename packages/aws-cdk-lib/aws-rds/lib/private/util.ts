@@ -109,6 +109,30 @@ export function validateManagedPasswordCredentials(scope: Construct, credentials
 }
 
 /**
+ * Validates that snapshot credentials used with manageMasterUserPassword don't include unsupported properties.
+ * When RDS manages the master password, only 'username' and 'encryptionKey' are allowed.
+ */
+export function validateManagedPasswordSnapshotCredentials(scope: Construct, snapshotCredentials?: SnapshotCredentials): void {
+  const unsupportedProps = [
+    snapshotCredentials?.excludeCharacters && 'excludeCharacters',
+    snapshotCredentials?.generatePassword && 'generatePassword',
+    snapshotCredentials?.password && 'password',
+    snapshotCredentials?.replaceOnPasswordCriteriaChanges && 'replaceOnPasswordCriteriaChanges',
+    snapshotCredentials?.replicaRegions && 'replicaRegions',
+    snapshotCredentials?.secret && 'secret',
+  ].filter(Boolean);
+
+  if (unsupportedProps.length > 0) {
+    throw new ValidationError(
+      lit`ManagedPasswordUnsupportedSnapshotCredentialProperties`,
+      'When manageMasterUserPassword is enabled, only \'username\' and \'encryptionKey\' are allowed in snapshotCredentials. ' +
+      `Found unsupported properties: ${unsupportedProps.join(', ')}.`,
+      scope,
+    );
+  }
+}
+
+/**
  * Renders the credentials for an instance or cluster
  */
 export function renderCredentials(scope: Construct, engine: IEngine, credentials?: Credentials): Credentials {
