@@ -2104,6 +2104,43 @@ describe('instance', () => {
     });
   });
 
+  describe('manageMasterUserPassword rotation conflict', () => {
+    test('addRotationSingleUser throws when manageMasterUserPassword is enabled', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+
+      expect(() => instance.addRotationSingleUser()).toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationMultiUser throws when manageMasterUserPassword is enabled', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        manageMasterUserPassword: true,
+      });
+      const userSecret = new rds.DatabaseSecret(stack, 'UserSecret', { username: 'user' });
+
+      expect(() => instance.addRotationMultiUser('user', { secret: userSecret.attach(instance) }))
+        .toThrow(/Cannot add rotation when `manageMasterUserPassword` is enabled\. RDS automatically rotates the master password when it manages the secret\./);
+    });
+
+    test('addRotationSingleUser works when manageMasterUserPassword is not enabled (regression)', () => {
+      const instance = new rds.DatabaseInstance(stack, 'Database', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+      });
+
+      // WHEN - should not throw
+      instance.addRotationSingleUser();
+
+      // THEN
+      Template.fromStack(stack).resourceCountIs('AWS::SecretsManager::RotationSchedule', 1);
+    });
+  });
+
   test('can set publiclyAccessible to false with public subnets', () => {
     new rds.DatabaseInstance(stack, 'Instance', {
       engine: rds.DatabaseInstanceEngine.mysql({
