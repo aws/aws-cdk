@@ -43,6 +43,36 @@ describe('Gateway Coverage Tests', () => {
     stack = new cdk.Stack(app, 'TestStack');
   });
 
+  test('Should create a ServiceRole when no custom role is provided', () => {
+    new Gateway(stack, 'Gateway');
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should use the provided role and not create a ServiceRole', () => {
+    const role = new iam.Role(stack, 'CustomRole', {
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+    });
+
+    new Gateway(stack, 'Gateway', { role });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::IAM::Role', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::Gateway', {
+      RoleArn: { 'Fn::GetAtt': [Match.stringLikeRegexp('CustomRole.*'), 'Arn'] },
+    });
+  });
+
   test('Should grant KMS permissions when both kmsKey and custom role provided', () => {
     const key = new kms.Key(stack, 'Key');
     const role = new iam.Role(stack, 'Role', {
