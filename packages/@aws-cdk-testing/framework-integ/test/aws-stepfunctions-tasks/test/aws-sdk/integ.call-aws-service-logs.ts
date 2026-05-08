@@ -20,7 +20,7 @@ const task = new CallAwsService(stack, 'SendTaskSuccess', {
 });
 
 const stateMachine = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: task,
+  definitionBody: sfn.DefinitionBody.fromChainable(task),
 });
 
 // THEN

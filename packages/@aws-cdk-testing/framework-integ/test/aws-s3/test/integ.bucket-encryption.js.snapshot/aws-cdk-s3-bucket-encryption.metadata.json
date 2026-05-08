@@ -1,0 +1,92 @@
+{
+  "/aws-cdk-s3-bucket-encryption/MyDSSEBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "DSSE_MANAGED",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MySSES3Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "S3_MANAGED",
+        "bucketKeyEnabled": true,
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MyKMSBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "KMS",
+        "blockedEncryptionTypes": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MySSECBlockedBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "S3_MANAGED",
+        "blockedEncryptionTypes": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MyDSSEBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyDSSEBucket8A2A1D0C"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MySSES3Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySSES3Bucket6973690D"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MyKMSBucket/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "enableKeyRotation": true
+      }
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MyKMSBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyKMSBucketDF8715AC"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MySSECBlockedBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MySSECBlockedBucket184125AB"
+    }
+  ],
+  "/aws-cdk-s3-bucket-encryption/MyKMSBucket/Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyKMSBucketKey9CACDA9E"
+    }
+  ]
+}

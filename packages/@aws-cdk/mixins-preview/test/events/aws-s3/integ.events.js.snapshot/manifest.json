@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "L1L2BucketWithL2Rule.assets": {
       "type": "cdk:asset-manifest",
@@ -33,250 +33,7 @@
       "dependencies": [
         "L1L2BucketWithL2Rule.assets"
       ],
-      "metadata": {
-        "/L1L2BucketWithL2Rule/bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "bucket"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/bucketL2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/bucketL2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "bucketL2297FC72A"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/MyFuncA": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/L1L2BucketWithL2Rule/MyFuncA/ServiceRole": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/MyFuncA/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/MyFuncA/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncAServiceRole9A674AAA"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/MyFuncA/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncAAF5F3089"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/MyFuncA/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/L1L2BucketWithL2Rule/MyFuncA/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncALogGroupD7C330A5"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/Trail": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addS3EventSelector": [
-                [
-                  {
-                    "bucket": "*"
-                  }
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventSelector": [
-                "AWS::S3::Object",
-                [
-                  "*"
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addS3EventSelector": [
-                [
-                  {
-                    "bucket": "*"
-                  }
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventSelector": [
-                "AWS::S3::Object",
-                [
-                  "*"
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          }
-        ],
-        "/L1L2BucketWithL2Rule/Trail/S3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "enforceSSL": true
-            }
-          }
-        ],
-        "/L1L2BucketWithL2Rule/Trail/S3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS30071F172"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/Trail/S3/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/L1L2BucketWithL2Rule/Trail/S3/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS3PolicyE42170FE"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/Trail/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Trail022F0CF2"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/L2RuleForL1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "targets": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addTarget": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*",
-                  "detailType": "*",
-                  "detail": "*",
-                  "version": "*",
-                  "resources": "*",
-                  "region": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*",
-                  "detailType": "*",
-                  "detail": "*",
-                  "version": "*",
-                  "resources": "*",
-                  "region": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/L1L2BucketWithL2Rule/L2RuleForL1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "L2RuleForL13AA6354B"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/L2RuleForL1/AllowEventRuleL1L2BucketWithL2RuleMyFuncAE7084B38": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "L2RuleForL1AllowEventRuleL1L2BucketWithL2RuleMyFuncAE7084B384341AAF4"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/L1L2BucketWithL2Rule/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "L1L2BucketWithL2Rule.metadata.json",
       "displayName": "L1L2BucketWithL2Rule"
     },
     "L1BucketWithL1Rule.assets": {
@@ -311,155 +68,7 @@
       "dependencies": [
         "L1BucketWithL1Rule.assets"
       ],
-      "metadata": {
-        "/L1BucketWithL1Rule/bucket": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "bucket"
-          }
-        ],
-        "/L1BucketWithL1Rule/Trail": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addS3EventSelector": [
-                [
-                  {
-                    "bucket": "*"
-                  }
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventSelector": [
-                "AWS::S3::Object",
-                [
-                  "*"
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          }
-        ],
-        "/L1BucketWithL1Rule/Trail/S3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "enforceSSL": true
-            }
-          }
-        ],
-        "/L1BucketWithL1Rule/Trail/S3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS30071F172"
-          }
-        ],
-        "/L1BucketWithL1Rule/Trail/S3/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/L1BucketWithL1Rule/Trail/S3/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS3PolicyE42170FE"
-          }
-        ],
-        "/L1BucketWithL1Rule/Trail/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Trail022F0CF2"
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB/ServiceRole": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncBServiceRole2DC0511D"
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncB694FF518"
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncBLogGroupFF9DDFC9"
-          }
-        ],
-        "/L1BucketWithL1Rule/MyFuncB/L1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncBL1830B2FE1"
-          }
-        ],
-        "/L1BucketWithL1Rule/RuleL1BucketL1": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuleL1BucketL1"
-          }
-        ],
-        "/L1BucketWithL1Rule/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/L1BucketWithL1Rule/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "L1BucketWithL1Rule.metadata.json",
       "displayName": "L1BucketWithL1Rule"
     },
     "L2BucketWithL1Rule.assets": {
@@ -494,161 +103,7 @@
       "dependencies": [
         "L2BucketWithL1Rule.assets"
       ],
-      "metadata": {
-        "/L2BucketWithL1Rule/bucketL2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/L2BucketWithL1Rule/bucketL2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "bucketL2297FC72A"
-          }
-        ],
-        "/L2BucketWithL1Rule/Trail": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addS3EventSelector": [
-                [
-                  {
-                    "bucket": "*"
-                  }
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventSelector": [
-                "AWS::S3::Object",
-                [
-                  "*"
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          }
-        ],
-        "/L2BucketWithL1Rule/Trail/S3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "enforceSSL": true
-            }
-          }
-        ],
-        "/L2BucketWithL1Rule/Trail/S3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS30071F172"
-          }
-        ],
-        "/L2BucketWithL1Rule/Trail/S3/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/L2BucketWithL1Rule/Trail/S3/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS3PolicyE42170FE"
-          }
-        ],
-        "/L2BucketWithL1Rule/Trail/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Trail022F0CF2"
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC/ServiceRole": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncCServiceRoleAE8313A3"
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncCF4F4B34F"
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncCLogGroup2FF99A86"
-          }
-        ],
-        "/L2BucketWithL1Rule/MyFuncC/L2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncCL23886A2F3"
-          }
-        ],
-        "/L2BucketWithL1Rule/RuleL1BucketL2": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RuleL1BucketL2"
-          }
-        ],
-        "/L2BucketWithL1Rule/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/L2BucketWithL1Rule/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "L2BucketWithL1Rule.metadata.json",
       "displayName": "L2BucketWithL1Rule"
     },
     "L2BucketOtherEventsWithL2Rule.assets": {
@@ -668,7 +123,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/3e1faf0a4efcaf8666130d319b1890c6583699f193db00bec5492a5031191587.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/2ed182fc43d40274ea6449ac953f0ac6988db81bf9b1cce711dd8bd8656923b2.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -683,316 +138,7 @@
       "dependencies": [
         "L2BucketOtherEventsWithL2Rule.assets"
       ],
-      "metadata": {
-        "/L2BucketOtherEventsWithL2Rule/bucketL2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "eventBridgeEnabled": true
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/bucketL2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "bucketL2297FC72A"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/bucketL2/Notifications/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "bucketL2Notifications08F46D0C"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add method metadata for node [Role], method name addManagedPolicy. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addMethodMetadataFailed]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/MyFuncA": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/MyFuncA/ServiceRole": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/MyFuncA/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/MyFuncA/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncAServiceRole9A674AAA"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/MyFuncA/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncAAF5F3089"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/MyFuncA/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroupName": "*"
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/MyFuncA/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFuncALogGroupD7C330A5"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/Trail": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addS3EventSelector": [
-                [
-                  {
-                    "bucket": "*"
-                  }
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventSelector": [
-                "AWS::S3::Object",
-                [
-                  "*"
-                ],
-                {
-                  "readWriteType": "All"
-                }
-              ]
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/Trail/S3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "enforceSSL": true
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/Trail/S3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS30071F172"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/Trail/S3/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/Trail/S3/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TrailS3PolicyE42170FE"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/Trail/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Trail022F0CF2"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/L2RuleForL1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "targets": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addTarget": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*",
-                  "detailType": "*",
-                  "detail": "*",
-                  "version": "*",
-                  "resources": "*",
-                  "region": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEventPattern": [
-                {
-                  "source": "*",
-                  "detailType": "*",
-                  "detail": "*",
-                  "version": "*",
-                  "resources": "*",
-                  "region": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/L2RuleForL1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "L2RuleForL13AA6354B"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/L2RuleForL1/AllowEventRuleL2BucketOtherEventsWithL2RuleMyFuncA23B22BFE": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "L2RuleForL1AllowEventRuleL2BucketOtherEventsWithL2RuleMyFuncA23B22BFEEE303209"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/L2BucketOtherEventsWithL2Rule/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "L2BucketOtherEventsWithL2Rule.metadata.json",
       "displayName": "L2BucketOtherEventsWithL2Rule"
     },
     "BucketTestDefaultTestDeployAssert4091776C.assets": {
@@ -1027,20 +173,7 @@
       "dependencies": [
         "BucketTestDefaultTestDeployAssert4091776C.assets"
       ],
-      "metadata": {
-        "/Bucket-Test/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/Bucket-Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "BucketTestDefaultTestDeployAssert4091776C.metadata.json",
       "displayName": "Bucket-Test/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -1340,6 +473,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1371,16 +509,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1527,6 +655,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1538,12 +667,37 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1108.0"
 }

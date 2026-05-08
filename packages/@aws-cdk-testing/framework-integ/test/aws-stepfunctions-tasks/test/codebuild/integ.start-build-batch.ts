@@ -80,7 +80,7 @@ class TestStack extends cdk.Stack {
     }).next(startBuildBatch1).next(startBuildBatch2);
 
     new sfn.StateMachine(this, 'StateMachine', {
-      definition,
+      definitionBody: sfn.DefinitionBody.fromChainable(definition),
     });
   }
 }
