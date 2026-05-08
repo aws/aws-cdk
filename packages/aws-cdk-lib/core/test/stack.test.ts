@@ -8,7 +8,7 @@ import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString,
-  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer, CliCredentialsStackSynthesizer,
+  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws, Fn, ResolutionTypeHint,
   PermissionsBoundary,
@@ -767,14 +767,27 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        PublishOutputFnGetAttSomeResourceExportnameC1AF3C83: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'name',
-            ],
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -786,11 +799,10 @@ describe('stack', () => {
           Type: 'AWS::S3::Bucket',
           Properties: {
             Name: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack1',
-                Region: 'us-east-1',
-                OutputName: 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83',
-              },
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
             },
           },
         },
@@ -798,281 +810,27 @@ describe('stack', () => {
     });
   });
 
-  test('cross-account stack references - producer template contains IAM role with trust policy', () => {
+  test('cross-region stack references throws error', () => {
     // GIVEN
     const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
 
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - producer template has an IAM Role with trust policy
-    const resources = producerTemplate.Resources;
-    const roleLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    );
-    expect(roleLogicalIds).toHaveLength(1);
-    const role = resources[roleLogicalIds[0]];
-    const statement = role.Properties.AssumeRolePolicyDocument.Statement[0];
-
-    expect(statement.Effect).toBe('Allow');
-    expect(statement.Action).toEqual(['sts:AssumeRole']);
-    // Principal is the consumer's CFN execution role
-    expect(statement.Principal.AWS).toEqual({
-      'Fn::Sub': 'arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-cfn-exec-role-222222222222-us-east-2',
-    });
-  });
-
-  test('cross-account stack references - producer template contains IAM policy with cloudformation:DescribeStacks', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - producer template has an IAM Policy granting DescribeStacks
-    const resources = producerTemplate.Resources;
-    const policyLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Policy',
-    );
-    expect(policyLogicalIds).toHaveLength(1);
-    const policy = resources[policyLogicalIds[0]];
-    expect(policy.Properties.PolicyDocument.Statement).toEqual([
-      {
-        Effect: 'Allow',
-        Action: 'cloudformation:DescribeStacks',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':cloudformation:us-east-1:111111111111:stack/Stack1/*',
-            ],
-          ],
-        },
-      },
-    ]);
-    // Policy is attached to the role
-    const roleLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    );
-    expect(policy.Properties.Roles).toEqual([
-      { Ref: roleLogicalIds[0] },
-    ]);
-  });
-
-  test('cross-account stack references fail with LegacyStackSynthesizer', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-      synthesizer: new LegacyStackSynthesizer(),
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    // THEN
-    expect(() => app.synth()).toThrow(/Could not find a CloudFormation execution role for the consumer stack/);
-  });
-
-  test('cross-account stack references fail with CliCredentialsStackSynthesizer', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-      synthesizer: new CliCredentialsStackSynthesizer(),
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    // THEN
-    expect(() => app.synth()).toThrow(/Could not find a CloudFormation execution role for the consumer stack/);
-  });
-
-  test('cross-account stack references fail when region is unknown', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { account: '222222222222' },
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    // THEN
-    expect(() => app.synth()).toThrow(/Cross stack\/region references are only supported for stacks with an explicit region defined/);
-  });
-
-  test('cross-account stack references with custom cloudFormationExecutionRole', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-      synthesizer: new DefaultStackSynthesizer({
-        cloudFormationExecutionRole: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/MyCustomCfnExecRole',
-      }),
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - trust policy principal reflects the custom role
-    const resources = producerTemplate.Resources;
-    const roleLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    );
-    expect(roleLogicalIds).toHaveLength(1);
-    const statement = resources[roleLogicalIds[0]].Properties.AssumeRolePolicyDocument.Statement[0];
-    expect(statement.Principal.AWS).toEqual({
-      'Fn::Sub': 'arn:${AWS::Partition}:iam::222222222222:role/MyCustomCfnExecRole',
-    });
-  });
-
-  test('cross-account stack references with multiple references create one role per unique reference', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-    });
-
-    // WHEN - two different attributes from the same resource
-    new CfnResource(consumer, 'SomeResource', {
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
       type: 'AWS::S3::Bucket',
       properties: {
         Name: exportResource.getAtt('name'),
-        Other: exportResource.getAtt('arn'),
       },
     });
 
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - one role and one policy per unique reference (2 references = 2 roles, 2 policies)
-    const resources = producerTemplate.Resources;
-    const roleCount = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    ).length;
-    const policyCount = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Policy',
-    ).length;
-    expect(roleCount).toBe(2);
-    expect(policyCount).toBe(2);
-  });
-
-  test('same-account cross-region references do not create IAM roles in producer', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-      crossRegionReferences: true,
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '111111111111' },
-      crossRegionReferences: true,
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
-
-    // THEN - no IAM resources in producer
-    const resources = producerTemplate.Resources ?? {};
-    const iamResources = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role' || resources[id].Type === 'AWS::IAM::Policy',
-    );
-    expect(iamResources).toHaveLength(0);
-
-    // THEN - consumer Fn::GetStackOutput has no RoleArn
-    const consumerResource = consumerTemplate.Resources.SomeResource;
-    expect(consumerResource.Properties.Name['Fn::GetStackOutput']).not.toHaveProperty('RoleArn');
+    // THEN
+    expect(() => {
+      app.synth();
+    }).toThrow(/Set crossRegionReferences=true to enable cross region references/);
   });
 
   test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
@@ -1106,29 +864,87 @@ describe('stack', () => {
     // THEN
     expect(template2).toMatchObject({
       Resources: {
+        CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD: {
+          Properties: {
+            Policies: [
+              {
+                PolicyDocument: {
+                  Statement: [
+                    {
+                      Action: [
+                        'ssm:AddTagsToResource',
+                        'ssm:RemoveTagsFromResource',
+                        'ssm:GetParameters',
+                      ],
+                      Effect: 'Allow',
+                      Resource: {
+                        'Fn::Join': [
+                          '',
+                          [
+                            'arn:',
+                            {
+                              Ref: 'AWS::Partition',
+                            },
+                            ':ssm:us-east-2:',
+                            {
+                              Ref: 'AWS::AccountId',
+                            },
+                            ':parameter/cdk/exports/Stack2/*',
+                          ],
+                        ],
+                      },
+                    },
+                  ],
+                  Version: '2012-10-17',
+                },
+                PolicyName: 'Inline',
+              },
+            ],
+          },
+          Type: 'AWS::IAM::Role',
+        },
+        ExportsReader8B249524: {
+          DeletionPolicy: 'Delete',
+          Properties: {
+            ReaderProps: {
+              imports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': '{{resolve:ssm:/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B}}',
+              },
+              region: 'us-east-2',
+              prefix: 'Stack2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
+                'Arn',
+              ],
+            },
+          },
+          Type: 'Custom::CrossRegionExportReader',
+          UpdateReplacePolicy: 'Delete',
+        },
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
             Name: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack1',
-                Region: 'us-east-1',
-                OutputName: 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83',
-              },
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
             },
             Other: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack1',
-                Region: 'us-east-1',
-                OutputName: 'PublishOutputFnGetAttSomeResourceExportother3693C96F',
-              },
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
+              ],
             },
             Other2: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack3',
-                Region: 'us-east-1',
-                OutputName: 'PublishOutputFnGetAttSomeResourceExportother215E978B3',
-              },
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B',
+              ],
             },
           },
         },
@@ -1139,14 +955,27 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        PublishOutputFnGetAttSomeResourceExportother215E978B3: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other2',
-            ],
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other2',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -1156,22 +985,33 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        PublishOutputFnGetAttSomeResourceExportnameC1AF3C83: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'name',
-            ],
-          },
-        },
-        PublishOutputFnGetAttSomeResourceExportother3693C96F: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other',
-            ],
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -1220,25 +1060,22 @@ describe('stack', () => {
           Type: 'AWS::S3::Bucket',
           Properties: {
             Name: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack1',
-                Region: 'us-east-1',
-                OutputName: 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83',
-              },
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
+              ],
             },
             Other: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack1',
-                Region: 'us-east-1',
-                OutputName: 'PublishOutputFnGetAttSomeResourceExportother3693C96F',
-              },
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
+              ],
             },
             Other2: {
-              'Fn::GetStackOutput': {
-                StackName: 'Stack3',
-                Region: 'us-west-1',
-                OutputName: 'PublishOutputFnGetAttSomeResourceExportother215E978B3',
-              },
+              'Fn::GetAtt': [
+                'ExportsReader8B249524',
+                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7',
+              ],
             },
           },
         },
@@ -1249,14 +1086,27 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        PublishOutputFnGetAttSomeResourceExportother215E978B3: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other2',
-            ],
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other2',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -1266,22 +1116,33 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-      },
-      Outputs: {
-        PublishOutputFnGetAttSomeResourceExportnameC1AF3C83: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'name',
-            ],
-          },
-        },
-        PublishOutputFnGetAttSomeResourceExportother3693C96F: {
-          Value: {
-            'Fn::GetAtt': [
-              'SomeResourceExport',
-              'other',
-            ],
+        ExportsWriteruseast2828FA26B86FBEFA7: {
+          Type: 'Custom::CrossRegionExportWriter',
+          DeletionPolicy: 'Delete',
+          Properties: {
+            WriterProps: {
+              exports: {
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'name',
+                  ],
+                },
+                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
+                  'Fn::GetAtt': [
+                    'SomeResourceExport',
+                    'other',
+                  ],
+                },
+              },
+              region: 'us-east-2',
+            },
+            ServiceToken: {
+              'Fn::GetAtt': [
+                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
+                'Arn',
+              ],
+            },
           },
         },
       },
@@ -1991,7 +1852,7 @@ describe('stack', () => {
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
   });
 
-  test('can create references to stacks in other accounts', () => {
+  test('cannot create references to stacks in other accounts', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
@@ -2003,7 +1864,7 @@ describe('stack', () => {
 
     expect(() => {
       app.synth();
-    }).not.toThrow();
+    }).toThrow(/Stack "Stack2" cannot reference [^ ]+ in stack "Stack1"/);
   });
 
   test('urlSuffix does not imply a stack dependency', () => {
