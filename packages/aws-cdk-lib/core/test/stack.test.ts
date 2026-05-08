@@ -1038,8 +1038,44 @@ describe('stack', () => {
     });
   });
 
+  test('cross-region references default to strong (ExportWriter/ExportReader) when flag is unset', () => {
+    // GIVEN - no crossStackReferenceStrength context set
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has ExportWriter custom resource
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
+
+    // THEN - consumer has ExportReader custom resource
+    const resources2 = template2.Resources ?? {};
+    const customResources2 = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(customResources2.length).toBeGreaterThan(0);
+  });
+
   test('cross-region strong references use ExportWriter/ExportReader', () => {
-    // GIVEN - strength is 'strong'
+    // GIVEN - strength is explicitly 'strong'
     const app = new App({ context: { [cxapi.CROSS_STACK_REFERENCE_STRENGTH]: 'strong' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
