@@ -2970,10 +2970,10 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
       originEndpointName: this.physicalName,
       description: props.description,
       tags: props?.tags ? renderTags(props.tags) : undefined,
-      hlsManifests: this.hlsManifests,
-      lowLatencyHlsManifests: this.llHlsManifests,
-      dashManifests: this.dashManifests,
-      mssManifests: this.mssManifests,
+      hlsManifests: omitEmptyArray(this.hlsManifests),
+      lowLatencyHlsManifests: omitEmptyArray(this.llHlsManifests),
+      dashManifests: omitEmptyArray(this.dashManifests),
+      mssManifests: omitEmptyArray(this.mssManifests),
       containerType: containerType,
       startoverWindowSeconds: props.startoverWindow?.toSeconds(),
       segment: this.segmentValidation(containerType, props.segment),
@@ -3018,3 +3018,8 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     }
   }
 }
+
+function omitEmptyArray<A>(a: Array<A>): Array<A> | undefined {
+  return a.length > 0 ? a : undefined;
+}
+
