@@ -507,25 +507,89 @@ For more information on anomaly detection in CloudWatch, see the [AWS documentat
 
 ## PromQL Alarms
 
-PromQL alarms allow you to create CloudWatch alarms using PromQL query expressions. This is useful when working with Prometheus-compatible metrics in CloudWatch.
+PromQL alarms evaluate a [PromQL](https://prometheus.io/docs/prometheus/latest/querying/basics/) instant query against metrics ingested through the CloudWatch OTLP endpoint on a recurring schedule. All matching time series returned by the query are considered breaching, and each is tracked independently as a _contributor_.
+
+### How PromQL Alarms Differ from Standard CloudWatch Alarms
+
+The existing `Alarm` construct is designed around the standard CloudWatch alarm model: a metric, a comparison operator, a threshold, and evaluation periods. PromQL alarms have a fundamentally different configuration model:
+
+- Instead of using alarm condition (threshold + comparison), all matching time series returned by the PromQL alarm query are considered to be breaching.
+- Instead of `evaluationPeriods` and `period`, PromQL alarms use `evaluationInterval`, `pendingPeriod`, and `recoveryPeriod`.
+- PromQL alarms do not use `MetricName`, `Namespace`, `Statistic`, `Dimensions`, or `Threshold` properties.
+- PromQL alarms only work with metrics ingested through the CloudWatch OTLP endpoint. Standard CloudWatch namespace metrics (e.g., `AWS/EC2`, `AWS/Lambda`) are not queryable via PromQL.
+
+### Creating a PromQL Alarm
 
 ```ts
-new cloudwatch.PromQLAlarm(this, 'PromQLAlarm', {
-  alarmName: 'HighCpuUsage',
-  alarmDescription: 'Alarm when CPU usage exceeds 90%',
-  query: 'cpu_usage > 90',
+new cloudwatch.PromQLAlarm(this, 'HighCpuAlarm', {
+  alarmName: 'HighCpuAlarm',
+  alarmDescription: 'Alarm when average CPU exceeds 80%',
+  query: 'avg(cpu_utilization_percent) > 80',
+  evaluationInterval: Duration.seconds(60),
+});
+```
+
+### Pending and Recovery Periods
+
+Use `pendingPeriod` to require a contributor to breach continuously for a duration before entering ALARM state (equivalent to Prometheus `for` duration). Use `recoveryPeriod` to require a contributor to stop breaching for a duration before returning to OK state (equivalent to Prometheus `keep_firing_for` duration).
+
+```ts
+new cloudwatch.PromQLAlarm(this, 'HighLatencyAlarm', {
+  alarmDescription: 'P99 latency exceeds 500ms for 5 minutes',
+  query: 'histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 0.5',
+  evaluationInterval: Duration.seconds(60),
+  pendingPeriod: Duration.seconds(300),
+  recoveryPeriod: Duration.seconds(600),
+});
+```
+
+### Adding Actions
+
+`PromQLAlarm` extends `AlarmBase`, so you can add alarm, OK, and insufficient-data actions the same way as standard alarms:
+
+```ts
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as cloudwatch_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
+
+declare const topic: sns.Topic;
+
+const alarm = new cloudwatch.PromQLAlarm(this, 'ServiceDownAlarm', {
+  query: 'up == 0',
   evaluationInterval: Duration.seconds(60),
   pendingPeriod: Duration.seconds(300),
   recoveryPeriod: Duration.seconds(300),
 });
+
+alarm.addAlarmAction(new cloudwatch_actions.SnsAction(topic));
+alarm.addOkAction(new cloudwatch_actions.SnsAction(topic));
 ```
 
-The key properties for PromQL alarms are:
+### Importing an Existing PromQL Alarm
 
-- `query`: The PromQL query that the alarm evaluates.
-- `evaluationInterval`: The frequency at which the alarm is evaluated.
-- `pendingPeriod`: The duration that a contributor must continuously breach before the contributor transitions to ALARM state.
-- `recoveryPeriod`: The duration that a contributor must continuously not be breaching before it transitions back to the OK state.
+```ts
+const importedByArn = cloudwatch.PromQLAlarm.fromPromQLAlarmArn(
+  this, 'ImportedAlarm',
+  'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyPromQLAlarm',
+);
+
+const importedByName = cloudwatch.PromQLAlarm.fromPromQLAlarmName(
+  this, 'ImportedByName',
+  'MyPromQLAlarm',
+);
+```
+
+### Using in Composite Alarms
+
+Since `PromQLAlarm` implements `IAlarm`, it can be used in composite alarm rules alongside standard alarms:
+
+```ts
+declare const promqlAlarm: cloudwatch.PromQLAlarm;
+declare const standardAlarm: cloudwatch.Alarm;
+
+new cloudwatch.CompositeAlarm(this, 'CompositeAlarm', {
+  alarmRule: cloudwatch.AlarmRule.allOf(promqlAlarm, standardAlarm),
+});
+```
 
 ## Dashboards
 

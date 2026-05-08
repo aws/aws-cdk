@@ -135,7 +135,7 @@ describe('PromQLAlarm', () => {
     const stack = new Stack();
 
     // WHEN
-    const alarm = PromQLAlarm.fromAlarmArn(stack, 'ImportedAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyPromQLAlarm');
+    const alarm = PromQLAlarm.fromPromQLAlarmArn(stack, 'ImportedAlarm', 'arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyPromQLAlarm');
 
     // THEN
     expect(alarm.alarmArn).toEqual('arn:aws:cloudwatch:us-east-1:123456789012:alarm:MyPromQLAlarm');
@@ -147,7 +147,7 @@ describe('PromQLAlarm', () => {
     const stack = new Stack();
 
     // WHEN
-    const alarm = PromQLAlarm.fromAlarmName(stack, 'ImportedAlarm', 'MyPromQLAlarm');
+    const alarm = PromQLAlarm.fromPromQLAlarmName(stack, 'ImportedAlarm', 'MyPromQLAlarm');
 
     // THEN
     expect(alarm.alarmName).toEqual('MyPromQLAlarm');
@@ -200,6 +200,74 @@ describe('PromQLAlarm', () => {
 
     // THEN
     expect(alarm.renderAlarmRule()).toMatch(/ALARM\(".*"\)/);
+  });
+
+  test('throws when evaluationInterval is less than 10 seconds', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: 'up == 0',
+      evaluationInterval: Duration.seconds(5),
+    })).toThrow(/evaluationInterval must be between 10 and 3600 seconds, got 5/);
+  });
+
+  test('throws when evaluationInterval is greater than 3600 seconds', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: 'up == 0',
+      evaluationInterval: Duration.seconds(7200),
+    })).toThrow(/evaluationInterval must be between 10 and 3600 seconds, got 7200/);
+  });
+
+  test('throws when pendingPeriod is less than 0 seconds', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: 'up == 0',
+      evaluationInterval: Duration.seconds(60),
+      pendingPeriod: Duration.seconds(-1),
+    })).toThrow(/pendingPeriod must be between 0 and 86400 seconds, got -1/);
+  });
+
+  test('throws when pendingPeriod is greater than 86400 seconds', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: 'up == 0',
+      evaluationInterval: Duration.seconds(60),
+      pendingPeriod: Duration.seconds(86401),
+    })).toThrow(/pendingPeriod must be between 0 and 86400 seconds, got 86401/);
+  });
+
+  test('throws when recoveryPeriod is less than 0 seconds', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: 'up == 0',
+      evaluationInterval: Duration.seconds(60),
+      recoveryPeriod: Duration.seconds(-1),
+    })).toThrow(/recoveryPeriod must be between 0 and 86400 seconds, got -1/);
+  });
+
+  test('throws when recoveryPeriod is greater than 86400 seconds', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: 'up == 0',
+      evaluationInterval: Duration.seconds(60),
+      recoveryPeriod: Duration.seconds(86401),
+    })).toThrow(/recoveryPeriod must be between 0 and 86400 seconds, got 86401/);
+  });
+
+  test('throws when query is empty', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: '',
+      evaluationInterval: Duration.seconds(60),
+    })).toThrow(/query must be between 1 and 10000 characters, got 0/);
+  });
+
+  test('throws when query exceeds 10000 characters', () => {
+    const stack = new Stack();
+    expect(() => new PromQLAlarm(stack, 'Alarm', {
+      query: 'x'.repeat(10001),
+      evaluationInterval: Duration.seconds(60),
+    })).toThrow(/query must be between 1 and 10000 characters, got 10001/);
   });
 });
 

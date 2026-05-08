@@ -2,7 +2,7 @@ import type { Construct } from 'constructs';
 import type { IAlarm } from './alarm-base';
 import { AlarmBase } from './alarm-base';
 import { CfnAlarm } from './cloudwatch.generated';
-import { ArnFormat, Lazy, Stack, Token, ValidationError } from '../../core';
+import { ArnFormat, Stack, Token, ValidationError } from '../../core';
 import type { Duration } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
@@ -63,7 +63,7 @@ export interface PromQLAlarmProps {
 
 /**
  * A CloudWatch Alarm based on a PromQL query expression.
- *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-promql.html
  * @resource AWS::CloudWatch::Alarm
  */
 @propertyInjectable
@@ -74,7 +74,7 @@ export class PromQLAlarm extends AlarmBase {
   /**
    * Import an existing CloudWatch alarm provided an ARN.
    */
-  public static fromAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
+  public static fromPromQLAlarmArn(scope: Construct, id: string, alarmArn: string): IAlarm {
     class Import extends AlarmBase implements IAlarm {
       public readonly alarmArn = alarmArn;
       public readonly alarmName = Stack.of(scope).splitArn(alarmArn, ArnFormat.COLON_RESOURCE_NAME).resourceName!;
@@ -85,9 +85,9 @@ export class PromQLAlarm extends AlarmBase {
   /**
    * Import an existing CloudWatch alarm provided a Name.
    */
-  public static fromAlarmName(scope: Construct, id: string, alarmName: string): IAlarm {
+  public static fromPromQLAlarmName(scope: Construct, id: string, alarmName: string): IAlarm {
     const stack = Stack.of(scope);
-    return this.fromAlarmArn(scope, id, stack.formatArn({
+    return this.fromPromQLAlarmArn(scope, id, stack.formatArn({
       service: 'cloudwatch',
       resource: 'alarm',
       resourceName: alarmName,
@@ -127,9 +127,9 @@ export class PromQLAlarm extends AlarmBase {
       alarmDescription: props.alarmDescription,
       alarmName: this.physicalName,
       actionsEnabled: props.actionsEnabled,
-      alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
-      insufficientDataActions: Lazy.list({ produce: () => this.insufficientDataActionArns }),
-      okActions: Lazy.list({ produce: () => this.okActionArns }),
+      alarmActions: Token.asList(this._alarmActionArns),
+      insufficientDataActions: Token.asList(this._insufficientDataActionArns),
+      okActions: Token.asList(this._okActionArns),
       evaluationCriteria: {
         promQlCriteria: {
           query: props.query,
