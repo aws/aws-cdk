@@ -1748,6 +1748,19 @@ describe('instance', () => {
       });
     });
 
+    test('explicitly disabling performance insights is respected', () => {
+      new rds.DatabaseInstanceFromSnapshot(stack, 'Instance', {
+        engine: rds.DatabaseInstanceEngine.mysql({ version: rds.MysqlEngineVersion.VER_8_0_19 }),
+        vpc,
+        snapshotIdentifier: 'my-snapshot',
+        enablePerformanceInsights: false,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBInstance', {
+        EnablePerformanceInsights: false,
+      });
+    });
+
     test('throws if performance insights fields are set but performance insights is disabled', () => {
       expect(() => {
         new rds.DatabaseInstance(stack, 'Instance', {

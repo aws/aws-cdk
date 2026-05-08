@@ -1,11 +1,13 @@
 import { Token, Lazy, Names } from 'aws-cdk-lib';
 import * as bedrockagentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import type { IRuntimeEndpoint, RuntimeEndpointAttributes } from './runtime-endpoint-base';
 import { RuntimeEndpointBase } from './runtime-endpoint-base';
-import { validateStringField, validateFieldPattern, ValidationError } from './validation-helpers';
+import { validateStringField, validateFieldPattern } from './validation-helpers';
 
 /******************************************************************************
  *                                Props
@@ -283,7 +285,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     // Combine and throw if any errors
     const allErrors = [...lengthErrors, ...patternErrors];
     if (allErrors.length > 0) {
-      throw new ValidationError(allErrors.join('\n'));
+      throw new UnscopedValidationError(lit`InvalidEndpointName`, allErrors.join('\n'));
     }
   }
 
@@ -306,7 +308,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       });
 
       if (errors.length > 0) {
-        throw new ValidationError(errors.join('\n'));
+        throw new UnscopedValidationError(lit`InvalidEndpointDescription`, errors.join('\n'));
       }
     }
   }
@@ -331,7 +333,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new UnscopedValidationError(lit`InvalidAgentRuntimeId`, patternErrors.join('\n'));
     }
   }
 
@@ -354,7 +356,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
     );
 
     if (patternErrors.length > 0) {
-      throw new ValidationError(patternErrors.join('\n'));
+      throw new UnscopedValidationError(lit`InvalidAgentRuntimeVersion`, patternErrors.join('\n'));
     }
   }
 
@@ -388,11 +390,11 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       // Combine key errors and throw if any
       const keyErrors = [...keyLengthErrors, ...keyPatternErrors];
       if (keyErrors.length > 0) {
-        throw new ValidationError(keyErrors.join('\n'));
+        throw new UnscopedValidationError(lit`InvalidEndpointTagKey`, keyErrors.join('\n'));
       }
 
       if (value === undefined || value === null) {
-        throw new ValidationError(`Tag value for key "${key}" cannot be null or undefined`);
+        throw new UnscopedValidationError(lit`NullEndpointTagValue`, `Tag value for key "${key}" cannot be null or undefined`);
       }
 
       // Validate tag value length
@@ -414,7 +416,7 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
       // Combine value errors and throw if any
       const valueErrors = [...valueLengthErrors, ...valuePatternErrors];
       if (valueErrors.length > 0) {
-        throw new ValidationError(valueErrors.join('\n'));
+        throw new UnscopedValidationError(lit`InvalidEndpointTagValue`, valueErrors.join('\n'));
       }
     }
   }

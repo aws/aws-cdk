@@ -12,9 +12,11 @@ import type {
 import { DefaultEncryptedResourceFactories, DefaultPolicyFactories, PolicyDocument } from '../../../aws-iam';
 import type { CfnKey } from '../../../aws-kms';
 import { KeyGrants } from '../../../aws-kms';
+import { CfnKeyMatcher } from '../../../aws-kms/lib/private/cfn-key-matcher';
 import type { CfnResource } from '../../../core';
 import { ValidationError } from '../../../core';
-import { findClosestRelatedResource } from '../../../core/lib/helpers-internal';
+import { ConstructReflection } from '../../../core/lib/helpers-internal';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ResourceEnvironment } from '../../../interfaces';
 import { CfnQueue, CfnQueuePolicy } from '../sqs.generated';
 
@@ -81,7 +83,7 @@ class EncryptedCfnQueue implements IEncryptedResource {
 
 function ifCfnQueue<A>(resource: IConstruct, factory: (r: CfnQueue) => A): A {
   if (!CfnQueue.isCfnQueue(resource)) {
-    throw new ValidationError(`Construct ${resource.node.path} is not of type CfnQueue`, resource);
+    throw new ValidationError(lit`Construct`, `Construct ${resource.node.path} is not of type CfnQueue`, resource);
   }
 
   return factory(resource);
@@ -92,11 +94,7 @@ function tryFindKmsKeyForQueue(queue: CfnQueue): CfnKey | undefined {
   if (!kmsMasterKeyId) {
     return undefined;
   }
-  return findClosestRelatedResource<IConstruct, CfnKey>(
-    queue,
-    'AWS::KMS::Key',
-    (_, key) => key.ref === kmsMasterKeyId || key.attrKeyId === kmsMasterKeyId || key.attrArn === kmsMasterKeyId,
-  );
+  return ConstructReflection.of(queue).findRelatedCfnResource(new CfnKeyMatcher(kmsMasterKeyId)) as CfnKey | undefined;
 }
 
 DefaultPolicyFactories.set('AWS::SQS::Queue', new QueueWithPolicyFactory());
