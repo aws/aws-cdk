@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "EvaluatorTagsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-bedrock-agentcore-evaluator-tags"
+      ],
+      "assertionStack": "EvaluatorTagsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluatorTagsTestDefaultTestDeployAssert5C465BF9"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

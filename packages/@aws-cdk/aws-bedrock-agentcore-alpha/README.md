@@ -3223,6 +3223,7 @@ Custom evaluators let you define evaluation logic tailored to your specific use 
 | `evaluatorConfig` | `EvaluatorConfig` | Yes | Configuration defining how the evaluator assesses performance |
 | `level` | `EvaluationLevel` | Yes | The level at which the evaluator operates: `TOOL_CALL`, `TRACE`, or `SESSION` |
 | `description` | `string` | No | Description of the evaluator. Maximum 200 characters |
+| `tags` | `{ [key: string]: string }` | No | Tags for the evaluator. A list of key:value pairs to apply to this Evaluator resource |
 
 #### LLM-as-a-Judge Evaluator
 
