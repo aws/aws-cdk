@@ -14,9 +14,6 @@ on:
         required: false
         type: number
 
-env:
-  DAYS_THRESHOLD: 30
-
 permissions:
   contents: read
   pull-requests: write
@@ -26,22 +23,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/github-script@v7
+        env:
+          DAYS_THRESHOLD: '30'
+          INPUT_DAYS: ${{ inputs.days_threshold }}
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |
-            const days = parseInt('${{ inputs.days_threshold }}') || parseInt(process.env.DAYS_THRESHOLD);
+            const days = parseInt(process.env.INPUT_DAYS) || parseInt(process.env.DAYS_THRESHOLD);
             const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
             const bumped = [];
             const errors = [];
 
             // Find all open PRs waiting for community review
-            const prs = await github.paginate(github.rest.issues.listForRepo, {
+            const allItems = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: 'pr/needs-community-review',
               state: 'open',
               per_page: 100,
             });
+            const prs = allItems.filter(item => item.pull_request);
 
             core.info(`Found ${prs.length} PRs with pr/needs-community-review`);
 
