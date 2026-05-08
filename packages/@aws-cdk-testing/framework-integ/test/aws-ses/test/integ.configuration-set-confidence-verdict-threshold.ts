@@ -7,13 +7,13 @@ const stack = new Stack(app, 'cdk-ses-configuration-set-confidence-verdict-thres
 
 const configurationSetThresholdDisabled = new ses.ConfigurationSet(stack, 'ThresholdDisabled', {
   configurationSetName: 'threshold-disabled',
-  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.DISABLED,
+  disableAutoValidation: true,
 });
 
 const configurationSetWithSuppressionReasons = new ses.ConfigurationSet(stack, 'WithSuppressionReasons', {
   configurationSetName: 'with-suppression-reasons',
   suppressionReasons: ses.SuppressionReasons.BOUNCES_AND_COMPLAINTS,
-  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.MANAGED,
+  autoValidationThreshold: ses.AutoValidationThreshold.MANAGED,
 });
 
 const test = new integ.IntegTest(app, 'ConfigurationSetConfidenceVerdictThresholdInteg', {

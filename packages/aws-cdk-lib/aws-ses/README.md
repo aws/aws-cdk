@@ -259,18 +259,32 @@ new ses.ConfigurationSet(this, 'ConfigurationSet', {
 
 Auto validation automatically reviews all outbound email addresses before sending and only delivers messages to recipients meeting your selected validation threshold. This protects sender reputation by preventing sends to invalid or risky addresses.
 
-You can override the account-level Auto Validation settings at the configuration set level using `confidenceVerdictThreshold`:
+You can override the account-level Auto Validation settings at the configuration set level using `autoValidationThreshold`:
 
 - `MANAGED` - Amazon SES automatically optimizes threshold based on sending patterns and reputation (recommended)
 - `HIGH` - Only addresses with high delivery likelihood (maximum reputation protection)
 - `MEDIUM` - Addresses with medium or high delivery likelihood (balances protection with reach)
-- `DISABLED` - Auto Validation turned off for this configuration set
 
 For more details, see [Auto Validation](https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html).
 
 ```ts
 new ses.ConfigurationSet(this, 'ConfigurationSet', {
-  confidenceVerdictThreshold: ses.ConfidenceVerdictThreshold.HIGH,
+  autoValidationThreshold: ses.AutoValidationThreshold.HIGH,
+});
+```
+
+Use `disableAutoValidation` to turn the feature on or off for this configuration set, regardless of the account-level setting:
+
+```ts
+// Explicitly disable Auto Validation for this configuration set.
+new ses.ConfigurationSet(this, 'NoAutoValidation', {
+  disableAutoValidation: true,
+});
+
+// Explicitly enable Auto Validation even when it is disabled at the account level.
+// Threshold falls back to the SES default unless `autoValidationThreshold` is also set.
+new ses.ConfigurationSet(this, 'ForceAutoValidation', {
+  disableAutoValidation: false,
 });
 ```
 

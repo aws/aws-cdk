@@ -80,14 +80,32 @@ export interface ConfigurationSetProps {
   readonly disableSuppressionList?: boolean;
 
   /**
-   * The confidence verdict threshold level for suppression list validation.
+   * The Auto Validation threshold for this configuration set.
    *
-   * - `DISABLED`: Explicitly disable condition threshold validation
-   * - `MEDIUM/HIGH/MANAGED`: Enable condition threshold with specified level
+   * When set, Auto Validation is enabled for this configuration set with the specified
+   * confidence threshold. Cannot be combined with `disableAutoValidation: true`.
    *
-   * @default - No validation options configured
+   * @see https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html
+   *
+   * @default - inherit the account-level Auto Validation settings
    */
-  readonly confidenceVerdictThreshold?: ConfidenceVerdictThreshold;
+  readonly autoValidationThreshold?: AutoValidationThreshold;
+
+  /**
+   * Override the account-level Auto Validation setting for this configuration set.
+   *
+   * - `true`: explicitly disable Auto Validation for this configuration set.
+   *   Cannot be combined with `autoValidationThreshold`.
+   * - `false`: explicitly enable Auto Validation for this configuration set even if
+   *   it is disabled at the account level. The threshold falls back to the SES default
+   *   unless `autoValidationThreshold` is also specified.
+   * - `undefined`: inherit the account-level setting.
+   *
+   * @see https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html
+   *
+   * @default - inherit the account-level Auto Validation settings
+   */
+  readonly disableAutoValidation?: boolean;
 
   /**
    * The custom subdomain that is used to redirect email recipients to the
@@ -199,31 +217,24 @@ export enum SuppressionReasons {
 }
 
 /**
- * Confidence verdict threshold for suppression validation.
+ * Confidence threshold used by SES Auto Validation to decide whether an outbound
+ * recipient address should be delivered to.
  *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ses-configurationset-overallconfidencethreshold.html
- *
- * This determines the confidence level threshold for suppression list validation.
+ * @see https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html
  */
-export enum ConfidenceVerdictThreshold {
+export enum AutoValidationThreshold {
   /**
-   * Disable condition threshold validation.
-   * This explicitly disables the feature.
-   */
-  DISABLED = 'DISABLED',
-
-  /**
-   * Medium confidence threshold
+   * Medium confidence threshold. Allow addresses with medium or higher delivery likelihood.
    */
   MEDIUM = 'MEDIUM',
 
   /**
-   * High confidence threshold
+   * High confidence threshold. Only allow addresses with high delivery likelihood.
    */
   HIGH = 'HIGH',
 
   /**
-   * Managed confidence threshold (AWS manages the threshold)
+   * Amazon SES manages the threshold automatically based on sending patterns and reputation.
    */
   MANAGED = 'MANAGED',
 }
@@ -272,6 +283,9 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
     if (props.disableSuppressionList && props.suppressionReasons) {
       throw new ValidationError(lit`DisableSuppressionListTrueSuppression`, 'When disableSuppressionList is true, suppressionReasons must not be specified.', this);
     }
+    if (props.disableAutoValidation === true && props.autoValidationThreshold !== undefined) {
+      throw new ValidationError(lit`DisableAutoValidationWithThreshold`, 'When disableAutoValidation is true, autoValidationThreshold must not be specified.', this);
+    }
     if (props.maxDeliveryDuration && !Token.isUnresolved(props.maxDeliveryDuration)) {
       if (props.maxDeliveryDuration.toMilliseconds() < Duration.minutes(5).toMilliseconds()) {
         throw new ValidationError(lit`MaximumDeliveryDurationGreaterEqual`, `The maximum delivery duration must be greater than or equal to 5 minutes (300_000 milliseconds), got: ${props.maxDeliveryDuration.toMilliseconds()} milliseconds.`, this);
@@ -299,7 +313,7 @@ export class ConfigurationSet extends Resource implements IConfigurationSet {
       }),
       suppressionOptions: undefinedIfNoKeys({
         suppressedReasons: props.disableSuppressionList ? [] : renderSuppressedReasons(props.suppressionReasons),
-        validationOptions: renderValidationOptions(props.confidenceVerdictThreshold),
+        validationOptions: renderValidationOptions(props.autoValidationThreshold, props.disableAutoValidation),
       }),
       trackingOptions: undefinedIfNoKeys({
         customRedirectDomain: props.customTrackingRedirectDomain,
@@ -351,12 +365,15 @@ function booleanToEnabledDisabled(value: boolean): 'ENABLED' | 'DISABLED' {
     : 'DISABLED';
 }
 
-function renderValidationOptions(threshold?: ConfidenceVerdictThreshold): CfnConfigurationSet.ValidationOptionsProperty | undefined {
-  if (!threshold) {
+function renderValidationOptions(
+  threshold?: AutoValidationThreshold,
+  disabled?: boolean,
+): CfnConfigurationSet.ValidationOptionsProperty | undefined {
+  if (disabled === undefined && threshold === undefined) {
     return undefined;
   }
 
-  if (threshold === ConfidenceVerdictThreshold.DISABLED) {
+  if (disabled === true) {
     return {
       conditionThreshold: {
         conditionThresholdEnabled: 'DISABLED',
@@ -367,9 +384,9 @@ function renderValidationOptions(threshold?: ConfidenceVerdictThreshold): CfnCon
   return {
     conditionThreshold: {
       conditionThresholdEnabled: 'ENABLED',
-      overallConfidenceThreshold: {
+      overallConfidenceThreshold: threshold !== undefined ? {
         confidenceVerdictThreshold: threshold,
-      },
+      } : undefined,
     },
   };
 }

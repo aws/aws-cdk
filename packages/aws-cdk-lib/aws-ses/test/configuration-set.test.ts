@@ -1,6 +1,6 @@
 import { Template, Match } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { ConfidenceVerdictThreshold, ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, HttpsPolicy, SuppressionReasons } from '../lib';
+import { AutoValidationThreshold, ConfigurationSet, ConfigurationSetTlsPolicy, DedicatedIpPool, HttpsPolicy, SuppressionReasons } from '../lib';
 
 let stack: Stack;
 beforeEach(() => {
@@ -217,8 +217,8 @@ describe('maxDeliveryDuration', () => {
   });
 });
 
-describe('confidenceVerdictThreshold', () => {
-  test('configuration set without confidenceVerdictThreshold', () => {
+describe('autoValidationThreshold', () => {
+  test('configuration set without autoValidationThreshold', () => {
     new ConfigurationSet(stack, 'ConfigurationSet');
 
     Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
@@ -226,9 +226,9 @@ describe('confidenceVerdictThreshold', () => {
     });
   });
 
-  test('configuration set with confidenceVerdictThreshold DISABLED', () => {
+  test('configuration set with disableAutoValidation true', () => {
     new ConfigurationSet(stack, 'ConfigurationSet', {
-      confidenceVerdictThreshold: ConfidenceVerdictThreshold.DISABLED,
+      disableAutoValidation: true,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
@@ -242,13 +242,30 @@ describe('confidenceVerdictThreshold', () => {
     });
   });
 
-  test.each([
-    ConfidenceVerdictThreshold.MEDIUM,
-    ConfidenceVerdictThreshold.HIGH,
-    ConfidenceVerdictThreshold.MANAGED,
-  ])('configuration set with confidenceVerdictThreshold %s', (threshold) => {
+  test('configuration set with disableAutoValidation false', () => {
     new ConfigurationSet(stack, 'ConfigurationSet', {
-      confidenceVerdictThreshold: threshold,
+      disableAutoValidation: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'ENABLED',
+            OverallConfidenceThreshold: Match.absent(),
+          },
+        },
+      },
+    });
+  });
+
+  test.each([
+    AutoValidationThreshold.MEDIUM,
+    AutoValidationThreshold.HIGH,
+    AutoValidationThreshold.MANAGED,
+  ])('configuration set with autoValidationThreshold %s', (threshold) => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      autoValidationThreshold: threshold,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
@@ -263,5 +280,34 @@ describe('confidenceVerdictThreshold', () => {
         },
       },
     });
+  });
+
+  test('configuration set with disableAutoValidation false and autoValidationThreshold', () => {
+    new ConfigurationSet(stack, 'ConfigurationSet', {
+      disableAutoValidation: false,
+      autoValidationThreshold: AutoValidationThreshold.HIGH,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::SES::ConfigurationSet', {
+      SuppressionOptions: {
+        ValidationOptions: {
+          ConditionThreshold: {
+            ConditionThresholdEnabled: 'ENABLED',
+            OverallConfidenceThreshold: {
+              ConfidenceVerdictThreshold: 'HIGH',
+            },
+          },
+        },
+      },
+    });
+  });
+
+  test('fails when disableAutoValidation true and autoValidationThreshold are both set', () => {
+    expect(() => {
+      new ConfigurationSet(stack, 'ConfigurationSet', {
+        disableAutoValidation: true,
+        autoValidationThreshold: AutoValidationThreshold.HIGH,
+      });
+    }).toThrow('When disableAutoValidation is true, autoValidationThreshold must not be specified.');
   });
 });
