@@ -1111,6 +1111,36 @@ Policy Validation Report Summary
       expect(output).toContain('E9001');
       expect(output).toContain('Unknown resource type');
     });
+
+    test('plugin names with spaces use dashes in suppression IDs', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('My Plugin', [{
+          description: 'Some violation',
+          ruleName: 'MY RULE',
+          severity: 'error',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress using dashes instead of spaces
+      core.Validations.of(stack).acknowledge({ id: 'My-Plugin::MY-RULE', reason: 'OK' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('MY RULE');
+    });
   });
 
   describe('Validations.of()', () => {
