@@ -24,7 +24,7 @@ describe('VectorBucketPolicy', () => {
       resourcePolicy: new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
           actions: ['s3vectors:GetVectorBucket'],
-          principals: [new iam.AccountPrincipal('111122223333')],
+          principals: [new iam.AccountPrincipal('123456789012')],
           resources: ['*'],
         })],
       }),
@@ -40,7 +40,7 @@ describe('VectorBucketPolicy', () => {
       statements: [
         new iam.PolicyStatement({
           actions: ['s3vectors:GetVectorBucket'],
-          principals: [new iam.AccountPrincipal('111122223333')],
+          principals: [new iam.AccountPrincipal('123456789012')],
           resources: ['*'],
         }),
       ],
@@ -70,7 +70,7 @@ describe('VectorBucketPolicy', () => {
       resourcePolicy: new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
           actions: ['s3vectors:GetVectorBucket'],
-          principals: [new iam.AccountPrincipal('111122223333')],
+          principals: [new iam.AccountPrincipal('123456789012')],
           resources: ['*'],
         })],
       }),

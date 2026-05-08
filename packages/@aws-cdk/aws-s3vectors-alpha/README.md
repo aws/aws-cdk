@@ -130,7 +130,7 @@ Attach a custom statement directly via `addToResourcePolicy`. A
 ```ts
 vectorBucket.addToResourcePolicy(new iam.PolicyStatement({
   actions: ['s3vectors:GetVectorBucket'],
-  principals: [new iam.AccountPrincipal('111122223333')],
+  principals: [new iam.AccountPrincipal('123456789012')],
   resources: [vectorBucket.vectorBucketArn],
 }));
 ```
@@ -153,7 +153,7 @@ Import a vector bucket by ARN:
 ```ts
 const importedBucket = VectorBucket.fromVectorBucketArn(
   scope, 'ImportedBucket',
-  'arn:aws:s3vectors:us-east-1:111122223333:bucket/my-vector-bucket',
+  'arn:aws:s3vectors:us-east-1:123456789012:bucket/my-vector-bucket',
 );
 ```
 
@@ -164,7 +164,7 @@ declare const key: kms.IKey;
 const importedBucket = VectorBucket.fromVectorBucketAttributes(scope, 'ImportedBucketFromAttrs', {
   vectorBucketName: 'my-vector-bucket',
   region: 'us-east-1',
-  account: '111122223333',
+  account: '123456789012',
   encryptionKey: key,
 });
 ```

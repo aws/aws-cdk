@@ -1,40 +1,97 @@
-import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
 import type { Construct } from 'constructs';
 import * as s3vectors from '../../lib';
 
-/**
- * Snapshot test for a vector bucket with default parameters.
- */
-class DefaultTestStack extends core.Stack {
-  public readonly vectorBucket: s3vectors.VectorBucket;
+class TestStack extends core.Stack {
+  public readonly plainBucket: s3vectors.VectorBucket;
+  public readonly encryptedBucket: s3vectors.VectorBucket;
+  public readonly vectorIndex: s3vectors.VectorIndex;
+  public readonly key: kms.IKey;
 
   constructor(scope: Construct, id: string, props?: core.StackProps) {
     super(scope, id, props);
 
-    this.vectorBucket = new s3vectors.VectorBucket(this, 'DefaultBucket', {
-      vectorBucketName: 'integ-vector-default-bucket',
+    this.plainBucket = new s3vectors.VectorBucket(this, 'PlainBucket', {
+      vectorBucketName: 'integ-vb-plain',
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
+
+    this.plainBucket.addToResourcePolicy(new iam.PolicyStatement({
+      actions: ['s3vectors:GetVectorBucket'],
+      principals: [new iam.AccountPrincipal(this.account)],
+      resources: [this.plainBucket.vectorBucketArn],
+    }));
+
+    this.key = new kms.Key(this, 'Key', { removalPolicy: core.RemovalPolicy.DESTROY });
+    this.encryptedBucket = new s3vectors.VectorBucket(this, 'EncryptedBucket', {
+      vectorBucketName: 'integ-vb-encrypted',
+      encryption: s3vectors.VectorBucketEncryption.KMS,
+      encryptionKey: this.key,
+      removalPolicy: core.RemovalPolicy.DESTROY,
+    });
+
+    this.vectorIndex = new s3vectors.VectorIndex(this, 'Index', {
+      vectorBucket: this.encryptedBucket,
+      indexName: 'integ-example-index',
+      dimension: 1024,
+      dataType: s3vectors.VectorDataType.FLOAT32,
+      distanceMetric: s3vectors.DistanceMetric.COSINE,
+      nonFilterableMetadataKeys: ['source', 'author'],
+      removalPolicy: core.RemovalPolicy.DESTROY,
+    });
+
+    const consumer = new iam.Role(this, 'Consumer', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+    this.encryptedBucket.grantReadWrite(consumer, '*');
+    this.vectorIndex.grantReadWrite(consumer);
   }
 }
 
 const app = new core.App();
 
-const defaultStack = new DefaultTestStack(app, 'VectorBucketIntegTest');
+const stack = new TestStack(app, 'VectorBucketIntegTest');
 
 const integ = new IntegTest(app, 'VectorBucketIntegTestCase', {
-  testCases: [defaultStack],
+  testCases: [stack],
 });
 
-const getVectorBucket = integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetVectorBucketCommand', {
-  vectorBucketArn: defaultStack.vectorBucket.vectorBucketArn,
-});
-
-getVectorBucket.expect(ExpectedResult.objectLike({
+integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetVectorBucketCommand', {
+  vectorBucketArn: stack.plainBucket.vectorBucketArn,
+}).expect(ExpectedResult.objectLike({
   vectorBucket: {
-    vectorBucketArn: defaultStack.vectorBucket.vectorBucketArn,
-    vectorBucketName: 'integ-vector-default-bucket',
+    vectorBucketName: 'integ-vb-plain',
+  },
+}));
+
+integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetVectorBucketCommand', {
+  vectorBucketArn: stack.encryptedBucket.vectorBucketArn,
+}).expect(ExpectedResult.objectLike({
+  vectorBucket: {
+    encryptionConfiguration: {
+      sseType: 'aws:kms',
+      kmsKeyArn: stack.key.keyArn,
+    },
+  },
+}));
+
+integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetVectorBucketPolicyCommand', {
+  vectorBucketArn: stack.plainBucket.vectorBucketArn,
+}).expect(ExpectedResult.objectLike({
+  policy: Match.stringLikeRegexp('s3vectors:GetVectorBucket'),
+}));
+
+integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetIndexCommand', {
+  indexArn: stack.vectorIndex.indexArn,
+}).expect(ExpectedResult.objectLike({
+  index: {
+    indexName: 'integ-example-index',
+    dimension: 1024,
+    dataType: 'float32',
+    distanceMetric: 'cosine',
   },
 }));
 

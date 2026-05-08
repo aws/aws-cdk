@@ -282,12 +282,12 @@ describe('VectorIndex', () => {
     test('derives index name from an explicit ARN', () => {
       const importedBucket = s3vectors.VectorBucket.fromVectorBucketArn(
         stack, 'ImportedBucket',
-        'arn:aws:s3vectors:us-east-1:111122223333:bucket/demo-bucket',
+        'arn:aws:s3vectors:us-east-1:123456789012:bucket/demo-bucket',
       );
 
       const imported = s3vectors.VectorIndex.fromVectorIndexAttributes(stack, 'ImportedIndex', {
         vectorBucket: importedBucket,
-        indexArn: 'arn:aws:s3vectors:us-east-1:111122223333:bucket/demo-bucket/index/demo-index',
+        indexArn: 'arn:aws:s3vectors:us-east-1:123456789012:bucket/demo-bucket/index/demo-index',
       });
 
       expect(imported.indexName).toEqual('demo-index');
