@@ -6,13 +6,16 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 
 /**
  * This test verifies that CallAwsServiceCrossRegion correctly invokes a Lambda
- * function and properly serializes the response as JSON (not as a byte array).
- * See https://github.com/aws/aws-cdk/issues/34768
+ * function in a different region and properly serializes the response as JSON
+ * (not as a byte array). See https://github.com/aws/aws-cdk/issues/34768
  *
- * The state machine uses CallAwsServiceCrossRegion with an explicit region
- * parameter, which exercises the cross-region code path and verifies proper
- * response deserialization.
+ * The state machine is deployed in us-west-2 (via regions constraint) and
+ * invokes a Lambda in us-east-1 using CallAwsServiceCrossRegion, exercising
+ * the cross-region code path and verifying proper response deserialization.
  */
+
+const TARGET_REGION = 'us-east-1';
+const LAMBDA_FUNCTION_NAME = 'integ-cross-region-target-lambda';
 
 const app = new cdk.App({
   postCliContext: {
@@ -21,10 +24,13 @@ const app = new cdk.App({
   },
 });
 
-const stack = new cdk.Stack(app, 'aws-sfn-call-aws-service-cross-region-lambda');
+// Target Lambda stack in us-east-1 (explicit env, no cross-stack references)
+const targetStack = new cdk.Stack(app, 'aws-sfn-cross-region-lambda-target', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: TARGET_REGION },
+});
 
-// Target Lambda function
-const targetLambda = new lambda.Function(stack, 'TargetLambda', {
+new lambda.Function(targetStack, 'TargetLambda', {
+  functionName: LAMBDA_FUNCTION_NAME,
   runtime: lambda.Runtime.NODEJS_20_X,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
@@ -41,30 +47,43 @@ const targetLambda = new lambda.Function(stack, 'TargetLambda', {
   `),
 });
 
-// Invoke Lambda using CallAwsServiceCrossRegion (exercises cross-region code path)
-// The region is set to us-east-1 explicitly to exercise the cross-region
-// serialization logic, which is where the byte array bug manifests.
+// Caller stack — no explicit env so assertions work without cross-env issues
+const callerStack = new cdk.Stack(app, 'aws-sfn-call-aws-service-cross-region-lambda');
+
+// Construct the target Lambda ARN using the known function name and target region
+const targetLambdaArn = callerStack.formatArn({
+  service: 'lambda',
+  resource: 'function',
+  resourceName: LAMBDA_FUNCTION_NAME,
+  arnFormat: cdk.ArnFormat.COLON_RESOURCE_NAME,
+  region: TARGET_REGION,
+});
+
 const crossRegionInvokeTask = tasks.CallAwsServiceCrossRegion.jsonata(
-  stack, 'CrossRegionLambdaInvoke', {
+  callerStack, 'CrossRegionLambdaInvoke', {
     service: 'lambda',
     action: 'invoke',
-    region: 'us-east-1',
+    region: TARGET_REGION,
     parameters: {
-      FunctionName: targetLambda.functionArn,
+      FunctionName: targetLambdaArn,
       Payload: JSON.stringify({ hello: 'world' }),
     },
-    iamResources: [targetLambda.functionArn],
+    iamResources: [targetLambdaArn],
     iamAction: 'lambda:InvokeFunction',
   },
 );
 
-const stateMachine = new sfn.StateMachine(stack, 'TestStateMachine', {
+const stateMachine = new sfn.StateMachine(callerStack, 'TestStateMachine', {
   definitionBody: sfn.DefinitionBody.fromChainable(crossRegionInvokeTask),
   timeout: cdk.Duration.minutes(5),
 });
 
+// callerStack depends on targetStack being deployed first
+callerStack.addDependency(targetStack);
+
 const integ = new IntegTest(app, 'IntegTest', {
-  testCases: [stack],
+  testCases: [callerStack],
+  regions: ['us-west-2'],
 });
 
 // Start the Step Functions execution

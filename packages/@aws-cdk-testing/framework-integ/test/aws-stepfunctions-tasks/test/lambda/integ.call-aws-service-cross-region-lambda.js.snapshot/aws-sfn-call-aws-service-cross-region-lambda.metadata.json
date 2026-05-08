@@ -1,0 +1,402 @@
+{
+  "/aws-sfn-call-aws-service-cross-region-lambda": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:47:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-singleton",
+      "data": true
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "definitionBody": "*",
+        "timeout": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionLambdaInvoke/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "uuid": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eF7430F4F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CrossRegionAwsSdkSingletonFunction.ensureLambda (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CrossRegionAwsSdkSingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated.js:9:9)",
+        "new CallAwsServiceCrossRegion (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:96:31)",
+        "CallAwsServiceCrossRegion.jsonata (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:52:16)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:56:63)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestStateMachine3C216BE3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:447:30)",
+        "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:67:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/Exports/Output{\"Ref\":\"TestStateMachine3C216BE3\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefTestStateMachine3C216BE323AC47AE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
+        "resolveValue (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
+        "resolveReferences (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
+        "prepareApp (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CrossRegionAwsSdkSingletonFunction.ensureLambda (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CrossRegionAwsSdkSingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated.js:9:9)",
+        "new CallAwsServiceCrossRegion (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:96:31)",
+        "CallAwsServiceCrossRegion.jsonata (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:52:16)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:56:63)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestStateMachineRole2476F720"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:392:39)",
+        "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:67:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7e/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRoleDefaultPolicy63AE5FEF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "CrossRegionAwsSdkSingletonFunction.addToRolePolicy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:213:23)",
+        "/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:109: (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:109:5)",
+        "Array.forEach (:)",
+        "new CallAwsServiceCrossRegion (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:109:11)",
+        "CallAwsServiceCrossRegion.jsonata (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:52:16)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:56:63)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-sfn-call-aws-service-cross-region-lambda/TestStateMachine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestStateMachineRoleDefaultPolicyB28F488D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToRolePolicy (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:484:23)",
+        "WrappedClass.<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:402:26)",
+        "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:67:22)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
