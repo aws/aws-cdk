@@ -1,5 +1,6 @@
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
 import { ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -93,7 +94,7 @@ export class NoPasswordUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (!SUPPORTED_NO_PASSWORD_ENGINES.includes(this.engine)) {
-      throw new ValidationError(`Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
+      throw new ValidationError(lit`UnsupportedEngineForNoPassword`, `Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

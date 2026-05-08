@@ -5,6 +5,11 @@ export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
+ * If this environment variable is set, error codes of CDK-specific errors will be written to it.
+ */
+export const ERRORFILE_ENV = 'CDK_ERROR_FILE';
+
+/**
  * The name of the temporary file where the context is stored.
  */
 export const CONTEXT_OVERFLOW_LOCATION_ENV = 'CONTEXT_OVERFLOW_LOCATION_ENV';
@@ -22,7 +27,7 @@ export const DEFAULT_REGION_ENV = 'CDK_DEFAULT_REGION';
 /**
  * Version of Cloud Assembly expected by CDK Toolkit.
  *
- * Despite it's name, this value applies to all version of the CDK Toolkit, not just the CLI.
+ * Despite its name, this value applies to all version of the CDK Toolkit, not just the CLI.
  *
  * CLI started emitting this at 1.10.1
  */

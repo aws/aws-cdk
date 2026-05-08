@@ -17,13 +17,14 @@ import type * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as assets from 'aws-cdk-lib/aws-ecr-assets';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import type { Runtime } from './runtime';
-import { ValidationError } from './validation-helpers';
 
 /**
  * Bedrock AgentCore runtime environment for code execution
- * Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
+ * Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13 | PYTHON_3_14 | NODE_22
  */
 export enum AgentCoreRuntime {
   /**
@@ -42,6 +43,14 @@ export enum AgentCoreRuntime {
    * Python 3.13 runtime
    */
   PYTHON_3_13 = 'PYTHON_3_13',
+  /**
+   * Python 3.14 runtime
+   */
+  PYTHON_3_14 = 'PYTHON_3_14',
+  /**
+   * Node.js 22 runtime
+   */
+  NODE_22 = 'NODE_22',
 }
 
 /**
@@ -88,7 +97,7 @@ export abstract class AgentRuntimeArtifact {
   /**
    * Reference an agent runtime artifact that's constructed directly from an S3 object
    * @param s3Location The source code location and configuration details.
-   * @param runtime The runtime environment for executing the code. Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
+   * @param runtime The runtime environment for executing the code. Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13 | PYTHON_3_14 | NODE_22
    * @param entrypoint The entry point for the code execution, specifying the function or method that should be invoked when the code runs.
    */
   public static fromS3(s3Location: s3.Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {
@@ -179,7 +188,7 @@ class AssetImage extends AgentRuntimeArtifact {
 
   public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
     if (!this.asset) {
-      throw new ValidationError('Asset not initialized. Call bind() before _render()');
+      throw new UnscopedValidationError(lit`AssetNotInitialized`, 'Asset not initialized. Call bind() before _render()');
     }
 
     // Return container configuration directly as expected by the runtime
@@ -269,7 +278,7 @@ class CodeAsset extends AgentRuntimeArtifact {
 
   public _render(): CfnRuntime.AgentRuntimeArtifactProperty {
     if (!this.asset) {
-      throw new ValidationError('Asset not initialized. Call bind() before _render()');
+      throw new UnscopedValidationError(lit`AssetNotInitialized`, 'Asset not initialized. Call bind() before _render()');
     }
 
     const s3Config: any = {
@@ -294,7 +303,8 @@ class ImageUriArtifact extends AgentRuntimeArtifact {
     // Validate ECR container URI format per CloudFormation requirements
     const ecrPattern = /^\d{12}\.dkr\.ecr\.([a-z0-9-]+)\.amazonaws\.com\/((?:[a-z0-9]+(?:[._-][a-z0-9]+)*\/)*[a-z0-9]+(?:[._-][a-z0-9]+)*)([:@]\S+)$/;
     if (!Token.isUnresolved(containerUri) && !ecrPattern.test(containerUri)) {
-      throw new ValidationError(
+      throw new UnscopedValidationError(
+        lit`InvalidEcrContainerUri`,
         `Invalid ECR container URI format: ${containerUri}. Must be an ECR URI: {account}.dkr.ecr.{region}.amazonaws.com/{repository}:{tag}`,
       );
     }

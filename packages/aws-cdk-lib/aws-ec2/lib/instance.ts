@@ -31,9 +31,12 @@ import {
   Token,
   ValidationError,
 } from '../../core';
-import { md5hash } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, md5hash } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -431,7 +434,7 @@ export interface InstanceProps {
    * Alternatively, if you set InstanceInitiatedShutdownBehavior to terminate, you can terminate the instance
    * by running the shutdown command from the instance.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ec2-instance.html#cfn-ec2-instance-disableapitermination
    *
    * @default false
    */
@@ -496,6 +499,7 @@ export interface InstanceProps {
  * This represents a single EC2 instance
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Instance extends Resource implements IInstance {
   /**
    * Uniquely identifies this class.
@@ -559,7 +563,7 @@ export class Instance extends Resource implements IInstance {
   public readonly instancePublicIp: string;
 
   private readonly securityGroup: ISecurityGroup;
-  private readonly securityGroups: ISecurityGroup[] = [];
+  private readonly _securityGroups: IArrayBox<ISecurityGroup>;
 
   constructor(scope: Construct, id: string, props: InstanceProps) {
     super(scope, id);
@@ -567,16 +571,16 @@ export class Instance extends Resource implements IInstance {
     addConstructMetadata(this, props);
 
     if (props.initOptions && !props.init) {
-      throw new ValidationError('Setting \'initOptions\' requires that \'init\' is also set', this);
+      throw new ValidationError(lit`RequiresSettingInitoptionsRequires`, 'Setting \'initOptions\' requires that \'init\' is also set', this);
     }
 
     if (props.keyName && props.keyPair) {
-      throw new ValidationError('Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
+      throw new ValidationError(lit`CannotSpecifyKeyNameKey`, 'Cannot specify both of \'keyName\' and \'keyPair\'; prefer \'keyPair\'', this);
     }
 
     // if credit specification is set, then the instance type must be burstable
     if (props.creditSpecification && !props.instanceType.isBurstable()) {
-      throw new ValidationError(`creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`, this);
+      throw new ValidationError(lit`CreditSpecificationSupportedInstanceType`, `creditSpecification is supported only for T4g, T3a, T3, T2 instance type, got: ${props.instanceType.toString()}`, this);
     }
 
     if (props.securityGroup) {
@@ -589,11 +593,11 @@ export class Instance extends Resource implements IInstance {
       });
     }
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
-    this.securityGroups.push(this.securityGroup);
+    this._securityGroups = Box.fromArray([this.securityGroup], { omitEmpty: false });
     Tags.of(this).add(NAME_TAG, props.instanceName || this.node.path);
 
     if (props.instanceProfile && props.role) {
-      throw new ValidationError('You cannot provide both instanceProfile and role', this);
+      throw new ValidationError(lit`CannotProvideInstanceProfileRole`, 'You cannot provide both instanceProfile and role', this);
     }
 
     let iamInstanceProfile: string | undefined = undefined;
@@ -621,7 +625,7 @@ export class Instance extends Resource implements IInstance {
     const imageConfig = props.machineImage.getImage(this);
     this.userData = props.userData ?? imageConfig.userData;
     const userDataToken = Lazy.string({ produce: () => Fn.base64(this.userData.render()) });
-    const securityGroupsToken = Lazy.list({ produce: () => this.securityGroups.map(sg => sg.securityGroupId) });
+    const securityGroupsToken = Token.asList(this._securityGroups.map(sg => sg.securityGroupId), { displayHint: 'securityGroupIds' });
 
     const { subnets, hasPublic } = props.vpc.selectSubnets(props.vpcSubnets);
     let subnet;
@@ -630,13 +634,13 @@ export class Instance extends Resource implements IInstance {
       if (selected.length === 1) {
         subnet = selected[0];
       } else {
-        Annotations.of(this).addError(`Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
+        Annotations.of(this)._addTrackableError(lit`AmbiguousSubnetForAz`, `Need exactly 1 subnet to match AZ '${props.availabilityZone}', found ${selected.length}. Use a different availabilityZone.`);
       }
     } else {
       if (subnets.length > 0) {
         subnet = subnets[0];
       } else {
-        Annotations.of(this).addError(`Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
+        Annotations.of(this)._addTrackableError(lit`NoMatchingSubnets`, `Did not find any subnets matching '${JSON.stringify(props.vpcSubnets)}', please use a different selection.`);
       }
     }
     if (!subnet) {
@@ -659,11 +663,11 @@ export class Instance extends Resource implements IInstance {
       }] : undefined;
 
     if (props.keyPair && !props.keyPair._isOsCompatible(imageConfig.osType)) {
-      throw new ValidationError(`${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
+      throw new ValidationError(lit`IncompatibleKeyPairType`, `${props.keyPair.type} keys are not compatible with the chosen AMI`, this);
     }
 
     if (props.enclaveEnabled && props.hibernationEnabled) {
-      throw new ValidationError('You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance', this);
+      throw new ValidationError(lit`CanTBothTrueSame`, 'You can\'t set both `enclaveEnabled` and `hibernationEnabled` to true on the same instance', this);
     }
 
     if (
@@ -671,13 +675,13 @@ export class Instance extends Resource implements IInstance {
       !Token.isUnresolved(props.ipv6AddressCount) &&
       (props.ipv6AddressCount < 0 || !Number.isInteger(props.ipv6AddressCount))
     ) {
-      throw new ValidationError(`\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`, this);
+      throw new ValidationError(lit`MustBeIpv6addresscountNonNegativeInteger`, `\'ipv6AddressCount\' must be a non-negative integer, got: ${props.ipv6AddressCount}`, this);
     }
 
     if (
       props.ipv6AddressCount !== undefined &&
       props.associatePublicIpAddress !== undefined) {
-      throw new ValidationError('You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'', this);
+      throw new ValidationError(lit`SetIpvAddressCountAssociate`, 'You can\'t set both \'ipv6AddressCount\' and \'associatePublicIpAddress\'', this);
     }
 
     // if network interfaces array is configured then subnetId, securityGroupIds,
@@ -717,7 +721,7 @@ export class Instance extends Resource implements IInstance {
     }
 
     if (!hasPublic && props.associatePublicIpAddress) {
-      throw new ValidationError("To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
+      throw new ValidationError(lit`SetAssociatePublicIpAddress`, "To set 'associatePublicIpAddress: true' you must select Public subnets (vpcSubnets: { subnetType: SubnetType.PUBLIC })", this);
     }
 
     this.osType = imageConfig.osType;
@@ -792,7 +796,7 @@ export class Instance extends Resource implements IInstance {
    */
   @MethodMetadata()
   public addSecurityGroup(securityGroup: ISecurityGroup): void {
-    this.securityGroups.push(securityGroup);
+    this._securityGroups.push(securityGroup);
   }
 
   /**
@@ -893,13 +897,13 @@ export class Instance extends Resource implements IInstance {
     // are set directly on the instance. Using both would result in a CloudFormation
     // deployment error, so we prevent this combination at synthesis time.
     if (props.requireImdsv2) {
-      throw new ValidationError('Cannot use both requireImdsv2 and metadata options. Use requireImdsv2 for simple IMDSv2 enforcement or individual metadata option properties for advanced configuration, but not both.', this);
+      throw new ValidationError(lit`CannotRequireImdsvMetadataOptions`, 'Cannot use both requireImdsv2 and metadata options. Use requireImdsv2 for simple IMDSv2 enforcement or individual metadata option properties for advanced configuration, but not both.', this);
     }
 
     // Validate httpPutResponseHopLimit range
     if (props.httpPutResponseHopLimit !== undefined &&
       (props.httpPutResponseHopLimit < 1 || props.httpPutResponseHopLimit > 64)) {
-      throw new ValidationError('httpPutResponseHopLimit must be between 1 and 64', this);
+      throw new ValidationError(lit`HttpPutResponseHopLimit`, 'httpPutResponseHopLimit must be between 1 and 64', this);
     }
 
     return {

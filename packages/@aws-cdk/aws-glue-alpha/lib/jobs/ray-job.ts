@@ -1,7 +1,7 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import type * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -97,7 +97,7 @@ export class RayJob extends Job {
     };
 
     if (props.workerType && props.workerType !== WorkerType.Z_2X) {
-      throw new ValidationError('Ray jobs only support Z.2X worker type', this);
+      throw new ValidationError(lit`RayJobsOnlySupportZ2XWorkerType`, 'Ray jobs only support Z.2X worker type', this);
     }
 
     this.resource = new CfnJob(this, 'Resource', {
