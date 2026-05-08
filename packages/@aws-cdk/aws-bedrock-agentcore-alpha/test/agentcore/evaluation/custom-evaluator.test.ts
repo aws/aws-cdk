@@ -645,4 +645,92 @@ describe('Evaluator', () => {
       }).not.toThrow();
     });
   });
+
+  describe('tags', () => {
+    test('passes tags to the L1 resource', () => {
+      new Evaluator(stack, 'TaggedEvaluator', {
+        evaluatorName: 'tagged_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+            { label: 'Bad', definition: 'Not helpful.' },
+          ]),
+        }),
+        tags: {
+          Environment: 'Production',
+          Team: 'AgentCore',
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        Tags: Match.arrayWith([
+          { Key: 'Environment', Value: 'Production' },
+          { Key: 'Team', Value: 'AgentCore' },
+        ]),
+      });
+    });
+
+    test('does not include tags when not specified', () => {
+      new Evaluator(stack, 'NoTagsEvaluator', {
+        evaluatorName: 'no_tags_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+            { label: 'Bad', definition: 'Not helpful.' },
+          ]),
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        Tags: Match.absent(),
+      });
+    });
+
+    test('does not include tags when empty object is passed', () => {
+      new Evaluator(stack, 'EmptyTagsEvaluator', {
+        evaluatorName: 'empty_tags_evaluator',
+        level: EvaluationLevel.SESSION,
+        evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+          instructions: 'Evaluate helpfulness.',
+          modelId: 'us.anthropic.claude-sonnet-4-6',
+          ratingScale: EvaluatorRatingScale.categorical([
+            { label: 'Good', definition: 'Helpful.' },
+            { label: 'Bad', definition: 'Not helpful.' },
+          ]),
+        }),
+        tags: {},
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::Evaluator', {
+        Tags: Match.absent(),
+      });
+    });
+
+    test('throws on invalid tag key characters', () => {
+      expect(() => {
+        new Evaluator(stack, 'InvalidTagEvaluator', {
+          evaluatorName: 'invalid_tag_evaluator',
+          level: EvaluationLevel.SESSION,
+          evaluatorConfig: EvaluatorConfig.llmAsAJudge({
+            instructions: 'Evaluate helpfulness.',
+            modelId: 'us.anthropic.claude-sonnet-4-6',
+            ratingScale: EvaluatorRatingScale.categorical([
+              { label: 'Good', definition: 'Helpful.' },
+              { label: 'Bad', definition: 'Not helpful.' },
+            ]),
+          }),
+          tags: { 'invalid!key': 'value' },
+        });
+      }).toThrow(/invalid characters/);
+    });
+  });
 });

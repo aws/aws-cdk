@@ -24,6 +24,7 @@ import {
   throwIfInvalid,
   validateDescription,
   validateEvaluatorName,
+  validateEvaluationTags,
 } from './validation-helpers';
 
 /**
@@ -63,6 +64,14 @@ export interface EvaluatorProps {
    * @maxLength 200
    */
   readonly description?: string;
+
+  /**
+   * Tags for the evaluator.
+   * A list of key:value pairs of tags to apply to this Evaluator resource.
+   *
+   * @default - No tags
+   */
+  readonly tags?: { [key: string]: string };
 }
 
 /**
@@ -233,6 +242,10 @@ export class Evaluator extends EvaluatorBase {
     throwIfInvalid(validateEvaluatorName, props.evaluatorName, this);
     throwIfInvalid(validateDescription, props.description, this);
 
+    if (props.tags) {
+      throwIfInvalid(validateEvaluationTags, props.tags, this);
+    }
+
     this.evaluatorName = this.physicalName;
 
     const resource = new bedrockagentcore.CfnEvaluator(this, 'Resource', {
@@ -240,6 +253,9 @@ export class Evaluator extends EvaluatorBase {
       evaluatorConfig: props.evaluatorConfig._bind(),
       level: props.level.value,
       description: props.description,
+      tags: props.tags && Object.keys(props.tags).length > 0
+        ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
+        : undefined,
     });
 
     // If code-based, grant the bedrock-agentcore service permission to invoke

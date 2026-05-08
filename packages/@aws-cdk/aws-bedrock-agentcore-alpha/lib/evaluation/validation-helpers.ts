@@ -443,3 +443,46 @@ export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope
   }
   return param;
 }
+
+/**
+ * Validates tags for evaluation resources.
+ * @param tags - The tags object to validate
+ * @param _scope - The construct scope for error reporting (optional)
+ * @returns Array of validation error messages, empty if valid
+ */
+export function validateEvaluationTags(tags?: { [key: string]: string }, _scope?: IConstruct): string[] {
+  const errors: string[] = [];
+  if (tags == null) {
+    return errors;
+  }
+  if (Token.isUnresolved(tags)) {
+    return errors;
+  }
+
+  const TAG_KEY_MIN = 1;
+  const TAG_KEY_MAX = 128;
+  const TAG_VALUE_MAX = 256;
+  const TAG_KEY_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]+$/;
+  const TAG_VALUE_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]*$/;
+
+  for (const [key, value] of Object.entries(tags)) {
+    if (!Token.isUnresolved(key)) {
+      if (key.length < TAG_KEY_MIN || key.length > TAG_KEY_MAX) {
+        errors.push(`Tag key "${key}" must be between ${TAG_KEY_MIN} and ${TAG_KEY_MAX} characters, got ${key.length}`);
+      }
+      if (!TAG_KEY_PATTERN.test(key)) {
+        errors.push(`Tag key "${key}" contains invalid characters. Valid: a-zA-Z0-9 and ._:/=+@- and spaces`);
+      }
+    }
+    if (!Token.isUnresolved(value)) {
+      if (value.length > TAG_VALUE_MAX) {
+        errors.push(`Tag value for key "${key}" must be at most ${TAG_VALUE_MAX} characters, got ${value.length}`);
+      }
+      if (!TAG_VALUE_PATTERN.test(value)) {
+        errors.push(`Tag value for key "${key}" contains invalid characters. Valid: a-zA-Z0-9 and ._:/=+@- and spaces`);
+      }
+    }
+  }
+
+  return errors;
+}
