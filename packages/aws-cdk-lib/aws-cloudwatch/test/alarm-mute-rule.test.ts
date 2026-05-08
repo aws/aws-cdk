@@ -8,11 +8,13 @@ const testMetric = new cloudwatch.Metric({
 });
 
 describe('Alarm mute rule', () => {
+  let app: cdk.App;
   let stack: cdk.Stack;
   let alarm: cloudwatch.Alarm;
 
   beforeEach(() => {
-    stack = new cdk.Stack();
+    app = new cdk.App;
+    stack = new cdk.Stack(app);
     alarm = new cloudwatch.Alarm(stack, 'Alarm', {
       metric: testMetric,
       threshold: 1,
@@ -68,6 +70,22 @@ describe('Alarm mute rule', () => {
         AlarmNames: [{ Ref: 'Alarm7103F465' }, { Ref: 'Alarm2A7122E13' }],
       },
     });
+  });
+
+  test('throws when number of target alarms > 100', () => {
+    // GIVEN
+    const alarmMuteRule = new cloudwatch.AlarmMuteRule(stack, 'AlarmMuteRule', {
+      schedule: cloudwatch.ScheduleExpression.cron({ minute: '0' }),
+      duration: cdk.Duration.hours(1),
+    });
+
+    // WHEN
+    for (let i = 1; i <= 101; ++i) {
+      alarmMuteRule.addAlarm(new cloudwatch.Alarm(stack, `Alarm${i}`, { metric: testMetric, threshold: 1, evaluationPeriods: 1 }));
+    }
+
+    // THEN
+    expect(() => app.synth()).toThrow('The maximum number of target alarms is 100.');
   });
 
   test('cron schedule without time zone', () => {

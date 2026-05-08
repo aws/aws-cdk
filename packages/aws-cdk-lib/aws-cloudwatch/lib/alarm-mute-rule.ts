@@ -328,6 +328,9 @@ export class AlarmMuteRule extends cdk.Resource implements IAlarmMuteRule, cdk.I
     if (this.alarms.length === 0) {
       return undefined;
     }
+    if (this.alarms.length > 100) {
+      throw new cdk.ValidationError(lit`TargetAlarmsTooMany`, `The maximum number of target alarms is 100. Got ${this.alarms.length} alarms.`, this);
+    }
     return {
       alarmNames: this.alarms.map((alarm) => alarm.alarmRef.alarmName),
     };
