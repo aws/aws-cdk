@@ -1,0 +1,114 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "VectorBucketName": "integ-vi-with-grants"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Index4A79713B": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 256,
+    "DistanceMetric": "cosine",
+    "IndexName": "integ-example-index",
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "Bucket83908E77",
+      "VectorBucketArn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ConsumerRoleACB9B9F3": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ConsumerRoleDefaultPolicy2C8B36A4": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3vectors:DeleteVectors",
+        "s3vectors:GetIndex",
+        "s3vectors:GetVectors",
+        "s3vectors:ListTagsForResource",
+        "s3vectors:ListVectors",
+        "s3vectors:PutVectors",
+        "s3vectors:QueryVectors"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Index4A79713B",
+         "IndexArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ConsumerRoleDefaultPolicy2C8B36A4",
+    "Roles": [
+     {
+      "Ref": "ConsumerRoleACB9B9F3"
+     }
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

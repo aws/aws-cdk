@@ -1,0 +1,105 @@
+{
+ "Resources": {
+  "BucketKey7E4AEAB8": {
+   "Type": "AWS::KMS::Key",
+   "Properties": {
+    "Description": "Created by OnlyKmsEncryptionTypeTest/Bucket",
+    "EnableKeyRotation": true,
+    "KeyPolicy": {
+     "Statement": [
+      {
+       "Action": "kms:*",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "Bucket83908E77": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "EncryptionConfiguration": {
+     "KmsKeyArn": {
+      "Fn::GetAtt": [
+       "BucketKey7E4AEAB8",
+       "Arn"
+      ]
+     },
+     "SseType": "aws:kms"
+    },
+    "VectorBucketName": "integ-vb-kms-only"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttBucket83908E77VectorBucketArnD6F2C8F5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Bucket83908E77",
+     "VectorBucketArn"
+    ]
+   },
+   "Export": {
+    "Name": "OnlyKmsEncryptionTypeTest:ExportsOutputFnGetAttBucket83908E77VectorBucketArnD6F2C8F5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,103 @@
+{
+ "Resources": {
+  "DefaultBucketEEDD2DB7": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "VectorBucketName": "integ-vb-with-policy"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "DefaultBucketDefaultPolicy75769BC2": {
+   "Type": "AWS::S3Vectors::VectorBucketPolicy",
+   "Properties": {
+    "Policy": {
+     "Statement": [
+      {
+       "Action": "s3vectors:GetVectorBucket",
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":root"
+          ]
+         ]
+        }
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "DefaultBucketEEDD2DB7",
+         "VectorBucketArn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "DefaultBucketEEDD2DB7",
+      "VectorBucketArn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttDefaultBucketEEDD2DB7VectorBucketArn6DF87808": {
+   "Value": {
+    "Fn::GetAtt": [
+     "DefaultBucketEEDD2DB7",
+     "VectorBucketArn"
+    ]
+   },
+   "Export": {
+    "Name": "VectorBucketPolicyIntegTest:ExportsOutputFnGetAttDefaultBucketEEDD2DB7VectorBucketArn6DF87808"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

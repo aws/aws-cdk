@@ -1,0 +1,93 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "VectorBucketName": "integ-vb-with-index"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Index4A79713B": {
+   "Type": "AWS::S3Vectors::Index",
+   "Properties": {
+    "DataType": "float32",
+    "Dimension": 1024,
+    "DistanceMetric": "cosine",
+    "IndexName": "integ-example-index",
+    "MetadataConfiguration": {
+     "NonFilterableMetadataKeys": [
+      "source",
+      "author"
+     ]
+    },
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "Bucket83908E77",
+      "VectorBucketArn"
+     ]
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttIndex4A79713BIndexArn5888FEA5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Index4A79713B",
+     "IndexArn"
+    ]
+   },
+   "Export": {
+    "Name": "VectorIndexIntegTest:ExportsOutputFnGetAttIndex4A79713BIndexArn5888FEA5"
+   }
+  },
+  "ExportsOutputFnGetAttBucket83908E77VectorBucketArnD6F2C8F5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Bucket83908E77",
+     "VectorBucketArn"
+    ]
+   },
+   "Export": {
+    "Name": "VectorIndexIntegTest:ExportsOutputFnGetAttBucket83908E77VectorBucketArnD6F2C8F5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

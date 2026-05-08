@@ -1,0 +1,111 @@
+{
+ "Resources": {
+  "Bucket83908E77": {
+   "Type": "AWS::S3Vectors::VectorBucket",
+   "Properties": {
+    "VectorBucketName": "integ-vb-grant-read-write"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "BucketDefaultPolicyA3EF6025": {
+   "Type": "AWS::S3Vectors::VectorBucketPolicy",
+   "Properties": {
+    "Policy": {
+     "Statement": [
+      {
+       "Action": [
+        "s3vectors:CreateIndex",
+        "s3vectors:DeleteIndex",
+        "s3vectors:GetVectorBucket",
+        "s3vectors:GetVectorBucketPolicy",
+        "s3vectors:ListIndexes",
+        "s3vectors:ListTagsForResource"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "Bucket83908E77",
+          "VectorBucketArn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "Bucket83908E77",
+             "VectorBucketArn"
+            ]
+           },
+           "/index/example-index"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "VectorBucketArn": {
+     "Fn::GetAtt": [
+      "Bucket83908E77",
+      "VectorBucketArn"
+     ]
+    }
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttBucket83908E77VectorBucketArnD6F2C8F5": {
+   "Value": {
+    "Fn::GetAtt": [
+     "Bucket83908E77",
+     "VectorBucketArn"
+    ]
+   },
+   "Export": {
+    "Name": "integ-vb-grant-read-write:ExportsOutputFnGetAttBucket83908E77VectorBucketArnD6F2C8F5"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
