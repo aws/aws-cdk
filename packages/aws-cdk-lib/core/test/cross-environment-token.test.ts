@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { toCloudFormation } from './util';
+import * as cxapi from '../../cx-api';
 import { App, CfnOutput, CfnResource, PhysicalName, Resource, Stack } from '../lib';
 import { memoizedGetter } from '../lib/helpers-internal/memoize';
 
@@ -189,7 +190,7 @@ describe('cross environment', () => {
 
   test('can reference a deploy-time physical name across regions, when crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', {
       env: {
         account: '123456789012',

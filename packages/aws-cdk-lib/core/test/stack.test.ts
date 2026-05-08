@@ -742,7 +742,7 @@ describe('stack', () => {
 
   test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -810,10 +810,10 @@ describe('stack', () => {
     });
   });
 
-  test('cross-region stack references throws error', () => {
-    // GIVEN
+  test('cross-region stack references work without crossRegionReferences prop', () => {
+    // GIVEN - no crossRegionReferences on consumer, strong flag (default)
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
@@ -827,15 +827,19 @@ describe('stack', () => {
       },
     });
 
-    // THEN
-    expect(() => {
-      app.synth();
-    }).toThrow(/Set crossRegionReferences=true to enable cross region references/);
+    // THEN - does not throw, uses ExportWriter/ExportReader
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
   });
 
   test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1020,7 +1024,7 @@ describe('stack', () => {
 
   test('cross region stack references with multiple stacks and multiple regions, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1147,6 +1151,195 @@ describe('stack', () => {
         },
       },
     });
+  });
+
+  test('cross-region references default to strong (ExportWriter/ExportReader) when flag is unset', () => {
+    // GIVEN - no crossStackReferenceStrength context set
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has ExportWriter custom resource
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
+
+    // THEN - consumer has ExportReader custom resource
+    const resources2 = template2.Resources ?? {};
+    const customResources2 = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(customResources2.length).toBeGreaterThan(0);
+  });
+
+  test('cross-region strong references use ExportWriter/ExportReader', () => {
+    // GIVEN - strength is explicitly 'strong'
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has ExportWriter custom resource
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
+
+    // THEN - consumer has ExportReader custom resource
+    const resources2 = template2.Resources ?? {};
+    const customResources2 = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(customResources2.length).toBeGreaterThan(0);
+  });
+
+  test('cross-region both references generate ExportWriter AND Fn::GetStackOutput', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has ExportWriter (strong side)
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
+
+    // THEN - producer has Output (for Fn::GetStackOutput)
+    expect(template1.Outputs).toBeDefined();
+
+    // THEN - consumer uses Fn::GetStackOutput (weak side), NOT ExportReader
+    const resources2 = template2.Resources ?? {};
+    const consumerResource = resources2.SomeResource;
+    expect(consumerResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+
+    const customResources2 = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(customResources2).toHaveLength(0);
+  });
+
+  test('cross-account strong references emit warning and use Fn::GetStackOutput', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '222222222222' },
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - still uses Fn::GetStackOutput (falls through)
+    expect(consumerTemplate.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+
+    // THEN - warning emitted
+    const warnings = consumer.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+    expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
+  });
+
+  test('same-region weak references emit warning and use Fn::ImportValue', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - still uses Fn::ImportValue (strong behavior, as weak is not implemented)
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::ImportValue');
+
+    // THEN - warning emitted
+    const warnings = stack2.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+    expect(warnings.some(w => w.data.includes('not yet implemented'))).toBe(true);
+  });
+
+  test('invalid cross stack reference strength throws', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'invalid' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Must be "strong", "weak", or "both"/);
   });
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
@@ -1852,7 +2045,7 @@ describe('stack', () => {
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
   });
 
-  test('cannot create references to stacks in other accounts', () => {
+  test('cross-account references with strong flag emit warning but still synth', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
@@ -1862,9 +2055,13 @@ describe('stack', () => {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
+    // THEN - does not throw, emits warning
     expect(() => {
       app.synth();
-    }).toThrow(/Stack "Stack2" cannot reference [^ ]+ in stack "Stack1"/);
+    }).not.toThrow();
+
+    const warnings = stack2.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+    expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
   });
 
   test('urlSuffix does not imply a stack dependency', () => {
