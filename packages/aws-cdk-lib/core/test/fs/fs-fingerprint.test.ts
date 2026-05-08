@@ -211,6 +211,111 @@ describe('fs fingerprint', () => {
       // THEN
       expect(hashSrc).toEqual(hashCpy);
     });
+
+    test('dangling symlink is hashed as a link (not followed)', () => {
+      // GIVEN
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      fs.symlinkSync('/nonexistent/path/to/nowhere', path.join(dir, 'dangling'));
+
+      // WHEN/THEN — should not throw, should produce a stable hash
+      const hash1 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.ALWAYS });
+      const hash2 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.ALWAYS });
+      expect(hash1).toEqual(hash2);
+    });
+
+    test('symlink to external directory is followed in EXTERNAL mode', () => {
+      // GIVEN
+      const externalDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-external'));
+      fs.writeFileSync(path.join(externalDir, 'file.txt'), 'external content');
+
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      fs.symlinkSync(externalDir, path.join(dir, 'ext-link'));
+
+      // WHEN
+      const hash1 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // Change the external file — hash should change since we follow
+      fs.writeFileSync(path.join(externalDir, 'file.txt'), 'modified');
+      const hash2 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    test('symlink to internal directory is NOT followed in EXTERNAL mode', () => {
+      // GIVEN
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      fs.mkdirSync(path.join(dir, 'subdir'));
+      fs.writeFileSync(path.join(dir, 'subdir', 'file.txt'), 'content');
+      fs.symlinkSync(path.join(dir, 'subdir'), path.join(dir, 'internal-link'));
+
+      // WHEN
+      const hash1 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // Change the file — hash should still change because we traverse subdir directly
+      // But the internal-link should be hashed as a link, not followed
+      fs.writeFileSync(path.join(dir, 'subdir', 'file.txt'), 'modified');
+      const hash2 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN — hash changes because subdir/file.txt is traversed directly
+      expect(hash1).not.toEqual(hash2);
+    });
+
+    test('absolute symlink targets are resolved correctly', () => {
+      // GIVEN
+      const externalDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-external'));
+      fs.writeFileSync(path.join(externalDir, 'target.txt'), 'hello');
+
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      // Create an absolute symlink to a file
+      fs.symlinkSync(path.join(externalDir, 'target.txt'), path.join(dir, 'abs-link.txt'));
+
+      // WHEN
+      const hash = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN — should not throw and produce a deterministic hash
+      expect(hash).toEqual(FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL }));
+    });
+
+    test('relative symlink targets are resolved correctly', () => {
+      // GIVEN
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      fs.mkdirSync(path.join(dir, 'subdir'));
+      fs.writeFileSync(path.join(dir, 'target.txt'), 'hello');
+      // Create a relative symlink: subdir/link -> ../target.txt
+      fs.symlinkSync('../target.txt', path.join(dir, 'subdir', 'rel-link.txt'));
+
+      // WHEN — internal relative symlink, EXTERNAL mode should NOT follow
+      const hash = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // Change target — hash should NOT change since internal link is not followed
+      const hashBefore = hash;
+      fs.writeFileSync(path.join(dir, 'target.txt'), 'changed');
+      // But the direct file IS traversed, so hash changes from that
+      const hashAfter = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+      expect(hashBefore).not.toEqual(hashAfter);
+    });
+
+    test('symlink pointing to another symlink is resolved transitively', () => {
+      // GIVEN
+      const externalDir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-external'));
+      fs.writeFileSync(path.join(externalDir, 'real-file.txt'), 'the real content');
+      // First symlink: external dir has a symlink to the real file
+      fs.symlinkSync(path.join(externalDir, 'real-file.txt'), path.join(externalDir, 'link1.txt'));
+
+      const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fingerprint-tests'));
+      // Second symlink: our dir has a symlink to the first symlink
+      fs.symlinkSync(path.join(externalDir, 'link1.txt'), path.join(dir, 'link2.txt'));
+
+      // WHEN — statSync follows the full chain, so content of real-file.txt is hashed
+      const hash1 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      fs.writeFileSync(path.join(externalDir, 'real-file.txt'), 'modified content');
+      const hash2 = FileSystem.fingerprint(dir, { follow: SymlinkFollowMode.EXTERNAL });
+
+      // THEN — hash changes because we follow through to the real file
+      expect(hash1).not.toEqual(hash2);
+    });
   });
 
   describe('eol', () => {
