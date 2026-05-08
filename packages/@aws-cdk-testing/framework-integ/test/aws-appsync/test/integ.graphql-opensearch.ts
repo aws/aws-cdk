@@ -30,7 +30,9 @@ class OpensSearch23Stack extends cdk.Stack {
 
     const api = new appsync.GraphqlApi(this, 'api', {
       name: 'api',
-      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      definition: {
+        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      },
     });
 
     const ds = api.addOpenSearchDataSource('ds', domain);
