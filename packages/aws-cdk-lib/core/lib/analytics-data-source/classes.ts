@@ -539,6 +539,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'description': '*'
     }
   },
+  '@aws-cdk.aws-dsql-alpha': {
+    'Cluster': {}
+  },
   '@aws-cdk.aws-ec2-alpha': {
     'IpamPool': {
       'ipamScopeId': '*',
@@ -3645,6 +3648,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         },
+        'region': '*',
         'grants': '*'
       },
       'policyDocument': '*'
@@ -3690,6 +3694,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             'region': '*'
           }
         },
+        'region': '*',
         'grants': '*'
       },
       'originEndpointName': '*',
@@ -8739,8 +8744,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -8771,6 +8774,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -8853,13 +8858,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'ManagedEc2EksComputeEnvironment': {
       'kubernetesNamespace': '*',
@@ -8940,8 +8939,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'allocationStrategy': 'AllocationStrategy',
       'spotBidPercentage': '*',
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -8972,6 +8969,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -9054,13 +9053,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'FargateComputeEnvironment': {
       'maxvCpus': '*',
@@ -21769,6 +21762,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'PublicHostedZone': {
       'caaAmazon': 'boolean',
+      'acceleratedRecoveryEnabled': 'boolean',
       'crossAccountZoneDelegationPrincipal': {
         'assumeRoleAction': '*',
         'policyFragment': '*',
@@ -23974,6 +23968,33 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'stackRegion': '*'
         }
       ]
+    },
+    'Group': {
+      'groupName': '*',
+      'canaries': {
+        'canaryId': '*',
+        'canaryName': '*',
+        'canaryArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'addCanary': [
+        {
+          'canaryId': '*',
+          'canaryName': '*',
+          'canaryArn': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      ]
     }
   },
   'aws-cdk-lib.core': {
@@ -24233,6 +24254,43 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   'aws-bedrock-agentcore-alpha.lib': {
+    'Evaluator': {
+      'evaluatorName': '*',
+      'evaluatorConfig': '*',
+      'level': '*',
+      'description': '*'
+    },
+    'OnlineEvaluationConfig': {
+      'evaluators': '*',
+      'dataSource': '*',
+      'onlineEvaluationConfigName': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'description': '*',
+      'samplingPercentage': '*',
+      'filters': {
+        'key': '*',
+        'operator': '*',
+        'value': '*'
+      },
+      'sessionTimeout': '*',
+      'executionStatus': '*'
+    },
     'Gateway': {
       'gatewayName': '*',
       'description': '*',
@@ -24273,6 +24331,30 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'tags': '*',
       'interceptorConfigurations': {
         'interceptionPoint': 'InterceptionPoint'
+      },
+      'policyEngineConfiguration': {
+        'policyEngine': {
+          'policyEngineArn': '*',
+          'policyEngineId': '*',
+          'policyEngineName': '*',
+          'description': '*',
+          'kmsKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        'mode': '*'
       },
       'addLambdaTarget': [
         '*',
@@ -24486,6 +24568,59 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'PolicyEngine': {
+      'policyEngineName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'addPolicy': [
+        '*',
+        {
+          'definition': '*',
+          'statement': '*',
+          'policyName': '*',
+          'description': '*',
+          'validationMode': '*'
+        }
+      ]
+    },
+    'Policy': {
+      'policyName': '*',
+      'policyEngine': {
+        'policyEngineArn': '*',
+        'policyEngineId': '*',
+        'policyEngineName': '*',
+        'description': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*'
+        }
+      },
+      'definition': '*',
+      'statement': '*',
+      'description': '*',
+      'validationMode': '*'
+    },
     'RuntimeEndpoint': {
       'endpointName': '*',
       'agentRuntimeId': '*',
@@ -24524,6 +24659,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'lifecycleConfiguration': {
         'idleRuntimeSessionTimeout': '*'
+      },
+      'tracingEnabled': 'boolean',
+      'loggingConfigs': {
+        'logType': '*',
+        'destination': '*'
       },
       'addEndpoint': [
         '*',
@@ -25239,6 +25379,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'PythonShellJob': {
       'pythonVersion': 'PythonVersion',
       'maxCapacity': 'MaxCapacity',
+      'extraPythonFiles': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
@@ -27979,7 +28120,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
@@ -28236,7 +28381,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
@@ -28602,7 +28751,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',

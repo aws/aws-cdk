@@ -1,0 +1,332 @@
+{
+  "/aws-cdk-bedrock-agentcore-online-evaluation": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:12:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/AgentLogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*",
+        "removalPolicy": "destroy",
+        "retention": 1
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/CustomEvaluator": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:51:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:51:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/AgentLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AgentLogGroupFDA72973"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:14:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/CustomEvaluator/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomEvaluator9FEA397A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Evaluator (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/custom-evaluator.js:227:30)",
+        "new Evaluator (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:20:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicEvaluationB20A0A46"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:239:30)",
+        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:34:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicEvaluationExecutionRoleFB7E4913"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createExecutionRole (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:262:26)",
+        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:237:62)",
+        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:34:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-online-evaluation/BasicEvaluation/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicEvaluationExecutionRoleDefaultPolicy6E0AF966"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
+        "new Policy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.createExecutionRole (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:309:18)",
+        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:237:62)",
+        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:34:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

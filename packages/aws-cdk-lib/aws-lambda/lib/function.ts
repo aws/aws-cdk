@@ -43,7 +43,8 @@ import {
   Names, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IMapBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -940,7 +941,7 @@ export class Function extends FunctionBase {
   protected readonly canCreatePermissions = true;
 
   /** @internal */
-  public readonly _layers: ILayerVersion[] = [];
+  public readonly _layers: IArrayBox<ILayerVersion> = Box.fromArray();
 
   /** @internal */
   public _logRetention?: logs.LogRetention;
@@ -971,7 +972,7 @@ export class Function extends FunctionBase {
   /**
    * Environment variables for this function
    */
-  private environment: { [key: string]: EnvironmentConfig } = {};
+  private readonly environment: IMapBox<string, EnvironmentConfig> = Box.fromMap();
 
   private readonly currentVersionOptions?: VersionOptions;
   private _currentVersion?: Version;
@@ -1125,15 +1126,13 @@ export class Function extends FunctionBase {
         imageUri: code.image?.imageUri,
         sourceKmsKeyArn: code.sourceKMSKeyArn,
       },
-      layers: Lazy.list({ produce: () => this.renderLayers() }), // Evaluated on synthesis
+      layers: Token.asList(this._layers.derive(l => this.renderLayers(l))),
       handler: props.handler === Handler.FROM_IMAGE ? undefined : props.handler,
       timeout: props.timeout && props.timeout.toSeconds(),
       packageType: props.runtime === Runtime.FROM_IMAGE ? 'Image' : undefined,
       runtime: props.runtime === Runtime.FROM_IMAGE ? undefined : effectiveRuntime.name,
       role: this.role.roleArn,
-      // Uncached because calling '_checkEdgeCompatibility', which gets called in the resolve of another
-      // Token, actually *modifies* the 'environment' map.
-      environment: Lazy.uncachedAny({ produce: () => this.renderEnvironment() }),
+      environment: this.environment.derive(e => this.renderEnvironment(e)),
       memorySize: props.memorySize,
       ephemeralStorage: props.ephemeralStorageSize ? {
         size: props.ephemeralStorageSize.toMebibytes(),
@@ -1294,7 +1293,7 @@ export class Function extends FunctionBase {
     if (reservedEnvironmentVariables.includes(key)) {
       throw new ValidationError(lit`ReservedEnvironmentVariable`, `${key} environment variable is reserved by the lambda runtime and can not be set manually. See https://docs.aws.amazon.com/lambda/latest/dg/configuration-envvars.html`, this);
     }
-    this.environment[key] = { value, ...options };
+    this.environment.put(key, { value, ...options });
     return this;
   }
 
@@ -1483,14 +1482,14 @@ export class Function extends FunctionBase {
   /** @internal */
   public _checkEdgeCompatibility(): void {
     // Check env vars
-    const envEntries = Object.entries(this.environment);
+    const envEntries = [...this.environment.entries()];
     for (const [key, config] of envEntries) {
       if (config.removeInEdge) {
-        delete this.environment[key];
+        this.environment.delete(key);
         Annotations.of(this).addInfo(`Removed ${key} environment variable for Lambda@Edge compatibility`);
       }
     }
-    const envKeys = Object.keys(this.environment);
+    const envKeys = [...this.environment.keys()];
     if (envKeys.length !== 0) {
       throw new ValidationError(lit`LambdaEdgeEnvironmentVariablesNotAllowed`, `The function ${this.node.path} contains environment variables [${envKeys}] and is not compatible with Lambda@Edge. \
 Environment variables can be marked for removal when used in Lambda@Edge by setting the \'removeInEdge\' property in the \'addEnvironment()\' API.`, this);
@@ -1560,24 +1559,18 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     Object.entries(layerVersion.environmentVars).forEach(([key, value]) => this.addEnvironment(key, value.toString()));
   }
 
-  private renderLayers() {
-    if (!this._layers || this._layers.length === 0) {
-      return undefined;
-    }
-
+  private renderLayers(layers: ReadonlyArray<ILayerVersion>): string[] | undefined {
+    if (layers.length === 0) return undefined;
+    const sorted = [...layers];
     if (FeatureFlags.of(this).isEnabled(LAMBDA_RECOGNIZE_LAYER_VERSION)) {
-      this._layers.sort();
+      sorted.sort();
     }
-
-    return this._layers.map(layer => layer.layerVersionArn);
+    return sorted.map(layer => layer.layerVersionArn);
   }
 
-  private renderEnvironment() {
-    if (!this.environment || Object.keys(this.environment).length === 0) {
-      return undefined;
-    }
-
-    const variables: { [key: string]: string } = {};
+  private renderEnvironment(env: ReadonlyMap<string, EnvironmentConfig>): { variables: Record<string, string> } | undefined {
+    if (env.size === 0) return undefined;
+    const variables: Record<string, string> = {};
     // Sort environment so the hash of the function used to create
     // `currentVersion` is not affected by key order (this is how lambda does
     // it). For backwards compatibility we do not sort environment variables in case
@@ -1585,13 +1578,11 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // the template, and for example, may cause unneeded updates for nested
     // stacks.
     const keys = this._currentVersion
-      ? Object.keys(this.environment).sort()
-      : Object.keys(this.environment);
-
+      ? [...env.keys()].sort()
+      : [...env.keys()];
     for (const key of keys) {
-      variables[key] = this.environment[key].value;
+      variables[key] = env.get(key)!.value;
     }
-
     return { variables };
   }
 

@@ -1,0 +1,58 @@
+{
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/LambdaInvoke8f849906820baf7b84b6b55424d5cc31/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/LambdaInvoke8f849906820baf7b84b6b55424d5cc31/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke8f849906820baf7b84b6b55424d5cc31Invoke6A0E05BE"
+    }
+  ],
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/LambdaInvoke8f849906820baf7b84b6b55424d5cc31/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke8f849906820baf7b84b6b55424d5cc31"
+    }
+  ],
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/appsync-eventapi-rds-test/DefaultTest/DeployAssert/LambdaInvoke8f849906820baf7b84b6b55424d5cc31/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke8f849906820baf7b84b6b55424d5cc31"
+    }
+  ]
+}
