@@ -23,6 +23,16 @@ test('default secret', () => {
   });
 });
 
+test('secret without replica regions omits ReplicaRegions', () => {
+  // WHEN
+  new secretsmanager.Secret(stack, 'Secret');
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::SecretsManager::Secret', {
+    ReplicaRegions: Match.absent(),
+  });
+});
+
 test('set removalPolicy to secret', () => {
   // WHEN
   new secretsmanager.Secret(stack, 'Secret', {
