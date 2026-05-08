@@ -1565,9 +1565,10 @@ const fn = new lambda.Function(this, 'MyLambda', {
 Lambda functions can mount an S3 Files file system to read and write files using standard filesystem operations,
 which is useful for workloads that need POSIX-compatible file access to S3 data — such as ML inference, media processing, or legacy applications that expect a local mount path.
 
-> **Note:** S3 Files currently only has L1 (CloudFormation) constructs. The setup below
-> requires more manual wiring than the equivalent EFS integration. L2 constructs will
-> simplify this in a future release.
+> **Note:** The example below uses L1 (CloudFormation) constructs from
+> `aws-cdk-lib/aws-s3files`. For an experimental L2 (`FileSystem`, `AccessPoint`)
+> that handles role/mount-target/security-group wiring automatically, see the
+> [`@aws-cdk/aws-s3files-alpha`](https://www.npmjs.com/package/@aws-cdk/aws-s3files-alpha) package.
 
 S3 Files uses the same NFS infrastructure as Amazon EFS. To mount the file system in Lambda, you need:
 

@@ -1,0 +1,15 @@
+{
+    "exclude": [
+      "prefer-ref-interface:aws-cdk-lib.aws_secretsmanager.RotationScheduleOptions.rotationLambda",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSource.bind.target",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.EventSourceMappingOptions.filterEncryption",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.target",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IEventSourceDlq.bind.targetHandler",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.target",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.ISchemaRegistry.bind.targetHandler",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IDestination.bind.fn",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IFunction.grantInvokeVersion.version",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.IVersion.grantInvokeVersion.version",
+      "prefer-ref-interface:aws-cdk-lib.aws_lambda.VersionWeight.version"
+    ]
+}

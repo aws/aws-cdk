@@ -1,13 +1,13 @@
 import type { Construct } from 'constructs';
 import type { IFileSystem } from './file-system';
 import { FILE_SYSTEM_SYMBOL } from './private/symbols';
-import { CfnAccessPoint } from './s3files.generated';
-import type { IResource } from '../../core';
-import { ArnFormat, Resource, Stack, Token, UnscopedValidationError, ValidationError } from '../../core';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
-import { lit } from '../../core/lib/private/literal-string';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-s3files-interfaces.generated';
+import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from 'aws-cdk-lib/aws-s3files';
+import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3files';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 const POSIX_ID_MAX = 4294967295; // 2^32 - 1
 
@@ -174,7 +174,7 @@ abstract class AccessPointBase extends Resource implements IAccessPoint {
 @propertyInjectable
 export class AccessPoint extends AccessPointBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3files.AccessPoint';
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk/aws-s3files-alpha.AccessPoint';
 
   /**
    * Import an existing access point by attributes.
@@ -312,7 +312,7 @@ export class AccessPoint extends AccessPointBase {
 @propertyInjectable
 class ImportedAccessPoint extends AccessPointBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3files.ImportedAccessPoint';
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk/aws-s3files-alpha.ImportedAccessPoint';
 
   public readonly accessPointId: string;
   public readonly accessPointArn: string;

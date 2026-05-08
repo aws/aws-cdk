@@ -4,17 +4,17 @@ import type { AccessPointOptions } from './access-point';
 import { AccessPoint } from './access-point';
 import { FILE_SYSTEM_SYMBOL } from './private/symbols';
 import { FileSystemGrants } from './s3files-grants.generated';
-import { CfnFileSystem, CfnFileSystemPolicy, CfnMountTarget } from './s3files.generated';
-import * as ec2 from '../../aws-ec2';
-import * as iam from '../../aws-iam';
-import type * as kms from '../../aws-kms';
-import type * as s3 from '../../aws-s3';
-import type { Duration, IResource, Size } from '../../core';
-import { ArnFormat, Lazy, Names, RemovalPolicy, Resource, Stack, Token, ValidationError } from '../../core';
-import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
-import { lit } from '../../core/lib/private/literal-string';
-import { propertyInjectable } from '../../core/lib/prop-injectable';
-import type { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-s3files-interfaces.generated';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
+import type { FileSystemReference, IFileSystemRef } from 'aws-cdk-lib/aws-s3files';
+import { CfnFileSystem, CfnFileSystemPolicy, CfnMountTarget } from 'aws-cdk-lib/aws-s3files';
+import type { Duration, IResource, Size } from 'aws-cdk-lib/core';
+import { ArnFormat, Lazy, Names, RemovalPolicy, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 
 /**
  * IP address type for an S3 Files mount target.
@@ -324,7 +324,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
 @propertyInjectable
 export class FileSystem extends FileSystemBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3files.FileSystem';
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk/aws-s3files-alpha.FileSystem';
 
   /**
    * The default port that S3 Files mount targets listen on (NFS).
@@ -576,7 +576,7 @@ export class FileSystem extends FileSystemBase {
 @propertyInjectable
 class ImportedFileSystem extends FileSystemBase {
   /** Uniquely identifies this class. */
-  public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-s3files.ImportedFileSystem';
+  public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk/aws-s3files-alpha.ImportedFileSystem';
 
   public readonly connections: ec2.Connections;
   public readonly fileSystemId: string;

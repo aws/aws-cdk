@@ -3,8 +3,8 @@ import { RemovalPolicies } from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import { FileSystem } from 'aws-cdk-lib/aws-s3files';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { FileSystem } from '../lib';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'test-s3files-filesystem-integ');
