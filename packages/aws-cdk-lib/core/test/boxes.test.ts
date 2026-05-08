@@ -328,6 +328,23 @@ describe('Boxes', () => {
         const doubled = box.map(x => x * 2);
         expect(doubled.get()).toEqual([]);
       });
+
+      test('includes() returns true for existing element', () => {
+        const box = Box.fromArray([1, 2, 3]);
+        expect(box.includes(2)).toBe(true);
+      });
+
+      test('includes() returns false for missing element', () => {
+        const box = Box.fromArray([1, 2, 3]);
+        expect(box.includes(4)).toBe(false);
+      });
+
+      test('includes() reflects push()', () => {
+        const box = Box.fromArray([1]);
+        expect(box.includes(2)).toBe(false);
+        box.push(2);
+        expect(box.includes(2)).toBe(true);
+      });
     });
 
     describe('Boxes.isBox', () => {
