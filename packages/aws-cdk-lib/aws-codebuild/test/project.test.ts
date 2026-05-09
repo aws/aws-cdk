@@ -866,6 +866,95 @@ describe('Environment', () => {
     });
   });
 
+  test('logs config - s3 with encrypted true sets EncryptionDisabled to false', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: true,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: false,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted false sets EncryptionDisabled to true', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+          encrypted: false,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: true,
+        },
+      }),
+    });
+  });
+
+  test('logs config - s3 with encrypted unset does not set EncryptionDisabled', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const bucket = s3.Bucket.fromBucketName(stack, 'LogBucket', 'mybucketname');
+
+    // WHEN
+    new codebuild.Project(stack, 'Project', {
+      source: codebuild.Source.s3({
+        bucket: new s3.Bucket(stack, 'Bucket'),
+        path: 'path',
+      }),
+      logging: {
+        s3: {
+          bucket,
+        },
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CodeBuild::Project', {
+      LogsConfig: Match.objectLike({
+        S3Logs: {
+          Status: 'ENABLED',
+          EncryptionDisabled: Match.absent(),
+        },
+      }),
+    });
+  });
+
   test('logs config - cloudWatch and s3', () => {
     // GIVEN
     const stack = new cdk.Stack();

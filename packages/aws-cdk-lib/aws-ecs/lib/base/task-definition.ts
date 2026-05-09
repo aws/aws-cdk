@@ -4,6 +4,8 @@ import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import type { IResource } from '../../../core';
 import { Lazy, Names, PhysicalName, Resource, UnscopedValidationError, ValidationError } from '../../../core';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -445,12 +447,19 @@ export class TaskDefinition extends TaskDefinitionBase {
   /**
    * The container definitions.
    */
-  protected readonly containers = new Array<ContainerDefinition>();
+  private readonly _containers: IArrayBox<ContainerDefinition> = Box.fromArray();
+
+  /**
+   * The container definitions.
+   */
+  protected get containers(): ContainerDefinition[] {
+    return this._containers.getMutable();
+  }
 
   /**
    * All volumes
    */
-  private readonly volumes: Volume[] = [];
+  private readonly volumes: IArrayBox<Volume> = Box.fromArray();
 
   /**
    * Placement constraints for task instances
@@ -580,7 +589,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     let taskDefProps: CfnTaskDefinitionProps = {
       containerDefinitions: Lazy.any({ produce: () => this.renderContainers() }, { omitEmptyArray: true }),
-      volumes: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
+      volumes: this.volumes.derive(vs => vs.map(renderVolume)),
       executionRoleArn: Lazy.string({ produce: () => this.executionRole && this.executionRole.roleArn }),
       family: this.family,
       taskRoleArn: this.taskRole.roleArn,
@@ -639,33 +648,6 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   public get inferenceAccelerators(): InferenceAccelerator[] {
     return this._inferenceAccelerators;
-  }
-
-  private renderVolumes(): CfnTaskDefinition.VolumeProperty[] {
-    return this.volumes.map(renderVolume);
-
-    function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
-      return {
-        host: spec.host,
-        name: spec.name,
-        configuredAtLaunch: spec.configuredAtLaunch,
-        dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
-          autoprovision: spec.dockerVolumeConfiguration.autoprovision,
-          driver: spec.dockerVolumeConfiguration.driver,
-          driverOpts: spec.dockerVolumeConfiguration.driverOpts,
-          labels: spec.dockerVolumeConfiguration.labels,
-          scope: spec.dockerVolumeConfiguration.scope,
-        },
-        efsVolumeConfiguration: spec.efsVolumeConfiguration && {
-          filesystemId: spec.efsVolumeConfiguration.fileSystemId,
-          authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
-          rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
-          transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
-          transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
-
-        },
-      };
-    }
   }
 
   private renderInferenceAccelerators(): CfnTaskDefinition.InferenceAcceleratorProperty[] {
@@ -750,7 +732,7 @@ export class TaskDefinition extends TaskDefinitionBase {
   @MethodMetadata()
   public addFirelensLogRouter(id: string, props: FirelensLogRouterDefinitionOptions) {
     // only one firelens log router is allowed in each task.
-    if (this.containers.find(x => x instanceof FirelensLogRouter)) {
+    if (this._containers.find(x => x instanceof FirelensLogRouter)) {
       throw new ValidationError(lit`FirelensRouterAlreadyAdded`, 'Firelens log router is already added in this task.', this);
     }
 
@@ -770,7 +752,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     }
 
-    this.containers.push(container);
+    this._containers.push(container);
     if (this.defaultContainer === undefined && container.essential) {
       this.defaultContainer = container;
     }
@@ -906,7 +888,7 @@ export class TaskDefinition extends TaskDefinitionBase {
 
     // Validate that there are no named port mapping conflicts for Service Connect.
     const portMappingNames = new Map<string, string>(); // Map from port mapping name to most recent container it appears in.
-    this.containers.forEach(container => {
+    for (const container of this.containers) {
       for (const pm of container.portMappings) {
         if (pm.name) {
           if (portMappingNames.has(pm.name)) {
@@ -915,9 +897,9 @@ export class TaskDefinition extends TaskDefinitionBase {
           portMappingNames.set(pm.name, container.containerName);
         }
       }
-    });
+    }
     // Validate if multiple volumes configured with configuredAtLaunch.
-    const runtimeVolumes = this.volumes.filter(vol => vol.configuredAtLaunch);
+    const runtimeVolumes = this.volumes.get().filter(vol => vol.configuredAtLaunch);
     if (runtimeVolumes.length > 1) {
       const volumeNames = runtimeVolumes.map(vol => vol.name).join(',');
       ret.push(`More than one volume is configured at launch: [${volumeNames}]`);
@@ -926,7 +908,7 @@ export class TaskDefinition extends TaskDefinitionBase {
     // Validate that volume with configuredAtLaunch set to true is mounted by at least one container.
     for (const volume of this.volumes) {
       if (volume.configuredAtLaunch) {
-        const isVolumeMounted = this.containers.some(container => {
+        const isVolumeMounted = this._containers.some(container => {
           return container.mountPoints.some(mp => mp.sourceVolume === volume.name);
         });
 
@@ -947,12 +929,12 @@ export class TaskDefinition extends TaskDefinitionBase {
   public findPortMappingByName(name: string): PortMapping | undefined {
     let portMapping;
 
-    this.containers.forEach(container => {
+    for (const container of this.containers) {
       const pm = container.findPortMappingByName(name);
       if (pm) {
         portMapping = pm;
       }
-    });
+    }
 
     return portMapping;
   }
@@ -962,7 +944,7 @@ export class TaskDefinition extends TaskDefinitionBase {
    */
   @MethodMetadata()
   public findContainer(containerName: string): ContainerDefinition | undefined {
-    return this.containers.find(c => c.containerName === containerName);
+    return this._containers.find(c => c.containerName === containerName);
   }
 
   private get passRoleStatement() {
@@ -984,12 +966,12 @@ export class TaskDefinition extends TaskDefinitionBase {
     return (networkMode === NetworkMode.NAT) ? undefined : networkMode;
   }
 
+  // Called via Lazy.any (not derive) because it has side effects (creates FirelensLogRouter).
+  // Lazy caches; derive re-runs on every resolve() which would duplicate constructs.
   private renderContainers() {
-    // add firelens log router container if any application container is using firelens log driver,
-    // also check if already created log router container
     for (const container of this.containers) {
       if (container.logDriverConfig && container.logDriverConfig.logDriver === 'awsfirelens'
-        && !this.containers.find(x => x instanceof FirelensLogRouter)) {
+        && !this._containers.find(x => x instanceof FirelensLogRouter)) {
         this.addFirelensLogRouter('log-router', {
           image: obtainDefaultFluentBitECRImage(this, container.logDriverConfig),
           firelensConfig: {
@@ -1003,7 +985,7 @@ export class TaskDefinition extends TaskDefinitionBase {
       }
     }
 
-    return this.containers.map(x => x.renderContainerDefinition());
+    return this._containers.get().map(x => x.renderContainerDefinition());
   }
 
   private checkFargateWindowsBasedTasksSize(cpu: string, memory: string, runtimePlatform: RuntimePlatform) {
@@ -1023,6 +1005,28 @@ export class TaskDefinition extends TaskDefinitionBase {
       throw new ValidationError(lit`OperatingSystemFamily`, `If operatingSystemFamily is ${runtimePlatform.operatingSystemFamily!._operatingSystemFamily}, then cpu must be in 1024 (1 vCPU), 2048 (2 vCPU), or 4096 (4 vCPU). Provided value was: ${cpu}`, this);
     }
   }
+}
+
+function renderVolume(spec: Volume): CfnTaskDefinition.VolumeProperty {
+  return {
+    host: spec.host,
+    name: spec.name,
+    configuredAtLaunch: spec.configuredAtLaunch,
+    dockerVolumeConfiguration: spec.dockerVolumeConfiguration && {
+      autoprovision: spec.dockerVolumeConfiguration.autoprovision,
+      driver: spec.dockerVolumeConfiguration.driver,
+      driverOpts: spec.dockerVolumeConfiguration.driverOpts,
+      labels: spec.dockerVolumeConfiguration.labels,
+      scope: spec.dockerVolumeConfiguration.scope,
+    },
+    efsVolumeConfiguration: spec.efsVolumeConfiguration && {
+      filesystemId: spec.efsVolumeConfiguration.fileSystemId,
+      authorizationConfig: spec.efsVolumeConfiguration.authorizationConfig,
+      rootDirectory: spec.efsVolumeConfiguration.rootDirectory,
+      transitEncryption: spec.efsVolumeConfiguration.transitEncryption,
+      transitEncryptionPort: spec.efsVolumeConfiguration.transitEncryptionPort,
+    },
+  };
 }
 
 /**
