@@ -1,6 +1,3 @@
-import type { Construct } from 'constructs';
-import type { IFileSystem } from './file-system';
-import { FILE_SYSTEM_SYMBOL } from './private/symbols';
 import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from 'aws-cdk-lib/aws-s3files';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3files';
 import type { IResource } from 'aws-cdk-lib/core';
@@ -8,6 +5,9 @@ import { ArnFormat, Resource, Stack, Token, UnscopedValidationError, ValidationE
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import type { IFileSystem } from './file-system';
+import { FILE_SYSTEM_SYMBOL } from './private/symbols';
 
 const POSIX_ID_MAX = 4294967295; // 2^32 - 1
 

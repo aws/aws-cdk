@@ -1,9 +1,3 @@
-import { DependencyGroup } from 'constructs';
-import type { Construct, IDependable } from 'constructs';
-import type { AccessPointOptions } from './access-point';
-import { AccessPoint } from './access-point';
-import { FILE_SYSTEM_SYMBOL } from './private/symbols';
-import { FileSystemGrants } from './s3files-grants.generated';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type * as kms from 'aws-cdk-lib/aws-kms';
@@ -15,6 +9,12 @@ import { ArnFormat, Lazy, Names, RemovalPolicy, Resource, Stack, Token, Validati
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct, IDependable } from 'constructs';
+import { DependencyGroup } from 'constructs';
+import { AccessPoint } from './access-point';
+import type { AccessPointOptions } from './access-point';
+import { FILE_SYSTEM_SYMBOL } from './private/symbols';
+import { FileSystemGrants } from './s3files-grants.generated';
 
 /**
  * IP address type for an S3 Files mount target.
