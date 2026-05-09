@@ -1,21 +1,39 @@
-# Amazon S3 Files Construct Library
+# AWS::S3Files Construct Library
 <!--BEGIN STABILITY BANNER-->
 
 ---
 
 ![cfn-resources: Stable](https://img.shields.io/badge/cfn--resources-stable-success.svg?style=for-the-badge)
 
+> All classes with the `Cfn` prefix in this module ([CFN Resources]) are always stable and safe to use.
+>
+> [CFN Resources]: https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib
+
 ---
 
 <!--END STABILITY BANNER-->
 
-This module ships the L1 (CFN) constructs for `AWS::S3Files::FileSystem`,
-`AWS::S3Files::AccessPoint`, `AWS::S3Files::MountTarget`, and
-`AWS::S3Files::FileSystemPolicy`.
+This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aws-cdk) project.
 
 ```ts nofixture
 import * as s3files from 'aws-cdk-lib/aws-s3files';
 ```
 
-The L2 (`FileSystem`, `AccessPoint`) constructs are published in the experimental
-`@aws-cdk/aws-s3files-alpha` package. See its README for usage.
+<!--BEGIN CFNONLY DISCLAIMER-->
+
+There are no official hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. Here are some suggestions on how to proceed:
+
+- Search [Construct Hub for S3Files construct libraries](https://constructs.dev/search?q=s3files)
+- Use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, in the same way you would use [the CloudFormation AWS::S3Files resources](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_S3Files.html) directly.
+
+
+<!--BEGIN CFNONLY DISCLAIMER-->
+
+There are no hand-written ([L2](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_lib)) constructs for this service yet. 
+However, you can still use the automatically generated [L1](https://docs.aws.amazon.com/cdk/latest/guide/constructs.html#constructs_l1_using) constructs, and use this service exactly as you would using CloudFormation directly.
+
+For more information on the resources and properties available for this service, see the [CloudFormation documentation for AWS::S3Files](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_S3Files.html).
+
+(Read the [CDK Contributing Guide](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and submit an RFC if you are interested in contributing to this construct library.)
+
+<!--END CFNONLY DISCLAIMER-->
