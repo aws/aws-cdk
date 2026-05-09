@@ -868,6 +868,26 @@ new agentcore.Runtime(this, 'test-runtime', {
 });
 ```
 
+#### Application log group
+
+Every Runtime has a default endpoint whose stdout is written to the AgentCore-managed log group at `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`. The Runtime construct exposes this log group as `applicationLogGroup` so you can attach metric filters, subscription filters, or alarms without hardcoding the path:
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository');
+const runtime = new agentcore.Runtime(this, 'Runtime', {
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+});
+
+new logs.MetricFilter(this, 'ToolErrors', {
+  logGroup: runtime.applicationLogGroup,
+  filterPattern: logs.FilterPattern.stringValue('$.tool_status', '=', 'error'),
+  metricNamespace: 'MyApp',
+  metricName: 'ToolExecutionErrors',
+});
+```
+
+The log group itself is created by the AgentCore service on the runtime's first invocation, not by CDK. Constructs that require the log group to exist at deploy time may race the first invocation; if that is a concern, pre-create the log group with a `LogRetention` resource using the same name.
+
 ## Browser
 
 The Amazon Bedrock AgentCore Browser provides a secure, cloud-based browser that enables AI agents to interact with websites. It includes security features such as session isolation, built-in observability through live viewing, CloudTrail logging, and session replay capabilities.

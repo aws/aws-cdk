@@ -3371,3 +3371,124 @@ describe('Runtime observability tests', () => {
     });
   });
 });
+
+describe('Runtime applicationLogGroup tests', () => {
+  test('Should expose applicationLogGroup pointing at the default endpoint log group', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+    });
+
+    // Log group name resolves the AgentRuntimeId attribute
+    const resolvedName = stack.resolve(runtime.applicationLogGroup.logGroupName);
+    expect(resolvedName).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          '/aws/bedrock-agentcore/runtimes/',
+          { 'Fn::GetAtt': [expect.stringMatching(/^testruntime/), 'AgentRuntimeId'] },
+          '-DEFAULT',
+        ],
+      ],
+    });
+
+    // ARN includes the stack region/account and uses the COLON_RESOURCE_NAME format with :*
+    const resolvedArn = stack.resolve(runtime.applicationLogGroup.logGroupArn);
+    expect(resolvedArn).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/',
+          { 'Fn::GetAtt': [expect.stringMatching(/^testruntime/), 'AgentRuntimeId'] },
+          '-DEFAULT:*',
+        ],
+      ],
+    });
+  });
+
+  test('Should accept the log group as the target of a MetricFilter without hardcoding its name', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+    });
+
+    new logs.MetricFilter(stack, 'ToolErrors', {
+      logGroup: runtime.applicationLogGroup,
+      filterPattern: logs.FilterPattern.stringValue('$.tool_status', '=', 'error'),
+      metricNamespace: 'MyApp',
+      metricName: 'ToolExecutionErrors',
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::MetricFilter', {
+      LogGroupName: {
+        'Fn::Join': [
+          '',
+          [
+            '/aws/bedrock-agentcore/runtimes/',
+            { 'Fn::GetAtt': [Match.stringLikeRegexp('^testruntime'), 'AgentRuntimeId'] },
+            '-DEFAULT',
+          ],
+        ],
+      },
+      MetricTransformations: Match.arrayWith([
+        Match.objectLike({
+          MetricNamespace: 'MyApp',
+          MetricName: 'ToolExecutionErrors',
+        }),
+      ]),
+    });
+  });
+
+  test('Should memoize the imported log group across repeated accesses', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+    });
+
+    expect(runtime.applicationLogGroup).toBe(runtime.applicationLogGroup);
+  });
+
+  test('Should expose applicationLogGroup on imported runtimes', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const imported = Runtime.fromAgentRuntimeAttributes(stack, 'ImportedRuntime', {
+      agentRuntimeArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:runtime/runtime-abc123',
+      agentRuntimeId: 'runtime-abc123',
+      agentRuntimeName: 'imported-runtime',
+      roleArn: 'arn:aws:iam::123456789012:role/test-role',
+    });
+
+    expect(imported.applicationLogGroup.logGroupName)
+      .toBe('/aws/bedrock-agentcore/runtimes/runtime-abc123-DEFAULT');
+    expect(stack.resolve(imported.applicationLogGroup.logGroupArn)).toEqual({
+      'Fn::Join': [
+        '',
+        [
+          'arn:',
+          { Ref: 'AWS::Partition' },
+          ':logs:us-east-1:123456789012:log-group:/aws/bedrock-agentcore/runtimes/runtime-abc123-DEFAULT:*',
+        ],
+      ],
+    });
+  });
+});
