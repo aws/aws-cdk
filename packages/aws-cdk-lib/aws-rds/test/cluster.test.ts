@@ -23,6 +23,7 @@ import {
   DBClusterStorageType,
   DatabaseInsightsMode,
   EngineLifecycleSupport,
+  MasterUserAuthenticationType,
 } from '../lib';
 
 describe('cluster new api', () => {
@@ -1745,6 +1746,187 @@ describe('cluster new api', () => {
         PromotionTier: 1,
         ApplyImmediately: applyImmediately,
       });
+    });
+  });
+
+  describe('masterUserAuthenticationType', () => {
+    test('IAM master auth: no MasterUserPassword or secret in template', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: true,
+        masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        MasterUserAuthenticationType: 'iam-db-auth',
+        EnableIAMDatabaseAuthentication: true,
+        MasterUserPassword: Match.absent(),
+      });
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('IAM master auth: auto-enables iamAuthentication and emits warning', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        // iamAuthentication NOT provided — should be auto-set to true
+        masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        EnableIAMDatabaseAuthentication: true,
+      });
+      Annotations.fromStack(stack).hasWarning('*', Match.stringLikeRegexp('iamAuthRequiredForIamMasterAuth'));
+    });
+
+    test('fails: IAM master auth with iamAuthentication explicitly false', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN / THEN
+      expect(() => new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: false,
+        masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+      })).toThrow(/IamAuthRequiredForIamMasterAuth/);
+    });
+
+    test('fails: IAM master auth with explicit password', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN / THEN
+      expect(() => new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: true,
+        credentials: Credentials.fromPassword('admin', cdk.SecretValue.unsafePlainText('password')),
+        masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+      })).toThrow(/CredentialsMutuallyExclusiveWithIamMasterAuth/);
+    });
+
+    test('IAM master auth: username-only credentials allowed', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        iamAuthentication: true,
+        credentials: Credentials.fromUsername('mydbuser'),
+        masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        MasterUsername: 'mydbuser',
+        MasterUserPassword: Match.absent(),
+        MasterUserAuthenticationType: 'iam-db-auth',
+      });
+      template.resourceCountIs('AWS::SecretsManager::Secret', 0);
+    });
+
+    test('default behavior unchanged when masterUserAuthenticationType is not set', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      // Password should still be present (default behavior)
+      template.hasResourceProperties('AWS::RDS::DBCluster', {
+        MasterUserPassword: Match.anyValue(),
+      });
+      // A Secrets Manager secret should be created
+      template.resourceCountIs('AWS::SecretsManager::Secret', 1);
+    });
+
+    test('DatabaseClusterFromSnapshot with IAM master auth works without password', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        iamAuthentication: true,
+        masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+        MasterUserAuthenticationType: 'iam-db-auth',
+        EnableIAMDatabaseAuthentication: true,
+        MasterUserPassword: Match.absent(),
+      });
+    });
+
+    test('fails: DatabaseClusterFromSnapshot with IAM master auth and snapshotCredentials', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN / THEN
+      expect(() => new DatabaseClusterFromSnapshot(stack, 'Database', {
+        engine: DatabaseClusterEngine.auroraPostgres({
+          version: AuroraPostgresEngineVersion.VER_17_5,
+        }),
+        vpc,
+        writer: ClusterInstance.serverlessV2('writer'),
+        snapshotIdentifier: 'my-snapshot',
+        snapshotCredentials: SnapshotCredentials.fromGeneratedSecret('admin'),
+        iamAuthentication: true,
+        masterUserAuthenticationType: MasterUserAuthenticationType.IAM,
+      })).toThrow(/CredentialsMutuallyExclusiveWithIamMasterAuth/);
     });
   });
 });
