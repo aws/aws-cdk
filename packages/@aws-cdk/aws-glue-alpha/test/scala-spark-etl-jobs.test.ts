@@ -1,3 +1,14 @@
+import * as cdk from 'aws-cdk-lib';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as glue from '../lib';
+
+let stack: cdk.Stack;
+let role: iam.IRole;
+let script: glue.Code;
+let codeBucket: s3.IBucket;
+let job: glue.IJob;
 
 describe('Create Scala Spark ETL Job with notifyDelayAfter', () => {
   beforeEach(() => {
