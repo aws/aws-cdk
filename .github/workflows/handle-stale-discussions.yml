@@ -15,6 +15,6 @@ jobs:
       discussions: write
     steps:
       - name: Stale discussions action
-        uses: aws-github-ops/handle-stale-discussions@v1
+        uses: aws-github-ops/handle-stale-discussions@c0beee451a5d33d9c8f048a6d4e7c856b5422544 # v1.6.0
         env:
           GITHUB_TOKEN:  ${{secrets.GITHUB_TOKEN}}
