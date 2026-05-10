@@ -17,53 +17,47 @@ import type { IUserGroup } from './user-group';
  * Named instances cover the versions currently available on ElastiCache Serverless.
  * To target a version that is not yet represented by a named instance, use
  * `CacheEngine.of(engineType, majorEngineVersion)`.
+ *
+ * @see https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
  */
 export class CacheEngine {
   /**
    * Valkey engine, latest major version available, minor version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly VALKEY_LATEST = CacheEngine.of('valkey');
 
   /**
    * Valkey engine, major version 7, minor version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly VALKEY_7 = CacheEngine.of('valkey', '7');
 
   /**
    * Valkey engine, major version 8, minor version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly VALKEY_8 = CacheEngine.of('valkey', '8');
 
   /**
    * Valkey engine, major version 9, minor version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly VALKEY_9 = CacheEngine.of('valkey', '9');
 
   /**
    * Redis engine, latest major version available, minor version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly REDIS_LATEST = CacheEngine.of('redis');
 
   /**
    * Redis engine, major version 7, minor version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly REDIS_7 = CacheEngine.of('redis', '7');
 
   /**
    * Memcached engine, latest major version available, minor version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly MEMCACHED_LATEST = CacheEngine.of('memcached');
 
   /**
    * Memcached engine, minor version 1.6, patch version is selected automatically.
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
    */
   public static readonly MEMCACHED_1_6 = CacheEngine.of('memcached', '1.6');
 
