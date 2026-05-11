@@ -2970,10 +2970,10 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
       originEndpointName: this.physicalName,
       description: props.description,
       tags: props?.tags ? renderTags(props.tags) : undefined,
-      hlsManifests: Lazy.any({ produce: () => this.hlsManifests }, { omitEmptyArray: true }),
-      lowLatencyHlsManifests: Lazy.any({ produce: () => this.llHlsManifests }, { omitEmptyArray: true }),
-      dashManifests: Lazy.any({ produce: () => this.dashManifests }, { omitEmptyArray: true }),
-      mssManifests: Lazy.any({ produce: () => this.mssManifests }, { omitEmptyArray: true }),
+      hlsManifests: omitEmptyArray(this.hlsManifests),
+      lowLatencyHlsManifests: omitEmptyArray(this.llHlsManifests),
+      dashManifests: omitEmptyArray(this.dashManifests),
+      mssManifests: omitEmptyArray(this.mssManifests),
       containerType: containerType,
       startoverWindowSeconds: props.startoverWindow?.toSeconds(),
       segment: this.segmentValidation(containerType, props.segment),
@@ -3018,3 +3018,8 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     }
   }
 }
+
+function omitEmptyArray<A>(a: Array<A>): Array<A> | undefined {
+  return a.length > 0 ? a : undefined;
+}
+
