@@ -165,6 +165,54 @@ new python.PythonFunction(this, 'function', {
 });
 ```
 
+## Local Bundling (Docker-less)
+
+By default, dependencies are installed inside a Lambda-compatible Docker container. If Docker is unavailable or undesirable on the host, you can opt in to **local bundling**, which installs dependencies directly on your machine using the locally installed `pip`:
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/function',
+  runtime: Runtime.PYTHON_3_12,
+  bundling: {
+    local: true,
+  },
+});
+```
+
+The resulting artifact is binary-compatible with the Lambda runtime regardless of your host OS or CPU architecture — `pip` is invoked with `--platform`, `--python-version`, `--abi`, and `--only-binary=:all:` to select pre-built wheels for the target environment. Cross-compilation (e.g. building `arm64` on an `x86_64` dev machine) works out of the box.
+
+Prerequisites on the host:
+
+- `python3` (preferred) or `python` on `PATH`, with `pip >= 22.0` — multiple `--platform` flags (used for Python 3.12+ fall-through tag lists) were added in pip 22.0. Older pip versions will fail with an "unknown option" error. `python3` is tried first; `python` is used as a fallback.
+- If your project uses a lockfile-based dependency manager, the matching tool must also be on `PATH`:
+  - `pipenv >= 2022.4.8` (for `pipenv requirements`)
+  - `poetry >= 1.2` (for `poetry export --with-credentials`)
+  - `uv >= 0.4` (for `uv export --frozen --no-emit-workspace --no-dev --no-editable`)
+- Every dependency must publish a compatible wheel for the target platform. Source-only distributions are rejected (a source build would target the host OS/arch and not the Lambda runtime).
+- On Windows hosts, only plain `requirements.txt` projects are supported. The `pipenv`/`poetry`/`uv` export commands embed POSIX shell syntax (`&&`, `rm -rf`, `>` redirection) and will fail under `cmd.exe`; use Docker bundling for lockfile-based projects on Windows.
+
+If local bundling fails for any reason, synthesis fails — there is no silent fallback to Docker.
+
+**Overriding platform tags**
+
+For edge cases where a dependency is only published under a non-default tag (e.g. `musllinux`), you can override the tag list:
+
+```ts
+new python.PythonFunction(this, 'function', {
+  entry: '/path/to/function',
+  runtime: Runtime.PYTHON_3_12,
+  bundling: {
+    local: true,
+    manyLinuxTags: ['manylinux_2_28_x86_64', 'manylinux2014_x86_64'],
+  },
+});
+```
+
+When omitted, the default tags are derived from the runtime's base image:
+
+- Python 3.11 and below (Amazon Linux 2): `manylinux2014_{arch}`
+- Python 3.12 and above (Amazon Linux 2023): `manylinux_2_28_{arch}` falling back to `manylinux2014_{arch}`
+
 ## Custom Bundling
 
 Custom bundling can be performed by passing in additional build arguments that point to index URLs to private repos, or by using an entirely custom Docker images for bundling dependencies. The build args currently supported are:

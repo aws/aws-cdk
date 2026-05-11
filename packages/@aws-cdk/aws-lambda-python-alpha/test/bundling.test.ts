@@ -604,3 +604,54 @@ test('Bundling a function with uv dependencies', () => {
   // Contains hidden files.
   expect(files).toContain('.ignorefile');
 });
+
+describe('local bundling wiring', () => {
+  test('local: true exposes a local bundler with a tryBundle function', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+      local: true,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+      bundling: expect.objectContaining({
+        local: expect.objectContaining({
+          tryBundle: expect.any(Function),
+        }),
+      }),
+    }));
+  });
+
+  test('local: false leaves local undefined', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+      local: false,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+      bundling: expect.objectContaining({
+        local: undefined,
+      }),
+    }));
+  });
+
+  test('default (no local option) leaves local undefined', () => {
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(entry, expect.objectContaining({
+      bundling: expect.objectContaining({
+        local: undefined,
+      }),
+    }));
+  });
+});

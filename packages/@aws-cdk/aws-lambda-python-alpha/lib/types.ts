@@ -105,6 +105,43 @@ export interface BundlingOptions extends DockerRunOptions {
    * @default - BundlingFileAccess.BIND_MOUNT
    */
   readonly bundlingFileAccess?: BundlingFileAccess;
+
+  /**
+   * Whether to bundle the function locally (on the host) instead of using Docker.
+   *
+   * When enabled, the host must have `python3` or `python` (with `pip`) on its
+   * PATH — `python3` is preferred and `python` is tried as a fallback. If the
+   * project uses `pipenv`, `poetry`, or `uv`, the corresponding tool must also be
+   * on PATH so its lockfile can be exported to a `requirements.txt`. On Windows,
+   * only plain `requirements.txt` projects are supported — pipenv/poetry/uv export
+   * commands assume a POSIX shell.
+   *
+   * Cross-platform wheels are selected via pip's `--platform`, `--python-version`,
+   * and `--only-binary=:all:` flags, so the resulting artifact is binary-compatible
+   * with the Lambda runtime regardless of the host OS/architecture.
+   *
+   * If local bundling fails (missing tools, no compatible wheel, etc.), synthesis
+   * fails — there is no silent fallback to Docker.
+   *
+   * @default false
+   */
+  readonly local?: boolean;
+
+  /**
+   * Platform tags passed to `pip install --platform ...` when `local` is enabled.
+   *
+   * Use this to override the default tag list when a dependency is only published
+   * under an unusual tag (e.g. `musllinux_1_2_x86_64`). The first tag that has a
+   * matching wheel on the index wins; subsequent tags are fallbacks.
+   *
+   * Has no effect when `local` is not `true`.
+   *
+   * @default - Derived from the target Python runtime's base image:
+   *            `manylinux2014_{arch}` for Python 3.11 and below (Amazon Linux 2),
+   *            `manylinux_2_28_{arch}` falling back to `manylinux2014_{arch}` for
+   *            Python 3.12 and above (Amazon Linux 2023).
+   */
+  readonly manyLinuxTags?: string[];
 }
 
 /**
