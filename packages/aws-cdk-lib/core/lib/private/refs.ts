@@ -7,12 +7,15 @@ import { Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
+import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
+import { Annotations } from '../annotations';
 import { ArnFormat } from '../arn';
 import { CfnElement } from '../cfn-element';
 import { Fn } from '../cfn-fn';
 import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
+import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { Names } from '../names';
 import type { Reference } from '../reference';
@@ -29,6 +32,23 @@ import type {
 } from '../../../interfaces/generated/aws-iam-interfaces.generated';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
+
+const CROSS_STACK_REFERENCE_VALUES = ['strong', 'weak', 'both'] as const;
+type CrossStackReferenceStrength = (typeof CROSS_STACK_REFERENCE_VALUES)[number];
+
+function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStrength {
+  const value = scope.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES);
+  if (value === undefined || value === null) {
+    return 'strong';
+  }
+  if (CROSS_STACK_REFERENCE_VALUES.includes(value)) {
+    return value;
+  }
+  throw new UnscopedValidationError(
+    lit`InvalidCrossStackReferenceStrength`,
+    `Invalid value for ${cxapi.DEFAULT_CROSS_STACK_REFERENCES}: "${value}". Must be "strong", "weak", or "both".`,
+  );
+}
 
 /**
  * This is called from the App level to resolve all references defined. Each
@@ -70,7 +90,18 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    // only supported if the customer opts in, and we have a role to add to the Fn::GetStackOutput call
+    const strength = crossStackReferenceStrength(consumer);
+
+    if (strength === 'strong') {
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossAccountRefsAreAlwaysWeak',
+        'Strong references requested, but cross-account references can only be weak. ' +
+        `Acknowledge this warning or set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "weak" to remove this message.`,
+      );
+      // Fall through to weak behavior since strong is not possible for cross-account
+    }
+
+    // "weak" or "both" fallback — use Fn::GetStackOutput with cross-account role
     if (consumer.synthesizer.cloudFormationExecutionRole == null) {
       throw new UnscopedValidationError(lit`NoCfnExecutionRoleForCrossAccountRefs`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
@@ -80,7 +111,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
       );
     }
 
-    // and the environment is known
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
       throw new UnscopedValidationError(lit`CrossRegionReferencesRequireExplicitRegion`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
@@ -154,6 +184,17 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
+    const strength = crossStackReferenceStrength(consumer);
+
+    if (strength === 'strong') {
+      return createCrossRegionImportValue(reference, consumer);
+    }
+
+    if (strength === 'both') {
+      // Generate the ExportWriter (strong side) but don't create the ExportReader
+      createCrossRegionExportOnly(reference, consumer);
+    }
+
     const producerStackArn = producer.formatArn({
       service: 'cloudformation',
       resource: 'stack',
@@ -176,7 +217,19 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-  return createImportValue(reference);
+  const strength = crossStackReferenceStrength(consumer);
+
+  if (strength === 'strong') {
+    return createImportValue(reference);
+  }
+
+  if (strength === 'both') {
+    // Create the Import/Export pair, but drop the Import side.
+    createImportValue(reference);
+  }
+
+  // strength === 'weak'
+  return createGetStackOutput(reference, {});
 }
 
 /**
@@ -255,6 +308,67 @@ function createImportValue(reference: Reference): Intrinsic {
   importExpr = exportingStack.exportValue(reference);
   // I happen to know this returns a Fn.importValue() which implements Intrinsic.
   return Tokenization.reverseCompleteString(importExpr) as Intrinsic;
+}
+
+function getOrCreateExportWriter(reference: Reference, importStack: Stack): { exportWriter: ExportWriter; exportName: string } {
+  const referenceStack = Stack.of(reference.target);
+  const exportingStack = referenceStack.nestedStackParent ?? referenceStack;
+
+  const exportable = getExportable(exportingStack, reference);
+  const id = JSON.stringify(exportingStack.resolve(exportable));
+  const exportName = generateExportName(importStack, reference, id);
+  if (Token.isUnresolved(exportName)) {
+    throw new UnscopedValidationError(lit`UnresolvedTokenInExportName`, `unresolved token in generated export name: ${JSON.stringify(exportingStack.resolve(exportName))}`);
+  }
+
+  const writerConstructName = makeUniqueId(['ExportsWriter', importStack.region]);
+  const exportWriter = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
+    region: importStack.region,
+  });
+
+  return { exportWriter, exportName };
+}
+
+/**
+ * Imports a value from another stack in a different region using ExportWriter/ExportReader.
+ */
+function createCrossRegionImportValue(reference: Reference, importStack: Stack): Intrinsic {
+  const { exportWriter, exportName } = getOrCreateExportWriter(reference, importStack);
+
+  const exported = exportWriter.exportValue(exportName, reference, importStack);
+  if (importStack.nestedStackParent) {
+    return createNestedStackParameter(importStack, (exported as CfnReference), exported);
+  }
+  return exported;
+}
+
+/**
+ * Creates the ExportWriter in the producing stack without creating the ExportReader
+ * in the consuming stack. Used during the "both" transitional state.
+ */
+function createCrossRegionExportOnly(reference: Reference, importStack: Stack): void {
+  const { exportWriter, exportName } = getOrCreateExportWriter(reference, importStack);
+  exportWriter.exportValueWriteOnly(exportName, reference, importStack);
+}
+
+/**
+ * Generate a unique physical name for the export
+ */
+function generateExportName(importStack: Stack, reference: Reference, id: string): string {
+  const referenceStack = Stack.of(reference.target);
+
+  const components = [
+    referenceStack.stackName ?? '',
+    referenceStack.region,
+    id,
+  ];
+  const prefix = `${importStack.nestedStackParent?.stackName ?? importStack.stackName}/`;
+  const localPart = makeUniqueId(components);
+  // max name length for a system manager parameter is 1011 characters
+  // including the arn, i.e.
+  // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${stackName}/${name}
+  const maxLength = 900;
+  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
 }
 
 interface GetStackOutputOptions {

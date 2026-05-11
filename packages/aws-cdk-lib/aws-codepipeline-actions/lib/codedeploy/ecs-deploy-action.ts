@@ -2,7 +2,7 @@ import type { Construct } from 'constructs';
 import type * as codedeploy from '../../../aws-codedeploy';
 import * as codepipeline from '../../../aws-codepipeline';
 import * as iam from '../../../aws-iam';
-import { Lazy, UnscopedValidationError } from '../../../core';
+import { UnscopedValidationError } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { Action } from '../action';
 import { forceSupportStackDependency } from '../private/stack-dependency';
@@ -188,12 +188,12 @@ export class CodeDeployEcsDeployAction extends Action {
         ApplicationName: this.actionProps.deploymentGroup.application.applicationName,
         DeploymentGroupName: this.actionProps.deploymentGroup.deploymentGroupName,
 
-        TaskDefinitionTemplateArtifact: Lazy.string({ produce: () => taskDefinitionTemplateArtifact.artifactName }),
+        TaskDefinitionTemplateArtifact: taskDefinitionTemplateArtifact._artifactNameBox,
         TaskDefinitionTemplatePath: this.actionProps.taskDefinitionTemplateFile
           ? this.actionProps.taskDefinitionTemplateFile.fileName
           : 'taskdef.json',
 
-        AppSpecTemplateArtifact: Lazy.string({ produce: () => appSpecTemplateArtifact.artifactName }),
+        AppSpecTemplateArtifact: appSpecTemplateArtifact._artifactNameBox,
         AppSpecTemplatePath: this.actionProps.appSpecTemplateFile
           ? this.actionProps.appSpecTemplateFile.fileName
           : 'appspec.yaml',
@@ -203,7 +203,7 @@ export class CodeDeployEcsDeployAction extends Action {
     if (this.actionProps.containerImageInputs) {
       for (let i = 1; i <= this.actionProps.containerImageInputs.length; i++) {
         const imageInput = this.actionProps.containerImageInputs[i - 1];
-        actionConfig.configuration[`Image${i}ArtifactName`] = Lazy.string({ produce: () => imageInput.input.artifactName });
+        actionConfig.configuration[`Image${i}ArtifactName`] = imageInput.input._artifactNameBox;
         actionConfig.configuration[`Image${i}ContainerName`] = imageInput.taskDefinitionPlaceholder
           ? imageInput.taskDefinitionPlaceholder
           : 'IMAGE';

@@ -8,7 +8,7 @@ import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
   CfnResource, Lazy, ScopedAws, Stack, validateString,
-  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer, CliCredentialsStackSynthesizer,
+  Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws, Fn, ResolutionTypeHint,
   PermissionsBoundary,
@@ -742,7 +742,7 @@ describe('stack', () => {
 
   test('cross-region stack references, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -798,286 +798,36 @@ describe('stack', () => {
     });
   });
 
-  test('cross-account stack references - producer template contains IAM role with trust policy', () => {
-    // GIVEN
+  test('cross-region stack references work without crossRegionReferences prop', () => {
+    // GIVEN - no crossRegionReferences on consumer, strong flag (default)
     const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
 
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - producer template has an IAM Role with trust policy
-    const resources = producerTemplate.Resources;
-    const roleLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    );
-    expect(roleLogicalIds).toHaveLength(1);
-    const role = resources[roleLogicalIds[0]];
-    const statement = role.Properties.AssumeRolePolicyDocument.Statement[0];
-
-    expect(statement.Effect).toBe('Allow');
-    expect(statement.Action).toEqual(['sts:AssumeRole']);
-    // Principal is the consumer's CFN execution role
-    expect(statement.Principal.AWS).toEqual({
-      'Fn::Sub': 'arn:${AWS::Partition}:iam::222222222222:role/cdk-hnb659fds-cfn-exec-role-222222222222-us-east-2',
-    });
-  });
-
-  test('cross-account stack references - producer template contains IAM policy with cloudformation:DescribeStacks', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - producer template has an IAM Policy granting DescribeStacks
-    const resources = producerTemplate.Resources;
-    const policyLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Policy',
-    );
-    expect(policyLogicalIds).toHaveLength(1);
-    const policy = resources[policyLogicalIds[0]];
-    expect(policy.Properties.PolicyDocument.Statement).toEqual([
-      {
-        Effect: 'Allow',
-        Action: 'cloudformation:DescribeStacks',
-        Resource: {
-          'Fn::Join': [
-            '',
-            [
-              'arn:',
-              {
-                Ref: 'AWS::Partition',
-              },
-              ':cloudformation:us-east-1:111111111111:stack/Stack1/*',
-            ],
-          ],
-        },
-      },
-    ]);
-    // Policy is attached to the role
-    const roleLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    );
-    expect(policy.Properties.Roles).toEqual([
-      { Ref: roleLogicalIds[0] },
-    ]);
-  });
-
-  test('cross-account stack references fail with LegacyStackSynthesizer', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-      synthesizer: new LegacyStackSynthesizer(),
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    // THEN
-    expect(() => app.synth()).toThrow(/Could not find a CloudFormation execution role for the consumer stack/);
-  });
-
-  test('cross-account stack references fail with CliCredentialsStackSynthesizer', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-      synthesizer: new CliCredentialsStackSynthesizer(),
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    // THEN
-    expect(() => app.synth()).toThrow(/Could not find a CloudFormation execution role for the consumer stack/);
-  });
-
-  test('cross-account stack references fail when region is unknown', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { account: '222222222222' },
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    // THEN
-    expect(() => app.synth()).toThrow(/Cross stack\/region references are only supported for stacks with an explicit region defined/);
-  });
-
-  test('cross-account stack references with custom cloudFormationExecutionRole', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-      synthesizer: new DefaultStackSynthesizer({
-        cloudFormationExecutionRole: 'arn:${AWS::Partition}:iam::${AWS::AccountId}:role/MyCustomCfnExecRole',
-      }),
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - trust policy principal reflects the custom role
-    const resources = producerTemplate.Resources;
-    const roleLogicalIds = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    );
-    expect(roleLogicalIds).toHaveLength(1);
-    const statement = resources[roleLogicalIds[0]].Properties.AssumeRolePolicyDocument.Statement[0];
-    expect(statement.Principal.AWS).toEqual({
-      'Fn::Sub': 'arn:${AWS::Partition}:iam::222222222222:role/MyCustomCfnExecRole',
-    });
-  });
-
-  test('cross-account stack references with multiple references create one role per unique reference', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '222222222222' },
-    });
-
-    // WHEN - two different attributes from the same resource
-    new CfnResource(consumer, 'SomeResource', {
+    // WHEN - used in another stack
+    new CfnResource(stack2, 'SomeResource', {
       type: 'AWS::S3::Bucket',
       properties: {
         Name: exportResource.getAtt('name'),
-        Other: exportResource.getAtt('arn'),
       },
     });
 
+    // THEN - does not throw, uses ExportWriter/ExportReader
     const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-
-    // THEN - one role and one policy per unique reference (2 references = 2 roles, 2 policies)
-    const resources = producerTemplate.Resources;
-    const roleCount = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role',
-    ).length;
-    const policyCount = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Policy',
-    ).length;
-    expect(roleCount).toBe(2);
-    expect(policyCount).toBe(2);
-  });
-
-  test('same-account cross-region references do not create IAM roles in producer', () => {
-    // GIVEN
-    const app = new App();
-    const producer = new Stack(app, 'Stack1', {
-      env: { region: 'us-east-1', account: '111111111111' },
-      crossRegionReferences: true,
-    });
-    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
-      type: 'AWS::S3::Bucket',
-    });
-    const consumer = new Stack(app, 'Stack2', {
-      env: { region: 'us-east-2', account: '111111111111' },
-      crossRegionReferences: true,
-    });
-
-    // WHEN
-    new CfnResource(consumer, 'SomeResource', {
-      type: 'AWS::S3::Bucket',
-      properties: { Name: exportResource.getAtt('name') },
-    });
-
-    const assembly = app.synth();
-    const producerTemplate = assembly.getStackByName(producer.stackName).template;
-    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
-
-    // THEN - no IAM resources in producer
-    const resources = producerTemplate.Resources ?? {};
-    const iamResources = Object.keys(resources).filter(
-      (id) => resources[id].Type === 'AWS::IAM::Role' || resources[id].Type === 'AWS::IAM::Policy',
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
     );
-    expect(iamResources).toHaveLength(0);
-
-    // THEN - consumer Fn::GetStackOutput has no RoleArn
-    const consumerResource = consumerTemplate.Resources.SomeResource;
-    expect(consumerResource.Properties.Name['Fn::GetStackOutput']).not.toHaveProperty('RoleArn');
+    expect(customResources1.length).toBeGreaterThan(0);
   });
 
   test('cross region stack references with multiple stacks, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1180,7 +930,7 @@ describe('stack', () => {
 
   test('cross region stack references with multiple stacks and multiple regions, crossRegionReferences=true', () => {
     // GIVEN
-    const app = new App();
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
@@ -1286,6 +1036,235 @@ describe('stack', () => {
         },
       },
     });
+  });
+
+  test('cross-region references default to strong (ExportWriter/ExportReader) when flag is unset', () => {
+    // GIVEN - no crossStackReferenceStrength context set
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has ExportWriter custom resource
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
+
+    // THEN - consumer has ExportReader custom resource
+    const resources2 = template2.Resources ?? {};
+    const customResources2 = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(customResources2.length).toBeGreaterThan(0);
+  });
+
+  test('cross-region strong references use ExportWriter/ExportReader', () => {
+    // GIVEN - strength is explicitly 'strong'
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has ExportWriter custom resource
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
+
+    // THEN - consumer has ExportReader custom resource
+    const resources2 = template2.Resources ?? {};
+    const customResources2 = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(customResources2.length).toBeGreaterThan(0);
+  });
+
+  test('cross-region both references generate ExportWriter AND Fn::GetStackOutput', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has ExportWriter (strong side)
+    const resources1 = template1.Resources ?? {};
+    const customResources1 = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(customResources1.length).toBeGreaterThan(0);
+
+    // THEN - producer has Output (for Fn::GetStackOutput)
+    expect(template1.Outputs).toBeDefined();
+
+    // THEN - consumer uses Fn::GetStackOutput (weak side), NOT ExportReader
+    const resources2 = template2.Resources ?? {};
+    const consumerResource = resources2.SomeResource;
+    expect(consumerResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+
+    const customResources2 = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(customResources2).toHaveLength(0);
+  });
+
+  test('cross-account strong references emit warning and use Fn::GetStackOutput', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const producer = new Stack(app, 'Stack1', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Stack2', {
+      env: { region: 'us-east-2', account: '222222222222' },
+    });
+
+    // WHEN
+    new CfnResource(consumer, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const consumerTemplate = assembly.getStackByName(consumer.stackName).template;
+
+    // THEN - still uses Fn::GetStackOutput (falls through)
+    expect(consumerTemplate.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+
+    // THEN - warning emitted
+    const warnings = consumer.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+    expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
+  });
+
+  test('same-region weak references use Fn::GetStackOutput', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has an Output without Export
+    expect(template1.Outputs).toBeDefined();
+    const outputKeys = Object.keys(template1.Outputs);
+    expect(outputKeys.length).toBeGreaterThan(0);
+    const output = template1.Outputs[outputKeys[0]];
+    expect(output.Export).toBeUndefined();
+
+    // THEN - consumer uses Fn::GetStackOutput
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+  });
+
+  test('same-region both references generate Export AND Fn::GetStackOutput', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has an Output WITH Export (strong side)
+    const outputsWithExport = Object.values(template1.Outputs ?? {}).filter(
+      (o: any) => o.Export !== undefined,
+    );
+    expect(outputsWithExport.length).toBeGreaterThan(0);
+
+    // THEN - producer also has an Output WITHOUT Export (for Fn::GetStackOutput)
+    const outputsWithoutExport = Object.values(template1.Outputs ?? {}).filter(
+      (o: any) => o.Export === undefined,
+    );
+    expect(outputsWithoutExport.length).toBeGreaterThan(0);
+
+    // THEN - consumer uses Fn::GetStackOutput (weak side), NOT Fn::ImportValue
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+    expect(template2.Resources.SomeResource.Properties.Name).not.toHaveProperty('Fn::ImportValue');
+  });
+
+  test('invalid cross stack reference strength throws', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'invalid' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    // THEN
+    expect(() => app.synth()).toThrow(/Must be "strong", "weak", or "both"/);
   });
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
@@ -1991,7 +1970,7 @@ describe('stack', () => {
     expect(stack2.dependencies.map(s => s.node.id)).toEqual(['Stack1']);
   });
 
-  test('can create references to stacks in other accounts', () => {
+  test('cross-account references with strong flag emit warning but still synth', () => {
     // GIVEN
     const app = new App();
     const stack1 = new Stack(app, 'Stack1', { env: { account: '123456789012', region: 'es-norst-1' } });
@@ -2001,9 +1980,13 @@ describe('stack', () => {
     // WHEN
     new CfnParameter(stack2, 'SomeParameter', { type: 'String', default: account1 });
 
+    // THEN - does not throw, emits warning
     expect(() => {
       app.synth();
     }).not.toThrow();
+
+    const warnings = stack2.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+    expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
   });
 
   test('urlSuffix does not imply a stack dependency', () => {

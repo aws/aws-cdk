@@ -300,17 +300,16 @@ in the producing stack and an
 in the consuming stack to transfer that information from one stack to the
 other.
 
-If the resources are in different regions or different accounts, it will
-synthesize templates AWS CloudFormation Outputs in the producer stack
-(without an `Export` attribute), and a `Fn::GetStackOutput` in the consuming
-stack:
+## Accessing resources in a different stack and region
+
+You can access resources in a different stack and region. For example, you can create
+a CloudFront distribution in `us-east-2` that references an ACM certificate in `us-east-1`.
 
 ```ts
 const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',
   },
-  crossRegionReferences: true,
 });
 const cert = new acm.Certificate(stack1, 'Cert', {
   domainName: '*.example.com',
@@ -321,7 +320,6 @@ const stack2 = new Stack(app, 'Stack2', {
   env: {
     region: 'us-east-2',
   },
-  crossRegionReferences: true,
 });
 new cloudfront.Distribution(stack2, 'Distribution', {
   defaultBehavior: {
@@ -331,6 +329,87 @@ new cloudfront.Distribution(stack2, 'Distribution', {
   certificate: cert,
 });
 ```
+
+### Cross-stack reference strength
+
+The context key `@aws-cdk/core:defaultCrossStackReferences` controls the mechanism used for
+cross-stack references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
+
+**Strong references** (default) create a tight coupling between stacks. For same-region references,
+the producer creates a CloudFormation Export and the consumer uses `Fn::ImportValue`. For
+cross-region references, a pair of Custom Resources (ExportWriter/ExportReader) write values to
+SSM Parameters in the consuming region. In both cases, the producing stack cannot be deleted
+while consumers exist.
+
+**Weak references** use `Fn::GetStackOutput`, a CloudFormation intrinsic that reads an output
+directly from the producing stack. This is simpler (no extra infrastructure), but the producing
+stack can be deleted independently of its consumers.
+
+**Both** is a transitional state used during migration from strong to weak. The producer keeps
+the strong-side artifacts (Export for same-region, ExportWriter for cross-region), and also adds
+a plain Output. The consumer switches to `Fn::GetStackOutput`. This ensures the consumer is no
+longer dependent on the strong mechanism before it is removed.
+
+Configure the reference strength in your `cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:defaultCrossStackReferences": "strong"
+  }
+}
+```
+
+> [!NOTE]
+> When using `"strong"` references, the feature is built on Custom Resources, which are restricted
+> to a CloudFormation response body size limitation of
+> [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
+> To prevent deployment errors, we recommend limiting the use of nested stacks and minimizing
+> the length of stack names.
+
+The full behavior is summarized in the following table:
+
+|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                  |
+|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                 |
+| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                 |
+| Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
+
+
+### Migrating from strong to weak references
+
+If you have existing stacks deployed with strong references and want to switch to weak
+references, you must do so in two deployments to avoid the
+[deadly embrace](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html)
+problem:
+
+**DEPLOYMENT 1**: set the flag to `"both"` and deploy.
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:defaultCrossStackReferences": "both"
+  }
+}
+```
+
+This adds `Fn::GetStackOutput` references in the consumers (weak) while keeping the
+strong-side artifacts in the producer (Export for same-region, ExportWriter for cross-region).
+After this deployment, consumers no longer depend on the strong mechanism.
+
+**DEPLOYMENT 2**: set the flag to `"weak"` and deploy.
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:defaultCrossStackReferences": "weak"
+  }
+}
+```
+
+This removes the strong-side infrastructure entirely (Exports for same-region,
+ExportWriter/ExportReader for cross-region). All references now use the lightweight
+`Fn::GetStackOutput` mechanism.
 
 ### Removing automatic cross-stack references
 
