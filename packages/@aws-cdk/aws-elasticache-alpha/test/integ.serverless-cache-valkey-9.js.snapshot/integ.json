@@ -1,0 +1,17 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "aws-cdk-serverless-cache-valkey-9-integ/DefaultTest": {
+      "stacks": [
+        "aws-cdk-serverless-cache-valkey-9"
+      ],
+      "regions": [
+        "us-east-1"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "aws-cdk-serverless-cache-valkey-9-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkserverlesscachevalkey9integDefaultTestDeployAssertC93AA1B5"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

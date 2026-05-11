@@ -1,0 +1,822 @@
+{
+  "/aws-cdk-serverless-cache-valkey-9": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/Cache": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/RestrictDefaultSecurityGroupCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new RestrictDefaultSgProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new RestrictDefaultSgProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/Cache/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/Cache/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cache18F6EE16"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ServerlessCache (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.js:292:30)",
+        "new ServerlessCache (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:13:22)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/VPC/RestrictDefaultSecurityGroupCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCRestrictDefaultSecurityGroupCustomResource59474679"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.restrictDefaultSecurityGroup (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:12:21)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-serverless-cache-valkey-9/Cache/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CacheSecurityGroup79A9F160"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureSecurityGroups (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.js:487:42)",
+        "new ServerlessCache (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.js:289:46)",
+        "new ServerlessCache (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:13:22)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/test/integ.serverless-cache-valkey-9.js:22:18)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
