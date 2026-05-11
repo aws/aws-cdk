@@ -398,10 +398,12 @@ export class FileSystem extends FileSystemBase {
     this.fileSystemCreationTime = this._resource.attrCreationTime;
     this.fileSystemOwnerId = this._resource.attrOwnerId;
 
-    if (props.resourcePolicy) {
-      for (const statement of props.resourcePolicy.statements) {
-        this.addToResourcePolicy(statement);
-      }
+    if (props.resourcePolicy && !props.resourcePolicy.isEmpty) {
+      this._fileSystemPolicy = props.resourcePolicy;
+      this._cfnFileSystemPolicy = new CfnFileSystemPolicy(this, 'Policy', {
+        fileSystemId: this.fileSystemId,
+        policy: Lazy.any({ produce: () => this._fileSystemPolicy?.toJSON() }),
+      });
     }
 
     const securityGroup = props.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', {
