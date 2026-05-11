@@ -3129,6 +3129,15 @@ policyEngine.grantEvaluate(lambdaRole);
 
 The Online Evaluation construct enables continuous monitoring and assessment of your agent's performance using live traffic. It automatically samples agent traces from CloudWatch Logs or Agent Endpoints and applies built-in evaluators to assess quality metrics like helpfulness, correctness, and safety.
 
+### Prerequisites
+
+Before creating an `OnlineEvaluationConfig`, ensure the following are configured in your account:
+
+- **CloudWatch Transaction Search** enabled — this creates the `aws/spans` log group required by the evaluation service. See [Enable Transaction Search](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html).
+- **AWS Distro for OpenTelemetry (ADOT) SDK** instrumenting your agent to emit traces.
+
+For full details, see [AgentCore Evaluations Prerequisites](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/evaluations-prerequisites.html).
+
 ### Online Evaluation Properties
 
 | Name | Type | Required | Description |
