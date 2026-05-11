@@ -1,6 +1,6 @@
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from '../validation';
-import type { PolicyValidationPluginReport } from '../validation/report';
 import type { NamedValidationPluginReport } from '../validation/private/report';
+import type { PolicyValidationPluginReport } from '../validation/report';
 
 /**
  * Wraps the annotation collection logic as an IPolicyValidationPlugin

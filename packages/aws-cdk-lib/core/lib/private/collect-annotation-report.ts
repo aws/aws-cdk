@@ -1,10 +1,10 @@
 import * as path from 'path';
 import type { IConstruct } from 'constructs';
-import * as cxschema from '../../../cloud-assembly-schema';
 import { iterateDfsPreorder } from './construct-iteration';
+import * as cxschema from '../../../cloud-assembly-schema';
 import { Stack } from '../stack';
-import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 import type { NamedValidationPluginReport } from '../validation/private/report';
+import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
 const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
 
