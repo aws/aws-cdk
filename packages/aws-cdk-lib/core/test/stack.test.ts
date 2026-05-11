@@ -767,27 +767,14 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-        ExportsWriteruseast2828FA26B86FBEFA7: {
-          Type: 'Custom::CrossRegionExportWriter',
-          DeletionPolicy: 'Delete',
-          Properties: {
-            WriterProps: {
-              exports: {
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'name',
-                  ],
-                },
-              },
-              region: 'us-east-2',
-            },
-            ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
-            },
+      },
+      Outputs: {
+        PublishOutputFnGetAttSomeResourceExportnameC1AF3C83: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'name',
+            ],
           },
         },
       },
@@ -799,10 +786,11 @@ describe('stack', () => {
           Type: 'AWS::S3::Bucket',
           Properties: {
             Name: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
-              ],
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'us-east-1',
+                OutputName: 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83',
+              },
             },
           },
         },
@@ -868,87 +856,29 @@ describe('stack', () => {
     // THEN
     expect(template2).toMatchObject({
       Resources: {
-        CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD: {
-          Properties: {
-            Policies: [
-              {
-                PolicyDocument: {
-                  Statement: [
-                    {
-                      Action: [
-                        'ssm:AddTagsToResource',
-                        'ssm:RemoveTagsFromResource',
-                        'ssm:GetParameters',
-                      ],
-                      Effect: 'Allow',
-                      Resource: {
-                        'Fn::Join': [
-                          '',
-                          [
-                            'arn:',
-                            {
-                              Ref: 'AWS::Partition',
-                            },
-                            ':ssm:us-east-2:',
-                            {
-                              Ref: 'AWS::AccountId',
-                            },
-                            ':parameter/cdk/exports/Stack2/*',
-                          ],
-                        ],
-                      },
-                    },
-                  ],
-                  Version: '2012-10-17',
-                },
-                PolicyName: 'Inline',
-              },
-            ],
-          },
-          Type: 'AWS::IAM::Role',
-        },
-        ExportsReader8B249524: {
-          DeletionPolicy: 'Delete',
-          Properties: {
-            ReaderProps: {
-              imports: {
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F}}',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': '{{resolve:ssm:/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1}}',
-                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': '{{resolve:ssm:/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B}}',
-              },
-              region: 'us-east-2',
-              prefix: 'Stack2',
-            },
-            ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68',
-                'Arn',
-              ],
-            },
-          },
-          Type: 'Custom::CrossRegionExportReader',
-          UpdateReplacePolicy: 'Delete',
-        },
         SomeResource: {
           Type: 'AWS::S3::Bucket',
           Properties: {
             Name: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
-              ],
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'us-east-1',
+                OutputName: 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83',
+              },
             },
             Other: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
-              ],
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'us-east-1',
+                OutputName: 'PublishOutputFnGetAttSomeResourceExportother3693C96F',
+              },
             },
             Other2: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B',
-              ],
+              'Fn::GetStackOutput': {
+                StackName: 'Stack3',
+                Region: 'us-east-1',
+                OutputName: 'PublishOutputFnGetAttSomeResourceExportother215E978B3',
+              },
             },
           },
         },
@@ -959,27 +889,14 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-        ExportsWriteruseast2828FA26B86FBEFA7: {
-          Type: 'Custom::CrossRegionExportWriter',
-          DeletionPolicy: 'Delete',
-          Properties: {
-            WriterProps: {
-              exports: {
-                '/cdk/exports/Stack2/Stack3useast1FnGetAttSomeResourceExportother2190A679B': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other2',
-                  ],
-                },
-              },
-              region: 'us-east-2',
-            },
-            ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
-            },
+      },
+      Outputs: {
+        PublishOutputFnGetAttSomeResourceExportother215E978B3: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other2',
+            ],
           },
         },
       },
@@ -989,33 +906,22 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-        ExportsWriteruseast2828FA26B86FBEFA7: {
-          Type: 'Custom::CrossRegionExportWriter',
-          DeletionPolicy: 'Delete',
-          Properties: {
-            WriterProps: {
-              exports: {
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'name',
-                  ],
-                },
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other',
-                  ],
-                },
-              },
-              region: 'us-east-2',
-            },
-            ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
-            },
+      },
+      Outputs: {
+        PublishOutputFnGetAttSomeResourceExportnameC1AF3C83: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'name',
+            ],
+          },
+        },
+        PublishOutputFnGetAttSomeResourceExportother3693C96F: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other',
+            ],
           },
         },
       },
@@ -1064,22 +970,25 @@ describe('stack', () => {
           Type: 'AWS::S3::Bucket',
           Properties: {
             Name: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F',
-              ],
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'us-east-1',
+                OutputName: 'PublishOutputFnGetAttSomeResourceExportnameC1AF3C83',
+              },
             },
             Other: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1',
-              ],
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'us-east-1',
+                OutputName: 'PublishOutputFnGetAttSomeResourceExportother3693C96F',
+              },
             },
             Other2: {
-              'Fn::GetAtt': [
-                'ExportsReader8B249524',
-                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7',
-              ],
+              'Fn::GetStackOutput': {
+                StackName: 'Stack3',
+                Region: 'us-west-1',
+                OutputName: 'PublishOutputFnGetAttSomeResourceExportother215E978B3',
+              },
             },
           },
         },
@@ -1090,27 +999,14 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-        ExportsWriteruseast2828FA26B86FBEFA7: {
-          Type: 'Custom::CrossRegionExportWriter',
-          DeletionPolicy: 'Delete',
-          Properties: {
-            WriterProps: {
-              exports: {
-                '/cdk/exports/Stack2/Stack3uswest1FnGetAttSomeResourceExportother2491B5DA7': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other2',
-                  ],
-                },
-              },
-              region: 'us-east-2',
-            },
-            ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
-            },
+      },
+      Outputs: {
+        PublishOutputFnGetAttSomeResourceExportother215E978B3: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other2',
+            ],
           },
         },
       },
@@ -1120,33 +1016,22 @@ describe('stack', () => {
         SomeResourceExport: {
           Type: 'AWS::S3::Bucket',
         },
-        ExportsWriteruseast2828FA26B86FBEFA7: {
-          Type: 'Custom::CrossRegionExportWriter',
-          DeletionPolicy: 'Delete',
-          Properties: {
-            WriterProps: {
-              exports: {
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportname47AD304F': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'name',
-                  ],
-                },
-                '/cdk/exports/Stack2/Stack1useast1FnGetAttSomeResourceExportotherC6F8CBD1': {
-                  'Fn::GetAtt': [
-                    'SomeResourceExport',
-                    'other',
-                  ],
-                },
-              },
-              region: 'us-east-2',
-            },
-            ServiceToken: {
-              'Fn::GetAtt': [
-                'CustomCrossRegionExportWriterCustomResourceProviderHandlerD8786E8A',
-                'Arn',
-              ],
-            },
+      },
+      Outputs: {
+        PublishOutputFnGetAttSomeResourceExportnameC1AF3C83: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'name',
+            ],
+          },
+        },
+        PublishOutputFnGetAttSomeResourceExportother3693C96F: {
+          Value: {
+            'Fn::GetAtt': [
+              'SomeResourceExport',
+              'other',
+            ],
           },
         },
       },
