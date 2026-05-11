@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:12:15)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:12:15)",
         "...node internals..."
       ]
     }
@@ -38,16 +38,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:51:5)",
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -60,16 +60,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
-        "/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
-        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
-        "visit (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
-        "synthesizeTree (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
-        "synthesize (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
-        "App.synth (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:51:5)",
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -82,9 +82,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:14:18)",
+        "new LogGroup (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:14:18)",
         "...node internals..."
       ]
     }
@@ -97,9 +97,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Evaluator (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/custom-evaluator.js:227:30)",
-        "new Evaluator (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:20:25)",
+        "new Evaluator (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/custom-evaluator.js:230:30)",
+        "new Evaluator (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:20:25)",
         "...node internals..."
       ]
     }
@@ -220,9 +220,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:239:30)",
-        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:34:1)",
+        "new OnlineEvaluationConfig (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:242:30)",
+        "new OnlineEvaluationConfig (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:38:1)",
         "...node internals..."
       ]
     }
@@ -235,12 +235,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createExecutionRole (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:262:26)",
-        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:237:62)",
-        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:34:1)",
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createExecutionRole (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:268:26)",
+        "new OnlineEvaluationConfig (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:240:62)",
+        "new OnlineEvaluationConfig (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:38:1)",
         "...node internals..."
       ]
     }
@@ -315,16 +315,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
-        "new Policy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "WrappedClass.addToPolicy (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
-        "WrappedClass.<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "WrappedClass.createExecutionRole (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:309:18)",
-        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:237:62)",
-        "new OnlineEvaluationConfig (/Users/rezabekf/Development/GitHub/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/rezabekf/Development/GitHub/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:34:1)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.createExecutionRole (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:315:18)",
+        "new OnlineEvaluationConfig (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/online-evaluation.js:240:62)",
+        "new OnlineEvaluationConfig (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:38:1)",
         "...node internals..."
       ]
     }

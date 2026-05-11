@@ -36,7 +36,17 @@
      }
     },
     "EvaluatorName": "integ_test_custom_eval",
-    "Level": "SESSION"
+    "Level": "SESSION",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "IntegTest"
+     },
+     {
+      "Key": "Team",
+      "Value": "CDKAbstractions"
+     }
+    ]
    }
   },
   "BasicEvaluationExecutionRoleFB7E4913": {
