@@ -37,7 +37,7 @@ import {
   Token,
   ValidationError,
 } from '../../core';
-import type { IBox } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
 import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
@@ -370,9 +370,9 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
-  private readonly additionalBehaviors: CacheBehavior[] = [];
-  private readonly boundOrigins: BoundOrigin[] = [];
-  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
+  private readonly additionalBehaviors: IArrayBox<CacheBehavior> = Box.fromArray();
+  private readonly boundOrigins: IArrayBox<BoundOrigin> = Box.fromArray([], { omitEmpty: false });
+  private readonly originGroups: IArrayBox<CfnDistribution.OriginGroupProperty> = Box.fromArray();
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: ICertificateRef;
@@ -424,11 +424,15 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
-        origins: Lazy.any({ produce: () => this.renderOrigins() }),
-        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
+        origins: this.renderOrigins(),
+        originGroups: this.originGroups.derive(og =>
+          og.length === 0 ? undefined : { items: og, quantity: og.length },
+        ),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
+        cacheBehaviors: this.additionalBehaviors.derive(ab =>
+          ab.length === 0 ? undefined : ab.map(b => b._renderBehavior()),
+        ),
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
@@ -804,28 +808,12 @@ export class Distribution extends Resource implements IDistribution {
     });
   }
 
-  private renderOrigins(): CfnDistribution.OriginProperty[] {
-    const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.boundOrigins.forEach(boundOrigin => {
-      if (boundOrigin.originProperty) {
-        renderedOrigins.push(boundOrigin.originProperty);
-      }
-    });
-    return renderedOrigins;
-  }
-
-  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
-    return this.originGroups.length === 0
-      ? undefined
-      : {
-        items: this.originGroups,
-        quantity: this.originGroups.length,
-      };
-  }
-
-  private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
-    if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+  private renderOrigins(): IReadableBox<Array<CfnDistribution.OriginProperty>> {
+    return this.boundOrigins
+      .map(origin => origin.originProperty)
+      .derive(origins => origins.filter(Boolean))
+      // only defined values remaining
+      .derive(origins => origins as CfnDistribution.OriginProperty[]);
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {

@@ -226,4 +226,52 @@ describe('BasePathMapping', () => {
       Stage: Match.absent(),
     });
   });
+
+  test('works with imported domain name from attributes', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const api = new apigw.RestApi(stack, 'MyApi');
+    api.root.addMethod('GET');
+    const domain = apigw.DomainName.fromDomainNameAttributes(stack, 'Domain', {
+      domainName: 'domainName',
+      domainNameAliasHostedZoneId: 'domainNameAliasHostedZoneId',
+      domainNameAliasTarget: 'domainNameAliasTarget',
+    });
+
+    // WHEN
+    new apigw.BasePathMapping(stack, 'MappingOne', {
+      domainName: domain,
+      restApi: api,
+    });
+    new apigw.BasePathMapping(stack, 'MappingTwo', {
+      domainName: domain,
+      restApi: api,
+      basePath: 'path',
+      attachToStage: false,
+    });
+    new apigw.BasePathMapping(stack, 'MappingThree', {
+      domainName: domain,
+      restApi: api,
+      basePath: 'api/v1/multi-level-path',
+      attachToStage: false,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+      DomainName: 'domainName',
+      RestApiId: { Ref: 'MyApi49610EDF' },
+      Stage: { Ref: 'MyApiDeploymentStageprodE1054AF0' },
+    });
+    template.hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+      DomainName: 'domainName',
+      BasePath: 'path',
+      Stage: Match.absent(),
+    });
+    template.hasResourceProperties('AWS::ApiGateway::BasePathMapping', {
+      DomainName: 'domainName',
+      BasePath: 'api/v1/multi-level-path',
+      Stage: Match.absent(),
+    });
+  });
 });
