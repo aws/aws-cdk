@@ -175,12 +175,36 @@ Tokens can encode strings, numbers, and lists. Any object implementing `IResolva
 - Use `Tokenization.stringifyNumber()` to safely convert a possibly-tokenized number to string
 - Don't use resource attributes (Tokens) in hash calculations for physical names
 
-### Lazy Values
+### Deferred Values (Box API)
 
-- `Lazy.any()` for arrays: pass `{ omitEmptyArray: true }`
+L2 constructs that accumulate state after construction (e.g., adding actions, policy statements, security groups) MUST use the **Box API** to defer value resolution — not `Lazy`. Boxes implement `IResolvable` and capture stack traces at mutation call sites (under `CDK_DEBUG`), enabling accurate property attribution in synthesized templates.
+
+- Use `Box.fromArray<T>([])` for accumulator lists, `Box.fromValue<T>(initial)` for single values, `Box.fromMap<K,V>()` for maps, `Box.fromSet<A>()` for sets
+- Pass to L1 props via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box.derive(...))`, or `Token.asAny(box)` for complex/object values
+- `Box.fromArray` resolves to `undefined` when empty (omitEmpty default) — no manual empty-array check needed
+- Mutate via `box.push(item)` or `box.set(newValue)` — each captures a stack trace at the call site
+- Use `box.derive(fn)` for single-source transforms or `Box.combine({ name: box, ... }, ({ name, ... }) => ...)` for multi-source derived values
+- Apply `@noBoxStackTraces` decorator on L2 classes that create or mutate Boxes in their constructor (suppresses irrelevant internal traces)
+- NEVER mutate construct tree in Lazy or Box callbacks
+
+`Lazy` is legacy — existing code still uses it but new L2 constructs MUST prefer Boxes. See `packages/aws-cdk-lib/core/adr/box-api.md` for full rationale.
+
+**Before (legacy — do not use in new code):**
+```ts
+alarmActions: Lazy.list({ produce: () => this.alarmActionArns }),
+```
+
+**After (preferred):**
+```ts
+protected readonly _alarmActionArns: IArrayBox<string> = Box.fromArray([]);
+// in constructor:
+alarmActions: Token.asList(this._alarmActionArns),
+// in mutating method:
+this._alarmActionArns.push(newArn); // stack trace captured here
+```
+
 - Map empty arrays to `undefined` for CFN properties
 - Optional nested CFN objects: `undefined` (not `{}`) when no sub-properties set
-- NEVER mutate construct tree in Lazy callbacks
 
 ### ARN Construction
 
