@@ -24,7 +24,6 @@ describe('FeatureStabilityRule', () => {
           features: [
             { name: 'Experimental Feature', stability: 'Experimental' },
             { name: 'Stable Feature', stability: 'Stable' },
-            { name: 'Dev Preview Feature', stability: 'Developer Preview' },
             { name: 'Not Implemented Feature', stability: 'Not Implemented' },
           ],
         },
@@ -41,7 +40,6 @@ describe('FeatureStabilityRule', () => {
     pkgJson.applyFixes();
     const fixedContents = await fs.readFile(path.join(dirPath, 'README.md'), { encoding: 'utf8' });
     expect(fixedContents).toMatch(/Experimental Feature\s* \| \!\[Experimental\]/);
-    expect(fixedContents).toMatch(/Dev Preview Feature\s* \| \!\[Developer Preview\]/);
     expect(fixedContents).toMatch(/Stable Feature\s* \| \!\[Stable\]/);
     expect(fixedContents).toMatch(/Not Implemented Feature\s* \| \!\[Not Implemented\]/);
     expect(fixedContents).not.toMatch(/CFN Resources/);
@@ -111,31 +109,6 @@ describe('FeatureStabilityRule', () => {
 
       const fixedContents = await fs.readFile(path.join(dirPath, 'README.md'), { encoding: 'utf8' });
       expect(fixedContents).toMatch(/> \*\*Experimental:\*\*/);
-      expect(fixedContents).not.toMatch(/> \*\*Developer Preview:\*\*/);
-      expect(fixedContents).not.toMatch(/> \*\*Stable:\*\*/);
-    });
-
-    test('developer preview', async () => {
-      fakeModule = new FakeModule({
-        files: {
-          'package.json': {
-            features: [
-              { name: 'Feature', stability: 'Developer Preview' },
-            ],
-          },
-          'README.md': '',
-        },
-      });
-      const dirPath = await fakeModule.tmpdir();
-      const rule = new rules.FeatureStabilityRule();
-
-      const pkgJson = new PackageJson(path.join(dirPath, 'package.json'));
-      rule.validate(pkgJson);
-      pkgJson.applyFixes();
-
-      const fixedContents = await fs.readFile(path.join(dirPath, 'README.md'), { encoding: 'utf8' });
-      expect(fixedContents).toMatch(/> \*\*Developer Preview:\*\*/);
-      expect(fixedContents).not.toMatch(/> \*\*Experimental:\*\*/);
       expect(fixedContents).not.toMatch(/> \*\*Stable:\*\*/);
     });
 
@@ -160,7 +133,6 @@ describe('FeatureStabilityRule', () => {
       const fixedContents = await fs.readFile(path.join(dirPath, 'README.md'), { encoding: 'utf8' });
       expect(fixedContents).toMatch(/> \*\*Stable:\*\*/);
       expect(fixedContents).not.toMatch(/> \*\*Experimental:\*\*/);
-      expect(fixedContents).not.toMatch(/> \*\*Developer Preview:\*\*/);
     });
   });
 
