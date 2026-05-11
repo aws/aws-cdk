@@ -14,7 +14,9 @@ class TestStack extends Stack {
     const vpc = new Vpc(this, 'VPC');
     this.cache = new ServerlessCache(this, 'Cache', {
       vpc,
-      engine: CacheEngine.VALKEY_9,
+      // Demonstrate that the `.of()` factory works for an arbitrary engine/version
+      // combination without waiting for a CDK release to add it as a named member.
+      engine: CacheEngine.of('valkey', '9'),
       serverlessCacheName: cacheName,
     });
     this.cache.applyRemovalPolicy(RemovalPolicy.DESTROY);
