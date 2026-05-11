@@ -21,6 +21,13 @@ export interface ScalaSparkEtlJobProps extends SparkJobProps {
   readonly className: string;
 
   /**
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   * @default - undefined
+   */
+  readonly notifyDelayAfter?: cdk.Duration;
+
+  /**
    * Additional files, such as configuration files that AWS Glue copies to the working directory of your script before executing it.
    *
    * @default - no extra files specified.
@@ -107,6 +114,7 @@ export class ScalaSparkEtlJob extends SparkJob {
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,

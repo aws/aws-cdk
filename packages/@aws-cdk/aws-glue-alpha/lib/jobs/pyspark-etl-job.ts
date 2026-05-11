@@ -13,6 +13,13 @@ import { SparkJob } from './spark-job';
  */
 export interface PySparkEtlJobProps extends SparkJobProps {
   /**
+   * Specifies configuration properties of a notification (optional).
+   * After a job run starts, the number of minutes to wait before sending a job run delay notification.
+   * @default - undefined
+   */
+  readonly notifyDelayAfter?: cdk.Duration;
+
+  /**
    * Extra Python Files S3 URL (optional)
    * S3 URL where additional python dependencies are located
    *
@@ -104,6 +111,7 @@ export class PySparkEtlJob extends SparkJob {
       numberOfWorkers: props.numberOfWorkers ? props.numberOfWorkers : 10,
       maxRetries: props.jobRunQueuingEnabled ? 0 : props.maxRetries,
       jobRunQueuingEnabled: props.jobRunQueuingEnabled ? props.jobRunQueuingEnabled : false,
+      notificationProperty: props.notifyDelayAfter ? { notifyDelayAfter: props.notifyDelayAfter.toMinutes() } : undefined,
       executionProperty: props.maxConcurrentRuns ? { maxConcurrentRuns: props.maxConcurrentRuns } : undefined,
       timeout: props.timeout?.toMinutes(),
       connections: props.connections ? { connections: props.connections.map((connection) => connection.connectionName) } : undefined,
