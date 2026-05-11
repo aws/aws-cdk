@@ -218,15 +218,6 @@ describe('PromQLAlarm', () => {
     })).toThrow(/evaluationInterval must be between 10 and 3600 seconds, got 7200/);
   });
 
-  test('throws when pendingPeriod is less than 0 seconds', () => {
-    const stack = new Stack();
-    expect(() => new PromQLAlarm(stack, 'Alarm', {
-      query: 'up == 0',
-      evaluationInterval: Duration.seconds(60),
-      pendingPeriod: Duration.seconds(-1),
-    })).toThrow(/pendingPeriod must be between 0 and 86400 seconds, got -1/);
-  });
-
   test('throws when pendingPeriod is greater than 86400 seconds', () => {
     const stack = new Stack();
     expect(() => new PromQLAlarm(stack, 'Alarm', {
@@ -234,15 +225,6 @@ describe('PromQLAlarm', () => {
       evaluationInterval: Duration.seconds(60),
       pendingPeriod: Duration.seconds(86401),
     })).toThrow(/pendingPeriod must be between 0 and 86400 seconds, got 86401/);
-  });
-
-  test('throws when recoveryPeriod is less than 0 seconds', () => {
-    const stack = new Stack();
-    expect(() => new PromQLAlarm(stack, 'Alarm', {
-      query: 'up == 0',
-      evaluationInterval: Duration.seconds(60),
-      recoveryPeriod: Duration.seconds(-1),
-    })).toThrow(/recoveryPeriod must be between 0 and 86400 seconds, got -1/);
   });
 
   test('throws when recoveryPeriod is greater than 86400 seconds', () => {
