@@ -471,7 +471,7 @@ describe('log group', () => {
     });
   });
 
-  test('when added to log groups, IAM users are converted into account IDs in the resource policy', () => {
+  test('when added to log groups, IAM principals are converted into account root ARN format in the resource policy', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -483,11 +483,41 @@ describe('log group', () => {
       principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/user-name')],
     }));
 
-    // THEN
+    // THEN — principal emits the canonical root ARN so CloudFormation drift detection
+    // sees no difference between the template and the deployed resource.
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::123456789012:root\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+          ],
+        ],
+      },
       PolicyName: 'LogGroupPolicy643B329C',
     });
+  });
+
+  test('cross-account grantRead emits root ARN principal, not bare account ID, to prevent CloudFormation drift', () => {
+    // Regression test for https://github.com/aws/aws-cdk/issues/37797.
+    // CloudFormation normalizes "123456789012" to "arn:aws:iam::123456789012:root" after
+    // deployment; emitting the bare account ID causes persistent drift false positives.
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+    const crossAccountRole = iam.Role.fromRoleArn(stack, 'CrossAccountRole', 'arn:aws:iam::999888777666:role/Reader');
+
+    lg.grantRead(crossAccountRole);
+
+    // The PolicyDocument serializes as a Fn::Join when the principal contains tokens.
+    // Stringify the whole resource policy to check the principal format.
+    const resources = Template.fromStack(stack).findResources('AWS::Logs::ResourcePolicy');
+    const policyDocJson = JSON.stringify(Object.values(resources)[0].Properties.PolicyDocument);
+
+    // Must emit root ARN format, not bare account ID, to match what CloudFormation stores.
+    expect(policyDocJson).toContain(':iam::999888777666:root');
+    expect(policyDocJson).not.toContain('"999888777666"');
   });
 
   test('log groups accept the AnyPrincipal policy', () => {
@@ -516,7 +546,7 @@ describe('log group', () => {
     });
   });
 
-  test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
+  test('imported values are treated as if they are ARNs and converted to account root ARN format via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -528,20 +558,23 @@ describe('log group', () => {
       principals: [iam.Role.fromRoleArn(stack, 'Role', Fn.importValue('SomeRole'))],
     }));
 
-    // THEN
+    // THEN — principal emits canonical root ARN using CFN intrinsics so drift detection
+    // sees no difference between the template and the deployed resource.
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyDocument: {
         'Fn::Join': [
           '',
           [
-            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::',
             {
               'Fn::Select': [
                 4,
                 { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
               ],
             },
-            '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+            ':root\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
           ],
         ],
       },
