@@ -6,9 +6,12 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as imagebuilder from '../lib';
 import { ImageArchitecture, ImageType } from '../lib';
+import { enableInspector } from './enable-inspector';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-imagebuilder-image-pipeline-container-all-parameters');
+
+const inspector = enableInspector(stack, ['ECR']);
 
 const repository = new ecr.Repository(stack, 'Repository', {
   emptyOnDelete: true,
@@ -37,7 +40,7 @@ const containerRecipe = new imagebuilder.ContainerRecipe(stack, 'ContainerRecipe
   targetRepository: imagebuilder.Repository.fromEcr(repository),
   components: [
     {
-      component: imagebuilder.AwsManagedComponent.helloWorld(stack, 'HelloWorld', {
+      component: imagebuilder.AmazonManagedComponent.helloWorld(stack, 'HelloWorld', {
         platform: imagebuilder.Platform.LINUX,
       }),
     },
@@ -65,9 +68,9 @@ const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipel
     autoDisableFailureCount: 5,
   },
   workflows: [
-    { workflow: imagebuilder.AwsManagedWorkflow.buildContainer(stack, 'BuildContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.testContainer(stack, 'TestContainer') },
-    { workflow: imagebuilder.AwsManagedWorkflow.distributeContainer(stack, 'DistributeContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.buildContainer(stack, 'BuildContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.testContainer(stack, 'TestContainer') },
+    { workflow: imagebuilder.AmazonManagedWorkflow.distributeContainer(stack, 'DistributeContainer') },
   ],
   imageLogGroup,
   imagePipelineLogGroup,
@@ -78,6 +81,7 @@ const containerImagePipeline = new imagebuilder.ImagePipeline(stack, 'ImagePipel
   imageScanningEcrTags: ['latest-scan'],
   tags: { key1: 'value1', key2: 'value2' },
 });
+containerImagePipeline.node.addDependency(inspector);
 containerImagePipeline.grantDefaultExecutionRolePermissions(executionRole);
 containerImagePipeline.onEvent('ImageBuildSuccessTriggerRule');
 containerImagePipeline.onImagePipelineAutoDisabled('ImagePipelineAutoDisabledTriggerRule');

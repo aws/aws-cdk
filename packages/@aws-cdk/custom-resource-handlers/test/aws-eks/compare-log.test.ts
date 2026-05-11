@@ -1,5 +1,5 @@
 
-import { CreateClusterRequest, LogType } from '@aws-sdk/client-eks';
+import type { CreateClusterRequest, LogType } from '@aws-sdk/client-eks';
 import { compareLoggingProps } from '../../lib/aws-eks/cluster-resource-handler/compareLogging';
 
 /**

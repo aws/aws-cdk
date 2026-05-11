@@ -1,4 +1,5 @@
-import { $E, $T, expr, Expression, ExternalModule, IScope, ThingSymbol, Type } from '@cdklabs/typewriter';
+import type { Expression, IScope } from '@cdklabs/typewriter';
+import { $E, $T, expr, ExternalModule, ThingSymbol, Type } from '@cdklabs/typewriter';
 
 export class CdkCore extends ExternalModule {
   public readonly helpers = new CdkInternalHelpers(this);
@@ -14,6 +15,7 @@ export class CdkCore extends ExternalModule {
   public readonly TagManager = $T(Type.fromName(this, 'TagManager'));
   public readonly TagType = $T(Type.fromName(this, 'TagType'));
   public readonly Fn = $T(Type.fromName(this, 'Fn'));
+  public readonly Aws = $T(Type.fromName(this, 'Aws'));
   public readonly ITaggable = Type.fromName(this, 'ITaggable');
   public readonly ITaggableV2 = Type.fromName(this, 'ITaggableV2');
   public readonly IResolvable = Type.fromName(this, 'IResolvable');
@@ -34,6 +36,7 @@ export class CdkCore extends ExternalModule {
   public readonly unionMapper = makeCallableExpr(this, 'unionMapper');
   public readonly requireProperty = makeCallableExpr(this, 'requireProperty');
   public readonly isResolvableObject = makeCallableExpr(this, 'isResolvableObject');
+  public readonly traceProperty = makeCallableExpr(this, 'traceProperty');
   public readonly mapArrayInPlace = makeCallableExpr(this, 'mapArrayInPlace');
 
   public readonly ValidationResult = $T(Type.fromName(this, 'ValidationResult'));
@@ -54,6 +57,10 @@ export class CdkCore extends ExternalModule {
 
   public readonly AWSEventMetadata = Type.fromName(this, 'AWSEventMetadata');
   public readonly AWSEventMetadataProps = Type.fromName(this, 'AWSEventMetadataProps');
+
+  public readonly Mixin = Type.fromName(this, 'Mixin');
+  public readonly IMergeStrategy = Type.fromName(this, 'IMergeStrategy');
+  public readonly PropertyMergeStrategy = $T(Type.fromName(this, 'PropertyMergeStrategy'));
 
   constructor(fqn: string) {
     super(fqn);
@@ -86,6 +93,12 @@ export class CdkCore extends ExternalModule {
 
 export class Interfaces extends ExternalModule {
   public readonly IEnvironmentAware = Type.fromName(this, 'IEnvironmentAware');
+
+  public readonly IBucketRef = Type.fromName(this, 'aws_s3.IBucketRef');
+  public readonly IKeyRef = Type.fromName(this, 'aws_kms.IKeyRef');
+  public readonly ILogGroupRef = Type.fromName(this, 'aws_logs.ILogGroupRef');
+  public readonly IDeliveryStreamRef = Type.fromName(this, 'aws_kinesisfirehose.IDeliveryStreamRef');
+  public readonly IDeliveryDestinationRef = Type.fromName(this, 'aws_logs.IDeliveryDestinationRef');
 }
 
 export class CdkInternalHelpers extends ExternalModule {
@@ -111,6 +124,7 @@ export class CdkErrors extends ExternalModule {
 export class Constructs extends ExternalModule {
   public readonly Construct = Type.fromName(this, 'Construct');
   public readonly IConstruct = Type.fromName(this, 'IConstruct');
+  public readonly IMixin = Type.fromName(this, 'IMixin');
 
   constructor() {
     super('constructs');
@@ -122,6 +136,7 @@ export class CdkCloudWatch extends ExternalModule {
   public readonly MetricOptions = Type.fromName(this, 'MetricOptions');
 }
 
+export const CDK_INTERFACES = new Interfaces('aws-cdk-lib/interfaces');
 export const CDK_INTERFACES_ENVIRONMENT_AWARE = new Interfaces('aws-cdk-lib/interfaces/environment-aware');
 export const CDK_CORE = new CdkCore('aws-cdk-lib/core');
 export const CDK_CLOUDWATCH = new CdkCloudWatch('aws-cdk-lib/aws-cloudwatch');

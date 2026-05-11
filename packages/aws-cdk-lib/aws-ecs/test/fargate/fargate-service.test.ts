@@ -17,7 +17,8 @@ import { App } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectProps } from '../../lib/base/base-service';
+import type { ServiceConnectProps } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { ServiceManagedVolume } from '../../lib/base/service-managed-volume';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -1379,7 +1380,7 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      const service = new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
       });
@@ -1399,7 +1400,7 @@ describe('fargate service', () => {
         image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
       });
 
-      const service = new ecs.FargateService(stack, 'FargateService', {
+      new ecs.FargateService(stack, 'FargateService', {
         cluster,
         taskDefinition,
         minHealthyPercent: 50,
@@ -3645,6 +3646,7 @@ describe('fargate service', () => {
         cluster,
         taskDefinition,
         minHealthyPercent: 50, // must be set to avoid warning causing test failure
+        circuitBreaker: {}, // Set to silence an unrelated warning
       });
 
       // WHEN
@@ -4270,7 +4272,7 @@ describe('fargate service', () => {
     test('with circuit breaker and deployment controller feature flag enabled', () => {
       // GIVEN
       const disableCircuitBreakerEcsDeploymentControllerFeatureFlag =
-          { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
+        { [cxapi.ECS_DISABLE_EXPLICIT_DEPLOYMENT_CONTROLLER_FOR_CIRCUIT_BREAKER]: true };
       const app = new App({ context: disableCircuitBreakerEcsDeploymentControllerFeatureFlag });
       const stack = new cdk.Stack(app);
       const cluster = new ecs.Cluster(stack, 'EcsCluster');

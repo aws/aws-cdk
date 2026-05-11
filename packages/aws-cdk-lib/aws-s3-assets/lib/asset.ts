@@ -1,12 +1,13 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { toSymlinkFollow } from './compat';
-import { CopyOptions } from '../../assets';
-import * as iam from '../../aws-iam';
+import type { CopyOptions } from '../../assets';
+import type * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
 export interface AssetOptions extends CopyOptions, cdk.FileCopyOptions, cdk.AssetOptions {
@@ -166,7 +167,7 @@ export class Asset extends Construct implements cdk.IAsset {
     super(scope, id);
 
     if (!props.path) {
-      throw new ValidationError('Asset path cannot be empty', this);
+      throw new ValidationError(lit`AssetPathCannotEmpty`, 'Asset path cannot be empty', this);
     }
 
     this.isBundled = props.bundling != null;
@@ -247,6 +248,8 @@ export class Asset extends Construct implements cdk.IAsset {
 
   /**
    * Grants read permissions to the principal on the assets bucket.
+   *
+   * [disable-awslint:no-grants]
    */
   public grantRead(grantee: iam.IGrantable) {
     // we give permissions on all files in the bucket since we don't want to

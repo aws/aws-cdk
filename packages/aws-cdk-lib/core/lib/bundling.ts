@@ -1,11 +1,12 @@
 import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
-import { DockerCacheOption } from './assets';
+import type { DockerCacheOption } from './assets';
 import { ExecutionError, UnscopedValidationError } from './errors';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
+import { lit } from './private/literal-string';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
@@ -313,7 +314,7 @@ export class BundlingDockerImage {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
-      throw new ExecutionError('Failed to extract container ID from Docker create output');
+      throw new ExecutionError(lit`FailedToFailedExtractContainer`, 'Failed to extract container ID from Docker create output');
     }
 
     const containerId = match[1];
@@ -323,7 +324,7 @@ export class BundlingDockerImage {
       dockerExec(['cp', containerPath, destPath]);
       return destPath;
     } catch (err) {
-      throw new ExecutionError(`Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
+      throw new ExecutionError(lit`FailedToFailedCopyFiles`, `Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
@@ -344,7 +345,7 @@ export class DockerImage extends BundlingDockerImage {
     const buildArgs = options.buildArgs || {};
 
     if (options.file && isAbsolute(options.file)) {
-      throw new UnscopedValidationError(`"file" must be relative to the docker build directory. Got ${options.file}`);
+      throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
     // Image tag derived from path and build options
@@ -362,6 +363,7 @@ export class DockerImage extends BundlingDockerImage {
       ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
       ...(options.cacheDisabled ? ['--no-cache'] : []),
       ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+      ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ['--build-context', `${k}=${v}`])),
       path,
     ];
 
@@ -591,6 +593,19 @@ export interface DockerBuildOptions {
    * @default - no build args
    */
   readonly buildArgs?: { [key: string]: string };
+
+  /**
+   * Build contexts to pass to the `docker build` command.
+   *
+   * Build contexts can be used to specify additional directories or images
+   * to use during the build. Each entry specifies a named build context
+   * and its source (a directory path, a URL, or a docker image).
+   *
+   * @see https://docs.docker.com/build/building/context/#additional-build-contexts
+   *
+   * @default - no additional build contexts
+   */
+  readonly buildContexts?: { [key: string]: string };
 
   /**
    * Name of the Dockerfile, must relative to the docker build path.

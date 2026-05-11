@@ -7,7 +7,7 @@ import { mockClient } from 'aws-sdk-client-mock';
 import * as fs from 'fs-extra';
 import * as nock from 'nock';
 import { handler } from '../../../lib/custom-resources/aws-custom-resource-handler';
-import { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
+import type { AwsSdkCall } from '../../../lib/custom-resources/aws-custom-resource-handler/construct-types';
 import { forceSdkInstallation } from '../../../lib/custom-resources/aws-custom-resource-handler/load-sdk';
 import 'aws-sdk-client-mock-jest' ;
 
@@ -29,7 +29,6 @@ beforeEach(() => {
   mockExecSync.mockReset();
 });
 
-/* eslint-disable no-console */
 console.log = jest.fn();
 
 const eventCommon = {

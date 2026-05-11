@@ -1,16 +1,16 @@
 {
-  "version": "45.0.0",
+  "version": "48.0.0",
   "files": {
-    "6c00532294f6644673f200f9cd0a87595abb762306a183f47597518cbdbe0f35": {
+    "1c0d4ed6be8fd3c1fd10bbf4d99035eb2ca5576f1acb2ceea45b13599093e852": {
       "displayName": "integ-ecs-al2023-ami Template",
       "source": {
         "path": "integ-ecs-al2023-ami.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-fa7b193d": {
+        "current_account-current_region-ee9fe2ee": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6c00532294f6644673f200f9cd0a87595abb762306a183f47597518cbdbe0f35.json",
+          "objectKey": "1c0d4ed6be8fd3c1fd10bbf4d99035eb2ca5576f1acb2ceea45b13599093e852.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

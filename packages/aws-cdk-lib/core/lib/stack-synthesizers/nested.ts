@@ -1,6 +1,6 @@
 import { StackSynthesizer } from './stack-synthesizer';
-import { IStackSynthesizer, ISynthesisSession } from './types';
-import { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
+import type { IStackSynthesizer, ISynthesisSession } from './types';
+import type { DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource } from '../assets';
 
 /**
  * Synthesizer for a nested stack
@@ -21,6 +21,10 @@ export class NestedStackSynthesizer extends StackSynthesizer {
 
   public get lookupRole(): string | undefined {
     return this.parentDeployment.lookupRole;
+  }
+
+  public get cloudFormationExecutionRole(): string | undefined {
+    return this.parentDeployment.cloudFormationExecutionRole;
   }
 
   public addFileAsset(asset: FileAssetSource): FileAssetLocation {

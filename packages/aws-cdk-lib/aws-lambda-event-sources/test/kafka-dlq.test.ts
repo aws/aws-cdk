@@ -1,4 +1,3 @@
-import { Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as sources from '../lib';
 
@@ -47,7 +46,6 @@ describe('KafkaDlq', () => {
     });
 
     test('appends token as is without validation or prefix', () => {
-      const stack = new cdk.Stack();
       const token = cdk.Fn.ref('MyTopicParameter');
 
       const dlq = new sources.KafkaDlq(token);

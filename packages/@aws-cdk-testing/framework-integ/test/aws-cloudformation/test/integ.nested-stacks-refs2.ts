@@ -1,7 +1,7 @@
 /// !cdk-integ *
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { App, Fn, NestedStack, Stack } from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 
 // non-nested non-parent stack consumes a resource from a nested stack
 

@@ -1,8 +1,8 @@
-import * as cdk from '../..';
 import { Match, Template } from '../../assertions';
 import * as glue from '../../aws-glue';
 import * as iam from '../../aws-iam';
 import * as s3 from '../../aws-s3';
+import * as cdk from '../../core';
 import * as firehose from '../lib';
 
 describe('Record format conversion', () => {

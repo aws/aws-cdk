@@ -1,15 +1,23 @@
-import { Construct } from 'constructs';
-import { Connections, IConnectable } from './connections';
-import { CfnVPCEndpoint, IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
+import type { Construct } from 'constructs';
+import type { IConnectable } from './connections';
+import { Connections } from './connections';
+import type { IVPCEndpointRef, VPCEndpointReference } from './ec2.generated';
+import { CfnVPCEndpoint } from './ec2.generated';
 import { Peer } from './peer';
 import { Port } from './port';
-import { ISecurityGroup, SecurityGroup } from './security-group';
+import type { ISecurityGroup } from './security-group';
+import { SecurityGroup } from './security-group';
 import { allRouteTableIds, flatten } from './util';
-import { ISubnet, IVpc, SubnetSelection } from './vpc';
+import type { ISubnet, IVpc, SubnetSelection } from './vpc';
 import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
-import { Aws, ContextProvider, IResource, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IResource } from '../../core';
+import { Aws, ContextProvider, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -26,7 +34,21 @@ export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
 export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
 
-  protected policyDocument?: iam.PolicyDocument;
+  private readonly _policyDocument: IBox<iam.PolicyDocument | undefined> = Box.fromValue<iam.PolicyDocument | undefined>(undefined);
+
+  protected get policyDocument(): iam.PolicyDocument | undefined {
+    return this._policyDocument.get() as iam.PolicyDocument | undefined;
+  }
+  protected set policyDocument(value: iam.PolicyDocument | undefined) {
+    this._policyDocument.set(value);
+  }
+
+  /**
+   * @internal
+   */
+  protected _policyDocumentToken(): any {
+    return Token.asAny(this._policyDocument);
+  }
 
   public get vpcEndpointRef(): VPCEndpointReference {
     return {
@@ -45,14 +67,14 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
    */
   public addToPolicy(statement: iam.PolicyStatement) {
     if (!statement.hasPrincipal) {
-      throw new ValidationError('Statement must have a `Principal`.', this);
+      throw new ValidationError(lit`Statement`, 'Statement must have a `Principal`.', this);
     }
 
-    if (!this.policyDocument) {
-      this.policyDocument = new iam.PolicyDocument();
-    }
-
-    this.policyDocument.addStatements(statement);
+    this._policyDocument.update(doc => {
+      const d = doc ?? new iam.PolicyDocument();
+      d.addStatements(statement);
+      return d;
+    });
   }
 }
 
@@ -247,6 +269,7 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * @resource AWS::EC2::VPCEndpoint
  */
 @propertyInjectable
+@noBoxStackTraces
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.GatewayVpcEndpoint';
@@ -291,11 +314,11 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     const routeTableIds = allRouteTableIds(subnets);
 
     if (routeTableIds.length === 0) {
-      throw new ValidationError('Can\'t add a gateway endpoint to VPC; route table IDs are not available', this);
+      throw new ValidationError(lit`CanTGatewayEndpointVpc`, 'Can\'t add a gateway endpoint to VPC; route table IDs are not available', this);
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
+      policyDocument: this._policyDocumentToken(),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
@@ -523,6 +546,8 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
   public static readonly ELASTICACHE_FIPS = new InterfaceVpcEndpointAwsService('elasticache-fips');
   public static readonly ELEMENTAL_MEDIACONNECT = new InterfaceVpcEndpointAwsService('mediaconnect');
   public static readonly EMAIL_SMTP = new InterfaceVpcEndpointAwsService('email-smtp');
+  public static readonly EMAIL = new InterfaceVpcEndpointAwsService('email');
+  public static readonly EMAIL_FIPS = new InterfaceVpcEndpointAwsService('email-fips');
   public static readonly EMR = new InterfaceVpcEndpointAwsService('elasticmapreduce');
   public static readonly EMR_EKS = new InterfaceVpcEndpointAwsService('emr-containers');
   public static readonly EMR_SERVERLESS = new InterfaceVpcEndpointAwsService('emr-serverless');
@@ -846,12 +871,42 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
         'redshift', 'redshift-data', 's3', 'sagemaker.api', 'sagemaker.featurestore-runtime', 'sagemaker.runtime', 'securityhub',
         'servicecatalog', 'sms', 'sqs', 'states', 'sts', 'sync-states', 'synthetics', 'transcribe', 'transcribestreaming', 'transfer',
         'workspaces', 'xray'],
+      'eusc-de-east-1': ['ecr.dkr', 'ecr.api', 'execute-api', 'securityhub'],
+      'us-iso-east-1': ['application-autoscaling', 'athena', 'autoscaling', 'comprehend', 'diode-messaging',
+        'diode-messaging-proxy', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticfilesystem', 'elasticfilesystem-fips',
+        'execute-api', 'sagemaker.api', 'sagemaker.runtime', 'sns', 'sqs', 'textract', 'textract-fips', 'transcribe',
+        'workspaces'],
+      'us-iso-west-1': ['autoscaling', 'ebs', 'ec2', 'ecr.api', 'ecr.dkr', 'elasticfilesystem', 'elasticfilesystem-fips',
+        'execute-api', 'monitoring', 'sns', 'sqs', 'workspaces'],
+      'us-isob-east-1': ['application-autoscaling', 'autoscaling', 'diode-messaging', 'diode-messaging-proxy', 'ebs',
+        'ec2', 'ecr.api', 'ecr.dkr', 'elasticfilesystem', 'elasticfilesystem-fips', 'execute-api', 'sagemaker.api',
+        'sagemaker.runtime', 'sns', 'sqs', 'workspaces'],
+      'us-isob-west-1': ['ecr.api', 'ecr.dkr', 'elasticfilesystem-fips', 'execute-api'],
+      'us-isof-south-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
+      'us-isof-east-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
+      'eu-isoe-west-1': ['ebs', 'ecr.api', 'ecr.dkr', 'execute-api'],
     };
     if (VPC_ENDPOINT_SERVICE_EXCEPTIONS[region]?.includes(name)) {
-      return 'cn.com.amazonaws';
-    } else {
-      return 'com.amazonaws';
+      switch (region) {
+        case 'eusc-de-east-1':
+          return 'eu.amazonaws';
+        case 'us-iso-east-1':
+        case 'us-iso-west-1':
+          return 'gov.ic.c2s';
+        case 'us-isob-east-1':
+        case 'us-isob-west-1':
+          return 'gov.sgov.sc2s';
+        case 'us-isof-south-1':
+        case 'us-isof-east-1':
+          return 'gov.ic.hci.csp';
+        case 'eu-isoe-west-1':
+          return 'uk.adc-e.cloud';
+        case 'cn-north-1':
+        case 'cn-northwest-1':
+          return 'cn.com.amazonaws';
+      }
     }
+    return 'com.amazonaws';
   }
 
   /**
@@ -978,6 +1033,7 @@ export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
  * @resource AWS::EC2::VPCEndpoint
  */
 @propertyInjectable
+@noBoxStackTraces
 export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEndpoint {
   /**
    * Uniquely identifies this class.
@@ -1087,7 +1143,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
-      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
+      policyDocument: this._policyDocumentToken(),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
@@ -1115,7 +1171,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     // Sanity check the subnet count
     if (!subnetSelection.isPendingLookup && subnetSelection.subnets.length == 0) {
-      throw new ValidationError('Cannot create a VPC Endpoint with no subnets', this);
+      throw new ValidationError(lit`CannotCreateEndpointSubnets`, 'Cannot create a VPC Endpoint with no subnets', this);
     }
 
     // If we aren't going to lookup supported AZs we'll exit early, returning the subnetIds from the provided subnet selection
@@ -1141,7 +1197,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // Throw an error if the lookup filtered out all subnets
     // VpcEndpoints must be created with at least one AZ
     if (filteredSubnets.length == 0) {
-      throw new ValidationError(`lookupSupportedAzs returned ${availableAZs} but subnets have AZs ${subnets.map(s => s.availabilityZone)}`, this);
+      throw new ValidationError(lit`LookupSupportedAzsReturned`, `lookupSupportedAzs returned ${availableAZs} but subnets have AZs ${subnets.map(s => s.availabilityZone)}`, this);
     }
     return filteredSubnets.map(s => s.subnetId);
   }
@@ -1161,12 +1217,12 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     // Context provider cannot make an AWS call without an account/region
     if (agnosticAcct || agnosticRegion) {
-      throw new ValidationError('Cannot look up VPC endpoint availability zones if account/region are not specified', this);
+      throw new ValidationError(lit`CannotLookUpEndpointAvailability`, 'Cannot look up VPC endpoint availability zones if account/region are not specified', this);
     }
 
     // The AWS call will fail if there is a Token in the service name
     if (agnosticService) {
-      throw new ValidationError(`Cannot lookup AZs for a service name with a Token: ${serviceName}`, this);
+      throw new ValidationError(lit`CannotLookupZsServiceName`, `Cannot lookup AZs for a service name with a Token: ${serviceName}`, this);
     }
 
     // The AWS call return strings for AZs, like us-east-1a, us-east-1b, etc
@@ -1174,7 +1230,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
     // will not match
     if (agnosticSubnets || agnosticSubnetList) {
       const agnostic = subnets.filter(s => Token.isUnresolved(s.availabilityZone));
-      throw new ValidationError(`lookupSupportedAzs cannot filter on subnets with Token AZs: ${agnostic}`, this);
+      throw new ValidationError(lit`LookupSupportedAzsCannotFilter`, `lookupSupportedAzs cannot filter on subnets with Token AZs: ${agnostic}`, this);
     }
   }
 
@@ -1188,7 +1244,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
       props: { serviceName },
     }).value;
     if (!Array.isArray(availableAZs)) {
-      throw new ValidationError(`Discovered AZs for endpoint service ${serviceName} must be an array`, this);
+      throw new ValidationError(lit`DiscoveredZsEndpointService`, `Discovered AZs for endpoint service ${serviceName} must be an array`, this);
     }
     return availableAZs;
   }

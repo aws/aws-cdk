@@ -1,14 +1,15 @@
-import { Construct, Dependable, DependencyGroup } from 'constructs';
+import type { Construct } from 'constructs';
+import { Dependable, DependencyGroup } from 'constructs';
 import { Resource } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { Grant } from '../grant';
-import { RoleReference } from '../iam.generated';
-import { IManagedPolicy } from '../managed-policy';
-import { Policy } from '../policy';
-import { PolicyStatement } from '../policy-statement';
-import { AddToPrincipalPolicyResult, IPrincipal } from '../principals';
-import { IRole } from '../role';
+import type { Grant } from '../grant';
+import type { RoleReference } from '../iam.generated';
+import type { IManagedPolicy } from '../managed-policy';
+import type { Policy } from '../policy';
+import type { PolicyStatement } from '../policy-statement';
+import type { AddToPrincipalPolicyResult, IPrincipal } from '../principals';
+import type { IRole } from '../role';
 
 /**
  * An immutable wrapper around an IRole
@@ -33,7 +34,7 @@ export class ImmutableRole extends Resource implements IRole {
   public readonly principalAccount: string | undefined;
   public readonly roleArn: string;
   public readonly roleName: string;
-  public readonly stack: IRole['stack'];
+  private readonly _stack: IRole['stack'];
 
   constructor(scope: Construct, id: string, private readonly role: IRole, private readonly addGrantsToResources: boolean) {
     super(scope, id, {
@@ -47,7 +48,7 @@ export class ImmutableRole extends Resource implements IRole {
     this.principalAccount = this.role.principalAccount;
     this.roleArn = this.role.roleArn;
     this.roleName = this.role.roleName;
-    this.stack = this.role.stack;
+    this._stack = this.role.stack;
 
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, role);
@@ -57,6 +58,10 @@ export class ImmutableRole extends Resource implements IRole {
       dependencyRoots: [role],
     });
     this.node.defaultChild = role.node.defaultChild;
+  }
+
+  public get stack() {
+    return this._stack;
   }
 
   public get roleRef(): RoleReference {

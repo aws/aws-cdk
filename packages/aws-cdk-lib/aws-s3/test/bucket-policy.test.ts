@@ -1,8 +1,8 @@
 import { Template } from '../../assertions';
 import { AnyPrincipal, PolicyStatement } from '../../aws-iam';
-import { RemovalPolicy, Stack, App } from '../../core';
+import { RemovalPolicy, Stack } from '../../core';
 import * as s3 from '../lib';
-import { CfnBucketPolicy } from '../lib';
+import type { CfnBucketPolicy } from '../lib';
 
 // to make it easy to copy & paste from output:
 /* eslint-disable @stylistic/quote-props */

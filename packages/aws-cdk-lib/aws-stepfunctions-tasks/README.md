@@ -49,6 +49,7 @@ This module is part of the [AWS Cloud Development Kit](https://github.com/aws/aw
     - [RunTask](#runtask)
       - [EC2](#ec2)
       - [Fargate](#fargate)
+      - [Capacity Provider Options](#capacity-provider-options)
       - [Override CPU and Memory Parameter](#override-cpu-and-memory-parameter)
       - [ECS enable Exec](#ecs-enable-exec)
   - [EMR](#emr)
@@ -829,6 +830,52 @@ const runTask = new tasks.EcsRunTask(this, 'RunFargate', {
 });
 ```
 
+#### Capacity Provider Options
+
+The `capacityProviderOptions` property allows you to configure the capacity provider
+strategy for both EC2 and Fargate launch targets.
+
+- When `CapacityProviderOptions.custom()` is used, you can specify a custom capacity provider strategy.
+- When `CapacityProviderOptions.default()` is used, the task uses the cluster's default capacity provider strategy.
+- If `capacityProviderOptions` is not specified, the task uses the launch type (EC2 or FARGATE) without a capacity provider strategy.
+
+```ts
+const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+  isDefault: true,
+});
+
+const cluster = new ecs.Cluster(this, 'FargateCluster', { vpc });
+
+const taskDefinition = new ecs.TaskDefinition(this, 'TD', {
+  memoryMiB: '512',
+  cpu: '256',
+  compatibility: ecs.Compatibility.FARGATE,
+});
+
+// Use custom() option - specify custom capacity provider strategy
+const runTaskWithCustom = new tasks.EcsRunTask(this, 'RunTaskWithCustom', {
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget({
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    capacityProviderOptions: tasks.CapacityProviderOptions.custom([
+      { capacityProvider: 'FARGATE_SPOT', weight: 2, base: 1 },
+      { capacityProvider: 'FARGATE', weight: 1 },
+    ]),
+  }),
+});
+
+// Use default() option - uses cluster's default capacity provider strategy
+const runTaskWithDefault = new tasks.EcsRunTask(this, 'RunTaskWithDefault', {
+  cluster,
+  taskDefinition,
+  launchTarget: new tasks.EcsFargateLaunchTarget({
+    platformVersion: ecs.FargatePlatformVersion.VERSION1_4,
+    capacityProviderOptions: tasks.CapacityProviderOptions.default(),
+  }),
+});
+```
+
 #### Override CPU and Memory Parameter
 
 By setting the property cpu or memoryMiB, you can override the Fargate or EC2 task instance size at runtime.
@@ -969,6 +1016,33 @@ new tasks.EmrCreateCluster(this, 'SpotSpecification', {
     }],
   },
   name: 'SpotCluster',
+  integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+});
+```
+
+You can use the prioritized allocation strategy to specify instance type priorities for On-Demand instances:
+
+```ts
+new tasks.EmrCreateCluster(this, 'PrioritizedAllocation', {
+  instances: {
+    instanceFleets: [{
+      instanceFleetType: tasks.EmrCreateCluster.InstanceRoleType.CORE,
+      instanceTypeConfigs: [{
+        instanceType: 'm5.large',
+        priority: 0, // Highest priority
+      }, {
+        instanceType: 'm5.xlarge',
+        priority: 1, // Lower priority
+      }],
+      launchSpecifications: {
+        onDemandSpecification: {
+          allocationStrategy: tasks.EmrCreateCluster.OnDemandAllocationStrategy.PRIORITIZED,
+        },
+      },
+      targetOnDemandCapacity: 2,
+    }],
+  },
+  name: 'PrioritizedCluster',
   integrationPattern: sfn.IntegrationPattern.RUN_JOB,
 });
 ```
@@ -1385,12 +1459,12 @@ The following code snippet includes a Task state that uses eks:call to list the 
 
 ```ts
 import * as eks from 'aws-cdk-lib/aws-eks';
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 const myEksCluster = new eks.Cluster(this, 'my sample cluster', {
-  version: eks.KubernetesVersion.V1_34,
+  version: eks.KubernetesVersion.V1_35,
   clusterName: 'myEksCluster',
-  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+  kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
 });
 
 new tasks.EksCall(this, 'Call a EKS Endpoint', {
@@ -1712,7 +1786,7 @@ Step Functions supports [AWS MediaConvert](https://docs.aws.amazon.com/step-func
 ### CreateJob
 
 The [CreateJob](https://docs.aws.amazon.com/mediaconvert/latest/apireference/jobs.html#jobspost) API creates a new transcoding job.
-For information about jobs and job settings, see the User Guide at http://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
+For information about jobs and job settings, see the User Guide at https://docs.aws.amazon.com/mediaconvert/latest/ug/what-is.html
 
 You can call the `CreateJob` API from a `Task` state. Optionally you can specify the `integrationPattern`.
 

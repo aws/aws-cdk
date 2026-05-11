@@ -1,12 +1,19 @@
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
 import { ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { UserEngine } from './common';
-import { UserBase, UserBaseProps } from './user-base';
+import type { UserBaseProps } from './user-base';
+import { UserBase } from './user-base';
 
 const ELASTICACHE_NOPASSWORDUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.NoPasswordUser');
+
+/**
+ * List of engines that support no-password authentication.
+ */
+const SUPPORTED_NO_PASSWORD_ENGINES = [UserEngine.REDIS];
 
 /**
  * Properties for defining an ElastiCache user with no password authentication.
@@ -86,8 +93,8 @@ export class NoPasswordUser extends UserBase {
     this.userName = props.userName ?? props.userId;
     this.accessString = props.accessControl.accessString;
 
-    if (this.engine === UserEngine.VALKEY) {
-      throw new ValidationError('Valkey engine does not support no-password authentication.', this);
+    if (!SUPPORTED_NO_PASSWORD_ENGINES.includes(this.engine)) {
+      throw new ValidationError(lit`UnsupportedEngineForNoPassword`, `Engine '${this.engine}' does not support no-password authentication. Supported engines: ${SUPPORTED_NO_PASSWORD_ENGINES.join(', ')}.`, this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

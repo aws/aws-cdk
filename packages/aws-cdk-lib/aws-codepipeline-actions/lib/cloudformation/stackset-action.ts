@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { parseCapabilities, SingletonPolicy } from './private/singleton-policy';
-import { CommonCloudFormationStackSetOptions, StackInstances, StackSetDeploymentModel, StackSetParameters, StackSetTemplate } from './stackset-types';
+import type { CommonCloudFormationStackSetOptions, StackInstances, StackSetParameters, StackSetTemplate } from './stackset-types';
+import { StackSetDeploymentModel } from './stackset-types';
 import * as codepipeline from '../../../aws-codepipeline';
-import * as cdk from '../../../core';
+import type * as cdk from '../../../core';
 import { Action } from '../action';
 import { validatePercentage } from '../common';
 

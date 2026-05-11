@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { BundlingDockerImage, DockerImage, Stack } from '../../core';
+import type { Construct } from 'constructs';
+import type { BundlingDockerImage } from '../../core';
+import { DockerImage, Stack } from '../../core';
 import { FactName } from '../../region-info';
 
 export interface LambdaRuntimeProps {
@@ -49,6 +50,9 @@ export enum RuntimeFamily {
  *
  * If you need to use a runtime name that doesn't exist as a static member, you
  * can instantiate a `Runtime` object, e.g: `new Runtime('nodejs99.99')`.
+ *
+ * For NodeJS lambda functions, it is recommended to use the latest LTS NodeJS runtime available
+ * (`Runtime.NODEJS_LATEST`) to keep the lambda function up-to-date.
  */
 export class Runtime {
   /** A list of all known `Runtime`'s. */
@@ -104,6 +108,7 @@ export class Runtime {
 
   /**
    * The NodeJS 18.x runtime (nodejs18.x)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest NodeJS runtime.
    */
   public static readonly NODEJS_18_X = new Runtime('nodejs18.x', RuntimeFamily.NODEJS, { supportsInlineCode: true });
 
@@ -166,6 +171,7 @@ export class Runtime {
 
   /**
    * The Python 3.9 runtime (python3.9)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest Python runtime.
    */
   public static readonly PYTHON_3_9 = new Runtime('python3.9', RuntimeFamily.PYTHON, {
     supportsInlineCode: true,
@@ -264,6 +270,7 @@ export class Runtime {
 
   /**
    * The .NET 6 runtime (dotnet6)
+   * @deprecated Legacy runtime no longer supported by AWS Lambda. Migrate to the latest .NET runtime.
    */
   public static readonly DOTNET_6 = new Runtime('dotnet6', RuntimeFamily.DOTNET_CORE);
 
@@ -278,6 +285,13 @@ export class Runtime {
    * The .NET 9 runtime (dotnet9)
    */
   public static readonly DOTNET_9 = new Runtime('dotnet9', RuntimeFamily.DOTNET_CORE, {
+    supportsSnapStart: true,
+  });
+
+  /**
+   * The .NET 10 runtime (dotnet10)
+   */
+  public static readonly DOTNET_10 = new Runtime('dotnet10', RuntimeFamily.DOTNET_CORE, {
     supportsSnapStart: true,
   });
 
@@ -337,6 +351,11 @@ export class Runtime {
    * The Ruby 3.4 runtime (ruby3.4)
    */
   public static readonly RUBY_3_4 = new Runtime('ruby3.4', RuntimeFamily.RUBY);
+
+  /**
+   * The Ruby 4.0 runtime (ruby4.0)
+   */
+  public static readonly RUBY_4_0 = new Runtime('ruby4.0', RuntimeFamily.RUBY);
 
   /**
    * The custom provided runtime (provided)

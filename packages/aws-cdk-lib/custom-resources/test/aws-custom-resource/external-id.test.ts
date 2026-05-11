@@ -1,5 +1,5 @@
 import { Match, Template } from '../../../assertions';
-import { Role, ServicePrincipal, PolicyStatement } from '../../../aws-iam';
+import { Role, ServicePrincipal } from '../../../aws-iam';
 import { Stack } from '../../../core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../lib';
 

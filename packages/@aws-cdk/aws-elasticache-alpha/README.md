@@ -305,6 +305,8 @@ const user = new elasticache.NoPasswordUser(this, 'User', {
 });
 ```
 
+> NOTE: `NoPasswordUser` is only available for Redis Cache.
+
 ### Default user
 
 ElastiCache automatically creates a default user with both a user ID and username set to `default`. This default user cannot be modified or deleted. The user is created as a no password authentication user.
@@ -395,7 +397,7 @@ declare const role: iam.Role;
  
 // grant "elasticache:Connect" action permissions to role
 user.grantConnect(role);
-serverlessCache.grantConnect(role);
+serverlessCache.grants.connect(role);
 ```
 
 ### Import an existing user and user group

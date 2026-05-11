@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * What class and generation of instance to use
@@ -1488,6 +1489,16 @@ export enum InstanceClass {
   M8A = 'm8a',
 
   /**
+   * Standard instances, 9th generation with Graviton5 processors
+   */
+  STANDARD9_GRAVITON = 'standard9-graviton',
+
+  /**
+   * Standard instances, 9th generation with Graviton5 processors
+   */
+  M9G = 'm9g',
+
+  /**
    * High memory and compute capacity instances, 1st generation
    */
   HIGH_COMPUTE_MEMORY1 = 'high-compute-memory1',
@@ -2095,6 +2106,8 @@ export class InstanceType {
       [InstanceClass.M7A]: 'm7a',
       [InstanceClass.STANDARD8_AMD]: 'm8a',
       [InstanceClass.M8A]: 'm8a',
+      [InstanceClass.STANDARD9_GRAVITON]: 'm9g',
+      [InstanceClass.M9G]: 'm9g',
       [InstanceClass.HIGH_COMPUTE_MEMORY1]: 'z1d',
       [InstanceClass.Z1D]: 'z1d',
       [InstanceClass.INFERENCE1]: 'inf1',
@@ -2156,7 +2169,7 @@ export class InstanceType {
     // capture the family, generation, capabilities, and size portions of the instance type id
     const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
-      throw new UnscopedValidationError('Malformed instance type identifier');
+      throw new UnscopedValidationError(lit`MalformedInstanceTypeIdentifier`, 'Malformed instance type identifier');
     }
 
     const family = instanceTypeComponents[1];
@@ -2176,7 +2189,7 @@ export class InstanceType {
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {
-      throw new UnscopedValidationError('Malformed instance type identifier');
+      throw new UnscopedValidationError(lit`MalformedInstanceTypeIdentifier`, 'Malformed instance type identifier');
     }
     return instanceClassId[1] === otherInstanceClassId[1];
   }

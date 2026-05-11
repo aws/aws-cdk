@@ -59,6 +59,29 @@ variable in order to provide a custom Docker executable command or path. This ma
 be needed when building in environments where the standard docker cannot be executed
 (see https://github.com/aws/aws-cdk/issues/8460 for details).
 
+### Docker Alternatives
+
+The CDK supports several Docker alternatives through the `CDK_DOCKER` environment variable:
+
+#### Finch (AWS-supported)
+
+```bash
+export CDK_DOCKER=finch
+```
+
+**Note**: For Finch, you may also need to set the `DOCKER_HOST` environment variable. The socket path is OS-specific (e.g., on macOS: `unix:///Applications/Finch/lima/data/finch/sock/finch.sock`).
+
+#### Podman (Community-tested)
+
+```bash
+export CDK_DOCKER=podman
+export DOCKER_HOST=$(podman machine inspect --format 'unix://{{.ConnectionInfo.PodmanSocket.Path}}')
+```
+
+**Note**: While Finch receives official AWS support, Podman is community-tested and may work for many use cases. The CDK doesn't check which Docker replacement you are using to determine if it's supported. If the tool has equivalent Docker commands and behaves similarly, it should work.
+
+For some container runtimes, you may need to set the `DOCKER_HOST` environment variable to specify the correct socket path for the CDK to communicate with the container daemon.
+
 SSH agent sockets or keys may be passed to docker build via `buildSsh`.
 
 ```ts
@@ -72,6 +95,44 @@ const asset = new DockerImageAsset(this, 'MyBuildImage', {
   invalidation: {
     buildArgs: false,
   },
+});
+```
+
+You can optionally pass additional build contexts to the `docker build` command by specifying
+the `buildContexts` property. Each entry specifies a named build context and its source, which
+can be a directory path, a URL, or a docker image. This is equivalent to the `--build-context`
+flag in the `docker build` command.
+
+```ts
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  buildContexts: {
+    mycontext: path.join(__dirname, 'path/to/context'),
+    alpine: 'docker-image://alpine:latest',
+  },
+});
+```
+
+Note that while changes to the `buildContexts` values (e.g. changing which directory a context
+points to) will invalidate the asset hash and trigger a rebuild, changes to the *contents* of
+directories referenced by build contexts are not automatically tracked. Only the contents of
+the primary `directory` are fingerprinted. If files in a build context directory change, you can
+use `extraHash` to trigger a rebuild:
+
+```ts
+import { DockerImageAsset } from 'aws-cdk-lib/aws-ecr-assets';
+import { FileSystem } from 'aws-cdk-lib';
+
+const contextDir = path.join(__dirname, 'path/to/context');
+
+const asset = new DockerImageAsset(this, 'MyBuildImage', {
+  directory: path.join(__dirname, 'my-image'),
+  buildContexts: {
+    mycontext: contextDir,
+  },
+  extraHash: FileSystem.fingerprint(contextDir),
 });
 ```
 

@@ -2,7 +2,6 @@ import { Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as elbv2 from '../../aws-elasticloadbalancingv2';
 import * as iam from '../../aws-iam';
-import { Runtime, Code, Function } from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as apigw from '../lib';
 

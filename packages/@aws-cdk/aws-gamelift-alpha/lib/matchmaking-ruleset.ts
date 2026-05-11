@@ -1,10 +1,11 @@
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnMatchmakingRuleSet } from 'aws-cdk-lib/aws-gamelift';
 import * as cdk from 'aws-cdk-lib/core';
+import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { RuleSetContent } from './matchmaking-ruleset-body';
+import type { Construct } from 'constructs';
+import type { RuleSetContent } from './matchmaking-ruleset-body';
 
 /**
  * Represents a Gamelift matchmaking ruleset
@@ -187,15 +188,7 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
     return new Import(scope, id);
   }
 
-  /**
-   * The unique name of the ruleSet.
-   */
-  public readonly matchmakingRuleSetName: string;
-
-  /**
-   * The ARN of the ruleSet.
-   */
-  public readonly matchmakingRuleSetArn: string;
+  private resource: CfnMatchmakingRuleSet;
 
   constructor(scope: Construct, id: string, props: MatchmakingRuleSetProps) {
     super(scope, id, {
@@ -215,13 +208,20 @@ export class MatchmakingRuleSet extends MatchmakingRuleSetBase {
     }
     const content = props.content.bind(this);
 
-    const resource = new CfnMatchmakingRuleSet(this, 'Resource', {
+    this.resource = new CfnMatchmakingRuleSet(this, 'Resource', {
       name: props.matchmakingRuleSetName,
       ruleSetBody: content.ruleSetBody,
     });
+  }
 
-    this.matchmakingRuleSetName = this.getResourceNameAttribute(resource.ref);
-    this.matchmakingRuleSetArn = this.getResourceArnAttribute(resource.attrArn, {
+  @memoizedGetter
+  public get matchmakingRuleSetName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
+  }
+
+  @memoizedGetter
+  public get matchmakingRuleSetArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'gamelift',
       resource: 'matchmakingruleset',
       resourceName: this.physicalName,

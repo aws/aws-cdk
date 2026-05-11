@@ -1,5 +1,6 @@
-import { Metric, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
-import { ClassType, TypeDeclaration } from '@cdklabs/typewriter';
+import type { Metric, Resource, TypeDefinition } from '@aws-cdk/service-spec-types';
+import type { TypeDeclaration } from '@cdklabs/typewriter';
+import { ClassType } from '@cdklabs/typewriter';
 import * as camelcase from 'camelcase';
 
 /**
@@ -60,6 +61,14 @@ export function propStructNameFromResource(res: Resource, suffix?: string) {
 
 export function interfaceNameFromResource(res: Resource, suffix?: string) {
   return `I${classNameFromResource(res, suffix)}`;
+}
+
+/**
+ * resource to alias for interface imports
+ * `AWS::S3::Bucket` -> `s3Refs`
+ */
+export function interfaceModuleImportName(res: Resource) {
+  return camelcase(`${modulePartsFromResource(res).moduleBaseName}Refs`);
 }
 
 export function namespaceFromResource(res: Resource) {
@@ -146,10 +155,24 @@ export function modulePartsFromNamespace(namespace: string) {
 }
 
 /**
+ * resource to module name parts (`AWS::S3::Bucket` -> ['aws-s3', 'AWS', 'S3'])
+ */
+export function modulePartsFromResource(res: Resource) {
+  return modulePartsFromNamespace(namespaceFromResource(res));
+}
+
+/**
  * Submodule identifier from name (`aws-s3` -> `aws_s3`)
  */
 export function submoduleSymbolFromName(name: string) {
   return name.replace(/-/g, '_');
+}
+
+/**
+ * Submodule identifier from name (`AWS::S3::Bucket` -> `aws_s3`)
+ */
+export function submoduleSymbolFromResource(res: Resource) {
+  return modulePartsFromResource(res).moduleName.replace(/-/g, '_');
 }
 
 /**
@@ -179,8 +202,15 @@ export function eventNamespaceName(eventName: string) {
  * Convert event name to pattern method name (AcknowledgementCompleted -> acknowledgementCompletedPattern)
  */
 export function eventPatternMethodName(eventName: string) {
-  if (eventName.startsWith('AWS')) {
-    return `aws${eventName.slice(3)}Pattern`;
+  const prefixes = ['AWS', 'EC2', 'RDS', 'KMS', 'DNS', 'S3', 'ECR', 'EBS', 'ECS', 'EMR', 'DLM', 'FIS', 'FTP', 'SFT', 'AS2', 'QLDB'];
+
+  const prefix = prefixes.find(p => eventName.startsWith(p));
+
+  if (prefix) {
+    return `${prefix.toLowerCase()}${eventName.slice(prefix.length)}Pattern`;
+  }
+  if (eventName[1].toUpperCase() === eventName[1]) {
+    throw new Error(`Unrecognized uppercase prefix in event name '${eventName}'. Add the service prefix to the prefixes array.`);
   }
   return `${eventName.charAt(0).toLowerCase()}${eventName.slice(1)}Pattern`;
 }
@@ -234,7 +264,14 @@ function makeIdentifier(s: string) {
 export function sanitizeTypeName(name: string): string {
   const id = makeIdentifier(camelcase(name, { pascalCase: true }));
 
-  return RESERVED_NAMES_LIST.has(id) ? `${id}Type` : id;
+  return RESERVED_TYPE_NAMES_LIST.has(id) ? `${id}Type` : id;
 }
 
-const RESERVED_NAMES_LIST = new Set(['Object']);
+export function santitizeFieldName(name: string): string {
+  return RESERVED_FIELD_NAMES_LIST.has(name) ? `${name}Property` : name;
+}
+
+const RESERVED_TYPE_NAMES_LIST = new Set(['Object', 'Tag', 'Math']);
+
+const RESERVED_FIELD_NAMES_LIST = new Set(['build']);
+

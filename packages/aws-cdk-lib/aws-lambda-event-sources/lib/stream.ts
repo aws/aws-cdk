@@ -1,7 +1,9 @@
 import { S3OnFailureDestination } from './s3-onfailuire-destination';
-import { IKey } from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import { Duration, UnscopedValidationError } from '../../core';
+import type { IKey } from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type { Duration } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The set of properties for streaming event sources shared by
@@ -184,19 +186,21 @@ export abstract class StreamEventSource implements lambda.IEventSource {
   protected constructor(protected readonly props: StreamEventSourceProps) {
     if (props.provisionedPollerConfig) {
       const { minimumPollers, maximumPollers } = props.provisionedPollerConfig;
-      if (minimumPollers != undefined) {
+      const isMinimumPollersDefinedAndResolved = minimumPollers != undefined && !Token.isUnresolved(minimumPollers);
+      const isMaximumPollersDefinedAndResolved = maximumPollers != undefined && !Token.isUnresolved(maximumPollers);
+      if (isMinimumPollersDefinedAndResolved) {
         if (minimumPollers < 1 || minimumPollers > 200) {
-          throw new UnscopedValidationError('Minimum provisioned pollers must be between 1 and 200 inclusive');
+          throw new UnscopedValidationError(lit`MustBeMinimumProvisionedPollers`, 'Minimum provisioned pollers must be between 1 and 200 inclusive');
         }
       }
-      if (maximumPollers != undefined) {
+      if (isMaximumPollersDefinedAndResolved) {
         if (maximumPollers < 1 || maximumPollers > 2000) {
-          throw new UnscopedValidationError('Maximum provisioned pollers must be between 1 and 2000 inclusive');
+          throw new UnscopedValidationError(lit`MustBeMaximumProvisionedPollers`, 'Maximum provisioned pollers must be between 1 and 2000 inclusive');
         }
       }
-      if (minimumPollers != undefined && maximumPollers != undefined) {
+      if (isMinimumPollersDefinedAndResolved && isMaximumPollersDefinedAndResolved) {
         if (minimumPollers > maximumPollers) {
-          throw new UnscopedValidationError('Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
+          throw new UnscopedValidationError(lit`MustBeMinimumProvisionedPollers`, 'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers');
         }
       }
     }
@@ -207,7 +211,7 @@ export abstract class StreamEventSource implements lambda.IEventSource {
   protected enrichMappingOptions(options: lambda.EventSourceMappingOptions): lambda.EventSourceMappingOptions {
     // check if this event source support S3 as OnFailure, Kinesis, Kafka, DynamoDB has supported S3 OFD
     if (this.props.onFailure instanceof S3OnFailureDestination && !options.supportS3OnFailureDestination) {
-      throw new UnscopedValidationError('S3 onFailure Destination is not supported for this event source');
+      throw new UnscopedValidationError(lit`OnfailureDestinationSupportedEvent`, 'S3 onFailure Destination is not supported for this event source');
     }
     return {
       ...options,

@@ -1,7 +1,7 @@
-/* eslint-disable no-console */
+
 import * as github from '@actions/github';
 import { Octokit } from '@octokit/rest';
-import { StatusEvent, PullRequestEvent, CheckSuiteEvent } from '@octokit/webhooks-definitions/schema';
+import type { StatusEvent, PullRequestEvent, CheckSuiteEvent } from '@octokit/webhooks-definitions/schema';
 import { DEFAULT_LINTER_LOGIN } from './constants';
 import { PullRequestLinter } from './lint';
 
