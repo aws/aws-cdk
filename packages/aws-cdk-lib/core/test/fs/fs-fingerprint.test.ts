@@ -310,7 +310,7 @@ describe('fs fingerprint', () => {
       // WHEN — statSync follows the full chain, so content of real-file.txt is hashed
       const hash1 = FileSystem.fingerprint(dir.dir, { follow: SymlinkFollowMode.EXTERNAL });
 
-      fs.writeFileSync(path.join(externalDir.dir, 'real-file.txt'), 'modified content');
+      fs.writeFileSync(path.join(externalDir.dir, 'real-file.txt'), 'modified content of definitely different length');
       const hash2 = FileSystem.fingerprint(dir.dir, { follow: SymlinkFollowMode.EXTERNAL });
 
       // THEN — hash changes because we follow through to the real file
