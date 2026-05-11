@@ -548,7 +548,6 @@ new cloudwatch.PromQLAlarm(this, 'HighLatencyAlarm', {
 `PromQLAlarm` extends `AlarmBase`, so you can add alarm, OK, and insufficient-data actions the same way as standard alarms:
 
 ```ts
-import * as sns from 'aws-cdk-lib/aws-sns';
 import * as cloudwatch_actions from 'aws-cdk-lib/aws-cloudwatch-actions';
 
 declare const topic: sns.Topic;
