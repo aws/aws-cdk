@@ -1,13 +1,26 @@
 {
  "Resources": {
-  "ThresholdDisabledE05CACBB": {
+  "AutoValidationDisabled249BE54D": {
    "Type": "AWS::SES::ConfigurationSet",
    "Properties": {
-    "Name": "threshold-disabled",
+    "Name": "auto-validation-disabled",
     "SuppressionOptions": {
      "ValidationOptions": {
       "ConditionThreshold": {
        "ConditionThresholdEnabled": "DISABLED"
+      }
+     }
+    }
+   }
+  },
+  "AutoValidationEnabledWithoutThreshold8E33470D": {
+   "Type": "AWS::SES::ConfigurationSet",
+   "Properties": {
+    "Name": "auto-validation-enabled-without-threshold",
+    "SuppressionOptions": {
+     "ValidationOptions": {
+      "ConditionThreshold": {
+       "ConditionThresholdEnabled": "ENABLED"
       }
      }
     }
@@ -35,12 +48,20 @@
   }
  },
  "Outputs": {
-  "ExportsOutputRefThresholdDisabledE05CACBB1A0F341E": {
+  "ExportsOutputRefAutoValidationDisabled249BE54DC6962AE6": {
    "Value": {
-    "Ref": "ThresholdDisabledE05CACBB"
+    "Ref": "AutoValidationDisabled249BE54D"
    },
    "Export": {
-    "Name": "cdk-ses-configuration-set-confidence-verdict-threshold-integ:ExportsOutputRefThresholdDisabledE05CACBB1A0F341E"
+    "Name": "cdk-ses-configuration-set-auto-validation:ExportsOutputRefAutoValidationDisabled249BE54DC6962AE6"
+   }
+  },
+  "ExportsOutputRefAutoValidationEnabledWithoutThreshold8E33470DD533B47C": {
+   "Value": {
+    "Ref": "AutoValidationEnabledWithoutThreshold8E33470D"
+   },
+   "Export": {
+    "Name": "cdk-ses-configuration-set-auto-validation:ExportsOutputRefAutoValidationEnabledWithoutThreshold8E33470DD533B47C"
    }
   },
   "ExportsOutputRefWithSuppressionReasons73CA0472E55F91ED": {
@@ -48,7 +69,7 @@
     "Ref": "WithSuppressionReasons73CA0472"
    },
    "Export": {
-    "Name": "cdk-ses-configuration-set-confidence-verdict-threshold-integ:ExportsOutputRefWithSuppressionReasons73CA0472E55F91ED"
+    "Name": "cdk-ses-configuration-set-auto-validation:ExportsOutputRefWithSuppressionReasons73CA0472E55F91ED"
    }
   }
  },

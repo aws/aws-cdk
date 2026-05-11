@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallSESV2GetConfigurationSet5c6d6752874475f44776354317ce485d": {
+  "AwsApiCallSESV2GetConfigurationSet0a2498c55b889787d695f3de50050b1b": {
    "Type": "Custom::DeployAssert@SdkCallSESV2GetConfigurationSet",
    "Properties": {
     "ServiceToken": {
@@ -11,7 +11,7 @@
     },
     "service": "SESV2",
     "api": "GetConfigurationSet",
-    "expected": "{\"$ObjectLike\":{\"SuppressionOptions\":{\"ConditionThreshold\":{\"ConditionThresholdEnabled\":\"DISABLED\"}}}}",
+    "expected": "{\"$ObjectLike\":{\"SuppressionOptions\":{\"ValidationOptions\":{\"ConditionThreshold\":{\"ConditionThresholdEnabled\":\"DISABLED\"}}}}}",
     "parameters": {
      "ConfigurationSetName": {
       "Fn::Join": [
@@ -19,7 +19,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-ses-configuration-set-confidence-verdict-threshold-integ:ExportsOutputRefThresholdDisabledE05CACBB1A0F341E"
+         "Fn::ImportValue": "cdk-ses-configuration-set-auto-validation:ExportsOutputRefAutoValidationDisabled249BE54DC6962AE6"
         },
         "\""
        ]
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1768313526957"
+    "salt": "1778514084285"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -75,6 +75,15 @@
          "Resource": [
           "*"
          ]
+        },
+        {
+         "Action": [
+          "ses:GetConfigurationSet"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          "*"
+         ]
         }
        ]
       }
@@ -90,7 +99,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -101,6 +110,38 @@
      ]
     }
    }
+  },
+  "AwsApiCallSESV2GetConfigurationSet1aa50289ac3b840a40c1fb9822d80b3f": {
+   "Type": "Custom::DeployAssert@SdkCallSESV2GetConfigurationSet",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "service": "SESV2",
+    "api": "GetConfigurationSet",
+    "expected": "{\"$ObjectLike\":{\"SuppressionOptions\":{\"ValidationOptions\":{\"ConditionThreshold\":{\"ConditionThresholdEnabled\":\"ENABLED\"}}}}}",
+    "parameters": {
+     "ConfigurationSetName": {
+      "Fn::Join": [
+       "",
+       [
+        "\"",
+        {
+         "Fn::ImportValue": "cdk-ses-configuration-set-auto-validation:ExportsOutputRefAutoValidationEnabledWithoutThreshold8E33470DD533B47C"
+        },
+        "\""
+       ]
+      ]
+     }
+    },
+    "flattenResponse": "false",
+    "salt": "1778514084287"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "AwsApiCallSESV2GetConfigurationSet9921721e48919251b6c32f1d7602d026": {
    "Type": "Custom::DeployAssert@SdkCallSESV2GetConfigurationSet",
@@ -113,7 +154,7 @@
     },
     "service": "SESV2",
     "api": "GetConfigurationSet",
-    "expected": "{\"$ObjectLike\":{\"SuppressionOptions\":{\"SuppressedReasons\":[\"BOUNCE\",\"COMPLAINT\"],\"ConditionThreshold\":{\"ConditionThresholdEnabled\":\"ENABLED\",\"OverallConfidenceThreshold\":{\"ConfidenceVerdictThreshold\":\"MANAGED\"}}}}}",
+    "expected": "{\"$ObjectLike\":{\"SuppressionOptions\":{\"SuppressedReasons\":[\"BOUNCE\",\"COMPLAINT\"],\"ValidationOptions\":{\"ConditionThreshold\":{\"ConditionThresholdEnabled\":\"ENABLED\",\"OverallConfidenceThreshold\":{\"ConfidenceVerdictThreshold\":\"MANAGED\"}}}}}}",
     "parameters": {
      "ConfigurationSetName": {
       "Fn::Join": [
@@ -121,7 +162,7 @@
        [
         "\"",
         {
-         "Fn::ImportValue": "cdk-ses-configuration-set-confidence-verdict-threshold-integ:ExportsOutputRefWithSuppressionReasons73CA0472E55F91ED"
+         "Fn::ImportValue": "cdk-ses-configuration-set-auto-validation:ExportsOutputRefWithSuppressionReasons73CA0472E55F91ED"
         },
         "\""
        ]
@@ -129,17 +170,25 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1768313526958"
+    "salt": "1778514084288"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallSESV2GetConfigurationSet5c6d6752874475f44776354317ce485d": {
+  "AssertionResultsAwsApiCallSESV2GetConfigurationSet0a2498c55b889787d695f3de50050b1b": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallSESV2GetConfigurationSet5c6d6752874475f44776354317ce485d",
+     "AwsApiCallSESV2GetConfigurationSet0a2498c55b889787d695f3de50050b1b",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsAwsApiCallSESV2GetConfigurationSet1aa50289ac3b840a40c1fb9822d80b3f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "AwsApiCallSESV2GetConfigurationSet1aa50289ac3b840a40c1fb9822d80b3f",
      "assertion"
     ]
    }

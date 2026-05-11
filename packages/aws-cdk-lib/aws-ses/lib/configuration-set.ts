@@ -99,11 +99,11 @@ export interface ConfigurationSetProps {
    * - `false`: explicitly enable Auto Validation for this configuration set even if
    *   it is disabled at the account level. The threshold falls back to the SES default
    *   unless `autoValidationThreshold` is also specified.
-   * - `undefined`: inherit the account-level setting.
+   * - `undefined`: inherit the account-level setting when `autoValidationThreshold` is also not specified.
    *
    * @see https://docs.aws.amazon.com/ses/latest/dg/email-validation-auto.html
    *
-   * @default - inherit the account-level Auto Validation settings
+   * @default - inherit the account-level Auto Validation settings when autoValidationThreshold is also unspecified
    */
   readonly disableAutoValidation?: boolean;
 
