@@ -132,7 +132,11 @@ describe('nested-stack', () => {
         Resource2: {
           Properties: {
             Prop1: {
-              Ref: 'referencetoStack2ExportsReader861D07DCcdkexportsStack2Stack1bermudatriangle1337FnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067RefCEEE331E',
+              'Fn::GetStackOutput': {
+                StackName: 'Stack1',
+                Region: 'bermuda-triangle-1337',
+                OutputName: 'PublishOutputFnGetAttNested1NestedStackNested1NestedStackResourceCD0AD36BOutputsStack1Nested1Resource178AEB067Ref9772E2BF',
+              },
             },
           },
           Type: 'My::Resource',
@@ -157,8 +161,6 @@ describe('nested-stack', () => {
             'Outputs.Stack1Nested1Resource178AEB067Ref',
           ],
         },
-        Type: 'Custom::CrossRegionExportReader',
-        UpdateReplacePolicy: 'Delete',
       },
     });
   });
