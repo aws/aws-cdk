@@ -356,10 +356,10 @@ describe('serverless cache', () => {
       expect(engine.majorEngineVersion).toBe('8');
     });
 
-    test('of() supports arbitrary future versions', () => {
-      const engine = CacheEngine.of('valkey', '99');
+    test('of() accepts an explicit engineType and majorEngineVersion', () => {
+      const engine = CacheEngine.of('valkey', '9');
       expect(engine.engineType).toBe('valkey');
-      expect(engine.majorEngineVersion).toBe('99');
+      expect(engine.majorEngineVersion).toBe('9');
     });
 
     test('of() accepts an undefined majorEngineVersion', () => {
