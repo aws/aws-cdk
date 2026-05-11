@@ -1049,6 +1049,98 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('my-lib:TestId (');
     });
+
+    test('plugin violations can be suppressed via Validations.acknowledge()', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: 'MyBucket',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress the error-level violation using <pluginName>::<ruleId>
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
+    });
+
+    test('fatal plugin violations cannot be suppressed', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'Unknown resource type',
+          ruleName: 'E9001',
+          severity: 'fatal',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'BadResource',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Attempt to suppress the fatal violation
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::E9001', reason: 'Trying to suppress fatal' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      // Fatal violations remain despite acknowledgment
+      expect(output).toContain('E9001');
+      expect(output).toContain('Unknown resource type');
+    });
+
+    test('plugin names with spaces use dashes in suppression IDs', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('My Plugin', [{
+          description: 'Some violation',
+          ruleName: 'MY RULE',
+          severity: 'error',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress using dashes instead of spaces
+      core.Validations.of(stack).acknowledge({ id: 'My-Plugin::MY-RULE', reason: 'OK' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('MY RULE');
+    });
   });
 
   describe('Validations.of()', () => {
