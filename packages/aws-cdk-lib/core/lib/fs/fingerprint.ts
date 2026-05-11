@@ -62,7 +62,7 @@ export function fingerprint(fileOrDirectory: string, options: FingerprintOptions
   const ignoreStrategy = IgnoreStrategy.fromCopyOptions(options, fileOrDirectory);
 
   // Per-operation disk cache scoped to this directory
-  const cache = new FingerprintDiskCache(fileOrDirectory);
+  const cache = new FingerprintDiskCache(resolvedRoot);
 
   function _contentFingerprint(file: string): string {
     const stats = fs.statSync(file, { bigint: true });
@@ -189,10 +189,7 @@ function contentFingerprintWithStats(file: string, stats: fs.BigIntStats, cache:
     size: stats.size.toString(),
   });
 
-  if (cache) {
-    return cache.obtain(cacheKey, () => contentFingerprintMiss(file));
-  }
-  return contentFingerprintMiss(file);
+  return cache?.obtain(cacheKey, () => contentFingerprintMiss(file)) ?? contentFingerprintMiss(file);
 }
 
 // Pre-compiled regex for CRLF normalization

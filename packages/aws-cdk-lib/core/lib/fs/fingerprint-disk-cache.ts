@@ -18,6 +18,11 @@ export class FingerprintDiskCache {
   private dirty = false;
   private cacheFile: string;
 
+  /**
+   * Create a FingerprintDiskCache
+   *
+   * The `directoryPath` argument is expected to be pre-resolved to an absolute path.
+   */
   constructor(directoryPath: string) {
     // Derive a stable cache filename from the directory being fingerprinted
     const dirHash = crypto.createHash('sha256').update(directoryPath).digest('hex').slice(0, 16);
@@ -86,9 +91,8 @@ export class FingerprintDiskCache {
     if (!this.cache || this.cache.size <= MAX_ENTRIES) {
       return;
     }
-    // Keep the most recent half
     const entries = Array.from(this.cache.entries());
-    this.cache = new Map(entries.slice(entries.length - MAX_ENTRIES / 2));
+    this.cache = new Map(entries.slice(entries.length - MAX_ENTRIES));
   }
 
   /** Remove oldest cache files if the directory exceeds MAX_CACHE_FILES */
