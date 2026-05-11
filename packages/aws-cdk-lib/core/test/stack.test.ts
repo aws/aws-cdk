@@ -1182,7 +1182,7 @@ describe('stack', () => {
     expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
   });
 
-  test('same-region weak references emit warning and use Fn::ImportValue', () => {
+  test('same-region weak references use Fn::GetStackOutput', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
     const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
@@ -1198,14 +1198,54 @@ describe('stack', () => {
     });
 
     const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
     const template2 = assembly.getStackByName(stack2.stackName).template;
 
-    // THEN - still uses Fn::ImportValue (strong behavior, as weak is not implemented)
-    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::ImportValue');
+    // THEN - producer has an Output without Export
+    expect(template1.Outputs).toBeDefined();
+    const outputKeys = Object.keys(template1.Outputs);
+    expect(outputKeys.length).toBeGreaterThan(0);
+    const output = template1.Outputs[outputKeys[0]];
+    expect(output.Export).toBeUndefined();
 
-    // THEN - warning emitted
-    const warnings = stack2.node.metadata.filter(m => m.type === 'aws:cdk:warning');
-    expect(warnings.some(w => w.data.includes('not yet implemented'))).toBe(true);
+    // THEN - consumer uses Fn::GetStackOutput
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+  });
+
+  test('same-region both references generate Export AND Fn::GetStackOutput', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has an Output WITH Export (strong side)
+    const outputsWithExport = Object.values(template1.Outputs ?? {}).filter(
+      (o: any) => o.Export !== undefined,
+    );
+    expect(outputsWithExport.length).toBeGreaterThan(0);
+
+    // THEN - producer also has an Output WITHOUT Export (for Fn::GetStackOutput)
+    const outputsWithoutExport = Object.values(template1.Outputs ?? {}).filter(
+      (o: any) => o.Export === undefined,
+    );
+    expect(outputsWithoutExport.length).toBeGreaterThan(0);
+
+    // THEN - consumer uses Fn::GetStackOutput (weak side), NOT Fn::ImportValue
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+    expect(template2.Resources.SomeResource.Properties.Name).not.toHaveProperty('Fn::ImportValue');
   });
 
   test('invalid cross stack reference strength throws', () => {
