@@ -22,7 +22,7 @@ jobs:
   bump-stale-community-reviews:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@v9
         env:
           DAYS_THRESHOLD: '30'
           INPUT_DAYS: ${{ inputs.days_threshold }}
