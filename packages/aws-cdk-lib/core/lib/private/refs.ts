@@ -218,15 +218,18 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
   const strength = crossStackReferenceStrength(consumer);
-  if (strength === 'weak' || strength === 'both') {
-    Annotations.of(consumer).addWarningV2(
-      '@aws-cdk/core:sameRegionWeakRefsNotImplemented',
-      'Weak cross-stack references for same-account, same-region stacks are not yet implemented. ' +
-      `Stack "${consumer.node.path}" will use strong (Fn::ImportValue) references to stack "${producer.node.path}".`,
-    );
+
+  if (strength === 'strong') {
+    return createImportValue(reference);
   }
 
-  return createImportValue(reference);
+  if (strength === 'both') {
+    // Create the Import/Export pair, but drop the Import side.
+    createImportValue(reference);
+  }
+
+  // strength === 'weak'
+  return createGetStackOutput(reference, {});
 }
 
 /**

@@ -333,21 +333,22 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 ### Cross-stack reference strength
 
 The context key `@aws-cdk/core:defaultCrossStackReferences` controls the mechanism used for
-cross-region references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
+cross-stack references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
 
-**Strong references** (default) use a pair of Custom Resources (ExportWriter/ExportReader) that
-write values to SSM Parameters in the consuming region. This prevents the producing stack from
-being deleted while consumers exist, at the cost of additional infrastructure (Lambda functions,
-IAM roles, SSM parameters).
+**Strong references** (default) create a tight coupling between stacks. For same-region references,
+the producer creates a CloudFormation Export and the consumer uses `Fn::ImportValue`. For
+cross-region references, a pair of Custom Resources (ExportWriter/ExportReader) write values to
+SSM Parameters in the consuming region. In both cases, the producing stack cannot be deleted
+while consumers exist.
 
 **Weak references** use `Fn::GetStackOutput`, a CloudFormation intrinsic that reads an output
 directly from the producing stack. This is simpler (no extra infrastructure), but the producing
 stack can be deleted independently of its consumers.
 
 **Both** is a transitional state used during migration from strong to weak. The producer keeps
-the ExportWriter (so it continues writing to SSM), and also adds an Output. The consumer switches
-to `Fn::GetStackOutput`. This ensures the consumer is no longer dependent on the ExportReader
-before the ExportWriter is removed.
+the strong-side artifacts (Export for same-region, ExportWriter for cross-region), and also adds
+a plain Output. The consumer switches to `Fn::GetStackOutput`. This ensures the consumer is no
+longer dependent on the strong mechanism before it is removed.
 
 Configure the reference strength in your `cdk.json`:
 
@@ -368,10 +369,10 @@ Configure the reference strength in your `cdk.json`:
 
 The full behavior is summarized in the following table:
 
-|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                       |
-|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| Same account and region    | Generates a `Fn::ImportValue` reference           | Not yet implemented. Will use strong                                                         | Not yet implemented. Will use strong                            |
-| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                      |
+|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                  |
+|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                 |
+| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                 |
 | Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
 
 
@@ -393,8 +394,8 @@ problem:
 ```
 
 This adds `Fn::GetStackOutput` references in the consumers (weak) while keeping the
-ExportWriter in the producer (strong). After this deployment, consumers no longer depend on
-the ExportReader custom resource.
+strong-side artifacts in the producer (Export for same-region, ExportWriter for cross-region).
+After this deployment, consumers no longer depend on the strong mechanism.
 
 **DEPLOYMENT 2**: set the flag to `"weak"` and deploy.
 
@@ -406,8 +407,9 @@ the ExportReader custom resource.
 }
 ```
 
-This removes the ExportWriter/ExportReader infrastructure entirely. All references now use
-the lightweight `Fn::GetStackOutput` mechanism.
+This removes the strong-side infrastructure entirely (Exports for same-region,
+ExportWriter/ExportReader for cross-region). All references now use the lightweight
+`Fn::GetStackOutput` mechanism.
 
 ### Removing automatic cross-stack references
 
