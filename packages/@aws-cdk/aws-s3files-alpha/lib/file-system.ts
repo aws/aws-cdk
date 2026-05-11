@@ -399,11 +399,9 @@ export class FileSystem extends FileSystemBase {
     this.fileSystemOwnerId = this._resource.attrOwnerId;
 
     if (props.resourcePolicy) {
-      this._fileSystemPolicy = props.resourcePolicy;
-      this._cfnFileSystemPolicy = new CfnFileSystemPolicy(this, 'Policy', {
-        fileSystemId: this.fileSystemId,
-        policy: Lazy.any({ produce: () => this._fileSystemPolicy?.toJSON() }),
-      });
+      for (const statement of props.resourcePolicy.statements) {
+        this.addToResourcePolicy(statement);
+      }
     }
 
     const securityGroup = props.securityGroup ?? new ec2.SecurityGroup(this, 'SecurityGroup', {
@@ -465,6 +463,18 @@ export class FileSystem extends FileSystemBase {
         throw new ValidationError(
           lit`InvalidPrefix`,
           `'prefix' must be empty or end with '/', got ${JSON.stringify(prefix)}`,
+          this,
+        );
+      }
+    }
+    const expirationRules = props.synchronizationConfiguration?.expirationDataRules ?? [];
+    for (let i = 0; i < expirationRules.length; i++) {
+      const d = expirationRules[i].afterLastAccess;
+      const seconds = d.toSeconds();
+      if (!Token.isUnresolved(seconds) && seconds % 86400 !== 0) {
+        throw new ValidationError(
+          lit`ExpirationDataRuleAfterLastAccessUnit`,
+          `'expirationDataRules[${i}].afterLastAccess' must be a whole number of days, got ${d.toHumanString()}`,
           this,
         );
       }

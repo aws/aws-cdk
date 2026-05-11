@@ -350,6 +350,27 @@ describe('FileSystem', () => {
     Template.fromStack(stack).resourceCountIs('AWS::S3Files::FileSystemPolicy', 1);
   });
 
+  test('empty resourcePolicy emits no CfnFileSystemPolicy', () => {
+    new FileSystem(stack, 'FileSystem', {
+      bucket,
+      vpc,
+      resourcePolicy: new iam.PolicyDocument(),
+    });
+
+    Template.fromStack(stack).resourceCountIs('AWS::S3Files::FileSystemPolicy', 0);
+  });
+
+  test('expirationDataRules.afterLastAccess must be whole days', () => {
+    expect(() => new FileSystem(stack, 'FileSystem', {
+      bucket,
+      vpc,
+      synchronizationConfiguration: {
+        importDataRules: [],
+        expirationDataRules: [{ afterLastAccess: Duration.hours(36) }],
+      },
+    })).toThrow(/'expirationDataRules\[0\]\.afterLastAccess' must be a whole number of days/);
+  });
+
   test('isFileSystem identifies FileSystem instances', () => {
     const fs = new FileSystem(stack, 'FileSystem', { bucket, vpc });
     expect(FileSystem.isFileSystem(fs)).toBe(true);

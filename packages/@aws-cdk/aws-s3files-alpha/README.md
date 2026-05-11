@@ -95,8 +95,12 @@ new s3files.FileSystem(this, 'FileSystem', {
 
 ## Custom IAM role
 
-By default, a service role is created with permissions scoped to the bucket (and
-`prefix` when set). To use an existing role, pass it via `role`.
+By default, a service role is created with read/write access to the backing bucket
+(and KMS permissions when `kmsKey` is set). To use an existing role, pass it via
+`role`. The role must trust `elasticfilesystem.amazonaws.com` (S3 Files reuses the
+EFS service principal) and grant the S3 (and optional KMS) permissions S3 Files
+needs to synchronize data; the L2 does not attach anything to a user-supplied
+role.
 
 ```ts
 declare const bucket: s3.IBucket;
@@ -133,6 +137,8 @@ new s3files.FileSystem(this, 'FileSystem', {
 
 A file system can have an attached resource policy. You can pass an initial document
 through `resourcePolicy`, and add statements later with `addToResourcePolicy()`.
+The `CfnFileSystemPolicy` is created lazily on the first statement, so a file system
+without any resource-policy statements emits no policy resource.
 
 ```ts fixture=with-filesystem
 fileSystem.addToResourcePolicy(new iam.PolicyStatement({
@@ -141,6 +147,10 @@ fileSystem.addToResourcePolicy(new iam.PolicyStatement({
   resources: ['*'],
 }));
 ```
+
+> Resource policies cannot be added to file systems imported via
+> `FileSystem.fromFileSystemAttributes()`; `addToResourcePolicy()` returns
+> `{ statementAdded: false }` in that case.
 
 ## Granting permissions
 
@@ -185,11 +195,23 @@ const ap = s3files.AccessPoint.fromAccessPointId(this, 'ImportedAP', 'fsap-12345
 ## Connecting from EC2
 
 The file system is `IConnectable` and exposes a security group through `connections`.
-Allow traffic from your instances on the default port (NFS/2049):
+Allow traffic from your instances on the default port (NFS, exposed as
+`FileSystem.DEFAULT_PORT = 2049`):
 
 ```ts fixture=with-filesystem
 declare const instance: ec2.Instance;
 fileSystem.connections.allowDefaultPortFrom(instance);
+```
+
+## Waiting for mount targets
+
+Mount targets are created asynchronously and a client may try to mount the file
+system before they are ready. Use `mountTargetsAvailable` as a dependency to
+ensure another resource only deploys after every mount target is available:
+
+```ts fixture=with-filesystem
+declare const instance: ec2.Instance;
+instance.node.addDependency(fileSystem.mountTargetsAvailable);
 ```
 
 ## Importing an existing file system

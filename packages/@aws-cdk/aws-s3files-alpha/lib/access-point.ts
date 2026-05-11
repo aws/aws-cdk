@@ -1,7 +1,7 @@
 import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from 'aws-cdk-lib/aws-s3files';
 import { CfnAccessPoint } from 'aws-cdk-lib/aws-s3files';
 import type { IResource } from 'aws-cdk-lib/core';
-import { ArnFormat, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { ArnFormat, Resource, Stack, Token, ValidationError } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -199,7 +199,7 @@ export class AccessPoint extends AccessPointBase {
   private readonly _fileSystem: IFileSystemRef;
 
   public get fileSystem(): IFileSystem {
-    return toIFileSystem(this._fileSystem);
+    return toIFileSystem(this, this._fileSystem);
   }
 
   constructor(scope: Construct, id: string, props: AccessPointProps) {
@@ -209,7 +209,7 @@ export class AccessPoint extends AccessPointBase {
     this.validateProps(props);
 
     const resource = new CfnAccessPoint(this, 'Resource', {
-      fileSystemId: extractFileSystemId(props.fileSystem),
+      fileSystemId: extractFileSystemId(this, props.fileSystem),
       rootDirectory: {
         creationPermissions: props.createAcl ? {
           ownerGid: props.createAcl.ownerGid,
@@ -361,7 +361,7 @@ class ImportedAccessPoint extends AccessPointBase {
         this,
       );
     }
-    return toIFileSystem(this._fileSystem);
+    return toIFileSystem(this, this._fileSystem);
   }
 }
 
@@ -369,18 +369,19 @@ function isIFileSystem(fs: IFileSystemRef): fs is IFileSystem {
   return fs !== null && typeof fs === 'object' && (FILE_SYSTEM_SYMBOL in fs);
 }
 
-function extractFileSystemId(fs: IFileSystemRef): string {
+function extractFileSystemId(scope: Construct, fs: IFileSystemRef): string {
   if (isIFileSystem(fs)) {
     return fs.fileSystemId;
   }
-  return Stack.of(fs as unknown as Construct).splitArn(fs.fileSystemRef.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+  return Stack.of(scope).splitArn(fs.fileSystemRef.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
 }
 
-function toIFileSystem(fs: IFileSystemRef): IFileSystem {
+function toIFileSystem(scope: Construct, fs: IFileSystemRef): IFileSystem {
   if (!isIFileSystem(fs)) {
-    throw new UnscopedValidationError(
+    throw new ValidationError(
       lit`FileSystemInstanceShouldImplement`,
       `'fileSystem' must be a FileSystem L2 (created by 'new FileSystem(...)' or 'FileSystem.fromFileSystemAttributes(...)'), got: ${fs.constructor.name}`,
+      scope,
     );
   }
   return fs;
