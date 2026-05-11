@@ -3,6 +3,7 @@
 // ----------------------------------------------------
 
 import type { IConstruct } from 'constructs';
+import { Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
 import type { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
@@ -23,7 +24,12 @@ import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { iterateDfsPreorder } from './construct-iteration';
+import { CfnResource } from '../cfn-resource';
 import { lit } from './literal-string';
+import type {
+  PolicyReference,
+  RoleReference,
+} from '../../../interfaces/generated/aws-iam-interfaces.generated';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
@@ -82,7 +88,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     throw new UnscopedValidationError(lit`CannotReferenceAcrossApps`, 'Cannot reference across apps. Consuming and producing stacks must be defined within the same CDK app.');
   }
 
-  // unsupported: stacks are not in the same account
+  // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
     const strength = crossStackReferenceStrength(consumer);
 
@@ -111,12 +117,20 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
         'Cross stack/region references are only supported for stacks with an explicit region defined. ');
     }
 
-  // Stacks are in the same account, but different regions
-  if (producerRegion !== consumerRegion && !consumer._crossRegionReferences) {
-    throw new UnscopedValidationError(lit`CrossRegionReferencesNotEnabled`,
-      `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
-      'Cross stack references are only supported for stacks deployed to the same environment or between nested stacks and their parent stack. ' +
-      'Set crossRegionReferences=true to enable cross region references');
+    const producerStackArn = Stack.of(reference.target).formatArn({
+      service: 'cloudformation',
+      resource: 'stack',
+      resourceName: `${producer.stackName}/*`,
+      region: producerRegion,
+      account: producerAccount,
+    });
+
+    return createGetStackOutput(reference, {
+      consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
+      producerAccount,
+      producerRegion,
+      producerStackArn,
+    });
   }
 
   // ----------------------------------------------------------------------
@@ -161,7 +175,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // ----------------------------------------------------------------------
 
   // Stacks are in the same account, but different regions
-  if (producerRegion !== consumerRegion && consumer._crossRegionReferences) {
+  if (producerRegion !== consumerRegion) {
     if (producerRegion === cxapi.UNKNOWN_REGION || consumerRegion === cxapi.UNKNOWN_REGION) {
       throw new UnscopedValidationError(lit`CrossRegionReferencesRequireExplicitRegion`,
         `Stack "${consumer.node.path}" cannot reference ${renderReference(reference)} in stack "${producer.node.path}". ` +
@@ -465,37 +479,30 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
     });
   }
 
-  // get or create the export writer
-  const writerConstructName = makeUniqueId(['ExportsWriter', importStack.region]);
-  const exportWriter = ExportWriter.getOrCreate(exportingStack, writerConstructName, {
-    region: importStack.region,
-  });
+  let roleArn: string | undefined = undefined;
+  if (options.consumerRoleArn) {
+    let roleResource = scope.node.tryFindChild(roleId) as CfnResource;
+    if (roleResource == null) {
+      const { resource, roleRef } = createGetStackOutputRole(scope, roleId, {
+        consumerRoleArn: options.consumerRoleArn,
+        producerAccount: options.producerAccount,
+      });
+      roleResource = resource;
+      roleArn = roleRef.roleArn;
+    }
 
-  const exported = exportWriter.exportValue(exportName, reference, importStack);
-  if (importStack.nestedStackParent) {
-    return createNestedStackParameter(importStack, (exported as CfnReference), exported);
+    let policy = scope.node.tryFindChild(policyId) as CfnResource;
+    if (policy == null) {
+      createGetStackOutputPolicy(scope, policyId, {
+        role: roleResource,
+        producerStackArn: options.producerStackArn,
+      });
+    }
   }
-  return exported;
-}
 
-/**
- * Generate a unique physical name for the export
- */
-function generateExportName(importStack: Stack, reference: Reference, id: string): string {
-  const referenceStack = Stack.of(reference.target);
-
-  const components = [
-    referenceStack.stackName ?? '',
-    referenceStack.region,
-    id,
-  ];
-  const prefix = `${importStack.nestedStackParent?.stackName ?? importStack.stackName}/`;
-  const localPart = makeUniqueId(components);
-  // max name length for a system manager parameter is 1011 characters
-  // including the arn, i.e.
-  // arn:aws:ssm:us-east-2:111122223333:parameter/cdk/exports/${stackName}/${name}
-  const maxLength = 900;
-  return prefix + localPart.slice(Math.max(0, localPart.length - maxLength + prefix.length));
+  return Tokenization.reverseCompleteString(
+    Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn),
+  ) as Intrinsic;
 }
 
 export function getExportable(stack: Stack, reference: Reference): Intrinsic {
