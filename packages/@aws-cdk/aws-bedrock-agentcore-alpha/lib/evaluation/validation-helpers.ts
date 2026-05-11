@@ -45,6 +45,11 @@ const SERVICE_NAMES_MAX_COUNT = 1;
 const EVALUATOR_NAME_MIN_LENGTH = 1;
 const EVALUATOR_NAME_MAX_LENGTH = 48;
 const RATING_SCALE_MIN_OPTIONS = 1;
+const TAG_KEY_MIN = 1;
+const TAG_KEY_MAX = 128;
+const TAG_VALUE_MAX = 256;
+const TAG_KEY_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]+$/;
+const TAG_VALUE_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]*$/;
 
 /******************************************************************************
  *                              TYPES
@@ -458,12 +463,6 @@ export function validateEvaluationTags(tags?: { [key: string]: string }, _scope?
   if (Token.isUnresolved(tags)) {
     return errors;
   }
-
-  const TAG_KEY_MIN = 1;
-  const TAG_KEY_MAX = 128;
-  const TAG_VALUE_MAX = 256;
-  const TAG_KEY_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]+$/;
-  const TAG_VALUE_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]*$/;
 
   for (const [key, value] of Object.entries(tags)) {
     if (!Token.isUnresolved(key)) {
