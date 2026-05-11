@@ -2043,26 +2043,82 @@ information that can be obtained from the stack trace.
 
 * Do not use FnSub
 
-### Lazys
+### Deferred Values
 
-Do not use a `Lazy` to perform a mutation on the construct tree. For example:
+#### Box API (preferred for new code)
+
+L2 constructs that accumulate state after construction (e.g., alarm actions, policy
+statements, security group rules) should use the **Box API** instead of `Lazy`.
+Boxes are mutable containers that implement `IResolvable` and capture stack traces
+at mutation call sites, enabling accurate property-to-source-code attribution.
+
+**Before (Lazy — legacy, do not use in new code):**
 
 ```ts
-constructor(scope: Scope, id: string, props: MyConstructProps) {
-  this.lazyProperty = Lazy.any({
-    produce: () => {
-      return props.logging.bind(this, this);
-    },
-  });
+class MyL2 extends Resource {
+  private readonly _actions: string[] = [];
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    new CfnResource(this, 'Resource', {
+      // Stack trace captured HERE (constructor), not useful
+      actions: Lazy.list({ produce: () => this._actions }),
+    });
+  }
+
+  addAction(action: string) {
+    this._actions.push(action); // No stack trace captured
+  }
 }
 ```
 
-`bind()` methods mutate the construct tree, and should not be called from a callback
-in a `Lazy`.
+**After (Box — preferred):**
 
-* The why:
- - `Lazy`s are called after the construct tree has already been sythesized. Mutating it
- at this point could have not-obvious consequences.
+```ts
+@noBoxStackTraces
+class MyL2 extends Resource {
+  private readonly _actions: IArrayBox<string> = Box.fromArray([]);
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    new CfnResource(this, 'Resource', {
+      actions: Token.asList(this._actions),
+    });
+  }
+
+  addAction(action: string) {
+    this._actions.push(action); // Stack trace captured HERE — user's code
+  }
+}
+```
+
+Key rules:
+- `Box.fromArray([])` for lists, `Box.fromValue(x)` for scalars, `Box.fromMap()` for maps, `Box.fromSet()` for sets
+- Pass to L1 via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box)`, or `Token.asAny(box)` for complex/object values
+- `Box.fromArray` resolves to `undefined` when empty by default (no manual empty-array → `undefined` mapping needed). Pass `{ omitEmpty: false }` as the second argument to resolve to an empty array instead
+- Apply `@noBoxStackTraces` on classes that create or mutate Boxes in their constructor
+- Use `box.derive(fn)` for single-source transforms, `Box.combine({ a: boxA, b: boxB }, ({ a, b }) => ...)` for multi-source derived values
+
+See `packages/aws-cdk-lib/core/adr/box-api.md` for the full ADR.
+
+#### Lazy (legacy)
+
+`Lazy` remains available and is not deprecated, but new L2 constructs should prefer
+Boxes for better debuggability. If you must use `Lazy`:
+
+- Do not use a `Lazy` to perform a mutation on the construct tree
+- `Lazy`s are resolved after the construct tree has been synthesized — mutating it
+  at that point has non-obvious consequences
+- For `Lazy.any()` wrapping arrays, pass `{ omitEmptyArray: true }` to resolve empty arrays to `undefined`
+
+```ts
+// DO NOT do this — bind() mutates the construct tree
+this.lazyProperty = Lazy.any({
+  produce: () => {
+    return props.logging.bind(this, this); // BAD: tree mutation in Lazy
+  },
+});
+```
 
 ## Documentation
 
