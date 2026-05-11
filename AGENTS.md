@@ -180,8 +180,8 @@ Tokens can encode strings, numbers, and lists. Any object implementing `IResolva
 L2 constructs that accumulate state after construction (e.g., adding actions, policy statements, security groups) MUST use the **Box API** to defer value resolution — not `Lazy`. Boxes implement `IResolvable` and capture stack traces at mutation call sites (under `CDK_DEBUG`), enabling accurate property attribution in synthesized templates.
 
 - Use `Box.fromArray<T>([])` for accumulator lists, `Box.fromValue<T>(initial)` for single values, `Box.fromMap<K,V>()` for maps, `Box.fromSet<A>()` for sets
-- Pass to L1 props via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box.derive(...))`, or `Token.asAny(box)` for complex/object values
-- `Box.fromArray` resolves to `undefined` when empty (omitEmpty default) — no manual empty-array check needed
+- Pass to L1 props via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box)`, or `Token.asAny(box)` for complex/object values
+- `Box.fromArray` resolves to `undefined` when empty (omitEmpty default) — no manual empty-array check needed. Pass `{ omitEmpty: false }` to resolve to an empty array instead
 - Mutate via `box.push(item)` or `box.set(newValue)` — each captures a stack trace at the call site
 - Use `box.derive(fn)` for single-source transforms or `Box.combine({ name: box, ... }, ({ name, ... }) => ...)` for multi-source derived values
 - Apply `@noBoxStackTraces` decorator on L2 classes that create or mutate Boxes in their constructor (suppresses irrelevant internal traces)

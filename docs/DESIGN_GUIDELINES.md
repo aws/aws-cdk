@@ -2056,18 +2056,18 @@ at mutation call sites, enabling accurate property-to-source-code attribution.
 
 ```ts
 class MyL2 extends Resource {
-  private readonly _statements: PolicyStatement[] = [];
+  private readonly _actions: string[] = [];
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
     new CfnResource(this, 'Resource', {
       // Stack trace captured HERE (constructor), not useful
-      policyDocument: Lazy.any({ produce: () => this.renderPolicy() }),
+      actions: Lazy.list({ produce: () => this._actions }),
     });
   }
 
-  addStatement(stmt: PolicyStatement) {
-    this._statements.push(stmt); // No stack trace captured
+  addAction(action: string) {
+    this._actions.push(action); // No stack trace captured
   }
 }
 ```
@@ -2077,27 +2077,25 @@ class MyL2 extends Resource {
 ```ts
 @noBoxStackTraces
 class MyL2 extends Resource {
-  private readonly _statements: IArrayBox<PolicyStatement>;
+  private readonly _actions: IArrayBox<string> = Box.fromArray([]);
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
-    this._statements = Box.fromArray([]);
-
     new CfnResource(this, 'Resource', {
-      policyDocument: Token.asAny(this._statements.derive(stmts => this.renderPolicy(stmts))),
+      actions: Token.asList(this._actions),
     });
   }
 
-  addStatement(stmt: PolicyStatement) {
-    this._statements.push(stmt); // Stack trace captured HERE — user's code
+  addAction(action: string) {
+    this._actions.push(action); // Stack trace captured HERE — user's code
   }
 }
 ```
 
 Key rules:
 - `Box.fromArray([])` for lists, `Box.fromValue(x)` for scalars, `Box.fromMap()` for maps, `Box.fromSet()` for sets
-- Pass to L1 via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box.derive(...))`, or `Token.asAny(box)` for complex/object values
-- `Box.fromArray` resolves to `undefined` when empty by default (no manual empty-array → `undefined` mapping needed)
+- Pass to L1 via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box)`, or `Token.asAny(box)` for complex/object values
+- `Box.fromArray` resolves to `undefined` when empty by default (no manual empty-array → `undefined` mapping needed). Pass `{ omitEmpty: false }` as the second argument to resolve to an empty array instead
 - Apply `@noBoxStackTraces` on classes that create or mutate Boxes in their constructor
 - Use `box.derive(fn)` for single-source transforms, `Box.combine({ a: boxA, b: boxB }, ({ a, b }) => ...)` for multi-source derived values
 
