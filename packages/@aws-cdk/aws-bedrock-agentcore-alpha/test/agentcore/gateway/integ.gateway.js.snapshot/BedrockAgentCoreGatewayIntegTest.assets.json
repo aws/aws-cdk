@@ -2,7 +2,7 @@
   "version": "48.0.0",
   "files": {
     "986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c": {
-      "displayName": "TestGateway/SmithyTarget/Schema",
+      "displayName": "TestGateway/SmithyTarget/Schema395571ec96d778ed65dcfc0bb311cac5",
       "source": {
         "path": "asset.986ba659d2bd7adfcf9b77065f593411e332e26d4e2ee706f1d83b9f41d7da7c.json",
         "packaging": "file"
@@ -16,16 +16,16 @@
         }
       }
     },
-    "21273dbf16eaa5e7dc6b90f7bd3e5eac87cfae7534d9f2b8bf9b43385621ae13": {
+    "b596a7c2b6abe1b4b0550d41f2904c28fecde5bc1a75a34fbabff9cd595045d4": {
       "displayName": "BedrockAgentCoreGatewayIntegTest Template",
       "source": {
         "path": "BedrockAgentCoreGatewayIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-7ad47049": {
+        "current_account-us-east-1-4bf94dd9": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "21273dbf16eaa5e7dc6b90f7bd3e5eac87cfae7534d9f2b8bf9b43385621ae13.json",
+          "objectKey": "b596a7c2b6abe1b4b0550d41f2904c28fecde5bc1a75a34fbabff9cd595045d4.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }

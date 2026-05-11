@@ -1,4 +1,5 @@
-import { App, Stack, AssetStaging, CfnResource, NestedStack } from '../../lib';
+import type { AssetStaging } from '../../lib';
+import { App, Stack, CfnResource, NestedStack } from '../../lib';
 import { ExportWriter } from '../../lib/custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { toCloudFormation } from '../util';
 

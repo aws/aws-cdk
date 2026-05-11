@@ -201,3 +201,31 @@ test('multinode job returns a dummy instance type when accessing `instanceType`'
   // THEN
   expect(jobDef.instanceType).toBeInstanceOf(OptimalInstanceType);
 });
+
+test.each([true, false])('MultiNodeJobDefinition respects skipDeregisterOnUpdate property %s', (skipDeregisterOnUpdate) => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  new MultiNodeJobDefinition(stack, 'MultiNodeJobDefnWithSkip', {
+    skipDeregisterOnUpdate,
+    containers: [{
+      container: new EcsEc2ContainerDefinition(stack, 'MultinodeContainer', {
+        cpu: 256,
+        memory: Size.mebibytes(2048),
+        image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      }),
+      startNode: 0,
+      endNode: 9,
+    }],
+    mainNode: 0,
+    instanceType: InstanceType.of(InstanceClass.R4, InstanceSize.LARGE),
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::Batch::JobDefinition', {
+    ResourceRetentionPolicy: {
+      SkipDeregisterOnUpdate: skipDeregisterOnUpdate,
+    },
+  });
+});

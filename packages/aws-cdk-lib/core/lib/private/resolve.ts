@@ -1,10 +1,23 @@
-import { IConstruct } from 'constructs';
+import type { IConstruct } from 'constructs';
 import { containsListTokenElement, TokenString, unresolved } from './encoding';
 import { TokenMap } from './token-map';
 import { UnscopedValidationError } from '../errors';
-import { DefaultTokenResolver, IPostProcessor, IResolvable, IResolveContext, ITokenResolver, ResolveChangeContextOptions, StringConcat } from '../resolvable';
-import { TokenizedStringFragments } from '../string-fragments';
+import type {
+  IFragmentConcatenator,
+  IPostProcessor,
+  IResolvable,
+  IResolveContext,
+  ITokenResolver,
+  ResolveChangeContextOptions,
+} from '../resolvable';
+import {
+  DefaultTokenResolver,
+  StringConcat,
+} from '../resolvable';
+import type { TokenizedStringFragments } from '../string-fragments';
 import { ResolutionTypeHint } from '../type-hints';
+import { lit } from './literal-string';
+import { Box } from '../helpers-internal/box';
 
 // This file should not be exported to consumers, resolving should happen through Construct.resolve()
 const tokenMap = TokenMap.instance();
@@ -114,7 +127,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
 
   // protect against cyclic references by limiting depth.
   if (prefix.length > 200) {
-    throw new UnscopedValidationError('Unable to resolve object tree with circular reference. Path: ' + pathName);
+    throw new UnscopedValidationError(lit`CircularReferenceDetected`, 'Unable to resolve object tree with circular reference. Path: ' + pathName);
   }
 
   // whether to leave the empty elements when resolving - false by default
@@ -141,7 +154,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   //
 
   if (typeof(obj) === 'function') {
-    throw new UnscopedValidationError(`Trying to resolve a non-data object. Only token are supported for lazy evaluation. Path: ${pathName}. Object: ${obj}`);
+    throw new UnscopedValidationError(lit`TryingToResolveNonDataObject`, `Trying to resolve a non-data object. Only token are supported for lazy evaluation. Path: ${pathName}. Object: ${obj}`);
   }
 
   //
@@ -150,7 +163,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   if (typeof(obj) === 'string') {
     // If this is a "list element" Token, it should never occur by itself in string context
     if (TokenString.forListToken(obj).test()) {
-      throw new UnscopedValidationError('Found an encoded list token string in a scalar string context. Use \'Fn.select(0, list)\' (not \'list[0]\') to extract elements from token lists.');
+      throw new UnscopedValidationError(lit`EncodedListTokenInScalarContext`, 'Found an encoded list token string in a scalar string context. Use \'Fn.select(0, list)\' (not \'list[0]\') to extract elements from token lists.');
     }
 
     // Otherwise look for a stringified Token in this object
@@ -219,7 +232,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
   // mistake somewhere and resolve will get into an infinite loop recursing into
   // child.parent <---> parent.children
   if (isConstruct(obj)) {
-    throw new UnscopedValidationError('Trying to resolve() a Construct at ' + pathName);
+    throw new UnscopedValidationError(lit`TryingToResolveConstruct`, 'Trying to resolve() a Construct at ' + pathName);
   }
 
   const result: any = { };
@@ -246,7 +259,7 @@ export function resolve(obj: any, options: IResolveOptions): any {
       result[resolvedKey] = value;
     } else {
       if (!options.allowIntrinsicKeys) {
-        throw new UnscopedValidationError(`"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
+        throw new UnscopedValidationError(lit`KeyMustResolveToString`, `"${String(key)}" is used as the key in a map so must resolve to a string, but it resolves to: ${JSON.stringify(resolvedKey)}. Consider using "CfnJson" to delay resolution to deployment-time`);
       }
 
       // Can't represent this object in a JavaScript key position, but we can store it
@@ -270,6 +283,55 @@ export function findTokens(scope: IConstruct, fn: () => any): IResolvable[] {
   resolve(fn(), { scope, prefix: [], resolver, preparing: true });
 
   return resolver.tokens;
+}
+
+export function writePropertyAssignmentMetadataForConstruct(scope: IConstruct, fn: () => any, lookupTable: IPropertyNameLookupTable): void {
+  const resolver = new PropertyAssignmentMetadataWriter(new StringConcat(), lookupTable);
+
+  resolve(fn(), { scope, prefix: [], resolver, preparing: true });
+}
+
+export interface IPropertyNameLookupTable {
+  cfnPropertyName(cdkPropertyName: string): string | undefined;
+}
+
+export class PropertyAssignmentMetadataWriter extends DefaultTokenResolver {
+  private readonly lookupTable: IPropertyNameLookupTable;
+  private readonly seenDocumentPaths = new Set<string>();
+
+  constructor(concat: IFragmentConcatenator, lookupTable: IPropertyNameLookupTable) {
+    super(concat);
+    this.lookupTable = lookupTable;
+  }
+
+  public resolveToken(t: IResolvable, context: IResolveContext, postProcessor: IPostProcessor) {
+    const result = super.resolveToken(t, context, postProcessor);
+    const lookupTable = this.lookupTable;
+
+    function propertyNameFromContext(ctx: IResolveContext): string | undefined {
+      const documentPath = ctx.documentPath;
+      // Expected pattern:
+      //  ["Resources", "${Token[...]}", "Properties", "assumeRolePolicyDocument"]
+      if (documentPath.length < 4 || documentPath[0] !== 'Resources' || documentPath[2] !== 'Properties') {
+        return undefined;
+      }
+      return lookupTable.cfnPropertyName(documentPath[3]);
+    }
+
+    const propertyName = propertyNameFromContext(context);
+    const documentPathKey = context.documentPath.join('/');
+    if (Box.isBox(t) && propertyName && !this.seenDocumentPaths.has(documentPathKey)) {
+      for (let stackTrace of t.getStackTraces()) {
+        context.scope.node.addMetadata('aws:cdk:propertyAssignment', {
+          propertyName,
+          stackTrace,
+        });
+        this.seenDocumentPaths.add(documentPathKey);
+      }
+    }
+
+    return result;
+  }
 }
 
 /**

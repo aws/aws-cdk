@@ -3,14 +3,13 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { table } from 'table';
+import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
-import { PolicyValidationPluginReportBeta1, PolicyViolationBeta1 } from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
-let consoleLogMock: jest.SpyInstance;
 beforeEach(() => {
   consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => { return true; });
-  consoleLogMock = jest.spyOn(console, 'log').mockImplementation(() => { return true; });
+  jest.spyOn(console, 'log').mockImplementation(() => { return true; });
   process.exitCode = undefined;
 });
 
@@ -52,7 +51,7 @@ describe('validations', () => {
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    expect(consoleErrorMock.mock.calls[0][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
+    expect(consoleErrorMock.mock.calls[1][0].split('\n')).toEqual(expect.arrayContaining(validationReport([{
       templatePath: '/path/to/Default.template.json',
       constructPath: 'Default/Fake',
       title: 'test-rule',
@@ -66,11 +65,11 @@ describe('validations', () => {
         expect.stringMatching(/Default \(Default\)/),
         expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+        expect.stringMatching(/│ Location:/),
         expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
         expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
         expect.stringMatching(/│ Library Version: .*/),
-        expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+        expect.stringMatching(/│ Location:/),
       ],
       resourceLogicalId: 'Fake',
     }])));
@@ -95,21 +94,19 @@ describe('validations', () => {
     app.synth();
     expect(process.exitCode).toBeUndefined();
 
-    expect(consoleLogMock.mock.calls).toEqual([
-      [
-        expect.stringMatching(/Performing Policy Validations/),
-      ],
-      [
-        expect.stringMatching(/Policy Validation Successful!/),
-      ],
+    expect(consoleErrorMock.mock.calls[0]).toEqual([
+      expect.stringMatching(/Performing Policy Validations/),
     ]);
-    expect(consoleErrorMock.mock.calls[0][0]).toEqual(`Validation Report
+    expect(consoleErrorMock.mock.calls[2]).toEqual([
+      expect.stringMatching(/Policy Validation Successful!/),
+    ]);
+    expect(consoleErrorMock.mock.calls[1][0]).toEqual(`Validation Report
 -----------------
 
 Policy Validation Report Summary
 
 ╔══════════════╤═════════╗
-║ Plugin       │ Status  ║
+║ Source       │ Status  ║
 ╟──────────────┼─────────╢
 ║ test-plugin  │ success ║
 ╟──────────────┼─────────╢
@@ -152,7 +149,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[1][0];
     // Assuming the rest of the report's content is checked by another test
     expect(report).toContain('- Template Path: /path/to/stack1.template.json');
     expect(report).not.toContain('- Template Path: /path/to/stack2.template.json');
@@ -236,7 +233,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    const report = consoleErrorMock.mock.calls[1][0].split('\n');
     // Assuming the rest of the report's content is checked by another test
     expect(report).toEqual(expect.arrayContaining(
       validationReport([
@@ -250,15 +247,15 @@ Policy Validation Report Summary
             expect.stringMatching(/Stage1 \(Stage1\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stage|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  stack1 \(Stage1\/stack1\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  DefaultResource \(Stage1\/stack1\/DefaultResource\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           resourceLogicalId: 'DefaultResource',
           description: 'do something',
@@ -430,7 +427,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[1][0];
     // Assuming the rest of the report's content is checked by another test
     expect(report).toContain('- Construct Path: Default/SomeResource');
     expect(report).not.toContain('- Construct Path: Default/AnotherResource');
@@ -469,7 +466,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    const report = consoleErrorMock.mock.calls[1][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
       validationReport([
         {
@@ -482,11 +479,11 @@ Policy Validation Report Summary
             expect.stringMatching(/Default \(Default\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           description: 'do something',
           resourceLogicalId: 'Fake',
@@ -528,7 +525,7 @@ Policy Validation Report Summary
     });
     app.synth();
 
-    const report = consoleErrorMock.mock.calls[0][0].split('\n');
+    const report = consoleErrorMock.mock.calls[1][0].split('\n');
     expect(report).toEqual(expect.arrayContaining(
       validationReport([
         {
@@ -549,11 +546,11 @@ Policy Validation Report Summary
             expect.stringMatching(/Default \(Default\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.Stack|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
             expect.stringMatching(/└──  Fake \(Default\/Fake\)/),
             expect.stringMatching(/│ Construct: (aws-cdk-lib.CfnResource|constructs.Construct)/),
             expect.stringMatching(/│ Library Version: .*/),
-            expect.stringMatching(/│ Location: Run with '--debug' to include location info/),
+            expect.stringMatching(/│ Location:/),
           ],
           description: 'do another thing',
           resourceLogicalId: 'Fake',
@@ -592,7 +589,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    const report = consoleErrorMock.mock.calls[0][0];
+    const report = consoleErrorMock.mock.calls[1][0];
     expect(report).toContain('error: Validation plugin \'broken-plugin\' failed: Something went wrong');
     expect(report).toContain(generateTable('test-plugin', 'failure', 'N/A'));
   });
@@ -672,13 +669,13 @@ Policy Validation Report Summary
                     'id': 'Default',
                     'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
-                    'location': "Run with '--debug' to include location info",
+                    'location': expect.any(String),
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
                       'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
-                      'location': "Run with '--debug' to include location info",
+                      'location': expect.any(String),
                       'path': 'Default/Fake',
                     },
                   },
@@ -693,7 +690,7 @@ Policy Validation Report Summary
         },
       ],
     }));
-    const consoleOut = consoleLogMock.mock.calls[1][0];
+    const consoleOut = consoleErrorMock.mock.calls[1][0];
     expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' for details`);
   });
 
@@ -725,9 +722,9 @@ Policy Validation Report Summary
     });
     app.synth();
     expect(process.exitCode).toEqual(1);
-    const consoleOut = consoleLogMock.mock.calls[1][0];
+    const consoleOut = consoleErrorMock.mock.calls[2][0];
     expect(consoleOut).toContain('Validation failed. See the validation report above for details');
-    const consoleReport = consoleErrorMock.mock.calls[0][0];
+    const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
   });
 
@@ -789,13 +786,13 @@ Policy Validation Report Summary
                     'id': 'Default',
                     'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
                     'libraryVersion': expect.any(String),
-                    'location': "Run with '--debug' to include location info",
+                    'location': expect.any(String),
                     'path': 'Default',
                     'child': {
                       'id': 'Fake',
                       'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
                       'libraryVersion': expect.any(String),
-                      'location': "Run with '--debug' to include location info",
+                      'location': expect.any(String),
                       'path': 'Default/Fake',
                     },
                   },
@@ -810,22 +807,508 @@ Policy Validation Report Summary
         },
       ],
     }));
-    const consoleOut = consoleLogMock.mock.calls[1][0];
+    const consoleOut = consoleErrorMock.mock.calls[2][0];
     expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' and above for details`);
-    const consoleReport = consoleErrorMock.mock.calls[0][0];
+    const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('a plugin implementing Beta1 is assignable to IPolicyValidationPlugin', () => {
+    // GIVEN
+    const beta1Plugin: core.IPolicyValidationPluginBeta1 = new FakePlugin('beta1-plugin', []);
+
+    // WHEN
+    const plugin: core.IPolicyValidationPlugin = beta1Plugin;
+
+    // THEN
+    expect(plugin.name).toEqual('beta1-plugin');
+  });
+
+  describe('annotation report integration', () => {
+    const annotationReportContext = { [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: true };
+
+    test('annotation warnings appear in validation report', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:SomeWarning', 'This is a warning');
+
+      app.synth();
+
+      // Warnings alone should not fail
+      expect(process.exitCode).toBeUndefined();
+
+      // Should show the annotation report
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('my-lib:SomeWarning');
+      expect(output).toContain('Policy Validation Successful!');
+    });
+
+    test('annotation errors cause validation failure', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addError('Something is broken');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Something is broken');
+      expect(output).toContain('Severity: error');
+    });
+
+    test('acknowledged warnings are excluded from annotation report', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:AckedWarning', 'This warning is acknowledged');
+      core.Annotations.of(construct).acknowledgeWarning('my-lib:AckedWarning');
+
+      app.synth();
+
+      // No annotations left, so no report at all
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('Construct Annotations');
+    });
+
+    test('partial acknowledgment only excludes acknowledged warnings', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(construct).addWarning('AckedRule', 'This one is acknowledged');
+      core.Validations.of(construct).addWarning('KeptRule', 'This one is not');
+      core.Validations.of(construct).acknowledge({ id: 'AckedRule', reason: 'Accepted risk' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).not.toContain('annotation::AckedRule');
+      expect(output).toContain('annotation::KeptRule');
+    });
+
+    test('annotation report works alongside plugin reports', () => {
+      const app = new core.App({
+        context: annotationReportContext,
+        policyValidationBeta1: [
+          new FakePlugin('test-plugin', [{
+            description: 'plugin violation',
+            ruleName: 'plugin-rule',
+            violatingResources: [{
+              locations: ['test-location'],
+              resourceLogicalId: 'Fake',
+              templatePath: '/path/to/Default.template.json',
+            }],
+          }]),
+        ],
+      });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(stack).addWarningV2('my-lib:StackWarning', 'Stack-level warning');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      // Both plugin and annotation reports should appear
+      expect(output).toContain('test-plugin');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('plugin-rule');
+      expect(output).toContain('my-lib:StackWarning');
+    });
+
+    test('annotation report with no plugins registered still produces output', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addError('Error without plugins');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Error without plugins');
+    });
+
+    test('annotations on constructs without CfnResource use construct path', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'Orphan');
+      // No CfnResource child
+
+      core.Annotations.of(construct).addWarningV2('my-lib:OrphanWarning', 'Warning on orphan');
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('my-lib:OrphanWarning');
+      // Construct path is provided directly
+      expect(output).toContain('Construct Path: MyStack/Orphan');
+      // Resource ID is N/A for annotation-sourced violations
+      expect(output).toContain('Resource ID: N/A');
+      // templatePath should still resolve via Stack.of()
+      expect(output).toContain('Template Path:');
+      expect(output).toContain('MyStack.template.json');
+    });
+
+    test('Validations.of().addWarning appears in annotation report', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(construct).addWarning('MyRule', 'Validation warning');
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('annotation::MyRule');
+    });
+
+    test('Validations.of().addError appears in annotation report and fails', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(construct).addError('MyError', 'Validation error');
+
+      app.synth();
+
+      expect(process.exitCode).toEqual(1);
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('Construct Annotations');
+      expect(output).toContain('Severity: error');
+    });
+
+    test('extractRuleName regex matches addWarningV2 ack tag format', () => {
+      // This test verifies the coupling between the [ack: <id>] tag format
+      // produced by Annotations.addWarningV2 and the regex in extractRuleName.
+      // If the tag format in annotations.ts changes, this test should fail.
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:TestId', 'Test message');
+
+      // Verify the metadata contains the expected tag format
+      const warning = construct.node.metadata.find(m => m.type === 'aws:cdk:warning');
+      expect(warning?.data).toContain('[ack: my-lib:TestId]');
+
+      // Verify the report extracts the ID correctly
+      app.synth();
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('my-lib:TestId (');
+    });
+  });
+
+  describe('Validations.of()', () => {
+    test('addPlugins adds plugin to enclosing stage', () => {
+      // GIVEN
+      const app = new core.App();
+      const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
+      core.Validations.of(app).addPlugins(plugin);
+
+      // THEN
+      expect(app.policyValidationBeta1.map(p => p.name)).toContain('test-plugin');
+    });
+
+    test('addPlugins from nested construct resolves to enclosing stage', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const plugin = new FakePlugin('test-plugin', []);
+
+      // WHEN
+      core.Validations.of(stack).addPlugins(plugin);
+
+      // THEN - plugin is registered on the app (enclosing stage), not the stack
+      expect(app.policyValidationBeta1.map(p => p.name)).toContain('test-plugin');
+    });
+
+    test('throws when addPlugins called without enclosing stage', () => {
+      // GIVEN
+      const construct = new Construct(undefined as any, '');
+
+      // THEN
+      expect(() => core.Validations.of(construct).addPlugins(new FakePlugin('test', []))).toThrow(/without an enclosing Stage/);
+    });
+
+    test('plugin added via addPlugins runs during synth', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: { result: 'success' },
+      });
+
+      // WHEN
+      core.Validations.of(app).addPlugins(new FakePlugin('added-plugin', [{
+        description: 'test recommendation',
+        ruleName: 'test-rule',
+        violatingResources: [{
+          locations: ['test-location'],
+          resourceLogicalId: 'Fake',
+          templatePath: '/path/to/Default.template.json',
+        }],
+      }]));
+      app.synth();
+
+      // THEN - exitCode 1 means the plugin ran and reported violations
+      expect(process.exitCode).toEqual(1);
+    });
+
+    test('addWarning adds warning metadata to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addWarning('my-lib:MyWarning', 'Something is off');
+
+      // THEN
+      const warnings = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0].data).toContain('Something is off');
+      expect(warnings[0].data).toContain('[ack: annotation::my-lib:MyWarning]');
+    });
+
+    test('addError adds error metadata with id to construct', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).addError('my-lib:MyError', 'Something is wrong');
+
+      // THEN
+      const errors = construct.node.metadata.filter(m => m.type === 'aws:cdk:error');
+      expect(errors).toHaveLength(1);
+      expect(errors[0].data).toBe('Something is wrong (annotation::my-lib:MyError)');
+    });
+
+    test('acknowledge routes annotation rules to Annotations.acknowledgeWarning', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      core.Validations.of(construct).addWarning('SomeWarning', 'This is a warning');
+
+      // WHEN - no prefix defaults to annotation rule
+      core.Validations.of(construct).acknowledge({ id: 'SomeWarning', reason: 'Accepted risk' });
+
+      // THEN - existing warning is removed
+      const warningsAfterAck = construct.node.metadata.filter(m => m.type === 'aws:cdk:warning');
+      expect(warningsAfterAck).toHaveLength(0);
+    });
+
+    test('acknowledge records to construct metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN
+      core.Validations.of(construct).acknowledge(
+        { id: 'annotation::SomeWarning', reason: 'Accepted risk per team review' },
+        { id: 'some-plugin::RuleX', reason: 'Not applicable' },
+      );
+
+      // THEN
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      // Last entry contains all acknowledged rules
+      const lastEntry = ackEntries[ackEntries.length - 1];
+      expect(lastEntry.data).toEqual({
+        'annotation::SomeWarning': 'Accepted risk per team review',
+        'some-plugin::RuleX': 'Not applicable',
+      });
+    });
+
+    test('multiple acknowledge calls accumulate in metadata', () => {
+      // GIVEN
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      // WHEN - two separate calls
+      core.Validations.of(construct).acknowledge({ id: 'RuleA', reason: 'reason A' });
+      core.Validations.of(construct).acknowledge({ id: 'RuleB', reason: 'reason B' });
+
+      // THEN - last metadata entry has both rules
+      const ackEntries = construct.node.metadata.filter(
+        m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      );
+      const lastEntry = ackEntries[ackEntries.length - 1];
+      expect(lastEntry.data).toEqual({
+        'annotation::RuleA': 'reason A',
+        'annotation::RuleB': 'reason B',
+      });
+    });
+
+    test('throws on invalid ID with multiple delimiters', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: 'a::b::c', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID 'a::b::c'/);
+    });
+
+    test('throws on invalid ID with empty prefix', () => {
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+
+      expect(() => {
+        core.Validations.of(construct).acknowledge({ id: '::foo', reason: 'reason' });
+      }).toThrow(/Invalid validation rule ID '::foo'/);
+    });
+
+    test('non-Beta1 plugin with constructPath runs through synth', () => {
+      // GIVEN - a plugin returning violations with optional fields (constructPath instead of resourceLogicalId)
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      // WHEN
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('non-beta1-plugin', [{
+        description: 'construct-level violation',
+        ruleName: 'construct-rule',
+        violatingResources: [{
+          constructPath: 'Default/Fake',
+          locations: ['Properties'],
+        }],
+      }]));
+      app.synth();
+
+      // THEN
+      expect(process.exitCode).toEqual(1);
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('non-beta1-plugin');
+      expect(output).toContain('construct-rule');
+      expect(output).toContain('Default/Fake');
+    });
+
+    test('non-Beta1 plugin accessed via policyValidationBeta1 getter has defaults for optional fields', () => {
+      // GIVEN - a plugin returning violations without resourceLogicalId or templatePath
+      const app = new core.App();
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('non-beta1-plugin', [{
+        description: 'test',
+        ruleName: 'test-rule',
+        violatingResources: [{
+          constructPath: 'Default/Foo',
+          locations: ['Props'],
+        }],
+      }]));
+
+      // WHEN - access via Beta1 getter
+      const beta1Plugins = app.policyValidationBeta1;
+      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'] });
+
+      // THEN - optional fields are filled with defaults
+      expect(report.violations[0].violatingResources[0].resourceLogicalId).toEqual('');
+      expect(report.violations[0].violatingResources[0].templatePath).toEqual('');
+    });
+
+    test('non-Beta1 plugin with all fields populated works identically to Beta1', () => {
+      // GIVEN - a non-Beta1 plugin that provides all fields (same as Beta1 would)
+      const app = new core.App();
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(new FakeNonBeta1Plugin('full-fields-plugin', [{
+        description: 'full violation',
+        ruleName: 'full-rule',
+        violatingResources: [{
+          resourceLogicalId: 'Fake',
+          templatePath: '/path/to/Default.template.json',
+          locations: ['Properties/Result'],
+        }],
+      }]));
+      app.synth();
+
+      // THEN
+      expect(process.exitCode).toEqual(1);
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).toContain('full-fields-plugin');
+      expect(output).toContain('full-rule');
+      expect(output).toContain('Resource ID: Fake');
+    });
   });
 });
 
 class FakePlugin implements core.IPolicyValidationPluginBeta1 {
   constructor(
     public readonly name: string,
-    private readonly violations: PolicyViolationBeta1[],
+    private readonly violations: core.PolicyViolationBeta1[],
     public readonly version?: string,
     public readonly ruleIds?: string []) {
   }
 
-  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     return {
       success: this.violations.length === 0,
       violations: this.violations,
@@ -837,7 +1320,7 @@ class FakePlugin implements core.IPolicyValidationPluginBeta1 {
 class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'rogue-plugin';
 
-  validate(context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     const templatePath = context.templatePaths[0];
     fs.writeFileSync(templatePath, 'malicious data');
     return {
@@ -850,8 +1333,22 @@ class RoguePlugin implements core.IPolicyValidationPluginBeta1 {
 class BrokenPlugin implements core.IPolicyValidationPluginBeta1 {
   public readonly name = 'broken-plugin';
 
-  validate(_context: core.IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  validate(_context: core.IPolicyValidationContextBeta1): core.PolicyValidationPluginReportBeta1 {
     throw new Error('Something went wrong');
+  }
+}
+
+class FakeNonBeta1Plugin implements core.IPolicyValidationPlugin {
+  constructor(
+    public readonly name: string,
+    private readonly violations: core.PolicyViolation[],
+  ) {}
+
+  validate(_context: core.IPolicyValidationContext): core.PolicyValidationPluginReport {
+    return {
+      success: this.violations.length === 0,
+      violations: this.violations,
+    };
   }
 }
 
@@ -871,11 +1368,11 @@ interface ValidationReportData {
 
 function generateTable(pluginName: string, status: string, pluginVersion: string): string {
   return table([
-    [`Plugin: ${pluginName}`],
+    [`Source: ${pluginName}`],
     [`Version: ${pluginVersion}`],
     [`Status: ${status}`],
   ], {
-    header: { content: 'Plugin Report' },
+    header: { content: 'Validation Report' },
     singleLine: true,
     columns: [{
       paddingLeft: 3,
@@ -891,7 +1388,7 @@ const validationReport = (data: ValidationReportData[]) => {
       return [
         expect.stringMatching(new RegExp('Validation Report')),
         expect.stringMatching(new RegExp('-----------------')),
-        expect.stringMatching(new RegExp(`Plugin: ${d.pluginName}`)),
+        expect.stringMatching(new RegExp(`Source: ${d.pluginName}`)),
         expect.stringMatching(new RegExp(`Version: ${d.version ?? 'N/A'}`)),
         expect.stringMatching(new RegExp(`Status: ${d.status}`)),
         expect.stringMatching(new RegExp('\\(Violations\\)')),

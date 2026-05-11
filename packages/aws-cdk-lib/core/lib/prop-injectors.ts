@@ -1,4 +1,4 @@
-import { Construct, IConstruct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import { PROPERTY_INJECTORS_SYMBOL } from './prop-injectors-helpers';
 
 /**

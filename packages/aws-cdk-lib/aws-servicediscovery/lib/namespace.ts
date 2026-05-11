@@ -1,4 +1,4 @@
-import { IResource } from '../../core';
+import type { IResource } from '../../core';
 
 /**
  * A type of namespace

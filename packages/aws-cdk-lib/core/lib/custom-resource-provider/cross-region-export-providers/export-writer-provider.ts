@@ -1,16 +1,18 @@
 import { Construct } from 'constructs';
 import { ExportReader } from './export-reader-provider';
-import { CrossRegionExports, SSM_EXPORT_PATH_PREFIX, ExportWriterCRProps } from './types';
+import type { ExportWriterCRProps } from './types';
+import { SSM_EXPORT_PATH_PREFIX } from './types';
 import { CfnDynamicReference, CfnDynamicReferenceService } from '../../cfn-dynamic-reference';
 import { CustomResource } from '../../custom-resource';
 import { CrossRegionSsmWriterProvider } from '../../dist/core/cross-region-ssm-writer-provider.generated';
-import { Lazy } from '../../lazy';
-import { Intrinsic } from '../../private/intrinsic';
+import type { IMapBox, ISetBox } from '../../helpers-internal';
+import { Box } from '../../helpers-internal';
+import type { Intrinsic } from '../../private/intrinsic';
 import { makeUniqueId } from '../../private/uniqueid';
-import { Reference } from '../../reference';
+import type { Reference } from '../../reference';
 import { Stack } from '../../stack';
 import { Token } from '../../token';
-import { CustomResourceProviderOptions } from '../shared';
+import type { CustomResourceProviderOptions } from '../shared';
 
 /**
  * Properties for an ExportWriter
@@ -37,12 +39,12 @@ class CRProvider extends CrossRegionSsmWriterProvider {
     return provider;
   }
 
-  private readonly resourceArns = new Set<string>();
+  private readonly resourceArns: ISetBox<string> = Box.fromSet();
   constructor(scope: Construct, id: string, props?: CustomResourceProviderOptions) {
     super(scope, id, props);
     this.addToRolePolicy({
       Effect: 'Allow',
-      Resource: Lazy.list({ produce: () => Array.from(this.resourceArns) }),
+      Resource: this.resourceArns.derive(Array.from),
       Action: [
         'ssm:DeleteParameters',
         'ssm:ListTagsForResource',
@@ -90,7 +92,7 @@ export class ExportWriter extends Construct {
         region: props.region,
       });
   }
-  private readonly _references: CrossRegionExports = {};
+  private readonly _references: IMapBox<string, any> = Box.fromMap();
   private readonly provider: CRProvider;
   constructor(scope: Construct, id: string, props: ExportWriterProps) {
     super(scope, id);
@@ -104,7 +106,7 @@ export class ExportWriter extends Construct {
 
     const properties: ExportWriterCRProps = {
       region: region,
-      exports: Lazy.any({ produce: () => this._references }),
+      exports: this._references.derive(m => Object.fromEntries(m)),
     };
     new CustomResource(this, 'Resource', {
       resourceType: resourceType,
@@ -127,13 +129,27 @@ export class ExportWriter extends Construct {
    * @returns a reference to the reader custom resource
    */
   public exportValue(exportName: string, reference: Reference, importStack: Stack): Intrinsic {
-    const stack = Stack.of(this);
-    const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
+    const parameterName = this.registerExport(exportName, reference, importStack);
 
     const ref = new CfnDynamicReference(CfnDynamicReferenceService.SSM, parameterName);
-
-    this._references[parameterName] = stack.resolve(reference.toString());
     return this.addToExportReader(parameterName, ref, importStack);
+  }
+
+  /**
+   * Register a reference with the writer without creating an ExportReader in the consumer stack.
+   * Used during the "both" transitional state where the producer still writes to SSM
+   * but the consumer reads via Fn::GetStackOutput instead of the ExportReader.
+   */
+  public exportValueWriteOnly(exportName: string, reference: Reference, importStack: Stack): void {
+    this.registerExport(exportName, reference, importStack);
+  }
+
+  private registerExport(exportName: string, reference: Reference, importStack: Stack): string {
+    const stack = Stack.of(this);
+    const parameterName = `/${SSM_EXPORT_PATH_PREFIX}${exportName}`;
+    this._references.put(parameterName, stack.resolve(reference.toString()));
+    this.addRegionToPolicy(importStack.region);
+    return parameterName;
   }
 
   /**

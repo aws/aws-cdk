@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "52.0.0",
   "testCases": {
     "aws-cdk-config-rule-integ/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-cdk-config-rule-integ/DefaultTest/DeployAssert",
       "assertionStackName": "awscdkconfigruleintegDefaultTestDeployAssert37C5819B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1107.0"
 }

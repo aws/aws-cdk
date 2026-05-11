@@ -23,7 +23,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Download Artifacts
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: coverage-artifacts
           path: ./packages/aws-cdk-lib/core/coverage
@@ -32,7 +32,7 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
 
       - name: Upload to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         with:
           files: ./packages/aws-cdk-lib/core/coverage/cobertura-coverage.xml
           fail_ci_if_error: true

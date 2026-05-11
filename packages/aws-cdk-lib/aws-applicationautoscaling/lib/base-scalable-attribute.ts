@@ -1,10 +1,11 @@
 import { Construct } from 'constructs';
-import { IScalableTargetRef, ScalableTargetReference } from './applicationautoscaling.generated';
-import { ScalableTarget, ScalingSchedule, ServiceNamespace } from './scalable-target';
-import { BasicStepScalingPolicyProps } from './step-scaling-policy';
-import { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
-import * as iam from '../../aws-iam';
-import { ResourceEnvironment } from '../../interfaces';
+import type { IScalableTargetRef, ScalableTargetReference } from './applicationautoscaling.generated';
+import type { ScalingSchedule, ServiceNamespace } from './scalable-target';
+import { ScalableTarget } from './scalable-target';
+import type { BasicStepScalingPolicyProps } from './step-scaling-policy';
+import type { BasicTargetTrackingScalingPolicyProps } from './target-tracking-scaling-policy';
+import type * as iam from '../../aws-iam';
+import type { ResourceEnvironment } from '../../interfaces';
 
 /**
  * Properties for a ScalableTableAttribute

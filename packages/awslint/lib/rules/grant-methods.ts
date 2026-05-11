@@ -1,4 +1,4 @@
-import { Method } from 'jsii-reflect';
+import type { Method } from 'jsii-reflect';
 import { Linter } from '../linter';
 
 const EXCLUDE_ANNOTATION_NO_GRANTS = '[disable-awslint:no-grants]';

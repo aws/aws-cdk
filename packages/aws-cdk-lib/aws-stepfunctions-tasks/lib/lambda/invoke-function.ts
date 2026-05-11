@@ -1,6 +1,6 @@
 import * as iam from '../../../aws-iam';
-import * as lambda from '../../../aws-lambda';
-import * as sfn from '../../../aws-stepfunctions';
+import type * as lambda from '../../../aws-lambda';
+import type * as sfn from '../../../aws-stepfunctions';
 
 /**
  * Properties for InvokeFunction

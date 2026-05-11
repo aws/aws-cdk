@@ -1,31 +1,23 @@
-import * as integ from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import { INTEG_TEST_LATEST_POSTGRES } from './db-versions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
 import * as rds from 'aws-cdk-lib/aws-rds';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-rds-integ-instance-create-grant');
 
-const vpc = new ec2.Vpc(stack, 'VPC');
+const stack = new IntegTestBaseStack(app, 'aws-cdk-rds-instance-create-grant');
+
+const vpc = new ec2.Vpc(stack, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false, natGateways: 1 });
 
 const instance = new rds.DatabaseInstance(stack, 'Instance', {
-  vpc,
-  vpcSubnets: {
-    subnetType: ec2.SubnetType.PUBLIC,
-  },
   engine: rds.DatabaseInstanceEngine.postgres({
-    version: rds.PostgresEngineVersion.VER_14,
+    version: INTEG_TEST_LATEST_POSTGRES,
   }),
-  instanceType: ec2.InstanceType.of(
-    ec2.InstanceClass.T3,
-    ec2.InstanceSize.MICRO,
-  ),
-  credentials: rds.Credentials.fromGeneratedSecret('dbuser'),
-  multiAz: false,
-  deletionProtection: false,
-  publiclyAccessible: false,
-  backupRetention: cdk.Duration.days(0),
+  vpc,
+  credentials: rds.Credentials.fromUsername('postgres'),
 });
 
 const role = new iam.Role(stack, 'DBRole', {
@@ -34,8 +26,6 @@ const role = new iam.Role(stack, 'DBRole', {
 
 instance.grantConnect(role);
 
-new integ.IntegTest(app, 'rds-integ-instance-create-grant', {
+new IntegTest(app, 'instance-create-grant-integ-test', {
   testCases: [stack],
 });
-
-app.synth();

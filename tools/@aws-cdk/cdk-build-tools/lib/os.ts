@@ -15,15 +15,14 @@ interface ShellOptions {
  * Is platform-aware, handles errors nicely.
  */
 export async function shell(command: string[], options: ShellOptions = {}): Promise<string> {
-  const [cmd, ...args] = command;
+  const [cmd] = command;
   const timer = (options.timers || new Timers()).start(cmd);
 
   await makeShellScriptExecutable(cmd);
 
   // yarn exec runs the provided command with the correct environment for the workspace.
   const child = child_process.spawn(
-    cmd,
-    args,
+    command.join(' '),
     {
       // Need this for Windows where we want .cmd and .bat to be found as well.
       shell: true,

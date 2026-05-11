@@ -1,8 +1,9 @@
-import { Construct } from 'constructs';
-import * as events from '../../../aws-events';
-import { ResourceEnvironment, Stack, Token, TokenComparison } from '../../../core';
-import { IPipelineRef } from '../../../interfaces/generated/aws-codepipeline-interfaces.generated';
-import { ActionBindOptions, ActionConfig, ActionProperties, IAction, IStage } from '../action';
+import type { Construct } from 'constructs';
+import type * as events from '../../../aws-events';
+import type { ResourceEnvironment } from '../../../core';
+import { Stack, Token, TokenComparison } from '../../../core';
+import type { IPipelineRef } from '../../../interfaces/generated/aws-codepipeline-interfaces.generated';
+import type { ActionBindOptions, ActionConfig, ActionProperties, IAction, IStage } from '../action';
 
 /**
  * Helper routines to work with Actions

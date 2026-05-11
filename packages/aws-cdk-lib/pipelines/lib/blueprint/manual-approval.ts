@@ -1,6 +1,6 @@
 import { Step } from './step';
-import { IRole } from '../../../aws-iam';
-import { ITopic } from '../../../aws-sns';
+import type { IRole } from '../../../aws-iam';
+import type { ITopic } from '../../../aws-sns';
 /**
  * Construction properties for a `ManualApprovalStep`
  */

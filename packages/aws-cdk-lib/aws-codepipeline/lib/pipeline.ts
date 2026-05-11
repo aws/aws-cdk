@@ -1,33 +1,37 @@
-import { Construct } from 'constructs';
-import {
-  ActionCategory,
+import type { Construct } from 'constructs';
+import type {
   IAction,
   IPipeline,
   IStage,
-  PipelineNotificationEvents,
   PipelineNotifyOnOptions,
 } from './action';
-import { CfnPipeline, PipelineReference } from './codepipeline.generated';
+import {
+  ActionCategory,
+  PipelineNotificationEvents,
+} from './action';
+import type { PipelineReference } from './codepipeline.generated';
+import { CfnPipeline } from './codepipeline.generated';
 import { CrossRegionSupportConstruct, CrossRegionSupportStack } from './private/cross-region-support-stack';
 import { FullActionDescriptor } from './private/full-action-descriptor';
 import { RichAction } from './private/rich-action';
 import { Stage } from './private/stage';
 import { validateName, validateNamespaceName, validateSourceAction } from './private/validation';
-import { Rule } from './rule';
-import { Trigger, TriggerProps } from './trigger';
-import { Variable } from './variable';
+import type { Rule } from './rule';
+import type { TriggerProps } from './trigger';
+import { Trigger } from './trigger';
+import type { Variable } from './variable';
 import * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import * as s3 from '../../aws-s3';
+import type { IStackSynthesizer } from '../../core';
 import {
   Annotations,
   ArnFormat,
   BootstraplessSynthesizer,
   DefaultStackSynthesizer,
   FeatureFlags,
-  IStackSynthesizer,
   Lazy,
   Names,
   PhysicalName,
@@ -38,7 +42,11 @@ import {
   Token,
   ValidationError,
 } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -93,6 +101,8 @@ export interface Conditions {
    * The conditions that are configured as entry conditions, making check to succeed the stage, or fail the stage.
    *
    * @default - No conditions are configured
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   readonly conditions?: Condition[];
 }
@@ -534,6 +544,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
  *
  * // ... add more stages
  */
+@noBoxStackTraces
 @propertyInjectable
 export class Pipeline extends PipelineBase {
   /** Uniquely identifies this class. */
@@ -564,28 +575,11 @@ export class Pipeline extends PipelineBase {
   public readonly role: iam.IRole;
 
   /**
-   * ARN of this pipeline
-   */
-  public readonly pipelineArn: string;
-
-  /**
-   * The name of the pipeline
-   */
-  public readonly pipelineName: string;
-
-  /**
-   * The version of the pipeline
-   *
-   * @attribute
-   */
-  public readonly pipelineVersion: string;
-
-  /**
    * Bucket used to store output artifacts
    */
   public readonly artifactBucket: s3.IBucket;
 
-  private readonly _stages = new Array<Stage>();
+  private readonly _stages: IArrayBox<Stage> = Box.fromArray([], { omitEmpty: false });
   private readonly crossRegionBucketsPassed: boolean;
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
@@ -595,8 +589,37 @@ export class Pipeline extends PipelineBase {
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
   private readonly usePipelineRoleForActions: boolean;
-  private readonly variables = new Array<Variable>();
-  private readonly triggers = new Array<Trigger>();
+  private readonly variables: IArrayBox<Variable> = Box.fromArray();
+  private readonly triggers: IArrayBox<Trigger> = Box.fromArray();
+
+  /**
+   * ARN of this pipeline
+   */
+  @memoizedGetter
+  public get pipelineArn(): string {
+    return Stack.of(this).formatArn({
+      service: 'codepipeline',
+      resource: this.pipelineName,
+    });
+  }
+
+  /**
+   * The name of the pipeline
+   */
+  @memoizedGetter
+  public get pipelineName(): string {
+    return this.getResourceNameAttribute(this.codePipeline.ref);
+  }
+
+  /**
+   * The version of the pipeline
+   *
+   * @attribute
+   */
+  @memoizedGetter
+  public get pipelineVersion(): string {
+    return this.codePipeline.attrVersion;
+  }
 
   constructor(scope: Construct, id: string, props: PipelineProps = {}) {
     super(scope, id, {
@@ -609,7 +632,7 @@ export class Pipeline extends PipelineBase {
 
     // only one of artifactBucket and crossRegionReplicationBuckets can be supplied
     if (props.artifactBucket && props.crossRegionReplicationBuckets) {
-      throw new ValidationError('Only one of artifactBucket and crossRegionReplicationBuckets can be specified!', this);
+      throw new ValidationError(lit`OnlyArtifactBucketOrCrossRegionReplicationBucketsSpecified`, 'Only one of artifactBucket and crossRegionReplicationBuckets can be specified!', this);
     }
 
     // The feature flag is set to true by default for new projects, otherwise false.
@@ -619,7 +642,7 @@ export class Pipeline extends PipelineBase {
 
     // Cross account keys must be set for key rotation to be enabled
     if (this.enableKeyRotation && !this.crossAccountKeys) {
-      throw new ValidationError("Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled", this);
+      throw new ValidationError(lit`CrossAccountKeysRequiredForKeyRotation`, "Setting 'enableKeyRotation' to true also requires 'crossAccountKeys' to be enabled", this);
     }
 
     this.reuseCrossRegionSupportStacks = props.reuseCrossRegionSupportStacks ?? true;
@@ -676,19 +699,19 @@ export class Pipeline extends PipelineBase {
       && [ExecutionMode.QUEUED, ExecutionMode.PARALLEL].includes(props.executionMode)
       && this.pipelineType !== PipelineType.V2
     ) {
-      throw new ValidationError(`${props.executionMode} execution mode can only be used with V2 pipelines, \`PipelineType.V2\` must be specified for \`pipelineType\``, this);
+      throw new ValidationError(lit`ExecutionModeRequiresV2Pipeline`, `${props.executionMode} execution mode can only be used with V2 pipelines, \`PipelineType.V2\` must be specified for \`pipelineType\``, this);
     }
 
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
-      stages: Lazy.any({ produce: () => this.renderStages() }),
+      stages: this._stages.map(stage => stage.render()),
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       pipelineType: props.pipelineType ?? (isDefaultV2 ? PipelineType.V2 : undefined),
-      variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
-      triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
+      variables: this.variables.map(variable => variable._render()),
+      triggers: this.triggers.map(trigger => trigger._render()),
       executionMode: props.executionMode,
       name: this.physicalName,
     });
@@ -697,8 +720,6 @@ export class Pipeline extends PipelineBase {
     this.codePipeline.node.addDependency(this.role);
 
     this.artifactBucket.grantReadWrite(this.role);
-    this.pipelineName = this.getResourceNameAttribute(this.codePipeline.ref);
-    this.pipelineVersion = this.codePipeline.attrVersion;
     this.crossRegionBucketsPassed = !!props.crossRegionReplicationBuckets;
 
     for (const [region, replicationBucket] of Object.entries(props.crossRegionReplicationBuckets || {})) {
@@ -707,12 +728,6 @@ export class Pipeline extends PipelineBase {
         stack: Stack.of(replicationBucket),
       };
     }
-
-    // Does not expose a Fn::GetAtt for the ARN so we'll have to make it ourselves
-    this.pipelineArn = Stack.of(this).formatArn({
-      service: 'codepipeline',
-      resource: this.pipelineName,
-    });
 
     for (const stage of props.stages || []) {
       this.addStage(stage);
@@ -737,7 +752,7 @@ export class Pipeline extends PipelineBase {
   public addStage(props: StageOptions): IStage {
     // check for duplicate Stages and names
     if (this._stages.find(s => s.stageName === props.stageName)) {
-      throw new ValidationError(`Stage with duplicate name '${props.stageName}' added to the Pipeline`, this);
+      throw new ValidationError(lit`StageDuplicateNameAdded`, `Stage with duplicate name '${props.stageName}' added to the Pipeline`, this);
     }
 
     const stage = new Stage(props, this);
@@ -769,7 +784,7 @@ export class Pipeline extends PipelineBase {
   public addVariable(variable: Variable): Variable {
     // check for duplicate variables and names
     if (this.variables.find(v => v.variableName === variable.variableName)) {
-      throw new ValidationError(`Variable with duplicate name '${variable.variableName}' added to the Pipeline`, this);
+      throw new ValidationError(lit`VariableDuplicateNameAdded`, `Variable with duplicate name '${variable.variableName}' added to the Pipeline`, this);
     }
 
     this.variables.push(variable);
@@ -789,7 +804,7 @@ export class Pipeline extends PipelineBase {
 
     // check for duplicate source actions for triggers
     if (actionName !== undefined && this.triggers.find(t => t.sourceAction?.actionProperties.actionName === actionName)) {
-      throw new ValidationError(`Trigger with duplicate source action '${actionName}' added to the Pipeline`, this);
+      throw new ValidationError(lit`TriggerDuplicateSourceAction`, `Trigger with duplicate source action '${actionName}' added to the Pipeline`, this);
     }
 
     this.triggers.push(trigger);
@@ -812,7 +827,7 @@ export class Pipeline extends PipelineBase {
    * to the pipeline.
    */
   public get stages(): IStage[] {
-    return this._stages.slice();
+    return [...this._stages];
   }
 
   /**
@@ -825,7 +840,7 @@ export class Pipeline extends PipelineBase {
         return stage;
       }
     }
-    throw new ValidationError(`Pipeline does not contain a stage named '${stageName}'. Available stages: ${this._stages.map(s => s.stageName).join(', ')}`, this);
+    throw new ValidationError(lit`PipelineDoesNotContainStage`, `Pipeline does not contain a stage named '${stageName}'. Available stages: ${[...this._stages].map(s => s.stageName).join(', ')}`, this);
   }
 
   /**
@@ -903,7 +918,7 @@ export class Pipeline extends PipelineBase {
 
     // source actions have to be in the same region as the pipeline
     if (action.actionProperties.category === ActionCategory.SOURCE) {
-      throw new ValidationError(`Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`, this);
+      throw new ValidationError(lit`SourceActionMustBeSameRegion`, `Source action '${action.actionProperties.actionName}' must be in the same region as the pipeline`, this);
     }
 
     // check whether we already have a bucket in that region,
@@ -960,7 +975,7 @@ export class Pipeline extends PipelineBase {
     const pipelineStack = Stack.of(this);
     const pipelineAccount = pipelineStack.account;
     if (Token.isUnresolved(pipelineAccount)) {
-      throw new ValidationError("You need to specify an explicit account when using CodePipeline's cross-region support", this);
+      throw new ValidationError(lit`ExplicitAccountRequiredForCrossRegion`, "You need to specify an explicit account when using CodePipeline's cross-region support", this);
     }
 
     const app = this.supportScope();
@@ -1060,7 +1075,7 @@ export class Pipeline extends PipelineBase {
     if (action.isCrossAccount) {
       const artifactBucket = this.ensureReplicationResourcesExistFor(action).artifactBucket;
       if (!artifactBucket.encryptionKey) {
-        throw new ValidationError(
+        throw new ValidationError(lit`ArtifactBucketMustHaveKmsKey`,
           `Artifact Bucket must have a KMS Key to add cross-account action '${action.actionProperties.actionName}' ` +
           `(pipeline account: '${renderEnvDimension(this.env.account)}', action account: '${renderEnvDimension(action.effectiveAccount)}'). ` +
           'Create Pipeline with \'crossAccountKeys: true\' (or pass an existing Bucket with a key)',
@@ -1088,7 +1103,7 @@ export class Pipeline extends PipelineBase {
       } else {
         // ...except if the Action is not owned by 'AWS',
         // as that would be rejected by CodePipeline at deploy time
-        throw new ValidationError(
+        throw new ValidationError(lit`RoleNotSupportedForNonAwsActions`,
           "Specifying a Role is not supported for actions with an owner different than 'AWS' - " +
           `got '${action.actionProperties.owner}' (Action: '${action.actionProperties.actionName}' in Stage: '${stage.stageName}')`,
           this,
@@ -1154,14 +1169,14 @@ export class Pipeline extends PipelineBase {
         // the pipeline is also env-agnostic, so that's fine
         return undefined;
       } else {
-        throw new ValidationError(`The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`, this);
+        throw new ValidationError(lit`AccountPropertyMustBeConcrete`, `The 'account' property must be a concrete value (action: '${action.actionProperties.actionName}')`, this);
       }
     }
 
     // At this point, we know that the action's account is a static string.
     // In this case, the pipeline's account must also be a static string.
     if (Token.isUnresolved(this.env.account)) {
-      throw new ValidationError('Pipeline stack which uses cross-environment actions must have an explicitly set account', this);
+      throw new ValidationError(lit`PipelineStackMustHaveExplicitAccount`, 'Pipeline stack which uses cross-environment actions must have an explicitly set account', this);
     }
 
     // at this point, we know that both the Pipeline's account,
@@ -1234,7 +1249,7 @@ export class Pipeline extends PipelineBase {
     const providedPlacementProps = ['rightBefore', 'justAfter', 'atIndex']
       .filter((prop) => (placement as any)[prop] !== undefined);
     if (providedPlacementProps.length > 1) {
-      throw new ValidationError(
+      throw new ValidationError(lit`PlacementPropertiesConflict`,
         'Error adding Stage to the Pipeline: ' +
         'you can only provide at most one placement property, but ' +
         `'${providedPlacementProps.join(', ')}' were given`,
@@ -1245,7 +1260,7 @@ export class Pipeline extends PipelineBase {
     if (placement.rightBefore !== undefined) {
       const targetIndex = this.findStageIndex(placement.rightBefore);
       if (targetIndex === -1) {
-        throw new ValidationError(
+        throw new ValidationError(lit`StageNotFoundForRightBefore`,
           'Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it before, '${placement.rightBefore.stageName}', was not found`,
           this,
@@ -1257,7 +1272,7 @@ export class Pipeline extends PipelineBase {
     if (placement.justAfter !== undefined) {
       const targetIndex = this.findStageIndex(placement.justAfter);
       if (targetIndex === -1) {
-        throw new ValidationError(
+        throw new ValidationError(lit`StageNotFoundForJustAfter`,
           'Error adding Stage to the Pipeline: ' +
           `the requested Stage to add it after, '${placement.justAfter.stageName}', was not found`,
           this,
@@ -1307,7 +1322,7 @@ export class Pipeline extends PipelineBase {
     const producers: Record<string, PipelineLocation> = {};
     const firstConsumers: Record<string, PipelineLocation> = {};
 
-    for (const [stageIndex, stage] of enumerate(this._stages)) {
+    for (const [stageIndex, stage] of enumerate([...this._stages])) {
       // For every output artifact, get the producer
       for (const action of stage.actionDescriptors) {
         const actionLoc = new PipelineLocation(stageIndex, stage, action);
@@ -1416,12 +1431,8 @@ export class Pipeline extends PipelineBase {
     return this._stages.some(stage => stage.actionDescriptors.some(action => action.region !== undefined));
   }
 
-  private renderStages(): CfnPipeline.StageDeclarationProperty[] {
-    return this._stages.map(stage => stage.render());
-  }
-
   private renderDisabledTransitions(): CfnPipeline.StageTransitionProperty[] {
-    return this._stages
+    return [...this._stages]
       .filter(stage => !stage.transitionToEnabled)
       .map(stage => ({
         reason: stage.transitionDisabledReason,
@@ -1429,18 +1440,10 @@ export class Pipeline extends PipelineBase {
       }));
   }
 
-  private renderVariables(): CfnPipeline.VariableDeclarationProperty[] {
-    return this.variables.map(variable => variable._render());
-  }
-
-  private renderTriggers(): CfnPipeline.PipelineTriggerDeclarationProperty[] {
-    return this.triggers.map(trigger => trigger._render());
-  }
-
   private requireRegion(): string {
     const region = this.env.region;
     if (Token.isUnresolved(region)) {
-      throw new ValidationError('Pipeline stack which uses cross-environment actions must have an explicitly set region', this);
+      throw new ValidationError(lit`PipelineStackMustHaveExplicitRegion`, 'Pipeline stack which uses cross-environment actions must have an explicitly set region', this);
     }
     return region;
   }
@@ -1448,7 +1451,7 @@ export class Pipeline extends PipelineBase {
   private supportScope(): CdkStage {
     const scope = CdkStage.of(this);
     if (!scope) {
-      throw new ValidationError('Pipeline stack which uses cross-environment actions must be part of a CDK App or Stage', this);
+      throw new ValidationError(lit`PipelineStackMustBePartOfCdkApp`, 'Pipeline stack which uses cross-environment actions must be part of a CDK App or Stage', this);
     }
     return scope;
   }

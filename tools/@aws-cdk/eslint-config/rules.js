@@ -10,6 +10,7 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     '@cdklabs/no-invalid-path': ['error'],
     '@cdklabs/promiseall-no-unbounded-parallelism': [ 'error' ],
     '@cdklabs/no-evaluating-typeguard': [ 'error' ],
+    '@cdklabs/no-unconditional-token-allocation': [ 'error' ],
 
     // Error handling
     'no-throw-literal': [ 'error' ],
@@ -43,6 +44,9 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
     'jsdoc/require-property-description': ['error'],
     'jsdoc/require-returns-description': ['error'],
     'jsdoc/check-alignment': ['error'],
+
+    // Require all imports to use the type keyword if the import only exists in the type system
+    '@typescript-eslint/consistent-type-imports': 'error',
 
     // Require all imported dependencies are actually declared in package.json
     'import/no-extraneous-dependencies': [
@@ -82,8 +86,8 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
       },
     ],
 
-    // Cannot import from the same module twice
-    'no-duplicate-imports': ['error'],
+    // Cannot import from the same module twice (we prefer `import/no-duplicates` over `no-duplicate-imports` since the former can handle type imports)
+    'import/no-duplicates': ['error'],
 
     // Cannot shadow names
     'no-shadow': ['off'],
@@ -217,7 +221,9 @@ export function makeRules(/** @type{bool} */ isConstructLibrary) {
 export function makeTestRules(/** @type{bool} */ isConstructLibrary) {
   /** @type { import("@eslint/core").RulesConfig } */
   const ret = {
+    // Only for library code, not test code
     '@cdklabs/no-throw-default-error': 'off',
+    '@cdklabs/no-unconditional-token-allocation': 'off',
     'no-console': 'off',
   };
   return ret;

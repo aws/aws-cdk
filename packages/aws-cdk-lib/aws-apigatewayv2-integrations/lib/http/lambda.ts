@@ -1,14 +1,18 @@
-import {
-  HttpIntegrationType,
+import type {
   HttpRouteIntegrationBindOptions,
   HttpRouteIntegrationConfig,
-  HttpRouteIntegration,
-  PayloadFormatVersion,
   ParameterMapping,
 } from '../../../aws-apigatewayv2';
+import {
+  HttpIntegrationType,
+  HttpRouteIntegration,
+  PayloadFormatVersion,
+} from '../../../aws-apigatewayv2';
 import { ServicePrincipal } from '../../../aws-iam';
-import { CfnPermission, IFunction } from '../../../aws-lambda';
-import { Duration, Names, Stack } from '../../../core';
+import type { IFunction } from '../../../aws-lambda';
+import { CfnPermission } from '../../../aws-lambda';
+import type { Duration } from '../../../core';
+import { Names, Stack } from '../../../core';
 
 /**
  * Lambda Proxy integration properties
