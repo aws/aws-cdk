@@ -756,4 +756,152 @@ describe('OnlineEvaluationConfig', () => {
       expect(imported.executionRole).toBeDefined();
     });
   });
+
+  describe('tags', () => {
+    test('passes tags to the L1 resource', () => {
+      new OnlineEvaluationConfig(stack, 'TaggedConfig', {
+        onlineEvaluationConfigName: 'tagged_config',
+        evaluators: [
+          EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+        ],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/test'],
+          serviceNames: ['test-service.default'],
+        }),
+        tags: {
+          Environment: 'Production',
+          Team: 'AgentCore',
+        },
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        Tags: Match.arrayWith([
+          { Key: 'Environment', Value: 'Production' },
+          { Key: 'Team', Value: 'AgentCore' },
+        ]),
+      });
+    });
+
+    test('does not include tags when not specified', () => {
+      new OnlineEvaluationConfig(stack, 'NoTagsConfig', {
+        onlineEvaluationConfigName: 'no_tags_config',
+        evaluators: [
+          EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+        ],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/test'],
+          serviceNames: ['test-service.default'],
+        }),
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        Tags: Match.absent(),
+      });
+    });
+
+    test('does not include tags when empty object is passed', () => {
+      new OnlineEvaluationConfig(stack, 'EmptyTagsConfig', {
+        onlineEvaluationConfigName: 'empty_tags_config',
+        evaluators: [
+          EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+        ],
+        dataSource: DataSourceConfig.fromCloudWatchLogs({
+          logGroupNames: ['/aws/bedrock-agentcore/test'],
+          serviceNames: ['test-service.default'],
+        }),
+        tags: {},
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::BedrockAgentCore::OnlineEvaluationConfig', {
+        Tags: Match.absent(),
+      });
+    });
+
+    test('throws on invalid tag key characters', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'InvalidTagConfig', {
+          onlineEvaluationConfigName: 'invalid_tag_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: { 'invalid!key': 'value' },
+        });
+      }).toThrow(/invalid characters/);
+    });
+
+    test('throws on aws: reserved prefix in tag key', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'AwsPrefixTagConfig', {
+          onlineEvaluationConfigName: 'aws_prefix_tag_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: { 'aws:reserved': 'value' },
+        });
+      }).toThrow(/cannot start with "aws:"/);
+    });
+
+    test('throws on whitespace-only tag key', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'WhitespaceTagConfig', {
+          onlineEvaluationConfigName: 'whitespace_tag_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: { '   ': 'value' },
+        });
+      }).toThrow(/cannot be empty or consist only of whitespace/);
+    });
+
+    test('accepts Unicode characters in tag values', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'UnicodeTagConfig', {
+          onlineEvaluationConfigName: 'unicode_tag_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: { Environment: '日本語テスト' },
+        });
+      }).not.toThrow();
+    });
+
+    test('throws when more than 50 tags are provided', () => {
+      const tooManyTags: { [key: string]: string } = {};
+      for (let i = 0; i < 51; i++) {
+        tooManyTags[`key${i}`] = `value${i}`;
+      }
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'TooManyTagsConfig', {
+          onlineEvaluationConfigName: 'too_many_tags_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: tooManyTags,
+        });
+      }).toThrow(/Cannot have more than 50 tags/);
+    });
+  });
 });
