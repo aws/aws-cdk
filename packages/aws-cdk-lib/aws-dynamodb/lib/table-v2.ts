@@ -1506,6 +1506,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
 
     const resource = new CfnGlobalTable(this, 'Resource', {
       tableName: props.replicaSourceTable.tableName,
+      sseSpecification: props.encryption?._renderSseSpecification(),
       replicas: [{
         region: this.stack.region,
         deletionProtectionEnabled: props.deletionProtection,
