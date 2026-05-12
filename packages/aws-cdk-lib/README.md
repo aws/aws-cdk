@@ -422,7 +422,7 @@ declare const producer: Stack;
 declare const consumer: Stack;
 
 const bucket = new s3.Bucket(producer, 'SharedBucket');
-bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+CrossStackReferences.of(bucket).strength(CrossStackReferenceStrength.WEAK);
 
 // This reference will use Fn::GetStackOutput regardless of the global setting
 new CfnOutput(consumer, 'BucketName', { value: bucket.bucketName });

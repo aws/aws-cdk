@@ -1,3 +1,7 @@
+import type { IConstruct } from 'constructs';
+import { CfnResource } from './cfn-resource';
+import * as cxapi from '../../cx-api';
+
 /**
  * Controls how cross-stack references to a resource are resolved.
  */
@@ -26,4 +30,43 @@ export enum CrossStackReferenceStrength {
    * switches to Fn::GetStackOutput.
    */
   BOTH = 'both',
+}
+
+/**
+ * Manages cross-stack reference settings for a construct.
+ */
+export class CrossStackReferences {
+  /**
+   * Returns a `CrossStackReferences` object for the given construct.
+   *
+   * @param scope The construct to configure.
+   */
+  public static of(scope: IConstruct): CrossStackReferences {
+    return new CrossStackReferences(scope);
+  }
+
+  private constructor(private readonly scope: IConstruct) {}
+
+  /**
+   * Set the cross-stack reference strength for this construct.
+   *
+   * When set, any cross-stack reference to this construct will use the specified
+   * mechanism instead of the global default. This is useful for selectively
+   * weakening specific references to avoid the "deadly embrace" problem without
+   * changing the app-wide default.
+   *
+   * @param value - The reference strength to use.
+   */
+  public strength(value: CrossStackReferenceStrength): void {
+    const target = this.targetNode();
+    target.node.setContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES, value);
+  }
+
+  private targetNode(): IConstruct {
+    const defaultChild = this.scope.node.defaultChild;
+    if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
+      return defaultChild;
+    }
+    return this.scope;
+  }
 }

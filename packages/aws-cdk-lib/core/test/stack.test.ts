@@ -7,7 +7,7 @@ import { Fact, RegionInfo } from '../../region-info';
 import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, CrossStackReferenceStrength, Lazy, ScopedAws, Stack, validateString,
+  CfnResource, CrossStackReferences, CrossStackReferenceStrength, Lazy, ScopedAws, Stack, validateString,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws, Fn, ResolutionTypeHint,
@@ -1274,7 +1274,7 @@ describe('stack', () => {
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    exportResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+    CrossStackReferences.of(exportResource).strength(CrossStackReferenceStrength.WEAK);
 
     const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
 
@@ -1306,7 +1306,7 @@ describe('stack', () => {
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    exportResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.STRONG);
+    CrossStackReferences.of(exportResource).strength(CrossStackReferenceStrength.STRONG);
 
     const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
 
@@ -1330,7 +1330,7 @@ describe('stack', () => {
     const weakResource = new CfnResource(stack1, 'WeakResource', {
       type: 'AWS::S3::Bucket',
     });
-    weakResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+    CrossStackReferences.of(weakResource).strength(CrossStackReferenceStrength.WEAK);
 
     const strongResource = new CfnResource(stack1, 'StrongResource', {
       type: 'AWS::SNS::Topic',
@@ -1363,7 +1363,7 @@ describe('stack', () => {
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    exportResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+    CrossStackReferences.of(exportResource).strength(CrossStackReferenceStrength.WEAK);
 
     const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
 
@@ -1393,15 +1393,15 @@ describe('stack', () => {
     expect(exportReaders).toHaveLength(0);
   });
 
-  test('applyCrossStackReferenceStrength on CfnResource stores and exposes value', () => {
+  test('CrossStackReferences.of().strength() sets context on the construct', () => {
     const stack = new Stack();
     const resource = new CfnResource(stack, 'MyResource', { type: 'AWS::S3::Bucket' });
 
     // WHEN
-    resource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+    CrossStackReferences.of(resource).strength(CrossStackReferenceStrength.WEAK);
 
     // THEN
-    expect(resource._crossStackReferenceStrengthOverride).toBe(CrossStackReferenceStrength.WEAK);
+    expect(resource.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES)).toBe('weak');
   });
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {

@@ -1734,7 +1734,7 @@ describe('bucket', () => {
       const consumerStack = new cdk.Stack(app, 'Consumer', { env: { region: 'us-east-1', account: '111111111111' } });
 
       const b = new s3.Bucket(producerStack, 'MyBucket');
-      b.applyCrossStackReferenceStrength(cdk.CrossStackReferenceStrength.WEAK);
+      cdk.CrossStackReferences.of(b).strength(cdk.CrossStackReferenceStrength.WEAK);
 
       new cdk.CfnOutput(consumerStack, 'BucketName', { value: b.bucketName });
 

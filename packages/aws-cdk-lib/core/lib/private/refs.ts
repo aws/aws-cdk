@@ -36,10 +36,10 @@ export const STRING_LIST_REFERENCE_DELIMITER = '||';
 const CROSS_STACK_REFERENCE_VALUES = ['strong', 'weak', 'both'] as const;
 type CrossStackReferenceStrength = (typeof CROSS_STACK_REFERENCE_VALUES)[number];
 
-function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStrength {
+function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStrength | undefined {
   const value = scope.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES);
   if (value === undefined || value === null) {
-    return 'strong';
+    return undefined;
   }
   if (CROSS_STACK_REFERENCE_VALUES.includes(value)) {
     return value;
@@ -48,13 +48,6 @@ function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStre
     lit`InvalidCrossStackReferenceStrength`,
     `Invalid value for ${cxapi.DEFAULT_CROSS_STACK_REFERENCES}: "${value}". Must be "strong", "weak", or "both".`,
   );
-}
-
-function getResourceReferenceStrength(target: IConstruct): CrossStackReferenceStrength | undefined {
-  if (CfnResource.isCfnResource(target)) {
-    return target._crossStackReferenceStrengthOverride;
-  }
-  return undefined;
 }
 
 /**
@@ -84,12 +77,12 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
   const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
   const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
-  // Global strength is read from the consumer ("how do I receive references?") while
-  // per-resource strength is read from the producer ("how should I be referenced?").
-  // Per-resource wins when set; context can differ per-stack so the distinction matters.
-  const globalStrength = crossStackReferenceStrength(consumer);
-  const resourceStrength = getResourceReferenceStrength(reference.target);
-  const strength = resourceStrength ?? globalStrength;
+  // Per-resource strength is read from the producer via context on reference.target
+  // ("how should I be referenced?"). Global strength is read from the consumer
+  // ("how do I receive references?"). Per-resource wins when set.
+  const strength = crossStackReferenceStrength(reference.target)
+    ?? crossStackReferenceStrength(consumer)
+    ?? 'strong';
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
