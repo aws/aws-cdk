@@ -628,6 +628,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Resolve a tokenized value in the context of the current stack.
    */
+  @profileFn('Stack.resolve', { telemetry: true })
   public resolve(obj: any): any {
     return resolve(obj, {
       scope: this,
@@ -1909,4 +1910,5 @@ import { AssumptionError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './stack-trace';
+import { profileFn } from './private/perf';
 /* eslint-enable import/order */

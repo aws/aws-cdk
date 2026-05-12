@@ -2,7 +2,7 @@ import * as path from 'path';
 import type { AssetCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
 import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume } from 'aws-cdk-lib/core';
-import { AssetStaging, DockerImage } from 'aws-cdk-lib/core';
+import { AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
 import { Packaging, DependenciesFile } from './packaging';
 import type { BundlingOptions, ICommandHooks } from './types';
 
@@ -64,6 +64,7 @@ export class Bundling implements CdkBundlingOptions {
     });
   }
 
+  public readonly [PERF_BUNDLING_SRC_SYM] = 'PythonFunction';
   public readonly image: DockerImage;
   public readonly entrypoint?: string[];
   public readonly command: string[];

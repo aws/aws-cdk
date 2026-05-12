@@ -11,6 +11,7 @@ import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { AssumptionError, ValidationError } from '../../core';
+import { profileFn } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
@@ -83,6 +84,8 @@ export class Bundling implements cdk.BundlingOptions {
 
   private static esbuildInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
+
+  public readonly [cdk.PERF_BUNDLING_SRC_SYM] = 'NodejsFunction';
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -455,6 +458,7 @@ export class Bundling implements cdk.BundlingOptions {
     return steps;
   }
 
+  @profileFn('NodejsFunction#tryBundle', { telemetry: true })
   private executeBundlingSteps(scope: IConstruct, steps: BundlingStep[]) {
     const cwd = this.projectRoot;
     const osPlatform = os.platform();

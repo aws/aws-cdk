@@ -3,6 +3,7 @@ import * as path from 'path';
 import type { Architecture, AssetCode } from 'aws-cdk-lib/aws-lambda';
 import { Code, Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib/core';
+import { profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { BundlingOptions } from './types';
 import { exec, findUp, getGoBuildVersion } from './util';
 
@@ -102,6 +103,8 @@ export class Bundling implements cdk.BundlingOptions {
 
   private static runsLocally?: boolean;
 
+  public readonly [cdk.PERF_BUNDLING_SRC_SYM] = 'GoFunction';
+
   // Core bundling options
   public readonly image: cdk.DockerImage;
   public readonly command: string[];
@@ -176,6 +179,8 @@ export class Bundling implements cdk.BundlingOptions {
             process.stderr.write('go build cannot run locally. Switching to Docker bundling.\n');
             return false;
           }
+
+          using _span = profileSpan('GoFunction#tryBundle', { telemetry: true });
 
           const localCommand = createLocalCommand(outputDir);
           exec(
