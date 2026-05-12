@@ -200,12 +200,16 @@ describe('parametrized sweeps', () => {
     [Runtime.PYTHON_3_12, '3.12', 'cp312'],
     [Runtime.PYTHON_3_13, '3.13', 'cp313'],
     [Runtime.PYTHON_3_14, '3.14', 'cp314'],
-  ])('%s passes --python-version=%s and --abi=%s', (runtime, pyVersion, abi) => {
+  ])('%s passes --python-version=%s and --abi=%s (plus --only-binary=:all:)', (runtime, pyVersion, abi) => {
     const local = makeLocalBundling({ entry: ENTRY_PIP, runtime, architecture: Architecture.X86_64 });
     local.tryBundle(outputDir);
     const args = pipInstallCall()!;
     expect(args).toEqual(expect.arrayContaining(['--python-version', pyVersion]));
     expect(args).toEqual(expect.arrayContaining(['--abi', abi]));
+    // Invariant: every cell must pass --only-binary=:all: so source-only
+    // distributions are rejected (they'd be built against the host, not the
+    // Lambda runtime).
+    expect(args).toContain('--only-binary=:all:');
   });
 });
 
