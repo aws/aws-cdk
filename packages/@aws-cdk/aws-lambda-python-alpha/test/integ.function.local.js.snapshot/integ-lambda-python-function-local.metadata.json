@@ -3,12 +3,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-x86_64": [
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -18,21 +18,21 @@
       "data": "*"
     }
   ],
-  "/integ-lambda-python-function-local/LocalFunctionArn-al2-x86_64": [
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2-py310-x86_64": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "LocalFunctionArnal2x8664"
+      "data": "LocalFunctionArnal2py310x8664"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:41:13)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-arm64": [
+  "/integ-lambda-python-function-local/local-al2-py310-arm64": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -42,21 +42,21 @@
       "data": "*"
     }
   ],
-  "/integ-lambda-python-function-local/LocalFunctionArn-al2-arm64": [
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2-py310-arm64": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "LocalFunctionArnal2arm64"
+      "data": "LocalFunctionArnal2py310arm64"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:41:13)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-x86_64": [
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -66,21 +66,21 @@
       "data": "*"
     }
   ],
-  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-x86_64": [
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2-py311-x86_64": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "LocalFunctionArnal2023x8664"
+      "data": "LocalFunctionArnal2py311x8664"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:41:13)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-arm64": [
+  "/integ-lambda-python-function-local/local-al2-py311-arm64": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -90,16 +90,184 @@
       "data": "*"
     }
   ],
-  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-arm64": [
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2-py311-arm64": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "LocalFunctionArnal2023arm64"
+      "data": "LocalFunctionArnal2py311arm64"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:41:13)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py312-x86_64": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py312x8664"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py312-arm64": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py312arm64"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py313-x86_64": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py313x8664"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py313-arm64": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py313arm64"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py314-x86_64": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py314x8664"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-al2023-py314-arm64": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArnal2023py314arm64"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-musl-first": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/LocalFunctionArn-tags-override-musl-first": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LocalFunctionArntagsoverridemuslfirst"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:49:13)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
@@ -121,7 +289,7 @@
         "synthesizeTree (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:63:5)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
         "...node internals..."
       ]
     }
@@ -143,12 +311,12 @@
         "synthesizeTree (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:63:5)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-x86_64/ServiceRole": [
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -164,10 +332,10 @@
       }
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-x86_64/Resource": [
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2x86649437D0D0"
+      "data": "localal2py310x86649BDEE0EA"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -176,13 +344,13 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-arm64/ServiceRole": [
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -198,10 +366,10 @@
       }
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-arm64/Resource": [
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2arm64B8F40029"
+      "data": "localal2py310arm64DD15CBF0"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -210,13 +378,13 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-x86_64/ServiceRole": [
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -232,10 +400,10 @@
       }
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-x86_64/Resource": [
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2023x866489431DC5"
+      "data": "localal2py311x8664CADB2489"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -244,13 +412,13 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-arm64/ServiceRole": [
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -266,10 +434,10 @@
       }
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-arm64/Resource": [
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2023arm642A258311"
+      "data": "localal2py311arm64766910EA"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -278,16 +446,254 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2x86649437D0D0\"}": [
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputReflocalal2x86649437D0D039CE7182"
+      "data": "localal2023py312x86644EE211AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312arm640CEA647F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313x8664343319B1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313arm6482EC1A2E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314x8664E73D7D42"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314arm6449F0304A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-musl-first/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-musl-first/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localtagsoverridemuslfirst7B00C2F9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2py310x86649BDEE0EA\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflocalal2py310x86649BDEE0EAB47574A8"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -299,15 +705,15 @@
         "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:63:5)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2arm64B8F40029\"}": [
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2py310arm64DD15CBF0\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputReflocalal2arm64B8F400291E1FA24F"
+      "data": "ExportsOutputReflocalal2py310arm64DD15CBF0A6FFE5DC"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -319,15 +725,15 @@
         "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:63:5)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023x866489431DC5\"}": [
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2py311x8664CADB2489\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputReflocalal2023x866489431DC580C5D20E"
+      "data": "ExportsOutputReflocalal2py311x8664CADB24899B53C2AA"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -339,15 +745,15 @@
         "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:63:5)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023arm642A258311\"}": [
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2py311arm64766910EA\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "ExportsOutputReflocalal2023arm642A258311A6E5BDEB"
+      "data": "ExportsOutputReflocalal2py311arm64766910EAFBD028E1"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -359,15 +765,155 @@
         "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
         "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:63:5)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-x86_64/ServiceRole/Resource": [
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023py312x86644EE211AC\"}": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2x8664ServiceRole25F5B518"
+      "data": "ExportsOutputReflocalal2023py312x86644EE211AC8C7336AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
+        "resolveValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
+        "resolveReferences (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
+        "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023py312arm640CEA647F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflocalal2023py312arm640CEA647F71CAE4E5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
+        "resolveValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
+        "resolveReferences (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
+        "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023py313x8664343319B1\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflocalal2023py313x8664343319B1E0707CB0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
+        "resolveValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
+        "resolveReferences (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
+        "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023py313arm6482EC1A2E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflocalal2023py313arm6482EC1A2EA23B6624"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
+        "resolveValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
+        "resolveReferences (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
+        "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023py314x8664E73D7D42\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflocalal2023py314x8664E73D7D42440547A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
+        "resolveValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
+        "resolveReferences (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
+        "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localal2023py314arm6449F0304A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflocalal2023py314arm6449F0304A56F360FA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
+        "resolveValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
+        "resolveReferences (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
+        "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/Exports/Output{\"Ref\":\"localtagsoverridemuslfirst7B00C2F9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReflocaltagsoverridemuslfirst7B00C2F91799168B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
+        "resolveValue (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
+        "resolveReferences (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
+        "prepareApp (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:71:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2py310x8664ServiceRole63855A48"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -378,22 +924,22 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-x86_64/Code/AssetBucket": [
+  "/integ-lambda-python-function-local/local-al2-py310-x86_64/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-arm64/ServiceRole/Resource": [
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2arm64ServiceRole540B3958"
+      "data": "localal2py310arm64ServiceRole68ACB130"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -404,22 +950,22 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2-arm64/Code/AssetBucket": [
+  "/integ-lambda-python-function-local/local-al2-py310-arm64/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-x86_64/ServiceRole/Resource": [
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2023x8664ServiceRoleA1AA1B2D"
+      "data": "localal2py311x8664ServiceRole4D79ED5F"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -430,22 +976,22 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-x86_64/Code/AssetBucket": [
+  "/integ-lambda-python-function-local/local-al2-py311-x86_64/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-arm64/ServiceRole/Resource": [
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "localal2023arm64ServiceRole3F47930B"
+      "data": "localal2py311arm64ServiceRoleFB807A72"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -456,13 +1002,195 @@
         "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
         "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:32:24)",
-        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:52:18)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
         "...node internals..."
       ]
     }
   ],
-  "/integ-lambda-python-function-local/local-al2023-arm64/Code/AssetBucket": [
+  "/integ-lambda-python-function-local/local-al2-py311-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312x8664ServiceRoleA529E372"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py312arm64ServiceRole83524C39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py312-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313x8664ServiceRole55457719"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py313arm64ServiceRole8AF5C3FC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py313-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314x8664ServiceRole64C3B7E4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-x86_64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localal2023py314arm64ServiceRole723D64FF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-al2023-py314-arm64/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-musl-first/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "localtagsoverridemuslfirstServiceRole61E9BF44"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
+        "new Function (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
+        "new PythonFunction (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:39:24)",
+        "<anonymous> (/Users/alexy.grabov/WebstormProjects/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.local.js:60:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-python-function-local/local-tags-override-musl-first/Code/AssetBucket": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
