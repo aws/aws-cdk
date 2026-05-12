@@ -5,6 +5,32 @@
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
+  "Bucket1NotificationsHandlerPolicy2894F2A2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutBucketNotification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Bucket12520700A",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Bucket1NotificationsHandlerPolicy2894F2A2",
+    "Roles": [
+     {
+      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+     }
+    ]
+   }
+  },
   "Bucket1NotificationsBC5D9A45": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
@@ -46,6 +72,7 @@
     "SkipDestinationValidation": false
    },
    "DependsOn": [
+    "Bucket1NotificationsHandlerPolicy2894F2A2",
     "QueuePolicy25439813",
     "Queue4A7E3555",
     "TopicPolicyA1747468",
@@ -56,6 +83,32 @@
    "Type": "AWS::S3::Bucket",
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
+  },
+  "Bucket2NotificationsHandlerPolicy2BDDB4E2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutBucketNotification",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "Bucket25524B414",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "Bucket2NotificationsHandlerPolicy2BDDB4E2",
+    "Roles": [
+     {
+      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+     }
+    ]
+   }
   },
   "Bucket2NotificationsD9BA2A77": {
    "Type": "Custom::S3BucketNotifications",
@@ -93,6 +146,7 @@
     "SkipDestinationValidation": false
    },
    "DependsOn": [
+    "Bucket2NotificationsHandlerPolicy2BDDB4E2",
     "TopicPolicyA1747468",
     "TopicBFC7AF6E"
    ]
@@ -235,40 +289,6 @@
     ]
    }
   },
-  "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
-   "Type": "AWS::IAM::Policy",
-   "Properties": {
-    "PolicyDocument": {
-     "Statement": [
-      {
-       "Action": "s3:PutBucketNotification",
-       "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::GetAtt": [
-          "Bucket12520700A",
-          "Arn"
-         ]
-        },
-        {
-         "Fn::GetAtt": [
-          "Bucket25524B414",
-          "Arn"
-         ]
-        }
-       ]
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
-    "Roles": [
-     {
-      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-     }
-    ]
-   }
-  },
   "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
@@ -287,7 +307,6 @@
     "Timeout": 300
    },
    "DependsOn": [
-    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
     "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
    ]
   }
