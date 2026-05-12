@@ -1,7 +1,7 @@
 import * as apigwv2 from '../../../aws-apigatewayv2';
 import type * as ec2 from '../../../aws-ec2';
 import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { Token } from '../../../core';
+import { Lazy, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
@@ -71,10 +71,10 @@ export class AlbIntegration extends Integration {
 
     super({
       type: proxy ? IntegrationType.HTTP_PROXY : IntegrationType.HTTP,
-      // integrationHttpMethod will be updated in bind() if not provided
+      // 'ANY' satisfies the parent validation; bind() falls back to the method's HTTP method when props.httpMethod is unset.
       integrationHttpMethod: props.httpMethod ?? 'ANY',
-      // uri is required for HTTP integrations, will be updated in bind()
-      uri: 'http://placeholder.internal',
+      // Lazy so that bind()'s VPC validation runs before loadBalancerDnsName is accessed (imported ALBs may not provide it).
+      uri: Lazy.string({ produce: () => `http://${alb.loadBalancerDnsName}` }),
       options: props.options,
     });
 
@@ -83,7 +83,8 @@ export class AlbIntegration extends Integration {
   }
 
   public bind(method: Method): IntegrationConfig {
-    // Determine VPC from vpcLink or ALB
+    const bindResult = super.bind(method);
+
     const vpc = this.albProps.vpcLink?.vpc ?? this.alb.vpc;
     if (!vpc) {
       throw new ValidationError(
@@ -93,38 +94,25 @@ export class AlbIntegration extends Integration {
       );
     }
 
-    // Create or reuse VPC Link
     this.vpcLink = this.albProps.vpcLink ?? this.createVpcLink(method, vpc);
 
-    // Build integration options with VPC Link V2 settings
-    const integrationOptions: IntegrationOptions = {
-      ...this.albProps.options,
-      connectionType: ConnectionType.VPC_LINK,
-      vpcLinkV2: this.vpcLink,
-      integrationTarget: this.alb.loadBalancerArn,
-    };
-
-    // Determine HTTP method
-    const httpMethod = this.albProps.httpMethod ?? method.httpMethod;
-
-    // Generate deployment token for proper redeployment on changes
-    let deploymentToken: string | undefined;
-    if (!Token.isUnresolved(this.alb.loadBalancerArn)) {
-      deploymentToken = JSON.stringify({
-        loadBalancerArn: this.alb.loadBalancerArn,
-        vpcLinkId: this.vpcLink.vpcLinkId,
-      });
-    }
-
-    const proxy = this.albProps.proxy ?? true;
+    // loadBalancerArn is included only when resolved; vpcLinkId is always included so a VPC link swap triggers redeployment even if the ARN is a token.
+    const deploymentToken = JSON.stringify({
+      ...(Token.isUnresolved(this.alb.loadBalancerArn)
+        ? {}
+        : { loadBalancerArn: this.alb.loadBalancerArn }),
+      vpcLinkId: this.vpcLink.vpcLinkId,
+    });
 
     return {
-      type: proxy ? IntegrationType.HTTP_PROXY : IntegrationType.HTTP,
-      integrationHttpMethod: httpMethod,
-      // URI is required for HTTP integrations with VPC Link V2
-      // It sets the Host header for the backend request
-      uri: `http://${this.alb.loadBalancerDnsName}`,
-      options: integrationOptions,
+      ...bindResult,
+      integrationHttpMethod: this.albProps.httpMethod ?? method.httpMethod,
+      options: {
+        ...bindResult.options,
+        connectionType: ConnectionType.VPC_LINK,
+        vpcLinkV2: this.vpcLink,
+        integrationTarget: this.alb.loadBalancerArn,
+      },
       deploymentToken,
     };
   }
@@ -137,7 +125,6 @@ export class AlbIntegration extends Integration {
   private createVpcLink(method: Method, vpc: ec2.IVpc): apigwv2.VpcLink {
     const id = `VpcLink-${vpc.node.id}`;
 
-    // Check if a VPC link already exists in the API's scope for this VPC
     const existingVpcLink = method.api.node.tryFindChild(id) as apigwv2.VpcLink | undefined;
     if (existingVpcLink) {
       return existingVpcLink;

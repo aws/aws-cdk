@@ -1,0 +1,52 @@
+{
+  "/AlbIntegrationInteg/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/AlbIntegrationInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/AlbIntegrationInteg/DefaultTest/DeployAssert/HttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/AlbIntegrationInteg/DefaultTest/DeployAssert/HttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsHttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c"
+    }
+  ],
+  "/AlbIntegrationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/AlbIntegrationInteg/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/AlbIntegrationInteg/DefaultTest/DeployAssert/HttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c"
+    }
+  ]
+}
