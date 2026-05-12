@@ -44,6 +44,7 @@ import {
   IAspect,
   ITaggable,
   PermissionsBoundary,
+  CrossStackReferences,
   CrossStackReferenceStrength,
   RemovalPolicy,
   RemovalPolicies,
