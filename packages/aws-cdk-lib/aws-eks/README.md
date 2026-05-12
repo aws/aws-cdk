@@ -276,6 +276,31 @@ cluster.addNodegroupCapacity('custom-node-group', {
 });
 ```
 
+To define the maximum number of instances which can be simultaneously replaced in a node group during a version update you can set `maxUnavailable` or `maxUnavailablePercentage` options.
+
+> For more details visit [Updating a managed node group](https://docs.aws.amazon.com/eks/latest/userguide/update-managed-node-group.html)
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  maxSize: 5,
+  maxUnavailable: 2,
+});
+```
+
+```ts
+declare const cluster: eks.Cluster;
+cluster.addNodegroupCapacity('custom-node-group', {
+  instanceTypes: [new ec2.InstanceType('m5.large')],
+  maxUnavailablePercentage: 33,
+});
+```
+
+> **NOTE:** If you add instances with the inferentia class (`inf1` or `inf2`) or trainium class (`trn1`, `trn1n`, or `trn2`) 
+> the [neuron plugin](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/containers/dlc-then-eks-devflow.html)
+> will be automatically installed in the kubernetes cluster.
+
 ##### Default AMI type (under feature flag)
 
 By default, managed node groups that do not set `amiType` use `AL2_X86_64` (or `AL2_ARM_64` for
