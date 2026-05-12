@@ -48,6 +48,7 @@ import type { IDatabaseCluster, IServerlessCluster } from '../../aws-rds';
 import type { ISecret } from '../../aws-secretsmanager';
 import { Lazy, Names, Stack, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -406,7 +407,7 @@ export abstract class EventApiBase extends ApiBase implements IEventApi {
    */
   public grant(grantee: IGrantable, resources: AppSyncEventResource, ...actions: string[]): Grant {
     if (!this.authProviderTypes.includes(AppSyncAuthorizationType.IAM)) {
-      throw new ValidationError('CannotGrantWithoutIam', 'Cannot use grant method because IAM Authorization mode is missing in the auth providers on this API.', this);
+      throw new ValidationError(lit`CannotGrantWithoutIam`, 'Cannot use grant method because IAM Authorization mode is missing in the auth providers on this API.', this);
     }
     return Grant.addToPrincipal({
       grantee,
@@ -640,7 +641,7 @@ export class EventApi extends EventApiBase {
   constructor(scope: Construct, id: string, props: EventApiProps) {
     if (props.apiName !== undefined && !Token.isUnresolved(props.apiName)) {
       if (props.apiName.length < 1 || props.apiName.length > 50) {
-        throw new ValidationError('ApiNameLengthInvalid', `\`apiName\` must be between 1 and 50 characters, got: ${props.apiName.length} characters.`, scope);
+        throw new ValidationError(lit`ApiNameLengthInvalid`, `\`apiName\` must be between 1 and 50 characters, got: ${props.apiName.length} characters.`, scope);
       }
     }
 
@@ -756,13 +757,13 @@ export class EventApi extends EventApiBase {
     if (ownerContact === undefined || Token.isUnresolved(ownerContact)) return;
 
     if (ownerContact.length < 1 || ownerContact.length > 256) {
-      throw new ValidationError('OwnerContactLengthInvalid', `\`ownerContact\` must be between 1 and 256 characters, got: ${ownerContact.length} characters.`, this);
+      throw new ValidationError(lit`OwnerContactLengthInvalid`, `\`ownerContact\` must be between 1 and 256 characters, got: ${ownerContact.length} characters.`, this);
     }
 
     const ownerContactPattern = /^[A-Za-z0-9_\-\ \.]+$/;
 
     if (!ownerContactPattern.test(ownerContact)) {
-      throw new ValidationError('OwnerContactInvalidCharacters', `\`ownerContact\` must contain only alphanumeric characters, underscores, hyphens, spaces, and periods, got: ${ownerContact}`, this);
+      throw new ValidationError(lit`OwnerContactInvalidCharacters`, `\`ownerContact\` must contain only alphanumeric characters, underscores, hyphens, spaces, and periods, got: ${ownerContact}`, this);
     }
   }
 
@@ -809,29 +810,29 @@ export class EventApi extends EventApiBase {
     const keyConfigs = authProviders.filter((mode) => mode.authorizationType === AppSyncAuthorizationType.API_KEY);
     const someWithNoNames = keyConfigs.some((config) => !config.apiKeyConfig?.name);
     if (keyConfigs.length > 1 && someWithNoNames) {
-      throw new ValidationError('ApiKeyNamesRequired', 'You must specify key names when configuring more than 1 API key.', this);
+      throw new ValidationError(lit`ApiKeyNamesRequired`, 'You must specify key names when configuring more than 1 API key.', this);
     }
 
     if (authProviders.filter((authProvider) => authProvider.authorizationType === AppSyncAuthorizationType.LAMBDA).length > 1) {
-      throw new ValidationError('MultipleLambdaAuthorizersNotAllowed',
+      throw new ValidationError(lit`MultipleLambdaAuthorizersNotAllowed`,
         'You can only have a single AWS Lambda function configured to authorize your API. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html',
         this,
       );
     }
 
     if (authProviders.filter((authProvider) => authProvider.authorizationType === AppSyncAuthorizationType.IAM).length > 1) {
-      throw new ValidationError('DuplicateIamConfiguration', "You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html", this);
+      throw new ValidationError(lit`DuplicateIamConfiguration`, "You can't duplicate IAM configuration. See https://docs.aws.amazon.com/appsync/latest/devguide/security.html", this);
     }
 
     authProviders.map((authProvider) => {
       if (authProvider.authorizationType === AppSyncAuthorizationType.OIDC && !authProvider.openIdConnectConfig) {
-        throw new ValidationError('OidcConfigurationMissing', 'OPENID_CONNECT authorization type is specified but OIDC Authorizer Configuration is missing in the AuthProvider', this);
+        throw new ValidationError(lit`OidcConfigurationMissing`, 'OPENID_CONNECT authorization type is specified but OIDC Authorizer Configuration is missing in the AuthProvider', this);
       }
       if (authProvider.authorizationType === AppSyncAuthorizationType.USER_POOL && !authProvider.cognitoConfig) {
-        throw new ValidationError('CognitoConfigurationMissing', 'AMAZON_COGNITO_USER_POOLS authorization type is specified but Cognito Authorizer Configuration is missing in the AuthProvider', this);
+        throw new ValidationError(lit`CognitoConfigurationMissing`, 'AMAZON_COGNITO_USER_POOLS authorization type is specified but Cognito Authorizer Configuration is missing in the AuthProvider', this);
       }
       if (authProvider.authorizationType === AppSyncAuthorizationType.LAMBDA && !authProvider.lambdaAuthorizerConfig) {
-        throw new ValidationError('LambdaConfigurationMissing', 'AWS_LAMBDA authorization type is specified but Lambda Authorizer Configuration is missing in the AuthProvider', this);
+        throw new ValidationError(lit`LambdaConfigurationMissing`, 'AWS_LAMBDA authorization type is specified but Lambda Authorizer Configuration is missing in the AuthProvider', this);
       }
     });
   }
@@ -839,11 +840,11 @@ export class EventApi extends EventApiBase {
   private validateAuthorizationConfig(authProviders: AppSyncAuthProvider[], authTypes: AppSyncAuthorizationType[]) {
     for (const authType of authTypes) {
       if (!authProviders.find((authProvider) => authProvider.authorizationType === authType)) {
-        throw new ValidationError('AuthorizationConfigurationMissing', `Missing authorization configuration for ${authType}`, this);
+        throw new ValidationError(lit`AuthorizationConfigurationMissing`, `Missing authorization configuration for ${authType}`, this);
       }
     }
     if (authTypes.length === 0) {
-      throw new ValidationError('EmptyAuthModeTypesNotAllowed', 'Empty AuthModeTypes array is not allowed, if specifying, you must specify a valid mode', this);
+      throw new ValidationError(lit`EmptyAuthModeTypesNotAllowed`, 'Empty AuthModeTypes array is not allowed, if specifying, you must specify a valid mode', this);
     }
   }
 
@@ -852,7 +853,7 @@ export class EventApi extends EventApiBase {
    */
   public get appSyncDomainName(): string {
     if (!this.domainNameResource) {
-      throw new ValidationError('DomainNameConfigurationRequired', 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
+      throw new ValidationError(lit`DomainNameConfigurationRequired`, 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
     }
     return this.domainNameResource.attrAppSyncDomainName;
   }
@@ -862,7 +863,7 @@ export class EventApi extends EventApiBase {
    */
   public get customHttpEndpoint(): string {
     if (!this.domainNameResource) {
-      throw new ValidationError('DomainNameConfigurationRequired', 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
+      throw new ValidationError(lit`DomainNameConfigurationRequired`, 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
     }
     return `https://${this.domainNameResource.attrDomainName}/event`;
   }
@@ -872,7 +873,7 @@ export class EventApi extends EventApiBase {
    */
   public get customRealtimeEndpoint(): string {
     if (!this.domainNameResource) {
-      throw new ValidationError('DomainNameConfigurationRequired', 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
+      throw new ValidationError(lit`DomainNameConfigurationRequired`, 'Cannot retrieve the appSyncDomainName without a domainName configuration', this);
     }
     return `wss://${this.domainNameResource.attrDomainName}/event/realtime`;
   }

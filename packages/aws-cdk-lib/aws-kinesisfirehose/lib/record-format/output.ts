@@ -1,4 +1,5 @@
 import * as cdk from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 
 /**
@@ -149,11 +150,11 @@ export class ParquetOutputFormat implements IOutputFormat {
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new cdk.UnscopedValidationError('ParquetBlockSizeTooSmall', `Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
+      throw new cdk.UnscopedValidationError(lit`ParquetBlockSizeTooSmall`, `Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
     }
 
     if (props.pageSize !== undefined && props.pageSize.toKibibytes() < 64) {
-      throw new cdk.UnscopedValidationError('ParquetPageSizeTooSmall', `Page size ${props.pageSize.toKibibytes()} is invalid, it must be at least 64 KiB`);
+      throw new cdk.UnscopedValidationError(lit`ParquetPageSizeTooSmall`, `Page size ${props.pageSize.toKibibytes()} is invalid, it must be at least 64 KiB`);
     }
   }
 
@@ -373,27 +374,27 @@ export class OrcOutputFormat implements IOutputFormat {
     }
 
     if (props.blockSize !== undefined && props.blockSize.toMebibytes() < 64) {
-      throw new cdk.UnscopedValidationError('OrcBlockSizeTooSmall', `Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
+      throw new cdk.UnscopedValidationError(lit`OrcBlockSizeTooSmall`, `Block size ${props.blockSize.toMebibytes()} is invalid, it must be at least 64 MiB`);
     }
 
     if (props.stripeSize !== undefined && props.stripeSize.toMebibytes() < 8) {
-      throw new cdk.UnscopedValidationError('OrcStripeSizeTooSmall', `Stripe size ${props.stripeSize.toMebibytes()} is invalid, it must be at least 8 MiB`);
+      throw new cdk.UnscopedValidationError(lit`OrcStripeSizeTooSmall`, `Stripe size ${props.stripeSize.toMebibytes()} is invalid, it must be at least 8 MiB`);
     }
 
     if (props.bloomFilterFalsePositiveProbability !== undefined && !this.betweenInclusive(props.bloomFilterFalsePositiveProbability, 0, 1)) {
-      throw new cdk.UnscopedValidationError('OrcBloomFilterFalsePositiveProbabilityInvalid', `Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} is invalid, it must be between 0 and 1, inclusive`);
+      throw new cdk.UnscopedValidationError(lit`OrcBloomFilterFalsePositiveProbabilityInvalid`, `Bloom filter false positive probability ${props.bloomFilterFalsePositiveProbability} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.dictionaryKeyThreshold !== undefined && !this.betweenInclusive(props.dictionaryKeyThreshold, 0, 1)) {
-      throw new cdk.UnscopedValidationError('OrcDictionaryKeyThresholdInvalid', `Dictionary key threshold ${props.dictionaryKeyThreshold} is invalid, it must be between 0 and 1, inclusive`);
+      throw new cdk.UnscopedValidationError(lit`OrcDictionaryKeyThresholdInvalid`, `Dictionary key threshold ${props.dictionaryKeyThreshold} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.paddingTolerance !== undefined && !this.betweenInclusive(props.paddingTolerance, 0, 1)) {
-      throw new cdk.UnscopedValidationError('OrcPaddingToleranceInvalid', `Padding tolerance ${props.paddingTolerance} is invalid, it must be between 0 and 1, inclusive`);
+      throw new cdk.UnscopedValidationError(lit`OrcPaddingToleranceInvalid`, `Padding tolerance ${props.paddingTolerance} is invalid, it must be between 0 and 1, inclusive`);
     }
 
     if (props.rowIndexStride !== undefined && props.rowIndexStride < 1000) {
-      throw new cdk.UnscopedValidationError('OrcRowIndexStrideTooSmall', `Row index stride ${props.rowIndexStride} is invalid, it must be at least 1000`);
+      throw new cdk.UnscopedValidationError(lit`OrcRowIndexStrideTooSmall`, `Row index stride ${props.rowIndexStride} is invalid, it must be at least 1000`);
     }
   }
 

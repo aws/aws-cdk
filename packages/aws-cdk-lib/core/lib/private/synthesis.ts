@@ -2,24 +2,31 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
+import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
+import { iterateDfsPreorder } from './construct-iteration';
+import { generateFeatureFlagReport } from './feature-flag-report';
+import { lit } from './literal-string';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
+import * as cxschema from '../../../cloud-assembly-schema';
+import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { FeatureFlags } from '../feature-flags';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
-import type { IPolicyValidationPluginBeta1 } from '../validation';
-import { generateFeatureFlagReport } from './feature-flag-report';
+import type { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
+import type { PolicyViolation, PolicyViolatingResource } from '../validation/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
@@ -97,21 +104,123 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
 }
 
 /**
+ * The plugin name used for annotation-based violations in the validation report.
+ */
+const ANNOTATION_PLUGIN_NAME = 'Construct Annotations';
+
+/**
+ * Collect annotation metadata (warnings and errors) from the construct tree
+ * and convert them into a NamedValidationPluginReport that can be merged
+ * into the same report pipeline as plugin violations.
+ *
+ * Unlike `visit()`, this walks the entire construct tree including across
+ * Stage boundaries. This is intentional: the validation report is a single
+ * global output (not per-stage), and a plugin registered at the App level
+ * sees templates from all stages. Annotations should have the same visibility.
+ */
+function collectAnnotationReport(root: IConstruct, outdir: string): NamedValidationPluginReport | undefined {
+  // Group violations by rule so that multiple constructs triggering the same
+  // rule appear as one violation with multiple violatingResources, matching
+  // how plugins report violations. The key includes description so that
+  // generic aws-cdk:error/aws-cdk:warning annotations with different messages
+  // are kept separate.
+  const violationMap = new Map<string, PolicyViolation & { violatingResources: PolicyViolatingResource[] }>();
+
+  for (const construct of iterateDfsPreorder(root)) {
+    for (const entry of construct.node.metadata) {
+      if (entry.type !== cxschema.ArtifactMetadataEntryType.WARN && entry.type !== cxschema.ArtifactMetadataEntryType.ERROR) {
+        continue;
+      }
+
+      const message = entry.data as string;
+      const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
+      const ruleName = extractRuleName(message, severity);
+
+      // Resolve template path if the construct is inside a Stack
+      let templatePath: string | undefined;
+      try {
+        templatePath = path.join(outdir, Stack.of(construct).templateFile);
+      } catch {
+        // Construct is not inside a Stack (e.g. attached to App or Stage)
+      }
+
+      const violatingResource: PolicyViolatingResource = {
+        constructPath: construct.node.path,
+        templatePath,
+        locations: [],
+      };
+
+      const key = `${ruleName}|${severity}|${message}`;
+      const existing = violationMap.get(key);
+      if (existing) {
+        existing.violatingResources.push(violatingResource);
+      } else {
+        violationMap.set(key, {
+          ruleName,
+          description: message,
+          severity,
+          violatingResources: [violatingResource],
+        });
+      }
+    }
+  }
+
+  const violations = Array.from(violationMap.values());
+  if (violations.length === 0) {
+    return undefined;
+  }
+
+  const hasErrors = violations.some(v => v.severity === 'error');
+  return {
+    pluginName: ANNOTATION_PLUGIN_NAME,
+    success: !hasErrors,
+    violations,
+  };
+}
+
+/**
+ * Extract a rule name from an annotation message.
+ *
+ * Annotations added via `addWarningV2` or `addInfoV2` include an `[ack: <id>]`
+ * tag in the message. When present, the id is used as the rule name — this is
+ * the deterministic, preferred path.
+ *
+ * Annotations added via the older `addWarning`, `addError`, or `addInfo` APIs
+ * do not include an ack tag. In that case, a generic identifier based on the
+ * severity is used (e.g. `aws-cdk:warning`, `aws-cdk:error`). These annotations
+ * cannot be acknowledged, so uniqueness of the rule name is not required. The
+ * full message is available in the violation's `description` field.
+ *
+ * COUPLING NOTE: The `[ack: <id>]` format is produced by the `ackTag()` helper
+ * in `annotations.ts`. There is no structured metadata field for the ack id —
+ * it is embedded in the message string. If the tag format changes, this regex
+ * must be updated to match. See the test 'extractRuleName regex matches
+ * addWarningV2 ack tag format' which verifies this coupling.
+ */
+function extractRuleName(message: string, severity: string): string {
+  const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
+  if (ackMatch) {
+    return ackMatch[1];
+  }
+  return `aws-cdk:${severity}`;
+}
+
+/**
  * Invoke validation plugins for all stages in an App.
  */
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
   let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
-  const templatePathsByPlugin: Map<IPolicyValidationPluginBeta1, string[]> = new Map();
+  const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
-      for (const plugin of construct.policyValidationBeta1) {
+      for (const plugin of construct._validationPlugins) {
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
         let assemblyToUse = assemblies.get(construct.artifactId);
-        if (!assemblyToUse) throw new AssumptionError('ValidationFailed', `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
+        if (!assemblyToUse) throw new AssumptionError(lit`ValidationFailed`, `Validation failed, cannot find cloud assembly for stage ${construct.stageName}`);
         templatePathsByPlugin.get(plugin)!.push(...assemblyToUse.stacksRecursively.map(stack => stack.templateFullPath));
       }
     }
@@ -120,7 +229,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   const reports: NamedValidationPluginReport[] = [];
   if (templatePathsByPlugin.size > 0) {
     // eslint-disable-next-line no-console
-    console.log('Performing Policy Validations\n');
+    console.error('Performing Policy Validations\n');
   }
 
   if (templatePathsByPlugin.size > 0) {
@@ -143,7 +252,43 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
       });
     }
     if (FileSystem.fingerprint(outdir) !== hash) {
-      throw new AssumptionError('IllegalOperationValidationPlugin', `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+      throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    }
+  }
+
+  // Collect annotation-based violations and merge into the report pipeline
+  // when the feature flag is enabled. When disabled, annotations are only
+  // displayed through the CLI's standard metadata output.
+  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
+    const annotationReport = collectAnnotationReport(root, assembly.directory);
+    if (annotationReport) {
+      reports.push(annotationReport);
+    }
+  }
+
+  // Filter out suppressed violations. Collect all acknowledged rule IDs
+  // from construct metadata across the tree, then remove matching violations
+  // from reports. Fatal violations cannot be suppressed.
+  //
+  // Rule matching: violations are matched as <pluginName>::<ruleName> with
+  // spaces replaced by dashes. Users suppress with:
+  //   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
+  const acknowledgedRuleIds = collectAcknowledgedRuleIds(root);
+  if (acknowledgedRuleIds.size > 0) {
+    for (let i = 0; i < reports.length; i++) {
+      const pluginName = reports[i].pluginName.replace(/ /g, '-');
+      const filtered = reports[i].violations.filter(v => {
+        if (v.severity === 'fatal') return true;
+        const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
+        return !acknowledgedRuleIds.has(ruleId);
+      });
+      if (filtered.length !== reports[i].violations.length) {
+        reports[i] = {
+          ...reports[i],
+          violations: filtered,
+          success: filtered.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
+        };
+      }
     }
   }
 
@@ -172,11 +317,11 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
       }
       // eslint-disable-next-line no-console
-      console.log(message);
+      console.error(message);
       process.exitCode = 1;
     } else {
       // eslint-disable-next-line no-console
-      console.log('Policy Validation Successful!');
+      console.error('Policy Validation Successful!');
     }
   }
 }
@@ -294,7 +439,7 @@ function invokeAspectsV2(root: IConstruct) {
     }
   }
 
-  throw new UnscopedValidationError('PossibleInfiniteLoopDetected', 'We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
+  throw new UnscopedValidationError(lit`PossibleInfiniteLoopDetected`, 'We have detected a possible infinite loop while invoking Aspects. Please check your Aspects and verify there is no configuration that would cause infinite Aspect or Node creation.');
 
   function recurse(construct: IConstruct, inheritedAspects: AspectApplication[]): 'invoked' | 'abort-recursion' | 'nothing' {
     const node = construct.node;
@@ -317,7 +462,7 @@ function invokeAspectsV2(root: IConstruct) {
       // If the last invoked Aspect has a higher priority than the current one, throw an error:
       const lastInvokedAspect = invoked[invoked.length - 1];
       if (lastInvokedAspect && lastInvokedAspect.priority > aspectApplication.priority) {
-        throw new UnscopedValidationError('CannotInvokeAspectWithLowerPriority',
+        throw new UnscopedValidationError(lit`CannotInvokeAspectWithLowerPriority`,
           `Cannot invoke Aspect ${aspectApplication.aspect.constructor.name} with priority ${aspectApplication.priority} on node ${node.path}: an Aspect ${lastInvokedAspect.aspect.constructor.name} with a lower priority (added at ${lastInvokedAspect.construct.node.path} with priority ${lastInvokedAspect.priority}) was already invoked on this node.`,
         );
       }
@@ -477,7 +622,7 @@ function validateTree(root: IConstruct) {
 
   if (errors.length > 0) {
     const errorList = errors.map(e => `[${e.source.node.path}] ${e.message}`).join('\n  ');
-    throw new UnscopedValidationError('ValidationFailedWithErrors', `Validation failed with the following errors:\n  ${errorList}`);
+    throw new UnscopedValidationError(lit`ValidationFailedWithErrors`, `Validation failed with the following errors:\n  ${errorList}`);
   }
 }
 

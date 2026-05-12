@@ -539,6 +539,9 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'description': '*'
     }
   },
+  '@aws-cdk.aws-dsql-alpha': {
+    'Cluster': {}
+  },
   '@aws-cdk.aws-ec2-alpha': {
     'IpamPool': {
       'ipamScopeId': '*',
@@ -3623,6 +3626,177 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       ]
     }
   },
+  '@aws-cdk.aws-mediapackagev2-alpha': {
+    'ChannelPolicy': {
+      'channel': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'channelArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'ingestEndpointUrls': '*',
+        'channelGroup': {
+          'channelGroupName': '*',
+          'channelGroupArn': '*',
+          'egressDomain': '*',
+          'createdAt': '*',
+          'modifiedAt': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'region': '*',
+        'grants': '*'
+      },
+      'policyDocument': '*'
+    },
+    'Channel': {
+      'channelGroup': {
+        'channelGroupName': '*',
+        'channelGroupArn': '*',
+        'egressDomain': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'channelName': '*',
+      'input': '*',
+      'description': '*',
+      'tags': '*',
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'OriginEndpoint': {
+      'channel': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'channelArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'ingestEndpointUrls': '*',
+        'channelGroup': {
+          'channelGroupName': '*',
+          'channelGroupArn': '*',
+          'egressDomain': '*',
+          'createdAt': '*',
+          'modifiedAt': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'region': '*',
+        'grants': '*'
+      },
+      'originEndpointName': '*',
+      'description': '*',
+      'tags': '*',
+      'manifests': '*',
+      'startoverWindow': '*',
+      'segment': {
+        'containerType': 'ContainerType',
+        'includeIframeOnlyStreams': 'boolean',
+        'scteFilter': 'ScteMessageType',
+        'scteInSegments': 'ScteInSegments',
+        'segmentDuration': '*',
+        'segmentName': '*',
+        'tsIncludeDvbSubtitles': 'boolean',
+        'tsUseAudioRenditionGroup': 'boolean',
+        'encryption': '*'
+      },
+      'forceEndpointConfigurationConditions': 'EndpointErrorConfiguration',
+      'cdnAuth': {
+        'secrets': {
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'secretArn': '*',
+          'secretFullArn': '*',
+          'secretName': '*',
+          'secretValue': '*'
+        },
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          }
+        }
+      },
+      'removalPolicy': 'RemovalPolicy'
+    },
+    'ChannelGroup': {},
+    'OriginEndpointPolicy': {
+      'originEndpoint': {
+        'channelGroupName': '*',
+        'channelName': '*',
+        'originEndpointName': '*',
+        'originEndpointArn': '*',
+        'createdAt': '*',
+        'modifiedAt': '*',
+        'hlsManifestUrls': '*',
+        'lowLatencyHlsManifestUrls': '*',
+        'dashManifestUrls': '*',
+        'mssManifestUrls': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'policyDocument': '*',
+      'cdnAuth': {
+        'secrets': {
+          'encryptionKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'secretArn': '*',
+          'secretFullArn': '*',
+          'secretName': '*',
+          'secretValue': '*'
+        },
+        'role': {
+          'roleArn': '*',
+          'roleName': '*',
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*',
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'principalAccount': '*'
+          }
+        }
+      }
+    }
+  },
   '@aws-cdk.aws-msk-alpha': {
     'Cluster': {
       'clusterName': '*',
@@ -4595,7 +4769,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'removalPolicy': 'RemovalPolicy'
+      'removalPolicy': 'RemovalPolicy',
+      'requestMetricsStatus': 'RequestMetricsStatus'
     },
     'TablePolicy': {
       'table': {
@@ -4642,10 +4817,32 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'icebergMetadata': {
         'icebergSchema': {
           'schemaFieldList': {
+            'id': '*',
             'name': '*',
             'required': 'boolean',
             'type': '*'
           }
+        },
+        'icebergPartitionSpec': {
+          'fields': {
+            'sourceId': '*',
+            'transform': '*',
+            'name': '*',
+            'fieldId': '*'
+          },
+          'specId': '*'
+        },
+        'icebergSortOrder': {
+          'fields': {
+            'sourceId': '*',
+            'direction': 'SortDirection',
+            'nullOrder': 'NullOrder'
+          },
+          'orderId': '*'
+        },
+        'tableProperties': {
+          'key': '*',
+          'value': '*'
         }
       },
       'snapshotManagement': {
@@ -8252,6 +8449,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'ssmSessionPermissions': 'boolean',
       'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
       'deletionProtection': 'DeletionProtection',
+      'instanceLifecyclePolicy': {
+        'retentionTriggers': {
+          'terminateHookAbandon': 'TerminateHookAbandonAction'
+        }
+      },
       'addSecurityGroup': [
         {
           'securityGroupId': '*',
@@ -8490,6 +8692,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'retryStrategies': '*',
       'schedulingPriority': '*',
       'timeout': '*',
+      'skipDeregisterOnUpdate': 'boolean',
       'grantSubmitJob': [
         {
           'grantPrincipal': {
@@ -8511,7 +8714,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'retryAttempts': '*',
       'retryStrategies': '*',
       'schedulingPriority': '*',
-      'timeout': '*'
+      'timeout': '*',
+      'skipDeregisterOnUpdate': 'boolean'
     },
     'JobQueue': {},
     'ManagedEc2EcsComputeEnvironment': {
@@ -8540,8 +8744,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -8572,6 +8774,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -8654,13 +8858,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'ManagedEc2EksComputeEnvironment': {
       'kubernetesNamespace': '*',
@@ -8741,8 +8939,6 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'allocationStrategy': 'AllocationStrategy',
       'spotBidPercentage': '*',
-      'instanceTypes': '*',
-      'instanceClasses': 'InstanceClass',
       'instanceRole': {
         'roleArn': '*',
         'roleName': '*',
@@ -8773,6 +8969,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'minvCpus': '*',
       'placementGroup': '*',
+      'instanceTypes': '*',
+      'instanceClasses': 'InstanceClass',
       'maxvCpus': '*',
       'replaceComputeEnvironment': 'boolean',
       'spot': 'boolean',
@@ -8855,13 +9053,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
-      'enabled': 'boolean',
-      'addInstanceType': [
-        '*'
-      ],
-      'addInstanceClass': [
-        'InstanceClass'
-      ]
+      'enabled': 'boolean'
     },
     'FargateComputeEnvironment': {
       'maxvCpus': '*',
@@ -13334,7 +13526,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'capacityRebalance': 'boolean',
         'ssmSessionPermissions': 'boolean',
         'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-        'deletionProtection': 'DeletionProtection'
+        'deletionProtection': 'DeletionProtection',
+        'instanceLifecyclePolicy': {
+          'retentionTriggers': {
+            'terminateHookAbandon': 'TerminateHookAbandonAction'
+          }
+        }
       },
       'capacityProviders': '*',
       'enableFargateCapacityProviders': [],
@@ -13504,7 +13701,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addAsgCapacityProvider': [
@@ -14364,7 +14566,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addNodegroupCapacity': [
@@ -15479,7 +15686,12 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'capacityRebalance': 'boolean',
           'ssmSessionPermissions': 'boolean',
           'azCapacityDistributionStrategy': 'CapacityDistributionStrategy',
-          'deletionProtection': 'DeletionProtection'
+          'deletionProtection': 'DeletionProtection',
+          'instanceLifecyclePolicy': {
+            'retentionTriggers': {
+              'terminateHookAbandon': 'TerminateHookAbandonAction'
+            }
+          }
         }
       ],
       'addNodegroupCapacity': [
@@ -21550,6 +21762,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     },
     'PublicHostedZone': {
       'caaAmazon': 'boolean',
+      'acceleratedRecoveryEnabled': 'boolean',
       'crossAccountZoneDelegationPrincipal': {
         'assumeRoleAction': '*',
         'policyFragment': '*',
@@ -22219,6 +22432,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'region': '*'
         }
       },
+      'blockedEncryptionTypes': '*',
       'enforceSSL': 'boolean',
       'bucketKeyEnabled': 'boolean',
       'bucketName': '*',
@@ -23754,6 +23968,33 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'stackRegion': '*'
         }
       ]
+    },
+    'Group': {
+      'groupName': '*',
+      'canaries': {
+        'canaryId': '*',
+        'canaryName': '*',
+        'canaryArn': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'addCanary': [
+        {
+          'canaryId': '*',
+          'canaryName': '*',
+          'canaryArn': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        }
+      ]
     }
   },
   'aws-cdk-lib.core': {
@@ -24013,6 +24254,43 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   'aws-bedrock-agentcore-alpha.lib': {
+    'Evaluator': {
+      'evaluatorName': '*',
+      'evaluatorConfig': '*',
+      'level': '*',
+      'description': '*'
+    },
+    'OnlineEvaluationConfig': {
+      'evaluators': '*',
+      'dataSource': '*',
+      'onlineEvaluationConfigName': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'description': '*',
+      'samplingPercentage': '*',
+      'filters': {
+        'key': '*',
+        'operator': '*',
+        'value': '*'
+      },
+      'sessionTimeout': '*',
+      'executionStatus': '*'
+    },
     'Gateway': {
       'gatewayName': '*',
       'description': '*',
@@ -24053,6 +24331,30 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'tags': '*',
       'interceptorConfigurations': {
         'interceptionPoint': 'InterceptionPoint'
+      },
+      'policyEngineConfiguration': {
+        'policyEngine': {
+          'policyEngineArn': '*',
+          'policyEngineId': '*',
+          'policyEngineName': '*',
+          'description': '*',
+          'kmsKey': {
+            'keyArn': '*',
+            'keyId': '*',
+            'stack': '*',
+            'node': '*',
+            'env': {
+              'account': '*',
+              'region': '*'
+            }
+          },
+          'grantPrincipal': {
+            'assumeRoleAction': '*',
+            'policyFragment': '*',
+            'principalAccount': '*'
+          }
+        },
+        'mode': '*'
       },
       'addLambdaTarget': [
         '*',
@@ -24266,6 +24568,59 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         }
       ]
     },
+    'PolicyEngine': {
+      'policyEngineName': '*',
+      'description': '*',
+      'kmsKey': {
+        'keyArn': '*',
+        'keyId': '*',
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'tags': '*',
+      'addPolicy': [
+        '*',
+        {
+          'definition': '*',
+          'statement': '*',
+          'policyName': '*',
+          'description': '*',
+          'validationMode': '*'
+        }
+      ]
+    },
+    'Policy': {
+      'policyName': '*',
+      'policyEngine': {
+        'policyEngineArn': '*',
+        'policyEngineId': '*',
+        'policyEngineName': '*',
+        'description': '*',
+        'kmsKey': {
+          'keyArn': '*',
+          'keyId': '*',
+          'stack': '*',
+          'node': '*',
+          'env': {
+            'account': '*',
+            'region': '*'
+          }
+        },
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'policyFragment': '*',
+          'principalAccount': '*'
+        }
+      },
+      'definition': '*',
+      'statement': '*',
+      'description': '*',
+      'validationMode': '*'
+    },
     'RuntimeEndpoint': {
       'endpointName': '*',
       'agentRuntimeId': '*',
@@ -24304,6 +24659,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       },
       'lifecycleConfiguration': {
         'idleRuntimeSessionTimeout': '*'
+      },
+      'tracingEnabled': 'boolean',
+      'loggingConfigs': {
+        'logType': '*',
+        'destination': '*'
       },
       'addEndpoint': [
         '*',
@@ -25019,6 +25379,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'PythonShellJob': {
       'pythonVersion': 'PythonVersion',
       'maxCapacity': 'MaxCapacity',
+      'extraPythonFiles': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {
@@ -25747,7 +26108,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enableSimpleResponses': 'boolean',
       'payloadFormatVersion': 'AuthorizerPayloadVersion',
       'authorizerUri': '*',
-      'resultsCacheTtl': '*'
+      'resultsCacheTtl': '*',
+      'role': '*'
     },
     'HttpIntegration': {
       'httpApi': {
@@ -27758,7 +28120,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
@@ -28015,7 +28381,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',
@@ -28381,7 +28751,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
             }
           }
         },
-        'logDriver': '*'
+        'logDriver': '*',
+        'accessLogConfiguration': {
+          'format': 'ServiceConnectAccessLogFormat',
+          'includeQueryParameters': 'boolean'
+        }
       },
       'taskDefinitionRevision': '*',
       'volumeConfigurations': '*',

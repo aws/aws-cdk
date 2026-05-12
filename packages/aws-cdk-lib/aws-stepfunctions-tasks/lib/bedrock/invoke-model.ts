@@ -5,6 +5,7 @@ import * as iam from '../../../aws-iam';
 import type * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { Annotations, Stack, FeatureFlags, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
@@ -203,22 +204,22 @@ export class BedrockInvokeModel extends sfn.TaskStateBase {
     }
 
     if (isBodySpecified && isInputSpecified) {
-      throw new ValidationError('MustBeEitherSpecified', 'Either `body` or `input` must be specified, but not both.', this);
+      throw new ValidationError(lit`MustBeEitherSpecified`, 'Either `body` or `input` must be specified, but not both.', this);
     }
     if (!isBodySpecified && !isInputSpecified) {
-      throw new ValidationError('MustBeEitherSpecified', 'Either `body` or `input` must be specified.', this);
+      throw new ValidationError(lit`MustBeEitherSpecified`, 'Either `body` or `input` must be specified.', this);
     }
     if (props.input?.s3Location?.objectVersion !== undefined) {
-      throw new ValidationError('InputObjectVersionSupported', 'Input S3 object version is not supported.', this);
+      throw new ValidationError(lit`InputObjectVersionSupported`, 'Input S3 object version is not supported.', this);
     }
     if (props.output?.s3Location?.objectVersion !== undefined) {
-      throw new ValidationError('OutputObjectVersionSupported', 'Output S3 object version is not supported.', this);
+      throw new ValidationError(lit`OutputObjectVersionSupported`, 'Output S3 object version is not supported.', this);
     }
     if (props.input?.s3InputUri && props.input.s3Location || props.output?.s3OutputUri && props.output.s3Location) {
-      throw new ValidationError('SpecifyUriLocation', 'Either specify S3 Uri or S3 location, but not both.', this);
+      throw new ValidationError(lit`SpecifyUriLocation`, 'Either specify S3 Uri or S3 location, but not both.', this);
     }
     if (useNewS3UriParamsForTask && (props.input?.s3InputUri === '' || props.output?.s3OutputUri === '')) {
-      throw new ValidationError('UriCannotEmptyString', 'S3 Uri cannot be an empty string', this);
+      throw new ValidationError(lit`UriCannotEmptyString`, 'S3 Uri cannot be an empty string', this);
     }
 
     // Warning to let users know about the newly introduced props

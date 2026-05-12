@@ -9,6 +9,7 @@ import type { FunctionRuntime } from './runtime';
 import type { IResource } from '../../core';
 import { Resource, Lazy, Fn, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IFunctionConfigurationRef, FunctionConfigurationReference } from '../../interfaces/generated/aws-appsync-interfaces.generated';
 
@@ -176,15 +177,15 @@ export class AppsyncFunction extends Resource implements IAppsyncFunction {
 
     // If runtime is specified, code must also be
     if (props.runtime && !props.code) {
-      throw new ValidationError('CodeRequiredSpecifyingRuntime', 'Code is required when specifying a runtime', scope);
+      throw new ValidationError(lit`CodeRequiredSpecifyingRuntime`, 'Code is required when specifying a runtime', scope);
     }
 
     if (props.code && (props.requestMappingTemplate || props.responseMappingTemplate)) {
-      throw new ValidationError('MappingTemplatesCannotAlongsideCode', 'Mapping templates cannot be used alongside code', scope);
+      throw new ValidationError(lit`MappingTemplatesCannotAlongsideCode`, 'Mapping templates cannot be used alongside code', scope);
     }
 
     if (props.maxBatchSize && !(props.dataSource instanceof LambdaDataSource)) {
-      throw new ValidationError('MaxbatchsizeOnlyDataSource', 'maxBatchSize can only be set for the data source of type \LambdaDataSource\'', scope);
+      throw new ValidationError(lit`MaxbatchsizeOnlyDataSource`, 'maxBatchSize can only be set for the data source of type \LambdaDataSource\'', scope);
     }
 
     const code = props.code?.bind(this);

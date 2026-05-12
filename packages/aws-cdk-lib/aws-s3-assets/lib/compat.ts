@@ -1,6 +1,7 @@
 import { FollowMode } from '../../assets';
 import { SymlinkFollowMode } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 export function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefined {
   if (!follow) {
@@ -13,6 +14,6 @@ export function toSymlinkFollow(follow?: FollowMode): SymlinkFollowMode | undefi
     case FollowMode.BLOCK_EXTERNAL: return SymlinkFollowMode.BLOCK_EXTERNAL;
     case FollowMode.EXTERNAL: return SymlinkFollowMode.EXTERNAL;
     default:
-      throw new UnscopedValidationError('UnknownFollowMode', `unknown follow mode: ${follow}`);
+      throw new UnscopedValidationError(lit`UnknownFollowMode`, `unknown follow mode: ${follow}`);
   }
 }

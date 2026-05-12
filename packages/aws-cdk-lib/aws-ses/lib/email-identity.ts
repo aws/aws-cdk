@@ -6,9 +6,10 @@ import { Grant } from '../../aws-iam';
 import type { IPublicHostedZone } from '../../aws-route53';
 import * as route53 from '../../aws-route53';
 import type { IResource, SecretValue } from '../../core';
-import { ArnFormat, Lazy, Resource, Stack } from '../../core';
+import { ArnFormat, Resource, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IConfigurationSetRef, IEmailIdentityRef, EmailIdentityReference } from '../../interfaces/generated/aws-ses-interfaces.generated';
 
@@ -248,29 +249,27 @@ class EasyDkim extends DkimIdentity {
 
   public bind(emailIdentity: EmailIdentity, hostedZone?: route53.IPublicHostedZone): DkimIdentityConfig | undefined {
     if (hostedZone) {
-      // Use CfnRecordSet instead of CnameRecord to avoid current bad handling of
-      // tokens in route53.determineFullyQualifiedDomainName() at https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-route53/lib/util.ts
       new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken1', {
         hostedZoneId: hostedZone.hostedZoneId,
-        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName1 }),
+        name: emailIdentity.dkimDnsTokenName1,
         type: 'CNAME',
-        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue1 })],
+        resourceRecords: [emailIdentity.dkimDnsTokenValue1],
         ttl: '1800',
       });
 
       new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken2', {
         hostedZoneId: hostedZone.hostedZoneId,
-        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName2 }),
+        name: emailIdentity.dkimDnsTokenName2,
         type: 'CNAME',
-        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue2 })],
+        resourceRecords: [emailIdentity.dkimDnsTokenValue2],
         ttl: '1800',
       });
 
       new route53.CfnRecordSet(emailIdentity, 'DkimDnsToken3', {
         hostedZoneId: hostedZone.hostedZoneId,
-        name: Lazy.string({ produce: () => emailIdentity.dkimDnsTokenName3 }),
+        name: emailIdentity.dkimDnsTokenName3,
         type: 'CNAME',
-        resourceRecords: [Lazy.string({ produce: () => emailIdentity.dkimDnsTokenValue3 })],
+        resourceRecords: [emailIdentity.dkimDnsTokenValue3],
         ttl: '1800',
       });
     }
@@ -427,7 +426,7 @@ export class EmailIdentity extends EmailIdentityBase {
     const parsedArn = stack.splitArn(emailIdentityArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (parsedArn.service !== 'ses' || parsedArn.resource !== 'identity' || !parsedArn.resourceName) {
-      throw new ValidationError('InvalidEmailIdentity', `Invalid email identity ARN: ${emailIdentityArn}`, scope);
+      throw new ValidationError(lit`InvalidEmailIdentity`, `Invalid email identity ARN: ${emailIdentityArn}`, scope);
     }
 
     const emailIdentityName = parsedArn.resourceName;
@@ -511,7 +510,6 @@ export class EmailIdentity extends EmailIdentityBase {
       dkimAttributes: undefinedIfNoKeys({
         signingEnabled: props.dkimSigning,
       }),
-      dkimSigningAttributes: dkimIdentity.bind(this, props.identity.hostedZone),
       feedbackAttributes: undefinedIfNoKeys({
         emailForwardingEnabled: props.feedbackForwarding,
       }),
@@ -520,6 +518,15 @@ export class EmailIdentity extends EmailIdentityBase {
         behaviorOnMxFailure: props.mailFromBehaviorOnMxFailure,
       }),
     });
+
+    this.dkimDnsTokenName1 = identity.attrDkimDnsTokenName1;
+    this.dkimDnsTokenName2 = identity.attrDkimDnsTokenName2;
+    this.dkimDnsTokenName3 = identity.attrDkimDnsTokenName3;
+    this.dkimDnsTokenValue1 = identity.attrDkimDnsTokenValue1;
+    this.dkimDnsTokenValue2 = identity.attrDkimDnsTokenValue2;
+    this.dkimDnsTokenValue3 = identity.attrDkimDnsTokenValue3;
+
+    identity.dkimSigningAttributes = dkimIdentity.bind(this, props.identity.hostedZone);
 
     if (props.mailFromDomain && props.identity.hostedZone) {
       new route53.MxRecord(this, 'MailFromMxRecord', {
@@ -545,13 +552,6 @@ export class EmailIdentity extends EmailIdentityBase {
       resource: 'identity',
       resourceName: this.emailIdentityName,
     });
-
-    this.dkimDnsTokenName1 = identity.attrDkimDnsTokenName1;
-    this.dkimDnsTokenName2 = identity.attrDkimDnsTokenName2;
-    this.dkimDnsTokenName3 = identity.attrDkimDnsTokenName3;
-    this.dkimDnsTokenValue1 = identity.attrDkimDnsTokenValue1;
-    this.dkimDnsTokenValue2 = identity.attrDkimDnsTokenValue2;
-    this.dkimDnsTokenValue3 = identity.attrDkimDnsTokenValue3;
 
     this.dkimRecords = [
       { name: this.dkimDnsTokenName1, value: this.dkimDnsTokenValue1 },

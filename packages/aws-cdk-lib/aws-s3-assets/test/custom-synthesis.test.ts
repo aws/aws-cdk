@@ -9,6 +9,7 @@ import { Template } from '../../assertions';
 import type { FileAssetSource, FileAssetLocation, DockerImageAssetSource, DockerImageAssetLocation, ISynthesisSession } from '../../core';
 import { StackSynthesizer, App, Stack, AssetManifestBuilder, CfnParameter, CfnResource } from '../../core';
 import { UnscopedValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import type { AssetManifestArtifact } from '../../cx-api';
 import { Asset } from '../lib';
 
@@ -111,7 +112,7 @@ class CustomSynthesizer extends StackSynthesizer {
 
   addDockerImageAsset(asset: DockerImageAssetSource): DockerImageAssetLocation {
     void(asset);
-    throw new UnscopedValidationError('DockerImagesSupportedHere', 'Docker images are not supported here');
+    throw new UnscopedValidationError(lit`DockerImagesSupportedHere`, 'Docker images are not supported here');
   }
 
   synthesize(session: ISynthesisSession): void {

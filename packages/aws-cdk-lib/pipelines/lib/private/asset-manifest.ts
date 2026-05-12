@@ -4,6 +4,7 @@ import * as path from 'path';
 import type { AssetManifest, AwsDestination, DockerImageDestination, DockerImageSource, FileDestination, FileSource } from '../../../cloud-assembly-schema';
 import { Manifest } from '../../../cloud-assembly-schema';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * A manifest of assets
@@ -23,7 +24,7 @@ export class AssetManifestReader {
 
       return new AssetManifestReader(path.dirname(fileName), obj);
     } catch (e: any) {
-      throw new UnscopedValidationError('CannotReadAssetManifest', `Cannot read asset manifest '${fileName}': ${e.message}`);
+      throw new UnscopedValidationError(lit`CannotReadAssetManifest`, `Cannot read asset manifest '${fileName}': ${e.message}`);
     }
   }
 
@@ -37,7 +38,7 @@ export class AssetManifestReader {
     try {
       st = fs.statSync(filePath);
     } catch (e: any) {
-      throw new UnscopedValidationError('CannotReadAssetManifest', `Cannot read asset manifest at '${filePath}': ${e.message}`);
+      throw new UnscopedValidationError(lit`CannotReadAssetManifest`, `Cannot read asset manifest at '${filePath}': ${e.message}`);
     }
     if (st.isDirectory()) {
       return AssetManifestReader.fromFile(path.join(filePath, AssetManifestReader.DEFAULT_FILENAME));
@@ -259,11 +260,11 @@ export class DestinationPattern {
    * Parse a ':'-separated string into an asset/destination identifier
    */
   public static parse(s: string) {
-    if (!s) { throw new UnscopedValidationError('EmptyStringValidDestination', 'Empty string is not a valid destination identifier'); }
+    if (!s) { throw new UnscopedValidationError(lit`EmptyStringValidDestination`, 'Empty string is not a valid destination identifier'); }
     const parts = s.split(':').map(x => x !== '*' ? x : undefined);
     if (parts.length === 1) { return new DestinationPattern(parts[0]); }
     if (parts.length === 2) { return new DestinationPattern(parts[0] || undefined, parts[1] || undefined); }
-    throw new UnscopedValidationError('AssetIdentifierContainMost', `Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);
+    throw new UnscopedValidationError(lit`AssetIdentifierContainMost`, `Asset identifier must contain at most 2 ':'-separated parts, got '${s}'`);
   }
 
   /**
