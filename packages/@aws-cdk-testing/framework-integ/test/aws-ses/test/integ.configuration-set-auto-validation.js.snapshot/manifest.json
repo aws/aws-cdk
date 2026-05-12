@@ -1,28 +1,28 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
-    "aws-cdk-pipes-targets-sagemaker.assets": {
+    "cdk-ses-configuration-set-auto-validation.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-pipes-targets-sagemaker.assets.json",
+        "file": "cdk-ses-configuration-set-auto-validation.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-pipes-targets-sagemaker": {
+    "cdk-ses-configuration-set-auto-validation": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-pipes-targets-sagemaker.template.json",
+        "templateFile": "cdk-ses-configuration-set-auto-validation.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b28625ab14b2442bc7e9de5fb550d23962fa163b69f5b0e631186e2b1a092bcd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/03740eecae5300f89ac95343d24d739c9d971f02b5ec7d6a6c1cd2863c6e977f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-pipes-targets-sagemaker.assets"
+          "cdk-ses-configuration-set-auto-validation.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,33 +31,33 @@
         }
       },
       "dependencies": [
-        "aws-cdk-pipes-targets-sagemaker.assets"
+        "cdk-ses-configuration-set-auto-validation.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-pipes-targets-sagemaker.metadata.json",
-      "displayName": "aws-cdk-pipes-targets-sagemaker"
+      "additionalMetadataFile": "cdk-ses-configuration-set-auto-validation.metadata.json",
+      "displayName": "cdk-ses-configuration-set-auto-validation"
     },
-    "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.assets": {
+    "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.assets.json",
+        "file": "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4": {
+    "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.template.json",
+        "templateFile": "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1e4c09eb96e8359a38b41760e18837589f72bcc9a57e1e9a70f9045f9628894f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9928f5e3c4edc0a60f742913524952e0292900b14c1a0e2c5a3450df62fcc9bf.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.assets"
+          "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,11 +66,11 @@
         }
       },
       "dependencies": [
-        "aws-cdk-pipes-targets-sagemaker",
-        "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.assets"
+        "cdk-ses-configuration-set-auto-validation",
+        "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC.assets"
       ],
-      "additionalMetadataFile": "integtestpipetargetsagemakerDefaultTestDeployAssert7D2ED3D4.metadata.json",
-      "displayName": "integtest-pipe-target-sagemaker/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "ConfigurationSetAutoValidationIntegDefaultTestDeployAssertDDE6AACC.metadata.json",
+      "displayName": "ConfigurationSetAutoValidationInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -370,6 +370,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -571,16 +572,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }
