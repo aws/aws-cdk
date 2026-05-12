@@ -120,11 +120,11 @@ export class PolicyValidationReportFormatter {
     json.pluginReports.forEach(plugin => {
       output.push('');
       output.push(table([
-        [`Plugin: ${plugin.summary.pluginName}`],
+        [`Source: ${plugin.summary.pluginName}`],
         [`Version: ${plugin.version ?? 'N/A'}`],
         [`Status: ${plugin.summary.status}`],
       ], {
-        header: { content: 'Plugin Report' },
+        header: { content: 'Validation Report' },
         singleLine: true,
         columns: [{
           paddingLeft: 3,
@@ -155,9 +155,9 @@ export class PolicyValidationReportFormatter {
         for (const construct of constructs) {
           output.push('');
           output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
-          output.push(`    - Template Path: ${construct.templatePath}`);
+          output.push(`    - Template Path: ${construct.templatePath ?? 'N/A'}`);
           output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
-          output.push(`    - Resource ID: ${construct.resourceLogicalId}`);
+          output.push(`    - Resource ID: ${construct.resourceLogicalId ?? 'N/A'}`);
           if (construct.locations) {
             output.push('    - Template Locations:');
             for (const location of construct.locations) {
@@ -180,7 +180,7 @@ export class PolicyValidationReportFormatter {
     output.push('Policy Validation Report Summary');
     output.push('');
     output.push(table([
-      ['Plugin', 'Status'],
+      ['Source', 'Status'],
       ...reps.map(rep => [rep.pluginName, rep.success ? 'success' : 'failure']),
     ], { }));
 
@@ -191,7 +191,12 @@ export class PolicyValidationReportFormatter {
     return {
       title: 'Validation Report',
       pluginReports: reps
-        .filter(rep => !rep.success)
+        // Include reports that failed OR have violations to render. This is
+        // broader than the original `!rep.success` filter: a source that
+        // returns success=true with violations (e.g. annotation warnings)
+        // will now appear in the report. This is intentional — violations
+        // should always be visible regardless of the overall success status.
+        .filter(rep => !rep.success || rep.violations.length > 0)
         .map(rep => ({
           version: rep.pluginVersion,
           summary: {
@@ -207,16 +212,22 @@ export class PolicyValidationReportFormatter {
             severity: violation.severity,
             violatingResources: violation.violatingResources,
             violatingConstructs: violation.violatingResources.map(resource => {
-              const constructPath = this.tree.getConstructByLogicalId(
-                path.basename(resource.templatePath),
-                resource.resourceLogicalId,
-              )?.node.path;
+              // Use constructPath from the input if provided (e.g. annotations),
+              // otherwise derive it from the logical ID via the construct tree.
+              const constructPath = resource.constructPath ?? (
+                resource.templatePath && resource.resourceLogicalId
+                  ? this.tree.getConstructByLogicalId(
+                    path.basename(resource.templatePath),
+                    resource.resourceLogicalId,
+                  )?.node.path
+                  : undefined
+              );
               return {
                 constructStack: constructPath ? this.reportTrace.formatJson(constructPath) : undefined,
                 constructPath: constructPath,
                 locations: resource.locations,
-                resourceLogicalId: resource.resourceLogicalId,
-                templatePath: resource.templatePath,
+                resourceLogicalId: resource.resourceLogicalId ?? 'N/A',
+                templatePath: resource.templatePath ?? 'N/A',
               };
             }),
           })),

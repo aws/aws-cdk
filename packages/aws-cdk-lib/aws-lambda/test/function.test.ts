@@ -62,6 +62,20 @@ describe('function', () => {
     });
   });
 
+  test('function without layers omits Layers property', () => {
+    const stack = new cdk.Stack();
+
+    new lambda.Function(stack, 'MyLambda', {
+      code: new lambda.InlineCode('foo'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
+      Layers: Match.absent(),
+    });
+  });
+
   test('adds policy permissions', () => {
     const stack = new cdk.Stack();
     new lambda.Function(stack, 'MyLambda', {

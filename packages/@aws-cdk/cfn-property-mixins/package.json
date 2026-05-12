@@ -53,6 +53,7 @@
     "./aws-ce": "./lib/services/aws-ce/index.js",
     "./aws-certificatemanager": "./lib/services/aws-certificatemanager/index.js",
     "./aws-chatbot": "./lib/services/aws-chatbot/index.js",
+    "./aws-chime": "./lib/services/aws-chime/index.js",
     "./aws-cleanrooms": "./lib/services/aws-cleanrooms/index.js",
     "./aws-cleanroomsml": "./lib/services/aws-cleanroomsml/index.js",
     "./aws-cloud9": "./lib/services/aws-cloud9/index.js",
