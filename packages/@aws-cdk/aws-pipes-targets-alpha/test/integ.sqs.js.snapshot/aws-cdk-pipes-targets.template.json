@@ -99,7 +99,11 @@
      "InputTemplate": "<$.body>",
      "SqsQueueParameters": {}
     }
-   }
+   },
+   "DependsOn": [
+    "PipeRoleDefaultPolicy56E6A74D",
+    "PipeRole7D4AFC73"
+   ]
   }
  },
  "Outputs": {
