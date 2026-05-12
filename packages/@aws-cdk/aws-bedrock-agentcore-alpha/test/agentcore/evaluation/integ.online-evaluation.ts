@@ -53,6 +53,10 @@ new agentcore.OnlineEvaluationConfig(stack, 'BasicEvaluation', {
   }),
   description: 'Integration test evaluation with built-in and custom evaluators',
   executionStatus: agentcore.ExecutionStatus.ENABLED,
+  tags: {
+    Environment: 'IntegTest',
+    Project: 'OnlineEval',
+  },
 });
 
 new integ.IntegTest(app, 'BedrockAgentCoreOnlineEvaluation', {

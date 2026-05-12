@@ -4,9 +4,9 @@
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
-        "new IntegTestCase (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:52:1)",
+        "new IntegTestCase (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:27:24)",
+        "new IntegTest (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:100:33)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/evaluation/integ.online-evaluation.js:56:1)",
         "...node internals..."
       ]
     }
@@ -19,18 +19,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:189:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:515: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:515:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:572:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:508:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)",
         "...node internals..."
       ]
     }
@@ -43,18 +43,18 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:197:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:515: (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:515:3)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:572:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
+        "visit (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:569:9)",
+        "synthesizeTree (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:508:5)",
+        "synthesize (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "process.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:81:51)",
         "...node internals..."
       ]
     }

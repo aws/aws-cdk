@@ -404,7 +404,17 @@
      "SessionConfig": {
       "SessionTimeoutMinutes": 15
      }
-    }
+    },
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "IntegTest"
+     },
+     {
+      "Key": "Project",
+      "Value": "OnlineEval"
+     }
+    ]
    },
    "DependsOn": [
     "BasicEvaluationExecutionRoleDefaultPolicy6E0AF966",
