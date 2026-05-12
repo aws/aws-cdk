@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
 import { AnnotationPlugin } from './annotation-plugin';
+import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
 import { collectAnnotationReport } from './collect-annotation-report';
 import { generateFeatureFlagReport } from './feature-flag-report';
 import { lit } from './literal-string';
@@ -166,6 +167,32 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     }
     if (hash && FileSystem.fingerprint(outdir) !== hash) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    }
+  }
+
+  // Filter out suppressed violations. Collect all acknowledged rule IDs
+  // from construct metadata across the tree, then remove matching violations
+  // from reports. Fatal violations cannot be suppressed.
+  //
+  // Rule matching: violations are matched as <pluginName>::<ruleName> with
+  // spaces replaced by dashes. Users suppress with:
+  //   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
+  const acknowledgedRuleIds = collectAcknowledgedRuleIds(root);
+  if (acknowledgedRuleIds.size > 0) {
+    for (let i = 0; i < reports.length; i++) {
+      const pluginName = reports[i].pluginName.replace(/ /g, '-');
+      const filtered = reports[i].violations.filter(v => {
+        if (v.severity === 'fatal') return true;
+        const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
+        return !acknowledgedRuleIds.has(ruleId);
+      });
+      if (filtered.length !== reports[i].violations.length) {
+        reports[i] = {
+          ...reports[i],
+          violations: filtered,
+          success: filtered.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
+        };
+      }
     }
   }
 
