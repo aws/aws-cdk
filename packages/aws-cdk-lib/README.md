@@ -454,7 +454,7 @@ DEPLOYMENT 1: switch the resource to weak references
 
 ```ts
 declare const bucket: s3.Bucket;
-bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.BOTH);
+CrossStackReferences.of(bucket).strength(CrossStackReferenceStrength.BOTH);
 ```
 
 Deploy. This keeps the Export but switches the consumer to `Fn::GetStackOutput`.
@@ -463,7 +463,7 @@ DEPLOYMENT 2: remove the strong-side artifacts
 
 ```ts
 declare const bucket: s3.Bucket;
-bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+CrossStackReferences.of(bucket).strength(CrossStackReferenceStrength.WEAK);
 ```
 
 Deploy. The Export is now removed and the consumer uses only `Fn::GetStackOutput`.
