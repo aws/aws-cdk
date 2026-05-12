@@ -27,6 +27,7 @@ import { PropertyInjectors } from './prop-injectors';
 import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
+import { profileFn } from './private/perf';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -1910,5 +1911,4 @@ import { AssumptionError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './stack-trace';
-import { profileFn } from './private/perf';
 /* eslint-enable import/order */

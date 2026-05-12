@@ -67,7 +67,9 @@ export function profileFn(key: string, options?: ProfileOptions) {
         }
       }
     };
-    ret.name = fn.name;
+    Object.defineProperty(ret, 'name', {
+      value: fn.name,
+    });
     return ret as any;
   };
 }
