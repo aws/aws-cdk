@@ -48,8 +48,10 @@ const RATING_SCALE_MIN_OPTIONS = 1;
 const TAG_KEY_MIN = 1;
 const TAG_KEY_MAX = 128;
 const TAG_VALUE_MAX = 256;
-const TAG_KEY_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]+$/;
-const TAG_VALUE_PATTERN = /^[a-zA-Z0-9\s._:/=+@-]*$/;
+const TAGS_MAX_COUNT = 50;
+const ONLINE_EVALUATION_CONFIG_TAG_KEY_PATTERN = /^[a-zA-Z+\-=._:/@]+$/;
+const EVALUATOR_TAG_KEY_PATTERN = /^[\p{L}\p{N}\s._:/=+@"-]+$/u;
+const TAG_VALUE_PATTERN = /^[\p{L}\p{N}\s._/=+-]*$/u;
 
 /******************************************************************************
  *                              TYPES
@@ -452,10 +454,11 @@ export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope
 /**
  * Validates tags for evaluation resources.
  * @param tags - The tags object to validate
+ * @param keyPattern - The regex pattern to validate tag keys against
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
  */
-export function validateEvaluationTags(tags?: { [key: string]: string }, _scope?: IConstruct): string[] {
+function validateTags(tags: { [key: string]: string } | undefined, keyPattern: RegExp, _scope?: IConstruct): string[] {
   const errors: string[] = [];
   if (tags == null) {
     return errors;
@@ -464,13 +467,22 @@ export function validateEvaluationTags(tags?: { [key: string]: string }, _scope?
     return errors;
   }
 
+  if (Object.keys(tags).length > TAGS_MAX_COUNT) {
+    errors.push(`Cannot have more than ${TAGS_MAX_COUNT} tags, got ${Object.keys(tags).length}`);
+  }
+
   for (const [key, value] of Object.entries(tags)) {
     if (!Token.isUnresolved(key)) {
-      if (key.length < TAG_KEY_MIN || key.length > TAG_KEY_MAX) {
+      if (key.trim().length === 0) {
+        errors.push('Tag key cannot be empty or consist only of whitespace');
+      } else if (key.length < TAG_KEY_MIN || key.length > TAG_KEY_MAX) {
         errors.push(`Tag key "${key}" must be between ${TAG_KEY_MIN} and ${TAG_KEY_MAX} characters, got ${key.length}`);
       }
-      if (!TAG_KEY_PATTERN.test(key)) {
-        errors.push(`Tag key "${key}" contains invalid characters. Valid: a-zA-Z0-9 and ._:/=+@- and spaces`);
+      if (key.toLowerCase().startsWith('aws:')) {
+        errors.push(`Tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`);
+      }
+      if (!keyPattern.test(key)) {
+        errors.push(`Tag key "${key}" contains invalid characters`);
       }
     }
     if (!Token.isUnresolved(value)) {
@@ -478,10 +490,20 @@ export function validateEvaluationTags(tags?: { [key: string]: string }, _scope?
         errors.push(`Tag value for key "${key}" must be at most ${TAG_VALUE_MAX} characters, got ${value.length}`);
       }
       if (!TAG_VALUE_PATTERN.test(value)) {
-        errors.push(`Tag value for key "${key}" contains invalid characters. Valid: a-zA-Z0-9 and ._:/=+@- and spaces`);
+        errors.push(`Tag value for key "${key}" contains invalid characters. Valid: Unicode letters, digits, whitespace, and _./=+-`);
       }
     }
   }
 
   return errors;
+}
+
+/** Validates tags for Evaluator resources (Unicode keys allowed per CFN docs) */
+export function validateEvaluatorTags(tags?: { [key: string]: string }, scope?: IConstruct): string[] {
+  return validateTags(tags, EVALUATOR_TAG_KEY_PATTERN, scope);
+}
+
+/** Validates tags for OnlineEvaluationConfig resources (ASCII keys per CFN pattern) */
+export function validateEvaluationTags(tags?: { [key: string]: string }, scope?: IConstruct): string[] {
+  return validateTags(tags, ONLINE_EVALUATION_CONFIG_TAG_KEY_PATTERN, scope);
 }

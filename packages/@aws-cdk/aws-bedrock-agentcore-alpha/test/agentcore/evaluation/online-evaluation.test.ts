@@ -835,5 +835,73 @@ describe('OnlineEvaluationConfig', () => {
         });
       }).toThrow(/invalid characters/);
     });
+
+    test('throws on aws: reserved prefix in tag key', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'AwsPrefixTagConfig', {
+          onlineEvaluationConfigName: 'aws_prefix_tag_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: { 'aws:reserved': 'value' },
+        });
+      }).toThrow(/cannot start with "aws:"/);
+    });
+
+    test('throws on whitespace-only tag key', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'WhitespaceTagConfig', {
+          onlineEvaluationConfigName: 'whitespace_tag_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: { '   ': 'value' },
+        });
+      }).toThrow(/cannot be empty or consist only of whitespace/);
+    });
+
+    test('accepts Unicode characters in tag values', () => {
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'UnicodeTagConfig', {
+          onlineEvaluationConfigName: 'unicode_tag_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: { Environment: '日本語テスト' },
+        });
+      }).not.toThrow();
+    });
+
+    test('throws when more than 50 tags are provided', () => {
+      const tooManyTags: { [key: string]: string } = {};
+      for (let i = 0; i < 51; i++) {
+        tooManyTags[`key${i}`] = `value${i}`;
+      }
+      expect(() => {
+        new OnlineEvaluationConfig(stack, 'TooManyTagsConfig', {
+          onlineEvaluationConfigName: 'too_many_tags_config',
+          evaluators: [
+            EvaluatorReference.builtin(BuiltinEvaluator.HELPFULNESS),
+          ],
+          dataSource: DataSourceConfig.fromCloudWatchLogs({
+            logGroupNames: ['/aws/bedrock-agentcore/test'],
+            serviceNames: ['test-service.default'],
+          }),
+          tags: tooManyTags,
+        });
+      }).toThrow(/Cannot have more than 50 tags/);
+    });
   });
 });

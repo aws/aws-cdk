@@ -24,7 +24,7 @@ import {
   throwIfInvalid,
   validateDescription,
   validateEvaluatorName,
-  validateEvaluationTags,
+  validateEvaluatorTags,
 } from './validation-helpers';
 
 /**
@@ -243,7 +243,7 @@ export class Evaluator extends EvaluatorBase {
     throwIfInvalid(validateDescription, props.description, this);
 
     if (props.tags) {
-      throwIfInvalid(validateEvaluationTags, props.tags, this);
+      throwIfInvalid(validateEvaluatorTags, props.tags, this);
     }
 
     this.evaluatorName = this.physicalName;
