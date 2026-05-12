@@ -5,6 +5,33 @@ import type { Duration } from '../../core';
 import { Names, Token, Annotations, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
+/**
+ * Configuration for provisioned pollers for an SQS event source.
+ *
+ * Provisioned mode enables faster scaling and supports up to 20,000
+ * maximum concurrent executions compared to the standard 1,250.
+ *
+ * When provided with no properties (empty object), provisioned mode
+ * is enabled with Lambda API default values (minimumPollers: 2, maximumPollers: 200).
+ *
+ * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html#invocation-eventsourcemapping-provisioned-mode
+ */
+export interface SqsProvisionedPollerConfig {
+  /**
+   * The minimum number of event pollers this event source can scale down to.
+   *
+   * @default 2
+   */
+  readonly minimumPollers?: number;
+
+  /**
+   * The maximum number of event pollers this event source can scale up to.
+   *
+   * @default 200
+   */
+  readonly maximumPollers?: number;
+}
+
 export interface SqsEventSourceProps {
   /**
    * The largest number of records that AWS Lambda will retrieve from your event
@@ -78,6 +105,23 @@ export interface SqsEventSourceProps {
    * @default - Enhanced monitoring is disabled
    */
   readonly metricsConfig?: lambda.MetricsConfig;
+
+  /**
+   * Configuration for provisioned pollers that read from the event source.
+   * When specified, allows you to control the minimum and maximum number of pollers
+   * that can be provisioned to process events from the source.
+   *
+   * Provisioned mode enables faster scaling (up to 3x) and supports up to 20,000
+   * maximum concurrent executions compared to the standard 1,250.
+   *
+   * Note: `provisionedPollerConfig` and `maxConcurrency` are mutually exclusive.
+   * You cannot use both at the same time.
+   *
+   * @see https://docs.aws.amazon.com/lambda/latest/dg/invocation-eventsourcemapping.html#invocation-eventsourcemapping-provisioned-mode
+   *
+   * @default - no provisioned pollers
+   */
+  readonly provisionedPollerConfig?: SqsProvisionedPollerConfig;
 }
 
 /**
@@ -104,6 +148,27 @@ export class SqsEventSource implements lambda.IEventSource {
         throw new ValidationError(lit`MaximumBatchSizeInclusiveGiven`, `Maximum batch size must be between 1 and 10 inclusive (given ${this.props.batchSize}) when batching window is not specified.`, queue);
       }
     }
+    if (this.props.provisionedPollerConfig && this.props.maxConcurrency !== undefined) {
+      throw new ValidationError('ProvisionedPollerConfigMaxConcurrencyMutuallyExclusive', 'provisionedPollerConfig and maxConcurrency are mutually exclusive', queue);
+    }
+    if (this.props.provisionedPollerConfig) {
+      const { minimumPollers, maximumPollers } = this.props.provisionedPollerConfig;
+      const isResolvable = (value: number) => !Token.isUnresolved(value);
+      const isValidIntInRange = (value: number, min: number, max: number) =>
+        Number.isInteger(value) && value >= min && value <= max;
+
+      if (minimumPollers !== undefined && isResolvable(minimumPollers) && !isValidIntInRange(minimumPollers, 2, 200)) {
+        throw new ValidationError('MinimumProvisionedPollersRange', 'Minimum provisioned pollers for SQS must be an integer between 2 and 200 inclusive', queue);
+      }
+      if (maximumPollers !== undefined && isResolvable(maximumPollers) && !isValidIntInRange(maximumPollers, 2, 2000)) {
+        throw new ValidationError('MaximumProvisionedPollersRange', 'Maximum provisioned pollers for SQS must be an integer between 2 and 2000 inclusive', queue);
+      }
+      if (minimumPollers !== undefined && maximumPollers !== undefined
+        && isResolvable(minimumPollers) && isResolvable(maximumPollers)
+        && minimumPollers > maximumPollers) {
+        throw new ValidationError('MinimumPollersLessThanMaximum', 'Minimum provisioned pollers must be less than or equal to maximum provisioned pollers', queue);
+      }
+    }
   }
 
   public bind(target: lambda.IFunction) {
@@ -117,6 +182,7 @@ export class SqsEventSource implements lambda.IEventSource {
       filters: this.props.filters,
       filterEncryption: this.props.filterEncryption,
       metricsConfig: this.props.metricsConfig,
+      provisionedPollerConfig: this.props.provisionedPollerConfig,
     });
     this._eventSourceMappingId = eventSourceMapping.eventSourceMappingId;
     this._eventSourceMappingArn = eventSourceMapping.eventSourceMappingArn;

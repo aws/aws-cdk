@@ -1,0 +1,110 @@
+{
+  "/sqs-event-source-provisioned-pollers/Func": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Func217E03A4"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/SqsEventSource:sqseventsourceprovisionedpollersQueue5F400569": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Queue4A7E3555"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FuncServiceRole49680D06"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FuncLogGroup12161788"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/SqsEventSource:sqseventsourceprovisionedpollersQueue5F400569/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FuncSqsEventSourcesqseventsourceprovisionedpollersQueue5F400569EA4E22D3"
+    }
+  ],
+  "/sqs-event-source-provisioned-pollers/Func/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FuncServiceRoleDefaultPolicy588DA782"
+    }
+  ]
+}
