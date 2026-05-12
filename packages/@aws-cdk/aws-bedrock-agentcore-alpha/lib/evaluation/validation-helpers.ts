@@ -49,8 +49,8 @@ const TAG_KEY_MIN = 1;
 const TAG_KEY_MAX = 128;
 const TAG_VALUE_MAX = 256;
 const TAGS_MAX_COUNT = 50;
-const ONLINE_EVALUATION_CONFIG_TAG_KEY_PATTERN = /^[a-zA-Z+\-=._:/@]+$/;
-const EVALUATOR_TAG_KEY_PATTERN = /^[\p{L}\p{N}\s._:/=+@"-]+$/u;
+const ONLINE_EVALUATION_CONFIG_TAG_KEY_PATTERN = /^[a-zA-Z+\-=._:/]+$/;
+const EVALUATOR_TAG_KEY_PATTERN = /^[\p{L}\p{N}\s._:/=+@-]+$/u;
 const TAG_VALUE_PATTERN = /^[\p{L}\p{N}\s._/=+-]*$/u;
 
 /******************************************************************************
