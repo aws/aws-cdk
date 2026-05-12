@@ -453,6 +453,7 @@ Let's say there is a Bucket in `stack1`, and `stack2` references its
 DEPLOYMENT 1: switch the resource to weak references
 
 ```ts
+declare const bucket: s3.Bucket;
 bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.BOTH);
 ```
 
@@ -461,6 +462,7 @@ Deploy. This keeps the Export but switches the consumer to `Fn::GetStackOutput`.
 DEPLOYMENT 2: remove the strong-side artifacts
 
 ```ts
+declare const bucket: s3.Bucket;
 bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
 ```
 
