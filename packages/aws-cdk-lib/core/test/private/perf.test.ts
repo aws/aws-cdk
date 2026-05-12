@@ -40,7 +40,7 @@ test('only top-level profiled function calls are recorded', () => {
 
 test('fs can be monkey-patched', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  profileObj('fs', require('fs'));
+  profileObj('fs')(require('fs'));
 
   // GIVEN
   console.log(fs.readFileSync);
@@ -48,7 +48,7 @@ test('fs can be monkey-patched', () => {
 
   // THEN
   const ctrs = readPerfCounters();
-  expect(ctrs).toContain('fs.readFileSync');
+  expect(ctrs).toMatchObject({ 'fs.readFileSync': expect.anything() });
 });
 
 test('classes can be instrumented', () => {
@@ -64,7 +64,7 @@ test('classes can be instrumented', () => {
   expect(ctrs).toMatchObject({ 'SomeClass.method': expect.anything() });
 });
 
-test('readPerfCounters can ly select only telemetry profilings', () => {
+test('readPerfCounters can select only telemetry profilings', () => {
   // GIVEN
   const yes = profileFn('yes', { telemetry: true })(() => {});
   const no = profileFn('no')(() => {});
@@ -77,4 +77,21 @@ test('readPerfCounters can ly select only telemetry profilings', () => {
   const ctrs = readPerfCounters({ telemetry: true });
   expect(ctrs).toMatchObject({ yes: expect.anything() });
   expect(ctrs).not.toMatchObject({ no: expect.anything() });
+});
+
+test('readPerfCounters can select all profilings', () => {
+  // GIVEN
+  const yes = profileFn('yes', { telemetry: true })(() => {});
+  const no = profileFn('no')(() => {});
+
+  // WHEN
+  yes();
+  no();
+
+  // THEN
+  const ctrs = readPerfCounters();
+  expect(ctrs).toMatchObject({
+    yes: expect.anything(),
+    no: expect.anything(),
+  });
 });

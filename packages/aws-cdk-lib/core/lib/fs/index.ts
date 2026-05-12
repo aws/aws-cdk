@@ -4,7 +4,7 @@ import * as path from 'path';
 import { copyDirectory } from './copy';
 import { fingerprint } from './fingerprint';
 import type { CopyOptions, FingerprintOptions } from './options';
-import { profileObj } from '../helpers-internal';
+import { profileObj } from '../private/perf';
 
 export * from './ignore';
 export * from './options';

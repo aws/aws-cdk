@@ -11,8 +11,8 @@ import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { AssumptionError, ValidationError } from '../../core';
-import { profileFn } from '../../core/lib/helpers-internal';
 import { lit } from '../../core/lib/private/literal-string';
+import { profileFn } from '../../core/lib/private/perf';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';

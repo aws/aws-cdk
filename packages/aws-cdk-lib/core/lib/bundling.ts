@@ -4,10 +4,10 @@ import { isAbsolute, join } from 'path';
 import type { DockerCacheOption } from './assets';
 import { ExecutionError, UnscopedValidationError } from './errors';
 import { FileSystem } from './fs';
-import { profileFn } from './helpers-internal';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
 import { lit } from './private/literal-string';
+import { profileFn } from './private/perf';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
