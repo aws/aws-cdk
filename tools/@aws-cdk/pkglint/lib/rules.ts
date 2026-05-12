@@ -356,10 +356,7 @@ export class MaturitySetting extends ValidationRule {
     }
 
     if (maturity) {
-      // developer-preview banner files have been removed; skip banner checking
-      if (maturity !== 'developer-preview') {
-        this.validateReadmeHasBanner(pkg, maturity, packageLevels);
-      }
+      this.validateReadmeHasBanner(pkg, maturity, packageLevels);
     }
   }
 
@@ -483,6 +480,7 @@ export class FeatureStabilityRule extends ValidationRule {
   private readonly badges: { [key: string]: string } = {
     'Not Implemented': 'https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge',
     'Experimental': 'https://img.shields.io/badge/experimental-important.svg?style=for-the-badge',
+    'Developer Preview': 'https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge',
     'Stable': 'https://img.shields.io/badge/stable-success.svg?style=for-the-badge',
   };
 
@@ -551,7 +549,7 @@ export class FeatureStabilityRule extends ValidationRule {
       notices.push('');
     }
 
-    const noticeOrder = ['Experimental', 'Stable'];
+    const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
     for (const notice of filteredNotices) {
