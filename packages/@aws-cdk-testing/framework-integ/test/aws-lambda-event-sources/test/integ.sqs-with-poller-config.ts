@@ -39,7 +39,7 @@ const integTest = new IntegTest(app, 'lambda-event-source-sqs-with-poller-config
   testCases: [stack],
 });
 
-// fn1: maximumPollers のみ設定 → minimumPollers は SQS デフォルト値 (2) になること
+// fn1: only maximumPollers set → minimumPollers falls back to the SQS default (2)
 integTest.assertions.awsApiCall('Lambda', 'getEventSourceMapping', {
   UUID: eventSource1.eventSourceMappingId,
 }).expect(ExpectedResult.objectLike({
@@ -49,7 +49,7 @@ integTest.assertions.awsApiCall('Lambda', 'getEventSourceMapping', {
   },
 }));
 
-// fn2: minimumPollers のみ設定 → maximumPollers は SQS デフォルト値 (200) になること
+// fn2: only minimumPollers set → maximumPollers falls back to the SQS default (200)
 integTest.assertions.awsApiCall('Lambda', 'getEventSourceMapping', {
   UUID: eventSource2.eventSourceMappingId,
 }).expect(ExpectedResult.objectLike({
@@ -59,7 +59,7 @@ integTest.assertions.awsApiCall('Lambda', 'getEventSourceMapping', {
   },
 }));
 
-// fn3: minimumPollers と maximumPollers を両方設定
+// fn3: both minimumPollers and maximumPollers set
 integTest.assertions.awsApiCall('Lambda', 'getEventSourceMapping', {
   UUID: eventSource3.eventSourceMappingId,
 }).expect(ExpectedResult.objectLike({

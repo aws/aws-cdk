@@ -116,6 +116,9 @@ export class SqsEventSource implements lambda.IEventSource {
       }
     }
     if (this.props.provisionedPollerConfig) {
+      if (this.props.maxConcurrency !== undefined) {
+        throw new ValidationError(lit`SqsProvisionedPollerConfigMaxConcurrencyMutuallyExclusive`, 'provisionedPollerConfig and maxConcurrency are mutually exclusive — specify only one', queue);
+      }
       const { minimumPollers, maximumPollers } = this.props.provisionedPollerConfig;
       const hasMin = minimumPollers !== undefined && !Token.isUnresolved(minimumPollers);
       const hasMax = maximumPollers !== undefined && !Token.isUnresolved(maximumPollers);

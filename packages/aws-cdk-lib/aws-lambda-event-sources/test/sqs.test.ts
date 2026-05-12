@@ -655,4 +655,17 @@ describe('SQSEventSource', () => {
       provisionedPollerConfig: { minimumPollers, maximumPollers },
     }))).toThrow(`Minimum provisioned pollers must be less than or equal to maximum provisioned pollers, got: min=${minimumPollers}, max=${maximumPollers}`);
   });
+
+  test('fails if provisionedPollerConfig and maxConcurrency are specified together', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+    const fn = new TestFunction(stack, 'Fn');
+    const q = new sqs.Queue(stack, 'Q');
+
+    // WHEN/THEN
+    expect(() => fn.addEventSource(new sources.SqsEventSource(q, {
+      maxConcurrency: 10,
+      provisionedPollerConfig: { minimumPollers: 2, maximumPollers: 10 },
+    }))).toThrow('provisionedPollerConfig and maxConcurrency are mutually exclusive — specify only one');
+  });
 });
