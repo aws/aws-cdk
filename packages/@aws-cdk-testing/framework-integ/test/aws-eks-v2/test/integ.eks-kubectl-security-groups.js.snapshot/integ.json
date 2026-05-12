@@ -1,0 +1,21 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "EksKubectlSecurityGroupsTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-eks-kubectl-security-groups-test"
+      ],
+      "diffAssets": false,
+      "cdkCommandOptions": {
+        "deploy": {
+          "args": {
+            "rollback": false
+          }
+        }
+      },
+      "assertionStack": "EksKubectlSecurityGroupsTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EksKubectlSecurityGroupsTestDefaultTestDeployAssert7B129564"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

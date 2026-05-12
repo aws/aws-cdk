@@ -64,7 +64,8 @@
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/inbound-auth/authorizer.ts": {
     "GatewayAuthorizerType": [
       "CUSTOM_JWT",
-      "AWS_IAM"
+      "AWS_IAM",
+      "NONE"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.ts": {
@@ -138,6 +139,25 @@
       "USER_PREFERENCE",
       "EPISODIC",
       "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-statement.ts": {
+    "PolicyEffect": [
+      "permit",
+      "forbid"
+    ],
+    "PrincipalScope": [
+      "all",
+      "specific"
+    ],
+    "ActionScope": [
+      "all",
+      "specific"
+    ],
+    "ResourceScope": [
+      "all",
+      "type",
+      "specific"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime-artifact.ts": {
@@ -2143,11 +2163,14 @@
     "EcsMachineImageType": [
       "ECS_AL2",
       "ECS_AL2023",
-      "ECS_AL2_NVIDIA"
+      "ECS_AL2_NVIDIA",
+      "ECS_AL2023_NVIDIA"
     ],
     "EksMachineImageType": [
       "EKS_AL2",
-      "EKS_AL2_NVIDIA"
+      "EKS_AL2_NVIDIA",
+      "EKS_AL2023",
+      "EKS_AL2023_NVIDIA"
     ],
     "AllocationStrategy": [
       "BEST_FIT",
@@ -4264,6 +4287,10 @@
     "AlarmBehavior": [
       "ROLLBACK_ON_ALARM",
       "FAIL_ON_ALARM"
+    ],
+    "ServiceConnectAccessLogFormat": [
+      "TEXT",
+      "JSON"
     ],
     "LaunchType": [
       "EC2",
@@ -6440,6 +6467,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/validation/report.ts": {
+    "PolicyValidationReportStatus": [
+      "success",
+      "failure"
+    ],
     "PolicyValidationReportStatusBeta1": [
       "success",
       "failure"

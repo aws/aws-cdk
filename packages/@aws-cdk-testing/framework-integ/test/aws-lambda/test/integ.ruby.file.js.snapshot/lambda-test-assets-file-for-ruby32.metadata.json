@@ -1,0 +1,64 @@
+{
+  "/lambda-test-assets-file-for-ruby32/MyRubyLambda": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby32/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby32/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby32/MyRubyLambda/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby32/MyRubyLambda/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyRubyLambdaAFED834F"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby32/Exports/Output{\"Ref\":\"MyRubyLambdaAFED834F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyRubyLambdaAFED834FC50AFB5F"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby32/MyRubyLambda/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyRubyLambdaServiceRoleDC227070"
+    }
+  ],
+  "/lambda-test-assets-file-for-ruby32/MyRubyLambda/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

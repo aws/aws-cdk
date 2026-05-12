@@ -3,17 +3,30 @@
  */
 export enum SymlinkFollowMode {
   /**
-   * Never follow symlinks.
+   * Copy symlinks themselves (do not follow, preserve the symlink contents).
+   *
+   * If any of the symlinks point outside the source directory and the Cloud
+   * Assembly gets moved to a different computer, the asset may end up pointing
+   * to files that don't exist on that other computer.
    */
   NEVER = 'never',
 
   /**
-   * Materialize all symlinks, whether they are internal or external to the source directory.
+   * Copy all the files the symlinks point to (always follow).
+   *
+   * This reads target files even if the symlinks point outside the source
+   * directory.  Uses more disk space but is guaranteed to end up with a
+   * complete asset directory.
    */
   ALWAYS = 'always',
 
   /**
-   * Only follows symlinks that are external to the source directory.
+   * Materialize symlinks pointing outside, leave symlinks pointing inside
+   *
+   * If the symlink points to a file outside the source, copy the target file.
+   * Otherwise copy the symlink itself.
+   *
+   * This produces a complete asset bundle, while saving space.
    */
   EXTERNAL = 'external',
 

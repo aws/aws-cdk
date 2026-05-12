@@ -98,7 +98,7 @@ const startJobRunJob = new EmrContainersStartJobRun(stack, 'Start a Job Run', {
 const chain = sfn.Chain.start(startJobRunJob);
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition: chain,
+  definitionBody: sfn.DefinitionBody.fromChainable(chain),
   timeout: cdk.Duration.seconds(1000),
 });
 
