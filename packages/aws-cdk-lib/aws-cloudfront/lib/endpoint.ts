@@ -4,7 +4,7 @@ import type * as kinesis from '../../aws-kinesis';
 import { PhysicalName } from '../../core';
 
 /**
- * Represents the endpoints available for targetting within a realtime log config resource
+ * Represents the endpoints available for targeting within a realtime log config resource
  */
 export abstract class Endpoint {
   /**

@@ -3801,7 +3801,7 @@ describe('fargate service', () => {
       });
     });
 
-    test('creates AWS Cloud Map service for Private DNS namespace with SRV records with overriden defaults', () => {
+    test('creates AWS Cloud Map service for Private DNS namespace with SRV records with overridden defaults', () => {
       // GIVEN
       const stack = new cdk.Stack();
       const vpc = new ec2.Vpc(stack, 'MyVpc', {});

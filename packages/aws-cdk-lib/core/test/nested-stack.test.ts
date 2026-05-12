@@ -50,7 +50,7 @@ describe('nested-stack', () => {
     expect(nestedTemplate).toMatch(/^{\n \"Resources\": {\n  \"MyResource\": {\n   \"Type\": \"MyResourceType\"\n  }\n }/);
   });
 
-  test('indent templates when @aws-cdk/core:suppressTemplateIndentation is true but is overriden by suppressTemplateIndentation', () => {
+  test('indent templates when @aws-cdk/core:suppressTemplateIndentation is true but is overridden by suppressTemplateIndentation', () => {
     const app = new App({
       context: {
         '@aws-cdk/core:suppressTemplateIndentation': true,
