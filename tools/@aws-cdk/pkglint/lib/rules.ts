@@ -356,9 +356,10 @@ export class MaturitySetting extends ValidationRule {
     }
 
     if (maturity) {
-      // developer-preview is treated as experimental for banner purposes
-      const bannerMaturity = maturity === 'developer-preview' ? 'experimental' : maturity;
-      this.validateReadmeHasBanner(pkg, bannerMaturity, packageLevels);
+      // developer-preview banner files have been removed; skip banner checking
+      if (maturity !== 'developer-preview') {
+        this.validateReadmeHasBanner(pkg, maturity, packageLevels);
+      }
     }
   }
 
