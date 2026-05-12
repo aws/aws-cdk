@@ -624,6 +624,19 @@ describe('local bundling wiring', () => {
     }));
   });
 
+  test('local: true does not trigger docker build', () => {
+    (DockerImage.fromBuild as jest.Mock).mockClear();
+    const entry = path.join(__dirname, 'lambda-handler');
+    Bundling.bundle({
+      entry,
+      runtime: Runtime.PYTHON_3_11,
+      architecture: Architecture.X86_64,
+      local: true,
+    });
+
+    expect(DockerImage.fromBuild).not.toHaveBeenCalled();
+  });
+
   test('local: false leaves local undefined', () => {
     const entry = path.join(__dirname, 'lambda-handler');
     Bundling.bundle({

@@ -103,14 +103,17 @@ export class Bundling implements CdkBundlingOptions {
       commandHooks,
     });
 
-    this.image = image ?? DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
-      buildArgs: {
-        ...props.buildArgs,
-        IMAGE: runtime.bundlingImage.image,
-      },
-      platform: architecture.dockerPlatform,
-      network: props.network,
-    });
+    this.image = image
+      ?? (props.local === true
+        ? DockerImage.fromRegistry(runtime.bundlingImage.image)
+        : DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
+          buildArgs: {
+            ...props.buildArgs,
+            IMAGE: runtime.bundlingImage.image,
+          },
+          platform: architecture.dockerPlatform,
+          network: props.network,
+        }));
     this.command = props.command ?? ['bash', '-c', chain(bundlingCommands)];
     this.entrypoint = props.entrypoint;
     this.volumes = props.volumes;
