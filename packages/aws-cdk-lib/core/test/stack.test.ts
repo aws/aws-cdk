@@ -7,7 +7,7 @@ import { Fact, RegionInfo } from '../../region-info';
 import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, Lazy, ScopedAws, Stack, validateString,
+  CfnResource, CrossStackReferenceStrength, Lazy, ScopedAws, Stack, validateString,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws, Fn, ResolutionTypeHint,
@@ -1265,6 +1265,143 @@ describe('stack', () => {
 
     // THEN
     expect(() => app.synth()).toThrow(/Must be "strong", "weak", or "both"/);
+  });
+
+  test('per-resource weak override uses Fn::GetStackOutput when global is strong (same region)', () => {
+    // GIVEN - global default is strong (no context set)
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    exportResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has an Output without Export
+    expect(template1.Outputs).toBeDefined();
+    const outputKeys = Object.keys(template1.Outputs);
+    expect(outputKeys.length).toBeGreaterThan(0);
+    const output = template1.Outputs[outputKeys[0]];
+    expect(output.Export).toBeUndefined();
+
+    // THEN - consumer uses Fn::GetStackOutput
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+  });
+
+  test('per-resource strong override uses Fn::ImportValue when global is weak (same region)', () => {
+    // GIVEN - global default is weak
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    exportResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.STRONG);
+
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - consumer uses Fn::ImportValue (strong)
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::ImportValue');
+  });
+
+  test('per-resource override only affects the overridden resource', () => {
+    // GIVEN - global default is strong
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const weakResource = new CfnResource(stack1, 'WeakResource', {
+      type: 'AWS::S3::Bucket',
+    });
+    weakResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+
+    const strongResource = new CfnResource(stack1, 'StrongResource', {
+      type: 'AWS::SNS::Topic',
+    });
+
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::Lambda::Function',
+      properties: {
+        WeakRef: weakResource.getAtt('name'),
+        StrongRef: strongResource.getAtt('arn'),
+      },
+    });
+
+    const assembly = app.synth();
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - weak-overridden resource uses Fn::GetStackOutput
+    expect(template2.Resources.SomeResource.Properties.WeakRef).toHaveProperty('Fn::GetStackOutput');
+    // THEN - non-overridden resource uses Fn::ImportValue (global strong)
+    expect(template2.Resources.SomeResource.Properties.StrongRef).toHaveProperty('Fn::ImportValue');
+  });
+
+  test('per-resource weak override works for cross-region references', () => {
+    // GIVEN - global default is strong
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    exportResource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer does NOT have ExportWriter
+    const resources1 = template1.Resources ?? {};
+    const exportWriters = Object.values(resources1).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportWriter',
+    );
+    expect(exportWriters).toHaveLength(0);
+
+    // THEN - consumer uses Fn::GetStackOutput, no ExportReader
+    expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
+    const resources2 = template2.Resources ?? {};
+    const exportReaders = Object.values(resources2).filter(
+      (r: any) => r.Type === 'Custom::CrossRegionExportReader',
+    );
+    expect(exportReaders).toHaveLength(0);
+  });
+
+  test('applyCrossStackReferenceStrength on CfnResource stores and exposes value', () => {
+    const stack = new Stack();
+    const resource = new CfnResource(stack, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    // WHEN
+    resource.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+
+    // THEN
+    expect(resource._crossStackReferenceStrengthOverride).toBe(CrossStackReferenceStrength.WEAK);
   });
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {

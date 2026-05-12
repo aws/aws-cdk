@@ -50,6 +50,13 @@ function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStre
   );
 }
 
+function getResourceReferenceStrength(target: IConstruct): CrossStackReferenceStrength | undefined {
+  if (CfnResource.isCfnResource(target)) {
+    return target._crossStackReferenceStrengthOverride;
+  }
+  return undefined;
+}
+
 /**
  * This is called from the App level to resolve all references defined. Each
  * reference is resolved based on it's consumption context.
@@ -77,6 +84,12 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
   const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
   const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
+  // Global strength is read from the consumer ("how do I receive references?") while
+  // per-resource strength is read from the producer ("how should I be referenced?").
+  // Per-resource wins when set; context can differ per-stack so the distinction matters.
+  const globalStrength = crossStackReferenceStrength(consumer);
+  const resourceStrength = getResourceReferenceStrength(reference.target);
+  const strength = resourceStrength ?? globalStrength;
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
@@ -90,8 +103,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    const strength = crossStackReferenceStrength(consumer);
-
     if (strength === 'strong') {
       Annotations.of(consumer).addWarningV2(
         '@aws-cdk/core:crossAccountRefsAreAlwaysWeak',
@@ -184,8 +195,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-    const strength = crossStackReferenceStrength(consumer);
-
     if (strength === 'strong') {
       return createCrossRegionImportValue(reference, consumer);
     }
@@ -216,8 +225,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   // top-level stacks).
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
-
-  const strength = crossStackReferenceStrength(consumer);
 
   if (strength === 'strong') {
     return createImportValue(reference);

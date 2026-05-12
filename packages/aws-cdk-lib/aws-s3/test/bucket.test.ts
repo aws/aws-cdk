@@ -1728,6 +1728,23 @@ describe('bucket', () => {
       });
     });
 
+    test('allows overriding cross-stack reference strength', () => {
+      const app = new cdk.App();
+      const producerStack = new cdk.Stack(app, 'Producer', { env: { region: 'us-east-1', account: '111111111111' } });
+      const consumerStack = new cdk.Stack(app, 'Consumer', { env: { region: 'us-east-1', account: '111111111111' } });
+
+      const b = new s3.Bucket(producerStack, 'MyBucket');
+      b.applyCrossStackReferenceStrength(cdk.CrossStackReferenceStrength.WEAK);
+
+      new cdk.CfnOutput(consumerStack, 'BucketName', { value: b.bucketName });
+
+      const assembly = app.synth();
+      const consumerTemplate = assembly.getStackByName(consumerStack.stackName).template;
+
+      const output = consumerTemplate.Outputs.BucketName;
+      expect(output.Value).toHaveProperty('Fn::GetStackOutput');
+    });
+
     test('correctly sets the default child of the returned L2', () => {
       expect(bucket.node.defaultChild).toBe(cfnBucket);
     });

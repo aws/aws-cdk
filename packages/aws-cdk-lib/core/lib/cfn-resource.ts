@@ -11,6 +11,7 @@ import { addDependency, obtainDependencies, removeDependency } from './deps';
 import { CfnReference } from './private/cfn-reference';
 import type { Reference } from './reference';
 import type { RemovalPolicyOptions } from './removal-policy';
+import type { CrossStackReferenceStrength } from './cross-stack-reference-strength';
 import { RemovalPolicy } from './removal-policy';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
@@ -84,6 +85,8 @@ export class CfnResource extends CfnRefElement {
    * Is filled during prepare().
    */
   private dependsOn: Set<CfnResource> | undefined;
+
+  private _crossStackReferenceStrength?: CrossStackReferenceStrength;
 
   protected readonly cfnPropertyNames: Record<string, string> = {};
 
@@ -189,6 +192,25 @@ export class CfnResource extends CfnRefElement {
     if (options.applyToUpdateReplacePolicy !== false) {
       this.cfnOptions.updateReplacePolicy = updateReplacePolicy;
     }
+  }
+
+  /**
+   * Sets the cross-stack reference strength for this resource.
+   *
+   * When set, any cross-stack reference to this resource will use the specified
+   * strength instead of the global default from the consuming stack's context.
+   *
+   * @param strength - The reference strength to use for this resource.
+   */
+  public applyCrossStackReferenceStrength(strength: CrossStackReferenceStrength): void {
+    this._crossStackReferenceStrength = strength;
+  }
+
+  /**
+   * @internal
+   */
+  public get _crossStackReferenceStrengthOverride(): CrossStackReferenceStrength | undefined {
+    return this._crossStackReferenceStrength;
   }
 
   /**

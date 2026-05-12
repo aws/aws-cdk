@@ -380,8 +380,7 @@ The full behavior is summarized in the following table:
 
 If you have existing stacks deployed with strong references and want to switch to weak
 references, you must do so in two deployments to avoid the
-[deadly embrace](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html)
-problem:
+[deadly embrace](https://github.com/aws/aws-cdk/pull/12778) problem:
 
 **DEPLOYMENT 1**: set the flag to `"both"` and deploy.
 
@@ -411,6 +410,27 @@ This removes the strong-side infrastructure entirely (Exports for same-region,
 ExportWriter/ExportReader for cross-region). All references now use the lightweight
 `Fn::GetStackOutput` mechanism.
 
+### Per-resource reference strength override
+
+You can override the reference strength for individual resources, independent of the
+global setting. This is particularly useful when the global default is `"strong"` but
+a specific resource is causing the [deadly embrace](https://github.com/aws/aws-cdk/pull/12778)
+problem and needs to use weak references:
+
+```ts
+declare const producer: Stack;
+declare const consumer: Stack;
+
+const bucket = new s3.Bucket(producer, 'SharedBucket');
+bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+
+// This reference will use Fn::GetStackOutput regardless of the global setting
+new CfnOutput(consumer, 'BucketName', { value: bucket.bucketName });
+```
+
+The override applies to all cross-stack references pointing to that resource. Other
+resources in the same stack continue to use the global default.
+
 ### Removing automatic cross-stack references
 
 The automatic references created by CDK when you use resources across stacks
@@ -421,27 +441,40 @@ resources that are referenced in this way. You will see an error like:
 Export Stack1:ExportsOutputFnGetAtt-****** cannot be deleted as it is in use by Stack1
 ```
 
-Let's say there is a Bucket in the `stack1`, and the `stack2` references its
+This happens because strong references create CloudFormation Exports that cannot be
+deleted while a consumer exists. The recommended solution is to weaken the reference
+first, then remove the resource.
+
+Let's say there is a Bucket in `stack1`, and `stack2` references its
 `bucket.bucketName`. You now want to remove the bucket and run into the error above.
 
-It's not safe to remove `stack1.bucket` while `stack2` is still using it, so
-unblocking yourself from this is a two-step process. This is how it works:
+**Option A: Weaken the specific resource (recommended)**
 
-DEPLOYMENT 1: break the relationship
+DEPLOYMENT 1: switch the resource to weak references
 
-- Make sure `stack2` no longer references `bucket.bucketName` (maybe the consumer
-  stack now uses its own bucket, or it writes to an AWS DynamoDB table, or maybe you just
-  remove the Lambda Function altogether).
-- In the `stack1` class, call `this.exportValue(this.bucket.bucketName)`. This
-  will make sure the CloudFormation Export continues to exist while the relationship
-  between the two stacks is being broken.
-- Deploy (this will effectively only change the `stack2`, but it's safe to deploy both).
+```ts
+bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.BOTH);
+```
 
-DEPLOYMENT 2: remove the resource
+Deploy. This keeps the Export but switches the consumer to `Fn::GetStackOutput`.
 
-- You are now free to remove the `bucket` resource from `stack1`.
-- Don't forget to remove the `exportValue()` call as well.
-- Deploy again (this time only the `stack1` will be changed -- the bucket will be deleted).
+DEPLOYMENT 2: remove the strong-side artifacts
+
+```ts
+bucket.applyCrossStackReferenceStrength(CrossStackReferenceStrength.WEAK);
+```
+
+Deploy. The Export is now removed and the consumer uses only `Fn::GetStackOutput`.
+
+DEPLOYMENT 3: remove the resource
+
+- Remove the bucket from `stack1` and any references from `stack2`.
+- Deploy.
+
+**Option B: Weaken all references globally**
+
+Follow the [migration steps above](#migrating-from-strong-to-weak-references) to
+switch the entire app from `"strong"` to `"both"` to `"weak"`, then remove the resource.
 
 ## Durations
 
