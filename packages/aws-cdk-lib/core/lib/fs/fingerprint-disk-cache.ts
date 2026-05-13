@@ -58,9 +58,20 @@ export class FingerprintDiskCache {
     try {
       fs.mkdirSync(CACHE_DIR, { recursive: true });
       const entries = Array.from(this.cache.entries());
-      fs.writeFileSync(this.cacheFile, JSON.stringify(entries));
-      this.dirty = false;
-      this._evictCacheDir();
+
+      // In order to make sure multiple processes don't trample on each other, do a tempfile+rename
+      let tempFile: string | undefined = `${this.cacheFile}.${Date.now()}.${Math.random()}`;
+      try {
+        fs.writeFileSync(tempFile, JSON.stringify(entries));
+        fs.renameSync(tempFile, this.cacheFile);
+        tempFile = undefined;
+        this.dirty = false;
+        this._evictCacheDir();
+      } finally {
+        if (tempFile) {
+          fs.rmSync(tempFile, { force: true });
+        }
+      }
     } catch {
       // Best-effort — don't fail the build if cache can't be written
     }
