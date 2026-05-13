@@ -1,11 +1,10 @@
 import type { IConstruct } from 'constructs';
-import { CfnResource } from './cfn-resource';
 import * as cxapi from '../../cx-api';
 
 /**
  * Controls how cross-stack references to a resource are resolved.
  */
-export enum CrossStackReferenceStrength {
+export enum ReferenceStrength {
   /**
    * Strong reference: uses CloudFormation Export/Import (same region)
    * or ExportWriter/ExportReader custom resources (cross-region).
@@ -22,7 +21,7 @@ export enum CrossStackReferenceStrength {
    * This will cause infrastructure in consuming stacks to temporarily reference a nonexistant
    * resource until the consumers are updated as well, causing any accesses in that time
    * frame to fail.
-   * 
+   *
    * Strong references prevent this.
    */
   WEAK = 'weak',
@@ -62,16 +61,7 @@ export class CrossStackReferences {
    *
    * @param value - The reference strength to use.
    */
-  public strength(value: CrossStackReferenceStrength): void {
-    const target = this.targetNode();
-    target.node.setContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES, value);
-  }
-
-  private targetNode(): IConstruct {
-    const defaultChild = this.scope.node.defaultChild;
-    if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
-      return defaultChild;
-    }
-    return this.scope;
+  public strength(value: ReferenceStrength): void {
+    this.scope.node.setContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES, value);
   }
 }

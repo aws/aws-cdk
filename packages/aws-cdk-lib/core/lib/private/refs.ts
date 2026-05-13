@@ -34,9 +34,9 @@ import type {
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
 const CROSS_STACK_REFERENCE_VALUES = ['strong', 'weak', 'both'] as const;
-type CrossStackReferenceStrength = (typeof CROSS_STACK_REFERENCE_VALUES)[number];
+type ReferenceStrength = (typeof CROSS_STACK_REFERENCE_VALUES)[number];
 
-function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStrength | undefined {
+function crossStackReferenceStrength(scope: IConstruct): ReferenceStrength | undefined {
   const value = scope.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES);
   if (value === undefined || value === null) {
     return undefined;
@@ -45,7 +45,7 @@ function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStre
     return value;
   }
   throw new UnscopedValidationError(
-    lit`InvalidCrossStackReferenceStrength`,
+    lit`InvalidReferenceStrength`,
     `Invalid value for ${cxapi.DEFAULT_CROSS_STACK_REFERENCES}: "${value}". Must be "strong", "weak", or "both".`,
   );
 }
