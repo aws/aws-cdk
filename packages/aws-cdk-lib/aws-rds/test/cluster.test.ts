@@ -5810,6 +5810,7 @@ describe('cluster', () => {
 
 test.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'RetainExceptOnCreate', 'RetainExceptOnCreate'],
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
   [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
 ])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
@@ -5844,6 +5845,7 @@ test.each([
 
 test.each([
   [cdk.RemovalPolicy.RETAIN, 'Retain', 'Retain', 'Retain'],
+  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, 'RetainExceptOnCreate', 'RetainExceptOnCreate', 'RetainExceptOnCreate'],
   [cdk.RemovalPolicy.SNAPSHOT, 'Snapshot', 'Delete', Match.absent()],
   [cdk.RemovalPolicy.DESTROY, 'Delete', 'Delete', Match.absent()],
 ])('if Cluster RemovalPolicy is \'%s\', the DBCluster has DeletionPolicy \'%s\', the DBInstance has \'%s\' and the DBSubnetGroup has \'%s\'', (clusterRemovalPolicy, clusterValue, instanceValue, subnetValue) => {
@@ -5874,6 +5876,29 @@ test.each([
   Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
     DeletionPolicy: subnetValue,
     UpdateReplacePolicy: subnetValue,
+  });
+});
+
+test.each([
+  [cdk.RemovalPolicy.RETAIN, true],
+  [cdk.RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE, true],
+  [cdk.RemovalPolicy.SNAPSHOT, Match.absent()],
+  [cdk.RemovalPolicy.DESTROY, Match.absent()],
+])('if Cluster RemovalPolicy is \'%s\', DeletionProtection is auto-set to \'%s\'', (removalPolicy, deletionProtection) => {
+  const stack = new cdk.Stack();
+
+  new DatabaseCluster(stack, 'Cluster', {
+    credentials: { username: 'admin' },
+    engine: DatabaseClusterEngine.AURORA_MYSQL,
+    instanceProps: {
+      instanceType: ec2.InstanceType.of(ec2.InstanceClass.M5, ec2.InstanceSize.LARGE),
+      vpc: new ec2.Vpc(stack, 'Vpc'),
+    },
+    removalPolicy,
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::RDS::DBCluster', {
+    DeletionProtection: deletionProtection,
   });
 });
 
