@@ -33,6 +33,7 @@
       "dependencies": [
         "CrossRegionWeakRefProducerInteg.assets"
       ],
+      "additionalMetadataFile": "CrossRegionWeakRefProducerInteg.metadata.json",
       "displayName": "CrossRegionWeakRefProducerInteg"
     },
     "CrossRegionWeakRefConsumerInteg.assets": {
@@ -68,6 +69,7 @@
         "CrossRegionWeakRefProducerInteg",
         "CrossRegionWeakRefConsumerInteg.assets"
       ],
+      "additionalMetadataFile": "CrossRegionWeakRefConsumerInteg.metadata.json",
       "displayName": "CrossRegionWeakRefConsumerInteg"
     },
     "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.assets": {
@@ -102,6 +104,7 @@
       "dependencies": [
         "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.assets"
       ],
+      "additionalMetadataFile": "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.metadata.json",
       "displayName": "CrossRegionWeakReferenceTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -627,10 +630,10 @@
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
-          "@aws-cdk/core:crossStackReferenceStrength": {
+          "@aws-cdk/core:defaultCrossStackReferences": {
             "userValue": "weak",
-            "recommendedValue": "weak",
-            "explanation": "Controls whether cross-stack references are strong, weak, or both",
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
               "v2": "strong"
             }

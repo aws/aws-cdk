@@ -1404,6 +1404,98 @@ describe('stack', () => {
     expect(resource.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES)).toBe('weak');
   });
 
+  test('consumeReference weakens a single reference usage (same region)', () => {
+    // GIVEN - global default is strong
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const resource = new CfnResource(stack1, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN - one reference uses consumeReference, another uses the raw token
+    new CfnResource(stack2, 'WeakConsumer', {
+      type: 'AWS::Lambda::Function',
+      properties: { Description: stack2.consumeReference(resource.getAtt('Arn').toString()) },
+    });
+    new CfnResource(stack2, 'StrongConsumer', {
+      type: 'AWS::Lambda::Function',
+      properties: { Description: resource.getAtt('Arn') },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has an Output (for weak) AND an Export (for strong)
+    expect(template1.Outputs).toBeDefined();
+
+    // THEN - weak consumer uses Fn::GetStackOutput
+    expect(template2.Resources.WeakConsumer.Properties.Description).toHaveProperty('Fn::GetStackOutput');
+    // THEN - strong consumer uses Fn::ImportValue
+    expect(template2.Resources.StrongConsumer.Properties.Description).toHaveProperty('Fn::ImportValue');
+  });
+
+  test('consumeReference defaults to BOTH strength (same region)', () => {
+    // GIVEN - global default is strong
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const resource = new CfnResource(stack1, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'BothConsumer', {
+      type: 'AWS::Lambda::Function',
+      properties: { Description: stack2.consumeReference(resource.getAtt('Arn').toString()) },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has Output with Export (the 'both' keeps the strong-side export)
+    const outputs = template1.Outputs ?? {};
+    const outputWithExport = Object.values(outputs).find((o: any) => o.Export);
+    expect(outputWithExport).toBeDefined();
+
+    // THEN - consumer uses Fn::GetStackOutput (the 'both' switches consumer to weak)
+    expect(template2.Resources.BothConsumer.Properties.Description).toHaveProperty('Fn::GetStackOutput');
+  });
+
+  test('consumeReference with explicit WEAK strength (same region)', () => {
+    // GIVEN
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const resource = new CfnResource(stack1, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'WeakConsumer', {
+      type: 'AWS::Lambda::Function',
+      properties: { Description: stack2.consumeReference(resource.getAtt('Arn').toString(), ReferenceStrength.WEAK) },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has Output WITHOUT Export
+    const outputs = template1.Outputs ?? {};
+    const outputWithExport = Object.values(outputs).find((o: any) => o.Export);
+    expect(outputWithExport).toBeUndefined();
+
+    // THEN - consumer uses Fn::GetStackOutput
+    expect(template2.Resources.WeakConsumer.Properties.Description).toHaveProperty('Fn::GetStackOutput');
+  });
+
+  test('consumeReference throws for non-reference values', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    expect(() => stack.consumeReference('just-a-string')).toThrow(/consumeReference: the value must be a resource attribute reference/);
+  });
+
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
     // GIVEN
     const app = new App({

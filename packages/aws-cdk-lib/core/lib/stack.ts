@@ -1351,6 +1351,60 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Override the reference strength for a specific cross-stack reference value.
+   *
+   * Use this to weaken (or strengthen) an individual reference without
+   * affecting other references to the same resource. For example:
+   *
+   * ```ts
+   * // producerStack defines an SNS topic
+   * declare const topic: sns.Topic;
+   *
+   * // consumerStack subscribes to it with a weak reference,
+   * // so the producer can be torn down without blocking on this consumer
+   * const consumerStack = new Stack(app, 'Consumer', { env });
+   * new sns.Subscription(consumerStack, 'Subscription', {
+   *   topic: sns.Topic.fromTopicArn(consumerStack, 'Topic',
+   *     Stack.of(consumerStack).consumeReference(topic.topicArn)),
+   *   endpoint: 'https://example.com/webhook',
+   *   protocol: sns.SubscriptionProtocol.HTTPS,
+   * });
+   * ```
+   *
+   * @param value A tokenized string reference (e.g. `bucket.bucketArn`).
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public consumeReference(value: string, strength: ReferenceStrength = ReferenceStrength.BOTH): string {
+    return Token.asString(this.makeCustomCoupledReference(value, strength));
+  }
+
+  /**
+   * Override the reference strength for a specific cross-stack string list reference.
+   *
+   * This is the string list equivalent of `consumeReference`.
+   *
+   * @param value A tokenized string list reference.
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public consumeListReference(value: string[], strength: ReferenceStrength = ReferenceStrength.BOTH): string[] {
+    return Token.asList(this.makeCustomCoupledReference(value, strength));
+  }
+
+  private makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
+    const resolvable = Tokenization.reverse(value);
+    if (!resolvable || !CfnReference.isCfnReference(resolvable)) {
+      throw new ValidationError(
+        lit`ConsumeReferenceRequiresResourceAttribute`,
+        'consumeReference: the value must be a resource attribute reference (like \'bucket.bucketArn\')',
+        this,
+      );
+    }
+    return new CustomCoupledReference(resolvable, strength);
+  }
+
+  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.
@@ -1886,6 +1940,7 @@ function count(xs: string[]): Record<string, number> {
 // These imports have to be at the end to prevent circular imports
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
+import { ReferenceStrength } from './cross-stack-reference-strength';
 import type { Element } from './deps';
 import { addDependency } from './deps';
 import { Names } from './names';
@@ -1898,7 +1953,8 @@ import { Stage } from './stage';
 import type { ITaggable } from './tag-manager';
 import { TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
+import { getExportable, CustomCoupledReference, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
+import { CfnReference } from './private/cfn-reference';
 import { Fact, RegionInfo } from '../../region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
