@@ -7,9 +7,26 @@ import type { ContainerImageConfig } from '../container-image';
 import { ContainerImage } from '../container-image';
 
 /**
+ * Properties for `TagParameterContainerImage`.
+ */
+export interface TagParameterContainerImageProps {
+  /**
+   * Whether the CloudFormation Parameter holds an image digest (`sha256:...`) rather than a tag.
+   *
+   * When `true`, the separator between the repository URI and the parameter value is `@`
+   * instead of `:`, producing `ACCOUNT.dkr.ecr.REGION.amazonaws.com/REPO@sha256:...`.
+   *
+   * Use this when your pipeline passes a digest rather than a mutable tag.
+   *
+   * @default false
+   */
+  readonly imageDigest?: boolean;
+}
+
+/**
  * A special type of `ContainerImage` that uses an ECR repository for the image,
- * but a CloudFormation Parameter for the tag of the image in that repository.
- * This allows providing this tag through the Parameter at deploy time,
+ * but a CloudFormation Parameter for the tag or digest of the image in that repository.
+ * This allows providing this tag or digest through the Parameter at deploy time,
  * for example in a CodePipeline that pushes a new tag of the image to the repository during a build step,
  * and then provides that new tag through the CloudFormation Parameter in the deploy step.
  *
@@ -17,11 +34,13 @@ import { ContainerImage } from '../container-image';
  */
 export class TagParameterContainerImage extends ContainerImage {
   private readonly repository: ecr.IRepository;
+  private readonly imageDigest: boolean;
   private imageTagParameter?: cdk.CfnParameter;
 
-  public constructor(repository: ecr.IRepository) {
+  public constructor(repository: ecr.IRepository, props: TagParameterContainerImageProps = {}) {
     super();
     this.repository = repository;
+    this.imageDigest = props.imageDigest ?? false;
   }
 
   public bind(scope: Construct, containerDefinition: ContainerDefinition): ContainerImageConfig {
@@ -29,7 +48,9 @@ export class TagParameterContainerImage extends ContainerImage {
     const imageTagParameter = new cdk.CfnParameter(scope, 'ImageTagParam');
     this.imageTagParameter = imageTagParameter;
     return {
-      imageName: this.repository.repositoryUriForTag(imageTagParameter.valueAsString),
+      imageName: this.imageDigest
+        ? this.repository.repositoryUriForDigest(imageTagParameter.valueAsString)
+        : this.repository.repositoryUriForTag(imageTagParameter.valueAsString),
     };
   }
 
