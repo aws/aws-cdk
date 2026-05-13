@@ -132,7 +132,7 @@ export class Rule extends Resource implements IRule {
     };
   }
 
-  private readonly targets: IArrayBox<CfnRule.TargetProperty> = Box.fromArray([]);
+  private readonly targets: IArrayBox<CfnRule.TargetProperty> = Box.fromArray();
   private readonly eventPattern: IBox<EventPattern>;
   private readonly scheduleExpression?: string;
   private readonly description?: string;

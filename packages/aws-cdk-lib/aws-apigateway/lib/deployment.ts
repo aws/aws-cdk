@@ -163,7 +163,7 @@ interface LatestDeploymentResourceProps {
 }
 
 class LatestDeploymentResource extends CfnDeployment {
-  private readonly hashComponents: IArrayBox<any> = Box.fromArray<any>([], { omitEmpty: false });
+  private readonly hashComponents: IArrayBox<any> = Box.fromArray([], { omitEmpty: false });
   private readonly originalLogicalId: string;
   private readonly api: IRestApiRef;
 

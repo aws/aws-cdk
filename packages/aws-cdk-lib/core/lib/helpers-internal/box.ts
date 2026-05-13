@@ -161,6 +161,16 @@ export interface IArrayBox<A> extends IBox<Array<A>>, Iterable<A> {
   some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean;
 
   /**
+   * Determines whether the array includes a certain element, returning true or false as appropriate.
+   *
+   * Delegates to `Array.prototype.includes` on the underlying array.
+   *
+   * @param searchElement the element to search for.
+   * @returns `true` if the element is found, `false` otherwise.
+   */
+  includes(searchElement: A): boolean;
+
+  /**
    * Creates a derived read-only box by applying `fn` to each element of the array.
    *
    * Shorthand for `this.derive(a => a.map(fn))`.
@@ -392,7 +402,7 @@ export class Box {
    *   array is empty. Set to `false` to resolve to an empty array instead.
    * @returns a new `ArrayBox<A>`.
    */
-  public static fromArray<A>(as: Array<A>, options?: { omitEmpty?: boolean }): IArrayBox<A> {
+  public static fromArray<A>(as: Array<A> = [], options?: { omitEmpty?: boolean }): IArrayBox<A> {
     return new ArrayState(as, options?.omitEmpty ?? true);
   }
 
@@ -402,7 +412,7 @@ export class Box {
    * @param map the initial map contents.
    * @returns a new `MapBox<K, V>`.
    */
-  public static fromMap<K, V>(map: Map<K, V>): IMapBox<K, V> {
+  public static fromMap<K, V>(map: Map<K, V> = new Map()): IMapBox<K, V> {
     return new MapState(map);
   }
 
@@ -412,7 +422,7 @@ export class Box {
    * @param set the initial set contents.
    * @returns a new `SetBox<A>`.
    */
-  public static fromSet<A>(set: Set<A>): ISetBox<A> {
+  public static fromSet<A>(set: Set<A> = new Set()): ISetBox<A> {
     return new SetState(set);
   }
 
@@ -629,6 +639,10 @@ class ArrayState<A> extends State<Array<A>> implements IArrayBox<A> {
 
   public some(predicate: (value: A, index: number, obj: Array<A>) => unknown): boolean {
     return this.array.some(predicate);
+  }
+
+  public includes(searchElement: A): boolean {
+    return this.array.includes(searchElement);
   }
 
   public map<B>(fn: (a: A) => B): IReadableBox<Array<B>> {

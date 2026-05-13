@@ -143,9 +143,9 @@ export class Policy extends Resource implements IPolicy, IGrantable {
   public readonly policyRef: PolicyReference;
 
   private readonly _policyName: string;
-  private readonly roles: IArrayBox<IRole> = Box.fromArray<IRole>([]);
-  private readonly users: IArrayBox<IUser> = Box.fromArray<IUser>([]);
-  private readonly groups: IArrayBox<IGroup> = Box.fromArray<IGroup>([]);
+  private readonly roles: IArrayBox<IRole> = Box.fromArray();
+  private readonly users: IArrayBox<IUser> = Box.fromArray();
+  private readonly groups: IArrayBox<IGroup> = Box.fromArray();
   private readonly force: boolean;
   private referenceTaken = false;
 
