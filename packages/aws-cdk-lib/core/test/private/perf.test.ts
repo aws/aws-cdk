@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { performance } from 'perf_hooks';
-import { profileClass, profileFn, profileObj, readPerfCounters } from '../../lib/private/perf';
+import { profileClass, profileFn, profileObj, profileSpan, readPerfCounters } from '../../lib/private/perf';
 
 beforeEach(() => {
   performance.clearMeasures();
@@ -36,6 +36,26 @@ test('only top-level profiled function calls are recorded', () => {
   const ctrs = readPerfCounters();
   expect(ctrs).toMatchObject({ outer: expect.anything() });
   expect(ctrs).not.toMatchObject({ inner: expect.anything() });
+});
+
+test('spans can be recorded, and counts can be skipped', () => {
+  // GIVEN
+  {
+    using _ = profileSpan('x');
+  }
+
+  {
+    using _ = profileSpan('x', { skipCount: true });
+  }
+
+  // THEN
+  const ctrs = readPerfCounters();
+  expect(ctrs).toMatchObject({
+    x: {
+      total: expect.anything(),
+      count: 1,
+    },
+  });
 });
 
 test('fs can be monkey-patched', () => {

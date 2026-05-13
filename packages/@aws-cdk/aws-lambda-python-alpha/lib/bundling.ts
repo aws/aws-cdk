@@ -110,7 +110,7 @@ export class Bundling implements CdkBundlingOptions {
       // Build our own image to do the build in in. We do some counter trickery here: we do want to count
       // the time spent here as part of 'bundle:PythonFunction', but by default only the RUNNING of the Docker
       // image would count as that. So we add an additional timer span just for the building of the runner image.
-      using _span = profileSpan(`bundle:${this[PERF_BUNDLING_SRC_SYM]}`, { telemetry: true });
+      using _span = profileSpan(`bundle:${this[PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
       this.image = DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
         buildArgs: {
           ...props.buildArgs,

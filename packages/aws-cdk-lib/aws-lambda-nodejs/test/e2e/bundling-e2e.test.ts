@@ -294,6 +294,7 @@ describeDockerSuite((forceDockerBundling) => {
           // A single counter should encompass both of them.
           expect(counters).toMatchObject({
             'bundle:NodejsFunction': expect.anything(),
+            'bundle:NodejsFunction(cnt)': 1,
             'DockerImage.fromBuild': expect.anything(),
             'AssetBundlingBindMount.run': expect.anything(),
           });
@@ -303,6 +304,7 @@ describeDockerSuite((forceDockerBundling) => {
           // Local bundling has 1 counter: do the bundling
           expect(counters).toMatchObject({
             'bundle:NodejsFunction': expect.anything(),
+            'bundle:NodejsFunction(cnt)': 1,
             'NodejsFunction#tryBundle': expect.anything(),
           });
 

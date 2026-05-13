@@ -29,6 +29,11 @@ const STATE: GlobalState = ((global as any)[Symbol.for('@aws-cdk/core:performanc
  */
 export const TELEMETRY_FIELD = 'telemetry';
 
+/**
+ * The field in `detail` that needs to be set to `true` in order to skip this for counting
+ */
+export const SKIPCOUNT_FIELD = 'skipCount';
+
 export interface ProfileOptions {
   /**
    * Whether to include the given profiling information in the report that the CLI sends for telemetry.
@@ -36,6 +41,16 @@ export interface ProfileOptions {
    * @default false
    */
   readonly telemetry?: boolean;
+
+  /**
+   * If set to true, do not increment the counter by `1`
+   *
+   * This is a trick for if multiple distinct spans should be counted together as time for a single
+   * conceptual invocation. Used for bundling, use sparingly.
+   *
+   * @default false
+   */
+  readonly skipCount?: boolean;
 }
 
 /**
@@ -62,7 +77,10 @@ export function profileFn(key: string, options?: ProfileOptions) {
           performance.measure(key, {
             start,
             end,
-            detail: options?.telemetry ? { [TELEMETRY_FIELD]: true } : undefined,
+            detail: {
+              [TELEMETRY_FIELD]: !!options?.telemetry,
+              [SKIPCOUNT_FIELD]: !!options?.skipCount,
+            },
           });
         }
       }
@@ -89,7 +107,10 @@ export function profileSpan(key: string, options?: ProfileOptions): Disposable {
     [Symbol.dispose]() {
       performance.measure(key, {
         start,
-        detail: options?.telemetry ? { [TELEMETRY_FIELD]: true } : undefined,
+        detail: {
+          [TELEMETRY_FIELD]: !!options?.telemetry,
+          [SKIPCOUNT_FIELD]: !!options?.skipCount,
+        },
       });
     },
   };
@@ -158,13 +179,15 @@ export function readPerfCounters(options?: ReadCountersOptions): PerfCounters {
       continue;
     }
 
+    const count = (entry.detail as any)?.[SKIPCOUNT_FIELD] ? 0 : 1;
+
     const ctr = counters[entry.name];
     if (ctr) {
-      ctr.count += 1;
+      ctr.count += count;
       ctr.total += entry.duration;
     } else {
       counters[entry.name] = {
-        count: 1,
+        count,
         total: entry.duration,
       };
     }
