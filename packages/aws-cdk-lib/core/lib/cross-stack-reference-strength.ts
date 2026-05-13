@@ -18,7 +18,12 @@ export enum CrossStackReferenceStrength {
    * Weak reference: uses Fn::GetStackOutput to read an output directly
    * from the producing stack.
    *
-   * The producing stack can be deleted independently of consumers.
+   * The producing stack or resource can be deleted independently of consumers.
+   * This will cause infrastructure in consuming stacks to temporarily reference a nonexistant
+   * resource until the consumers are updated as well, causing any accesses in that time
+   * frame to fail.
+   * 
+   * Strong references prevent this.
    */
   WEAK = 'weak',
 
