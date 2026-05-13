@@ -419,6 +419,7 @@ describe('app', () => {
       });
     } finally {
       fs.rmSync(countersDir, { force: true, recursive: true });
+      delete process.env[cxapi.PERF_COUNTERS_FILE_ENV];
     }
   });
 });

@@ -19,7 +19,12 @@ const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
 /**
  * Report performance counters if synthesis time exceeds this
  */
-const SLOW_SYNTH_PER_STACK_THRESHOLD_MS = 10_000;
+const DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS = 10_000;
+
+/**
+ * A context key that can be set to control the emission threshold
+ */
+const SLOW_SYNTH_THRESHOLD_CTX = '@aws-cdk/core.slowSynthThreshold';
 
 /**
  * Initialization props for apps.
@@ -315,7 +320,7 @@ export class App extends Stage {
 
     const totalAppTimeMs = performance.now() - this.initMark;
     const stackCount = ret.stacksRecursively.length;
-    if (this.performanceReporting && totalAppTimeMs / stackCount >= SLOW_SYNTH_PER_STACK_THRESHOLD_MS) {
+    if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
       emitPerformanceCountersFile();
     }
     performance.clearMeasures();
@@ -331,6 +336,14 @@ export class App extends Stage {
   private readContextFromEnvironment() {
     const contextJson = process.env[cxapi.CONTEXT_ENV];
     return contextJson ? JSON.parse(contextJson) : {};
+  }
+
+  private shouldReportSlowSynth(perStackTime: number): boolean {
+    if (!this.performanceReporting) {
+      return false;
+    }
+    const threshold = parseAsNumber(this.node.tryGetContext(SLOW_SYNTH_THRESHOLD_CTX)) ?? DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS;
+    return perStackTime >= threshold;
   }
 }
 
@@ -390,3 +403,14 @@ interface AppPerfState {
 const PERF_STATE: AppPerfState = ((global as any)[Symbol.for('@aws-cdk/core.AppPerfState')] ??= {
   loadTimeMeasured: false,
 } satisfies AppPerfState);
+
+/**
+ * Froces a string or number to a number, or return undefined
+ */
+function parseAsNumber(x: unknown) {
+  if (typeof x === 'number') {
+    return x;
+  }
+  const r = parseInt(`${x}`, 10);
+  return isNaN(r) ? undefined : r;
+}
