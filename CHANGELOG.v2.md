@@ -16,7 +16,6 @@ aws-vpclattice: AWS::VpcLattice::AuthPolicy: State attribute enum values changed
 ### Features
 
 * update L1 CloudFormation resource definitions ([#37826](https://github.com/aws/aws-cdk/issues/37826)) ([fb4197e](https://github.com/aws/aws-cdk/commit/fb4197edd5916247bfc776bc6e8d6922a760bd89))
-* **agentcore:** add identity L2 constructs ([#37610](https://github.com/aws/aws-cdk/issues/37610)) ([67c3af2](https://github.com/aws/aws-cdk/commit/67c3af260cedb8e610dff36f829afb36114dd93a))
 * **cloudwatch:** add PromQL Alarm L2 construct ([#37793](https://github.com/aws/aws-cdk/issues/37793)) ([13a4924](https://github.com/aws/aws-cdk/commit/13a49245ba996328067c67b07b0e80123b2410a3))
 * **core:** `PropertyMergeStrategy` now supports array merge strategies ([#37841](https://github.com/aws/aws-cdk/issues/37841)) ([701305d](https://github.com/aws/aws-cdk/commit/701305d8c5903dc880b1c92ae9ba5e6475fcc267))
 * **core:** plugin violations can be suppressed ([#37808](https://github.com/aws/aws-cdk/issues/37808)) ([a47ad39](https://github.com/aws/aws-cdk/commit/a47ad39ad980fd388d4e72012a2de8ad2ce85f3f)), closes [#37781](https://github.com/aws/aws-cdk/issues/37781)
