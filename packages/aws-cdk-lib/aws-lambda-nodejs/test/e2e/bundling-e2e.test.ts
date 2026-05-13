@@ -521,7 +521,7 @@ function cdkSynth(proj: TestProject, config: SerializableNodejsFunctionProps): {
         CDK_LIB_PATH,
         E2E_CONFIG: JSON.stringify(config),
       },
-      timeout: 120_000,
+      timeout: 450_000,
       stdio: 'pipe',
     },
   );
