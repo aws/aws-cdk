@@ -55,7 +55,7 @@ export class TagParameterContainerImage extends ContainerImage {
   }
 
   /**
-   * Returns the name of the CloudFormation Parameter that represents the tag of the image
+   * Returns the name of the CloudFormation Parameter that represents the tag or digest of the image
    * in the ECR repository.
    */
   public get tagParameterName(): string {
@@ -71,7 +71,7 @@ export class TagParameterContainerImage extends ContainerImage {
   }
 
   /**
-   * Returns the value of the CloudFormation Parameter that represents the tag of the image
+   * Returns the value of the CloudFormation Parameter that represents the tag or digest of the image
    * in the ECR repository.
    */
   public get tagParameterValue(): string {
