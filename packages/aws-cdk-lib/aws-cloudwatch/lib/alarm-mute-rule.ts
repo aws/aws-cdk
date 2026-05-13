@@ -89,8 +89,8 @@ export abstract class ScheduleExpression {
 /**
  * Options to configure a cron expression
  *
- * All fields are strings so you can use complex expressions. Absence of
- * a field implies '*' or '?', whichever one is appropriate.
+ * All fields are strings so you can use complex expressions.
+ * Absence of a field implies '*'.
  *
  * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/alarm-mute-rules.html#defining-alarm-mute-rules
  */
