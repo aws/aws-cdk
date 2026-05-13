@@ -1,7 +1,7 @@
 import * as apigwv2 from '../../../aws-apigatewayv2';
 import type * as ec2 from '../../../aws-ec2';
 import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
-import { Lazy, Token } from '../../../core';
+import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
@@ -73,8 +73,7 @@ export class AlbIntegration extends Integration {
       type: proxy ? IntegrationType.HTTP_PROXY : IntegrationType.HTTP,
       // 'ANY' satisfies the parent validation; bind() falls back to the method's HTTP method when props.httpMethod is unset.
       integrationHttpMethod: props.httpMethod ?? 'ANY',
-      // Lazy so that bind()'s VPC validation runs before loadBalancerDnsName is accessed (imported ALBs may not provide it).
-      uri: Lazy.string({ produce: () => `http://${alb.loadBalancerDnsName}` }),
+      // uri is set in bind() — accessing alb.loadBalancerDnsName eagerly would throw for imported ALBs without DnsName, before bind()'s VPC validation can surface a friendlier error.
       options: props.options,
     });
 
@@ -106,6 +105,7 @@ export class AlbIntegration extends Integration {
 
     return {
       ...bindResult,
+      uri: `http://${this.alb.loadBalancerDnsName}`,
       integrationHttpMethod: this.albProps.httpMethod ?? method.httpMethod,
       options: {
         ...bindResult.options,
