@@ -86,7 +86,7 @@ const definition = new sfn.Pass(stack, 'Start', {
 );
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 new cdk.CfnOutput(stack, 'stateMachineArn', {

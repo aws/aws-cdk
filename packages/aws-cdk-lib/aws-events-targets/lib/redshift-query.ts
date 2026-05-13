@@ -4,6 +4,7 @@ import * as iam from '../../aws-iam';
 import type * as secretsmanager from '../../aws-secretsmanager';
 import type * as sqs from '../../aws-sqs';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Configuration properties of an Amazon Redshift Query event.
@@ -97,7 +98,7 @@ export class RedshiftQuery implements events.IRuleTarget {
   bind(rule: events.IRuleRef, _id?: string): events.RuleTargetConfig {
     const role = this.props.role ?? singletonEventRole(rule);
     if (this.props.sql.length < 1) {
-      throw new ValidationError('AtLeastOneSqlStatementMustBeSpecified', 'At least one SQL statement must be specified.', rule);
+      throw new ValidationError(lit`AtLeastOneSqlStatementMustBeSpecified`, 'At least one SQL statement must be specified.', rule);
     }
     if (this.props.sql.length === 1) {
       role.addToPrincipalPolicy(this.putEventStatement());

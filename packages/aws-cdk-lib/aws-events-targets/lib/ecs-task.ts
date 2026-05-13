@@ -8,6 +8,7 @@ import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
 import { ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Metadata that you apply to a resource to help categorize and organize the resource. Each tag consists of a key and an optional value, both of which you define.
@@ -218,7 +219,7 @@ export class EcsTask implements events.IRuleTarget {
 
   constructor(private readonly props: EcsTaskProps) {
     if (props.securityGroup !== undefined && props.securityGroups !== undefined) {
-      throw new cdk.UnscopedValidationError('OnlyOneOfSecurityGroupOrSecurityGroupsCanBePopulated', 'Only one of SecurityGroup or SecurityGroups can be populated.');
+      throw new cdk.UnscopedValidationError(lit`OnlyOneOfSecurityGroupOrSecurityGroupsCanBePopulated`, 'Only one of SecurityGroup or SecurityGroups can be populated.');
     }
 
     this.cluster = props.cluster;
@@ -231,7 +232,7 @@ export class EcsTask implements events.IRuleTarget {
 
     const propagateTagsValidValues = [ecs.PropagatedTagSource.TASK_DEFINITION, ecs.PropagatedTagSource.NONE];
     if (props.propagateTags && !propagateTagsValidValues.includes(props.propagateTags)) {
-      throw new cdk.UnscopedValidationError('PropagateTagsMustBeTaskDefinitionOrNone', 'When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
+      throw new cdk.UnscopedValidationError(lit`PropagateTagsMustBeTaskDefinitionOrNone`, 'When propagateTags is passed, it must be set to TASK_DEFINITION or NONE.');
     }
     this.propagateTags = props.propagateTags;
 
@@ -255,7 +256,7 @@ export class EcsTask implements events.IRuleTarget {
     }
 
     if (!Construct.isConstruct(this.taskDefinition)) {
-      throw new cdk.UnscopedValidationError('CannotCreateSecurityGroupForEcsTask', 'Cannot create a security group for ECS task. ' +
+      throw new cdk.UnscopedValidationError(lit`CannotCreateSecurityGroupForEcsTask`, 'Cannot create a security group for ECS task. ' +
         'The task definition in ECS task is not a Construct. ' +
         'Please pass a taskDefinition as a Construct in EcsTaskProps.');
     }
@@ -283,14 +284,14 @@ export class EcsTask implements events.IRuleTarget {
 
     // throw an error if assignPublicIp is true and the subnet type is not PUBLIC
     if (this.assignPublicIp && subnetSelection.subnetType !== ec2.SubnetType.PUBLIC) {
-      throw new ValidationError('AssignPublicIpShouldBeTrueOnlyForPublicSubnets', 'assignPublicIp should be set to true only for PUBLIC subnets', rule);
+      throw new ValidationError(lit`AssignPublicIpShouldBeTrueOnlyForPublicSubnets`, 'assignPublicIp should be set to true only for PUBLIC subnets', rule);
     }
 
     const assignPublicIp = (this.assignPublicIp ?? subnetSelection.subnetType === ec2.SubnetType.PUBLIC) ? 'ENABLED' : 'DISABLED';
     const launchType = this.launchType ?? (this.taskDefinition.isEc2Compatible ? 'EC2' : 'FARGATE');
 
     if (assignPublicIp === 'ENABLED' && launchType !== 'FARGATE') {
-      throw new ValidationError('AssignPublicIpOnlySupportedForFargateTasks', 'assignPublicIp is only supported for FARGATE tasks', rule);
+      throw new ValidationError(lit`AssignPublicIpOnlySupportedForFargateTasks`, 'assignPublicIp is only supported for FARGATE tasks', rule);
     }
 
     const baseEcsParameters = { taskCount, taskDefinitionArn, propagateTags, tagList, enableExecuteCommand };
@@ -331,7 +332,7 @@ export class EcsTask implements events.IRuleTarget {
     if (this.props.ephemeralStorage) {
       const ephemeralStorage = this.props.ephemeralStorage;
       if (ephemeralStorage.sizeInGiB < 20 || ephemeralStorage.sizeInGiB > 200) {
-        throw new ValidationError('EphemeralStorageSizeMustBeBetween20And200Gib', 'Ephemeral storage size must be between 20 GiB and 200 GiB.', rule);
+        throw new ValidationError(lit`EphemeralStorageSizeMustBeBetween20And200Gib`, 'Ephemeral storage size must be between 20 GiB and 200 GiB.', rule);
       }
     }
 

@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { Token, TokenComparison, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnVirtualNode } from '../appmesh.generated';
 import type { GrpcGatewayRouteMatch } from '../gateway-route-spec';
 import type { HeaderMatch } from '../header-match';
@@ -102,11 +103,11 @@ export function validateHttpMatchArrayLength(scope: Construct, headers?: HeaderM
   const MAX_LENGTH = 10;
 
   if (headers && (headers.length < MIN_LENGTH || headers.length > MAX_LENGTH)) {
-    throw new ValidationError('HeaderCountOutOfRange', `Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`, scope);
+    throw new ValidationError(lit`HeaderCountOutOfRange`, `Number of headers provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${headers.length}`, scope);
   }
 
   if (queryParameters && (queryParameters.length < MIN_LENGTH || queryParameters.length > MAX_LENGTH)) {
-    throw new ValidationError('QueryParameterCountOutOfRange', `Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`, scope);
+    throw new ValidationError(lit`QueryParameterCountOutOfRange`, `Number of query parameters provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${queryParameters.length}`, scope);
   }
 }
 
@@ -118,7 +119,7 @@ export function validateGrpcMatchArrayLength(scope: Construct, metadata?: Header
   const MAX_LENGTH = 10;
 
   if (metadata && (metadata.length < MIN_LENGTH || metadata.length > MAX_LENGTH)) {
-    throw new ValidationError('MetadataCountOutOfRange', `Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`, scope);
+    throw new ValidationError(lit`MetadataCountOutOfRange`, `Number of metadata provided for matching must be between ${MIN_LENGTH} and ${MAX_LENGTH}, got: ${metadata.length}`, scope);
   }
 }
 
@@ -127,7 +128,7 @@ export function validateGrpcMatchArrayLength(scope: Construct, metadata?: Header
  */
 export function validateGrpcRouteMatch(scope: Construct, match: GrpcRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.methodName === undefined && match.port === undefined) {
-    throw new ValidationError('GrpcRouteMatchRequired', 'At least one gRPC route match property must be provided', scope);
+    throw new ValidationError(lit`GrpcRouteMatchRequired`, 'At least one gRPC route match property must be provided', scope);
   }
 }
 
@@ -136,6 +137,6 @@ export function validateGrpcRouteMatch(scope: Construct, match: GrpcRouteMatch):
  */
 export function validateGrpcGatewayRouteMatch(scope: Construct, match: GrpcGatewayRouteMatch): void {
   if (match.serviceName === undefined && match.metadata === undefined && match.hostname === undefined && match.port === undefined) {
-    throw new ValidationError('GrpcGatewayRouteMatchRequired', 'At least one gRPC gateway route match property beside rewriteRequestHostname must be provided', scope);
+    throw new ValidationError(lit`GrpcGatewayRouteMatchRequired`, 'At least one gRPC gateway route match property beside rewriteRequestHostname must be provided', scope);
   }
 }

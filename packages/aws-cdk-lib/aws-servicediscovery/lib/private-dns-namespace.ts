@@ -7,6 +7,7 @@ import { CfnPrivateDnsNamespace } from './servicediscovery.generated';
 import type * as ec2 from '../../aws-ec2';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { IPrivateDnsNamespaceRef, PrivateDnsNamespaceReference } from '../../interfaces/generated/aws-servicediscovery-interfaces.generated';
 
@@ -90,7 +91,7 @@ export class PrivateDnsNamespace extends Resource implements IPrivateDnsNamespac
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
     if (props.vpc === undefined) {
-      throw new ValidationError('SpecifiedPrivateNamespaces', 'VPC must be specified for PrivateDNSNamespaces', this);
+      throw new ValidationError(lit`SpecifiedPrivateNamespaces`, 'VPC must be specified for PrivateDNSNamespaces', this);
     }
 
     const ns = new CfnPrivateDnsNamespace(this, 'Resource', {

@@ -6,6 +6,7 @@ import * as cpa from '../../../aws-codepipeline-actions';
 import type * as sns from '../../../aws-sns';
 import type { Stage } from '../../../core';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { Step } from '../blueprint';
 import { ApplicationSecurityCheck } from '../private/application-security-check';
 
@@ -77,7 +78,7 @@ export class ConfirmPermissionsBroadening extends Step implements ICodePipelineA
     const existing = Node.of(pipeline).tryFindChild(id);
     if (existing) {
       if (!(existing instanceof ApplicationSecurityCheck)) {
-        throw new ValidationError('Expected', `Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`, pipeline);
+        throw new ValidationError(lit`Expected`, `Expected '${Node.of(existing).path}' to be 'ApplicationSecurityCheck' but was '${existing}'`, pipeline);
       }
       return existing;
     }

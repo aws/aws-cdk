@@ -8,6 +8,7 @@ import { Rule } from '../../../aws-events';
 import type { Tag } from '../../../aws-events-targets';
 import { EcsTask } from '../../../aws-events-targets';
 import { Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * The properties for the base ScheduledEc2Task or ScheduledFargateTask task.
@@ -192,7 +193,7 @@ export abstract class ScheduledTaskBase extends Construct {
 
     this.cluster = props.cluster || this.getDefaultCluster(this, props.vpc);
     if (props.desiredTaskCount !== undefined && props.desiredTaskCount < 1) {
-      throw new ValidationError('SpecifyDesiredTaskCountGreater', 'You must specify a desiredTaskCount greater than 0', this);
+      throw new ValidationError(lit`SpecifyDesiredTaskCountGreater`, 'You must specify a desiredTaskCount greater than 0', this);
     }
     this.desiredTaskCount = props.desiredTaskCount || 1;
     this.subnetSelection = props.subnetSelection || { subnetType: SubnetType.PRIVATE_WITH_EGRESS };

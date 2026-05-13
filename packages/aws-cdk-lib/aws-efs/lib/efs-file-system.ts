@@ -7,8 +7,12 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { RemovalPolicy, Size } from '../../core';
-import { ArnFormat, FeatureFlags, Lazy, Names, Resource, Stack, Tags, Token, ValidationError } from '../../core';
+import { ArnFormat, FeatureFlags, Names, Resource, Stack, Tags, Token, ValidationError } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 import type { FileSystemReference, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
@@ -17,7 +21,7 @@ import type { FileSystemReference, IFileSystemRef } from '../../interfaces/gener
  * EFS Lifecycle Policy, if a file is not accessed for given days, it will move to EFS Infrequent Access
  * or Archive storage.
  *
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-efs-filesystem.html#cfn-elasticfilesystem-filesystem-lifecyclepolicies
  */
 export enum LifecyclePolicy {
 
@@ -596,11 +600,11 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
   /**
    * @internal
    */
-  protected _fileSystemPolicy?: iam.PolicyDocument;
+  protected _fileSystemPolicy: IBox<iam.PolicyDocument | undefined> = Box.fromValue<iam.PolicyDocument | undefined>(undefined);
   /**
    * @internal
    */
-  protected _grantedClient: boolean = false;
+  protected _grantedClient: IBox<boolean> = Box.fromValue(false);
 
   /**
    * Grant the actions defined in actions to the given grantee
@@ -630,7 +634,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
    * @param conditions The conditions to grant
    */
   private _grantClient(grantee: iam.IGrantable, actions: ClientAction[], conditions?: Record<string, Record<string, unknown>>): iam.Grant {
-    this._grantedClient = true;
+    this._grantedClient.set(true);
     return iam.Grant.addToPrincipalOrResource({
       grantee: grantee,
       actions: actions,
@@ -706,8 +710,11 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
     if (!this._resource) {
       return { statementAdded: false };
     }
-    this._fileSystemPolicy = this._fileSystemPolicy ?? new iam.PolicyDocument({ statements: [] });
-    this._fileSystemPolicy.addStatements(statement);
+    this._fileSystemPolicy.update(policy => {
+      const doc = policy ?? new iam.PolicyDocument({ statements: [] });
+      doc.addStatements(statement);
+      return doc;
+    });
     return {
       statementAdded: true,
       policyDependable: this,
@@ -726,6 +733,7 @@ abstract class FileSystemBase extends Resource implements IFileSystem {
  * @resource AWS::EFS::FileSystem
  */
 @propertyInjectable
+@noBoxStackTraces
 export class FileSystem extends FileSystemBase {
   /**
    * Uniquely identifies this class.
@@ -775,21 +783,21 @@ export class FileSystem extends FileSystemBase {
     this.props = props;
 
     if (props.performanceMode === PerformanceMode.MAX_IO && props.oneZone) {
-      throw new ValidationError('PerformanceModeSupportedOneZone', 'performanceMode MAX_IO is not supported for One Zone file systems.', this);
+      throw new ValidationError(lit`PerformanceModeSupportedOneZone`, 'performanceMode MAX_IO is not supported for One Zone file systems.', this);
     }
 
     if (props.oneZone) { this.oneZoneValidation(); }
 
     if (props.throughputMode === ThroughputMode.PROVISIONED && props.provisionedThroughputPerSecond === undefined) {
-      throw new ValidationError('PropertyProvisionedThroughputPerSecond', 'Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED', this);
+      throw new ValidationError(lit`PropertyProvisionedThroughputPerSecond`, 'Property provisionedThroughputPerSecond is required when throughputMode is PROVISIONED', this);
     }
 
     if (props.throughputMode === ThroughputMode.ELASTIC && props.performanceMode === PerformanceMode.MAX_IO) {
-      throw new ValidationError('ThroughputModeSupportedFileSystems', 'ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO', this);
+      throw new ValidationError(lit`ThroughputModeSupportedFileSystems`, 'ThroughputMode ELASTIC is not supported for file systems with performanceMode MAX_IO', this);
     }
 
     if (props.replicationConfiguration && props.replicationOverwriteProtection === ReplicationOverwriteProtection.DISABLED) {
-      throw new ValidationError('CannotConfigureReplicationConfigurationReplication', 'Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'', this);
+      throw new ValidationError(lit`CannotConfigureReplicationConfigurationReplication`, 'Cannot configure \'replicationConfiguration\' when \'replicationOverwriteProtection\' is set to \'DISABLED\'', this);
     }
 
     // we explicitly use 'undefined' to represent 'false' to maintain backwards compatibility since
@@ -842,13 +850,15 @@ export class FileSystem extends FileSystemBase {
       throughputMode: props.throughputMode,
       provisionedThroughputInMibps: props.provisionedThroughputPerSecond?.toMebibytes(),
       backupPolicy: props.enableAutomaticBackups ? { status: 'ENABLED' } : undefined,
-      fileSystemPolicy: Lazy.any({
-        produce: () => {
+      fileSystemPolicy: Box.combine(
+        { grantedClient: this._grantedClient, policy: this._fileSystemPolicy },
+        ({ grantedClient, policy }) => {
           const denyAnonymousAccessFlag = FeatureFlags.of(this).isEnabled(cxapi.EFS_DENY_ANONYMOUS_ACCESS) ?? false;
-          const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || this._grantedClient;
+          const denyAnonymousAccessByDefault = denyAnonymousAccessFlag || grantedClient;
           const allowAnonymousAccess = props.allowAnonymousAccess ?? !denyAnonymousAccessByDefault;
           if (!allowAnonymousAccess) {
-            this.addToResourcePolicy(new iam.PolicyStatement({
+            const doc = policy ?? new iam.PolicyDocument({ statements: [] });
+            doc.addStatements(new iam.PolicyStatement({
               principals: [new iam.AnyPrincipal()],
               actions: [
                 ClientAction.WRITE,
@@ -860,10 +870,11 @@ export class FileSystem extends FileSystemBase {
                 },
               },
             }));
+            return doc;
           }
-          return this._fileSystemPolicy;
+          return policy;
         },
-      }),
+      ),
       fileSystemProtection,
       availabilityZoneName: props.oneZone ? oneZoneAzName : undefined,
       replicationConfiguration,
@@ -872,7 +883,7 @@ export class FileSystem extends FileSystemBase {
 
     this.fileSystemId = this._resource.ref;
     this.fileSystemArn = this._resource.attrArn;
-    this._fileSystemPolicy = props.fileSystemPolicy;
+    this._fileSystemPolicy.set(props.fileSystemPolicy);
 
     Tags.of(this).add('Name', props.fileSystemName || this.node.path);
 
@@ -933,13 +944,13 @@ export class FileSystem extends FileSystemBase {
   private oneZoneValidation() {
     // validate when props.oneZone is enabled
     if (this.props.vpcSubnets && !this.props.vpcSubnets.availabilityZones) {
-      throw new ValidationError('OneZoneEnabledVpcSubnets', 'When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.', this);
+      throw new ValidationError(lit`OneZoneEnabledVpcSubnets`, 'When oneZone is enabled and vpcSubnets defined, vpcSubnets.availabilityZones can not be undefined.', this);
     }
     // when vpcSubnets.availabilityZones is defined
     if (this.props.vpcSubnets && this.props.vpcSubnets.availabilityZones) {
       // it has to be only one az
       if (this.props.vpcSubnets.availabilityZones?.length !== 1) {
-        throw new ValidationError('OneZoneEnabledVpcSubnets', 'When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.', this);
+        throw new ValidationError(lit`OneZoneEnabledVpcSubnets`, 'When oneZone is enabled, vpcSubnets.availabilityZones should exactly have one zone.', this);
       }
       // it has to be in availabilityZones
       // but we only check this when vpc.availabilityZones are valid(not dummy values nore unresolved tokens)
@@ -948,7 +959,7 @@ export class FileSystem extends FileSystemBase {
       if (this.props.vpc.availabilityZones.every(isNotUnresolvedToken) &&
       this.props.vpc.availabilityZones.every(isNotDummy) &&
       !this.props.vpc.availabilityZones.includes(this.props.vpcSubnets.availabilityZones[0])) {
-        throw new ValidationError('Vpcsubnets', 'vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.', this);
+        throw new ValidationError(lit`Vpcsubnets`, 'vpcSubnets.availabilityZones specified is not in vpc.availabilityZones.', this);
       }
     }
   }
@@ -995,7 +1006,7 @@ class ImportedFileSystem extends FileSystemBase {
     addConstructMetadata(this, attrs);
 
     if (!!attrs.fileSystemId === !!attrs.fileSystemArn) {
-      throw new ValidationError('OneFileSystemIdFile', 'One of fileSystemId or fileSystemArn, but not both, must be provided.', this);
+      throw new ValidationError(lit`OneFileSystemIdFile`, 'One of fileSystemId or fileSystemArn, but not both, must be provided.', this);
     }
 
     this.fileSystemArn = attrs.fileSystemArn ?? Stack.of(scope).formatArn({
@@ -1007,7 +1018,7 @@ class ImportedFileSystem extends FileSystemBase {
     const parsedArn = Stack.of(scope).splitArn(this.fileSystemArn, ArnFormat.SLASH_RESOURCE_NAME);
 
     if (!parsedArn.resourceName) {
-      throw new ValidationError('InvalidFileSystemArn', `Invalid FileSystem Arn ${this.fileSystemArn}`, this);
+      throw new ValidationError(lit`InvalidFileSystemArn`, `Invalid FileSystem Arn ${this.fileSystemArn}`, this);
     }
 
     this.fileSystemId = attrs.fileSystemId ?? parsedArn.resourceName;
@@ -1023,7 +1034,7 @@ class ImportedFileSystem extends FileSystemBase {
 
 function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
   if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
-    throw new ValidationError('FilesystemInstanceShouldImplement', `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`, fileSystem as any);
+    throw new ValidationError(lit`FilesystemInstanceShouldImplement`, `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`, fileSystem as any);
   }
   return fileSystem as IFileSystem;
 }

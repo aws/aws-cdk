@@ -1,5 +1,6 @@
 import type { Construct } from 'constructs';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { CfnDeliveryStream } from '../kinesisfirehose.generated';
 import type { DataProcessorBindOptions, DataProcessorConfig, DataProcessorProps, IDataProcessor } from '../processor';
 
@@ -62,11 +63,11 @@ export class RecordDeAggregationProcessor implements IDataProcessor {
     ];
     // CFN validation message: "class com.amazonaws.services.firehose.internal.model.RecordDeAggregationProcessor can only be present when Dynamic Partitioning is enabled."
     if (!options.dynamicPartitioningEnabled) {
-      throw new ValidationError('RecordDeAggregationProcessorRequiresDynamicPartitioning', 'RecordDeAggregationProcessor can only be present when Dynamic Partitioning is enabled.', scope);
+      throw new ValidationError(lit`RecordDeAggregationProcessorRequiresDynamicPartitioning`, 'RecordDeAggregationProcessor can only be present when Dynamic Partitioning is enabled.', scope);
     }
     if (this.options.subRecordType === SubRecordType.DELIMITED) {
       if (!this.options.delimiter) {
-        throw new ValidationError('DelimiterRequiredForDelimitedSubRecordType', 'The delimiter must be specified when subRecordType is DELIMITED.', scope);
+        throw new ValidationError(lit`DelimiterRequiredForDelimitedSubRecordType`, 'The delimiter must be specified when subRecordType is DELIMITED.', scope);
       }
       parameters.push({
         parameterName: 'Delimiter', parameterValue: this.options.delimiter,

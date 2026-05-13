@@ -9,6 +9,7 @@ import * as kms from '../../aws-kms';
 import type * as lambda from '../../aws-lambda';
 import { Duration, Resource, Stack, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -100,7 +101,7 @@ export class RotationSchedule extends Resource {
     addConstructMetadata(this, props);
 
     if ((!props.rotationLambda && !props.hostedRotation) || (props.rotationLambda && props.hostedRotation)) {
-      throw new ValidationError('MustBeSpecified', 'One of `rotationLambda` or `hostedRotation` must be specified.', this);
+      throw new ValidationError(lit`MustBeSpecified`, 'One of `rotationLambda` or `hostedRotation` must be specified.', this);
     }
 
     if (props.rotationLambda?.permissionsNode.defaultChild) {
@@ -142,10 +143,10 @@ export class RotationSchedule extends Resource {
       const automaticallyAfterMillis = props.automaticallyAfter.toMilliseconds();
       if (automaticallyAfterMillis > 0) {
         if (automaticallyAfterMillis < Duration.hours(4).toMilliseconds()) {
-          throw new ValidationError('AutomaticallySmallerHours', `automaticallyAfter must not be smaller than 4 hours, got ${props.automaticallyAfter.toHours()} hours`, this);
+          throw new ValidationError(lit`AutomaticallySmallerHours`, `automaticallyAfter must not be smaller than 4 hours, got ${props.automaticallyAfter.toHours()} hours`, this);
         }
         if (automaticallyAfterMillis > Duration.days(1000).toMilliseconds()) {
-          throw new ValidationError('AutomaticallyGreaterDays', `automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`, this);
+          throw new ValidationError(lit`AutomaticallyGreaterDays`, `automaticallyAfter must not be greater than 1000 days, got ${props.automaticallyAfter.toDays()} days`, this);
         }
         scheduleExpression = Schedule.rate(props.automaticallyAfter).expressionString;
       }
@@ -306,7 +307,7 @@ export class HostedRotation implements ec2.IConnectable {
     private readonly masterSecret?: ISecret,
   ) {
     if (type.isMultiUser && !masterSecret) {
-      throw new UnscopedValidationError('MustBeSpecifiedUsingMulti', 'The `masterSecret` must be specified when using the multi user scheme.');
+      throw new UnscopedValidationError(lit`MustBeSpecifiedUsingMulti`, 'The `masterSecret` must be specified when using the multi user scheme.');
     }
   }
 
@@ -318,7 +319,7 @@ export class HostedRotation implements ec2.IConnectable {
     Stack.of(scope).addTransform('AWS::SecretsManager-2024-09-16');
 
     if (!this.props.vpc && this.props.securityGroups) {
-      throw new ValidationError('MustBeSpecifiedSpecifying', '`vpc` must be specified when specifying `securityGroups`.', secret);
+      throw new ValidationError(lit`MustBeSpecifiedSpecifying`, '`vpc` must be specified when specifying `securityGroups`.', secret);
     }
 
     if (this.props.vpc) {
@@ -362,12 +363,12 @@ export class HostedRotation implements ec2.IConnectable {
    */
   public get connections() {
     if (!this.props.vpc) {
-      throw new UnscopedValidationError('CannotConnectionsHostedRotationDeployed', 'Cannot use connections for a hosted rotation that is not deployed in a VPC');
+      throw new UnscopedValidationError(lit`CannotConnectionsHostedRotationDeployed`, 'Cannot use connections for a hosted rotation that is not deployed in a VPC');
     }
 
     // If we are in a vpc and bind() has been called _connections should be defined
     if (!this._connections) {
-      throw new UnscopedValidationError('CannotConnectionsHostedRotationBound', 'Cannot use connections for a hosted rotation that has not been bound to a secret');
+      throw new UnscopedValidationError(lit`CannotConnectionsHostedRotationBound`, 'Cannot use connections for a hosted rotation that has not been bound to a secret');
     }
 
     return this._connections;

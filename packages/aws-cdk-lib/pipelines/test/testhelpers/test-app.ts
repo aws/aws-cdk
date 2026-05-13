@@ -6,6 +6,7 @@ import * as s3 from '../../../aws-s3';
 import * as s3_assets from '../../../aws-s3-assets';
 import type { AppProps, Environment, StageProps, StackProps } from '../../../core';
 import { App, CfnOutput, Stage, Stack, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { assemblyBuilderOf } from '../../lib/private/construct-internals';
 
 export const PIPELINE_ENV: Environment = {
@@ -212,7 +213,7 @@ export class MultipleFileAssetsApp extends Stage {
       const displayName = props.displayNames ? props.displayNames[i] : undefined;
       const fn = fileNames[i];
       if (!fn) {
-        throw new ValidationError('DisplayNamesFileNames', `Got more displayNames than we have fileNames: ${i + 1}`, this);
+        throw new ValidationError(lit`DisplayNamesFileNames`, `Got more displayNames than we have fileNames: ${i + 1}`, this);
       }
 
       new s3_assets.Asset(stack, `Asset${i + 1}`, {
