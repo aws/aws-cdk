@@ -72,6 +72,16 @@ describe('Alarm mute rule', () => {
     });
   });
 
+  test('throws when alarmMuteRuleName is blank', () => {
+    expect(() => {
+      new cloudwatch.AlarmMuteRule(stack, 'AlarmMuteRule', {
+        alarmMuteRuleName: '',
+        schedule: cloudwatch.ScheduleExpression.cron({ minute: '0' }),
+        duration: cdk.Duration.hours(1),
+      });
+    }).toThrow('Alarm mute rule name must be between 1 and 255 characters');
+  });
+
   test('throws when length of alarmMuteRuleName > 255', () => {
     expect(() => {
       new cloudwatch.AlarmMuteRule(stack, 'AlarmMuteRule', {
@@ -79,7 +89,7 @@ describe('Alarm mute rule', () => {
         schedule: cloudwatch.ScheduleExpression.cron({ minute: '0' }),
         duration: cdk.Duration.hours(1),
       });
-    }).toThrow('Alarm mute rule name can not be longer than 255 characters');
+    }).toThrow('Alarm mute rule name must be between 1 and 255 characters');
   });
 
   test('throws when number of target alarms > 100', () => {
