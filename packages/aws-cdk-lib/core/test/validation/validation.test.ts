@@ -1141,6 +1141,33 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).not.toContain('MY RULE');
     });
+
+    test('CDK_EMIT_VALIDATION_REPORT env var writes JSON report to assembly', () => {
+      process.env[cxapi.EMIT_VALIDATION_REPORT_ENV] = '1';
+      try {
+        const app = new core.App({
+          context: annotationReportContext,
+        });
+        const stack = new core.Stack(app, 'MyStack');
+        const construct = new Construct(stack, 'MyConstruct');
+        new core.CfnResource(construct, 'Resource', {
+          type: 'Test::Resource::Fake',
+          properties: {},
+        });
+
+        core.Annotations.of(construct).addWarningV2('my-lib:EnvVarWarning', 'Written to file');
+
+        const assembly = app.synth();
+
+        // JSON report should be written to the assembly directory
+        const reportPath = path.join(assembly.directory, 'policy-validation-report.json');
+        expect(fs.existsSync(reportPath)).toBe(true);
+        const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+        expect(report.pluginReports[0].summary.pluginName).toEqual('Construct Annotations');
+      } finally {
+        delete process.env[cxapi.EMIT_VALIDATION_REPORT_ENV];
+      }
+    });
   });
 
   describe('Validations.of()', () => {

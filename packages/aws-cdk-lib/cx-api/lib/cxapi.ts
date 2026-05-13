@@ -47,3 +47,14 @@ export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
  * In the format "<package>@x.y.z", e.g  "aws-cdk@2.1006.0" or "@aws-cdk/toolkit-lib@1.0.0"
  */
 export const TOOLKIT_VERSION_ENV = 'CDK_TOOLKIT_VERSION';
+
+/**
+ * When set, the framework collects construct annotations into the policy
+ * validation report during synthesis — equivalent to enabling the
+ * `@aws-cdk/core:annotationsInValidationReport` feature flag, but without
+ * requiring a permanent project configuration change.
+ *
+ * Intended for use by the CDK CLI (e.g. `cdk validate`) to trigger report
+ * generation on a per-invocation basis.
+ */
+export const EMIT_VALIDATION_REPORT_ENV = 'CDK_EMIT_VALIDATION_REPORT';
