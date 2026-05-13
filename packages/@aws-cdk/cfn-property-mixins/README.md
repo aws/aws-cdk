@@ -119,7 +119,7 @@ class ArrayAppendStrategy implements IMergeStrategy {
 
 ### Deferred Values (Boxes)
 
-Property mixins support **Box-backed values**. Most L2 constructs in `aws-cdk-lib` use Boxes internally to defer property computation until synthesis time. When a mixin encounters a Box on either the target or source side, the merge is automatically deferred — the merge strategy runs once the Box resolves, ensuring it operates on final values.
+Property mixins support **Box-backed values**. Most L2 constructs in `aws-cdk-lib` use Boxes internally to defer property computation until synthesis time. When a mixin encounters a Box on the target, the merge is automatically deferred — the merge strategy runs once the Box resolves, ensuring it operates on final values.
 
 This means mixins work correctly with L2 constructs that use Boxes for properties like `replicas`, `rules`, or `tags`, without any special handling from the user:
 

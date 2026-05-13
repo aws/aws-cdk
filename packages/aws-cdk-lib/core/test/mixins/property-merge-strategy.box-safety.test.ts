@@ -126,131 +126,6 @@ describe('PropertyMergeStrategy - Box safety', () => {
     });
   });
 
-  describe('combine with Box-backed source values', () => {
-    test('appends a Box source to a plain target array', () => {
-      const sourceBox = Box.fromArray([3, 4]);
-      const target: any = { items: [1, 2] };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.append() });
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual([1, 2, 3, 4]);
-    });
-
-    test('replaces plain target array with Box source (default replace)', () => {
-      const sourceBox = Box.fromArray([4, 5]);
-      const target: any = { items: [1, 2, 3] };
-      const strategy = PropertyMergeStrategy.combine();
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual([4, 5]);
-    });
-
-    test('prepends Box source before plain target array', () => {
-      const sourceBox = Box.fromArray(['x', 'y']);
-      const target: any = { items: ['a', 'b'] };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.prepend() });
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual(['x', 'y', 'a', 'b']);
-    });
-
-    test('replaceByKey with Box source on plain target', () => {
-      const sourceBox = Box.fromArray([{ id: 1, v: 'new' }]);
-      const target: any = { items: [{ id: 1, v: 'old' }, { id: 2, v: 'keep' }] };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.replaceByKey('id') });
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual([{ id: 1, v: 'new' }, { id: 2, v: 'keep' }]);
-    });
-
-    test('deep merges Box source object into plain target object', () => {
-      const sourceBox = Box.fromValue({ y: 3, z: 4 });
-      const target: any = { config: { x: 1, y: 2 } };
-      const strategy = PropertyMergeStrategy.combine();
-
-      strategy.apply(target, { config: sourceBox }, ['config']);
-
-      expect(Box.isBox(target.config)).toBe(true);
-      expect(target.config.get()).toEqual({ x: 1, y: 3, z: 4 });
-    });
-
-    test('deferred source Box reflects mutations after apply', () => {
-      const sourceBox = Box.fromArray([10]);
-      const target: any = { items: [1, 2] };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.append() });
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      sourceBox.push(20);
-
-      expect(target.items.get()).toEqual([1, 2, 10, 20]);
-    });
-  });
-
-  describe('combine with both target and source as Boxes', () => {
-    test('appends Box source to Box target', () => {
-      const targetBox = Box.fromArray([1, 2]);
-      const sourceBox = Box.fromArray([3, 4]);
-      const target: any = { items: targetBox };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.append() });
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual([1, 2, 3, 4]);
-    });
-
-    test('replaceByKey with both Boxes', () => {
-      const targetBox = Box.fromArray([{ id: 1, v: 'old' }, { id: 2, v: 'keep' }]);
-      const sourceBox = Box.fromArray([{ id: 1, v: 'new' }, { id: 3, v: 'added' }]);
-      const target: any = { items: targetBox };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.replaceByKey('id') });
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual([
-        { id: 1, v: 'new' },
-        { id: 2, v: 'keep' },
-        { id: 3, v: 'added' },
-      ]);
-    });
-
-    test('deep merges two Box objects', () => {
-      const targetBox = Box.fromValue({ x: 1, y: 2 });
-      const sourceBox = Box.fromValue({ y: 3, z: 4 });
-      const target: any = { config: targetBox };
-      const strategy = PropertyMergeStrategy.combine();
-
-      strategy.apply(target, { config: sourceBox }, ['config']);
-
-      expect(Box.isBox(target.config)).toBe(true);
-      expect(target.config.get()).toEqual({ x: 1, y: 3, z: 4 });
-    });
-
-    test('mutations to either Box are reflected in the combined result', () => {
-      const targetBox = Box.fromArray(['a']);
-      const sourceBox = Box.fromArray(['b']);
-      const target: any = { items: targetBox };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.append() });
-
-      strategy.apply(target, { items: sourceBox }, ['items']);
-
-      targetBox.push('c');
-      sourceBox.push('d');
-
-      expect(target.items.get()).toEqual(['a', 'c', 'b', 'd']);
-    });
-  });
-
   describe('array elements that are Boxes', () => {
     test('ArrayMergeStrategy.replace passes Box elements through as-is', () => {
       const elem = Box.fromValue('a');
@@ -299,15 +174,6 @@ describe('PropertyMergeStrategy - Box safety', () => {
       expect((result as any).get()).toEqual([{ id: 1, v: 'new' }]);
     });
 
-    test('ArrayMergeStrategy.replaceByKey directly resolves Box elements in source', () => {
-      const elem = Box.fromValue({ id: 1, v: 'new' });
-      const strategy = ArrayMergeStrategy.replaceByKey('id');
-      const result = strategy.merge([{ id: 1, v: 'old' }], [elem]);
-
-      expect(Box.isBox(result)).toBe(true);
-      expect((result as any).get()).toEqual([{ id: 1, v: 'new' }]);
-    });
-
     test('ArrayMergeStrategy.replaceByKey passes through without deferring when no Boxes', () => {
       const strategy = ArrayMergeStrategy.replaceByKey('id');
       const result = strategy.merge([{ id: 1, v: 'a' }], [{ id: 1, v: 'b' }]);
@@ -343,32 +209,6 @@ describe('PropertyMergeStrategy - Box safety', () => {
         { id: 1, v: 'a' },
         { id: 2, v: 'b' },
       ]);
-    });
-
-    test('replaceByKey with source elements as Boxes', () => {
-      const sourceElem = Box.fromValue({ id: 1, v: 'new' });
-      const target: any = { items: [{ id: 1, v: 'old' }, { id: 2, v: 'keep' }] };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.replaceByKey('id') });
-
-      strategy.apply(target, { items: [sourceElem] }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual([
-        { id: 1, v: 'new' },
-        { id: 2, v: 'keep' },
-      ]);
-    });
-
-    test('replaceByKey with both target and source elements as Boxes', () => {
-      const targetElem = Box.fromValue({ id: 1, v: 'old' });
-      const sourceElem = Box.fromValue({ id: 1, v: 'new' });
-      const target: any = { items: [targetElem] };
-      const strategy = PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.replaceByKey('id') });
-
-      strategy.apply(target, { items: [sourceElem] }, ['items']);
-
-      expect(Box.isBox(target.items)).toBe(true);
-      expect(target.items.get()).toEqual([{ id: 1, v: 'new' }]);
     });
 
     test('replaceByIndex with Box elements in target passes them through', () => {

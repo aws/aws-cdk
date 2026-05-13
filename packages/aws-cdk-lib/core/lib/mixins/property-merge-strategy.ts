@@ -79,8 +79,8 @@ export class ArrayMergeStrategy {
    * Matching target elements are replaced (not deep-merged).
    * Unmatched source elements are appended.
    *
-   * Supports Box-backed elements: when array elements are Boxes, the match
-   * is deferred until the Boxes resolve.
+   * Supports Box-backed elements: when target array elements are Boxes, the
+   * match is deferred until the Boxes resolve.
    *
    * @param key - The property name to match elements on.
    *
@@ -132,8 +132,8 @@ export class PropertyMergeStrategy {
    * their properties are merged recursively. Primitives, arrays, and
    * mismatched types are overridden by the source value.
    *
-   * Supports Box-backed values: when either the target or source value is a
-   * Box, the merge is deferred until the Box resolves.
+   * Supports Box-backed values: when the target value is a Box, the merge
+   * is deferred until the Box resolves.
    */
   public static combine(options?: CombineStrategyOptions): IMergeStrategy {
     // Wrapped in BoxSafeMergeStrategy because CombineStrategy reads and
@@ -176,8 +176,8 @@ class CombineStrategy implements IMergeStrategy {
 
 /**
  * Wraps an IMergeStrategy to make it box-safe.
- * When either the target or source value for a key is a Box, the merge is
- * deferred via Box.combine so the delegate operates on resolved values.
+ * When the target value for a key is a Box, the merge is deferred via
+ * Box.combine so the delegate operates on the resolved value.
  */
 class BoxSafeMergeStrategy implements IMergeStrategy {
   constructor(private readonly delegate: IMergeStrategy) {}
@@ -192,26 +192,15 @@ class BoxSafeMergeStrategy implements IMergeStrategy {
         continue;
       }
 
-      const sourceValue = (source as any)[key];
       const targetValue = (target as any)[key];
-      const sourceIsBox = Box.isBox(sourceValue);
-      const targetIsBox = Box.isBox(targetValue);
 
-      if (sourceIsBox || targetIsBox) {
+      if (Box.isBox(targetValue)) {
         const delegate = this.delegate;
-        const boxes: { target?: IReadableBox<any>; source?: IReadableBox<any> } = {};
-        if (targetIsBox) {
-          boxes.target = targetValue;
-        }
-        if (sourceIsBox) {
-          boxes.source = sourceValue;
-        }
+        const sourceValue = (source as any)[key];
 
-        (target as any)[key] = Box.combine(boxes, (resolved) => {
-          const t = targetIsBox ? resolved.target : targetValue;
-          const s = sourceIsBox ? resolved.source : sourceValue;
-          const tmp: any = { value: t };
-          delegate.apply(tmp, { value: s }, ['value']);
+        (target as any)[key] = Box.combine({ box: targetValue }, ({ box: resolved }) => {
+          const tmp: any = { value: resolved };
+          delegate.apply(tmp, { value: sourceValue }, ['value']);
           return tmp.value;
         });
       } else {
@@ -237,13 +226,13 @@ class OverrideStrategy implements IMergeStrategy {
 
 /**
  * Wraps an array merge strategy to make it box-safe.
- * If any element in either array is a Box, the merge is deferred via Box.combine.
+ * If any element in the target array is a Box, the merge is deferred via Box.combine.
  */
 class BoxSafeArrayStrategy implements IArrayMergeStrategy {
   constructor(private readonly delegate: IArrayMergeStrategy) {}
 
   public merge(target: any[], source: any[]): any {
-    const hasBoxElements = target.some(Box.isBox) || source.some(Box.isBox);
+    const hasBoxElements = target.some(Box.isBox);
     if (!hasBoxElements) {
       return this.delegate.merge(target, source);
     }
@@ -254,17 +243,11 @@ class BoxSafeArrayStrategy implements IArrayMergeStrategy {
         boxes[`t${i}`] = target[i];
       }
     }
-    for (let i = 0; i < source.length; i++) {
-      if (Box.isBox(source[i])) {
-        boxes[`s${i}`] = source[i];
-      }
-    }
 
     const delegate = this.delegate;
     return Box.combine(boxes, (resolved) => {
       const resolvedTarget = target.map((el, i) => `t${i}` in resolved ? resolved[`t${i}`] : el);
-      const resolvedSource = source.map((el, i) => `s${i}` in resolved ? resolved[`s${i}`] : el);
-      return delegate.merge(resolvedTarget, resolvedSource);
+      return delegate.merge(resolvedTarget, source);
     });
   }
 }
