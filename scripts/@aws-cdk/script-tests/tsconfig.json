@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.pr-issue-check.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [
+    "**/*.test.ts",
+    "../../pr-issue-check.ts"
+  ]
+}
