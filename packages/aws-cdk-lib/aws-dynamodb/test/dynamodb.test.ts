@@ -668,7 +668,7 @@ test('when replica is retain and table is destroy', () => {
   });
 });
 
-test('when replica is destory and table is retain', () => {
+test('when replica is destroyed and table is retained', () => {
   const app = new App({
     context: {
       [cxapi.DYNAMODB_TABLE_RETAIN_TABLE_REPLICA]: true,
