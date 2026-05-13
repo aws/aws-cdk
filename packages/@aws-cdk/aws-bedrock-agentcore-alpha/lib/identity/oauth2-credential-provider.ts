@@ -21,7 +21,7 @@ import type {
 import { CfnOAuth2CredentialProvider } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { buildIdentityResourceArns, grantCredentialSecret, grantReadWithList, TOKEN_VAULT_OAUTH2_PARENT_RESOURCES, WORKLOAD_IDENTITY_USE_RESOURCES } from './grant-helpers';
@@ -1128,6 +1128,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
    * @param scopes OAuth scopes the gateway target should request (see vendor documentation).
    * @param customParameters Optional custom parameters for the OAuth flow.
    */
+  @MethodMetadata()
   public bindForGatewayOAuthTarget(
     scopes: string[],
     customParameters?: { [key: string]: string },

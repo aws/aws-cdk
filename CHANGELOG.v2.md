@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.254.0](https://github.com/aws/aws-cdk/compare/v2.253.1...v2.254.0) (2026-05-13)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+aws-elasticache: AWS::ElastiCache::CacheCluster: Id attribute removed.
+aws-sagemaker: AWS::SageMaker::Model: Id attribute removed.
+aws-vpclattice: AWS::VpcLattice::AuthPolicy: State attribute enum values changed from ACTIVE|INACTIVE to Active|Inactive.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37826](https://github.com/aws/aws-cdk/issues/37826)) ([fb4197e](https://github.com/aws/aws-cdk/commit/fb4197edd5916247bfc776bc6e8d6922a760bd89))
+* **cloudwatch:** add PromQL Alarm L2 construct ([#37793](https://github.com/aws/aws-cdk/issues/37793)) ([13a4924](https://github.com/aws/aws-cdk/commit/13a49245ba996328067c67b07b0e80123b2410a3))
+* **core:** `PropertyMergeStrategy` now supports array merge strategies ([#37841](https://github.com/aws/aws-cdk/issues/37841)) ([701305d](https://github.com/aws/aws-cdk/commit/701305d8c5903dc880b1c92ae9ba5e6475fcc267))
+* **core:** plugin violations can be suppressed ([#37808](https://github.com/aws/aws-cdk/issues/37808)) ([a47ad39](https://github.com/aws/aws-cdk/commit/a47ad39ad980fd388d4e72012a2de8ad2ce85f3f)), closes [#37781](https://github.com/aws/aws-cdk/issues/37781)
+* **core:** weak cross environment references ([#37800](https://github.com/aws/aws-cdk/issues/37800)) ([fe23dce](https://github.com/aws/aws-cdk/commit/fe23dce1fb20a0e6b21dd0780d91ed8e483be82e))
+* **core:** weak cross-stack references in the same environment ([#37824](https://github.com/aws/aws-cdk/issues/37824)) ([167ff3c](https://github.com/aws/aws-cdk/commit/167ff3c5feb42c9f131c4af5f34101f8b04212ca))
+* **dynamodb:** resource policies for streams ([#37254](https://github.com/aws/aws-cdk/issues/37254)) ([7e5679c](https://github.com/aws/aws-cdk/commit/7e5679cb1fb89125ea4fcf7174daa98b2ff8a42e))
+* **lambda:** add SQS provisionedPollerConfig support with validation and fix type mismatch ([#37550](https://github.com/aws/aws-cdk/issues/37550)) ([086738b](https://github.com/aws/aws-cdk/commit/086738b6062eece0fedc836ecb898a664fd9021c)), closes [#37197](https://github.com/aws/aws-cdk/issues/37197) [/github.com/aws/aws-cdk/pull/37197#pullrequestreview-2772143562](https://github.com/aws//github.com/aws/aws-cdk/pull/37197/issues/pullrequestreview-2772143562) [#37197](https://github.com/aws/aws-cdk/issues/37197)
+* **ses:** auto email validation for configuration sets ([#36679](https://github.com/aws/aws-cdk/issues/36679)) ([3a58641](https://github.com/aws/aws-cdk/commit/3a586417d2bd922c04e0f47db5aa0391c21212a2))
+
+
+### Bug Fixes
+
+* file fingerprinting is now ~33% faster ([#37802](https://github.com/aws/aws-cdk/issues/37802)) ([b871018](https://github.com/aws/aws-cdk/commit/b8710183cd9a003a5f9898ed5c6985233375c5eb))
+* **core:** "exports cannot be updated" for cross-region references ([#37790](https://github.com/aws/aws-cdk/issues/37790)) ([af11f00](https://github.com/aws/aws-cdk/commit/af11f0032e4333cc936aadd697cbc92bc27a10a8))
+* **rds:** add lower bound validation for ClusterInstance promotionTier ([#37519](https://github.com/aws/aws-cdk/issues/37519)) ([16c0a29](https://github.com/aws/aws-cdk/commit/16c0a29d73f18d2586d07eef18bc589043f71ab0)), closes [#37518](https://github.com/aws/aws-cdk/issues/37518)
+* **s3deploy:** empty sources leads to deployment error ([#37786](https://github.com/aws/aws-cdk/issues/37786)) ([d28ad30](https://github.com/aws/aws-cdk/commit/d28ad30d2217ed3b66d2b610ea3da5a3caa78b13))
+* bundled jsonschema in @aws-cdk/cloud-assembly-api causes ELSPROBLEMS ([#37774](https://github.com/aws/aws-cdk/issues/37774)) ([64651d3](https://github.com/aws/aws-cdk/commit/64651d32713472e261a10e8de67c7632dc7a5ac5)), closes [#37756](https://github.com/aws/aws-cdk/issues/37756)
+
 ## [2.253.1](https://github.com/aws/aws-cdk/compare/v2.253.0...v2.253.1) (2026-05-08)
 
 

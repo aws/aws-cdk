@@ -21,7 +21,7 @@ import type {
 import { CfnApiKeyCredentialProvider } from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
 import { buildIdentityResourceArns, grantCredentialSecret, grantReadWithList, TOKEN_VAULT_API_KEY_PARENT_RESOURCES, WORKLOAD_IDENTITY_USE_RESOURCES } from './grant-helpers';
@@ -393,6 +393,7 @@ export class ApiKeyCredentialProvider extends ApiKeyCredentialProviderBase {
   /**
    * ARNs for {@link GatewayCredentialProvider.fromApiKeyIdentity} / {@link GatewayCredentialProvider.fromApiKeyIdentityArn}.
    */
+  @MethodMetadata()
   public bindForGatewayApiKeyTarget(): GatewayApiKeyIdentityBinding {
     const secretArn = this.apiKeySecretArn;
     if (secretArn == null) {
