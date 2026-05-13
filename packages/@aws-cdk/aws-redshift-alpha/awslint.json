@@ -45,6 +45,9 @@
     "prefer-ref-interface:@aws-cdk/aws-redshift-alpha.UserAttributes.adminUser",
     "prefer-ref-interface:@aws-cdk/aws-redshift-alpha.UserProps.cluster",
     "prefer-ref-interface:@aws-cdk/aws-redshift-alpha.UserProps.adminUser",
-    "prefer-ref-interface:@aws-cdk/aws-redshift-alpha.UserProps.encryptionKey"
+    "prefer-ref-interface:@aws-cdk/aws-redshift-alpha.UserProps.encryptionKey",
+    "interface-extends-ref:@aws-cdk/aws-redshift-alpha.ICluster",
+    "interface-extends-ref:@aws-cdk/aws-redshift-alpha.IClusterParameterGroup",
+    "interface-extends-ref:@aws-cdk/aws-redshift-alpha.IClusterSubnetGroup"
   ]
 }

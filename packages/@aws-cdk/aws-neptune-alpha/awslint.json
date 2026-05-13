@@ -19,6 +19,11 @@
     "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseClusterProps.subnetGroup",
     "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseInstanceProps.cluster",
     "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.DatabaseInstanceProps.parameterGroup",
-    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.SubnetGroupProps.vpc"
+    "prefer-ref-interface:@aws-cdk/aws-neptune-alpha.SubnetGroupProps.vpc",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IClusterParameterGroup",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IDatabaseCluster",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IDatabaseInstance",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.IParameterGroup",
+    "interface-extends-ref:@aws-cdk/aws-neptune-alpha.ISubnetGroup"
   ]
 }

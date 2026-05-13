@@ -1,13 +1,21 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnBackupPlan } from './backup.generated';
 import { toIBackupVault } from './private/ref-utils';
-import { BackupPlanCopyActionProps, BackupPlanRule } from './rule';
-import { BackupSelection, BackupSelectionOptions } from './selection';
-import { BackupVault, IBackupVault } from './vault';
-import { ArnFormat, IResource, Lazy, Resource, ValidationError } from '../../core';
+import type { BackupPlanCopyActionProps } from './rule';
+import { BackupPlanRule } from './rule';
+import type { BackupSelectionOptions } from './selection';
+import { BackupSelection } from './selection';
+import type { IBackupVault } from './vault';
+import { BackupVault } from './vault';
+import type { IResource } from '../../core';
+import { ArnFormat, Resource, ValidationError } from '../../core';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
-import { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
+import type { BackupPlanReference, IBackupPlanRef, IBackupVaultRef } from '../../interfaces/generated/aws-backup-interfaces.generated';
 
 /**
  * A backup plan
@@ -62,6 +70,7 @@ export interface BackupPlanProps {
  * A backup plan
  */
 @propertyInjectable
+@noBoxStackTraces
 export class BackupPlan extends Resource implements IBackupPlan {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-backup.BackupPlan';
@@ -152,7 +161,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
     };
   }
 
-  private readonly rules: CfnBackupPlan.BackupRuleResourceTypeProperty[] = [];
+  private readonly rules: IArrayBox<CfnBackupPlan.BackupRuleResourceTypeProperty>;
   private _backupVault?: IBackupVaultRef;
 
   constructor(scope: Construct, id: string, props: BackupPlanProps = {}) {
@@ -160,11 +169,13 @@ export class BackupPlan extends Resource implements IBackupPlan {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.rules = Box.fromArray();
+
     const plan = new CfnBackupPlan(this, 'Resource', {
       backupPlan: {
         advancedBackupSettings: this.advancedBackupSettings(props),
         backupPlanName: props.backupPlanName || id,
-        backupPlanRule: Lazy.any({ produce: () => this.rules }, { omitEmptyArray: true }),
+        backupPlanRule: this.rules,
       },
     });
 
@@ -244,7 +255,7 @@ export class BackupPlan extends Resource implements IBackupPlan {
   public get backupVault(): IBackupVault {
     if (!this._backupVault) {
       // This cannot happen but is here to make TypeScript happy
-      throw new ValidationError('No backup vault!', this);
+      throw new ValidationError(lit`BackupVault`, 'No backup vault!', this);
     }
 
     return toIBackupVault(this._backupVault);

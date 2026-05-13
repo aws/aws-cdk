@@ -1,5 +1,6 @@
-import { Construct } from 'constructs';
-import { App, Stack, StackProps } from 'aws-cdk-lib/core';
+import type { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib/core';
+import { App, Stack } from 'aws-cdk-lib/core';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
 

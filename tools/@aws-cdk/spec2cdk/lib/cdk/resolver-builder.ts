@@ -1,9 +1,10 @@
-import { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
-import { CallableDeclaration, expr, Expression, Lambda, Module, Parameter, Type } from '@cdklabs/typewriter';
+import type { DefinitionReference, Property } from '@aws-cdk/service-spec-types';
+import type { CallableDeclaration, Expression, Module } from '@cdklabs/typewriter';
+import { expr, Lambda, Parameter, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { RelationshipDecider, Relationship } from './relationship-decider';
+import type { RelationshipDecider, Relationship } from './relationship-decider';
 import { NON_RESOLVABLE_PROPERTY_NAMES } from './tagging';
-import { TypeConverter } from './type-converter';
+import type { TypeConverter } from './type-converter';
 import { flattenFunctionNameFromType, propertyNameFromCloudFormation } from '../naming';
 
 export interface ResolverResult {
@@ -83,15 +84,17 @@ export class ResolverBuilder {
     ].join(' | ');
 
     // Generates code like:
-    // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
-    // For array <T | string>[]: cdk.mapArrayInPlace(props.layers, (item: IxxxRef | string) => (item as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.IxxxRef | string"))
+    // For single values (T | string):
+    // getRefProperty((props.xx as IxxxRef)?.xxxRef, 'xxxArn') ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string")
+    // For arrays (T | string)[]:
+    // cdk.mapArrayInPlace(props.layers, (item: IxxxRef | string) => getRefProperty((item as IxxxRef)?.xxxRef, 'xxxArn') ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.IxxxRef | string"))
     // Ensures that arn properties always appear first in the chain as they are more general
     const arnRels = relationships.filter(r => r.refPropName.toLowerCase().endsWith('arn'));
     const otherRels = relationships.filter(r => !r.refPropName.toLowerCase().endsWith('arn'));
 
     const buildChain = (itemName: string) => [
       ...[...arnRels, ...otherRels]
-        .map(r => `(${itemName} as ${r.refType})?.${r.refPropStructName}?.${r.refPropName}`),
+        .map(r => `cdk.getRefProperty((${itemName} as ${r.refType})?.${r.refPropStructName}, '${r.refPropName}')`),
       `cdk.ensureStringOrUndefined(${itemName}, "${name}", "${typeDisplayNames}")`,
     ].join(' ?? ');
     const resolver = (props: Expression) => {

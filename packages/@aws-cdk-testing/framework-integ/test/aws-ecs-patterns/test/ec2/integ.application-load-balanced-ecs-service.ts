@@ -1,7 +1,8 @@
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { InstanceType, Vpc, SecurityGroup, Peer, Port } from 'aws-cdk-lib/aws-ec2';
 import { Cluster, ContainerImage, AsgCapacityProvider, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
-import { App, Stack, CfnResource } from 'aws-cdk-lib';
+import type { CfnResource } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { ApplicationLoadBalancedEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
@@ -31,7 +32,6 @@ const provider1 = new AsgCapacityProvider(stack, 'FirstCapacityProvier', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'first-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider1);
 
@@ -42,7 +42,6 @@ const provider2 = new AsgCapacityProvider(stack, 'SecondCapacityProvier', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'second-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider2);
 
@@ -78,6 +77,12 @@ applicationLoadBalancedEc2Service.loadBalancer.connections.securityGroups.forEac
 
 new integ.IntegTest(app, 'applicationLoadBalancedEc2ServiceTest', {
   testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
 });
 
 app.synth();

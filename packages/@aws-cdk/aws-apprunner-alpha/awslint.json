@@ -22,6 +22,11 @@
     "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcConnectorProps.securityGroups",
     "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcIngressConnectionProps.interfaceVpcEndpoint",
     "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcIngressConnectionProps.service",
-    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcIngressConnectionProps.vpc"
+    "prefer-ref-interface:@aws-cdk/aws-apprunner-alpha.VpcIngressConnectionProps.vpc",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IAutoScalingConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IObservabilityConfiguration",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IService",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IVpcConnector",
+    "interface-extends-ref:@aws-cdk/aws-apprunner-alpha.IVpcIngressConnection"
   ]
 }

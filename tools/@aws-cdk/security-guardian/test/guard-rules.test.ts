@@ -46,22 +46,22 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  describe('Guard Hooks Rules (NO_ROOT_PRINCIPALS_EXCEPT_KMS_SECRETS)', () => {
-    test('should allow root principals in KMS keys but block in other resources', async () => {
-      // Process existing templates that contain KMS keys with root principals
+  describe('Resource Policy Rules (RESOURCE_POLICY_ROOT_PRINCIPAL_NEEDS_CONDITIONS)', () => {
+    test('should detect root principals without conditions in resource policies', async () => {
+      // Process existing templates that contain resource policies with root principals
       preprocessTemplates(templatesDir, outputDir);
       
-      // Run validation with guard-hooks rule
+      // Run validation with resource-policies rule
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'guard-hooks/guardhooks-no-root-principals-except-kms-secrets.guard'),
-        path.join(outputDir, 'guard-hooks-test.xml'),
-        'Guard Hooks',
+        path.join(rulesDir, 'resource-policies/resource-policy-root-principal-needs-conditions.guard'),
+        path.join(outputDir, 'resource-policy-test.xml'),
+        'Resource Policy',
         new Map(),
         true
       );
       
-      // Should detect violations in non-KMS resources (validation should fail)
+      // Should detect root principals without conditions (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
     });
@@ -184,22 +184,22 @@ describe('Guard Rules Validation', () => {
     });
   });
 
-  describe('CodePipeline Cross-Account Rules', () => {
-    test('CODEPIPELINE_CROSS_ACCOUNT_ROLE_TRUST_SCOPE - should detect overly broad cross-account trust policies', async () => {
-      // Process existing templates that may contain CodePipeline cross-account roles
+  describe('IAM Role Root Principal Conditions Rules', () => {
+    test('IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS - should detect root principals without restrictive conditions', async () => {
+      // Process existing templates that may contain IAM roles with root principals
       preprocessTemplates(templatesDir, outputDir);
       
-      // Run validation with CodePipeline rules
+      // Run validation with IAM root principal rule
       const success = await runCfnGuardValidation(
         outputDir,
-        path.join(rulesDir, 'codepipeline/codepipeline-cross-account-role-trust-scope.guard'),
-        path.join(outputDir, 'codepipeline-test.xml'),
-        'CodePipeline',
+        path.join(rulesDir, 'iam/iam-role-root-principal-needs-conditions.guard'),
+        path.join(outputDir, 'root-principal-test.xml'),
+        'Root Principal',
         new Map(),
         true
       );
       
-      // Should detect CodePipeline violations (validation should fail)
+      // Should detect root principals without conditions (validation should fail)
       expect(typeof success).toBe('boolean');
       expect(success).toBe(false);
     });
@@ -288,7 +288,34 @@ describe('Guard Rules Validation', () => {
       // Verify XML file exists and testsuite names are replaced
       const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
       expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
-      expect(xmlContent).toContain('for Type: Failure Type');
+      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.">');
+    });
+
+    test('should correctly post-process XML with enhanceXml disabled', async () => {
+      // Process templates to create files that will fail validation
+      preprocessTemplates(templatesDir, outputDir);
+      
+      const fileMapping = new Map([
+        [path.resolve(outputDir, 'CMCMK-Stack.template.json'), 'src/CMCMK-Stack.template.json'],
+        [path.resolve(outputDir, 'StagingStack-default-resourcesmax-ACCOUNT-REGION.template.json'), 'src/StagingStack.template.json']
+      ]);
+
+      const success = await runCfnGuardValidation(
+        outputDir,
+        path.join(rulesDir, 'iam/iam-role-no-broad-principals.guard'),
+        path.join(outputDir, 'xml-failure-test.xml'),
+        'Failure Type',
+        fileMapping,
+        false
+      );
+
+      expect(success).toBe(false);
+      
+      // Verify XML file exists and testsuite names are replaced
+      const xmlContent = fs.readFileSync(path.join(outputDir, 'xml-failure-test.xml'), 'utf8');
+      expect(xmlContent).toContain('name="src/CMCMK-Stack.template.json"');
+      expect(xmlContent).toContain('<failure message="[Type: Failure Type] IAM_ROLE_NO_BROAD_PRINCIPALS">');
+      expect(xmlContent).toContain('##ERROR:IAM role trust policy must not use broadly scoped principals. Remove &apos;*&apos; from Principal and scope to specific accounts or roles.##');
     });
   });
 });

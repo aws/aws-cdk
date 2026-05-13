@@ -1,9 +1,9 @@
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import * as EKS from '@aws-sdk/client-eks';
-import { EksClient, ResourceEvent, ResourceHandler } from './common';
+import type * as EKS from '@aws-sdk/client-eks';
+import type { EksClient, ResourceEvent } from './common';
+import { ResourceHandler } from './common';
 import { compareLoggingProps } from './compareLogging';
-import { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
+import type { IsCompleteResponse, OnEventResponse } from '../../copied-from-aws-cdk-lib/provider-framework-types';
 
 const MAX_CLUSTER_NAME_LEN = 100;
 

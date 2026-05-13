@@ -1,6 +1,6 @@
-import { PolicyDocument } from '../policy-document';
+import type { PolicyDocument } from '../policy-document';
 import { PolicyStatement } from '../policy-statement';
-import { IPrincipal, IAssumeRolePrincipal } from '../principals';
+import type { IPrincipal, IAssumeRolePrincipal } from '../principals';
 
 /**
  * Add a principal to an AssumeRolePolicyDocument in the right way

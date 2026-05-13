@@ -25,20 +25,24 @@ const name3 = cdk.Names.uniqueResourceName(parentConstruct, { discriminator: 'qu
 // If names were not unique, CloudFormation deployment would fail
 new sqs.Queue(parentConstruct, 'Queue1', {
   queueName: name1,
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 
 new sqs.Queue(parentConstruct, 'Queue2', {
   queueName: name2,
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 
 new sqs.Queue(parentConstruct, 'Queue3', {
   queueName: name3,
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 
 // Test without discriminator (should still work)
 const nameWithoutDiscriminator = cdk.Names.uniqueResourceName(parentConstruct, {});
 new sqs.Queue(parentConstruct, 'QueueWithoutDiscriminator', {
   queueName: nameWithoutDiscriminator,
+  encryption: sqs.QueueEncryption.SQS_MANAGED,
 });
 
 new integ.IntegTest(app, 'UniqueResourceNameDiscriminatorTest', {

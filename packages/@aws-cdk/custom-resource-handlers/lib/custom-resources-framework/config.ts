@@ -7,7 +7,7 @@ import { MemberVisibility } from '@cdklabs/typewriter';
  */
 export enum Runtime {
   /**
-   * The NodeJs 18.x runtime
+   * The NodeJs 20.x runtime
    */
   NODEJS_20_X = 'nodejs20.x',
 
@@ -81,7 +81,7 @@ export interface ComponentProps {
   /**
    * The runtime that is compatible with the framework component's source code.
    *
-   * @default Runtime.NODEJS_18_X
+   * @default The latest NodeJS runtime in all regions (not necessarily the latest NodeJS runtime).
    */
   readonly runtime?: Runtime;
 
@@ -223,6 +223,40 @@ export const config: HandlerFrameworkConfig = {
       {
         type: ComponentType.NO_OP,
         sourceCode: path.resolve(__dirname, '..', 'aws-eks', 'kubectl-handler', 'patch', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+    ],
+  },
+  'aws-eks-v2': {
+    'kubectl-provider': [
+      {
+        type: ComponentType.FUNCTION,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'index.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'apply', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'get', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'helm', '__init__.py'),
+        runtime: Runtime.PYTHON_LATEST,
+        minifyAndBundle: false,
+      },
+      {
+        type: ComponentType.NO_OP,
+        sourceCode: path.resolve(__dirname, '..', 'aws-eks-v2', 'kubectl-handler', 'patch', '__init__.py'),
         runtime: Runtime.PYTHON_LATEST,
         minifyAndBundle: false,
       },

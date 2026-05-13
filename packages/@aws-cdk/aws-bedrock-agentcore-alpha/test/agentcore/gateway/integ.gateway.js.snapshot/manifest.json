@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "artifacts": {
     "BedrockAgentCoreGatewayIntegTest.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/21273dbf16eaa5e7dc6b90f7bd3e5eac87cfae7534d9f2b8bf9b43385621ae13.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/b596a7c2b6abe1b4b0550d41f2904c28fecde5bc1a75a34fbabff9cd595045d4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -37,6 +37,14 @@
         "/BedrockAgentCoreGatewayIntegTest/TestGateway": [
           {
             "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
             "data": "*"
           },
           {
@@ -90,12 +98,22 @@
                 {}
               ]
             }
-          }
-        ],
-        "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole/ImportServiceRole": [
+          },
           {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole/Resource": [
@@ -122,6 +140,22 @@
             "data": {
               "attachToRole": [
                 "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addStatements": [
+                {}
               ]
             }
           },
@@ -246,6 +280,114 @@
             "data": "TestGatewaySmithyTarget2C1ACC84"
           }
         ],
+        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "description": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RequestInterceptorServiceRoleD8815DF9"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RequestInterceptorBE1C44C8"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RequestInterceptorLogGroup72E7DA80"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "functionName": "*",
+              "runtime": "*",
+              "handler": "*",
+              "code": "*",
+              "description": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/ServiceRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseInterceptorServiceRoleDC649E6F"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseInterceptor986DF12E"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/LogGroup": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "logGroupName": "*"
+            }
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/LogGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseInterceptorLogGroup1A3F0648"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/TestFunction": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -260,14 +402,18 @@
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
           }
         ],
         "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole/Resource": [
@@ -314,6 +460,18 @@
             "data": "SmithyTargetId"
           }
         ],
+        "/BedrockAgentCoreGatewayIntegTest/RequestInterceptorArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RequestInterceptorArn"
+          }
+        ],
+        "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptorArn": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseInterceptorArn"
+          }
+        ],
         "/BedrockAgentCoreGatewayIntegTest/BootstrapVersion": [
           {
             "type": "aws:cdk:logicalId",
@@ -346,7 +504,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b73db98070c0a0dbbc02c1a3b34776ffb1816e1d94f9eb1f1cfdffdabaef153a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e620d44a944021100cc8d07f907ea38a0b100e9a4fce9fe550e07eaa21403056.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -398,6 +556,58 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+          }
+        ],
+        "/GatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/GatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000"
+          }
+        ],
+        "/GatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallLambdagetFunctionfbd4f50d903dbd30eb3124015fab2000"
+          }
+        ],
+        "/GatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce/Default": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": "*"
+          }
+        ],
+        "/GatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce/Default/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce"
+          }
+        ],
+        "/GatewayIntegTest/DefaultTest/DeployAssert/AwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce/AssertionResults": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssertionResultsAwsApiCallLambdagetFunction8131977e19f09df370d2f178843f8cce"
           }
         ],
         "/GatewayIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
@@ -712,6 +922,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -743,16 +957,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -899,6 +1103,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -910,12 +1115,17 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1101.0"
 }

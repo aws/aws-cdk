@@ -10,6 +10,8 @@
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.ISubnet.associateNetworkAcl.acl",
     "prefer-ref-interface:aws-cdk-lib.aws_ec2.InterfaceVpcEndpointOptions.securityGroups",
     "prefer-ref-interface:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps.vpc",
-    "prefer-ref-interface:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps.firewallRuleGroup"
+    "prefer-ref-interface:@aws-cdk/aws-route53resolver-alpha.FirewallRuleGroupAssociationProps.firewallRuleGroup",
+    "interface-extends-ref:@aws-cdk/aws-route53resolver-alpha.IFirewallDomainList",
+    "interface-extends-ref:@aws-cdk/aws-route53resolver-alpha.IFirewallRuleGroup"
   ]
 }

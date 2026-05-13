@@ -1,7 +1,8 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { App, Intrinsic, Lazy, Stack, Token } from '../../core';
-import { Peer, Port, SecurityGroup, SecurityGroupProps, Vpc } from '../lib';
+import type { SecurityGroupProps } from '../lib';
+import { Peer, Port, SecurityGroup, Vpc } from '../lib';
 
 const SECURITY_GROUP_DISABLE_INLINE_RULES_CONTEXT_KEY = '@aws-cdk/aws-ec2.securityGroupDisableInlineRules';
 
@@ -23,6 +24,20 @@ describe('security group', () => {
           IpProtocol: '-1',
         },
       ],
+    });
+  });
+
+  test('security group without ingress rules omits SecurityGroupIngress', () => {
+    // GIVEN
+    const stack = new Stack();
+    const vpc = new Vpc(stack, 'VPC');
+
+    // WHEN
+    new SecurityGroup(stack, 'SG1', { vpc });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroup', {
+      SecurityGroupIngress: Match.absent(),
     });
   });
 

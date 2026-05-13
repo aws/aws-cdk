@@ -8,12 +8,14 @@ import { durationsLinter } from './durations';
 import { exportsLinter } from './exports';
 import { importsLinter } from './imports';
 import { integrationLinter } from './integrations';
+import { mixinLinter } from './mixins';
 import { moduleLinter } from './module';
 import { noUnusedTypeLinter } from './no-unused-type';
 import { publicStaticPropertiesLinter } from './public-static-properties';
 import { resourceLinter } from './resource';
 import { AggregateLinter } from '../linter';
 import { grantsMethodsLinter } from './grant-methods';
+import { l2InterfaceLinter } from './l2-interfaces';
 
 export const ALL_RULES_LINTER = new AggregateLinter(
   moduleLinter,
@@ -26,9 +28,11 @@ export const ALL_RULES_LINTER = new AggregateLinter(
   exportsLinter,
   eventsLinter,
   integrationLinter,
+  mixinLinter,
   noUnusedTypeLinter,
   durationsLinter,
   publicStaticPropertiesLinter,
   docsLinter,
   grantsMethodsLinter,
+  l2InterfaceLinter,
 );

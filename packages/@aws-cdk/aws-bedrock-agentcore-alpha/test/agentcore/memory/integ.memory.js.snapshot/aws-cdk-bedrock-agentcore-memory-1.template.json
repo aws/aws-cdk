@@ -557,6 +557,54 @@
    "DependsOn": [
     "MemoryWithSelfManagedStrategyServiceRoleDefaultPolicy8649CA0E"
    ]
+  },
+  "MemoryWithBuiltinEpisodicExServiceRoleB89EDF28": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "bedrock-agentcore.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "MemoryWithBuiltinEpisodicExMemory4F42AC13": {
+   "Type": "AWS::BedrockAgentCore::Memory",
+   "Properties": {
+    "Description": "A test memory with built-in episodic strategy",
+    "EventExpiryDuration": 90,
+    "MemoryExecutionRoleArn": {
+     "Fn::GetAtt": [
+      "MemoryWithBuiltinEpisodicExServiceRoleB89EDF28",
+      "Arn"
+     ]
+    },
+    "MemoryStrategies": [
+     {
+      "EpisodicMemoryStrategy": {
+       "Description": "Captures meaningful slices of user and system interactions.",
+       "Name": "episodic_builtin_cdkGen0001",
+       "Namespaces": [
+        "/strategy/{memoryStrategyId}/actor/{actorId}/session/{sessionId}"
+       ],
+       "ReflectionConfiguration": {
+        "Namespaces": [
+         "/strategy/{memoryStrategyId}/actor/{actorId}"
+        ]
+       },
+       "Type": "EPISODIC"
+      }
+     }
+    ],
+    "Name": "memory_with_builtin_episodic_example"
+   }
   }
  },
  "Parameters": {

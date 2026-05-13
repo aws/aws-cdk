@@ -3,7 +3,8 @@
   "ParentConstructQueue1B0CD8C94": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "QueueName": "StackParentConstruct18DE8C2B"
+    "QueueName": "StackParentConstruct18DE8C2B",
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -11,7 +12,8 @@
   "ParentConstructQueue2AB38D19F": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "QueueName": "StackParentConstruct8BE93FA9"
+    "QueueName": "StackParentConstruct8BE93FA9",
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -19,7 +21,8 @@
   "ParentConstructQueue356BCFF09": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "QueueName": "StackParentConstruct48846341"
+    "QueueName": "StackParentConstruct48846341",
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -27,7 +30,8 @@
   "ParentConstructQueueWithoutDiscriminator69125BAE": {
    "Type": "AWS::SQS::Queue",
    "Properties": {
-    "QueueName": "StackParentConstructDCA98D43"
+    "QueueName": "StackParentConstructDCA98D43",
+    "SqsManagedSseEnabled": true
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
