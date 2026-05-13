@@ -182,13 +182,7 @@ export function contentFingerprint(file: string): string {
 }
 
 function contentFingerprintWithStats(file: string, stats: fs.BigIntStats, cache: FingerprintDiskCache | undefined): string {
-  const cacheKey = JSON.stringify({
-    mtime_unix: stats.mtime.toUTCString(),
-    mtime_ms: stats.mtimeMs.toString(),
-    inode: stats.ino.toString(),
-    size: stats.size.toString(),
-  });
-
+  const cacheKey = `${stats.ino}|${stats.mtimeMs}|${stats.size}`;
   return cache?.obtain(cacheKey, () => contentFingerprintMiss(file)) ?? contentFingerprintMiss(file);
 }
 
