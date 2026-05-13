@@ -73,7 +73,6 @@ export class AlbIntegration extends Integration {
       type: proxy ? IntegrationType.HTTP_PROXY : IntegrationType.HTTP,
       // 'ANY' satisfies the parent validation; bind() falls back to the method's HTTP method when props.httpMethod is unset.
       integrationHttpMethod: props.httpMethod ?? 'ANY',
-      // uri is set in bind() — accessing alb.loadBalancerDnsName eagerly would throw for imported ALBs without DnsName, before bind()'s VPC validation can surface a friendlier error.
       options: props.options,
     });
 
