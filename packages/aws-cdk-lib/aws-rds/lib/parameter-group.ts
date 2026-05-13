@@ -2,8 +2,10 @@ import type { Construct } from 'constructs';
 import type { IEngine } from './engine';
 import { CfnDBClusterParameterGroup, CfnDBParameterGroup } from './rds.generated';
 import type { IResource } from '../../core';
-import { Lazy, RemovalPolicy, Resource } from '../../core';
+import { RemovalPolicy, Resource } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IMapBox, IReadableBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -181,7 +183,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     return parameterGroup;
   }
 
-  private readonly parameters: { [key: string]: string };
+  private readonly parameters: IMapBox<string, string>;
+  private readonly parametersObject: IReadableBox<{ [key: string]: string }>;
   private readonly family: string;
   private readonly removalPolicy?: RemovalPolicy;
   private readonly description?: string;
@@ -202,7 +205,8 @@ export class ParameterGroup extends Resource implements IParameterGroup {
     this.family = family;
     this.description = props.description;
     this.name = props.name;
-    this.parameters = props.parameters ?? {};
+    this.parameters = Box.fromMap(new Map(Object.entries(props.parameters ?? {})));
+    this.parametersObject = this.parameters.derive(m => Object.fromEntries(m));
     this.removalPolicy = props.removalPolicy;
   }
 
@@ -228,7 +232,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
    */
   @MethodMetadata()
   public addParameter(key: string, value: string): boolean {
-    this.parameters[key] = value;
+    this.parameters.put(key, value);
     return true;
   }
 
@@ -243,7 +247,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
         description: this.description || `Parameter group for ${this.family}`,
         family: this.family,
         dbParameterGroupName: this.name,
-        parameters: Lazy.any({ produce: () => this.parameters }),
+        parameters: this.parametersObject,
       });
     }
 
@@ -265,7 +269,7 @@ export class ParameterGroup extends Resource implements IParameterGroup {
         description: this.description || `Cluster parameter group for ${this.family}`,
         family: this.family,
         dbClusterParameterGroupName: this.name,
-        parameters: Lazy.any({ produce: () => this.parameters }),
+        parameters: this.parametersObject,
       });
     }
 

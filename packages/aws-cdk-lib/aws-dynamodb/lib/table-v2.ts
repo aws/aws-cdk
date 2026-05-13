@@ -288,6 +288,13 @@ export interface TableOptionsV2 extends IContributorInsightsConfigurable {
    * @default - No resource policy statements are added to the created table.
    */
   readonly resourcePolicy?: PolicyDocument;
+
+  /**
+   * Resource policy to assign to DynamoDB Stream.
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-globaltable-replicastreamspecification.html#cfn-dynamodb-globaltable-replicastreamspecification-resourcepolicy
+   * @default - No resource policy statements are added to the stream.
+   */
+  readonly streamResourcePolicy?: PolicyDocument;
 }
 
 /**
@@ -725,6 +732,11 @@ export class TableV2 extends TableBaseV2 {
   public resourcePolicy?: PolicyDocument;
 
   /**
+   * Resource policy associated with this table's stream.
+   */
+  public streamResourcePolicy?: PolicyDocument;
+
+  /**
    * Grants for this table
    */
   public readonly grants: TableGrants;
@@ -750,13 +762,13 @@ export class TableV2 extends TableBaseV2 {
   private readonly maxReadRequestUnits?: number;
   private readonly maxWriteRequestUnits?: number;
 
-  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap(new Map());
+  private readonly replicaTables: IMapBox<string, ReplicaTableProps> = Box.fromMap();
   private readonly replicaKeys: { [region: string]: IKey } = {};
   private readonly replicaTableArns: string[] = [];
   private readonly replicaStreamArns: string[] = [];
 
-  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap(new Map());
-  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap(new Map());
+  private readonly globalSecondaryIndexes: IMapBox<string, CfnGlobalTable.GlobalSecondaryIndexProperty> = Box.fromMap();
+  private readonly localSecondaryIndexes: IMapBox<string, CfnGlobalTable.LocalSecondaryIndexProperty> = Box.fromMap();
   private readonly globalSecondaryIndexReadCapacitys = new Map<string, Capacity>();
   private readonly globalSecondaryIndexMaxReadUnits = new Map<string, number>();
   private readonly globalTableSettingsReplicationMode?: GlobalTableSettingsReplicationMode;
@@ -832,6 +844,7 @@ export class TableV2 extends TableBaseV2 {
 
     // Initialize resourcePolicy from props or create empty one (KMS pattern)
     this.resourcePolicy = props.resourcePolicy;
+    this.streamResourcePolicy = props.streamResourcePolicy;
 
     this.resource = new CfnGlobalTable(this, 'Resource', {
       tableName: this.physicalName,
@@ -894,6 +907,28 @@ export class TableV2 extends TableBaseV2 {
     return {
       statementAdded: true,
       policyDependable: this.resourcePolicy,
+    };
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table's stream.
+   * A stream resource policy will be automatically created upon the first call to `addToStreamResourcePolicy`.
+   *
+   * Note that this does not work with imported tables.
+   *
+   * @param statement The policy statement to add
+   */
+  @MethodMetadata()
+  public addToStreamResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.streamResourcePolicy) {
+      this.streamResourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.streamResourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.streamResourcePolicy,
     };
   }
 
@@ -1045,7 +1080,20 @@ export class TableV2 extends TableBaseV2 {
       resourcePolicy: resourcePolicy
         ? { policyDocument: resourcePolicy }
         : undefined,
+      replicaStreamSpecification: this.renderReplicaStreamSpecification(props),
       globalTableSettingsReplicationMode: this.globalTableSettingsReplicationMode,
+    };
+  }
+
+  private renderReplicaStreamSpecification(props: ReplicaTableProps): CfnGlobalTable.ReplicaStreamSpecificationProperty | undefined {
+    const streamResourcePolicy = props.region === this.region
+      ? this.streamResourcePolicy
+      : props.streamResourcePolicy;
+
+    if (!streamResourcePolicy) return undefined;
+
+    return {
+      resourcePolicy: { policyDocument: streamResourcePolicy },
     };
   }
 
@@ -1404,6 +1452,17 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
   private readonly _resourcePolicy: IBox<PolicyDocument | undefined>;
 
   /**
+   * Resource policy associated with this table's stream.
+   */
+  public get streamResourcePolicy(): PolicyDocument | undefined {
+    return this._streamResourcePolicy.getMutable();
+  }
+  public set streamResourcePolicy(value: PolicyDocument | undefined) {
+    this._streamResourcePolicy.set(value);
+  }
+  private readonly _streamResourcePolicy: IBox<PolicyDocument | undefined>;
+
+  /**
    * Grants for this table
    */
   public readonly grants: TableGrants;
@@ -1441,6 +1500,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     this._hasIndex = props.grantIndexPermissions ?? true;
 
     this._resourcePolicy = Box.fromValue<PolicyDocument | undefined>(props.resourcePolicy);
+    this._streamResourcePolicy = Box.fromValue<PolicyDocument | undefined>(props.streamResourcePolicy);
 
     this.encryptionKey = props.encryption?.tableKey;
 
@@ -1455,6 +1515,7 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
         contributorInsightsSpecification: props.contributorInsightsSpecification,
         pointInTimeRecoverySpecification: props.pointInTimeRecoverySpecification,
         resourcePolicy: this._resourcePolicy.derive(rp => rp ? { policyDocument: rp } : undefined),
+        replicaStreamSpecification: this._streamResourcePolicy.derive(srp => srp ? { resourcePolicy: { policyDocument: srp } } : undefined),
         sseSpecification: props.encryption?._renderReplicaSseSpecification(this, this.stack.region),
         tags: props.tags,
         globalTableSettingsReplicationMode: props.globalTableSettingsReplicationMode,
@@ -1513,6 +1574,23 @@ export class TableV2MultiAccountReplica extends TableBaseV2 {
     return {
       statementAdded: true,
       policyDependable: this.resourcePolicy,
+    };
+  }
+
+  /**
+   * Adds a statement to the resource policy associated with this table's stream.
+   */
+  @MethodMetadata()
+  public addToStreamResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
+    if (!this.streamResourcePolicy) {
+      this.streamResourcePolicy = new PolicyDocument({ statements: [] });
+    }
+
+    this.streamResourcePolicy.addStatements(statement);
+
+    return {
+      statementAdded: true,
+      policyDependable: this.streamResourcePolicy,
     };
   }
 

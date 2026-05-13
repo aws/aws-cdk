@@ -395,7 +395,11 @@
       }
      }
     }
-   }
+   },
+   "DependsOn": [
+    "PipeRoleDefaultPolicy56E6A74D",
+    "PipeRole7D4AFC73"
+   ]
   },
   "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
    "Type": "AWS::IAM::Role",

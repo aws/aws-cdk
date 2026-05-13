@@ -65,6 +65,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
         Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
         Value: 'Value',
         Type: 'String',
+        Overwrite: true,
       });
       expect(mockPutParameter).toHaveBeenCalledTimes(1);
       expect(mocklistTagsForResource).toHaveBeenCalledTimes(1);
@@ -123,6 +124,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
         Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
         Value: 'Value',
         Type: 'String',
+        Overwrite: true,
       });
       expect(mockPutParameter).toHaveBeenCalledTimes(1);
       expect(mocklistTagsForResource).toHaveBeenCalledTimes(1);
@@ -163,6 +165,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
         Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
         Value: 'Value',
         Type: 'String',
+        Overwrite: true,
       });
       expect(mockPutParameter).toHaveBeenCalledTimes(1);
       expect(mocklistTagsForResource).toHaveBeenCalledTimes(1);
@@ -203,6 +206,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
         Name: `/${SSM_EXPORT_PATH_PREFIX}MyStack/MyExport`,
         Value: 'Value',
         Type: 'String',
+        Overwrite: true,
       });
       expect(mockPutParameter).toHaveBeenCalledTimes(1);
       expect(mocklistTagsForResource).toHaveBeenCalledTimes(2);

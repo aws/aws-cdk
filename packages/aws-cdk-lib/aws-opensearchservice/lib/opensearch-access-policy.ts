@@ -42,7 +42,7 @@ export class OpenSearchAccessPolicy extends cr.AwsCustomResource {
   private readonly accessPolicyStatements: IArrayBox<iam.PolicyStatement>;
 
   constructor(scope: Construct, id: string, props: OpenSearchAccessPolicyProps) {
-    const accessPolicyStatements = Box.fromArray<iam.PolicyStatement>([]);
+    const accessPolicyStatements: IArrayBox<iam.PolicyStatement> = Box.fromArray();
     super(scope, id, {
       resourceType: 'Custom::OpenSearchAccessPolicy',
       installLatestAwsSdk: false,

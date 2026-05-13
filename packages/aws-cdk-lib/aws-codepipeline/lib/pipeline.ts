@@ -42,8 +42,10 @@ import {
   Token,
   ValidationError,
 } from '../../core';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
@@ -542,6 +544,7 @@ abstract class PipelineBase extends Resource implements IPipeline {
  *
  * // ... add more stages
  */
+@noBoxStackTraces
 @propertyInjectable
 export class Pipeline extends PipelineBase {
   /** Uniquely identifies this class. */
@@ -576,7 +579,7 @@ export class Pipeline extends PipelineBase {
    */
   public readonly artifactBucket: s3.IBucket;
 
-  private readonly _stages = new Array<Stage>();
+  private readonly _stages: IArrayBox<Stage> = Box.fromArray([], { omitEmpty: false });
   private readonly crossRegionBucketsPassed: boolean;
   private readonly _crossRegionSupport: { [region: string]: CrossRegionSupport } = {};
   private readonly _crossAccountSupport: { [account: string]: Stack } = {};
@@ -586,8 +589,8 @@ export class Pipeline extends PipelineBase {
   private readonly codePipeline: CfnPipeline;
   private readonly pipelineType: PipelineType;
   private readonly usePipelineRoleForActions: boolean;
-  private readonly variables = new Array<Variable>();
-  private readonly triggers = new Array<Trigger>();
+  private readonly variables: IArrayBox<Variable> = Box.fromArray();
+  private readonly triggers: IArrayBox<Trigger> = Box.fromArray();
 
   /**
    * ARN of this pipeline
@@ -702,13 +705,13 @@ export class Pipeline extends PipelineBase {
     this.codePipeline = new CfnPipeline(this, 'Resource', {
       artifactStore: Lazy.any({ produce: () => this.renderArtifactStoreProperty() }),
       artifactStores: Lazy.any({ produce: () => this.renderArtifactStoresProperty() }),
-      stages: Lazy.any({ produce: () => this.renderStages() }),
+      stages: this._stages.map(stage => stage.render()),
       disableInboundStageTransitions: Lazy.any({ produce: () => this.renderDisabledTransitions() }, { omitEmptyArray: true }),
       roleArn: this.role.roleArn,
       restartExecutionOnUpdate: props && props.restartExecutionOnUpdate,
       pipelineType: props.pipelineType ?? (isDefaultV2 ? PipelineType.V2 : undefined),
-      variables: Lazy.any({ produce: () => this.renderVariables() }, { omitEmptyArray: true }),
-      triggers: Lazy.any({ produce: () => this.renderTriggers() }, { omitEmptyArray: true }),
+      variables: this.variables.map(variable => variable._render()),
+      triggers: this.triggers.map(trigger => trigger._render()),
       executionMode: props.executionMode,
       name: this.physicalName,
     });
@@ -824,7 +827,7 @@ export class Pipeline extends PipelineBase {
    * to the pipeline.
    */
   public get stages(): IStage[] {
-    return this._stages.slice();
+    return [...this._stages];
   }
 
   /**
@@ -837,7 +840,7 @@ export class Pipeline extends PipelineBase {
         return stage;
       }
     }
-    throw new ValidationError(lit`PipelineDoesNotContainStage`, `Pipeline does not contain a stage named '${stageName}'. Available stages: ${this._stages.map(s => s.stageName).join(', ')}`, this);
+    throw new ValidationError(lit`PipelineDoesNotContainStage`, `Pipeline does not contain a stage named '${stageName}'. Available stages: ${[...this._stages].map(s => s.stageName).join(', ')}`, this);
   }
 
   /**
@@ -1319,7 +1322,7 @@ export class Pipeline extends PipelineBase {
     const producers: Record<string, PipelineLocation> = {};
     const firstConsumers: Record<string, PipelineLocation> = {};
 
-    for (const [stageIndex, stage] of enumerate(this._stages)) {
+    for (const [stageIndex, stage] of enumerate([...this._stages])) {
       // For every output artifact, get the producer
       for (const action of stage.actionDescriptors) {
         const actionLoc = new PipelineLocation(stageIndex, stage, action);
@@ -1428,25 +1431,13 @@ export class Pipeline extends PipelineBase {
     return this._stages.some(stage => stage.actionDescriptors.some(action => action.region !== undefined));
   }
 
-  private renderStages(): CfnPipeline.StageDeclarationProperty[] {
-    return this._stages.map(stage => stage.render());
-  }
-
   private renderDisabledTransitions(): CfnPipeline.StageTransitionProperty[] {
-    return this._stages
+    return [...this._stages]
       .filter(stage => !stage.transitionToEnabled)
       .map(stage => ({
         reason: stage.transitionDisabledReason,
         stageName: stage.stageName,
       }));
-  }
-
-  private renderVariables(): CfnPipeline.VariableDeclarationProperty[] {
-    return this.variables.map(variable => variable._render());
-  }
-
-  private renderTriggers(): CfnPipeline.PipelineTriggerDeclarationProperty[] {
-    return this.triggers.map(trigger => trigger._render());
   }
 
   private requireRegion(): string {

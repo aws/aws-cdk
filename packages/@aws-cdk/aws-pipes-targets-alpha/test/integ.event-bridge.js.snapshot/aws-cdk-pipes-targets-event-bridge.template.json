@@ -95,7 +95,11 @@
     "TargetParameters": {
      "EventBridgeEventBusParameters": {}
     }
-   }
+   },
+   "DependsOn": [
+    "PipeRoleDefaultPolicy56E6A74D",
+    "PipeRole7D4AFC73"
+   ]
   },
   "ResultQueue98CD34E0": {
    "Type": "AWS::SQS::Queue",

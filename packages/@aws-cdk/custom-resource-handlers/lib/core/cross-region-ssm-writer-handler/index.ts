@@ -66,6 +66,7 @@ async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<
       Name: name,
       Value: value,
       Type: 'String',
+      Overwrite: true, // if, for whatever reason, we encounter this parameter lying around, just overwrite it.
     });
   }));
 }

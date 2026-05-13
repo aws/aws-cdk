@@ -320,7 +320,7 @@ export abstract class BaseLoadBalancer extends Resource {
   /**
    * Attributes set on this load balancer
    */
-  private readonly attributes: IMapBox<string, string | undefined> = Box.fromMap(new Map());
+  private readonly attributes: IMapBox<string, string | undefined> = Box.fromMap();
 
   constructor(scope: Construct, id: string, baseProps: BaseLoadBalancerProps, additionalProps: any) {
     super(scope, id, {

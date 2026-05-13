@@ -66,6 +66,18 @@ test('minimal example renders correctly', () => {
   expect(dist.distributionArn).toEqual(`arn:${Aws.PARTITION}:cloudfront::1234:distribution/${dist.distributionId}`);
 });
 
+test('distribution without additional behaviors or origin groups omits those properties', () => {
+  const origin = defaultOrigin();
+  new Distribution(stack, 'MyDist', { defaultBehavior: { origin } });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
+    DistributionConfig: {
+      CacheBehaviors: Match.absent(),
+      OriginGroups: Match.absent(),
+    },
+  });
+});
+
 test('existing distributions can be imported', () => {
   const dist = Distribution.fromDistributionAttributes(stack, 'ImportedDist', {
     domainName: 'd111111abcdef8.cloudfront.net',

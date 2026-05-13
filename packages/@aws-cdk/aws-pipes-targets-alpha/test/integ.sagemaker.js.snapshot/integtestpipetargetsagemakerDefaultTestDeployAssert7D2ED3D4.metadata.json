@@ -1,0 +1,64 @@
+{
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagece34a187bbbeaff4047b3759d5ddf254/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSageMakerDescribePipeline71b9b02a221fe0cb2da3392cc58e78d8/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSageMakerDescribePipeline71b9b02a221fe0cb2da3392cc58e78d8/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallSageMakerDescribePipeline71b9b02a221fe0cb2da3392cc58e78d8"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSQSsendMessagece34a187bbbeaff4047b3759d5ddf254/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSQSsendMessagece34a187bbbeaff4047b3759d5ddf254"
+    }
+  ],
+  "/integtest-pipe-target-sagemaker/DefaultTest/DeployAssert/AwsApiCallSageMakerDescribePipeline71b9b02a221fe0cb2da3392cc58e78d8/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallSageMakerDescribePipeline71b9b02a221fe0cb2da3392cc58e78d8"
+    }
+  ]
+}

@@ -289,7 +289,7 @@ export class User extends Resource implements IIdentity, IUser {
 
   public readonly policyFragment: PrincipalPolicyFragment;
 
-  private readonly groups: IArrayBox<any> = Box.fromArray<any>([]);
+  private readonly groups: IArrayBox<any> = Box.fromArray();
   private readonly _managedPolicies: IArrayBox<IManagedPolicy>;
   private readonly attachedPolicies = new AttachedPolicies();
   private defaultPolicy?: Policy;
