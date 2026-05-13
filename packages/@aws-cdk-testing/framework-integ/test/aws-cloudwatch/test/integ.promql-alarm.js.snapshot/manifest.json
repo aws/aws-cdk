@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "aws-cdk-bedrock-agentcore-online-evaluation.assets": {
+    "PromQLAlarmTestStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-bedrock-agentcore-online-evaluation.assets.json",
+        "file": "PromQLAlarmTestStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-bedrock-agentcore-online-evaluation": {
+    "PromQLAlarmTestStack": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-bedrock-agentcore-online-evaluation.template.json",
+        "templateFile": "PromQLAlarmTestStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8abdea97cbe94440daaaac3952258b5f7f8e05f35ec1ff1ab1e0ac6aed78c4ae.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/3e522c0018f68ed78eac240715824d3b989c961e4e20f0f45d9cb0919a18f71f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-bedrock-agentcore-online-evaluation.assets"
+          "PromQLAlarmTestStack.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,24 +31,24 @@
         }
       },
       "dependencies": [
-        "aws-cdk-bedrock-agentcore-online-evaluation.assets"
+        "PromQLAlarmTestStack.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-bedrock-agentcore-online-evaluation.metadata.json",
-      "displayName": "aws-cdk-bedrock-agentcore-online-evaluation"
+      "additionalMetadataFile": "PromQLAlarmTestStack.metadata.json",
+      "displayName": "PromQLAlarmTestStack"
     },
-    "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17.assets": {
+    "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17.assets.json",
+        "file": "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17": {
+    "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17.template.json",
+        "templateFile": "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -57,7 +57,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17.assets"
+          "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,10 @@
         }
       },
       "dependencies": [
-        "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17.assets"
+        "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB.assets"
       ],
-      "additionalMetadataFile": "BedrockAgentCoreOnlineEvaluationDefaultTestDeployAssertE96E7A17.metadata.json",
-      "displayName": "BedrockAgentCoreOnlineEvaluation/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB.metadata.json",
+      "displayName": "PromQLAlarmIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -593,13 +593,6 @@
           "@aws-cdk/core:annotationsInValidationReport": {
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
-          },
-          "@aws-cdk/core:defaultCrossStackReferences": {
-            "recommendedValue": "strong",
-            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
-            "unconfiguredBehavesLike": {
-              "v2": "strong"
-            }
           }
         }
       }
