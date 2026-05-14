@@ -199,9 +199,8 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    let formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? false;
-    const formatJson = (root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false) || !!process.env[cxapi.EMIT_VALIDATION_REPORT_ENV];
-    formatPretty = formatPretty || !(formatPretty || formatJson); // if neither is set, default to pretty print
+    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? true;
+    const formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? true;
     const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
     if (formatPretty) {
       const output = formatter.formatPrettyPrinted(reports);
@@ -209,16 +208,18 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
       console.error(output);
     }
     if (formatJson) {
-      const output = formatter.formatJson(reports);
-      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
+      const jsonOutput = formatter.formatJson(reports);
+      fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
     }
     const failed = reports.some(r => !r.success);
     if (failed) {
-      let message = formatJson
-        ? `Validation failed. See the validation report in '${reportFile}' for details`
-        : 'Validation failed. See the validation report above for details';
+      let message: string;
       if (formatPretty && formatJson) {
         message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
+      } else if (formatJson) {
+        message = `Validation failed. See the validation report in '${reportFile}' for details`;
+      } else {
+        message = 'Validation failed. See the validation report above for details';
       }
       // eslint-disable-next-line no-console
       console.error(message);
