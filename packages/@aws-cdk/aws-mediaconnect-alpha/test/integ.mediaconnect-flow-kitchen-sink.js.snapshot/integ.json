@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediaconnect-kitchen-sink/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-kitchen-sink"
+      ],
+      "assertionStack": "cdk-integ-mediaconnect-kitchen-sink/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediaconnectkitchensinkDefaultTestDeployAssertE9C83F7D"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-emx-router-output-encryption/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-output-encryption"
+      ],
+      "assertionStack": "cdk-integ-emx-router-output-encryption/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxrouteroutputencryptionDefaultTestDeployAssert849A39E5"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

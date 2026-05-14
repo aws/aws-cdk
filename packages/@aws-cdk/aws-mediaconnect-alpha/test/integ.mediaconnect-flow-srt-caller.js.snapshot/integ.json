@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-emx-flow-srt-caller/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-flow-srt-caller"
+      ],
+      "assertionStack": "cdk-integ-emx-flow-srt-caller/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxflowsrtcallerDefaultTestDeployAssert4CEF5000"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}

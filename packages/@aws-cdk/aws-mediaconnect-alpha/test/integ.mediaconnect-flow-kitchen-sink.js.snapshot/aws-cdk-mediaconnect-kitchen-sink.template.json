@@ -1,0 +1,665 @@
+{
+ "Resources": {
+  "Vpc8378EB38": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.0.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-kitchen-sink/Vpc"
+     }
+    ]
+   }
+  },
+  "VpcisolatedSubnet1SubnetE62B1B9B": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.0.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-kitchen-sink/Vpc/isolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcisolatedSubnet1RouteTableE442650B": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-kitchen-sink/Vpc/isolatedSubnet1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcisolatedSubnet1RouteTableAssociationD259E31A": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcisolatedSubnet1RouteTableE442650B"
+    },
+    "SubnetId": {
+     "Ref": "VpcisolatedSubnet1SubnetE62B1B9B"
+    }
+   }
+  },
+  "VpcisolatedSubnet2Subnet39217055": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      1,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "CidrBlock": "10.0.1.0/24",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "isolated"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-kitchen-sink/Vpc/isolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcisolatedSubnet2RouteTable334F9764": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-kitchen-sink/Vpc/isolatedSubnet2"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcisolatedSubnet2RouteTableAssociation25A4716F": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "VpcisolatedSubnet2RouteTable334F9764"
+    },
+    "SubnetId": {
+     "Ref": "VpcisolatedSubnet2Subnet39217055"
+    }
+   }
+  },
+  "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE": {
+   "Type": "Custom::VpcRestrictDefaultSG",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E",
+      "Arn"
+     ]
+    },
+    "DefaultSecurityGroupId": {
+     "Fn::GetAtt": [
+      "Vpc8378EB38",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "Account": {
+     "Ref": "AWS::AccountId"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyName": "Inline",
+      "PolicyDocument": {
+       "Version": "2012-10-17",
+       "Statement": [
+        {
+         "Effect": "Allow",
+         "Action": [
+          "ec2:AuthorizeSecurityGroupIngress",
+          "ec2:AuthorizeSecurityGroupEgress",
+          "ec2:RevokeSecurityGroupIngress",
+          "ec2:RevokeSecurityGroupEgress"
+         ],
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             "arn:",
+             {
+              "Ref": "AWS::Partition"
+             },
+             ":ec2:",
+             {
+              "Ref": "AWS::Region"
+             },
+             ":",
+             {
+              "Ref": "AWS::AccountId"
+             },
+             ":security-group/",
+             {
+              "Fn::GetAtt": [
+               "Vpc8378EB38",
+               "DefaultSecurityGroup"
+              ]
+             }
+            ]
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "__entrypoint__.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
+   },
+   "DependsOn": [
+    "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
+   ]
+  },
+  "Subnet53F41B8F": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "CidrBlock": "10.0.172.0/24",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-kitchen-sink/Subnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "SubnetRouteTableB722C9E4": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "aws-cdk-mediaconnect-kitchen-sink/Subnet"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "SubnetRouteTableAssociation3CCBAA31": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "SubnetRouteTableB722C9E4"
+    },
+    "SubnetId": {
+     "Ref": "Subnet53F41B8F"
+    }
+   }
+  },
+  "SGADB53937": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "aws-cdk-mediaconnect-kitchen-sink/SG",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": {
+     "Ref": "Vpc8378EB38"
+    }
+   }
+  },
+  "VpcRoleB96698AB": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "ec2:CreateNetworkInterface",
+          "ec2:CreateNetworkInterfacePermission",
+          "ec2:DeleteNetworkInterface",
+          "ec2:DescribeSubnets"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "eni"
+     }
+    ]
+   }
+  },
+  "EncryptionSecretA7F02943": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptionRole96CADEBA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "secretsmanager:GetSecretValue",
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "EncryptionSecretA7F02943"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "secrets"
+     }
+    ]
+   }
+  },
+  "KitchenSinkFlow732F281F": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
+    "FlowSize": "LARGE",
+    "Maintenance": {
+     "MaintenanceDay": "Sunday",
+     "MaintenanceStartHour": "06:00"
+    },
+    "Name": "kitchen-sink-flow",
+    "NdiConfig": {
+     "MachineName": "kitchen-sink",
+     "NdiDiscoveryServers": [
+      {
+       "DiscoveryServerAddress": "10.0.1.50",
+       "DiscoveryServerPort": 5959,
+       "VpcInterfaceAdapter": "ndi-vpc-iface"
+      }
+     ],
+     "NdiState": "ENABLED"
+    },
+    "Source": {
+     "IngestPort": 5000,
+     "Name": "rtp-source",
+     "Protocol": "rtp",
+     "WhitelistCidr": "10.0.0.0/16"
+    },
+    "SourceMonitoringConfig": {
+     "AudioMonitoringSettings": [
+      {
+       "SilentAudio": {
+        "State": "ENABLED",
+        "ThresholdSeconds": 15
+       }
+      }
+     ],
+     "ContentQualityAnalysisState": "ENABLED",
+     "ThumbnailState": "ENABLED",
+     "VideoMonitoringSettings": [
+      {
+       "BlackFrames": {
+        "State": "ENABLED",
+        "ThresholdSeconds": 15
+       },
+       "FrozenFrames": {
+        "State": "ENABLED",
+        "ThresholdSeconds": 15
+       }
+      }
+     ]
+    },
+    "VpcInterfaces": [
+     {
+      "Name": "ndi-vpc-iface",
+      "RoleArn": {
+       "Fn::GetAtt": [
+        "VpcRoleB96698AB",
+        "Arn"
+       ]
+      },
+      "SecurityGroupIds": [
+       {
+        "Fn::GetAtt": [
+         "SGADB53937",
+         "GroupId"
+        ]
+       }
+      ],
+      "SubnetId": {
+       "Ref": "Subnet53F41B8F"
+      }
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "NdiOutput5A3EFE8F": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "KitchenSinkFlow732F281F",
+      "FlowArn"
+     ]
+    },
+    "Name": "ndi-output",
+    "NdiProgramName": "kitchen-sink-ndi",
+    "NdiSpeedHqQuality": 100,
+    "Protocol": "ndi-speed-hq"
+   }
+  },
+  "RtpFecOutputD1CBA77C": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "Destination": "203.0.113.10",
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "KitchenSinkFlow732F281F",
+      "FlowArn"
+     ]
+    },
+    "Name": "rtp-fec-output",
+    "Port": 6000,
+    "Protocol": "rtp-fec"
+   }
+  },
+  "ZixiPullOutputEC920845": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "CidrAllowList": [
+     "10.0.0.0/16"
+    ],
+    "Encryption": {
+     "Algorithm": "aes256",
+     "KeyType": "static-key",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "EncryptionRole96CADEBA",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "EncryptionSecretA7F02943"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "KitchenSinkFlow732F281F",
+      "FlowArn"
+     ]
+    },
+    "MaxLatency": 1000,
+    "Name": "zixi-pull-output",
+    "Protocol": "zixi-pull",
+    "RemoteId": "remote-receiver-1",
+    "StreamId": "kitchen-sink-zixi-pull"
+   }
+  },
+  "ZixiPushOutput93AE2143": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "Destination": "203.0.113.20",
+    "Encryption": {
+     "Algorithm": "aes128",
+     "KeyType": "static-key",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "EncryptionRole96CADEBA",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "EncryptionSecretA7F02943"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "KitchenSinkFlow732F281F",
+      "FlowArn"
+     ]
+    },
+    "MaxLatency": 500,
+    "Name": "zixi-push-output",
+    "Port": 2088,
+    "Protocol": "zixi-push",
+    "StreamId": "kitchen-sink-zixi-push"
+   }
+  },
+  "SrtListenerOutput377FE6DB": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "CidrAllowList": [
+     "10.0.0.0/8"
+    ],
+    "Encryption": {
+     "KeyType": "srt-password",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "EncryptionRole96CADEBA",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "EncryptionSecretA7F02943"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "KitchenSinkFlow732F281F",
+      "FlowArn"
+     ]
+    },
+    "MinLatency": 100,
+    "Name": "srt-listener-output",
+    "Port": 7000,
+    "Protocol": "srt-listener"
+   }
+  },
+  "Entitlement27911D97": {
+   "Type": "AWS::MediaConnect::FlowEntitlement",
+   "Properties": {
+    "DataTransferSubscriberFeePercent": 50,
+    "Description": "Kitchen sink entitlement",
+    "Encryption": {
+     "Algorithm": "aes256",
+     "KeyType": "static-key",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "EncryptionRole96CADEBA",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "EncryptionSecretA7F02943"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "KitchenSinkFlow732F281F",
+      "FlowArn"
+     ]
+    },
+    "Name": "awscdkmediaconnectkitchensinkEntitlement7134D9FA",
+    "Subscribers": [
+     "111122223333"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

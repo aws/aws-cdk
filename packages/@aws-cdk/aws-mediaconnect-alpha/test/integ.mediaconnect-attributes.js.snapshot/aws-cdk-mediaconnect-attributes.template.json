@@ -1,0 +1,338 @@
+{
+ "Resources": {
+  "FlowA74D6E88": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "integ-attributes-flow",
+    "Source": {
+     "IngestPort": 5000,
+     "Name": "primary",
+     "Protocol": "rtp",
+     "WhitelistCidr": "203.0.113.0/24"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain"
+  },
+  "NetworkInterface4FC75A07": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "203.0.113.0/24"
+       }
+      ]
+     }
+    },
+    "Name": "integ-attributes-ni"
+   }
+  },
+  "RouterInputEFD0F32D": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "NetworkInterface4FC75A07",
+        "Arn"
+       ]
+      },
+      "Protocol": "RTP",
+      "ProtocolConfiguration": {
+       "Rtp": {
+        "Port": 5000
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 10000000,
+    "Name": "integ-attributes-input",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "INPUT_20",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  },
+  "RouterOutputD335589D": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "NetworkInterface4FC75A07",
+        "Arn"
+       ]
+      },
+      "Protocol": "RTP",
+      "ProtocolConfiguration": {
+       "Rtp": {
+        "DestinationAddress": "10.0.0.1",
+        "DestinationPort": 5001
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 10000000,
+    "Name": "integ-attributes-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_20"
+   }
+  }
+ },
+ "Outputs": {
+  "FlowArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FlowA74D6E88",
+     "FlowArn"
+    ]
+   }
+  },
+  "FlowSourceArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FlowA74D6E88",
+     "Source.SourceArn"
+    ]
+   }
+  },
+  "FlowEgressIp": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FlowA74D6E88",
+     "EgressIp"
+    ]
+   }
+  },
+  "FlowSourceIngestIp": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FlowA74D6E88",
+     "Source.IngestIp"
+    ]
+   }
+  },
+  "FlowSourceIngestPort": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FlowA74D6E88",
+     "Source.SourceIngestPort"
+    ]
+   }
+  },
+  "FlowSourceIngestUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "rtp://",
+      {
+       "Fn::GetAtt": [
+        "FlowA74D6E88",
+        "Source.IngestIp"
+       ]
+      },
+      ":",
+      {
+       "Fn::GetAtt": [
+        "FlowA74D6E88",
+        "Source.SourceIngestPort"
+       ]
+      }
+     ]
+    ]
+   }
+  },
+  "FlowAvailabilityZone": {
+   "Value": {
+    "Fn::GetAtt": [
+     "FlowA74D6E88",
+     "FlowAvailabilityZone"
+    ]
+   }
+  },
+  "NetworkInterfaceArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NetworkInterface4FC75A07",
+     "Arn"
+    ]
+   }
+  },
+  "NetworkInterfaceId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NetworkInterface4FC75A07",
+     "Id"
+    ]
+   }
+  },
+  "NetworkInterfaceCreatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NetworkInterface4FC75A07",
+     "CreatedAt"
+    ]
+   }
+  },
+  "NetworkInterfaceUpdatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NetworkInterface4FC75A07",
+     "UpdatedAt"
+    ]
+   }
+  },
+  "RouterInputArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterInputEFD0F32D",
+     "Arn"
+    ]
+   }
+  },
+  "RouterInputId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterInputEFD0F32D",
+     "Id"
+    ]
+   }
+  },
+  "RouterInputIpAddress": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterInputEFD0F32D",
+     "IpAddress"
+    ]
+   }
+  },
+  "RouterInputCreatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterInputEFD0F32D",
+     "CreatedAt"
+    ]
+   }
+  },
+  "RouterInputUpdatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterInputEFD0F32D",
+     "UpdatedAt"
+    ]
+   }
+  },
+  "RouterInputIngestUrl": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "rtp://",
+      {
+       "Fn::GetAtt": [
+        "RouterInputEFD0F32D",
+        "IpAddress"
+       ]
+      },
+      ":5000"
+     ]
+    ]
+   }
+  },
+  "RouterOutputArn": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterOutputD335589D",
+     "Arn"
+    ]
+   }
+  },
+  "RouterOutputId": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterOutputD335589D",
+     "Id"
+    ]
+   }
+  },
+  "RouterOutputIpAddress": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterOutputD335589D",
+     "IpAddress"
+    ]
+   }
+  },
+  "RouterOutputCreatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterOutputD335589D",
+     "CreatedAt"
+    ]
+   }
+  },
+  "RouterOutputUpdatedAt": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RouterOutputD335589D",
+     "UpdatedAt"
+    ]
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

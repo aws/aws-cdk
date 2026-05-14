@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-emx-router-input-merge/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-input-merge"
+      ],
+      "assertionStack": "cdk-integ-emx-router-input-merge/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxrouterinputmergeDefaultTestDeployAssert6B3F304C"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

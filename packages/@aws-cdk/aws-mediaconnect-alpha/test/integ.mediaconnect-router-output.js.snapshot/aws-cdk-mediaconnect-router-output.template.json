@@ -1,0 +1,326 @@
+{
+ "Resources": {
+  "network39EEAA36": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "10.0.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "test-output-network"
+   }
+  },
+  "rtpOutput36AD8ECF": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "network39EEAA36",
+        "Arn"
+       ]
+      },
+      "Protocol": "RTP",
+      "ProtocolConfiguration": {
+       "Rtp": {
+        "DestinationAddress": "192.168.1.100",
+        "DestinationPort": 5000,
+        "ForwardErrorCorrection": "ENABLED"
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 10000000,
+    "Name": "test-rtp-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "GLOBAL",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "test"
+     },
+     {
+      "Key": "Protocol",
+      "Value": "RTP"
+     }
+    ],
+    "Tier": "OUTPUT_100"
+   }
+  },
+  "srtOutputD58FCB58": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "network39EEAA36",
+        "Arn"
+       ]
+      },
+      "Protocol": "SRT_LISTENER",
+      "ProtocolConfiguration": {
+       "SrtListener": {
+        "MinimumLatencyMilliseconds": 200,
+        "Port": 9001
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "PreferredDayTime": {
+      "Day": "SUNDAY",
+      "Time": "03:00"
+     }
+    },
+    "MaximumBitrate": 15000000,
+    "Name": "test-srt-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_50"
+   }
+  },
+  "TestMediaLiveInput": {
+   "Type": "AWS::MediaLive::Input",
+   "Properties": {
+    "Name": "test-router-output-input",
+    "RouterSettings": {
+     "Destinations": [
+      {
+       "AvailabilityZoneName": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Ref": "AWS::Region"
+          },
+          "a"
+         ]
+        ]
+       }
+      }
+     ],
+     "EncryptionType": "AUTOMATIC"
+    },
+    "Type": "MEDIACONNECT_ROUTER"
+   }
+  },
+  "mediaLiveOutputE23D6C1F": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "MediaLiveInput": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      },
+      "MediaLiveInputArn": {
+       "Fn::GetAtt": [
+        "TestMediaLiveInput",
+        "Arn"
+       ]
+      },
+      "MediaLivePipelineId": "PIPELINE_0"
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 20000000,
+    "Name": "test-medialive-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "GLOBAL",
+    "Tier": "OUTPUT_20"
+   }
+  },
+  "mediaLiveNoInput79B218C4": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "Configuration": {
+     "MediaLiveInput": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 12000000,
+    "Name": "test-medialive-no-input",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_50"
+   }
+  },
+  "TestFlow204BC1479": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "a"
+      ]
+     ]
+    },
+    "Name": "source-flow",
+    "Source": {
+     "Name": "test-medialive-no-input",
+     "RouterIntegrationState": "ENABLED",
+     "RouterIntegrationTransitDecryption": {
+      "EncryptionKeyConfiguration": {
+       "Automatic": {}
+      },
+      "EncryptionKeyType": "AUTOMATIC"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "flowOutputC9CABCE8": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "MediaConnectFlow": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      },
+      "FlowArn": {
+       "Fn::GetAtt": [
+        "TestFlow204BC1479",
+        "FlowArn"
+       ]
+      },
+      "FlowSourceArn": {
+       "Fn::GetAtt": [
+        "TestFlow204BC1479",
+        "Source.SourceArn"
+       ]
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 25000000,
+    "Name": "test-flow-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_100"
+   }
+  },
+  "flowNoConnectionB95A438A": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "AvailabilityZone": {
+     "Fn::Join": [
+      "",
+      [
+       {
+        "Ref": "AWS::Region"
+       },
+       "b"
+      ]
+     ]
+    },
+    "Configuration": {
+     "MediaConnectFlow": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 14000000,
+    "Name": "test-flow-no-connection",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "GLOBAL",
+    "Tier": "OUTPUT_20"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

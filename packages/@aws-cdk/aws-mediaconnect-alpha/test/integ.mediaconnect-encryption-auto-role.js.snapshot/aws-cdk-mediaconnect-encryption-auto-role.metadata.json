@@ -1,0 +1,389 @@
+{
+  "/aws-cdk-mediaconnect-encryption-auto-role": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:26:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/TransitSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/StaticKeySecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtPasswordSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterSrtSecret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Network": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:107:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:107:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/TransitSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TransitSecretCF30D961"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:29:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/StaticKeySecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StaticKeySecret0015B52A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:32:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtPasswordSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtPasswordSecret3F306C2E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:35:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterSrtSecret/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterSrtSecret91A5209A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:500:30)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Secret (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:38:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/RouterTransitDecryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*",
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowA74D6E88"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:760:26)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:42:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*",
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPullOutputEC920845"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.js:368:30)",
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:53:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/EncryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*",
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerOutputAD1E91F4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.js:368:30)",
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:68:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Network/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Network1C6012B5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RouterNetworkInterface (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-network-interface.js:201:44)",
+        "new RouterNetworkInterface (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:81:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/DecryptionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*",
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputEFD0F32D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RouterInput (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-input.js:957:33)",
+        "new RouterInput (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:87:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/Flow/RouterTransitDecryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowRouterTransitDecryptionRole0305A46E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "resolveEncryptionRole (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:347:21)",
+        "renderTransitEncryption (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:422:22)",
+        "SourceConfiguration._bind (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-source-configuration.js:486:56)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow.js:720:47)",
+        "new Flow (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:42:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/ZixiPullOutput/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ZixiPullOutputEncryptionRole49B6B2B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "resolveEncryptionRole (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:347:21)",
+        "renderStaticKeyEncryption (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:377:18)",
+        "renderOutputEncryption (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.js:394:55)",
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.js:370:29)",
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:53:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/SrtCallerOutput/EncryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SrtCallerOutputEncryptionRole34317E9C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "resolveEncryptionRole (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:347:21)",
+        "renderSrtPasswordEncryption (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:391:18)",
+        "renderOutputEncryption (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.js:396:57)",
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/flow-output.js:370:29)",
+        "new FlowOutput (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:68:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-mediaconnect-encryption-auto-role/RouterInput/DecryptionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputDecryptionRoleDB242EE5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "resolveEncryptionRole (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:347:21)",
+        "renderRouterSrtEncryption (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/shared.js:405:18)",
+        "RouterInputProtocol._bind (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-input.js:308:80)",
+        "StandardRouterInputConfig._bind (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-input.js:583:46)",
+        "new RouterInput (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/lib/router-input.js:949:52)",
+        "new RouterInput (/Users/jamiepm/opensource/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/jamiepm/opensource/aws-cdk/packages/@aws-cdk/aws-mediaconnect-alpha/test/integ.mediaconnect-encryption-auto-role.js:87:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

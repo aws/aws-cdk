@@ -1,0 +1,247 @@
+{
+ "Resources": {
+  "SourceFlow80460280": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "router-input-source-flow",
+    "Source": {
+     "IngestPort": 5000,
+     "Name": "source-for-router",
+     "Protocol": "rtp",
+     "WhitelistCidr": "10.1.0.0/16"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TransitRoleF5930357": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "TransitRoleDefaultPolicy229C024C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "TransitSecretCF30D961"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "TransitRoleDefaultPolicy229C024C",
+    "Roles": [
+     {
+      "Ref": "TransitRoleF5930357"
+     }
+    ]
+   }
+  },
+  "TransitSecretCF30D961": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Transit encryption key for RouterInput Flow",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptedRouterOutputFlowE287EB3A": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "SourceFlow80460280",
+      "FlowArn"
+     ]
+    },
+    "Name": "awscdkmediaconnectrouterinputflowEncryptedRouterOutputFlow7597C9F0",
+    "RouterIntegrationState": "ENABLED",
+    "RouterIntegrationTransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "SecretsManager": {
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "TransitRoleF5930357",
+         "Arn"
+        ]
+       },
+       "SecretArn": {
+        "Ref": "TransitSecretCF30D961"
+       }
+      }
+     },
+     "EncryptionKeyType": "SECRETS_MANAGER"
+    }
+   }
+  },
+  "SimpleRouterOutputFlow10C06729": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "SourceFlow80460280",
+      "FlowArn"
+     ]
+    },
+    "Name": "awscdkmediaconnectrouterinputflowSimpleRouterOutputFlow79545FD8",
+    "RouterIntegrationState": "ENABLED",
+    "RouterIntegrationTransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  },
+  "routerInputFlowEncryptedF178525F": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "MediaConnectFlow": {
+      "FlowArn": {
+       "Fn::GetAtt": [
+        "SourceFlow80460280",
+        "FlowArn"
+       ]
+      },
+      "FlowOutputArn": {
+       "Fn::GetAtt": [
+        "EncryptedRouterOutputFlowE287EB3A",
+        "OutputArn"
+       ]
+      },
+      "SourceTransitDecryption": {
+       "EncryptionKeyConfiguration": {
+        "SecretsManager": {
+         "RoleArn": {
+          "Fn::GetAtt": [
+           "TransitRoleF5930357",
+           "Arn"
+          ]
+         },
+         "SecretArn": {
+          "Ref": "TransitSecretCF30D961"
+         }
+        }
+       },
+       "EncryptionKeyType": "SECRETS_MANAGER"
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 10000000,
+    "Name": "flow-input-encrypted",
+    "RegionName": "us-east-1",
+    "RoutingScope": "GLOBAL",
+    "Tier": "INPUT_100",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   },
+   "DependsOn": [
+    "TransitRoleDefaultPolicy229C024C"
+   ]
+  },
+  "routerInputFlowSimpleF742FCB5": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "MediaConnectFlow": {
+      "FlowArn": {
+       "Fn::GetAtt": [
+        "SourceFlow80460280",
+        "FlowArn"
+       ]
+      },
+      "FlowOutputArn": {
+       "Fn::GetAtt": [
+        "SimpleRouterOutputFlow10C06729",
+        "OutputArn"
+       ]
+      },
+      "SourceTransitDecryption": {
+       "EncryptionKeyConfiguration": {
+        "Automatic": {}
+       },
+       "EncryptionKeyType": "AUTOMATIC"
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 6000000,
+    "Name": "flow-input-simple",
+    "RegionName": "us-east-1",
+    "RoutingScope": "REGIONAL",
+    "Tier": "INPUT_50",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

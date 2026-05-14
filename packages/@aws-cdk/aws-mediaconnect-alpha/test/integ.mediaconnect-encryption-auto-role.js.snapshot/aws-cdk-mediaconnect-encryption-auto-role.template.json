@@ -1,0 +1,407 @@
+{
+ "Resources": {
+  "TransitSecretCF30D961": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Transit encryption (SourceConfiguration.router decryption)",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "StaticKeySecret0015B52A": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Static-key encryption for Zixi Pull output",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SrtPasswordSecret3F306C2E": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "SRT password encryption for SRT Caller output",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "RouterSrtSecret91A5209A": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "RouterInput SRT decryption",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "FlowRouterTransitDecryptionRole0305A46E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "TransitSecretCF30D961"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "SecretAccess"
+     }
+    ]
+   }
+  },
+  "FlowA74D6E88": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "auto-role-flow",
+    "Source": {
+     "RouterIntegrationState": "ENABLED",
+     "RouterIntegrationTransitDecryption": {
+      "EncryptionKeyConfiguration": {
+       "SecretsManager": {
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "FlowRouterTransitDecryptionRole0305A46E",
+          "Arn"
+         ]
+        },
+        "SecretArn": {
+         "Ref": "TransitSecretCF30D961"
+        }
+       }
+      },
+      "EncryptionKeyType": "SECRETS_MANAGER"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ZixiPullOutputEncryptionRole49B6B2B6": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "StaticKeySecret0015B52A"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "SecretAccess"
+     }
+    ]
+   }
+  },
+  "ZixiPullOutputEC920845": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "CidrAllowList": [
+     "198.51.100.0/24"
+    ],
+    "Encryption": {
+     "Algorithm": "aes256",
+     "KeyType": "static-key",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "ZixiPullOutputEncryptionRole49B6B2B6",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "StaticKeySecret0015B52A"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "FlowA74D6E88",
+      "FlowArn"
+     ]
+    },
+    "MaxLatency": 6000,
+    "Name": "awscdkmediaconnectencryptionautoroleZixiPullOutput83D351D2",
+    "Protocol": "zixi-pull",
+    "RemoteId": "auto-role-remote",
+    "StreamId": "auto-role-zixi-pull"
+   }
+  },
+  "SrtCallerOutputEncryptionRole34317E9C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "SrtPasswordSecret3F306C2E"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "SecretAccess"
+     }
+    ]
+   }
+  },
+  "SrtCallerOutputAD1E91F4": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "Destination": "198.51.100.10",
+    "Encryption": {
+     "KeyType": "srt-password",
+     "RoleArn": {
+      "Fn::GetAtt": [
+       "SrtCallerOutputEncryptionRole34317E9C",
+       "Arn"
+      ]
+     },
+     "SecretArn": {
+      "Ref": "SrtPasswordSecret3F306C2E"
+     }
+    },
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "FlowA74D6E88",
+      "FlowArn"
+     ]
+    },
+    "MinLatency": 120,
+    "Name": "awscdkmediaconnectencryptionautoroleSrtCallerOutputE24B47DA",
+    "Port": 9100,
+    "Protocol": "srt-caller"
+   }
+  },
+  "Network1C6012B5": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "10.0.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "auto-role-network"
+   }
+  },
+  "RouterInputDecryptionRoleDB242EE5": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:GetSecretValue"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "RouterSrtSecret91A5209A"
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "SecretAccess"
+     }
+    ]
+   }
+  },
+  "RouterInputEFD0F32D": {
+   "Type": "AWS::MediaConnect::RouterInput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "Network1C6012B5",
+        "Arn"
+       ]
+      },
+      "Protocol": "SRT_LISTENER",
+      "ProtocolConfiguration": {
+       "SrtListener": {
+        "DecryptionConfiguration": {
+         "EncryptionKey": {
+          "RoleArn": {
+           "Fn::GetAtt": [
+            "RouterInputDecryptionRoleDB242EE5",
+            "Arn"
+           ]
+          },
+          "SecretArn": {
+           "Ref": "RouterSrtSecret91A5209A"
+          }
+         }
+        },
+        "MinimumLatencyMilliseconds": 120,
+        "Port": 9200
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 5000000,
+    "Name": "auto-role-router-input",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "INPUT_20",
+    "TransitEncryption": {
+     "EncryptionKeyConfiguration": {
+      "Automatic": {}
+     },
+     "EncryptionKeyType": "AUTOMATIC"
+    }
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

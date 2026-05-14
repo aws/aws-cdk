@@ -1,0 +1,78 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
+
+import { Bridge, BridgeConfiguration, BridgeOutputConfiguration } from '../lib/bridge';
+import { Flow } from '../lib/flow';
+import { SourceConfiguration, NetworkConfiguration } from '../lib/flow-source-configuration';
+import { Gateway } from '../lib/gateway';
+import { BridgeProtocol } from '../lib/shared';
+
+const app = new cdk.App();
+
+const stack = new cdk.Stack(app, 'aws-cdk-mediaconnect-bridge');
+
+const network = {
+  cidrBlock: '10.0.0.0/23',
+  name: 'network-1',
+};
+
+const gateway = new Gateway(stack, 'gateway', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  egressCidrBlocks: ['10.0.0.0/23'],
+  networks: [network],
+});
+
+// Test 1: Ingress Bridge with Network Source
+new Bridge(stack, 'bridge', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  config: BridgeConfiguration.ingress({
+    maxBitrate: cdk.Bitrate.mbps(5),
+    maxOutputs: 1,
+    networkSources: [{
+      multicastIp: '239.0.0.0',
+      name: 'ingress-network-source',
+      networkName: network.name,
+      port: 5000,
+      protocol: BridgeProtocol.RTP_FEC,
+    }],
+  }),
+  gateway,
+});
+
+const flow = new Flow(stack, 'test-flow', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  source: SourceConfiguration.rtp({
+    port: 5000,
+    flowSourceName: 'ingest',
+    network: NetworkConfiguration.publicNetwork('203.0.113.0/24'),
+  }),
+});
+
+// Test 2: Egress Bridge with Network Output using BridgeOutputConfiguration
+new Bridge(stack, 'bridgeWithOutput', {
+  removalPolicy: cdk.RemovalPolicy.DESTROY,
+  config: BridgeConfiguration.egress({
+    maxBitrate: cdk.Bitrate.mbps(10),
+    flowSources: [{
+      flow: flow,
+      name: 'imported',
+    }],
+    networkOutputs: [
+      BridgeOutputConfiguration.network({
+        name: 'bridge-network-output',
+        ipAddress: '192.168.1.100',
+        port: 5000,
+        networkName: network.name,
+        protocol: BridgeProtocol.RTP,
+        ttl: 100,
+      }),
+    ],
+  }),
+  gateway,
+});
+
+new IntegTest(app, 'cdk-integ-emx-bridge', {
+  testCases: [stack],
+});
+
+app.synth();

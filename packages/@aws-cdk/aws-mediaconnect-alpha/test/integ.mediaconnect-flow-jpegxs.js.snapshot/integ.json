@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-emx-flow-jpegxs/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-flow-jpegxs"
+      ],
+      "assertionStack": "cdk-integ-emx-flow-jpegxs/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxflowjpegxsDefaultTestDeployAssert9E646691"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}

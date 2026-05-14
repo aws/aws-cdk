@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-emx-encryption-auto-role/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-encryption-auto-role"
+      ],
+      "assertionStack": "cdk-integ-emx-encryption-auto-role/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxencryptionautoroleDefaultTestDeployAssertCA0423A1"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}

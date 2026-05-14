@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "a03ac840bc35e92ccdc7c572859b4dd84eb09c75f6f8bb5ea80a918b6694755c": {
+      "displayName": "aws-cdk-mediaconnect-flow-srt-caller Template",
+      "source": {
+        "path": "aws-cdk-mediaconnect-flow-srt-caller.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-21bae996": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a03ac840bc35e92ccdc7c572859b4dd84eb09c75f6f8bb5ea80a918b6694755c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

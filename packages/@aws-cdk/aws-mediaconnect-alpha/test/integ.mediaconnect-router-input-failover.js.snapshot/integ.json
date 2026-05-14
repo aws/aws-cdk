@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-emx-router-input-failover/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-input-failover"
+      ],
+      "assertionStack": "cdk-integ-emx-router-input-failover/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxrouterinputfailoverDefaultTestDeployAssertB96D33F8"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

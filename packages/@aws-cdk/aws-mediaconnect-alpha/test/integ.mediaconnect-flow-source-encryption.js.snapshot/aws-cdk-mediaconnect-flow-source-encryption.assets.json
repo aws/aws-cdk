@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "c215bdf8efae994934de6ca35d38284da7db2b1f7be835347358aab030113968": {
+      "displayName": "aws-cdk-mediaconnect-flow-source-encryption Template",
+      "source": {
+        "path": "aws-cdk-mediaconnect-flow-source-encryption.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5456667d": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c215bdf8efae994934de6ca35d38284da7db2b1f7be835347358aab030113968.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
