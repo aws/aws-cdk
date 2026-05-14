@@ -3,6 +3,7 @@ import type * as sqs from '../../../aws-sqs';
 import * as sfn from '../../../aws-stepfunctions';
 import type { Duration } from '../../../core';
 import { ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { getResourceArn } from '../resource-arn-suffix';
 
 /**
@@ -72,12 +73,12 @@ export class SendToQueue implements sfn.IStepFunctionsTask {
     ];
 
     if (!supportedPatterns.includes(this.integrationPattern)) {
-      throw new ValidationError('InvalidServiceIntegrationPattern', `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SQS.`, queue);
+      throw new ValidationError(lit`InvalidServiceIntegrationPattern`, `Invalid Service Integration Pattern: ${this.integrationPattern} is not supported to call SQS.`, queue);
     }
 
     if (props.integrationPattern === sfn.ServiceIntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.messageBody)) {
-        throw new ValidationError('TaskTokenMissingMessageBody', 'Task Token is missing in messageBody (pass JsonPath.taskToken somewhere in messageBody)', queue);
+        throw new ValidationError(lit`TaskTokenMissingMessageBody`, 'Task Token is missing in messageBody (pass JsonPath.taskToken somewhere in messageBody)', queue);
       }
     }
   }

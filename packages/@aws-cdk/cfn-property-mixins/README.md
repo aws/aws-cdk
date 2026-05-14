@@ -117,6 +117,44 @@ class ArrayAppendStrategy implements IMergeStrategy {
 }
 ```
 
+### Deferred Values (Boxes)
+
+Property mixins support **Box-backed values**. Most L2 constructs in `aws-cdk-lib` use Boxes internally to defer property computation until synthesis time. When a mixin encounters a Box on the target, the merge is automatically deferred — the merge strategy runs once the Box resolves, ensuring it operates on final values.
+
+This means mixins work correctly with L2 constructs that use Boxes for properties like `replicas`, `rules`, or `tags`, without any special handling from the user:
+
+```typescript
+// TableV2 uses a Box internally for replicas.
+// The mixin defers the merge and appends the new replica at synthesis time.
+const table = new dynamodb.TableV2(scope, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  // L2 prop: pointInTimeRecovery is a boolean
+  replicas: [{ region: 'us-east-1', pointInTimeRecovery: true }],
+});
+
+// Mixins always use L1 (CloudFormation) property names and shapes,
+// regardless of what the L2 API looks like.
+table.with(new CfnGlobalTablePropsMixin({
+  replicas: [{
+    region: 'eu-west-1',
+    // L1 prop: pointInTimeRecoverySpecification is an object
+    pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+  }],
+}, { strategy: PropertyMergeStrategy.combine({ arrays: ArrayMergeStrategy.append() }) }));
+
+// Result (synthesized CloudFormation):
+// Replicas:
+//   - Region: us-east-1
+//     PointInTimeRecoverySpecification:
+//       PointInTimeRecoveryEnabled: true
+//   - Region: us-west-2        <-- primary region, added by L2
+//   - Region: eu-west-1        <-- added by mixin
+//     PointInTimeRecoverySpecification:
+//       PointInTimeRecoveryEnabled: true
+```
+
+**Lazys and Tokens are not supported.** If a property value is a `Lazy` or raw `Token` (not a Box), the merge strategy cannot inspect or defer it — the mixin will treat it as an opaque value and replace it. Most L2 constructs already use Boxes, but if you encounter one that doesn't, please [open an issue](https://github.com/aws/aws-cdk/issues/new?template=bug-report.yml) so we can migrate it.
+
 ### CloudFormation Property Mixins for Every Service
 
 This package provides auto-generated property mixins for every CloudFormation resource across all AWS services.

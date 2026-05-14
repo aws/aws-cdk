@@ -4,6 +4,7 @@ import type { IResource, RemovalPolicy } from '../../core';
 import { Resource, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ILogGroupRef, ILogStreamRef, LogStreamReference } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
@@ -83,7 +84,7 @@ export class LogStream extends Resource implements ILogStream {
       public get logStreamRef() {
         return {
           get logGroupName(): string {
-            throw new UnscopedValidationError('CannotAccessLogGroupName', 'Cannot access logGroupName on a LogStream obtained from fromLogStreamName. Use LogStream.fromLogStreamAttributes() instead.');
+            throw new UnscopedValidationError(lit`CannotAccessLogGroupName`, 'Cannot access logGroupName on a LogStream obtained from fromLogStreamName. Use LogStream.fromLogStreamAttributes() instead.');
           },
           logStreamName: this.logStreamName,
         };

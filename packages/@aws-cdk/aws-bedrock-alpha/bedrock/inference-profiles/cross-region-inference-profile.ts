@@ -2,6 +2,7 @@ import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
 import type { IGrantable } from 'aws-cdk-lib/aws-iam';
 import { Grant } from 'aws-cdk-lib/aws-iam';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { BedrockFoundationModel, IBedrockInvokable } from '../models';
 import type { IInferenceProfile } from './inference-profile';
 import { InferenceProfileType } from './inference-profile';
@@ -179,16 +180,16 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
   private constructor(props: CrossRegionInferenceProfileProps) {
     // Validate required properties
     if (!props.geoRegion) {
-      throw new UnscopedValidationError('GeoRegionRequired', 'geoRegion is required');
+      throw new UnscopedValidationError(lit`GeoRegionRequired`, 'geoRegion is required');
     }
 
     if (!props.model) {
-      throw new UnscopedValidationError('ModelRequired', 'model is required');
+      throw new UnscopedValidationError(lit`ModelRequired`, 'model is required');
     }
 
     // Validate that the model supports cross-region inference
     if (!props.model.supportsCrossRegion) {
-      throw new UnscopedValidationError('ModelNotSupportedForCrossRegion', `Model ${props.model.modelId} does not support cross-region inference`);
+      throw new UnscopedValidationError(lit`ModelNotSupportedForCrossRegion`, `Model ${props.model.modelId} does not support cross-region inference`);
     }
 
     this.type = InferenceProfileType.SYSTEM_DEFINED;

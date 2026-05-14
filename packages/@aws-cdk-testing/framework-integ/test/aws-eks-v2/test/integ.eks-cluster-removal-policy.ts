@@ -3,6 +3,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import { KubectlV32Layer } from '@aws-cdk/lambda-layer-kubectl-v32';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
@@ -129,7 +130,11 @@ class EksClusterRemovalPolicyStack extends Stack {
   }
 }
 
-const app = new App();
+const app = new App({
+  postCliContext: {
+    [EKS_USE_NATIVE_OIDC_PROVIDER]: false,
+  },
+});
 
 const stack = new EksClusterRemovalPolicyStack(app, 'EksClusterV2RemovalPolicyStack');
 

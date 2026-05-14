@@ -2,6 +2,7 @@ import type { IConstruct } from 'constructs';
 import * as cdk from '../../../core';
 import { ArnFormat } from '../../../core';
 import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { IntegrationConfig, IntegrationOptions } from '../integration';
 import { Integration, IntegrationType } from '../integration';
 import type { Method } from '../method';
@@ -91,7 +92,7 @@ export class AwsIntegration extends Integration {
       integrationHttpMethod: props.integrationHttpMethod || 'POST',
       uri: cdk.Lazy.string({
         produce: () => {
-          if (!this.scope) { throw new UnscopedValidationError('MustBeAwsintegrationUsed', 'AwsIntegration must be used in API'); }
+          if (!this.scope) { throw new UnscopedValidationError(lit`MustBeAwsintegrationUsed`, 'AwsIntegration must be used in API'); }
           return cdk.Stack.of(this.scope).formatArn({
             service: 'apigateway',
             account: backend,

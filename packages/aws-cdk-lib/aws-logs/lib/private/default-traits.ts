@@ -11,6 +11,7 @@ import {
 } from '../../../aws-iam';
 import type { CfnResource } from '../../../core';
 import { Names, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { ResourceEnvironment } from '../../../interfaces';
 import { CfnLogGroup, CfnResourcePolicy } from '../logs.generated';
 
@@ -53,7 +54,7 @@ class CfnLogGroupWithPolicy implements IResourceWithPolicyV2 {
 
 function ifCfnLogGroup<A>(resource: IConstruct, factory: (r: CfnLogGroup) => A): A {
   if (!CfnLogGroup.isCfnLogGroup(resource)) {
-    throw new ValidationError('Construct', `Construct ${resource.node.path} is not of type CfnLogGroup`, resource);
+    throw new ValidationError(lit`Construct`, `Construct ${resource.node.path} is not of type CfnLogGroup`, resource);
   }
 
   return factory(resource);
