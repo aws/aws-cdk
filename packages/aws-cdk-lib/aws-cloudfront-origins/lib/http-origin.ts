@@ -1,6 +1,8 @@
 import { validateSecondsInRangeOrUndefined } from './private/utils';
 import * as cloudfront from '../../aws-cloudfront';
 import type * as cdk from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for an Origin backed by an S3 website-configured bucket, load balancer, or custom HTTP server.
@@ -76,6 +78,15 @@ export class HttpOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('readTimeout', 1, 180, props.readTimeout);
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
+
+    if (props.httpPort !== undefined && !Token.isUnresolved(props.httpPort) &&
+        (!Number.isInteger(props.httpPort) || props.httpPort < 1 || props.httpPort > 65535)) {
+      throw new UnscopedValidationError(lit`HttpPortMustBeInRange`, `'httpPort' must be an integer between 1 and 65535 (inclusive); received ${props.httpPort}.`);
+    }
+    if (props.httpsPort !== undefined && !Token.isUnresolved(props.httpsPort) &&
+        (!Number.isInteger(props.httpsPort) || props.httpsPort < 1 || props.httpsPort > 65535)) {
+      throw new UnscopedValidationError(lit`HttpsPortMustBeInRange`, `'httpsPort' must be an integer between 1 and 65535 (inclusive); received ${props.httpsPort}.`);
+    }
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {

@@ -184,6 +184,38 @@ test('configure both responseCompletionTimeout and readTimeout', () => {
   });
 });
 
+test.each([
+  [0],
+  [-1],
+  [65536],
+])('fails for invalid httpPort %d', (httpPort) => {
+  expect(() => {
+    new HttpOrigin('www.example.com', { httpPort });
+  }).toThrow(`'httpPort' must be an integer between 1 and 65535 (inclusive); received ${httpPort}.`);
+});
+
+test('fails for non-integer httpPort', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', { httpPort: 80.5 });
+  }).toThrow('\'httpPort\' must be an integer between 1 and 65535 (inclusive); received 80.5.');
+});
+
+test.each([
+  [0],
+  [-1],
+  [65536],
+])('fails for invalid httpsPort %d', (httpsPort) => {
+  expect(() => {
+    new HttpOrigin('www.example.com', { httpsPort });
+  }).toThrow(`'httpsPort' must be an integer between 1 and 65535 (inclusive); received ${httpsPort}.`);
+});
+
+test('fails for non-integer httpsPort', () => {
+  expect(() => {
+    new HttpOrigin('www.example.com', { httpsPort: 443.5 });
+  }).toThrow('\'httpsPort\' must be an integer between 1 and 65535 (inclusive); received 443.5.');
+});
+
 test('throw error for configuring readTimeout less than responseCompletionTimeout value', () => {
   expect(() => {
     new HttpOrigin('www.example.com', {
