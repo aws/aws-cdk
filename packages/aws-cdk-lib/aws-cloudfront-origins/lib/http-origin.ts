@@ -79,14 +79,8 @@ export class HttpOrigin extends cloudfront.OriginBase {
     validateSecondsInRangeOrUndefined('keepaliveTimeout', 1, 180, props.keepaliveTimeout);
     this.validateResponseCompletionTimeoutWithReadTimeout(props.responseCompletionTimeout, props.readTimeout);
 
-    if (props.httpPort !== undefined && !Token.isUnresolved(props.httpPort) &&
-        (!Number.isInteger(props.httpPort) || props.httpPort < 1 || props.httpPort > 65535)) {
-      throw new UnscopedValidationError(lit`HttpPortMustBeInRange`, `'httpPort' must be an integer between 1 and 65535 (inclusive); received ${props.httpPort}.`);
-    }
-    if (props.httpsPort !== undefined && !Token.isUnresolved(props.httpsPort) &&
-        (!Number.isInteger(props.httpsPort) || props.httpsPort < 1 || props.httpsPort > 65535)) {
-      throw new UnscopedValidationError(lit`HttpsPortMustBeInRange`, `'httpsPort' must be an integer between 1 and 65535 (inclusive); received ${props.httpsPort}.`);
-    }
+    this.validatePortNumber('httpPort', props.httpPort);
+    this.validatePortNumber('httpsPort', props.httpsPort);
   }
 
   protected renderCustomOriginConfig(): cloudfront.CfnDistribution.CustomOriginConfigProperty | undefined {
@@ -99,5 +93,13 @@ export class HttpOrigin extends cloudfront.OriginBase {
       originKeepaliveTimeout: this.props.keepaliveTimeout?.toSeconds(),
       ipAddressType: this.props.ipAddressType,
     };
+  }
+
+  private validatePortNumber(name: string, port: number | undefined) {
+    if (port === undefined || Token.isUnresolved(port)) { return; }
+    const isValid = Number.isInteger(port) && (port === 80 || port === 443 || (port >= 1024 && port <= 65535));
+    if (!isValid) {
+      throw new UnscopedValidationError(lit`InvalidPortValue`, `'${name}' must be 80, 443, or an integer between 1024 and 65535; received ${port}.`);
+    }
   }
 }
