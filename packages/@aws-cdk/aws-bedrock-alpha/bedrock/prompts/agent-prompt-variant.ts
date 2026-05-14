@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { PromptGenAiResource } from './prompt-genai-resource';
 import { PromptTemplateConfiguration } from './prompt-template-configuration';
 import type { CommonPromptVariantProps, IPromptVariant } from './prompt-variant';
@@ -29,7 +30,7 @@ export interface AgentPromptVariantProps extends CommonPromptVariantProps {
  */
 export function createAgentPromptVariant(props: AgentPromptVariantProps): IPromptVariant {
   if (!props.promptText || props.promptText.trim() === '') {
-    throw new UnscopedValidationError('PromptTextEmpty', 'promptText cannot be empty');
+    throw new UnscopedValidationError(lit`PromptTextEmpty`, 'promptText cannot be empty');
   }
 
   return {

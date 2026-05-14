@@ -46,6 +46,14 @@ export const DISABLE_METADATA_STACK_TRACE = 'aws:cdk:disable-stack-trace';
 export const DISABLE_LOGICAL_ID_METADATA = 'aws:cdk:disable-logicalId-metadata';
 
 /**
+ * If this context key is set, construct stack traces will not be captured upon creation
+ *
+ * You should only need to set this for performance reasons, and `--debug` mode will
+ * turn it this back on unconditionally
+ */
+export const DISABLE_CREATION_STACK_TRACES = 'aws:cdk:disable-creation-stack-traces';
+
+/**
  * Run bundling for stacks specified in this context key
  */
 export const BUNDLING_STACKS = 'aws:cdk:bundling-stacks';

@@ -1,0 +1,121 @@
+{
+ "Resources": {
+  "GroupC77FDACD": {
+   "Type": "AWS::MediaPackageV2::ChannelGroup",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2ismencryptionGroupD4E66E24"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "Channel4048F119": {
+   "Type": "AWS::MediaPackageV2::Channel",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2ismencryptionGroupD4E66E24",
+    "ChannelName": "awscdkmediapackagev2ismencryptionChannel5C0C20F2",
+    "InputType": "CMAF"
+   },
+   "DependsOn": [
+    "GroupC77FDACD"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "SpekeRoleE39491EA": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediapackagev2.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "IsmEndpoint4BF39423": {
+   "Type": "AWS::MediaPackageV2::OriginEndpoint",
+   "Properties": {
+    "ChannelGroupName": "awscdkmediapackagev2ismencryptionGroupD4E66E24",
+    "ChannelName": "awscdkmediapackagev2ismencryptionChannel5C0C20F2",
+    "ContainerType": "ISM",
+    "MssManifests": [
+     {
+      "ManifestName": "index"
+     }
+    ],
+    "OriginEndpointName": "awscdkmediapackagev2ismencryptionIsmEndpointB4F44FD0",
+    "Segment": {
+     "Encryption": {
+      "EncryptionMethod": {
+       "IsmEncryptionMethod": "CENC"
+      },
+      "SpekeKeyProvider": {
+       "DrmSystems": [
+        "PLAYREADY"
+       ],
+       "EncryptionContractConfiguration": {
+        "PresetSpeke20Audio": "SHARED",
+        "PresetSpeke20Video": "SHARED"
+       },
+       "ResourceId": "ism-content",
+       "RoleArn": {
+        "Fn::GetAtt": [
+         "SpekeRoleE39491EA",
+         "Arn"
+        ]
+       },
+       "Url": "https://example.com/speke"
+      }
+     }
+    }
+   },
+   "DependsOn": [
+    "Channel4048F119",
+    "GroupC77FDACD",
+    "SpekeRoleE39491EA"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

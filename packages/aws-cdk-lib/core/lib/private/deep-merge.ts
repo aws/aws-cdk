@@ -1,4 +1,5 @@
 import { AssumptionError } from '../errors';
+import { lit } from './literal-string';
 
 /**
  * Object keys that deepMerge should not consider. Currently these include
@@ -33,7 +34,7 @@ const MERGE_EXCLUDE_KEYS: string[] = [
 export function deepMerge(target: any, ...sources: any[]) {
   for (const source of sources) {
     if (typeof(source) !== 'object' || typeof(target) !== 'object') {
-      throw new AssumptionError('InvalidDeepMergeArguments', `Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
+      throw new AssumptionError(lit`InvalidDeepMergeArguments`, `Invalid usage. Both source (${JSON.stringify(source)}) and target (${JSON.stringify(target)}) must be objects`);
     }
 
     for (const key of Object.keys(source)) {

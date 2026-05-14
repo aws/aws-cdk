@@ -5,6 +5,7 @@ import type { IStreamConsumer } from './stream-consumer';
 import { PolicyDocument } from '../../aws-iam';
 import { Resource, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -66,10 +67,10 @@ export class ResourcePolicy extends Resource {
     addConstructMetadata(this, props);
 
     if (props.stream && props.streamConsumer) {
-      throw new ValidationError('OnlyOneStreamOrConsumer', 'Only one of stream or streamConsumer can be set', this);
+      throw new ValidationError(lit`OnlyOneStreamOrConsumer`, 'Only one of stream or streamConsumer can be set', this);
     }
     if (props.stream === undefined && props.streamConsumer === undefined) {
-      throw new ValidationError('OnlyOneStreamOrConsumer', 'One of stream or streamConsumer must be set', this);
+      throw new ValidationError(lit`OnlyOneStreamOrConsumer`, 'One of stream or streamConsumer must be set', this);
     }
 
     this.document = props.policyDocument ?? this.document;
