@@ -1182,6 +1182,92 @@ describe('stack', () => {
     expect(warnings.some(w => w.data.includes('cross-account references can only be weak'))).toBe(true);
   });
 
+  test('cross-account references from multiple consumers share a single role with multiple principals', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer1 = new Stack(app, 'Consumer1', {
+      env: { region: 'us-east-1', account: '222222222222' },
+    });
+    const consumer2 = new Stack(app, 'Consumer2', {
+      env: { region: 'us-east-1', account: '333333333333' },
+    });
+
+    // WHEN - two different consumers reference the same producer
+    new CfnResource(consumer1, 'Resource1', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('name') },
+    });
+    new CfnResource(consumer2, 'Resource2', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('other') },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+
+    // THEN - producer has exactly one IAM::Role
+    const roles = Object.values(producerTemplate.Resources).filter(
+      (r: any) => r.Type === 'AWS::IAM::Role',
+    );
+    expect(roles).toHaveLength(1);
+
+    // THEN - the single role has both consumer principals
+    const role = roles[0] as any;
+    const principals = role.Properties.AssumeRolePolicyDocument.Statement[0].Principal.AWS;
+    expect(principals).toHaveLength(2);
+    expect(principals).toContainEqual({ 'Fn::Sub': consumer1.synthesizer.cloudFormationExecutionRole });
+    expect(principals).toContainEqual({ 'Fn::Sub': consumer2.synthesizer.cloudFormationExecutionRole });
+
+    // THEN - producer has exactly one IAM::Policy
+    const policies = Object.values(producerTemplate.Resources).filter(
+      (r: any) => r.Type === 'AWS::IAM::Policy',
+    );
+    expect(policies).toHaveLength(1);
+  });
+
+  test('cross-account references from a single consumer produce a single principal string', () => {
+    // GIVEN
+    const app = new App();
+    const producer = new Stack(app, 'Producer', {
+      env: { region: 'us-east-1', account: '111111111111' },
+    });
+    const exportResource = new CfnResource(producer, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    const consumer = new Stack(app, 'Consumer', {
+      env: { region: 'us-east-1', account: '222222222222' },
+    });
+
+    // WHEN - single consumer references multiple attributes
+    new CfnResource(consumer, 'Resource1', {
+      type: 'AWS::S3::Bucket',
+      properties: {
+        Name: exportResource.getAtt('name'),
+        Other: exportResource.getAtt('other'),
+      },
+    });
+
+    const assembly = app.synth();
+    const producerTemplate = assembly.getStackByName(producer.stackName).template;
+
+    // THEN - producer has exactly one IAM::Role
+    const roles = Object.values(producerTemplate.Resources).filter(
+      (r: any) => r.Type === 'AWS::IAM::Role',
+    );
+    expect(roles).toHaveLength(1);
+
+    // THEN - single principal is a string, not an array
+    const role = roles[0] as any;
+    const principal = role.Properties.AssumeRolePolicyDocument.Statement[0].Principal.AWS;
+    expect(principal).toEqual({ 'Fn::Sub': consumer.synthesizer.cloudFormationExecutionRole });
+  });
+
   test('same-region weak references use Fn::GetStackOutput', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
