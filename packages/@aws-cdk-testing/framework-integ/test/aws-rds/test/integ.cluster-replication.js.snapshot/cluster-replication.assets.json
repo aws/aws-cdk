@@ -1,15 +1,30 @@
 {
-  "version": "39.0.0",
+  "version": "52.0.0",
   "files": {
-    "9d255bf88332928597c7fafa86e3de2059114c045ec73a946038fd011bdf2628": {
+    "cacbae65717103d06f41c1e2d810143b3469d00294d9bbef4b39a6bce1660214": {
+      "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
+      "source": {
+        "path": "asset.cacbae65717103d06f41c1e2d810143b3469d00294d9bbef4b39a6bce1660214",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-caaab5a4": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cacbae65717103d06f41c1e2d810143b3469d00294d9bbef4b39a6bce1660214.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "d5a9627dfa064996b064b4989801da528b22e5bbfcceffb993eaba2dbaf30da8": {
+      "displayName": "cluster-replication Template",
       "source": {
         "path": "cluster-replication.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-ad05c62e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "9d255bf88332928597c7fafa86e3de2059114c045ec73a946038fd011bdf2628.json",
+          "objectKey": "d5a9627dfa064996b064b4989801da528b22e5bbfcceffb993eaba2dbaf30da8.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -84,15 +84,17 @@ export class ResolverBuilder {
     ].join(' | ');
 
     // Generates code like:
-    // For single value T | string : (props.xx as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string");
-    // For array <T | string>[]: cdk.mapArrayInPlace(props.layers, (item: IxxxRef | string) => (item as IxxxRef)?.xxxRef?.xxxArn ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.IxxxRef | string"))
+    // For single values (T | string):
+    // getRefProperty((props.xx as IxxxRef)?.xxxRef, 'xxxArn') ?? cdk.ensureStringOrUndefined(props.xxx, "xxx", "iam.IxxxRef | string")
+    // For arrays (T | string)[]:
+    // cdk.mapArrayInPlace(props.layers, (item: IxxxRef | string) => getRefProperty((item as IxxxRef)?.xxxRef, 'xxxArn') ?? cdk.ensureStringOrUndefined(item, "xxx", "lambda.IxxxRef | string"))
     // Ensures that arn properties always appear first in the chain as they are more general
     const arnRels = relationships.filter(r => r.refPropName.toLowerCase().endsWith('arn'));
     const otherRels = relationships.filter(r => !r.refPropName.toLowerCase().endsWith('arn'));
 
     const buildChain = (itemName: string) => [
       ...[...arnRels, ...otherRels]
-        .map(r => `(${itemName} as ${r.refType})?.${r.refPropStructName}?.${r.refPropName}`),
+        .map(r => `cdk.getRefProperty((${itemName} as ${r.refType})?.${r.refPropStructName}, '${r.refPropName}')`),
       `cdk.ensureStringOrUndefined(${itemName}, "${name}", "${typeDisplayNames}")`,
     ].join(' ?? ');
     const resolver = (props: Expression) => {

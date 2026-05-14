@@ -680,7 +680,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-12345678-test-region",
-     "S3Key": "4e81d1590504dce642b87042b0999db745220956ae69e7441a66475972723162.zip"
+     "S3Key": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip"
     },
     "Handler": "index.handler",
     "Role": {

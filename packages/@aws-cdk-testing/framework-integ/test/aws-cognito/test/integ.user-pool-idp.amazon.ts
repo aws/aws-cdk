@@ -1,4 +1,5 @@
 import { App, CfnOutput, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { ProviderAttribute, UserPool, UserPoolIdentityProviderAmazon } from 'aws-cdk-lib/aws-cognito';
 
 /*
@@ -20,9 +21,6 @@ new UserPoolIdentityProviderAmazon(stack, 'amazon', {
   attributeMapping: {
     givenName: ProviderAttribute.AMAZON_NAME,
     email: ProviderAttribute.AMAZON_EMAIL,
-    custom: {
-      userId: ProviderAttribute.AMAZON_USER_ID,
-    },
   },
 });
 
@@ -30,7 +28,7 @@ const client = userpool.addClient('client');
 
 const domain = userpool.addDomain('domain', {
   cognitoDomain: {
-    domainPrefix: 'nija-test-pool',
+    domainPrefix: 'nija-test-pool-amzn',
   },
 });
 
@@ -38,4 +36,8 @@ new CfnOutput(stack, 'SignInLink', {
   value: domain.signInUrl(client, {
     redirectUri: 'https://example.com',
   }),
+});
+
+new IntegTest(app, 'integ-user-pool-idp-amazon-test', {
+  testCases: [stack],
 });

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EmrCreateClusterPrioritizedTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-emr-create-cluster-with-prioritized-instance-fleet"
+      ],
+      "assertionStack": "EmrCreateClusterPrioritizedTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EmrCreateClusterPrioritizedTestDefaultTestDeployAssert7E92B105"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

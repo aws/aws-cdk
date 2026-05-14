@@ -156,7 +156,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
+     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -364,8 +364,30 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
+       ]
+      ]
+     }
     ]
    }
   },
@@ -385,9 +407,42 @@
      "Version": "2012-10-17"
     },
     "ManagedPolicyArns": [
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker",
-     "arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier"
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkWebTier"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSElasticBeanstalkWorkerTier"
+       ]
+      ]
+     }
     ]
    }
   },

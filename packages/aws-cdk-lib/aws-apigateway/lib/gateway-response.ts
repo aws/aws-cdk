@@ -244,6 +244,8 @@ export class ResponseType {
 
   /**
    * Valid value of response type.
+   *
+   * @jsii suppress JSII5019 For historic reasons
    */
   public readonly responseType: string;
 

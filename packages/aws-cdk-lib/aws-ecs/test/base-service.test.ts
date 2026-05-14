@@ -139,6 +139,85 @@ describe('When import an ECS Service', () => {
     });
   });
 
+  test.each([
+    { format: ecs.ServiceConnectAccessLogFormat.JSON, includeQueryParameters: true },
+    { format: ecs.ServiceConnectAccessLogFormat.JSON, includeQueryParameters: false },
+    { format: ecs.ServiceConnectAccessLogFormat.TEXT, includeQueryParameters: true },
+    { format: ecs.ServiceConnectAccessLogFormat.TEXT, includeQueryParameters: false },
+  ])('add access log configuration to service connect with format %p and includeQueryParameters %p', (testCase) => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          name: 'api',
+          containerPort: 80,
+        },
+      ],
+    });
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.enableServiceConnect({
+      services: [
+        {
+          portMappingName: 'api',
+        },
+      ],
+      namespace: 'test namespace',
+      logDriver: ecs.LogDrivers.awsLogs({ streamPrefix: 'sc' }),
+      accessLogConfiguration: {
+        format: testCase.format,
+        includeQueryParameters: testCase.includeQueryParameters,
+      },
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::ECS::Service', {
+      ServiceConnectConfiguration: {
+        AccessLogConfiguration: {
+          Format: testCase.format,
+          IncludeQueryParameters: testCase.includeQueryParameters ? 'ENABLED' : 'DISABLED',
+        },
+      },
+    });
+  });
+
+  test('throws an error when accessLogConfiguration is set without logDriver', () => {
+    // GIVEN
+    const vpc = new ec2.Vpc(stack, 'Vpc');
+    const cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    const taskDefinition = new ecs.FargateTaskDefinition(stack, 'TaskDef');
+    taskDefinition.addContainer('Web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      portMappings: [
+        {
+          name: 'api',
+          containerPort: 80,
+        },
+      ],
+    });
+    const service = new ecs.FargateService(stack, 'Service', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN / THEN
+    expect(() => service.enableServiceConnect({
+      services: [{ portMappingName: 'api' }],
+      namespace: 'test namespace',
+      accessLogConfiguration: {
+        format: ecs.ServiceConnectAccessLogFormat.JSON,
+      },
+    })).toThrow('accessLogConfiguration requires logDriver to be set. Without logDriver, access logs are not delivered to any destination.');
+  });
+
   test('throws an error when awsPcaAuthorityArn is not an ARN', () => {
     // GIVEN
     const vpc = new ec2.Vpc(stack, 'Vpc');
@@ -735,5 +814,203 @@ describe('Canary Deployment', () => {
         },
       });
     }).toThrow(/Canary configuration requires deploymentStrategy to be set to CANARY/);
+  });
+});
+
+describe('forceNewDeployment', () => {
+  let stack: cdk.Stack;
+  let vpc: ec2.Vpc;
+  let cluster: ecs.Cluster;
+  let taskDefinition: ecs.FargateTaskDefinition;
+
+  beforeEach(() => {
+    stack = new cdk.Stack();
+    vpc = new ec2.Vpc(stack, 'Vpc');
+    cluster = new ecs.Cluster(stack, 'EcsCluster', { vpc });
+    taskDefinition = new ecs.FargateTaskDefinition(stack, 'FargateTaskDef');
+    taskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+    });
+  });
+
+  test('should enable force new deployment with auto-generated nonce', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment();
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: Match.stringLikeRegexp('^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$'),
+      },
+    });
+  });
+
+  test('should enable force new deployment with custom nonce', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment('my-custom-nonce');
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'my-custom-nonce',
+      },
+    });
+  });
+
+  test('should work with EC2 service', () => {
+    // GIVEN
+    cluster.addCapacity('DefaultAutoScalingGroup', {
+      instanceType: new ec2.InstanceType('t3.micro'),
+      minCapacity: 1,
+    });
+    const ec2TaskDefinition = new ecs.Ec2TaskDefinition(stack, 'Ec2TaskDef');
+    ec2TaskDefinition.addContainer('web', {
+      image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
+      memoryLimitMiB: 512,
+    });
+    const service = new ecs.Ec2Service(stack, 'Ec2Service', {
+      cluster,
+      taskDefinition: ec2TaskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment();
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: Match.stringLikeRegexp('^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$'),
+      },
+    });
+  });
+
+  test('should not set ForceNewDeployment property when not called', () => {
+    // GIVEN
+    new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: Match.absent(),
+    });
+  });
+
+  test('should throw error when nonce exceeds 255 characters', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN & THEN
+    expect(() => {
+      service.forceNewDeployment('a'.repeat(256));
+    }).toThrow(/forceNewDeployment nonce must be between 1 and 255 characters, got 256/);
+  });
+
+  test('should throw error when nonce is empty string', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN & THEN
+    expect(() => {
+      service.forceNewDeployment('');
+    }).toThrow(/forceNewDeployment nonce must be between 1 and 255 characters, got 0/);
+  });
+
+  test('should accept nonce at maximum length of 255 characters', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment('a'.repeat(255));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'a'.repeat(255),
+      },
+    });
+  });
+
+  test('should throw error when using CODE_DEPLOY deployment controller', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.CODE_DEPLOY,
+      },
+    });
+
+    // WHEN & THEN
+    expect(() => {
+      service.forceNewDeployment();
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+
+  test('should throw error when using EXTERNAL deployment controller', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+      deploymentController: {
+        type: ecs.DeploymentControllerType.EXTERNAL,
+      },
+    });
+
+    // WHEN & THEN
+    expect(() => {
+      service.forceNewDeployment();
+    }).toThrow('forceNewDeployment requires the ECS deployment controller.');
+  });
+
+  test('should accept unresolved tokens as nonce without length validation', () => {
+    // GIVEN
+    const service = new ecs.FargateService(stack, 'FargateService', {
+      cluster,
+      taskDefinition,
+    });
+
+    // WHEN
+    service.forceNewDeployment(cdk.Lazy.string({ produce: () => 'resolved-later' }));
+
+    // THEN
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::ECS::Service', {
+      ForceNewDeployment: {
+        EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: 'resolved-later',
+      },
+    });
   });
 });

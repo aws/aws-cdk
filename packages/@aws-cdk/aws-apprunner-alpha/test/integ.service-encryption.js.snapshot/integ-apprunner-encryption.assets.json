@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "50.0.0",
   "files": {
     "0fe6f95cda1a644231803b5acf00b70af151133660b969f529838e037d6ffcfd": {
+      "displayName": "integ-apprunner-encryption Template",
       "source": {
         "path": "integ-apprunner-encryption.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-3540d835": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "0fe6f95cda1a644231803b5acf00b70af151133660b969f529838e037d6ffcfd.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

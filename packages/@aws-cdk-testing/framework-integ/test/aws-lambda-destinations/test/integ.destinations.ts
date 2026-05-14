@@ -56,8 +56,8 @@ class TestStack extends Stack {
       onSuccess: new destinations.LambdaDestination(onSuccessLambda),
     });
 
-    const successBucket = new s3.Bucket(this, 'OnSuccessBucket');
     const failureBucket = new s3.Bucket(this, 'OnFailureBucket');
+    const successQueue = new sqs.Queue(this, 'OnSuccessQueue');
 
     new lambda.Function(this, 'S3', {
       runtime: STANDARD_NODEJS_RUNTIME,
@@ -67,7 +67,7 @@ class TestStack extends Stack {
         throw new Error('failure');
       };`),
       onFailure: new destinations.S3Destination(failureBucket),
-      onSuccess: new destinations.S3Destination(successBucket),
+      onSuccess: new destinations.SqsDestination(successQueue),
       maxEventAge: Duration.hours(4),
       retryAttempts: 2,
     });

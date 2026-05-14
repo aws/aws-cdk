@@ -6,114 +6,107 @@ import * as VpcV2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'vpcv2-import-integ-test', {
-  env: {
-    region: 'us-west-2',
-  },
+/**
+ * Source stack: creates a VPC with secondary CIDRs and subnets,
+ * then exports their IDs for the import stack to consume.
+ */
+const sourceStack = new cdk.Stack(app, 'vpcv2-source-stack');
+
+const sourceVpc = new VpcV2.VpcV2(sourceStack, 'SourceVpc', {
+  primaryAddressBlock: VpcV2.IpAddresses.ipv4('10.1.0.0/16'),
+  secondaryAddressBlocks: [
+    VpcV2.IpAddresses.ipv4('10.2.0.0/16', { cidrBlockName: 'Secondary1' }),
+    VpcV2.IpAddresses.ipv4('10.3.0.0/16', { cidrBlockName: 'Secondary2' }),
+    VpcV2.IpAddresses.amazonProvidedIpv6({ cidrBlockName: 'AmazonIpv6' }),
+  ],
 });
+
+const isolatedSubnet = new SubnetV2(sourceStack, 'IsolatedSubnet', {
+  vpc: sourceVpc,
+  availabilityZone: sourceStack.availabilityZones[0],
+  ipv4CidrBlock: new IpCidr('10.2.0.0/24'),
+  subnetType: SubnetType.PRIVATE_ISOLATED,
+  subnetName: 'IsolatedSubnet',
+});
+
+const publicSubnet = new SubnetV2(sourceStack, 'PublicSubnet', {
+  vpc: sourceVpc,
+  availabilityZone: sourceStack.availabilityZones[1],
+  ipv4CidrBlock: new IpCidr('10.3.0.0/24'),
+  subnetType: SubnetType.PUBLIC,
+  subnetName: 'PublicSubnet',
+});
+
+// Export values for the import stack
+new cdk.CfnOutput(sourceStack, 'VpcId', { value: sourceVpc.vpcId, exportName: 'SourceVpcId' });
+new cdk.CfnOutput(sourceStack, 'IsolatedSubnetId', { value: isolatedSubnet.subnetId, exportName: 'IsolatedSubnetId' });
+new cdk.CfnOutput(sourceStack, 'IsolatedSubnetRtId', { value: isolatedSubnet.routeTable.routeTableId, exportName: 'IsolatedSubnetRtId' });
+new cdk.CfnOutput(sourceStack, 'PublicSubnetId', { value: publicSubnet.subnetId, exportName: 'PublicSubnetId' });
+new cdk.CfnOutput(sourceStack, 'PublicSubnetRtId', { value: publicSubnet.routeTable.routeTableId, exportName: 'PublicSubnetRtId' });
 
 /**
- * To deploy these test for importing VPCs
- * Create VPC in account using integ.vpc-v2-alpha
- * and integ.ipam.ts for IPAM related test
- * Once created, change the subnet and VPCID
- * according to the one alloted on creation
+ * Import stack: imports the VPC using fromVpcV2Attributes and
+ * adds new subnets and gateways to verify import functionality.
  */
-const imported_new_vpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedNewVPC', {
-  vpcId: 'vpc-08193db3ccc4f909f', // VPC id
+const importStack = new cdk.Stack(app, 'vpcv2-import-integ-test');
+importStack.addDependency(sourceStack);
+
+const importedVpc = VpcV2.VpcV2.fromVpcV2Attributes(importStack, 'ImportedVpc', {
+  vpcId: cdk.Fn.importValue('SourceVpcId'),
   vpcCidrBlock: '10.1.0.0/16',
-  secondaryCidrBlocks: [{
-    cidrBlock: '10.2.0.0/16',
-    cidrBlockName: 'ImportedBlock1',
-  },
-  {
-    cidrBlock: '10.3.0.0/16',
-    cidrBlockName: 'ImportedBlock2',
-  }, {
-    amazonProvidedIpv6CidrBlock: true,
-  }],
+  secondaryCidrBlocks: [
+    { cidrBlock: '10.2.0.0/16', cidrBlockName: 'ImportedBlock1' },
+    { cidrBlock: '10.3.0.0/16', cidrBlockName: 'ImportedBlock2' },
+    { amazonProvidedIpv6CidrBlock: true },
+  ],
   subnets: [{
-    subnetName: 'IsolatedSubnet2',
-    subnetId: 'subnet-03cd773c0fe08ed26', // Subnet Id
+    subnetName: 'ImportedIsolatedSubnet',
+    subnetId: cdk.Fn.importValue('IsolatedSubnetId'),
     subnetType: SubnetType.PRIVATE_ISOLATED,
-    availabilityZone: 'us-west-2a',
+    availabilityZone: sourceStack.availabilityZones[0],
     ipv4CidrBlock: '10.2.0.0/24',
-    routeTableId: 'rtb-0871c310f98da2cbb', // RouteTable id
+    routeTableId: cdk.Fn.importValue('IsolatedSubnetRtId'),
   }, {
-    subnetId: 'subnet-0fa477e01db27d820',
+    subnetName: 'ImportedPublicSubnet',
+    subnetId: cdk.Fn.importValue('PublicSubnetId'),
     subnetType: SubnetType.PUBLIC,
-    availabilityZone: 'us-west-2b',
+    availabilityZone: sourceStack.availabilityZones[1],
     ipv4CidrBlock: '10.3.0.0/24',
-    routeTableId: 'rtb-014f3043098fe4b96',
+    routeTableId: cdk.Fn.importValue('PublicSubnetRtId'),
   }],
 });
 
-// Test to add new subnet to imported VPC against secondary range
-new SubnetV2(stack, 'AddnewImportedSubnet', {
-  availabilityZone: 'us-west-2a',
+// Add new subnets to imported VPC against secondary ranges
+new SubnetV2(importStack, 'NewSubnet1', {
+  vpc: importedVpc,
+  availabilityZone: importStack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.2.2.0/24'),
-  // can be uncommented and modified after allocation is done using Amazon Provided Ipv6
-  // ipv6CidrBlock: new IpCidr('2600:1f14:b1d:6500::/64'),
-  vpc: imported_new_vpc,
   subnetType: SubnetType.PUBLIC,
 });
 
-// Test to add new subnet to imported VPC against secondary range
-new SubnetV2(stack, 'AddnewImportedSubnet2', {
-  availabilityZone: 'us-west-2a',
+new SubnetV2(importStack, 'NewSubnet2', {
+  vpc: importedVpc,
+  availabilityZone: importStack.availabilityZones[0],
   ipv4CidrBlock: new IpCidr('10.3.2.0/24'),
-  // can be uncommented and modified after allocation is done using Amazon Provided Ipv6
-  // ipv6CidrBlock: new IpCidr('2600:1f14:b1d:6500::/64'),
-  vpc: imported_new_vpc,
   subnetType: SubnetType.PUBLIC,
 });
 
-const ImportedSubnet = SubnetV2.fromSubnetV2Attributes(stack, 'IsolatedSubnet1', {
-  subnetId: 'subnet-0d441651f6653d4a7',
+// Add gateways to imported VPC
+importedVpc.addInternetGateway();
+importedVpc.addEgressOnlyInternetGateway();
+
+// Use an imported subnet as NAT gateway target
+const importedSubnet = SubnetV2.fromSubnetV2Attributes(importStack, 'ReImportedSubnet', {
+  subnetId: cdk.Fn.importValue('IsolatedSubnetId'),
   subnetType: SubnetType.PRIVATE_ISOLATED,
-  availabilityZone: 'us-west-2b',
+  availabilityZone: importStack.availabilityZones[0],
   ipv4CidrBlock: '10.2.0.0/24',
-  routeTableId: 'rtb-0f02fab3ed3fb4ba9',
+  routeTableId: cdk.Fn.importValue('IsolatedSubnetRtId'),
 });
 
-// Test to add different types of gateways
-imported_new_vpc.addInternetGateway();
-
-imported_new_vpc.addNatGateway({
-  subnet: ImportedSubnet,
-});
-
-imported_new_vpc.addEgressOnlyInternetGateway();
-
-// Import another IPAM enabled VPC
-const ipamvpc = VpcV2.VpcV2.fromVpcV2Attributes(stack, 'ImportedIPAMVPC', {
-  vpcId: 'vpc-02407f4a207815a97',
-  vpcCidrBlock: '10.0.0.0/16',
-  secondaryCidrBlocks: [{
-    ipv6IpamPoolId: 'ipam-pool-0316c6848898c09e0',
-    ipv6NetmaskLength: 52,
-    cidrBlockName: 'ImportedIpamIpv6',
-  },
-  {
-    ipv4IpamPoolId: 'ipam-pool-0d53ae29b3b8ca8de',
-    ipv4IpamProvisionedCidrs: ['10.2.0.0/16'],
-    cidrBlockName: 'ImportedIpamIpv4',
-  }],
-});
-
-// Test to add different types of gateways
-ipamvpc.addEgressOnlyInternetGateway();
-
-// Test to add new subnet to imported VPC against IPAM range
-new SubnetV2(stack, 'AddnewSubnettoImportedIpam', {
-  availabilityZone: 'us-west-2a',
-  ipv4CidrBlock: new IpCidr('10.2.1.0/28'),
-  // can be uncommented and modified after allocation is done using IPAM - Amazon Provided Ipv6
-  ipv6CidrBlock: new IpCidr('2600:1f24:6c:4000::/64'),
-  vpc: ipamvpc,
-  subnetType: SubnetType.PUBLIC,
-});
+importedVpc.addNatGateway({ subnet: importedSubnet });
 
 new IntegTest(app, 'integtest-model', {
-  testCases: [stack],
+  testCases: [importStack],
+  stackUpdateWorkflow: false,
 });
