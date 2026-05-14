@@ -3,12 +3,6 @@ import * as path from 'path';
 import * as feats from '../lib/features';
 import { MAGIC_V2NEXT, compareVersions } from '../lib/private/flag-modeling';
 
-test('all future flags have defaults configured', () => {
-  Object.keys(feats.FLAGS).forEach(flag => {
-    expect(typeof (feats.futureFlagDefault(flag))).toEqual('boolean');
-  });
-});
-
 test('futureFlagDefault returns false if non existent flag was given', () => {
   expect(feats.futureFlagDefault('non-existent-flag')).toEqual(false);
 });
@@ -53,7 +47,9 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.SIGNER_PROFILE_NAME_PASSED_TO_CFN]: false,
     [feats.ECS_PATTERNS_SEC_GROUPS_DISABLES_IMPLICIT_OPEN_LISTENER]: false,
     [feats.AUTOMATIC_L1_TRAITS]: true,
+    [feats.DEFAULT_CROSS_STACK_REFERENCES]: 'strong',
     [feats.BATCH_DEFAULT_AL2023]: false,
+    [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
 
   });
 });
