@@ -2737,6 +2737,29 @@ describe('cluster', () => {
         AccessPolicies: [],
       });
     });
+
+    test('cluster can grantAccess with Kubernetes groups and username', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const cluster = new eks.Cluster(stack, 'Cluster', {
+        vpc,
+        version: CLUSTER_VERSION,
+      });
+
+      // WHEN
+      cluster.grantAccess('GroupAccess', 'arn:aws:iam::123456789012:role/TestRole', [], {
+        kubernetesGroups: ['developers'],
+        username: 'developer',
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EKS::AccessEntry', {
+        PrincipalArn: 'arn:aws:iam::123456789012:role/TestRole',
+        KubernetesGroups: ['developers'],
+        Username: 'developer',
+        AccessPolicies: [],
+      });
+    });
   });
 
   describe('RemoteNetworkConfig', () => {
