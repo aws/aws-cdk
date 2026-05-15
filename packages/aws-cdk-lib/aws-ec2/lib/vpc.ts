@@ -1463,6 +1463,13 @@ export class Vpc extends VpcBase {
   public readonly vpcCidrBlock: string;
 
   /**
+   * The ID of the default network ACL created by AWS for this VPC.
+   *
+   * The default network ACL contains AWS-managed entries, including rule 100
+   * that allows all IPv4 ingress and egress traffic. CloudFormation cannot
+   * remove or replace those default entries. To use a deny-by-default network
+   * ACL, create a `NetworkAcl` and associate it with selected subnets instead.
+   *
    * @attribute
    */
   public readonly vpcDefaultNetworkAcl: string;
@@ -2277,6 +2284,9 @@ export class Subnet extends Resource implements ISubnet {
    *
    * Upon creation, this is the default ACL which allows all traffic, except
    * explicit DENY entries that you add.
+   *
+   * The AWS-managed default network ACL includes rule 100, which allows all
+   * IPv4 ingress and egress traffic. CloudFormation cannot delete this rule.
    *
    * You can replace it with a custom ACL which denies all traffic except
    * the explicit ALLOW entries that you add by creating a `NetworkAcl`
