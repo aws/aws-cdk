@@ -299,19 +299,15 @@ To grant the runtime permissions to invoke Bedrock models or inference profiles:
 declare const runtime: agentcore.Runtime;
 
 // Define the Bedrock Foundation Model
-const model = bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0;
+const model = bedrock.FoundationModel.fromFoundationModelId(this, 'Model',
+  bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_7_SONNET_20250219_V1_0,
+);
 
 // Grant the runtime permissions to invoke the model
-model.grantInvoke(runtime);
-
-// Create a cross-region inference profile for Claude 3.7 Sonnet
-const inferenceProfile = bedrock.CrossRegionInferenceProfile.fromConfig({
-  geoRegion: bedrock.CrossRegionInferenceProfileRegion.US,
-  model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_7_SONNET_V1_0
-});
-
-// Grant the runtime permissions to invoke the inference profile
-inferenceProfile.grantInvoke(runtime);
+runtime.role.addToPrincipalPolicy(new iam.PolicyStatement({
+  actions: ['bedrock:InvokeModel'],
+  resources: [model.modelArn],
+}));
 ```
 
 ### Runtime Versioning
@@ -2619,11 +2615,15 @@ const customSemanticStrategy = agentcore.MemoryStrategy.usingSemantic({
   description: "Custom semantic memory strategy",
   namespaces: ["/custom/strategies/{memoryStrategyId}/actors/{actorId}"],
   customConsolidation: {
-    model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+    model: bedrock.FoundationModel.fromFoundationModelId(this, 'ConsolidationModel',
+      bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0,
+    ),
     appendToPrompt: "Custom consolidation prompt for semantic memory",
   },
   customExtraction: {
-    model: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+    model: bedrock.FoundationModel.fromFoundationModelId(this, 'ExtractionModel',
+      bedrock.FoundationModelIdentifier.ANTHROPIC_CLAUDE_3_5_SONNET_20241022_V2_0,
+    ),
     appendToPrompt: "Custom extraction prompt for semantic memory",
   },
 });
