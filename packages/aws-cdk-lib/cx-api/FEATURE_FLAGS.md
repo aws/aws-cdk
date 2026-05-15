@@ -115,7 +115,7 @@ Flags come in three types:
 | [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
-| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | V2NEXT | config |
+| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 
 <!-- END table -->
 
@@ -2497,7 +2497,7 @@ The flag is read from the **consumer** stack's context, not the producer's.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| V2NEXT | `"strong"` | `"strong"` |
+| 2.254.0 | `"strong"` | `"strong"` |
 
 
 <!-- END details -->
