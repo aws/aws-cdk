@@ -108,6 +108,7 @@ export const CODECOMMIT_SOURCE_ACTION_DEFAULT_BRANCH_NAME = '@aws-cdk/aws-codepi
 export const LAMBDA_PERMISSION_LOGICAL_ID_FOR_LAMBDA_ACTION = '@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction';
 export const CODEPIPELINE_CROSS_ACCOUNT_KEYS_DEFAULT_VALUE_TO_FALSE = '@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse';
 export const CODEPIPELINE_DEFAULT_PIPELINE_TYPE_TO_V2 = '@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2';
+export const CODEPIPELINE_CROSS_REGION_REPLICATION_BUCKET_DESTROY = '@aws-cdk/aws-codepipeline:crossRegionReplicationBucketDestroy';
 export const KMS_REDUCE_CROSS_ACCOUNT_REGION_POLICY_SCOPE = '@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope';
 export const PIPELINE_REDUCE_ASSET_ROLE_TRUST_SCOPE = '@aws-cdk/pipelines:reduceAssetRoleTrustScope';
 export const EKS_NODEGROUP_NAME = '@aws-cdk/aws-eks:nodegroupNameAttribute';
@@ -1113,6 +1114,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.133.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `pipelineType: PipelineType.V1` to `Pipeline` construct to restore the previous behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CODEPIPELINE_CROSS_REGION_REPLICATION_BUCKET_DESTROY]: {
+    type: FlagType.BugFix,
+    summary: 'Destroy CodePipeline cross-region replication buckets',
+    detailsMd: `
+      When enabled, CodePipeline cross-region support stacks apply \`RemovalPolicy.DESTROY\`
+      and \`autoDeleteObjects\` to cross-region replication buckets so they are deleted
+      during stack destruction.
+
+      When disabled, replication buckets keep the legacy retain behavior.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 
   //////////////////////////////////////////////////////////////////////
