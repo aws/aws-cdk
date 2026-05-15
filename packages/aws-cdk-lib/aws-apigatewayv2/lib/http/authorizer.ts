@@ -1,12 +1,16 @@
-import { Construct } from 'constructs';
-import { IHttpApi } from './api';
-import { IHttpRoute } from './route';
-import { CfnAuthorizer } from '.././index';
-import { Duration, Resource } from '../../../core';
+import type { Construct } from 'constructs';
+import type { IHttpApiRef } from './api';
+import type { IHttpRoute } from './route';
+import type { IRoleRef } from '../../../aws-iam';
+import type { Duration } from '../../../core';
+import { Resource } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
-import { IAuthorizer } from '../common';
+import type { IAuthorizer } from '../common';
+import type { AuthorizerReference } from '../index';
+import { CfnAuthorizer } from '../index';
 
 /**
  * Supported Authorizer types
@@ -47,7 +51,7 @@ export interface HttpAuthorizerProps {
   /**
    * HTTP Api to attach the authorizer to
    */
-  readonly httpApi: IHttpApi;
+  readonly httpApi: IHttpApiRef;
 
   /**
    * The type of authorizer
@@ -104,6 +108,15 @@ export interface HttpAuthorizerProps {
    * @default - API Gateway will not cache authorizer responses
    */
   readonly resultsCacheTtl?: Duration;
+
+  /**
+   * The IAM role that the API Gateway service assumes while invoking the authorizer.
+   *
+   * Supported only for REQUEST authorizers.
+   *
+   * @default - No role
+   */
+  readonly role?: IRoleRef;
 }
 
 /**
@@ -162,6 +175,7 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
   }
 
   public readonly authorizerId: string;
+  private readonly apiId: string;
 
   constructor(scope: Construct, id: string, props: HttpAuthorizerProps) {
     super(scope, id);
@@ -171,11 +185,15 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
     let authorizerPayloadFormatVersion = props.payloadFormatVersion;
 
     if (props.type === HttpAuthorizerType.JWT && (!props.jwtAudience || props.jwtAudience.length === 0 || !props.jwtIssuer)) {
-      throw new ValidationError('jwtAudience and jwtIssuer are mandatory for JWT authorizers', scope);
+      throw new ValidationError(lit`JwtAudienceJwtIssuerMandatory`, 'jwtAudience and jwtIssuer are mandatory for JWT authorizers', scope);
     }
 
     if (props.type === HttpAuthorizerType.LAMBDA && !props.authorizerUri) {
-      throw new ValidationError('authorizerUri is mandatory for Lambda authorizers', scope);
+      throw new ValidationError(lit`AuthorizerUriMandatoryLambdaAuthorizers`, 'authorizerUri is mandatory for Lambda authorizers', scope);
+    }
+
+    if (props.type !== HttpAuthorizerType.LAMBDA && props.role) {
+      throw new ValidationError(lit`RoleSupportedOnlyForLambdaAuthorizers`, 'role is supported only for Lambda authorizers', scope);
     }
 
     /**
@@ -186,9 +204,10 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
       authorizerPayloadFormatVersion = AuthorizerPayloadVersion.VERSION_2_0;
     }
 
+    this.apiId = props.httpApi.apiRef.apiId;
     const resource = new CfnAuthorizer(this, 'Resource', {
       name: props.authorizerName ?? id,
-      apiId: props.httpApi.apiId,
+      apiId: props.httpApi.apiRef.apiId,
       authorizerType: props.type,
       identitySource: props.identitySource,
       jwtConfiguration: undefinedIfNoKeys({
@@ -199,9 +218,17 @@ export class HttpAuthorizer extends Resource implements IHttpAuthorizer {
       authorizerPayloadFormatVersion,
       authorizerUri: props.authorizerUri,
       authorizerResultTtlInSeconds: props.resultsCacheTtl?.toSeconds(),
+      authorizerCredentialsArn: props.role?.roleRef.roleArn,
     });
 
     this.authorizerId = resource.ref;
+  }
+
+  public get authorizerRef(): AuthorizerReference {
+    return {
+      authorizerId: this.authorizerId,
+      apiId: this.apiId,
+    };
   }
 }
 

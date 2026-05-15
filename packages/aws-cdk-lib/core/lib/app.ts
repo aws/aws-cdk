@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
-import { addCustomSynthesis, ICustomSynthesis } from './private/synthesis';
-import { IPropertyInjector, PropertyInjectors } from './prop-injectors';
-import { IReusableStackSynthesizer } from './stack-synthesizers';
+import type { ICustomSynthesis } from './private/synthesis';
+import { addCustomSynthesis } from './private/synthesis';
+import type { IPropertyInjector } from './prop-injectors';
+import { PropertyInjectors } from './prop-injectors';
+import type { IReusableStackSynthesizer } from './stack-synthesizers';
 import { Stage } from './stage';
-import { IPolicyValidationPluginBeta1 } from './validation/validation';
+import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
@@ -125,6 +127,7 @@ export interface AppProps {
    * Validation plugins to run after synthesis
    *
    * @default - no validation plugins
+   * @deprecated Use `Validations.of(app).addPlugins()` instead.
    */
   readonly policyValidationBeta1?: IPolicyValidationPluginBeta1[];
 
@@ -152,6 +155,15 @@ export interface AppProps {
  */
 export class App extends Stage {
   /**
+   * Return the app that is the root of the construct tree, if available.
+   *
+   */
+  public static of(construct: IConstruct): Stage | undefined {
+    const root = construct.node.root;
+    return App.isApp(root) ? root : undefined;
+  }
+
+  /**
    * Checks if an object is an instance of the `App` class.
    * @returns `true` if `obj` is an `App`.
    * @param obj The object to evaluate
@@ -174,12 +186,15 @@ export class App extends Stage {
   constructor(props: AppProps = {}) {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
-      policyValidationBeta1: props.policyValidationBeta1,
     });
 
     if (props.propertyInjectors) {
       const injectors = PropertyInjectors.of(this);
       injectors.add(...props.propertyInjectors);
+    }
+
+    if (props.policyValidationBeta1) {
+      this._addValidationPlugins(...props.policyValidationBeta1);
     }
 
     Object.defineProperty(this, APP_SYMBOL, { value: true });

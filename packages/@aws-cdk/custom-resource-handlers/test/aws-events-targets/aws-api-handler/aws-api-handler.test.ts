@@ -1,5 +1,6 @@
 
-import { ECSClient, UpdateServiceCommand, UpdateServiceCommandInput, ServiceNotFoundException } from '@aws-sdk/client-ecs';
+import type { UpdateServiceCommandInput } from '@aws-sdk/client-ecs';
+import { ECSClient, UpdateServiceCommand, ServiceNotFoundException } from '@aws-sdk/client-ecs';
 import { PutRecordsCommand, KinesisClient } from '@aws-sdk/client-kinesis';
 import { EncryptCommand, KMSClient } from '@aws-sdk/client-kms';
 import { mockClient } from 'aws-sdk-client-mock';

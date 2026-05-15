@@ -5,6 +5,7 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { ISecret } from '../../aws-secretsmanager';
 import { Stack, Token, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Properties for an environment variable.
@@ -69,10 +70,10 @@ export abstract class EnvironmentVariable {
   protected constructor(props: CommonEnvironmentVariableProps) {
     if (!Token.isUnresolved(props.variableName)) {
       if (props.variableName.length > 128) {
-        throw new UnscopedValidationError('The length of `variableName` for `actionEnvironmentVariables` must be less than or equal to 128, got: ' + props.variableName.length);
+        throw new UnscopedValidationError(lit`EnvironmentVariableNameTooLong`, 'The length of `variableName` for `actionEnvironmentVariables` must be less than or equal to 128, got: ' + props.variableName.length);
       }
       if (!/^[A-Za-z0-9_]+$/.test(props.variableName)) {
-        throw new UnscopedValidationError('The `variableName` for `actionEnvironmentVariables` must match the regular expression: `[A-Za-z0-9_]+`, got: ' + props.variableName);
+        throw new UnscopedValidationError(lit`InvalidEnvironmentVariableName`, 'The `variableName` for `actionEnvironmentVariables` must match the regular expression: `[A-Za-z0-9_]+`, got: ' + props.variableName);
       }
     }
 
@@ -154,7 +155,7 @@ class SecretsManagerEnvironmentVariable extends EnvironmentVariable {
    */
   public _bind(scope: Construct, actionProperties: ActionProperties, options: ActionBindOptions) {
     if (actionProperties.provider !== 'Commands') {
-      throw new UnscopedValidationError(`Secrets Manager environment variable ('${this.variableName}') in action '${actionProperties.actionName}' can only be used with the Commands action, got: ${actionProperties.provider} action`);
+      throw new UnscopedValidationError(lit`SecretsManagerEnvVarOnlyForCommands`, `Secrets Manager environment variable ('${this.variableName}') in action '${actionProperties.actionName}' can only be used with the Commands action, got: ${actionProperties.provider} action`);
     }
 
     const secretArn = this.secret.secretFullArn ? this.secret.secretFullArn : `${this.secret.secretArn}-??????`;

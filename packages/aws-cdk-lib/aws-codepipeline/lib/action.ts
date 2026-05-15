@@ -1,11 +1,16 @@
-import { Construct } from 'constructs';
-import { Artifact } from './artifact';
-import { EnvironmentVariable } from './environment-variable';
-import * as notifications from '../../aws-codestarnotifications';
+import type { Construct } from 'constructs';
+import type { Artifact } from './artifact';
+import type { EnvironmentVariable } from './environment-variable';
+import type * as notifications from '../../aws-codestarnotifications';
 import * as events from '../../aws-events';
-import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
-import { Duration, IResource, Lazy, UnscopedValidationError } from '../../core';
+import type * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
+import type { Duration, IResource } from '../../core';
+import { Token, UnscopedValidationError } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
+import { lit } from '../../core/lib/private/literal-string';
+import type { IPipelineRef } from '../../interfaces/generated/aws-codepipeline-interfaces.generated';
 
 export enum ActionCategory {
   SOURCE = 'Source',
@@ -203,7 +208,7 @@ export interface IAction {
  * It extends `events.IRuleTarget`,
  * so this interface can be used as a Target for CloudWatch Events.
  */
-export interface IPipeline extends IResource, notifications.INotificationRuleSource {
+export interface IPipeline extends IResource, IPipelineRef, notifications.INotificationRuleSource {
   /**
    * The name of the Pipeline.
    *
@@ -403,37 +408,38 @@ export abstract class Action implements IAction {
   private __stage?: IStage;
   private __scope?: Construct;
   private readonly _namespaceToken: string;
-  private _customerProvidedNamespace?: string;
-  private _actualNamespace?: string;
-
-  private _variableReferenced = false;
+  private readonly _customerProvidedNamespace: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
+  private readonly _actualNamespace: IBox<string | undefined> = Box.fromValue<string | undefined>(undefined);
+  private readonly _variableReferenced: IBox<boolean> = Box.fromValue(false);
 
   protected constructor() {
-    this._namespaceToken = Lazy.string({
-      produce: () => {
-        // make sure the action was bound (= added to a pipeline)
-        if (this._actualNamespace === undefined) {
-          throw new UnscopedValidationError(`Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
+    // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+    this._namespaceToken = Token.asString(
+      Box.combine({
+        actual: this._actualNamespace,
+        customer: this._customerProvidedNamespace,
+        referenced: this._variableReferenced,
+      }, ({ actual, customer, referenced }) => {
+        if (actual === undefined) {
+          throw new UnscopedValidationError(lit`CannotReferenceVariablesAction`, `Cannot reference variables of action '${this.actionProperties.actionName}', as that action was never added to a pipeline`);
         } else {
-          return this._customerProvidedNamespace !== undefined
-            // if a customer passed a namespace explicitly, always use that
-            ? this._customerProvidedNamespace
-            // otherwise, only return a namespace if any variable was referenced
-            : (this._variableReferenced ? this._actualNamespace : undefined);
+          return customer !== undefined
+            ? customer
+            : (referenced ? actual : undefined);
         }
-      },
-    });
+      }),
+    );
   }
 
   public get actionProperties(): ActionProperties {
     if (this.__actionProperties === undefined) {
       const actionProperties = this.providedActionProperties;
-      this._customerProvidedNamespace = actionProperties.variablesNamespace;
+      this._customerProvidedNamespace.set(actionProperties.variablesNamespace);
       this.__actionProperties = {
         ...actionProperties,
-        variablesNamespace: this._customerProvidedNamespace === undefined
+        variablesNamespace: this._customerProvidedNamespace.get() === undefined
           ? this._namespaceToken
-          : this._customerProvidedNamespace,
+          : this._customerProvidedNamespace.get(),
       };
     }
     return this.__actionProperties;
@@ -444,14 +450,13 @@ export abstract class Action implements IAction {
     this.__stage = stage;
     this.__scope = scope;
 
-    this._actualNamespace = this._customerProvidedNamespace === undefined
-      // default a namespace name, based on the stage and action names
+    this._actualNamespace.set(this._customerProvidedNamespace.get() === undefined
       ? `${stage.stageName}_${this.actionProperties.actionName}_NS`
-      : this._customerProvidedNamespace;
+      : this._customerProvidedNamespace.get());
 
     const envVars = this.actionProperties.actionEnvironmentVariables;
     if (envVars && envVars.length > 10) {
-      throw new UnscopedValidationError(`The length of \`environmentVariables\` in action '${this.actionProperties.actionName}' must be less than or equal to 10, got: ${envVars.length}`);
+      throw new UnscopedValidationError(lit`TooManyEnvironmentVariables`, `The length of \`environmentVariables\` in action '${this.actionProperties.actionName}' must be less than or equal to 10, got: ${envVars.length}`);
     }
     envVars?.forEach(envVar => {
       envVar._bind(scope, this.actionProperties, options);
@@ -476,7 +481,7 @@ export abstract class Action implements IAction {
   }
 
   protected variableExpression(variableName: string): string {
-    this._variableReferenced = true;
+    this._variableReferenced.set(true);
     return `#{${this._namespaceToken}.${variableName}}`;
   }
 
@@ -489,7 +494,7 @@ export abstract class Action implements IAction {
     if (this.__pipeline) {
       return this.__pipeline;
     } else {
-      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError(lit`MustBeActionAddedStage`, 'Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -497,7 +502,7 @@ export abstract class Action implements IAction {
     if (this.__stage) {
       return this.__stage;
     } else {
-      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline before using onStateChange');
+      throw new UnscopedValidationError(lit`MustBeActionAddedStage`, 'Action must be added to a stage that is part of a pipeline before using onStateChange');
     }
   }
 
@@ -510,7 +515,7 @@ export abstract class Action implements IAction {
     if (this.__scope) {
       return this.__scope;
     } else {
-      throw new UnscopedValidationError('Action must be added to a stage that is part of a pipeline first');
+      throw new UnscopedValidationError(lit`MustBeActionAddedStage`, 'Action must be added to a stage that is part of a pipeline first');
     }
   }
 }

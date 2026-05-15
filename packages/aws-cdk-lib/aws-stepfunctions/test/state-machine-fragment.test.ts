@@ -1,4 +1,4 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Match, Template } from '../../assertions';
 import * as cdk from '../../core';
 import * as stepfunctions from '../lib';

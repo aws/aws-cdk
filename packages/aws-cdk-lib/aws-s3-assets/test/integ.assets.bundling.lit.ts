@@ -1,7 +1,8 @@
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as iam from '../../aws-iam';
-import { App, DockerImage, Stack, StackProps } from '../../core';
+import type { StackProps } from '../../core';
+import { App, DockerImage, Stack } from '../../core';
 import * as assets from '../lib';
 
 class TestStack extends Stack {

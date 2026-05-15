@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+
 import { spawn } from 'child_process';
 import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { AtmosphereAllocation } from './atmosphere';
@@ -53,7 +53,20 @@ export const deployIntegTests = async (props: {
       console.error(e);
       hasFailure = true;
     } finally {
-      await allocation.release(outcome);
+      try {
+        await allocation.release(outcome);
+      } catch (e) {
+        if (e instanceof Error && e.message.includes('The security token included in the request is expired')) {
+          // In case of timeouts, the expired security token error can occur. We can skip the release as it will automatically be deleted.
+          // Atmosphere will automatically release the resource if a timeout occurs on the backend.
+          //
+          // Log uses Github warning syntax, see: https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-commands#setting-a-warning-message
+          console.warn(`::warning::Atmosphere allocation release failed: ${e}`);
+          console.warn('Skipping release request as we assume its caused by an integ test timing out.');
+        } else {
+          throw e;
+        }
+      }
     }
   }
 

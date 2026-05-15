@@ -89,7 +89,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "SnsSqsServiceRoleDefaultPolicy82E7B09F",
@@ -177,7 +177,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "OnSuccesServiceRole75E399CF"
@@ -293,7 +293,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "EventBusLambdaServiceRoleDefaultPolicy5BB7FEB6",
@@ -341,15 +341,15 @@
     "Qualifier": "$LATEST"
    }
   },
-  "OnSuccessBucket7BDFCF14": {
-   "Type": "AWS::S3::Bucket",
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
-  },
   "OnFailureBucketC16738A3": {
    "Type": "AWS::S3::Bucket",
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
+  },
+  "OnSuccessQueueDB3FE45D": {
+   "Type": "AWS::SQS::Queue",
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "S3ServiceRole9AEB7DE9": {
    "Type": "AWS::IAM::Role",
@@ -402,32 +402,12 @@
          ]
         },
         {
-         "Fn::GetAtt": [
-          "OnSuccessBucket7BDFCF14",
-          "Arn"
-         ]
-        },
-        {
          "Fn::Join": [
           "",
           [
            {
             "Fn::GetAtt": [
              "OnFailureBucketC16738A3",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "OnSuccessBucket7BDFCF14",
              "Arn"
             ]
            },
@@ -447,36 +427,34 @@
         "s3:PutObjectVersionTagging"
        ],
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "OnFailureBucketC16738A3",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "OnFailureBucketC16738A3",
+            "Arn"
+           ]
+          },
+          "/*"
          ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           {
-            "Fn::GetAtt": [
-             "OnSuccessBucket7BDFCF14",
-             "Arn"
-            ]
-           },
-           "/*"
-          ]
-         ]
-        }
-       ]
+        ]
+       }
+      },
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "OnSuccessQueueDB3FE45D",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -502,7 +480,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "S3ServiceRoleDefaultPolicyF2AA3BE6",
@@ -524,7 +502,7 @@
      "OnSuccess": {
       "Destination": {
        "Fn::GetAtt": [
-        "OnSuccessBucket7BDFCF14",
+        "OnSuccessQueueDB3FE45D",
         "Arn"
        ]
       }

@@ -1,5 +1,5 @@
 import * as path from 'path';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { Template } from '../../assertions';
 import * as core from '../../core';
 import * as cxapi from '../../cx-api';

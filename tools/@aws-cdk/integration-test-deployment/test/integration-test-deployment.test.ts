@@ -100,4 +100,26 @@ describe('Run Integration Tests with Atmosphere', () => {
 
     validateSnapshotRun({ batchSize: 3 });
   });
+
+  test('failed Atmosphere release requests after timeout creates a warning and proceeds with the next batch', async () => {
+    jest.spyOn(integRunner, 'deployIntegrationTest').mockImplementation(() => {
+      return Promise.reject(new Error('Integration tests failed with exit code 1'));
+    });
+
+    jest.spyOn(mockAtmosphereAllocation, 'release').mockImplementation(() => {
+      return Promise.reject(new Error('The security token included in the request is expired'));
+    });
+
+    const consoleSpy = jest.spyOn(console, 'warn').mockImplementation();
+
+    await expect(integRunner.deployIntegTests({ atmosphereRoleArn, endpoint, pool })).rejects.toThrow(
+      'Deployment integration test did not pass',
+    );
+
+    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('::warning::Atmosphere allocation release failed: Error: The security token included in the request is expired'));
+
+    consoleSpy.mockRestore();
+
+    validateSnapshotRun({ batchSize: 3 });
+  });
 });

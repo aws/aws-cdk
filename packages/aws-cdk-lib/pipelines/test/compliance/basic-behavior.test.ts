@@ -1,9 +1,10 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Capture, Match, Template } from '../../../assertions';
-import { Stack, Stage, StageProps, Tags } from '../../../core';
+import type { StageProps } from '../../../core';
+import { Stack, Stage, Tags } from '../../../core';
 import { OneStackApp, BucketStack, PIPELINE_ENV, TestApp, ModernTestGitHubNpmPipeline, stringLike } from '../testhelpers';
 
 let app: TestApp;

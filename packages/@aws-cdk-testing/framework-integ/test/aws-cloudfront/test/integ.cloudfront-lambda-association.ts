@@ -1,7 +1,13 @@
+/**
+ * This test uses Lambda@Edge which requires us-east-1.
+ * Lambda@Edge replicas cannot be immediately deleted during stack teardown.
+ * See: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-delete-replicas.html
+ */
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
@@ -16,14 +22,14 @@ const sourceBucket = new s3.Bucket(stack, 'Bucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
 });
 
-const lambdaFunction = new lambda.Function(stack, 'Lambda', {
+const edgeFunction = new lambda.Function(stack, 'Lambda', {
   code: lambda.Code.fromInline('foo'),
   handler: 'index.handler',
   runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const lambdaVersion = new lambda.Version(stack, 'LambdaVersion', {
-  lambda: lambdaFunction,
+  lambda: edgeFunction,
 });
 
 new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
@@ -43,4 +49,13 @@ new cloudfront.CloudFrontWebDistribution(stack, 'MyDistribution', {
   ],
 });
 
-app.synth();
+new IntegTest(app, 'integ-cloudfront-lambda-association', {
+  testCases: [stack],
+  regions: ['us-east-1'],
+  cdkCommandOptions: {
+    destroy: {
+      // Lambda@Edge replicas cannot be immediately deleted; expect destroy to fail
+      expectError: true,
+    },
+  },
+});

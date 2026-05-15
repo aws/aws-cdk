@@ -13,7 +13,8 @@
 
 import { Token } from 'aws-cdk-lib';
 import { ValidationError, UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import { IConstruct } from 'constructs';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import type { IConstruct } from 'constructs';
 interface IntervalValidation {
   fieldName: string;
   minLength: number;
@@ -41,7 +42,7 @@ export function validateStringFieldLength(params: StringLengthValidation, _scope
   const currentLength = params.value.length;
 
   // Evaluate only if it is not an unresolved Token
-  if (!Token.isUnresolved(params.fieldName)) {
+  if (!Token.isUnresolved(params.value)) {
     if (params.value.length > params.maxLength) {
       errors.push(
         `The field ${params.fieldName} is ${currentLength} characters long but must be less than or equal to ${params.maxLength} characters`,
@@ -108,9 +109,9 @@ export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope
   const errors = validationFn(param, scope);
   if (errors.length > 0) {
     if (scope) {
-      throw new ValidationError(errors.join('\n'), scope);
+      throw new ValidationError(lit`ValidationFailed`, errors.join('\n'), scope);
     } else {
-      throw new UnscopedValidationError(errors.join('\n'));
+      throw new UnscopedValidationError(lit`ValidationFailed`, errors.join('\n'));
     }
   }
   return param;

@@ -1,8 +1,8 @@
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { IComponent } from './component';
-import { IContainerRecipe } from './container-recipe';
-import { IImageRecipe } from './image-recipe';
+import type * as cdk from 'aws-cdk-lib';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type { IComponent } from './component';
+import type { IContainerRecipe } from './container-recipe';
+import type { IImageRecipe } from './image-recipe';
 
 /**
  * The parameter value for a component parameter

@@ -2,7 +2,8 @@
  * Snapshot tests to assert that the rendering styles of the deep mismatch rendering make sense
  */
 
-import { Matcher, Match } from '../lib';
+import type { Matcher } from '../lib';
+import { Match } from '../lib';
 
 interface Case {
   readonly name: string;

@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { Function, FunctionOptions, Runtime, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
+import type { FunctionOptions, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Function, RuntimeFamily } from 'aws-cdk-lib/aws-lambda';
 import { Stack } from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Bundling } from './bundling';
-import { BundlingOptions } from './types';
+import type { BundlingOptions } from './types';
 
 /**
  * Properties for a PythonFunction

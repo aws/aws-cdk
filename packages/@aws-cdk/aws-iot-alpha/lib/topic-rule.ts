@@ -1,10 +1,13 @@
 import { CfnTopicRule } from 'aws-cdk-lib/aws-iot';
-import { ArnFormat, Resource, Stack, IResource, Lazy } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { ArnFormat, Resource, Stack } from 'aws-cdk-lib/core';
+import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Box, memoizedGetter, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IAction } from './action';
-import { IotSql } from './iot-sql';
+import type { Construct } from 'constructs';
+import type { IAction } from './action';
+import type { IotSql } from './iot-sql';
 
 /**
  * Represents an AWS IoT Rule
@@ -76,6 +79,7 @@ export interface TopicRuleProps {
  * Defines an AWS IoT Rule in this stack.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class TopicRule extends Resource implements ITopicRule {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-iot-alpha.TopicRule';
@@ -103,19 +107,8 @@ export class TopicRule extends Resource implements ITopicRule {
     });
   }
 
-  /**
-   * Arn of this topic rule
-   * @attribute
-   */
-  public readonly topicRuleArn: string;
-
-  /**
-   * Name of this topic rule
-   * @attribute
-   */
-  public readonly topicRuleName: string;
-
-  private readonly actions: CfnTopicRule.ActionProperty[] = [];
+  private readonly actions: IArrayBox<CfnTopicRule.ActionProperty>;
+  private readonly resource: CfnTopicRule;
 
   constructor(scope: Construct, id: string, props: TopicRuleProps) {
     super(scope, id, {
@@ -124,12 +117,13 @@ export class TopicRule extends Resource implements ITopicRule {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
+    this.actions = Box.fromArray([], { omitEmpty: false });
     const sqlConfig = props.sql.bind(this);
 
-    const resource = new CfnTopicRule(this, 'Resource', {
+    this.resource = new CfnTopicRule(this, 'Resource', {
       ruleName: this.physicalName,
       topicRulePayload: {
-        actions: Lazy.any({ produce: () => this.actions }),
+        actions: this.actions,
         awsIotSqlVersion: sqlConfig.awsIotSqlVersion,
         description: props.description,
         errorAction: props.errorAction?._bind(this).configuration,
@@ -138,16 +132,31 @@ export class TopicRule extends Resource implements ITopicRule {
       },
     });
 
-    this.topicRuleArn = this.getResourceArnAttribute(resource.attrArn, {
+    props.actions?.forEach(action => {
+      this.addAction(action);
+    });
+  }
+
+  /**
+   * Arn of this topic rule
+   * @attribute
+   */
+  @memoizedGetter
+  public get topicRuleArn(): string {
+    return this.getResourceArnAttribute(this.resource.attrArn, {
       service: 'iot',
       resource: 'rule',
       resourceName: this.physicalName,
     });
-    this.topicRuleName = this.getResourceNameAttribute(resource.ref);
+  }
 
-    props.actions?.forEach(action => {
-      this.addAction(action);
-    });
+  /**
+   * Name of this topic rule
+   * @attribute
+   */
+  @memoizedGetter
+  public get topicRuleName(): string {
+    return this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**

@@ -1,10 +1,11 @@
 import { CfnVpcIngressConnection } from 'aws-cdk-lib/aws-apprunner';
-import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { IService } from './service';
+import type { Construct } from 'constructs';
+import type { IService } from './service';
 
 /**
  * Properties of the AppRunner VPC Ingress Connection
@@ -154,12 +155,14 @@ export class VpcIngressConnection extends cdk.Resource implements IVpcIngressCon
     if (props.vpcIngressConnectionName !== undefined && !cdk.Token.isUnresolved(props.vpcIngressConnectionName)) {
       if (props.vpcIngressConnectionName.length < 4 || props.vpcIngressConnectionName.length > 40) {
         throw new cdk.ValidationError(
+          lit`VpcIngressConnectionNameLength`,
           `\`vpcIngressConnectionName\` must be between 4 and 40 characters, got: ${props.vpcIngressConnectionName.length} characters.`, this,
         );
       }
 
       if (!/^[A-Za-z0-9][A-Za-z0-9\-_]*$/.test(props.vpcIngressConnectionName)) {
         throw new cdk.ValidationError(
+          lit`VpcIngressConnectionNameFormat`,
           `\`vpcIngressConnectionName\` must start with an alphanumeric character and contain only alphanumeric characters, hyphens, or underscores after that, got: ${props.vpcIngressConnectionName}.`, this,
         );
       }
