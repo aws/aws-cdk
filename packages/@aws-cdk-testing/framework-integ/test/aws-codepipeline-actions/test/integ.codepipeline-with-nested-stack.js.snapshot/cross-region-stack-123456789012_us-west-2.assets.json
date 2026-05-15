@@ -1,15 +1,31 @@
 {
-  "version": "40.0.0",
+  "version": "53.0.0",
   "files": {
-    "6ead11ac2a258f5956aa4d821020d99d8460173de308c7fd28a388dc243e3f89": {
+    "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
+      "displayName": "cross-region-stack-123456789012:us-west-2/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
+      "source": {
+        "path": "asset.44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "123456789012-us-west-2-6369b69f": {
+          "bucketName": "cdk-hnb659fds-assets-123456789012-us-west-2",
+          "objectKey": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip",
+          "region": "us-west-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-west-2"
+        }
+      }
+    },
+    "cda5943980cc001c9e7a0513581178d51dd67a5ee9c9abd874afa253bc4dec9c": {
+      "displayName": "cross-region-support-us-west-2 Template",
       "source": {
         "path": "cross-region-stack-123456789012_us-west-2.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "123456789012-us-west-2": {
+        "123456789012-us-west-2-e0a9dc9c": {
           "bucketName": "cdk-hnb659fds-assets-123456789012-us-west-2",
-          "objectKey": "6ead11ac2a258f5956aa4d821020d99d8460173de308c7fd28a388dc243e3f89.json",
+          "objectKey": "cda5943980cc001c9e7a0513581178d51dd67a5ee9c9abd874afa253bc4dec9c.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::123456789012:role/cdk-hnb659fds-file-publishing-role-123456789012-us-west-2"
         }
