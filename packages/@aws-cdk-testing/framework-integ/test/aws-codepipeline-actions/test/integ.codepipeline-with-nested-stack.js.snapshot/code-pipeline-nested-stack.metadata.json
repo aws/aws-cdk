@@ -1,0 +1,606 @@
+{
+  "/code-pipeline-nested-stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "crossAccountKeys": true,
+        "role": "*",
+        "stages": [
+          {
+            "stageName": "*",
+            "actions": [
+              {}
+            ]
+          },
+          {
+            "stageName": "*",
+            "actions": [
+              {}
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
+      "trace": [
+        "Annotations.addMessage (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:441:47)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new PipelineCrossRegionStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:53:5)",
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "Object.<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
+        "Module.m._compile (/tmp/aws-cdk-pr-35654/node_modules/ts-node/src/index.ts:1618:23)",
+        "node:internal/modules/cjs/loader:1839:10",
+        "Object.require.extensions.<computed> [as .ts] (/tmp/aws-cdk-pr-35654/node_modules/ts-node/src/index.ts:1621:12)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Function._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:328:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStage": [
+          {
+            "stageName": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack.NestedStack/PipelineCrossRegionStack.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineCrossRegionStackNestedStackPipelineCrossRegionStackNestedStackResourceAABDCA01"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NestedStack (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/nested-stack.js:79:25)",
+        "new PipelineCrossRegionStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:38:5)",
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Role1ABCC5F0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PipelineCrossRegionStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:49:18)",
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucketEncryptionKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "enableKeyRotation": "*"
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucketEncryptionKeyAlias": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "targetKey": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucketName": "*",
+        "encryptionKey": "*",
+        "encryption": "KMS",
+        "enforceSSL": true,
+        "blockPublicAccess": "*",
+        "removalPolicy": "retain"
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineC660917D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:449:33)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new PipelineCrossRegionStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:53:5)",
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RoleDefaultPolicy5FFB7DAB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Function.addToPrincipal (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Function.addToPrincipalOrResource (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucketEncryptionKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineArtifactsBucketEncryptionKey01D58D69"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:410:37)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new PipelineCrossRegionStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:53:5)",
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineArtifactsBucketEncryptionKeyAlias5C510EEE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-kms/lib/alias.js:357:29)",
+        "new Alias (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:417:21)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new PipelineCrossRegionStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:53:5)",
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineArtifactsBucket22248F97"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1333:30)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:423:31)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new PipelineCrossRegionStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:53:5)",
+        "new MainStack (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:32:5)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:92:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/ArtifactsBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineArtifactsBucketPolicyD4F9712A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.addToResourcePolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
+        "WrappedClass.enforceSSLStatement (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1495:18)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1364:22)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:423:31)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Source/Github/WebhookResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineSourceGithubWebhookResource9724AEC2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "GitHubSourceAction.bound (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline-actions/lib/github/source-action.js:68:13)",
+        "GitHubSourceAction.bind (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/action.js:95:21)",
+        "RichAction.bind (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/rich-action.js:28:28)",
+        "WrappedClass._attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:623:45)",
+        "Stage.attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)",
+        "Stage.addAction (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:97:33)",
+        "new Stage (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:45:18)",
+        "WrappedClass.addStage (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:503:27)",
+        "WrappedClass.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:473:22)"
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grantAssumeRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineTestCodePipelineActionRoleDD85885D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.getRoleForAction (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:792:30)",
+        "WrappedClass._attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:619:37)",
+        "Stage.attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)",
+        "Stage.addAction (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:97:33)",
+        "new Stage (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:45:18)",
+        "WrappedClass.addStage (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:503:27)",
+        "WrappedClass.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Pipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:473:22)"
+      ]
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/code-pipeline-nested-stack/PipelineCrossRegionStack/Pipeline/Test/Test/CodePipelineActionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PipelineTestCodePipelineActionRoleDefaultPolicy7ECDF2A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "StepFunctionInvokeAction.bound (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline-actions/lib/stepfunctions/invoke-action.js:116:22)",
+        "StepFunctionInvokeAction.bind (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/action.js:95:21)",
+        "RichAction.bind (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/rich-action.js:28:28)",
+        "WrappedClass._attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:623:45)",
+        "Stage.attachActionToPipeline (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)"
+      ]
+    }
+  ]
+}
