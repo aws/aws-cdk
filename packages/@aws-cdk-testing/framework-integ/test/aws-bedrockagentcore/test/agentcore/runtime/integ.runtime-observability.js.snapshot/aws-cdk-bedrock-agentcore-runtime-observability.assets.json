@@ -15,16 +15,16 @@
         }
       }
     },
-    "5410376982e8441b5bc3b47e700b768897f4e9f9f3b8655b05fa7c00630b05b3": {
+    "b28942dca811831035edf06a07af3b4a99c547eddabd021d8571b64e12102870": {
       "displayName": "aws-cdk-bedrock-agentcore-runtime-observability Template",
       "source": {
         "path": "aws-cdk-bedrock-agentcore-runtime-observability.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-99ae0c3b": {
+        "current_account-current_region-618834d5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5410376982e8441b5bc3b47e700b768897f4e9f9f3b8655b05fa7c00630b05b3.json",
+          "objectKey": "b28942dca811831035edf06a07af3b4a99c547eddabd021d8571b64e12102870.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

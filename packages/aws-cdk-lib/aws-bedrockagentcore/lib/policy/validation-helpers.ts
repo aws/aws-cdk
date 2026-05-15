@@ -304,6 +304,13 @@ export function validateTags(
   for (const [key, value] of Object.entries(tags)) {
     // Skip validation for unresolved token keys
     if (!Token.isUnresolved(key)) {
+      // Validate aws: prefix restriction
+      if (key.toLowerCase().startsWith('aws:')) {
+        errors.push(
+          `PolicyEngine '${resourceName}' tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`,
+        );
+      }
+
       // Validate key length
       if (key.length < TAG_KEY_MIN_LENGTH || key.length > TAG_KEY_MAX_LENGTH) {
         errors.push(

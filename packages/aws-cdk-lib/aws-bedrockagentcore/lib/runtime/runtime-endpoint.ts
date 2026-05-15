@@ -371,6 +371,11 @@ export class RuntimeEndpoint extends RuntimeEndpointBase {
         maxLength: 256,
       });
 
+      // Validate aws: prefix restriction
+      if (key.toLowerCase().startsWith('aws:')) {
+        throw new UnscopedValidationError(lit`InvalidEndpointTagKey`, `Tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`);
+      }
+
       // Validate tag key pattern
       const keyPatternErrors = validateFieldPattern(
         key,

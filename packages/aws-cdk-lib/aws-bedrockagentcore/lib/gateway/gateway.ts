@@ -619,6 +619,15 @@ export class Gateway extends GatewayBase {
 
     this.tags = props.tags ?? {};
 
+    // Validate tags
+    if (props.tags) {
+      for (const key of Object.keys(props.tags)) {
+        if (!Token.isUnresolved(key) && key.toLowerCase().startsWith('aws:')) {
+          throw new ValidationError(lit`InvalidTagKey`, `Tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`, this);
+        }
+      }
+    }
+
     // Initialize interceptors from props
     if (props.interceptorConfigurations) {
       this.validateAndInitializeInterceptors(props.interceptorConfigurations);
