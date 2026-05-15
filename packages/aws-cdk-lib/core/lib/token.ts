@@ -100,10 +100,30 @@ export class Token {
 
   /**
    * Return a reversible list representation of this token
+   *
+   * @deprecated Use `Token.asStringList()` or `Token.asAnyList()` instead.
    */
   public static asList(value: any, options: EncodingOptions = {}): string[] {
+    return Token.asStringList(value, options);
+  }
+
+  /**
+   * Return a reversible string list representation of this token
+   */
+  public static asStringList(value: any, options: EncodingOptions = {}): string[] {
     if (Array.isArray(value) && value.every(x => typeof x === 'string')) { return value; }
     return TokenMap.instance().registerList(Token.asAny(value), options.displayHint);
+  }
+
+  /**
+   * Return a reversible list representation of this token
+   *
+   * Use this for L1 properties typed as `any[]` or `object[]` where the
+   * produced value is an array of non-string elements.
+   */
+  public static asAnyList(value: any, options: EncodingOptions = {}): any[] {
+    if (Array.isArray(value) && !value.some(Token.isUnresolved)) { return value; }
+    return TokenMap.instance().registerList(Token.asAny(value), options.displayHint) as any;
   }
 
   /**

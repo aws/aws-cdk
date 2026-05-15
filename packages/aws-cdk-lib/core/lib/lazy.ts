@@ -280,6 +280,35 @@ export class Lazy {
   }
 
   /**
+   * Defer the one-time calculation of a list of arbitrary values to synthesis time
+   *
+   * Use this if you want to render a list to a template whose actual value depends on
+   * some state mutation that may happen after the construct has been created.
+   *
+   * The inner function will only be invoked once, and the resolved value
+   * cannot depend on the Stack the Token is used in.
+   */
+  public static anyList(producer: IStableAnyProducer, options: LazyListValueOptions = {}): any[] {
+    return Token.asAnyList(new LazyAnyList(producer, true, options), options);
+  }
+
+  /**
+   * Defer the calculation of a list of arbitrary values to synthesis time
+   *
+   * Use of this function is not recommended; unless you know you need it for sure, you
+   * probably don't. Use `Lazy.anyList()` instead.
+   *
+   * The inner function may be invoked multiple times during synthesis. You
+   * should only use this method if the returned value depends on variables
+   * that may change during the Aspect application phase of synthesis, or if
+   * the value depends on the Stack the value is being used in. Both of these
+   * cases are rare, and only ever occur for AWS Construct Library authors.
+   */
+  public static uncachedAnyList(producer: IAnyProducer, options: LazyListValueOptions = {}): any[] {
+    return Token.asAnyList(new LazyAnyList(producer, false, options), options);
+  }
+
+  /**
    * Defer the one-time calculation of an arbitrarily typed value to synthesis time
    *
    * Use this if you want to render an object to a template whose actual value depends on
@@ -387,6 +416,20 @@ class LazyAny extends LazyBase<any> {
   public resolve(context: IResolveContext) {
     const resolved = super.resolve(context);
     if (Array.isArray(resolved) && resolved.length === 0 && this.options.omitEmptyArray) {
+      return undefined;
+    }
+    return resolved;
+  }
+}
+
+class LazyAnyList extends LazyBase<any> {
+  constructor(producer: IAnyProducer | IStableAnyProducer, cache: boolean, private readonly options: LazyListValueOptions = {}) {
+    super(producer as ILazyProducer<any>, cache);
+  }
+
+  public resolve(context: IResolveContext) {
+    const resolved = super.resolve(context);
+    if (Array.isArray(resolved) && resolved.length === 0 && this.options.omitEmpty) {
       return undefined;
     }
     return resolved;
