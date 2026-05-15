@@ -55,6 +55,30 @@ describe('BrowserCustom default tests', () => {
       BrowserSigning: { Enabled: false },
     });
   });
+
+  test('Should have service role with confused deputy conditions', () => {
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': '123456789012' },
+              ArnLike: {
+                'aws:SourceArn': {
+                  'Fn::Join': ['', Match.arrayWith([
+                    ':bedrock-agentcore:us-east-1:123456789012:browser-custom/test_browser*',
+                  ])],
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
 });
 
 describe('BrowserCustom with VPC config tests', () => {

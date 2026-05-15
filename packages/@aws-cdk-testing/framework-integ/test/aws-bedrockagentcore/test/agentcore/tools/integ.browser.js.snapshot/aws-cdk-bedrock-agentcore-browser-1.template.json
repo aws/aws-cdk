@@ -7,6 +7,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":browser-custom/browser*"
+           ]
+          ]
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "bedrock-agentcore.amazonaws.com"
@@ -187,6 +216,35 @@
      "Statement": [
       {
        "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":bedrock-agentcore:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":browser-custom/browser_recording_integ*"
+           ]
+          ]
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "bedrock-agentcore.amazonaws.com"

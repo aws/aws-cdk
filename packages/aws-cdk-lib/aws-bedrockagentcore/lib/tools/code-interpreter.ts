@@ -18,6 +18,7 @@ import {
   Lazy,
   Names,
   Resource,
+  Stack,
   ValidationError,
 } from '../../../core';
 import type {
@@ -777,7 +778,19 @@ export class CodeInterpreterCustom extends CodeInterpreterCustomBase {
    * @internal This is an internal core function and should not be called directly.
    */
   private _createCodeInterpreterRole(): iam.IRole {
-    const role = new iam.Role(this, 'ServiceRole', { assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com') });
+    const role = new iam.Role(this, 'ServiceRole', {
+      // The service appends a random suffix to the resource name at creation time,
+      // so we use ArnLike with a wildcard to match.
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-codeinterpretercustom.md
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
+          ArnLike: {
+            'aws:SourceArn': Arn.format({ service: 'bedrock-agentcore', resource: 'code-interpreter-custom', resourceName: `${this.codeInterpreterCustomName}*` }, Stack.of(this)),
+          },
+        },
+      }),
+    });
 
     return role;
   }

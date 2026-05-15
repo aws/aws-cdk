@@ -70,6 +70,30 @@ describe('Memory default tests', () => {
 
     expect(memoryWithDefaultExpiry.expirationDuration?.toDays()).toBe(90);
   });
+
+  test('Should have service role with confused deputy conditions', () => {
+    template.hasResourceProperties('AWS::IAM::Role', {
+      AssumeRolePolicyDocument: {
+        Statement: [
+          {
+            Action: 'sts:AssumeRole',
+            Effect: 'Allow',
+            Principal: { Service: 'bedrock-agentcore.amazonaws.com' },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': '123456789012' },
+              ArnLike: {
+                'aws:SourceArn': {
+                  'Fn::Join': ['', Match.arrayWith([
+                    ':bedrock-agentcore:us-east-1:123456789012:memory/test_memory*',
+                  ])],
+                },
+              },
+            },
+          },
+        ],
+      },
+    });
+  });
 });
 
 describe('Memory static methods tests', () => {
