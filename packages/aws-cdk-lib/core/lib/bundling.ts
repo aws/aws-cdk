@@ -9,6 +9,12 @@ import { quiet, reset } from './private/jsii-deprecated';
 import { lit } from './private/literal-string';
 
 /**
+ * Path inside the bundling container where the host SSH agent socket is mounted
+ * when `sshForwarding` is enabled on `DockerRunOptions`.
+ */
+const SSH_AGENT_CONTAINER_SOCKET = '/run/host-services/ssh-auth.sock';
+
+/**
  * Methods to build Docker CLI arguments for builds using secrets.
  *
  * Docker BuildKit must be enabled to use build secrets.
@@ -257,8 +263,21 @@ export class BundlingDockerImage {
    * Runs a Docker image
    */
   public run(options: DockerRunOptions = {}) {
-    const volumes = options.volumes || [];
-    const environment = options.environment || {};
+    const volumes = [...(options.volumes ?? [])];
+    const environment = { ...(options.environment ?? {}) };
+
+    if (options.sshForwarding) {
+      const sshAuthSock = process.env.SSH_AUTH_SOCK;
+      if (!sshAuthSock) {
+        throw new UnscopedValidationError(
+          lit`SshForwardingRequiresSshAuthSock`,
+          "'sshForwarding' is enabled but the SSH_AUTH_SOCK environment variable is not set on the host. Start an SSH agent and export SSH_AUTH_SOCK before synthesizing.",
+        );
+      }
+      volumes.push({ hostPath: sshAuthSock, containerPath: SSH_AGENT_CONTAINER_SOCKET });
+      environment.SSH_AUTH_SOCK = SSH_AGENT_CONTAINER_SOCKET;
+    }
+
     const entrypoint = options.entrypoint?.[0] || null;
     const command = [
       ...options.entrypoint?.[1]
@@ -581,6 +600,22 @@ export interface DockerRunOptions {
    * @default - no platform specified
    */
   readonly platform?: string;
+
+  /**
+   * Forward the host SSH agent into the bundling container.
+   *
+   * When set to `true`, the host's `$SSH_AUTH_SOCK` is bind-mounted into the
+   * container and the `SSH_AUTH_SOCK` environment variable inside the container
+   * is set to that mount path. This lets bundling commands (for example, `pip`,
+   * `npm`, or `cargo` resolving private git dependencies over SSH) reuse the
+   * host SSH agent without copying private keys into the container.
+   *
+   * Synthesis will fail if `SSH_AUTH_SOCK` is not set on the host when this
+   * option is enabled.
+   *
+   * @default false
+   */
+  readonly sshForwarding?: boolean;
 }
 
 /**
