@@ -105,11 +105,20 @@ export class Policy extends PolicyBase {
     class Import extends PolicyBase {
       public readonly policyArn = attrs.policyArn;
       public readonly policyId = Arn.split(attrs.policyArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public readonly policyName = this.policyId;
       public readonly description = undefined;
       public readonly validationMode = undefined;
       public readonly policyEngine = attrs.policyEngine;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+
+      get policyName(): string {
+        throw new ValidationError(
+          lit`PolicyNameNotAvailable`,
+          'policyName is not available on imported Policy resources. ' +
+          'The service appends a random suffix to the name at creation time, so the original name cannot be extracted from the ARN. ' +
+          'Use policyArn or policyId instead.',
+          this,
+        );
+      }
     }
 
     return new Import(scope, id);

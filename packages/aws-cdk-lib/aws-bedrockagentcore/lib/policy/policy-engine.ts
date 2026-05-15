@@ -23,6 +23,8 @@ import type { CfnPolicyEngineProps } from '../../../aws-bedrockagentcore';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
 import { Arn, ArnFormat, Lazy, Names } from '../../../core';
+import { ValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
@@ -94,12 +96,21 @@ export class PolicyEngine extends PolicyEngineBase {
     class Import extends PolicyEngineBase {
       public readonly policyEngineArn = attrs.policyEngineArn;
       public readonly policyEngineId = Arn.split(attrs.policyEngineArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
-      public readonly policyEngineName = this.policyEngineId;
       public readonly description = undefined;
       public readonly kmsKey = attrs.kmsKeyArn
         ? kms.Key.fromKeyArn(scope, `${id}Key`, attrs.kmsKeyArn)
         : undefined;
       public readonly grantPrincipal = new iam.UnknownPrincipal({ resource: this });
+
+      get policyEngineName(): string {
+        throw new ValidationError(
+          lit`PolicyEngineNameNotAvailable`,
+          'policyEngineName is not available on imported PolicyEngine resources. ' +
+          'The service appends a random suffix to the name at creation time, so the original name cannot be extracted from the ARN. ' +
+          'Use policyEngineArn or policyEngineId instead.',
+          this,
+        );
+      }
 
       constructor(s: Construct, i: string) {
         super(s, i);

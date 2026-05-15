@@ -346,6 +346,26 @@ describe('Policy static methods tests', () => {
     expect(policy.policyId).toBe('test-policy-id');
     expect(policy.policyEngine).toBe(importedEngine);
   });
+
+  test('imported Policy throws when accessing policyName', () => {
+    const importedEngine = PolicyEngine.fromPolicyEngineAttributes(stack, 'imported-engine-3', {
+      policyEngineArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy-engine/test-engine-id',
+    });
+    const policy = Policy.fromPolicyAttributes(stack, 'imported-policy-name-throw', {
+      policyArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy/test-policy-id',
+      policyEngine: importedEngine,
+    });
+
+    expect(() => policy.policyName).toThrow(/policyName is not available on imported Policy resources/);
+  });
+
+  test('imported PolicyEngine throws when accessing policyEngineName', () => {
+    const importedEngine = PolicyEngine.fromPolicyEngineAttributes(stack, 'imported-engine-4', {
+      policyEngineArn: 'arn:aws:bedrock-agentcore:us-east-1:123456789012:policy-engine/test-engine-id',
+    });
+
+    expect(() => importedEngine.policyEngineName).toThrow(/policyEngineName is not available on imported PolicyEngine resources/);
+  });
 });
 
 describe('Policy grant methods tests', () => {
