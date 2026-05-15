@@ -168,7 +168,7 @@ describe('serverless cluster', () => {
 
     Template.fromStack(stack).hasResource('AWS::RDS::DBSubnetGroup', {
       DeletionPolicy: 'RetainExceptOnCreate',
-      UpdateReplacePolicy: 'RetainExceptOnCreate',
+      UpdateReplacePolicy: 'Retain',
     });
   });
 
