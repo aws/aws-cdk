@@ -19,9 +19,9 @@
       "trace": [
         "Annotations.addMessage (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
         "Annotations.addInfo (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:139:14)",
-        "WrappedClass.validateContainerUri (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:609:47)",
-        "WrappedClass.renderAgentRuntimeArtifact (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:399:26)",
-        "Object.produce (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:279:79)",
+        "WrappedClass.validateContainerUri (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:623:47)",
+        "WrappedClass.renderAgentRuntimeArtifact (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:409:26)",
+        "Object.produce (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:289:79)",
         "LazyAny.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:278:66)",
         "LazyAny.resolve (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:323:32)",
         "RememberingTokenResolver.resolveToken (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
@@ -295,7 +295,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:293:36)",
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:303:36)",
         "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-endpoint.js:18:17)",
         "...node internals..."
@@ -433,8 +433,8 @@
         "new Policy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
         "WrappedClass.<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "WrappedClass.addExecutionRolePermissions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:329:23)",
-        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:264:18)",
+        "WrappedClass.addExecutionRolePermissions (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:339:23)",
+        "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:274:18)",
         "new Runtime (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-endpoint.js:18:17)",
         "...node internals..."

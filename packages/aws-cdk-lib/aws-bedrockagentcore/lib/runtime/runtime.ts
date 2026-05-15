@@ -714,6 +714,11 @@ export class Runtime extends RuntimeBase {
         maxLength: 256,
       });
 
+      // Validate aws: prefix restriction
+      if (key.toLowerCase().startsWith('aws:')) {
+        throw new ValidationError(lit`InvalidTagKey`, `Tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`, this);
+      }
+
       // Validate tag key pattern
       const keyPatternErrors = validateFieldPattern(
         key,

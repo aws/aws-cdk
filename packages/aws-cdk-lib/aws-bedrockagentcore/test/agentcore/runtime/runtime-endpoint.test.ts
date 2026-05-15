@@ -215,7 +215,6 @@ describe('RuntimeEndpoint tests', () => {
           tags: {
             'Environment': 'Test',
             'Project:Name': 'BedrockAgentCore',
-            'aws:tag': 'value',
             'Key_with-special.chars': 'value@123',
           },
         });

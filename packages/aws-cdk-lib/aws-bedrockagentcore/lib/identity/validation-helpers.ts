@@ -157,6 +157,11 @@ export function validateCredentialProviderTags(tags?: { [key: string]: string },
 
   for (const [key, value] of Object.entries(tags)) {
     if (!Token.isUnresolved(key)) {
+      // Validate aws: prefix restriction
+      if (key.toLowerCase().startsWith('aws:')) {
+        errors.push(`Tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`);
+      }
+
       errors.push(...validateStringFieldLength({
         value: key,
         fieldName: 'Tag key',
