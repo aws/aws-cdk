@@ -151,6 +151,22 @@ export interface BundlingOptions {
    * @default - no platform specified (the current machine architecture will be used)
    */
   readonly platform?: string;
+
+  /**
+   * Forward the host SSH agent into the bundling container.
+   *
+   * When set to `true`, the host's `$SSH_AUTH_SOCK` is bind-mounted into the
+   * bundling container and the in-container `SSH_AUTH_SOCK` env var is pointed
+   * at the mount path. This lets bundling commands (for example `pip`, `npm`,
+   * or `cargo` resolving private git dependencies over SSH) reuse the host SSH
+   * agent without copying private keys into the container.
+   *
+   * Synthesis fails if `SSH_AUTH_SOCK` is not set on the host when this option
+   * is enabled.
+   *
+   * @default false
+   */
+  readonly sshForwarding?: boolean;
 }
 
 /**

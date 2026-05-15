@@ -75,6 +75,7 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
       ],
       network: this.options.network,
       platform: this.options.platform,
+      sshForwarding: this.options.sshForwarding,
     });
   }
 }
@@ -194,6 +195,7 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
         ...(this.options.volumesFrom ?? []),
       ],
       platform: this.options.platform,
+      sshForwarding: this.options.sshForwarding,
     });
 
     this.copyOutputTo(this.options.bundleDir);
