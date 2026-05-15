@@ -568,6 +568,7 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
   s3MockClient.on(S3.GetObjectCommand).resolves({});
   const credentialProviders = await import('@aws-sdk/credential-providers' as string);
   const mockCreds = credentialProviders.fromTemporaryCredentials({
+    // eslint-disable-next-line @cdklabs/no-literal-partition
     params: { RoleArn: 'arn:aws:iam::123456789012:role/CoolRole' },
   });
   const credentialProviderMock = jest.spyOn(credentialProviders, 'fromTemporaryCredentials').mockReturnValue(mockCreds);
@@ -607,6 +608,7 @@ test('SDK credentials are not persisted across subsequent invocations', async ()
       Create: JSON.stringify({
         service: '@aws-sdk/client-s3',
         action: 'GetObjectCommand',
+        // eslint-disable-next-line @cdklabs/no-literal-partition
         assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
         parameters: {
           Bucket: 'foo',
@@ -652,6 +654,7 @@ test('Role Session Name is sanitized before assuming', async () => {
   s3MockClient.on(S3.GetObjectCommand).resolves({});
   const credentialProviders = await import('@aws-sdk/credential-providers' as string);
   const mockCreds = credentialProviders.fromTemporaryCredentials({
+    // eslint-disable-next-line @cdklabs/no-literal-partition
     params: { RoleArn: 'arn:aws:iam::123456789012:role/CoolRole' },
   });
   const credentialProviderMock = jest.spyOn(credentialProviders, 'fromTemporaryCredentials').mockReturnValue(mockCreds);
@@ -666,6 +669,7 @@ test('Role Session Name is sanitized before assuming', async () => {
       Create: JSON.stringify({
         service: '@aws-sdk/client-s3',
         action: 'GetObjectCommand',
+        // eslint-disable-next-line @cdklabs/no-literal-partition
         assumedRoleArn: 'arn:aws:iam::123456789012:role/CoolRole',
         parameters: {
           Bucket: 'foo',
@@ -885,5 +889,188 @@ test('automatic Date conversion when necessary', async () => {
     ],
     StartTime: new Date('2023-01-01'),
     EndTime: new Date('2023-01-02'),
+  });
+});
+
+describe('AccessDenied retry behavior', () => {
+  let setTimeoutSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    // Make setTimeout fire immediately so retry delays don't slow tests down
+    setTimeoutSpy = jest.spyOn(global, 'setTimeout').mockImplementation((fn: any) => {
+      fn();
+      return undefined as unknown as ReturnType<typeof setTimeout>;
+    });
+  });
+
+  afterEach(() => {
+    setTimeoutSpy.mockRestore();
+  });
+
+  test('retries on AccessDeniedException and succeeds before MAX_RETRIES', async () => {
+    const accessDeniedError = new Error('Access Denied');
+    accessDeniedError.name = 'AccessDeniedException';
+
+    s3MockClient.on(S3.ListObjectsCommand)
+      .rejectsOnce(accessDeniedError)
+      .rejectsOnce(accessDeniedError)
+      .resolves({
+        Contents: [{ Key: 'first-key', ETag: 'first-key-etag' }],
+      } as S3.ListObjectsCommandOutput);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'ListObjectsCommand',
+          parameters: { Bucket: 'my-bucket' },
+          physicalResourceId: { id: 'physicalResourceId' },
+        } satisfies AwsSdkCall),
+      },
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'physicalResourceId',
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    expect(s3MockClient.commandCalls(S3.ListObjectsCommand).length).toBe(3);
+    expect(request.isDone()).toBeTruthy();
+  });
+
+  test('fails after exhausting all retries on persistent AccessDeniedException', async () => {
+    const accessDeniedError = new Error('Access Denied');
+    accessDeniedError.name = 'AccessDeniedException';
+
+    s3MockClient.on(S3.ListObjectsCommand).rejects(accessDeniedError);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'ListObjectsCommand',
+          parameters: { Bucket: 'my-bucket' },
+          physicalResourceId: { id: 'physicalResourceId' },
+        } satisfies AwsSdkCall),
+      },
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'FAILED' &&
+      (body.Reason ?? '').includes('Access Denied'),
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    // 1 initial attempt + 5 retries = 6 total
+    expect(s3MockClient.commandCalls(S3.ListObjectsCommand).length).toBe(6);
+    expect(request.isDone()).toBeTruthy();
+  });
+
+  test('retries on AccessDenied (short form) and succeeds', async () => {
+    const accessDeniedError = new Error('Access Denied');
+    accessDeniedError.name = 'AccessDenied';
+
+    s3MockClient.on(S3.ListObjectsCommand)
+      .rejectsOnce(accessDeniedError)
+      .resolves({ Contents: [] } as S3.ListObjectsCommandOutput);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'ListObjectsCommand',
+          parameters: { Bucket: 'my-bucket' },
+          physicalResourceId: { id: 'physicalResourceId' },
+        } satisfies AwsSdkCall),
+      },
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'physicalResourceId',
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    expect(s3MockClient.commandCalls(S3.ListObjectsCommand).length).toBe(2);
+    expect(request.isDone()).toBeTruthy();
+  });
+
+  test('non-AccessDenied errors throw immediately without retry', async () => {
+    const notFoundError = new Error('No such bucket');
+    notFoundError.name = 'NoSuchBucket';
+
+    s3MockClient.on(S3.ListObjectsCommand).rejects(notFoundError);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'ListObjectsCommand',
+          parameters: { Bucket: 'my-bucket' },
+          physicalResourceId: { id: 'physicalResourceId' },
+        } satisfies AwsSdkCall),
+      },
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'FAILED' &&
+      (body.Reason ?? '').includes('No such bucket'),
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    // Must fail on the first attempt — no retries for non-AccessDenied errors
+    expect(s3MockClient.commandCalls(S3.ListObjectsCommand).length).toBe(1);
+    expect(request.isDone()).toBeTruthy();
+  });
+
+  test('ignoreErrorCodesMatching matching AccessDeniedException swallows immediately without retry', async () => {
+    const accessDeniedError = new Error('Access Denied');
+    accessDeniedError.name = 'AccessDeniedException';
+
+    s3MockClient.on(S3.ListObjectsCommand).rejects(accessDeniedError);
+
+    const event: AWSLambda.CloudFormationCustomResourceCreateEvent = {
+      ...eventCommon,
+      RequestType: 'Create',
+      ResourceProperties: {
+        ServiceToken: 'token',
+        Create: JSON.stringify({
+          service: '@aws-sdk/client-s3',
+          action: 'ListObjectsCommand',
+          parameters: { Bucket: 'my-bucket' },
+          physicalResourceId: { id: 'physicalResourceId' },
+          ignoreErrorCodesMatching: 'AccessDeniedException',
+        } satisfies AwsSdkCall),
+      },
+    };
+
+    const request = createRequest(body =>
+      body.Status === 'SUCCESS' &&
+      body.PhysicalResourceId === 'physicalResourceId' &&
+      Object.keys(body.Data!).length === 0,
+    );
+
+    await handler(event, {} as AWSLambda.Context);
+
+    // Error is swallowed immediately — no retries
+    expect(s3MockClient.commandCalls(S3.ListObjectsCommand).length).toBe(1);
+    expect(request.isDone()).toBeTruthy();
   });
 });
