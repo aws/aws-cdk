@@ -1,9 +1,9 @@
-import { Construct } from 'constructs';
-import { ActionBindOptions, ActionProperties } from './action';
-import { CfnPipeline } from './codepipeline.generated';
+import type { Construct } from 'constructs';
+import type { ActionBindOptions, ActionProperties } from './action';
+import type { CfnPipeline } from './codepipeline.generated';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
-import { ISecret } from '../../aws-secretsmanager';
+import type { ISecret } from '../../aws-secretsmanager';
 import { Stack, Token, UnscopedValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
 
