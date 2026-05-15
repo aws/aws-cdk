@@ -26,7 +26,7 @@ import {
 } from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as kms from '../../../aws-kms';
-import { Arn, ArnFormat, Duration, Lazy, Resource, Token, Names } from '../../../core';
+import { Arn, ArnFormat, Duration, Lazy, Resource, Stack, Token, Names } from '../../../core';
 import type { IResource, ResourceProps } from '../../../core';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -781,7 +781,19 @@ export class Memory extends MemoryBase {
    * @internal This is an internal core function and should not be called directly.
    */
   private _createMemoryRole(): iam.IRole {
-    const role = new iam.Role(this, 'ServiceRole', { assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com') });
+    const role = new iam.Role(this, 'ServiceRole', {
+      // The service appends a random suffix to the resource name at creation time (e.g. MyMemory-a1b2c3d4e5),
+      // so we use ArnLike with a wildcard to match.
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-memory.md
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
+          ArnLike: {
+            'aws:SourceArn': Arn.format({ service: 'bedrock-agentcore', resource: 'memory', resourceName: `${this.memoryName}*` }, Stack.of(this)),
+          },
+        },
+      }),
+    });
 
     return role;
   }

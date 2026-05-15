@@ -864,7 +864,19 @@ export class BrowserCustom extends BrowserCustomBase {
    * @internal This is an internal core function and should not be called directly.
    */
   private _createBrowserRole(): iam.IRole {
-    const role = new iam.Role(this, 'ServiceRole', { assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com') });
+    const role = new iam.Role(this, 'ServiceRole', {
+      // The service appends a random suffix to the resource name at creation time (e.g. MyBrowser-a1b2c3d4e5),
+      // so we use ArnLike with a wildcard to match.
+      // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-browsercustom.md
+      assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
+        conditions: {
+          StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
+          ArnLike: {
+            'aws:SourceArn': Arn.format({ service: 'bedrock-agentcore', resource: 'browser-custom', resourceName: `${this.browserCustomName}*` }, Stack.of(this)),
+          },
+        },
+      }),
+    });
 
     return role;
   }

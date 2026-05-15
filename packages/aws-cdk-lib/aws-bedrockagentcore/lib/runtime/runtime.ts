@@ -326,7 +326,17 @@ export class Runtime extends RuntimeBase {
       }
     } else {
       this.role = new iam.Role(this, 'ExecutionRole', {
-        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+        // The service appends a random suffix to the resource name at creation time (e.g. MyRuntime-a1b2c3d4e5),
+        // so we use ArnLike with a wildcard to match.
+        // @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.md
+        assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com', {
+          conditions: {
+            StringEquals: { 'aws:SourceAccount': Stack.of(this).account },
+            ArnLike: {
+              'aws:SourceArn': Arn.format({ service: 'bedrock-agentcore', resource: 'runtime', resourceName: `${this.agentRuntimeName}*` }, Stack.of(this)),
+            },
+          },
+        }),
         description: 'Execution role for Bedrock Agent Core Runtime',
         maxSessionDuration: Duration.hours(8),
       });

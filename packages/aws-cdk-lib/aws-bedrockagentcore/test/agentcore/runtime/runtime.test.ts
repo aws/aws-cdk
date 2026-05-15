@@ -692,7 +692,7 @@ describe('Runtime with local asset tests', () => {
   });
 
   test('Should have execution role with correct trust policy', () => {
-    // Check that the execution role has the correct trust policy
+    // Check that the execution role has the correct trust policy with confused deputy conditions
     template.hasResourceProperties('AWS::IAM::Role', {
       AssumeRolePolicyDocument: {
         Statement: [
@@ -701,6 +701,16 @@ describe('Runtime with local asset tests', () => {
             Effect: 'Allow',
             Principal: {
               Service: 'bedrock-agentcore.amazonaws.com',
+            },
+            Condition: {
+              StringEquals: { 'aws:SourceAccount': '123456789012' },
+              ArnLike: {
+                'aws:SourceArn': {
+                  'Fn::Join': ['', Match.arrayWith([
+                    ':bedrock-agentcore:us-east-1:123456789012:runtime/test_runtime_local*',
+                  ])],
+                },
+              },
             },
           },
         ],
