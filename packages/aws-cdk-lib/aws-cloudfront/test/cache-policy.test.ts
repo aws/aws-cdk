@@ -108,6 +108,12 @@ describe('CachePolicy', () => {
     })).not.toThrow();
   });
 
+  test('does not throw if cachePolicyName is a token even when it resolves to over 128 characters', () => {
+    expect(() => new CachePolicy(stack, 'CachePolicy', {
+      cachePolicyName: Lazy.string({ produce: () => 'a'.repeat(129) }),
+    })).not.toThrow();
+  });
+
   test('throws on long comment over 128 characters', () => {
     const errorMessage = /'comment' cannot be longer than 128 characters, got: 129/;
     expect(() => new CachePolicy(stack, 'CachePolicy1', { comment: 'a'.repeat(129) })).toThrow(errorMessage);

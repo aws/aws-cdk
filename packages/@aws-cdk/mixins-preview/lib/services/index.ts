@@ -8,6 +8,7 @@ export * as aws_backupgateway from './aws-backupgateway';
 export * as aws_batch from './aws-batch';
 export * as aws_bedrock from './aws-bedrock';
 export * as aws_bedrockagentcore from './aws-bedrockagentcore';
+export * as aws_chime from './aws-chime';
 export * as aws_cleanrooms from './aws-cleanrooms';
 export * as aws_cloudformation from './aws-cloudformation';
 export * as aws_cloudfront from './aws-cloudfront';
