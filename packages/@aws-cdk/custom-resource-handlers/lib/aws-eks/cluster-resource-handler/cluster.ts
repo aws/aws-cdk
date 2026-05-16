@@ -413,6 +413,10 @@ function parseProps(props: any): EKS.CreateClusterCommandInput {
     }
   }
 
+  if (typeof (parsed.deletionProtection) === 'string') {
+    parsed.deletionProtection = parsed.deletionProtection === 'true';
+  }
+
   return parsed;
 }
 

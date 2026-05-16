@@ -139,6 +139,26 @@ describe('cluster resource provider', () => {
         name: 'MyResourceId-fakerequestid',
       });
     });
+
+    test('onCreate: deletionProtection is converted from string to boolean', async () => {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
+        ...mocks.MOCK_PROPS,
+        deletionProtection: 'true',
+      } as any));
+      await handler.onEvent();
+
+      expect((mocks.actualRequest.createClusterRequest as any).deletionProtection).toStrictEqual(true);
+    });
+
+    test('onCreate: deletionProtection "false" string is converted to boolean false', async () => {
+      const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Create', {
+        ...mocks.MOCK_PROPS,
+        deletionProtection: 'false',
+      } as any));
+      await handler.onEvent();
+
+      expect((mocks.actualRequest.createClusterRequest as any).deletionProtection).toStrictEqual(false);
+    });
   });
 
   describe('delete', () => {
