@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "44425c57619a94852a4c86803cf7b74485a99cec03a7a3ea245cb92a359e967c": {
+      "displayName": "aws-cdk-ec2-vpc-endpoint-cfn-subnet Template",
+      "source": {
+        "path": "aws-cdk-ec2-vpc-endpoint-cfn-subnet.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-1906d281": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "44425c57619a94852a4c86803cf7b74485a99cec03a7a3ea245cb92a359e967c.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
