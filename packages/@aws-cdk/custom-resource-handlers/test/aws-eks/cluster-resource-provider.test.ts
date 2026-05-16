@@ -1156,6 +1156,48 @@ describe('cluster resource provider', () => {
           });
         });
       });
+      describe('deletionProtection change', () => {
+        test('from undefined to true triggers updateClusterConfig', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any, {
+            ...mocks.MOCK_PROPS,
+          }));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect((mocks.actualRequest.updateClusterConfigRequest as any).deletionProtection).toEqual(true);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('from true to false triggers updateClusterConfig', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: false,
+          } as any, {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual({ EksUpdateId: mocks.MOCK_UPDATE_STATUS_ID });
+          expect((mocks.actualRequest.updateClusterConfigRequest as any).deletionProtection).toEqual(false);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+
+        test('no change does not trigger update', async () => {
+          const handler = new ClusterResourceHandler(mocks.client, mocks.newRequest('Update', {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any, {
+            ...mocks.MOCK_PROPS,
+            deletionProtection: true,
+          } as any));
+          const resp = await handler.onEvent();
+          expect(resp).toEqual(undefined);
+          expect(mocks.actualRequest.updateClusterConfigRequest).toEqual(undefined);
+          expect(mocks.actualRequest.createClusterRequest).toEqual(undefined);
+        });
+      });
     });
   });
 });

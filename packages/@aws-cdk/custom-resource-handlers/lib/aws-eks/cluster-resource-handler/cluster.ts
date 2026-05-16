@@ -130,7 +130,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     // validate updates
-    const updateTypes = Object.keys(updates).filter(type => type !== 'updateTags') as (keyof UpdateMap)[];
+    const updateTypes = Object.keys(updates).filter(type => type !== 'updateTags' && type !== 'updateDeletionProtection') as (keyof UpdateMap)[];
     const enabledUpdateTypes = updateTypes.filter((type) => updates[type]);
     console.log(enabledUpdateTypes);
 
@@ -196,7 +196,7 @@ export class ClusterResourceHandler extends ResourceHandler {
       return this.updateClusterVersion(this.newProps.version);
     }
 
-    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode) {
+    if (updates.updateLogging || updates.updateAccess || updates.updateVpc || updates.updateAuthMode || updates.updateDeletionProtection) {
       const config: EKS.UpdateClusterConfigCommandInput = {
         name: this.clusterName,
       };
@@ -261,6 +261,10 @@ export class ClusterResourceHandler extends ResourceHandler {
           subnetIds: this.newProps.resourcesVpcConfig?.subnetIds,
           securityGroupIds: this.newProps.resourcesVpcConfig?.securityGroupIds,
         };
+      }
+
+      if (updates.updateDeletionProtection) {
+        (config as any).deletionProtection = (this.newProps as any).deletionProtection;
       }
 
       const updateResponse = await this.eks.updateClusterConfig(config);
@@ -433,6 +437,7 @@ interface UpdateMap {
   updateVpc: boolean; // resourcesVpcConfig.subnetIds and securityGroupIds
   updateTags: boolean; // tags
   updateBootstrapSelfManagedAddons: boolean; // cluster with default networking add-ons
+  updateDeletionProtection: boolean; // deletionProtection
 }
 
 function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProps: EKS.CreateClusterCommandInput): UpdateMap {
@@ -477,6 +482,7 @@ function analyzeUpdate(oldProps: Partial<EKS.CreateClusterCommandInput>, newProp
       newProps.bootstrapSelfManagedAddons,
       oldProps.bootstrapSelfManagedAddons,
     ),
+    updateDeletionProtection: (newProps as any).deletionProtection !== (oldProps as any).deletionProtection,
   };
 }
 
