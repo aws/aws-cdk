@@ -4,6 +4,7 @@ import * as cxschema from '../../cloud-assembly-schema';
 import { ContextProvider, Fn, Stack } from '../../core';
 
 import {
+  CfnSubnet,
   GatewayVpcEndpoint,
   GatewayVpcEndpointAwsService,
   InterfaceVpcEndpoint,
@@ -640,6 +641,63 @@ describe('vpc endpoint', () => {
         }),
       })).toThrow();
     });
+    test('interface endpoint resolves SubnetIds when SubnetSelection.subnets contains L1 CfnSubnet objects', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      // VPC with no L2-managed subnets — subnets created directly via L1
+      const vpc = new Vpc(stack, 'VPC', { subnetConfiguration: [] });
+      const cfnSubnet = new CfnSubnet(stack, 'PrivateSubnet', {
+        vpcId: vpc.vpcId,
+        cidrBlock: '10.0.1.0/24',
+        availabilityZone: 'us-east-1a',
+      });
+
+      // WHEN – pass the L1 CfnSubnet directly; the framework wraps it automatically
+      vpc.addInterfaceEndpoint('SSMEndpoint', {
+        service: InterfaceVpcEndpointAwsService.SSM,
+        subnets: { subnets: [cfnSubnet as any] },
+      });
+
+      // THEN – SubnetIds must resolve to the CfnSubnet's logical ID, not be empty
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        SubnetIds: [{ Ref: stack.getLogicalId(cfnSubnet) }],
+      });
+    });
+
+    test('repeated selectSubnets calls with the same CfnSubnet do not create duplicate constructs', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-east-1' } });
+      const vpc = new Vpc(stack, 'VPC', { subnetConfiguration: [] });
+      const cfnSubnet = new CfnSubnet(stack, 'PrivateSubnet', {
+        vpcId: vpc.vpcId,
+        cidrBlock: '10.0.1.0/24',
+        availabilityZone: 'us-east-1a',
+      });
+
+      // WHEN – two endpoints sharing the same CfnSubnet
+      vpc.addInterfaceEndpoint('SSMEndpoint', {
+        service: InterfaceVpcEndpointAwsService.SSM,
+        subnets: { subnets: [cfnSubnet as any] },
+      });
+      // If the singleton guard is missing, this second call throws "Duplicate construct id"
+      vpc.addInterfaceEndpoint('EC2Endpoint', {
+        service: InterfaceVpcEndpointAwsService.EC2,
+        subnets: { subnets: [cfnSubnet as any] },
+      });
+
+      // THEN – both endpoints resolve to the same subnet ref without errors
+      const template = Template.fromStack(stack);
+      template.resourceCountIs('AWS::EC2::VPCEndpoint', 2);
+      template.hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: Match.stringLikeRegexp('ssm'),
+        SubnetIds: [{ Ref: stack.getLogicalId(cfnSubnet) }],
+      });
+      template.hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: Match.stringLikeRegexp('ec2'),
+        SubnetIds: [{ Ref: stack.getLogicalId(cfnSubnet) }],
+      });
+    });
+
     test('test vpc interface endpoint with cn.com.amazonaws prefix can be created correctly in cn-north-1', () => {
       // GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'cn-north-1' } });
