@@ -1704,6 +1704,40 @@ test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
   rmSyncMock.mockRestore();
 });
 
+test('beforeInstall hook fires after pnpm workspace files are written (Docker)', () => {
+  const pnpmLock = path.join(__dirname, '..', 'pnpm-lock.yaml');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(pnpmLock),
+    depsLockFilePath: pnpmLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+    commandHooks: {
+      beforeBundling: () => [],
+      afterBundling: () => [],
+      beforeInstall: (_inputDir: string, outputDir: string) => [
+        `echo allowBuilds >> "${outputDir}/pnpm-workspace.yaml"`,
+      ],
+    },
+  });
+
+  // Ordering: pnpm-workspace.yaml write → beforeInstall hook → pnpm install.
+  // Without the fix, beforeInstall fired before workspace files were written,
+  // making it impossible to append allowBuilds entries for pnpm v11.
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(pnpmLock), {
+    assetHashType: AssetHashType.OUTPUT,
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringMatching(
+          /echo '' > "\/asset-output\/pnpm-workspace\.yaml".*allowBuilds.*pnpm install/s,
+        ),
+      ]),
+    }),
+  });
+});
+
 test('Docker bundling escapes shell metacharacters in nodeModules dependency versions does not cause injection', () => {
   // A malicious (e.g. transitive) dependency version containing a single quote must not
   // break out of the `echo '...'`.
