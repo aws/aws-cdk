@@ -23,7 +23,7 @@ Currently supported are:
 
 - Republish a message to another MQTT topic
 - Invoke a Lambda function
-- Put objects to a S3 bucket
+- Put objects to an S3 bucket
 - Put logs to CloudWatch Logs
 - Capture CloudWatch metrics
 - Change state for a CloudWatch alarm
@@ -73,9 +73,9 @@ new iot.TopicRule(this, 'TopicRule', {
 });
 ```
 
-## Put objects to a S3 bucket
+## Put objects to an S3 bucket
 
-The code snippet below creates an AWS IoT Rule that puts objects to a S3 bucket
+The code snippet below creates an AWS IoT Rule that puts objects to an S3 bucket
 when it is triggered.
 
 ```ts

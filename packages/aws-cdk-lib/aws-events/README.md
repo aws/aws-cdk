@@ -65,7 +65,7 @@ const onCommitRule = repo.onCommit('OnCommit', {
 
 You can add additional targets, with optional [input
 transformer](https://docs.aws.amazon.com/eventbridge/latest/APIReference/API_InputTransformer.html)
-using `eventRule.addTarget(target[, input])`. For example, we can add a SNS
+using `eventRule.addTarget(target[, input])`. For example, we can add an SNS
 topic target which formats a human-readable message for the commit.
 
 For example, this adds an SNS topic as a target:

@@ -947,8 +947,8 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   });
   distributedMap.itemProcessor(new sfn.Pass(this, 'Pass'));
   ```
-* Objects in a S3 bucket with an optional prefix.
-  * When `DistributedMap` is required to iterate over objects stored in a S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source. Note that `S3ObjectsItemReader` will default to use Distributed map's query language. If the
+* Objects in an S3 bucket with an optional prefix.
+  * When `DistributedMap` is required to iterate over objects stored in an S3 bucket, then an object of `S3ObjectsItemReader` can be passed to `itemReader` to configure the iterator source. Note that `S3ObjectsItemReader` will default to use Distributed map's query language. If the
   map does not specify a query language, then it falls back to the State machine's query language. An exmaple of using `S3ObjectsItemReader`
   is as follows:
   ```ts
@@ -997,7 +997,7 @@ distributedMap.itemProcessor(new sfn.Pass(this, 'Pass State'));
   ```
   * Both `bucket` and `bucketNamePath` are mutually exclusive.
 * JSON array in a JSON file stored in S3
-  * When `DistributedMap` is required to iterate over a JSON array stored in a JSON file in a S3 bucket, then an object of `S3JsonItemReader` can be passed to `itemReader` to configure the iterator source as follows:
+  * When `DistributedMap` is required to iterate over a JSON array stored in a JSON file in an S3 bucket, then an object of `S3JsonItemReader` can be passed to `itemReader` to configure the iterator source as follows:
   ```ts
   import * as s3 from 'aws-cdk-lib/aws-s3';
 

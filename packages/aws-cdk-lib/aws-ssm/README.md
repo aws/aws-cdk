@@ -42,7 +42,7 @@ You can also reference an existing SSM Parameter Store value that matches an
 ssm.StringParameter.valueForTypedStringParameterV2(this, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
 ```
 
-To do the same for a SSM Parameter Store value that is stored as a list:
+To do the same for an SSM Parameter Store value that is stored as a list:
 
 ```ts
 ssm.StringListParameter.valueForTypedListParameter(this, '/My/Public/Parameter', ssm.ParameterValueType.AWS_EC2_IMAGE_ID);
@@ -76,8 +76,8 @@ const stringValue = ssm.StringParameter.valueFromLookup(this, '/My/Public/Parame
 When using `valueFromLookup` an initial value of 'dummy-value-for-${parameterName}'
 (`dummy-value-for-/My/Public/Parameter` in the above example)
 is returned prior to the lookup being performed. This can lead to errors if you are using this
-value in places that require a certain format. For example if you have stored the ARN for a SNS
-topic in a SSM Parameter which you want to lookup and provide to `Topic.fromTopicArn()`
+value in places that require a certain format. For example if you have stored the ARN for an SNS
+topic in an SSM Parameter which you want to lookup and provide to `Topic.fromTopicArn()`
 
 ```ts
 const arnLookup = ssm.StringParameter.valueFromLookup(this, '/my/topic/arn');

@@ -175,8 +175,8 @@ const product = new servicecatalog.CloudFormationProduct(this, 'Product', {
 
 ### Using Assets in your Product Stack
 
-You can reference assets in a Product Stack. For example, we can add a handler to a Lambda function or a S3 Asset directly from a local asset file.
-In this case, you must provide a S3 Bucket with a bucketName to store your assets.
+You can reference assets in a Product Stack. For example, we can add a handler to a Lambda function or an S3 Asset directly from a local asset file.
+In this case, you must provide an S3 Bucket with a bucketName to store your assets.
 
 ```ts
 import * as lambda from 'aws-cdk-lib/aws-lambda';

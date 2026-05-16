@@ -32,7 +32,7 @@ _cdk.json_
 
 * `@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption`
 
-Enable this feature flag to restrict the decryption of a SQS queue, which is subscribed to a SNS topic, to
+Enable this feature flag to restrict the decryption of an SQS queue, which is subscribed to an SNS topic, to
 only the topic which it is subscribed to and not the whole SNS service of an account.
 
 Previously the decryption was only restricted to the SNS service principal. To make the SQS subscription more
@@ -345,7 +345,7 @@ _cdk.json_
 
 When enabled, the default volume type of the EBS volume will be GP3.
 
-When this featuer flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
+When this feature flag is enabled, the default volume type of the EBS volume will be `EbsDeviceVolumeType.GENERAL_PURPOSE_SSD_GP3`
 
 _cdk.json_
 
@@ -361,7 +361,7 @@ _cdk.json_
 
 When enabled, remove default deployment alarm settings.
 
-When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+When this feature flag is enabled, remove the default deployment alarm settings when creating an AWS ECS service.
 
 _cdk.json_
 
