@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "PromQLAlarmIntegTest/DefaultTest": {
+      "stacks": [
+        "PromQLAlarmTestStack"
+      ],
+      "assertionStack": "PromQLAlarmIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "PromQLAlarmIntegTestDefaultTestDeployAssert0D6C6FEB"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}

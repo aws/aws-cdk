@@ -9830,6 +9830,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'originAccessControlName': '*',
       'signing': '*'
     },
+    'MediaPackageV2OriginAccessControl': {
+      'description': '*',
+      'originAccessControlName': '*',
+      'signing': '*'
+    },
     'OriginAccessIdentity': {},
     'OriginRequestPolicy': {
       'originRequestPolicyName': '*',
@@ -10289,6 +10294,15 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'addVariable': [
         '*'
       ]
+    },
+    'PromQLAlarm': {
+      'alarmName': '*',
+      'alarmDescription': '*',
+      'pendingPeriod': '*',
+      'recoveryPeriod': '*',
+      'query': '*',
+      'evaluationInterval': '*',
+      'actionsEnabled': 'boolean'
     }
   },
   'aws-cdk-lib.aws-codebuild': {
@@ -11908,7 +11922,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'value': '*'
       },
       'resourcePolicy': '*',
+      'streamResourcePolicy': '*',
       'addToResourcePolicy': [
+        '*'
+      ],
+      'addToStreamResourcePolicy': [
         '*'
       ],
       'addReplica': [
@@ -12037,7 +12055,11 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'value': '*'
       },
       'resourcePolicy': '*',
+      'streamResourcePolicy': '*',
       'addToResourcePolicy': [
+        '*'
+      ],
+      'addToStreamResourcePolicy': [
         '*'
       ]
     },
@@ -23245,6 +23267,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'sendingEnabled': 'boolean',
       'suppressionReasons': 'SuppressionReasons',
       'disableSuppressionList': 'boolean',
+      'autoValidationThreshold': 'AutoValidationThreshold',
+      'disableAutoValidation': 'boolean',
       'customTrackingRedirectDomain': '*',
       'customTrackingHttpsPolicy': 'HttpsPolicy',
       'vdmOptions': {
@@ -24254,6 +24278,45 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     }
   },
   'aws-bedrock-agentcore-alpha.lib': {
+    'Evaluator': {
+      'evaluatorName': '*',
+      'evaluatorConfig': '*',
+      'level': '*',
+      'description': '*',
+      'tags': '*'
+    },
+    'OnlineEvaluationConfig': {
+      'evaluators': '*',
+      'dataSource': '*',
+      'tags': '*',
+      'onlineEvaluationConfigName': '*',
+      'executionRole': {
+        'roleArn': '*',
+        'roleName': '*',
+        'assumeRoleAction': '*',
+        'policyFragment': '*',
+        'principalAccount': '*',
+        'grantPrincipal': {
+          'assumeRoleAction': '*',
+          'principalAccount': '*'
+        },
+        'stack': '*',
+        'node': '*',
+        'env': {
+          'account': '*',
+          'region': '*'
+        }
+      },
+      'description': '*',
+      'samplingPercentage': '*',
+      'filters': {
+        'key': '*',
+        'operator': '*',
+        'value': '*'
+      },
+      'sessionTimeout': '*',
+      'executionStatus': '*'
+    },
     'Gateway': {
       'gatewayName': '*',
       'description': '*',
@@ -24485,6 +24548,27 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
           'interceptionPoint': 'InterceptionPoint'
         }
       ]
+    },
+    'ApiKeyCredentialProvider': {
+      'apiKeyCredentialProviderName': '*',
+      'apiKey': '*',
+      'tags': '*',
+      'bindForGatewayApiKeyTarget': []
+    },
+    'OAuth2CredentialProvider': {
+      'oAuth2CredentialProviderName': '*',
+      'credentialProviderVendor': '*',
+      'oauth2ProviderConfigInput': '*',
+      'tags': '*',
+      'bindForGatewayOAuthTarget': [
+        '*',
+        '*'
+      ]
+    },
+    'WorkloadIdentity': {
+      'workloadIdentityName': '*',
+      'allowedResourceOauth2ReturnUrls': '*',
+      'tags': '*'
     },
     'Memory': {
       'memoryName': '*',
@@ -25342,6 +25426,7 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
     'PythonShellJob': {
       'pythonVersion': 'PythonVersion',
       'maxCapacity': 'MaxCapacity',
+      'extraPythonFiles': '*',
       'jobRunQueuingEnabled': 'boolean',
       'script': '*',
       'role': {

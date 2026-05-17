@@ -49,8 +49,26 @@ export interface PolicyViolation {
 export interface PolicyViolatingResource {
   /**
    * The logical ID of the resource in the CloudFormation template.
+   *
+   * Required for plugin-sourced violations that operate on CloudFormation
+   * templates. Mutually exclusive with `constructPath`.
+   *
+   * @default - no resource logical ID
    */
-  readonly resourceLogicalId: string;
+  readonly resourceLogicalId?: string;
+
+  /**
+   * The construct path of the violating construct.
+   *
+   * Use this for violations that originate from constructs rather than
+   * CloudFormation resources (e.g. annotations added via `Annotations.of()`
+   * or `Validations.of()`). When provided, the report will use this path
+   * directly instead of deriving it from the resource logical ID.
+   * Mutually exclusive with `resourceLogicalId`.
+   *
+   * @default - construct path is derived from the resource logical ID
+   */
+  readonly constructPath?: string;
 
   /**
    * The locations in the CloudFormation template that pose the violations.
@@ -59,8 +77,10 @@ export interface PolicyViolatingResource {
 
   /**
    * The path to the CloudFormation template that contains this resource
+   *
+   * @default - no template path
    */
-  readonly templatePath: string;
+  readonly templatePath?: string;
 }
 
 /**
