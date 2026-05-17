@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
@@ -8,9 +8,13 @@ import * as perms from '../lib/permissions';
 
 /* eslint-disable @stylistic/quote-props */
 
+const VECTOR_BUCKET_POLICY_CFN_RESOURCE = 'AWS::S3Vectors::VectorBucketPolicy';
+const KMS_KEY_CFN_RESOURCE = 'AWS::KMS::Key';
 const INDEX_NAME = 'example-index';
 const EXISTING_ROLE_ARN = 'arn:aws:iam::123456789012:role/existing-role';
 const VECTOR_BUCKET_NAME = 'example-vector-bucket';
+const PRINCIPAL = 'lambda.amazonaws.com';
+const INDEX_ARN_REF = { 'Fn::GetAtt': ['ExampleVectorIndex0BD96B3F', 'IndexArn'] };
 
 describe('VectorIndex grants', () => {
   let stack: core.Stack;
@@ -73,11 +77,29 @@ describe('VectorIndex grants', () => {
 
     testCases.forEach(({ category, grantType, actions, keyActions }) => {
       describe(category, () => {
-        const indexArnRef = { 'Fn::GetAtt': ['ExampleVectorIndex0BD96B3F', 'IndexArn'] };
+        const verifyKeyPolicies = () => {
+          if (withKMS) {
+            Template.fromStack(stack).hasResourceProperties(KMS_KEY_CFN_RESOURCE, {
+              'KeyPolicy': {
+                'Statement': Match.arrayWith([
+                  {
+                    'Action': keyActions,
+                    'Effect': 'Allow',
+                    'Principal': {
+                      'Service': PRINCIPAL,
+                    },
+                    'Resource': '*',
+                  },
+                ]),
+              },
+            });
+          }
+        };
+
         const expectedStatements: any = [{
           'Action': actions,
           'Effect': 'Allow',
-          'Resource': indexArnRef,
+          'Resource': INDEX_ARN_REF,
         }];
         if (withKMS) {
           expectedStatements.push({
@@ -95,6 +117,7 @@ describe('VectorIndex grants', () => {
               'Version': '2012-10-17',
             },
           });
+          Template.fromStack(stack).resourceCountIs(VECTOR_BUCKET_POLICY_CFN_RESOURCE, 0);
         });
 
         it(`attaches ${grantType} IAM policy to a user`, () => {
@@ -105,6 +128,7 @@ describe('VectorIndex grants', () => {
               'Version': '2012-10-17',
             },
           });
+          Template.fromStack(stack).resourceCountIs(VECTOR_BUCKET_POLICY_CFN_RESOURCE, 0);
         });
 
         it(`attaches ${grantType} IAM policy to an imported role`, () => {
@@ -115,6 +139,25 @@ describe('VectorIndex grants', () => {
               'Version': '2012-10-17',
             },
           });
+        });
+
+        it(`grants ${grantType} permissions via bucket policy for a service principal`, () => {
+          grantPermissions(vectorIndex, grantType, new iam.ServicePrincipal(PRINCIPAL));
+          Template.fromStack(stack).hasResourceProperties(VECTOR_BUCKET_POLICY_CFN_RESOURCE, {
+            'Policy': {
+              'Statement': [
+                {
+                  'Action': actions,
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'Service': PRINCIPAL,
+                  },
+                  'Resource': INDEX_ARN_REF,
+                },
+              ],
+            },
+          });
+          verifyKeyPolicies();
         });
       });
     });
@@ -159,5 +202,75 @@ describe('VectorIndex grants', () => {
     });
 
     grantTests({ withKMS: true, keyName });
+  });
+
+  describe('with an index-level KMS key overriding the bucket key', () => {
+    let bucketKey: kms.IKey;
+    let indexKey: kms.IKey;
+
+    beforeEach(() => {
+      bucketKey = new kms.Key(stack, 'BucketKey', {});
+      const vectorBucket = new s3vectors.VectorBucket(stack, 'ExampleVectorBucket', {
+        vectorBucketName: VECTOR_BUCKET_NAME,
+        encryption: s3vectors.VectorBucketEncryption.KMS,
+        encryptionKey: bucketKey,
+        removalPolicy: core.RemovalPolicy.DESTROY,
+      });
+      indexKey = new kms.Key(stack, 'IndexKey', {});
+      vectorIndex = new s3vectors.VectorIndex(stack, 'ExampleVectorIndex', {
+        vectorBucket,
+        indexName: INDEX_NAME,
+        dimension: 128,
+        dataType: s3vectors.VectorDataType.FLOAT32,
+        distanceMetric: s3vectors.DistanceMetric.COSINE,
+        encryption: s3vectors.VectorBucketEncryption.KMS,
+        encryptionKey: indexKey,
+      });
+    });
+
+    test('grantRead grants kms:Decrypt on the index key (not the bucket key)', () => {
+      vectorIndex.grantRead(role);
+
+      const indexKeyArn = stack.resolve(indexKey.keyArn);
+      const bucketKeyArn = stack.resolve(bucketKey.keyArn);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': Match.arrayWith([
+            {
+              'Action': stringIfSingle(perms.KEY_READ_ACCESS),
+              'Effect': 'Allow',
+              'Resource': indexKeyArn,
+            },
+          ]),
+        },
+      });
+
+      const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+      const statements = Object.values(policies).flatMap((p: any) => p.Properties.PolicyDocument.Statement);
+      const kmsStatements = statements.filter((s: any) => Array.isArray(s.Action)
+        ? s.Action.some((a: string) => a.startsWith('kms:'))
+        : typeof s.Action === 'string' && s.Action.startsWith('kms:'));
+      const resourcesGranted = kmsStatements.map((s: any) => JSON.stringify(s.Resource));
+      expect(resourcesGranted).not.toContain(JSON.stringify(bucketKeyArn));
+    });
+
+    test('grantReadWrite grants kms actions on the index key (not the bucket key)', () => {
+      vectorIndex.grantReadWrite(role);
+
+      const indexKeyArn = stack.resolve(indexKey.keyArn);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
+        'PolicyDocument': {
+          'Statement': Match.arrayWith([
+            {
+              'Action': stringIfSingle(perms.KEY_READ_WRITE_ACCESS),
+              'Effect': 'Allow',
+              'Resource': indexKeyArn,
+            },
+          ]),
+        },
+      });
+    });
   });
 });

@@ -197,9 +197,9 @@ abstract class VectorBucketBase extends Resource implements IVectorBucket {
     vectorBucketActions: string[],
     keyActions: string[],
     resourceArn: string,
-    ...otherResourceArns: (string | undefined)[]
+    indexArn?: string,
   ) {
-    const resources = [resourceArn, ...otherResourceArns].filter(arn => arn != undefined);
+    const resources = [resourceArn, indexArn].filter((arn): arn is string => arn !== undefined);
 
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
@@ -513,7 +513,7 @@ export class VectorBucket extends VectorBucketBase implements ITaggableV2 {
 
     if (encryptionType === undefined) {
       if (key === undefined) {
-        return { bucketEncryption: undefined, encryptionKey: undefined };
+        return {};
       } else {
         return {
           bucketEncryption: {

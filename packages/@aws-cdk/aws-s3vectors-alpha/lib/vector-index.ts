@@ -1,6 +1,6 @@
 import { EOL } from 'os';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import type * as kms from 'aws-cdk-lib/aws-kms';
+import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3vectors from 'aws-cdk-lib/aws-s3vectors';
 import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
 import { ArnFormat, Resource, Stack, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
@@ -59,6 +59,14 @@ export interface IVectorIndex extends IResource {
   readonly vectorBucket: IVectorBucket;
 
   /**
+   * Optional KMS encryption key associated with this vector index.
+   *
+   * If the index does not override the bucket's encryption settings, this is
+   * the KMS key inherited from the parent vector bucket (if any).
+   */
+  readonly encryptionKey?: kms.IKey;
+
+  /**
    * Grant read permissions for this vector index to an IAM principal
    * (Role/Group/User).
    *
@@ -96,6 +104,7 @@ abstract class VectorIndexBase extends Resource implements IVectorIndex {
   public abstract readonly indexArn: string;
   public abstract readonly indexName: string;
   public abstract readonly vectorBucket: IVectorBucket;
+  public abstract readonly encryptionKey?: kms.IKey;
 
   /**
    * [disable-awslint:no-grants]
@@ -123,14 +132,15 @@ abstract class VectorIndexBase extends Resource implements IVectorIndex {
     indexActions: string[],
     keyActions: string[],
   ) {
-    const grant = iam.Grant.addToPrincipal({
+    const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: indexActions,
       resourceArns: [this.indexArn],
+      resource: this.vectorBucket,
     });
 
-    if (this.vectorBucket.encryptionKey && keyActions.length !== 0) {
-      this.vectorBucket.encryptionKey.grant(grantee, ...keyActions);
+    if (this.encryptionKey && keyActions.length !== 0) {
+      this.encryptionKey.grant(grantee, ...keyActions);
     }
 
     return grant;
@@ -176,7 +186,10 @@ export interface VectorIndexProps {
   /**
    * The kind of server-side encryption to apply to this index.
    *
-   * When omitted, the parent bucket's encryption applies.
+   * When omitted (and `encryptionKey` is also omitted), no
+   * `EncryptionConfiguration` is sent to CloudFormation, and S3 Vectors
+   * applies the parent bucket's encryption settings to vectors stored in
+   * this index.
    *
    * @default - inherits the encryption configuration of the parent vector bucket.
    */
@@ -289,6 +302,7 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
       public readonly vectorBucket = vectorBucket;
       public readonly indexArn = resolvedIndexArn;
       public readonly indexName = resolvedIndexName;
+      public readonly encryptionKey = vectorBucket.encryptionKey;
     }
 
     return new Import(scope, id);
@@ -396,6 +410,8 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
 
   public readonly vectorBucket: IVectorBucket;
 
+  public readonly encryptionKey?: kms.IKey;
+
   constructor(scope: Construct, id: string, props: VectorIndexProps) {
     super(scope, id, {
       physicalName: props.indexName,
@@ -409,9 +425,10 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
     VectorIndex.validateDimension(props.dimension);
     VectorIndex.validateNonFilterableMetadataKeys(props.nonFilterableMetadataKeys);
 
-    const encryptionConfiguration = this.parseEncryption(props);
+    const { encryptionConfiguration, encryptionKey } = this.parseEncryption(props);
 
     this.vectorBucket = props.vectorBucket;
+    this.encryptionKey = encryptionKey ?? props.vectorBucket.encryptionKey;
 
     this.resource = new s3vectors.CfnIndex(this, 'Resource', {
       vectorBucketArn: props.vectorBucket.vectorBucketArn,
@@ -445,26 +462,74 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
     return this.resource.attrIndexArn;
   }
 
-  private parseEncryption(props: VectorIndexProps): s3vectors.CfnIndex.EncryptionConfigurationProperty | undefined {
-    if (props.encryption === undefined && props.encryptionKey === undefined) {
-      return undefined;
+  /**
+   * Set up key properties and return the index encryption configuration from
+   * the user's configuration, according to the following table:
+   *
+   * | props.encryption | props.encryptionKey | encryptionConfiguration (return value) | encryptionKey (return value)  |
+   * |------------------|---------------------|----------------------------------------|-------------------------------|
+   * | undefined        | undefined           | undefined                              | undefined                     |
+   * | undefined        | k                   | aws:kms                                | k                             |
+   * | KMS              | undefined           | aws:kms                                | new key                       |
+   * | KMS              | k                   | aws:kms                                | k                             |
+   * | S3_MANAGED       | undefined           | AES256                                 | undefined                     |
+   * | S3_MANAGED       | k                   | ERROR!                                 | ERROR!                        |
+   *
+   * When `encryptionConfiguration` is `undefined`, no `EncryptionConfiguration`
+   * is sent to CloudFormation, and S3 Vectors applies the parent bucket's
+   * encryption settings to vectors stored in this index.
+   */
+  private parseEncryption(props: VectorIndexProps): {
+    encryptionConfiguration?: s3vectors.CfnIndex.EncryptionConfigurationProperty;
+    encryptionKey?: kms.IKey;
+  } {
+    const encryptionType = props.encryption;
+    let key = props.encryptionKey;
+
+    if (encryptionType === undefined) {
+      if (key === undefined) {
+        return {};
+      } else {
+        return {
+          encryptionConfiguration: {
+            kmsKeyArn: key.keyArn,
+            sseType: VectorBucketEncryption.KMS,
+          },
+          encryptionKey: key,
+        };
+      }
     }
 
-    if (props.encryption === VectorBucketEncryption.S3_MANAGED) {
-      if (props.encryptionKey !== undefined) {
+    if (encryptionType === VectorBucketEncryption.KMS) {
+      if (key === undefined) {
+        key = new kms.Key(this, 'Key', {
+          description: `Created by ${this.node.path}`,
+          enableKeyRotation: true,
+        });
+      }
+      return {
+        encryptionConfiguration: {
+          kmsKeyArn: key.keyArn,
+          sseType: VectorBucketEncryption.KMS,
+        },
+        encryptionKey: key,
+      };
+    }
+
+    if (encryptionType === VectorBucketEncryption.S3_MANAGED) {
+      if (key !== undefined) {
         throw new UnscopedValidationError(
           lit`InvalidEncryptionConfiguration`,
           'Expected encryption = `KMS` when a user-provided encryption key is specified',
         );
       }
-      return { sseType: VectorBucketEncryption.S3_MANAGED };
+      return { encryptionConfiguration: { sseType: VectorBucketEncryption.S3_MANAGED } };
     }
 
-    // KMS (explicit, or implicit when only `encryptionKey` is set)
-    return {
-      sseType: VectorBucketEncryption.KMS,
-      kmsKeyArn: props.encryptionKey?.keyArn,
-    };
+    throw new UnscopedValidationError(
+      lit`UnknownEncryptionConfiguration`,
+      `Unknown encryption configuration: ${JSON.stringify(props.encryption)}`,
+    );
   }
 }
 

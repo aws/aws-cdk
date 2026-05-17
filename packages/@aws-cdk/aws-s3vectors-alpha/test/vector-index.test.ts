@@ -137,6 +137,24 @@ describe('VectorIndex', () => {
       });
     });
 
+    test('KMS without user key creates a new KMS key', () => {
+      new s3vectors.VectorIndex(stack, 'ExampleVectorIndex', {
+        vectorBucket,
+        dimension: 1024,
+        dataType: s3vectors.VectorDataType.FLOAT32,
+        distanceMetric: s3vectors.DistanceMetric.COSINE,
+        encryption: s3vectors.VectorBucketEncryption.KMS,
+      });
+
+      Template.fromStack(stack).resourceCountIs('AWS::KMS::Key', 1);
+      Template.fromStack(stack).hasResourceProperties(VECTOR_INDEX_CFN_RESOURCE, {
+        'EncryptionConfiguration': Match.objectLike({
+          'SseType': 'aws:kms',
+          'KmsKeyArn': Match.anyValue(),
+        }),
+      });
+    });
+
     test('S3_MANAGED sets sseType AES256', () => {
       new s3vectors.VectorIndex(stack, 'ExampleVectorIndex', {
         vectorBucket,
