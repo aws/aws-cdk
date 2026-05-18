@@ -542,13 +542,11 @@ class Computed<A, B> extends BaseReadableBox<B> {
   }
 }
 
-class State<A> extends BaseReadableBox<A> implements IBox<A> {
+export abstract class ReadonlyState<A> extends BaseReadableBox<A> {
   protected orderedTraces: Array<OrderedStackTrace> = [];
-  private readonly equals: (a: A, b: A) => boolean;
 
-  constructor(private value: A, options?: { equals?: (a: A, b: A) => boolean }) {
+  constructor(protected value: A) {
     super();
-    this.equals = options?.equals ?? ((a, b) => a === b);
     if (debugModeEnabled() && stackTraceCollectionEnabled) {
       this.orderedTraces = [{ trace: captureStackTrace(this.constructor), seq: globalSeq++ }];
     }
@@ -560,6 +558,23 @@ class State<A> extends BaseReadableBox<A> implements IBox<A> {
 
   public getMutable(): A {
     return this.value;
+  }
+
+  public getStackTraces(): Array<StackTrace> {
+    return this.orderedTraces.map((t) => t.trace);
+  }
+
+  public getOrderedStackTraces(): Array<OrderedStackTrace> {
+    return this.orderedTraces;
+  }
+}
+
+class State<A> extends ReadonlyState<A> implements IBox<A> {
+  private readonly equals: (a: A, b: A) => boolean;
+
+  constructor(value: A, options?: { equals?: (a: A, b: A) => boolean }) {
+    super(value);
+    this.equals = options?.equals ?? ((a, b) => a === b);
   }
 
   public set(value: A): void {
@@ -574,14 +589,6 @@ class State<A> extends BaseReadableBox<A> implements IBox<A> {
 
   public update(fn: (a: A) => A): void {
     this.set(fn(this.value));
-  }
-
-  public getStackTraces(): Array<StackTrace> {
-    return this.orderedTraces.map((t) => t.trace);
-  }
-
-  public getOrderedStackTraces(): Array<OrderedStackTrace> {
-    return this.orderedTraces;
   }
 }
 

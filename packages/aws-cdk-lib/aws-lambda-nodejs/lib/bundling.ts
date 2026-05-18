@@ -12,6 +12,7 @@ import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
 import { AssumptionError, ValidationError } from '../../core';
 import { lit } from '../../core/lib/private/literal-string';
+import { profileFn, profileSpan } from '../../core/lib/private/perf';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -83,6 +84,8 @@ export class Bundling implements cdk.BundlingOptions {
 
   private static esbuildInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
+
+  public readonly [cdk.PERF_BUNDLING_SRC_SYM] = 'NodejsFunction';
 
   // Core bundling options
   public readonly image: cdk.DockerImage;
@@ -183,8 +186,17 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
-    this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'),
-      {
+
+    if (shouldBuildImage && props.dockerImage) {
+      // Use the user's image
+      this.image = props.dockerImage;
+    } else if (shouldBuildImage && !props.dockerImage) {
+      // Build our own image to run esbuild in. We do some counter trickery here: we do want to count
+      // the time spent here as part of 'bundle:NodejsFunction', but by default only the RUNNING of the Docker
+      // image would count as that. So we add an additional timer span just for the building of the runner image.
+      using _span = profileSpan(`bundle:${this[cdk.PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
+
+      this.image = cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           // If runtime isn't passed use regional default, lowest common denominator is node18
@@ -193,8 +205,11 @@ export class Bundling implements cdk.BundlingOptions {
         },
         platform: props.architecture.dockerPlatform,
         network: props.network,
-      })
-      : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
+      });
+    } else {
+      // We won't use a Docker image, but this field must have a value.
+      this.image = cdk.DockerImage.fromRegistry('dummy');
+    }
 
     const bundlingCommand = this.createBundlingCommand(scope, {
       inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
@@ -455,6 +470,7 @@ export class Bundling implements cdk.BundlingOptions {
     return steps;
   }
 
+  @profileFn('NodejsFunction#tryBundle', { telemetry: true })
   private executeBundlingSteps(scope: IConstruct, steps: BundlingStep[]) {
     const cwd = this.projectRoot;
     const osPlatform = os.platform();
