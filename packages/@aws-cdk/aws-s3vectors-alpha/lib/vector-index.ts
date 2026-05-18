@@ -67,6 +67,21 @@ export interface IVectorIndex extends IResource {
   readonly encryptionKey?: kms.IKey;
 
   /**
+   * Add a statement to the resource policy that protects this vector index.
+   *
+   * S3 Vectors does not expose a per-index resource policy: index-level
+   * permissions are stored on the parent vector bucket's policy, scoped to
+   * this index's ARN. Statements added through this method are therefore
+   * forwarded to `vectorBucket.addToResourcePolicy(...)`.
+   *
+   * @param statement the policy statement to be added.
+   * @returns metadata about the execution of this method. Mirrors the
+   * semantics of `IVectorBucket.addToResourcePolicy` — if the parent bucket
+   * is imported and has no mutable policy, `statementAdded` will be `false`.
+   */
+  addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult;
+
+  /**
    * Grant read permissions for this vector index to an IAM principal
    * (Role/Group/User).
    *
@@ -105,6 +120,10 @@ abstract class VectorIndexBase extends Resource implements IVectorIndex {
   public abstract readonly indexName: string;
   public abstract readonly vectorBucket: IVectorBucket;
   public abstract readonly encryptionKey?: kms.IKey;
+
+  public addToResourcePolicy(statement: iam.PolicyStatement): iam.AddToResourcePolicyResult {
+    return this.vectorBucket.addToResourcePolicy(statement);
+  }
 
   /**
    * [disable-awslint:no-grants]
@@ -283,8 +302,15 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
     if (!indexName && indexArn && !Token.isUnresolved(indexArn)) {
       const resourceName = Stack.of(scope).splitArn(indexArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (resourceName) {
+        // Expected resourceName shape: '<bucketName>/index/<indexName>'
         const parts = resourceName.split('/');
-        indexName = parts[parts.length - 1];
+        if (parts.length !== 3 || parts[1] !== 'index') {
+          throw new UnscopedValidationError(
+            lit`InvalidVectorIndexArn`,
+            `Expected an ARN of the form 'arn:...:bucket/<bucket>/index/<index>', got: ${JSON.stringify(indexArn)}`,
+          );
+        }
+        indexName = parts[2];
       }
     }
 
@@ -428,7 +454,7 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
     const { encryptionConfiguration, encryptionKey } = this.parseEncryption(props);
 
     this.vectorBucket = props.vectorBucket;
-    this.encryptionKey = encryptionKey ?? props.vectorBucket.encryptionKey;
+    this.encryptionKey = encryptionKey;
 
     this.resource = new s3vectors.CfnIndex(this, 'Resource', {
       vectorBucketArn: props.vectorBucket.vectorBucketArn,
@@ -468,7 +494,7 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
    *
    * | props.encryption | props.encryptionKey | encryptionConfiguration (return value) | encryptionKey (return value)  |
    * |------------------|---------------------|----------------------------------------|-------------------------------|
-   * | undefined        | undefined           | undefined                              | undefined                     |
+   * | undefined        | undefined           | undefined                              | bucket.encryptionKey          |
    * | undefined        | k                   | aws:kms                                | k                             |
    * | KMS              | undefined           | aws:kms                                | new key                       |
    * | KMS              | k                   | aws:kms                                | k                             |
@@ -477,7 +503,9 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
    *
    * When `encryptionConfiguration` is `undefined`, no `EncryptionConfiguration`
    * is sent to CloudFormation, and S3 Vectors applies the parent bucket's
-   * encryption settings to vectors stored in this index.
+   * encryption settings to vectors stored in this index. In that case the
+   * returned `encryptionKey` mirrors the bucket's key so grant helpers issue
+   * the right kms permissions on the key that actually protects the data.
    */
   private parseEncryption(props: VectorIndexProps): {
     encryptionConfiguration?: s3vectors.CfnIndex.EncryptionConfigurationProperty;
@@ -488,7 +516,7 @@ export class VectorIndex extends VectorIndexBase implements ITaggableV2 {
 
     if (encryptionType === undefined) {
       if (key === undefined) {
-        return {};
+        return { encryptionKey: props.vectorBucket.encryptionKey };
       } else {
         return {
           encryptionConfiguration: {

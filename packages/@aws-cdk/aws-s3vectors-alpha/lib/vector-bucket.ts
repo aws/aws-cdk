@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3vectors from 'aws-cdk-lib/aws-s3vectors';
 import type { IResource, ITaggableV2, RemovalPolicy, TagManager } from 'aws-cdk-lib/core';
-import { Resource, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
+import { Resource, Stack, Token, UnscopedValidationError } from 'aws-cdk-lib/core';
 import { lit, memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -466,6 +466,10 @@ export class VectorBucket extends VectorBucketBase implements ITaggableV2 {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
 
+    if (encryptionKey) {
+      this.grantS3VectorsServicePrincipalAccess(encryptionKey);
+    }
+
     this.resource = new s3vectors.CfnVectorBucket(this, 'Resource', {
       vectorBucketName: props.vectorBucketName,
       encryptionConfiguration: bucketEncryption,
@@ -489,6 +493,42 @@ export class VectorBucket extends VectorBucketBase implements ITaggableV2 {
   @memoizedGetter
   public get vectorBucketArn(): string {
     return this.resource.attrVectorBucketArn;
+  }
+
+  /**
+   * Grants the S3 Vectors service principal `kms:Decrypt` on the customer
+   * managed key, scoped to vector buckets in this account/region.
+   *
+   * Required by S3 Vectors so the service can perform background indexing
+   * operations on vectors stored in this bucket. Without this grant, the
+   * vector bucket cannot be created (CloudFormation surfaces an
+   * `Insufficient access to perform asynchronous indexing` error).
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-vectors-data-encryption.html
+   */
+  private grantS3VectorsServicePrincipalAccess(key: kms.IKey): void {
+    const stack = Stack.of(this);
+    key.addToResourcePolicy(new iam.PolicyStatement({
+      sid: 'AllowS3VectorsServicePrincipal',
+      principals: [new iam.ServicePrincipal('indexing.s3vectors.amazonaws.com')],
+      actions: ['kms:Decrypt'],
+      resources: ['*'],
+      conditions: {
+        'ArnLike': {
+          'aws:SourceArn': stack.formatArn({
+            service: 's3vectors',
+            resource: 'bucket',
+            resourceName: '*',
+          }),
+        },
+        'StringEquals': {
+          'aws:SourceAccount': stack.account,
+        },
+        'ForAnyValue:StringEquals': {
+          'kms:EncryptionContextKeys': ['aws:s3vectors:arn', 'aws:s3vectors:resource-id'],
+        },
+      },
+    }));
   }
 
   /**

@@ -11,7 +11,18 @@
     },
     "service": "@aws-sdk/client-s3vectors",
     "api": "GetVectorBucketCommand",
-    "expected": "{\"$ObjectLike\":{\"vectorBucket\":{\"vectorBucketName\":\"integ-vb-plain\"}}}",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"vectorBucket\":{\"vectorBucketArn\":\"",
+       {
+        "Fn::ImportValue": "VectorBucketIntegTest:ExportsOutputFnGetAttPlainBucket9A5027E6VectorBucketArn41F43652"
+       },
+       "\"}}}"
+      ]
+     ]
+    },
     "parameters": {
      "vectorBucketArn": {
       "Fn::Join": [
@@ -27,7 +38,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1778229218599"
+    "salt": "1779110157473"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -158,7 +169,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1778229218602"
+    "salt": "1779110157476"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -190,7 +201,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1778229218603"
+    "salt": "1779110157477"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -206,7 +217,18 @@
     },
     "service": "@aws-sdk/client-s3vectors",
     "api": "GetIndexCommand",
-    "expected": "{\"$ObjectLike\":{\"index\":{\"indexName\":\"integ-example-index\",\"dimension\":1024,\"dataType\":\"float32\",\"distanceMetric\":\"cosine\"}}}",
+    "expected": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"$ObjectLike\":{\"index\":{\"indexArn\":\"",
+       {
+        "Fn::ImportValue": "VectorBucketIntegTest:ExportsOutputFnGetAttIndex4A79713BIndexArn5888FEA5"
+       },
+       "\",\"dimension\":1024,\"dataType\":\"float32\",\"distanceMetric\":\"cosine\"}}}"
+      ]
+     ]
+    },
     "parameters": {
      "indexArn": {
       "Fn::Join": [
@@ -222,7 +244,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1778229218604"
+    "salt": "1779110157477"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

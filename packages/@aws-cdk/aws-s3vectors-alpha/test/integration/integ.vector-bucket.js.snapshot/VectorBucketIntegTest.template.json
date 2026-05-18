@@ -2,9 +2,6 @@
  "Resources": {
   "PlainBucket9A5027E6": {
    "Type": "AWS::S3Vectors::VectorBucket",
-   "Properties": {
-    "VectorBucketName": "integ-vb-plain"
-   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -166,6 +163,50 @@
         }
        },
        "Resource": "*"
+      },
+      {
+       "Action": "kms:Decrypt",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":s3vectors:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":bucket/*"
+           ]
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        },
+        "ForAnyValue:StringEquals": {
+         "kms:EncryptionContextKeys": [
+          "aws:s3vectors:arn",
+          "aws:s3vectors:resource-id"
+         ]
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "indexing.s3vectors.amazonaws.com"
+       },
+       "Resource": "*",
+       "Sid": "AllowS3VectorsServicePrincipal"
       }
      ],
      "Version": "2012-10-17"
@@ -185,8 +226,7 @@
       ]
      },
      "SseType": "aws:kms"
-    },
-    "VectorBucketName": "integ-vb-encrypted"
+    }
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -197,7 +237,6 @@
     "DataType": "float32",
     "Dimension": 1024,
     "DistanceMetric": "cosine",
-    "IndexName": "integ-example-index",
     "MetadataConfiguration": {
      "NonFilterableMetadataKeys": [
       "source",

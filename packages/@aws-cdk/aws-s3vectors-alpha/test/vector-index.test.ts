@@ -1,4 +1,5 @@
 import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
 import * as s3vectors from '../lib';
@@ -316,6 +317,18 @@ describe('VectorIndex', () => {
         vectorBucket,
       })).toThrow(/`indexArn` or `indexName` must be provided/);
     });
+
+    test('throws on a malformed indexArn', () => {
+      const importedBucket = s3vectors.VectorBucket.fromVectorBucketArn(
+        stack, 'ImportedBucket',
+        'arn:aws:s3vectors:us-east-1:123456789012:bucket/demo-bucket',
+      );
+
+      expect(() => s3vectors.VectorIndex.fromVectorIndexAttributes(stack, 'ImportedIndex', {
+        vectorBucket: importedBucket,
+        indexArn: 'arn:aws:s3vectors:us-east-1:123456789012:bucket/demo-bucket/oops/demo-index',
+      })).toThrow(/Expected an ARN of the form/);
+    });
   });
 
   describe('tagging', () => {
@@ -327,6 +340,37 @@ describe('VectorIndex', () => {
         distanceMetric: s3vectors.DistanceMetric.COSINE,
       });
       expect(core.TagManager.of(idx)).toBeDefined();
+    });
+  });
+
+  describe('addToResourcePolicy', () => {
+    test('forwards the statement to the parent vector bucket policy', () => {
+      const index = new s3vectors.VectorIndex(stack, 'ExampleVectorIndex', {
+        vectorBucket,
+        indexName: INDEX_NAME,
+        dimension: 128,
+        dataType: s3vectors.VectorDataType.FLOAT32,
+        distanceMetric: s3vectors.DistanceMetric.COSINE,
+      });
+
+      const result = index.addToResourcePolicy(new iam.PolicyStatement({
+        actions: ['s3vectors:GetVectors'],
+        principals: [new iam.AccountPrincipal('123456789012')],
+        resources: [index.indexArn],
+      }));
+
+      expect(result.statementAdded).toBe(true);
+      Template.fromStack(stack).hasResourceProperties('AWS::S3Vectors::VectorBucketPolicy', {
+        'Policy': {
+          'Statement': [
+            {
+              'Action': 's3vectors:GetVectors',
+              'Effect': 'Allow',
+              'Resource': { 'Fn::GetAtt': ['ExampleVectorIndex0BD96B3F', 'IndexArn'] },
+            },
+          ],
+        },
+      });
     });
   });
 });

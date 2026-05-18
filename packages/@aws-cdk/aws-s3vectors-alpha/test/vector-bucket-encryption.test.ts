@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as core from 'aws-cdk-lib/core';
 import * as s3vectors from '../lib';
@@ -76,6 +76,31 @@ describe('VectorBucket with encryption', () => {
       Template.fromStack(stack).hasResourceProperties(VECTOR_BUCKET_CFN_RESOURCE, {
         'EncryptionConfiguration': {
           'SseType': 'aws:kms',
+        },
+      });
+    });
+
+    test('grants kms:Decrypt to the indexing.s3vectors service principal', () => {
+      Template.fromStack(stack).hasResourceProperties(KMS_KEY_CFN_RESOURCE, {
+        'KeyPolicy': {
+          'Statement': Match.arrayWith([
+            Match.objectLike({
+              'Action': 'kms:Decrypt',
+              'Effect': 'Allow',
+              'Principal': { 'Service': 'indexing.s3vectors.amazonaws.com' },
+              'Condition': Match.objectLike({
+                'ArnLike': {
+                  'aws:SourceArn': {
+                    'Fn::Join': ['', Match.arrayWith([':s3vectors:'])],
+                  },
+                },
+                'StringEquals': { 'aws:SourceAccount': { 'Ref': 'AWS::AccountId' } },
+                'ForAnyValue:StringEquals': {
+                  'kms:EncryptionContextKeys': ['aws:s3vectors:arn', 'aws:s3vectors:resource-id'],
+                },
+              }),
+            }),
+          ]),
         },
       });
     });

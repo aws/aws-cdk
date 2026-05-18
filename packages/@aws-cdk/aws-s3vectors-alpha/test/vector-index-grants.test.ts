@@ -273,4 +273,39 @@ describe('VectorIndex grants', () => {
       });
     });
   });
+
+  describe('with an index overriding the bucket KMS key with S3_MANAGED', () => {
+    let bucketKey: kms.IKey;
+
+    beforeEach(() => {
+      bucketKey = new kms.Key(stack, 'BucketKey', {});
+      const vectorBucket = new s3vectors.VectorBucket(stack, 'ExampleVectorBucket', {
+        vectorBucketName: VECTOR_BUCKET_NAME,
+        encryption: s3vectors.VectorBucketEncryption.KMS,
+        encryptionKey: bucketKey,
+        removalPolicy: core.RemovalPolicy.DESTROY,
+      });
+      vectorIndex = new s3vectors.VectorIndex(stack, 'ExampleVectorIndex', {
+        vectorBucket,
+        indexName: INDEX_NAME,
+        dimension: 128,
+        dataType: s3vectors.VectorDataType.FLOAT32,
+        distanceMetric: s3vectors.DistanceMetric.COSINE,
+        encryption: s3vectors.VectorBucketEncryption.S3_MANAGED,
+      });
+    });
+
+    test('grantRead does not grant any kms permissions on the bucket key', () => {
+      vectorIndex.grantRead(role);
+
+      const bucketKeyArn = stack.resolve(bucketKey.keyArn);
+      const policies = Template.fromStack(stack).findResources('AWS::IAM::Policy');
+      const statements = Object.values(policies).flatMap((p: any) => p.Properties.PolicyDocument.Statement);
+      const kmsStatements = statements.filter((s: any) => Array.isArray(s.Action)
+        ? s.Action.some((a: string) => a.startsWith('kms:'))
+        : typeof s.Action === 'string' && s.Action.startsWith('kms:'));
+      const resourcesGranted = kmsStatements.map((s: any) => JSON.stringify(s.Resource));
+      expect(resourcesGranted).not.toContain(JSON.stringify(bucketKeyArn));
+    });
+  });
 });

@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "7644eca34661b4b2af159634869eede57bc84a5200881d687a94f74404f2c0cd": {
+    "6e625f032b8a32039f44e62624a7028cf2cc441dde31560403120210c1944d14": {
       "displayName": "VectorBucketIntegTest Template",
       "source": {
         "path": "VectorBucketIntegTest.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-db49a32c": {
+        "current_account-current_region-9667a447": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7644eca34661b4b2af159634869eede57bc84a5200881d687a94f74404f2c0cd.json",
+          "objectKey": "6e625f032b8a32039f44e62624a7028cf2cc441dde31560403120210c1944d14.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

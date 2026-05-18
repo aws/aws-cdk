@@ -16,7 +16,6 @@ class TestStack extends core.Stack {
     super(scope, id, props);
 
     this.plainBucket = new s3vectors.VectorBucket(this, 'PlainBucket', {
-      vectorBucketName: 'integ-vb-plain',
       removalPolicy: core.RemovalPolicy.DESTROY,
     });
 
@@ -32,7 +31,6 @@ class TestStack extends core.Stack {
 
     this.key = new kms.Key(this, 'Key', { removalPolicy: core.RemovalPolicy.DESTROY });
     this.encryptedBucket = new s3vectors.VectorBucket(this, 'EncryptedBucket', {
-      vectorBucketName: 'integ-vb-encrypted',
       encryption: s3vectors.VectorBucketEncryption.KMS,
       encryptionKey: this.key,
       removalPolicy: core.RemovalPolicy.DESTROY,
@@ -40,7 +38,6 @@ class TestStack extends core.Stack {
 
     this.vectorIndex = new s3vectors.VectorIndex(this, 'Index', {
       vectorBucket: this.encryptedBucket,
-      indexName: 'integ-example-index',
       dimension: 1024,
       dataType: s3vectors.VectorDataType.FLOAT32,
       distanceMetric: s3vectors.DistanceMetric.COSINE,
@@ -65,7 +62,7 @@ integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetVectorBucketCommand
   vectorBucketArn: stack.plainBucket.vectorBucketArn,
 }).expect(ExpectedResult.objectLike({
   vectorBucket: {
-    vectorBucketName: 'integ-vb-plain',
+    vectorBucketArn: stack.plainBucket.vectorBucketArn,
   },
 }));
 
@@ -90,7 +87,7 @@ integ.assertions.awsApiCall('@aws-sdk/client-s3vectors', 'GetIndexCommand', {
   indexArn: stack.vectorIndex.indexArn,
 }).expect(ExpectedResult.objectLike({
   index: {
-    indexName: 'integ-example-index',
+    indexArn: stack.vectorIndex.indexArn,
     dimension: 1024,
     dataType: 'float32',
     distanceMetric: 'cosine',
