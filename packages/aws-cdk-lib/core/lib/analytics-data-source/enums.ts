@@ -2165,6 +2165,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "c8i-flex",
     "compute7-amd",
     "c7a",
+    "compute8-amd",
+    "c8a",
     "storage2",
     "d2",
     "storage3",
