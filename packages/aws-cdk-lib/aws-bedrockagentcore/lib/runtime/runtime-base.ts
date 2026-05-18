@@ -12,7 +12,7 @@
  */
 
 import type { Construct } from 'constructs';
-import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS, RUNTIME_INVOKE_WEBSOCKET_STREAM_PERMS } from './perms';
+import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS, RUNTIME_INVOKE_WEBSOCKET_STREAM_PERMS, RUNTIME_INVOKE_WEBSOCKET_STREAM_USER_PERMS } from './perms';
 import type { IRuntimeRef, RuntimeReference } from '../../../aws-bedrockagentcore';
 import type {
   MetricOptions,
@@ -191,6 +191,14 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
    * @param grantee The principal to grant access to
    */
   grantInvokeWithWebSocketStream(grantee: iam.IGrantable): iam.Grant;
+
+  /**
+   * Permits an IAM principal to invoke this runtime via WebSocket stream on behalf of a user
+   * Grants the bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStreamForUser permission
+   * Required when using the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header with WebSocket stream
+   * @param grantee The principal to grant access to
+   */
+  grantInvokeWithWebSocketStreamForUser(grantee: iam.IGrantable): iam.Grant;
 }
 
 /******************************************************************************
@@ -333,6 +341,23 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
     return iam.Grant.addToPrincipal({
       grantee,
       actions: RUNTIME_INVOKE_WEBSOCKET_STREAM_PERMS,
+      resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`],
+    });
+  }
+
+  /**
+   * Permits an IAM principal to invoke this runtime via WebSocket stream on behalf of a user
+   * Grants the bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStreamForUser permission
+   * Required when using the X-Amzn-Bedrock-AgentCore-Runtime-User-Id header with WebSocket stream
+   *
+   * [disable-awslint:no-grants]
+   *
+   * @param grantee The principal to grant access to
+   */
+  public grantInvokeWithWebSocketStreamForUser(grantee: iam.IGrantable): iam.Grant {
+    return iam.Grant.addToPrincipal({
+      grantee,
+      actions: RUNTIME_INVOKE_WEBSOCKET_STREAM_USER_PERMS,
       resourceArns: [this.runtimeRef.agentRuntimeArn, `${this.runtimeRef.agentRuntimeArn}/*`],
     });
   }
