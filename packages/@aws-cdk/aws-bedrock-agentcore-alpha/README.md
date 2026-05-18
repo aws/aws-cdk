@@ -98,6 +98,8 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Tools schema For Lambda target](#tools-schema-for-lambda-target)
     - [Api schema For OpenAPI and Smithy target](#api-schema-for-openapi-and-smithy-target)
     - [Outbound auth](#outbound-auth)
+      - [Token Vault credential providers](#token-vault-credential-providers)
+      - [Workload identities](#workload-identities)
     - [Basic Gateway Target Creation](#basic-gateway-target-creation)
       - [Using addTarget methods (Recommended)](#using-addtarget-methods-recommended)
       - [Using static factory methods](#using-static-factory-methods)
@@ -114,6 +116,26 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
       - [Memory with Custom Execution Role](#memory-with-custom-execution-role)
     - [Memory with self-managed Strategies](#memory-with-self-managed-strategies)
     - [Memory Strategy Methods](#memory-strategy-methods)
+  - [Policy](#policy)
+    - [PolicyEngine Properties](#policyengine-properties)
+    - [Policy Properties](#policy-properties)
+    - [Basic PolicyEngine and Policy Creation](#basic-policyengine-and-policy-creation)
+    - [Associating a Policy Engine with a Gateway](#associating-a-policy-engine-with-a-gateway)
+    - [Type-Safe Policy Builder](#type-safe-policy-builder)
+    - [PolicyEngine with KMS Encryption](#policyengine-with-kms-encryption)
+    - [Policy Validation Modes](#policy-validation-modes)
+  - [Online Evaluation](#online-evaluation)
+    - [Online Evaluation Properties](#online-evaluation-properties)
+    - [Basic Online Evaluation Creation](#basic-online-evaluation-creation)
+    - [Built-in Evaluators](#built-in-evaluators)
+    - [Custom Evaluators](#custom-evaluators)
+      - [LLM-as-a-Judge Evaluator](#llm-as-a-judge-evaluator)
+      - [Code-Based Evaluator](#code-based-evaluator)
+      - [Using Custom Evaluators with Online Evaluation](#using-custom-evaluators-with-online-evaluation)
+    - [Data Source Configuration](#data-source-configuration)
+    - [Sampling and Filtering](#sampling-and-filtering)
+    - [Online Evaluation with Custom Execution Role](#online-evaluation-with-custom-execution-role)
+    - [Online Evaluation IAM Permissions](#online-evaluation-iam-permissions)
 
 ## AgentCore Runtime
 
@@ -800,6 +822,52 @@ new agentcore.Runtime(this, 'test-runtime', {
 });
 ```
 
+#### Observability configuration
+
+The Runtime construct supports observability features including X-Ray tracing and logging to CloudWatch Logs, S3, or Kinesis Data Firehose. This allows you to monitor and debug your agent runtime invocations.
+
+You can configure:
+
+- tracingEnabled: Enable X-Ray tracing for the runtime
+- loggingConfigs: Send APPLICATION_LOGS (agent runtime invocations) and USAGE_LOGS (session-level resource consumption) to CloudWatch Logs, S3, or Kinesis Data Firehose
+
+For additional information, please refer to the [Set up logging and tracing for AgentCore](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability.html).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+
+// Create logging destinations
+const logGroup = new logs.LogGroup(this, 'RuntimeLogGroup');
+const logBucket = new s3.Bucket(this, 'RuntimeLogBucket');
+const firehoseStream = new firehose.DeliveryStream(this, 'RuntimeLogStream', {
+  destination: new firehose.S3Bucket(logBucket),
+});
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  tracingEnabled: true,
+  loggingConfigs: [
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.cloudWatchLogs(logGroup),
+    },
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.s3(logBucket),
+    },
+    {
+      logType: agentcore.LogType.APPLICATION_LOGS,
+      destination: agentcore.LoggingDestination.firehose(firehoseStream),
+    },
+  ],
+});
+```
+
 ## Browser
 
 The Amazon Bedrock AgentCore Browser provides a secure, cloud-based browser that enables AI agents to interact with websites. It includes security features such as session isolation, built-in observability through live viewing, CloudTrail logging, and session replay capabilities.
@@ -1177,6 +1245,7 @@ The Gateway construct provides a way to create Amazon Bedrock Agent Core Gateway
 | `kmsKey` | `kms.IKey` | No | The AWS KMS key used to encrypt data associated with the gateway |
 | `role` | `iam.IRole` | No | The IAM role that provides permissions for the gateway to access AWS services. A new role will be created if not provided |
 | `tags` | `{ [key: string]: string }` | No | Tags for the gateway. A list of key:value pairs of tags to apply to this Gateway resource |
+| `policyEngineConfiguration` | `GatewayPolicyEngineConfig` | No | Associates a policy engine with this gateway. All agent requests are evaluated against the Cedar policies in the engine. The gateway role is automatically granted evaluate permissions. Default: no policy engine |
 
 ### Basic Gateway Creation
 
@@ -1264,6 +1333,20 @@ const lambdaRole = new iam.Role(this, "LambdaRole", {
 // The Lambda needs permission to invoke the gateway
 gateway.grantInvoke(lambdaRole);
 ```
+
+**No Authorization** – Creates a gateway with no inbound authorization. This is useful for building public MCP servers,
+or when you want to skip gateway-level authentication and enforce tool execution-level authentication using Gateway Interceptors.
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  authorizerConfiguration: agentcore.GatewayAuthorizer.withNoAuth(),
+});
+```
+
+> **⚠️ Important:** Do not use No Authorization gateways for production workloads unless you have implemented all the security best practices. No Authorization gateways are most appropriate for testing and development purposes. See [Security Best Practices](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none) for required compensating controls.
+
+For more information, see [No Authorization](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-inbound-auth.html#gateway-inbound-auth-none).
 
 **Cognito with M2M (Machine-to-Machine) Authentication (Default)** – When no authorizer is specified, the construct automatically creates a Cognito User Pool configured for OAuth 2.0 client credentials flow. This enables machine-to-machine authentication suitable for AI agents and service-to-service communication.
 
@@ -1436,7 +1519,7 @@ credential provider attached enabling you to securely access targets whether the
 | `description` | `string` | No | Optional description for the gateway target. Maximum 200 characters |
 | `gateway` | `IGateway` | Yes | The gateway this target belongs to |
 | `targetConfiguration` | `ITargetConfiguration` | Yes | The target configuration (Lambda, OpenAPI, Smithy, or API Gateway). **Note:** Users typically don't create this directly. When using convenience methods like `GatewayTarget.forLambda()`, `GatewayTarget.forOpenApi()`, `GatewayTarget.forSmithy()`, `GatewayTarget.forApiGateway()`, `GatewayTarget.forMcpServer()` or the gateway's `addLambdaTarget()`, `addOpenApiTarget()`, `addSmithyTarget()`, `addApiGatewayTarget()`, `addMcpServerTarget()` methods, this configuration is created internally for you. Only needed when using the GatewayTarget constructor directly for [advanced scenarios](#advanced-usage-direct-configuration-for-gateway-target). |
-| `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. Use `GatewayCredentialProvider.fromApiKeyIdentityArn()`, `GatewayCredentialProvider.fromOauthIdentityArn()`, or `GatewayCredentialProvider.fromIamRole()` |
+| `credentialProviderConfigurations` | `IGatewayCredentialProvider[]` | No | Credential providers for authentication. Defaults to `[GatewayCredentialProvider.fromIamRole()]`. With Token Vault L2 constructs, prefer `GatewayCredentialProvider.fromApiKeyIdentity()` / `fromOauthIdentity()`; otherwise use `fromApiKeyIdentityArn()` / `fromOauthIdentityArn()`, or `fromIamRole()` |
 | `validateOpenApiSchema` | `boolean` | No | (OpenAPI targets only) Whether to validate the OpenAPI schema at synthesis time. Defaults to `true`. Only applies to inline and local asset schemas. For more information refer here <https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/gateway-schema-openapi.html> |
 
 This approach gives you full control over the configuration but is typically not necessary for most use cases.
@@ -1643,6 +1726,93 @@ The gateway authenticates on its own behalf, not on behalf of a user.
 
 **Note > You need to set up the outbound identity before you can create a gateway target.
 
+#### Token Vault credential providers
+
+AgentCore stores outbound **API key** and **OAuth2** client credentials in Token Vault. This module includes L2 constructs that create those resources and connect them to gateway targets.
+
+**Shared OAuth2 fields** — Every `OAuth2CredentialProvider` factory accepts the same **`clientId`** and **`clientSecret`**, plus optional **`oAuth2CredentialProviderName`** and **`tags`**. Extra properties appear only when an IdP needs them (for example **`tenantId`** for Microsoft, or **`issuer`** / endpoint overrides for Okta and other *included* configurations).
+
+**Vendor factories** — Prefer `OAuth2CredentialProvider.usingSlack`, `.usingGithub`, `.usingGoogle`, `.usingMicrosoft`, `.usingOkta`, `.usingAuth0`, `.usingCognito`, and the other `using*` helpers for known providers. Each maps to the matching CloudFormation *included* provider configuration.
+
+**Custom OAuth2 (`usingCustom`)** — Supply **exactly one** of:
+
+- **`discoveryUrl`** — OIDC/OAuth2 discovery document URL (for example `https://idp.example.com/.well-known/openid-configuration`), or
+- **`authorizationServerMetadata`** — Manual authorization server metadata (`issuer`, `authorizationEndpoint`, `tokenEndpoint`, and other fields supported by the `AWS::BedrockAgentCore::OAuth2CredentialProvider` resource).
+
+Do not pass both. The construct validates this at synthesis time when values are known; if you use CDK tokens, ensure the resolved template still satisfies the service rules.
+
+**Wiring to gateway targets** — After you create a provider in CDK, pass the construct to **`GatewayCredentialProvider.fromOauthIdentity()`** or **`fromApiKeyIdentity()`** (optional API key header/query settings go in the second argument for API keys). Alternatively, call **`bindForGatewayOAuthTarget`** / **`bindForGatewayApiKeyTarget`** on the provider and pass that object to **`fromOauthIdentityArn`** / **`fromApiKeyIdentityArn`**. You can still pass raw ARNs from the console or API when the provider already exists.
+
+**Example: GitHub OAuth2 and an MCP target**
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const oauth = agentcore.OAuth2CredentialProvider.usingGithub(this, "GhOAuth", {
+  oAuth2CredentialProviderName: "github-oauth",
+  clientId: "your-client-id",
+  clientSecret: cdk.SecretValue.unsafePlainText("your-client-secret"),
+});
+
+gateway.addMcpServerTarget("Mcp", {
+  gatewayTargetName: "mcp-server",
+  description: "MCP with GitHub OAuth",
+  endpoint: "https://my-mcp-server.example.com",
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.fromOauthIdentity(oauth, {
+      scopes: ["read:user"],
+    }),
+  ],
+});
+```
+
+**Example: custom IdP with a discovery URL**
+
+```typescript fixture=default
+agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuth", {
+  oAuth2CredentialProviderName: "custom-idp",
+  clientId: "your-client-id",
+  clientSecret: cdk.SecretValue.unsafePlainText("your-client-secret"),
+  discoveryUrl: "https://idp.example.com/.well-known/openid-configuration",
+});
+```
+
+**Example: custom IdP with explicit authorization server metadata**
+
+```typescript fixture=default
+agentcore.OAuth2CredentialProvider.usingCustom(this, "CustomOAuthMeta", {
+  clientId: "your-client-id",
+  clientSecret: cdk.SecretValue.unsafePlainText("your-client-secret"),
+  authorizationServerMetadata: {
+    issuer: "https://idp.example.com",
+    authorizationEndpoint: "https://idp.example.com/oauth2/authorize",
+    tokenEndpoint: "https://idp.example.com/oauth2/token",
+  },
+});
+```
+
+#### Workload identities
+
+A **workload identity** is the stable identity of an agent in your AWS account within the AgentCore Identity model. It ties together IAM roles, OAuth2 flows, API keys, and workload access tokens so agents can authenticate consistently across environments. For conceptual background, see [Understanding workload identities](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/understanding-agent-identities.html).
+
+**Agent identity directory** — Each account has a single logical directory that holds every workload identity, whether it was created by AgentCore Runtime, AgentCore Gateway, or manually (for example through CloudFormation or the control-plane API). The directory is created automatically when the first workload identity exists. Resource ARNs follow the pattern described in [Understanding the agent identity directory](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agent-identity-directory.html) (`workload-identity-directory/default` and child `workload-identity/<name>` entries).
+
+**When to create one in CDK** — Runtime and Gateway can create workload identities for you during deployment. Use the **`WorkloadIdentity`** L2 when you need a **manually defined** identity (custom name, allowed OAuth2 return URLs, tags) or when integrating workloads that are not driven by those services.
+
+**Construct** — `WorkloadIdentity` maps to **`AWS::BedrockAgentCore::WorkloadIdentity`**. It exposes `workloadIdentityArn`, `workloadIdentityName`, and `workloadIdentityRef` for wiring into IAM or other AgentCore resources. Import an existing identity with **`WorkloadIdentity.fromWorkloadIdentityAttributes`**. Grant helpers (`grantRead`, `grantAdmin`, `grantFullAccess`) align with [directory-level IAM patterns](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agent-identity-directory.html#directory-access-control-and-permissions) such as listing identities on the directory resource and scoping mutations to specific identity ARNs.
+
+**Example**
+
+```typescript fixture=default
+new agentcore.WorkloadIdentity(this, "MyWorkloadIdentity", {
+  workloadIdentityName: "customer-support-agent-prod",
+  allowedResourceOauth2ReturnUrls: ["https://app.example.com/oauth/callback"],
+  tags: { team: "agents", env: "prod" },
+});
+```
+
 ### Basic Gateway Target Creation
 
 You can create targets in two ways: using the static factory methods on `GatewayTarget` or using the convenient `addTarget` methods on the gateway instance.
@@ -1695,21 +1865,54 @@ const lambdaTarget = gateway.addLambdaTarget("MyLambdaTarget", {
 });
 ```
 
-- OpenAPI Target
+- OpenAPI Target (using Token Vault L2 construct — preferred)
 
 ``` typescript
 const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// These ARNs are returned when creating the API key credential provider via Console or API
+// Create an API key credential provider in Token Vault
+const apiKeyProvider = new agentcore.ApiKeyCredentialProvider(this, "MyApiKeyProvider", {
+  apiKeyCredentialProviderName: "my-apikey",
+});
+
+const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
+const s3mySchema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
+
+// Add an OpenAPI target using the L2 construct directly
+const target = gateway.addOpenApiTarget("MyTarget", {
+  gatewayTargetName: "my-api-target",
+  description: "Target for external API integration",
+  apiSchema: s3mySchema,
+  credentialProviderConfigurations: [
+    agentcore.GatewayCredentialProvider.fromApiKeyIdentity(apiKeyProvider, {
+      credentialLocation: agentcore.ApiKeyCredentialLocation.header({
+        credentialParameterName: "X-API-Key",
+      }),
+    }),
+  ],
+});
+
+// This makes sure your s3 bucket is available before target
+target.node.addDependency(bucket);
+```
+
+- OpenAPI Target (using ARNs — for providers created outside of CDK)
+
+``` typescript
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+// ARNs from the console/API, or from ApiKeyCredentialProvider + bindForGatewayApiKeyTarget
 const apiKeyProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/apikeycredentialprovider/my-apikey"
 const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
 const bucket = s3.Bucket.fromBucketName(this, "ExistingBucket", "my-schema-bucket");
 const s3mySchema = agentcore.ApiSchema.fromS3File(bucket, "schemas/myschema.yaml");
 
-// Add an OpenAPI target directly to the gateway
+// Add an OpenAPI target using ARNs directly
 const target = gateway.addOpenApiTarget("MyTarget", {
   gatewayTargetName: "my-api-target",
   description: "Target for external API integration",
@@ -1725,7 +1928,7 @@ const target = gateway.addOpenApiTarget("MyTarget", {
   ],
 });
 
-// This make sure your s3 bucket is available before target 
+// This makes sure your s3 bucket is available before target
 target.node.addDependency(bucket);
 ```
 
@@ -1757,8 +1960,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// OAuth2 authentication (recommended)
-// Note: Create the OAuth provider using AWS console or Identity L2 construct when available
+// OAuth2 (recommended): use OAuth2CredentialProvider + bindForGatewayOAuthTarget, or ARNs from console/API
 const oauthProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/oauth2credentialprovider/my-oauth";
 const oauthSecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-oauth-secret-abc123";
 
@@ -1867,7 +2069,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// outbound auth (Use AWS console to create it, Once Identity L2 construct is available you can use it to create identity)
+// Outbound auth: ApiKeyCredentialProvider + bindForGatewayApiKeyTarget, or ARNs from console/API
 const apiKeyIdentityArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/apikeycredentialprovider/my-apikey"
 const apiKeySecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-apikey-secret-abc123"
 
@@ -1920,8 +2122,7 @@ const gateway = new agentcore.Gateway(this, "MyGateway", {
   gatewayName: "my-gateway",
 });
 
-// OAuth2 authentication (recommended)
-// Note: Create the OAuth provider using AWS console or Identity L2 construct when available
+// OAuth2 (recommended): use OAuth2CredentialProvider + bindForGatewayOAuthTarget, or ARNs from console/API
 const oauthProviderArn = "arn:aws:bedrock-agentcore:us-east-1:123456789012:token-vault/abc123/oauth2credentialprovider/my-oauth";
 const oauthSecretArn = "arn:aws:secretsmanager:us-east-1:123456789012:secret:my-oauth-secret-abc123";
 
@@ -2519,4 +2720,760 @@ const memory = new agentcore.Memory(this, "test-memory", {
 // Add strategies after instantiation
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSummarization());
 memory.addMemoryStrategy(agentcore.MemoryStrategy.usingBuiltInSemantic());
+```
+
+## Policy Engine
+
+A policy engine is a collection of policies that evaluates and authorizes agent tool calls. When associated with a gateway, the policy engine intercepts all agent requests and determines whether to allow or deny each action based on the defined policies.
+
+For more information, see the [Policy in Amazon Bedrock AgentCore documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/policy.html).
+
+### PolicyEngine Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `policyEngineName` | `string` | No | The name of the policy engine. Valid characters: a-z, A-Z, 0-9, _ (underscore). Must start with a letter, 1-48 characters. If not provided, a unique name will be auto-generated |
+| `description` | `string` | No | Optional description for the policy engine (max 4,096 characters). Default: no description |
+| `kmsKey` | `IKey` | No | Custom KMS key for encryption. **IMPORTANT**: Once set, cannot be changed (requires replacement). Must be symmetric ENCRYPT_DECRYPT key. If key becomes inaccessible, all authorization decisions will be DENIED. Default: AWS owned key |
+| `tags` | `{ [key: string]: string }` | No | Tags for the policy engine (max 50 tags). Default: no tags |
+
+### Understanding Cedar Policies in AgentCore
+
+Policies are constructed using [Cedar language](https://www.cedarpolicy.com/en/tutorial), an open source language for writing and enforcing authorization policies.
+Cedar policies in AgentCore follow a specific structure with three main components: **Principal**, **Action**, and **Resource**. Understanding how these components work together is critical for writing effective policies.
+
+#### Policy Structure
+
+Every Cedar policy has this basic structure:
+
+```cedar
+permit(              // or forbid
+  principal,         // Who is making the request
+  action,            // What operation they want to perform
+  resource           // What Gateway/tool they want to access
+)
+when {               // Optional conditions
+  // Additional constraints
+};
+```
+
+Example Policy
+
+```cedar
+permit(
+  principal,
+  action == AgentCore::Action::"ApplicationToolTarget___create_application",
+  resource == AgentCore::Gateway::"<gateway-arn>"
+) when {
+  context.input.coverage_amount <= 1000000
+};
+```
+
+### Basic PolicyEngine and Policy Creation
+
+Create a policy engine and add policies to it.
+
+#### Policy Engine Mode
+
+When associating a policy engine with a gateway, you can control the enforcement behavior using `PolicyEngineMode`:
+
+- `PolicyEngineMode.LOG_ONLY` (default) — evaluates actions and adds traces but does not enforce decisions. Use this mode for testing and validation before enabling enforcement.
+- `PolicyEngineMode.ENFORCE` — actively allows or denies agent operations based on Cedar policy evaluation.
+
+```typescript fixture=default
+
+// Create a Policy engine  
+const policyEngine = new agentcore.PolicyEngine(this, "MyPolicyEngine", {
+  policyEngineName: "my_policy_engine",
+  description: "Policy engine for access control",
+});
+
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+  policyEngineConfiguration: {
+    policyEngine: policyEngine,
+    mode: agentcore.PolicyEngineMode.ENFORCE, // Default is LOG_ONLY
+  },
+});
+
+// Add policy to policy engine
+policyEngine.addPolicy("AllowAllActions", {
+  definition: `
+    permit(
+      principal,
+      action,
+      resource == AgentCore::Gateway::"${gateway.gatewayArn}"
+    );
+  `,
+  description: "Allow all actions on specific gateway (development)",
+  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS, // This will ignore all cedar warnings
+});
+
+// you can add multiple policies to the policy engine
+policyEngine.addPolicy("SpecificToolPolicy", {
+  definition: `
+    permit(
+      principal is AgentCore::OAuthUser,
+      action == AgentCore::Action::"WeatherTool__get_forecast",
+      resource == AgentCore::Gateway::"${gateway.gatewayArn}"
+    );
+  `,
+  description: "Allow specific weather tool access",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS, // This will fail policy creation for any cedar warning
+});
+```
+
+### Type-Safe Policy Builder
+
+For a more type-safe approach, use the `PolicyStatement` builder instead of writing raw Cedar syntax.
+
+```typescript fixture=default
+const gateway = new agentcore.Gateway(this, "MyGateway", {
+  gatewayName: "my-gateway",
+});
+
+const policyEngine = new agentcore.PolicyEngine(this, "MyPolicyEngine", {
+  policyEngineName: "my_policy_engine",
+});
+
+const allowAllPolicy = new agentcore.Policy(this, "AllowAllPolicy", {
+  policyEngine: policyEngine,
+  policyName: "allow_all",
+  statement: agentcore.PolicyStatement.permit()
+    .forAllPrincipals() // ** This will give overly permission to all principals
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),
+  description: "Allow all actions on specific gateway (development only)",
+  validationMode: agentcore.PolicyValidationMode.IGNORE_ALL_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal,
+//   action,
+//   resource == AgentCore::Gateway::"arn:aws:bedrock-agentcore:region:account:gateway/gateway-id"
+// );
+```
+
+#### Policy with Specific Actions
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow specific tool actions on specific gateway
+// Action names follow pattern: "ToolName__operation"
+policyEngine.addPolicy("SpecificToolPolicy", {
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser::your-client-id') 
+    .onActions([
+      'AgentCore::Action::WeatherTool__get_forecast',
+      'AgentCore::Action::WeatherTool__get_current',
+    ])
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),  
+  description: "Allow specific weather tool operations",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action in [
+//     AgentCore::Action::"WeatherTool__get_forecast",
+//     AgentCore::Action::"WeatherTool__get_current"
+//   ],
+//   resource == AgentCore::Gateway::"arn:aws:bedrock-agentcore:us-east-1:123:gateway/gw-123"
+// );
+```
+
+#### Policy with Conditions
+
+Use `when` clauses to add advanced conditions based on principal tags (from OAuth token) or context:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Policy with when conditions using principal tags
+const conditionalPolicy = new agentcore.Policy(this, "ConditionalPolicy", {
+  policyEngine: policyEngine,
+  policyName: "conditional_access",
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')  // Type constraint
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)  // Specific ARN
+    .when()
+      .principalAttribute('department').equalTo('Engineering')
+      .and()
+      .contextAttribute('input.priority').equalTo('high')
+      .done(),
+  description: "Allow engineers for high-priority requests",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action,
+//   resource == AgentCore::Gateway::"arn:..."
+// )
+// when {
+//   principal.department == "Engineering" && context.input.priority == "high"
+// };
+```
+
+#### Policy with Exclusions (unless)
+
+Use `unless` clauses to exclude specific conditions from a policy. The policy applies when the `unless` conditions are NOT met:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow access unless the user is suspended
+const policyWithUnless = new agentcore.Policy(this, "UnlessPolicy", {
+  policyEngine: policyEngine,
+  policyName: "unless_suspended",
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)
+    .unless()
+      .principalAttribute('suspended').equalTo(true)
+      .done(),
+  description: "Allow all actions unless user is suspended",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// permit(
+//   principal is AgentCore::OAuthUser,
+//   action,
+//   resource == AgentCore::Gateway::"arn:..."
+// )
+// unless {
+//   principal.suspended == true
+// };
+```
+
+You can combine `when` and `unless` clauses in the same policy:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Allow engineers unless they are on probation
+policyEngine.addPolicy("CombinedConditions", {
+  statement: agentcore.PolicyStatement.permit()
+    .forPrincipal('AgentCore::OAuthUser')
+    .onAllActions()
+    .onResource('AgentCore::Gateway', gateway.gatewayArn)
+    .when()
+      .principalAttribute('department').equalTo('Engineering')
+      .done()
+    .unless()
+      .principalAttribute('status').equalTo('probation')
+      .done(),
+  description: "Allow engineers unless on probation",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+```
+
+#### Forbid (Deny) Policy
+
+Use `forbid` to explicitly deny access. Forbid policies override permit policies.
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+declare const gateway: agentcore.Gateway;
+
+// Explicitly deny dangerous tool operations
+policyEngine.addPolicy("DenyDangerous", {
+  statement: agentcore.PolicyStatement.forbid()
+    .forAllPrincipals()
+    .onAction('AgentCore::Action::DeleteTool__delete_all')
+    .onResource('AgentCore::Gateway', gateway.gatewayArn),
+  description: "Forbid delete_all operation for all users",
+  validationMode: agentcore.PolicyValidationMode.FAIL_ON_ANY_FINDINGS,
+});
+
+// Generated Cedar:
+// forbid(
+//   principal,
+//   action == AgentCore::Action::"DeleteTool__delete_all",
+//   resource == AgentCore::Gateway::"arn:..."
+// );
+```
+
+#### Raw Cedar for Advanced Cases
+
+For advanced Cedar features not supported by the builder, use raw Cedar strings:
+
+```typescript fixture=default
+declare const policyEngine: agentcore.PolicyEngine;
+
+// Option 1: Using definition property
+const advancedPolicy = new agentcore.Policy(this, "AdvancedPolicy", {
+  policyEngine: policyEngine,
+  definition: 'permit(principal, action, resource) when { context.custom > 10 };',
+  description: "Advanced policy with custom Cedar logic",
+});
+
+// Option 2: Using fromCedar() with statement property
+policyEngine.addPolicy("CustomPolicy", {
+  statement: agentcore.PolicyStatement.fromCedar(
+    'forbid(principal, action, resource) when { resource.confidential == true };'
+  ),
+  description: "Custom policy from Cedar string",
+});
+```
+
+**Note**: You must specify **either** `definition` (raw Cedar string) **or** `statement` (PolicyStatement builder), but not both.
+
+#### Accessing Policies on PolicyEngine
+
+You can access the list of policies added to a PolicyEngine using policyEngine.policies.
+
+### PolicyEngine with KMS Encryption
+
+Encrypt policy data with a custom KMS key.
+
+```typescript fixture=default
+// Create a custom KMS key
+const policyKey = new kms.Key(this, "PolicyEngineKey", {
+  enableKeyRotation: true,
+  description: "KMS key for policy engine encryption",
+});
+
+// Create policy engine with encryption
+const policyEngine = new agentcore.PolicyEngine(this, "EncryptedEngine", {
+  policyEngineName: "encrypted_engine",
+  description: "Policy engine with KMS encryption",
+  kmsKey: policyKey,
+});
+```
+
+### Importing Existing PolicyEngine
+
+Import an existing policy engine from its ARN:
+
+```typescript fixture=default
+const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
+  this,
+  "ImportedEngine",
+  {
+    policyEngineArn: "policy-engine-arn",
+    kmsKeyArn: "kms-arn",
+  }
+);
+
+// Use the imported engine
+const policy = new agentcore.Policy(this, "PolicyForImportedEngine", {
+  policyEngine: importedEngine,
+  definition: "permit(principal, action, resource);",
+});
+```
+
+### Importing Existing Policy
+
+Import an existing policy from its ARN:
+
+```typescript fixture=default
+const importedEngine = agentcore.PolicyEngine.fromPolicyEngineAttributes(
+  this,
+  "ImportedEngine",
+  {
+    policyEngineArn: "policy-engine/my-engine-id",
+  }
+);
+
+const importedPolicy = agentcore.Policy.fromPolicyAttributes(
+  this,
+  "ImportedPolicy",
+  {
+    policyArn: "my-policy-arn",
+    policyEngine: importedEngine,
+  }
+);
+
+// Grant permissions to the imported policy
+const role = new iam.Role(this, "PolicyRole", {
+  assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+});
+
+importedPolicy.grantRead(role);
+```
+
+### PolicyEngine IAM Permissions
+
+Grant various levels of access to policy engines:
+
+```typescript fixture=default
+const policyEngine = new agentcore.PolicyEngine(this, "MyEngine", {
+  policyEngineName: "my_engine",
+});
+
+const lambdaRole = new iam.Role(this, "LambdaRole", {
+  assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+});
+
+// Grant read permissions 
+policyEngine.grantRead(lambdaRole);
+
+// Grant evaluation permissions 
+policyEngine.grantEvaluate(lambdaRole);
+
+```
+
+## Online Evaluation
+
+The Online Evaluation construct enables continuous monitoring and assessment of your agent's performance using live traffic. It automatically samples agent traces from CloudWatch Logs or Agent Endpoints and applies built-in evaluators to assess quality metrics like helpfulness, correctness, and safety.
+
+### Prerequisites
+
+Before creating an `OnlineEvaluationConfig`, ensure the following are configured in your account:
+
+- **CloudWatch Transaction Search** enabled — this creates the `aws/spans` log group required by the evaluation service. See [Enable Transaction Search](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/observability-configure.html).
+- **AWS Distro for OpenTelemetry (ADOT) SDK** instrumenting your agent to emit traces.
+
+For full details, see [AgentCore Evaluations Prerequisites](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/evaluations-prerequisites.html).
+
+### Online Evaluation Properties
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `onlineEvaluationConfigName` | `string` | Yes | The name of the online evaluation configuration. Must start with a letter and can contain a-z, A-Z, 0-9, _ (underscore). Maximum 48 characters |
+| `evaluators` | `EvaluatorReference[]` | Yes | The list of built-in evaluators to apply during evaluation. Minimum 1, maximum 10 |
+| `dataSource` | `DataSourceConfig` | Yes | The data source configuration specifying where to read agent traces from |
+| `executionRole` | `iam.IRole` | No | The IAM role for evaluation. If not provided, a role will be created automatically |
+| `description` | `string` | No | Description of the evaluation configuration. Maximum 200 characters |
+| `samplingPercentage` | `number` | No | Percentage of traces to sample (0.01-100). Default: 10 |
+| `filters` | `FilterConfig[]` | No | Filters to determine which traces to evaluate. Use `FilterValue.string()`, `FilterValue.number()`, or `FilterValue.boolean()` for typed filter values. Maximum 5 |
+| `sessionTimeout` | `Duration` | No | Duration of inactivity before a session is considered complete (1-1440 minutes). Default: `Duration.minutes(15)` |
+| `tags` | `{ [key: string]: string }` | No | Tags for the evaluation configuration |
+
+### Basic Online Evaluation Creation
+
+Create an online evaluation configuration with built-in evaluators:
+
+```typescript fixture=default
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MyEvaluation', {
+  onlineEvaluationConfigName: 'my_evaluation',
+  evaluators: [
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+    serviceNames: ['my-agent.default'],
+  }),
+});
+```
+
+### Built-in Evaluators
+
+Amazon Bedrock AgentCore provides 13 built-in evaluators that assess different aspects of agent performance:
+
+**Session-Level Evaluators:**
+
+- `GOAL_SUCCESS_RATE` - Evaluates whether the conversation successfully meets the user's goals
+
+**Trace-Level Evaluators:**
+
+- `HELPFULNESS` - How useful and valuable the agent's response is
+- `CORRECTNESS` - Whether the information is factually accurate
+- `FAITHFULNESS` - Whether the response is faithful to the provided context
+- `HARMFULNESS` - Whether the response contains harmful content
+- `STEREOTYPING` - Detects content that makes generalizations about individuals or groups
+- `REFUSAL` - Whether the agent appropriately refuses harmful requests
+- `COHERENCE` - Whether the response is logically coherent
+- `RESPONSE_RELEVANCE` - Whether the response appropriately addresses the user's query
+- `CONCISENESS` - Whether the response is appropriately concise
+- `INSTRUCTION_FOLLOWING` - How well the agent follows system instructions
+
+**Tool Call-Level Evaluators:**
+
+- `TOOL_SELECTION_ACCURACY` - Whether the agent selected the appropriate tool
+- `TOOL_PARAMETER_ACCURACY` - How accurately the agent extracts parameters from user queries
+
+```typescript fixture=default
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ComprehensiveEval', {
+  onlineEvaluationConfigName: 'comprehensive_evaluation',
+  evaluators: [
+    // Session level
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.GOAL_SUCCESS_RATE),
+    // Trace level - quality
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.COHERENCE),
+    // Trace level - safety
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HARMFULNESS),
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.STEREOTYPING),
+    // Tool call level
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.TOOL_SELECTION_ACCURACY),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+    serviceNames: ['my-agent.default'],
+  }),
+});
+```
+
+### Custom Evaluators
+
+Custom evaluators let you define evaluation logic tailored to your specific use cases. You can create custom evaluators using two strategies:
+
+- **LLM-as-a-Judge**: Uses a foundation model with custom instructions and a rating scale to assess agent performance.
+- **Code-based**: Uses a Lambda function for custom evaluation logic.
+
+| Property | Type | Required | Description |
+|---|---|---|---|
+| `evaluatorName` | `string` | Yes | Name of the evaluator. Must start with a letter, a-z, A-Z, 0-9, _ only. Maximum 48 characters |
+| `evaluatorConfig` | `EvaluatorConfig` | Yes | Configuration defining how the evaluator assesses performance |
+| `level` | `EvaluationLevel` | Yes | The level at which the evaluator operates: `TOOL_CALL`, `TRACE`, or `SESSION` |
+| `description` | `string` | No | Description of the evaluator. Maximum 200 characters |
+| `tags` | `{ [key: string]: string }` | No | Tags for the evaluator. A list of key:value pairs to apply to this Evaluator resource |
+
+#### LLM-as-a-Judge Evaluator
+
+Create a custom evaluator that uses a foundation model to assess agent performance:
+
+```typescript fixture=default
+// LLM-as-a-Judge with categorical rating scale
+const categoricalEvaluator = new agentcore.Evaluator(this, 'CategoricalEvaluator', {
+  evaluatorName: 'domain_accuracy_evaluator',
+  level: agentcore.EvaluationLevel.SESSION,
+  description: 'Evaluates domain-specific accuracy of agent responses',
+  evaluatorConfig: agentcore.EvaluatorConfig.llmAsAJudge({
+    instructions: 'Evaluate whether the agent response is accurate within the healthcare domain.',
+    modelId: 'us.anthropic.claude-sonnet-4-6',
+    ratingScale: agentcore.EvaluatorRatingScale.categorical([
+      { label: 'Accurate', definition: 'The response contains factually correct healthcare information.' },
+      { label: 'Inaccurate', definition: 'The response contains incorrect or misleading healthcare information.' },
+    ]),
+  }),
+});
+
+// LLM-as-a-Judge with numerical rating scale and inference config
+const numericalEvaluator = new agentcore.Evaluator(this, 'NumericalEvaluator', {
+  evaluatorName: 'response_quality_evaluator',
+  level: agentcore.EvaluationLevel.TRACE,
+  evaluatorConfig: agentcore.EvaluatorConfig.llmAsAJudge({
+    instructions: 'Rate the overall quality of the agent response on a scale of 1 to 5.',
+    modelId: 'us.anthropic.claude-sonnet-4-6',
+    ratingScale: agentcore.EvaluatorRatingScale.numerical([
+      { label: 'Poor', definition: 'Inadequate response.', value: 1 },
+      { label: 'Below Average', definition: 'Partially addresses the query.', value: 2 },
+      { label: 'Average', definition: 'Adequately addresses the query.', value: 3 },
+      { label: 'Good', definition: 'Well-structured and accurate response.', value: 4 },
+      { label: 'Excellent', definition: 'Outstanding response exceeding expectations.', value: 5 },
+    ]),
+    inferenceConfig: {
+      maxTokens: 1024,
+      temperature: 0.1,
+    },
+  }),
+});
+```
+
+The `modelId` accepts standard Bedrock model IDs and cross-region inference profile IDs with region prefixes (e.g., `us.`, `eu.`, `global.`).
+
+> **Instructions placeholders:** Instructions must contain placeholders appropriate for the evaluation level (e.g., `{context}`, `{available_tools}` for SESSION level). Evaluators using reference-input placeholders (e.g., `{expected_tool_trajectory}`, `{assertions}`) are only compatible with on-demand evaluation, not online evaluation. See the [custom evaluators documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/custom-evaluators.html) for allowed placeholders per level.
+
+#### Code-Based Evaluator
+
+Create a custom evaluator that uses a Lambda function for evaluation logic:
+
+```typescript fixture=default
+declare const evalFunction: lambda.IFunction;
+
+const codeEvaluator = new agentcore.Evaluator(this, 'CodeEvaluator', {
+  evaluatorName: 'custom_code_evaluator',
+  level: agentcore.EvaluationLevel.TOOL_CALL,
+  description: 'Evaluates tool call accuracy using custom logic',
+  evaluatorConfig: agentcore.EvaluatorConfig.codeBased({
+    lambdaFunction: evalFunction,
+    timeout: cdk.Duration.seconds(30),
+  }),
+});
+```
+
+For code-based evaluators, the construct automatically grants the `bedrock-agentcore.amazonaws.com` service principal permission to invoke the Lambda function, scoped to the specific evaluator resource with `aws:SourceAccount` and `aws:SourceArn` conditions for confused deputy prevention.
+
+#### Using Custom Evaluators with Online Evaluation
+
+Custom evaluators are used in `OnlineEvaluationConfig` via `EvaluatorReference.custom()`, alongside built-in evaluators:
+
+```typescript fixture=default
+declare const customEvaluator: agentcore.Evaluator;
+
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'MixedEvaluation', {
+  onlineEvaluationConfigName: 'mixed_evaluation',
+  evaluators: [
+    // Built-in evaluators
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
+    // Custom evaluator
+    agentcore.EvaluatorReference.custom(customEvaluator),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+    serviceNames: ['my-agent.default'],
+  }),
+});
+```
+
+### Data Source Configuration
+
+Online evaluation supports two types of data sources:
+
+**AgentCore Runtime Data Source (Recommended):**
+
+For runtimes created within your CDK app, use `fromAgentRuntimeEndpoint()` which automatically derives the CloudWatch log group and service name:
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository', {
+  repositoryName: 'test-agent-runtime',
+});
+
+const runtime = new agentcore.Runtime(this, 'MyRuntime', {
+  runtimeName: 'my_agent',
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+});
+
+// Using default endpoint (simplest)
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'RuntimeEval', {
+  onlineEvaluationConfigName: 'runtime_evaluation',
+  evaluators: [
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime),
+});
+```
+
+You can also specify a specific endpoint:
+
+```typescript fixture=default
+declare const runtime: agentcore.Runtime;
+
+// Using a specific endpoint construct
+const prodEndpoint = runtime.addEndpoint('PROD');
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'ProdEval', {
+  onlineEvaluationConfigName: 'prod_evaluation',
+  evaluators: [
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromAgentRuntimeEndpoint(runtime, prodEndpoint),
+});
+
+// Or using endpoint name as string
+const stagingEval = new agentcore.OnlineEvaluationConfig(this, 'StagingEval', {
+  onlineEvaluationConfigName: 'staging_evaluation',
+  evaluators: [
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.CORRECTNESS),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromAgentRuntimeEndpointName(runtime, 'STAGING'),
+});
+```
+
+**CloudWatch Logs Data Source:**
+
+For external agents or when you need to specify log groups directly:
+
+```typescript fixture=default
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'CloudWatchEval', {
+  onlineEvaluationConfigName: 'cloudwatch_evaluation',
+  evaluators: [
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: [
+      '/aws/bedrock-agentcore/agent1',
+      '/aws/bedrock-agentcore/agent2',
+    ],
+    serviceNames: ['agent1.default'],
+  }),
+});
+```
+
+### Sampling and Filtering
+
+Configure sampling percentage and filters to control which traces are evaluated:
+
+```typescript fixture=default
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'FilteredEval', {
+  onlineEvaluationConfigName: 'filtered_evaluation',
+  evaluators: [
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+    serviceNames: ['my-agent.default'],
+  }),
+  // Sample 25% of traces
+  samplingPercentage: 25,
+  // Only evaluate traces matching these filters
+  filters: [
+    {
+      key: 'user.region',
+      operator: agentcore.FilterOperator.EQUAL,
+      value: agentcore.FilterValue.string('us-east-1'),
+    },
+    {
+      key: 'session.duration',
+      operator: agentcore.FilterOperator.GREATER_THAN,
+      value: agentcore.FilterValue.number(60),
+    },
+  ],
+  // Consider sessions complete after 30 minutes of inactivity
+  sessionTimeout: cdk.Duration.minutes(30),
+});
+```
+
+### Online Evaluation with Custom Execution Role
+
+Provide a custom IAM role for the evaluation execution:
+
+```typescript fixture=default
+const executionRole = new iam.Role(this, 'EvaluationRole', {
+  assumedBy: new iam.ServicePrincipal('bedrock-agentcore.amazonaws.com'),
+  description: 'Custom role for online evaluation',
+});
+
+// Add required permissions
+executionRole.addToPolicy(new iam.PolicyStatement({
+  actions: [
+    'logs:DescribeLogGroups',
+    'logs:GetQueryResults',
+    'logs:StartQuery',
+  ],
+  resources: ['arn:aws:logs:*:*:log-group:/aws/bedrock-agentcore/*'],
+}));
+
+const evaluation = new agentcore.OnlineEvaluationConfig(this, 'CustomRoleEval', {
+  onlineEvaluationConfigName: 'custom_role_evaluation',
+  evaluators: [
+    agentcore.EvaluatorReference.builtin(agentcore.BuiltinEvaluator.HELPFULNESS),
+  ],
+  dataSource: agentcore.DataSourceConfig.fromCloudWatchLogs({
+    logGroupNames: ['/aws/bedrock-agentcore/my-agent'],
+    serviceNames: ['my-agent.default'],
+  }),
+  executionRole: executionRole,
+});
+```
+
+### Online Evaluation IAM Permissions
+
+Grant IAM permissions to manage or read evaluation configurations:
+
+```typescript fixture=default
+declare const evaluation: agentcore.OnlineEvaluationConfig;
+declare const role: iam.IRole;
+
+// Grant specific permissions
+evaluation.grant(role,
+  'bedrock-agentcore:GetOnlineEvaluationConfig',
+  'bedrock-agentcore:UpdateOnlineEvaluationConfig',
+);
 ```

@@ -1,6 +1,8 @@
 import { CfnUserGroup } from 'aws-cdk-lib/aws-elasticache';
 import type { IResource } from 'aws-cdk-lib/core';
-import { Resource, ArnFormat, Stack, Lazy, ValidationError, UnscopedValidationError, Names } from 'aws-cdk-lib/core';
+import { Resource, ArnFormat, Stack, Lazy, Token, ValidationError, UnscopedValidationError, Names } from 'aws-cdk-lib/core';
+import type { IArrayBox } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { Box, lit, noBoxStackTraces } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -94,7 +96,7 @@ export abstract class UserGroupBase extends Resource implements IUserGroup {
    * @param _user The user to add
    */
   public addUser(_user: IUser): void {
-    throw new UnscopedValidationError('ImportedUserGroupModification', 'Cannot add users to an imported UserGroup. Only UserGroups created in this stack can be modified.');
+    throw new UnscopedValidationError(lit`ImportedUserGroupModification`, 'Cannot add users to an imported UserGroup. Only UserGroups created in this stack can be modified.');
   }
 }
 
@@ -137,6 +139,7 @@ export interface UserGroupAttributes {
  *
  * @resource AWS::ElastiCache::UserGroup
  */
+@noBoxStackTraces
 @propertyInjectable
 export class UserGroup extends UserGroupBase {
   /**
@@ -186,14 +189,14 @@ export class UserGroup extends UserGroupBase {
     const stack = Stack.of(scope);
 
     if (attrs.userGroupArn && attrs.userGroupName) {
-      throw new ValidationError('ConflictingUserGroupIdentifiers', 'Only one of userGroupArn or userGroupName can be provided.', scope);
+      throw new ValidationError(lit`ConflictingUserGroupIdentifiers`, 'Only one of userGroupArn or userGroupName can be provided.', scope);
     }
 
     if (attrs.userGroupArn) {
       userGroupArn = attrs.userGroupArn;
       const extractedUserGroupName = stack.splitArn(attrs.userGroupArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
       if (!extractedUserGroupName) {
-        throw new ValidationError('InvalidUserGroupArn', 'Unable to extract user group name from ARN.', scope);
+        throw new ValidationError(lit`InvalidUserGroupArn`, 'Unable to extract user group name from ARN.', scope);
       }
       userGroupName = extractedUserGroupName;
     } else if (attrs.userGroupName) {
@@ -204,7 +207,7 @@ export class UserGroup extends UserGroupBase {
         resourceName: attrs.userGroupName,
       });
     } else {
-      throw new ValidationError('MissingUserGroupIdentifier', 'One of userGroupName or userGroupArn is required.', scope);
+      throw new ValidationError(lit`MissingUserGroupIdentifier`, 'One of userGroupName or userGroupArn is required.', scope);
     }
 
     class Import extends UserGroupBase {
@@ -229,7 +232,7 @@ export class UserGroup extends UserGroupBase {
 
   public readonly engine?: UserEngine;
   public readonly userGroupName: string;
-  private readonly _users: IUser[] = [];
+  private readonly _users: IArrayBox<IUser>;
   /**
    * The ARN of the user group
    *
@@ -258,19 +261,15 @@ export class UserGroup extends UserGroupBase {
       produce: () => Names.uniqueResourceName(this, { maxLength: 40 }).toLocaleLowerCase(),
     });
 
-    if (props.users) {
-      this._users.push(...props.users);
-    }
+    this._users = Box.fromArray(props.users ?? [], { omitEmpty: false });
 
     this.resource = new CfnUserGroup(this, 'Resource', {
       engine: this.engine,
       userGroupId: this.userGroupName,
-      userIds: Lazy.list({
-        produce: () => {
-          this.validateUsers();
-          return this._users.map(user => user.userId);
-        },
-      }),
+      userIds: Token.asList(this._users.derive(users => {
+        this.validateUsers();
+        return users.map(user => user.userId);
+      })),
     });
 
     if (props.users) {
@@ -297,28 +296,29 @@ export class UserGroup extends UserGroupBase {
    * Use addUser() instead to ensure proper validation and dependency management.
    */
   public get users(): IUser[] | undefined {
-    return this._users;
+    return this._users.getMutable();
   }
 
   /**
    * Validates users in the user group for duplicate usernames and Redis-specific requirements.
    */
   private validateUsers(): void {
-    const userNames = this._users.map(user => user.userName);
+    const users = this._users.get();
+    const userNames = users.map(user => user.userName);
     const duplicates = userNames.filter((name, index) => userNames.indexOf(name) !== index);
     if (duplicates.length > 0) {
-      throw new ValidationError('DuplicateUserName', 'User group cannot have users with the same user name.', this);
+      throw new ValidationError(lit`DuplicateUserName`, 'User group cannot have users with the same user name.', this);
     }
 
     if (this.engine === UserEngine.REDIS) {
-      this._users.forEach(user => {
+      users.forEach(user => {
         if (user.engine !== UserEngine.REDIS) {
-          throw new ValidationError('RedisUserGroupEngineMismatch', 'Redis user group can only contain Redis users.', this);
+          throw new ValidationError(lit`RedisUserGroupEngineMismatch`, 'Redis user group can only contain Redis users.', this);
         }
       });
       const hasDefaultUser = this._users.some(user => user.userName === 'default');
       if (!hasDefaultUser) {
-        throw new ValidationError('RedisUserGroupMissingDefaultUser', 'Redis user groups need to contain a user with the user name "default".', this);
+        throw new ValidationError(lit`RedisUserGroupMissingDefaultUser`, 'Redis user groups need to contain a user with the user name "default".', this);
       }
     }
   }

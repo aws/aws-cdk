@@ -1,8 +1,10 @@
 import * as fs from 'fs';
 import type { IConstruct } from 'constructs';
+import type { LiteralString } from './private/literal-string';
 import { constructInfoFromConstruct } from './private/runtime-info';
 import { captureCallStack, renderCallStackJustMyCode } from './stack-trace';
 import type { AssertionError } from '../../assertions/lib/private/error';
+import { ERRORFILE_ENV } from '../../cx-api';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
 
 const CONSTRUCT_ERROR_SYMBOL = Symbol.for('@aws-cdk/core.SynthesisError');
@@ -120,7 +122,7 @@ abstract class ConstructError extends Error {
     return this.#constructInfo;
   }
 
-  constructor(msg: string, scope?: IConstruct, name?: string) {
+  constructor(msg: string, scope?: IConstruct, name?: LiteralString) {
     super(msg);
 
     const ctr = this.constructor;
@@ -167,7 +169,7 @@ export class ValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(name: string, msg: string, scope: IConstruct) {
+  constructor(name: LiteralString, msg: string, scope: IConstruct) {
     super(msg, scope, name);
     Object.setPrototypeOf(this, ValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
@@ -189,7 +191,7 @@ export class UnscopedValidationError extends ConstructError {
     return 'validation';
   }
 
-  constructor(name: string, msg: string) {
+  constructor(name: LiteralString, msg: string) {
     super(msg, undefined, name);
     Object.setPrototypeOf(this, UnscopedValidationError.prototype);
     Object.defineProperty(this, VALIDATION_ERROR_SYMBOL, { value: true });
@@ -208,7 +210,7 @@ export class AssumptionError extends ConstructError {
     return 'assumption';
   }
 
-  constructor(name: string, msg: string) {
+  constructor(name: LiteralString, msg: string) {
     super(msg, undefined, name);
     Object.setPrototypeOf(this, AssumptionError.prototype);
     Object.defineProperty(this, ASSUMPTION_ERROR_SYMBOL, { value: true });
@@ -226,7 +228,7 @@ export class ExecutionError extends ConstructError {
     return 'exec';
   }
 
-  constructor(name: string, msg: string) {
+  constructor(name: LiteralString, msg: string) {
     super(msg, undefined, name);
     Object.setPrototypeOf(this, ExecutionError.prototype);
     Object.defineProperty(this, EXECUTION_ERROR_SYMBOL, { value: true });
@@ -264,38 +266,28 @@ export function renderConstructRootPath(construct: IConstruct) {
   return ret.join('\n');
 }
 
-const THROWN_ERRORS = new Set<string>();
-
 /**
- * If the appropriate environment variable is set, write this error code to a list of error codes in the given file.
+ * If the appropriate environment variable is set, write this error code the given file.
  *
- * The reason we do this is so that the CLI can scan `stderr` for one of the
- * error codes between markers, and be confident that when it finds something
- * that it's not user content but an actual error we threw.
+ * The reason we do this is so that the CLI can see the error code that led to the
+ * termination of the CDK application.
  *
- * - Why not just scan `stderr`? Because customers could put customer content
- *   between those markers, and we would capture user content as an error code (we
- *   explicitly don't want to do that!)
+ * This is not a guarantee: this exception could be caught and a different one
+ * thrown in its stead, in which case we would pick up the wrong error code.
+ * We will take that risk, and assume such cases are rare. The CLI only looks
+ * at the error file if the subprocess terminates with an error, and the most
+ * likely culprit in that case is the most recently thrown error regardless.
  *
- * - Why not take the error code immediately? Because the error could have been
- *   caught; but we only want to capture the error that terminated the program.
- *
- * So we're doing a double whammy of writing potential error codes to a file, then
- * make sure that we find that error code in `stderr`.
+ * Why not use `process.onUncaughtException()`? That will work for pure Node
+ * programs, but in a jsii language no exception is uncaught (the kernel
+ * is always the outermost loop) so that event handler would never fire.
  */
 function maybeWriteErrorCode(errorCode: string) {
-  const file = process.env.CDK_ERROR_FILE;
+  const file = process.env[ERRORFILE_ENV];
   if (!file) {
     return;
   }
 
-  // Only if this error is new
-  const oldSize = THROWN_ERRORS.size;
-  THROWN_ERRORS.add(errorCode);
-  if (THROWN_ERRORS.size === oldSize) {
-    return;
-  }
-
   // Update the indicated file
-  fs.writeFileSync(file, Array.from(THROWN_ERRORS).sort().join('\n'), 'utf-8');
+  fs.writeFileSync(file, errorCode, 'utf-8');
 }

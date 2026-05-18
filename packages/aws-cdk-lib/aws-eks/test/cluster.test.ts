@@ -2328,7 +2328,7 @@ describe('cluster', () => {
       });
     });
 
-    test('throws when kubectl private subnets include isolated subnets', () => {
+    test('warns when kubectl private subnets include isolated subnets', () => {
       // GIVEN
       const { stack } = testFixtureNoVpc();
       const vpc = new ec2.Vpc(stack, 'Vpc', {
@@ -2339,17 +2339,18 @@ describe('cluster', () => {
         ],
       });
 
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+        prune: false,
+      });
+
       // THEN
-      expect(() => {
-        new eks.Cluster(stack, 'Cluster', {
-          version: CLUSTER_VERSION,
-          vpc,
-          vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
-          endpointAccess: eks.EndpointAccess.PRIVATE,
-          kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
-          prune: false,
-        });
-      }).toThrow(/Isolated subnets cannot be used for kubectl private subnets/);
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', Match.stringLikeRegexp('Isolated subnets are being used for kubectl private subnets'));
     });
 
     test('does not throw when kubectl private subnets are PRIVATE_WITH_EGRESS', () => {

@@ -1,6 +1,7 @@
 import type { IStageRef } from './apigateway.generated';
 import type * as firehose from '../../aws-kinesisfirehose';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import type { ILogGroupRef } from '../../interfaces/generated/aws-logs-interfaces.generated';
 
 /**
@@ -52,7 +53,7 @@ export class FirehoseLogDestination implements IAccessLogDestination {
    */
   public bind(stage: IStageRef): AccessLogDestinationConfig {
     if (!this.stream.deliveryStreamName?.startsWith('amazon-apigateway-')) {
-      throw new ValidationError('MustBeFirehoseDeliveryStream', `Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
+      throw new ValidationError(lit`MustBeFirehoseDeliveryStream`, `Firehose delivery stream name for access log destination must begin with 'amazon-apigateway-', got '${this.stream.deliveryStreamName}'`, stage);
     }
     return {
       destinationArn: this.stream.attrArn,

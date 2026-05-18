@@ -6,6 +6,7 @@ import { OptionGroup } from './option-group';
 import type * as iam from '../../aws-iam';
 import * as secretsmanager from '../../aws-secretsmanager';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * The options passed to `IInstanceEngine.bind`.
@@ -146,7 +147,7 @@ abstract class InstanceEngineBase implements IInstanceEngine {
 
   public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.timezone && !this.supportsTimezone) {
-      throw new ValidationError('TimezonePropertyConfigured', `timezone property can not be configured for ${this.engineType}`, scope);
+      throw new ValidationError(lit`TimezonePropertyConfigured`, `timezone property can not be configured for ${this.engineType}`, scope);
     }
     return {
       features: this.features,
@@ -740,7 +741,7 @@ class MariaDbInstanceEngine extends InstanceEngineBase {
 
   public bindToInstance(scope: Construct, options: InstanceEngineBindOptions): InstanceEngineConfig {
     if (options.domain) {
-      throw new ValidationError('DomainPropertyCannotConfigured', `domain property cannot be configured for ${this.engineType}`, scope);
+      throw new ValidationError(lit`DomainPropertyCannotConfigured`, `domain property cannot be configured for ${this.engineType}`, scope);
     }
     return super.bindToInstance(scope, options);
   }
@@ -1976,6 +1977,8 @@ export class PostgresEngineVersion {
   public static readonly VER_14_20 = PostgresEngineVersion.of('14.20', '14', { s3Import: true, s3Export: true });
   /** Version "14.21". */
   public static readonly VER_14_21 = PostgresEngineVersion.of('14.21', '14', { s3Import: true, s3Export: true });
+  /** Version "14.22". */
+  public static readonly VER_14_22 = PostgresEngineVersion.of('14.22', '14', { s3Import: true, s3Export: true });
 
   /** Version "15" (only a major version, without a specific minor version). */
   public static readonly VER_15 = PostgresEngineVersion.of('15', '15', { s3Import: true, s3Export: true });
@@ -2030,6 +2033,8 @@ export class PostgresEngineVersion {
   public static readonly VER_15_15 = PostgresEngineVersion.of('15.15', '15', { s3Import: true, s3Export: true });
   /** Version "15.16". */
   public static readonly VER_15_16 = PostgresEngineVersion.of('15.16', '15', { s3Import: true, s3Export: true });
+  /** Version "15.17". */
+  public static readonly VER_15_17 = PostgresEngineVersion.of('15.17', '15', { s3Import: true, s3Export: true });
 
   /** Version "16" (only a major version, without a specific minor version). */
   public static readonly VER_16 = PostgresEngineVersion.of('16', '16', { s3Import: true, s3Export: true });
@@ -2069,6 +2074,8 @@ export class PostgresEngineVersion {
   public static readonly VER_16_11 = PostgresEngineVersion.of('16.11', '16', { s3Import: true, s3Export: true });
   /** Version "16.12". */
   public static readonly VER_16_12 = PostgresEngineVersion.of('16.12', '16', { s3Import: true, s3Export: true });
+  /** Version "16.13". */
+  public static readonly VER_16_13 = PostgresEngineVersion.of('16.13', '16', { s3Import: true, s3Export: true });
 
   /** Version "17" (only a major version, without a specific minor version). */
   public static readonly VER_17 = PostgresEngineVersion.of('17', '17', { s3Import: true, s3Export: true });
@@ -2094,6 +2101,8 @@ export class PostgresEngineVersion {
   public static readonly VER_17_7 = PostgresEngineVersion.of('17.7', '17', { s3Import: true, s3Export: true });
   /** Version "17.8". */
   public static readonly VER_17_8 = PostgresEngineVersion.of('17.8', '17', { s3Import: true, s3Export: true });
+  /** Version "17.9". */
+  public static readonly VER_17_9 = PostgresEngineVersion.of('17.9', '17', { s3Import: true, s3Export: true });
 
   /** Version "18" (only a major version, without a specific minor version). */
   public static readonly VER_18 = PostgresEngineVersion.of('18', '18', { s3Import: true, s3Export: true });
@@ -2101,6 +2110,8 @@ export class PostgresEngineVersion {
   public static readonly VER_18_1 = PostgresEngineVersion.of('18.1', '18', { s3Import: true, s3Export: true });
   /** Version "18.2". */
   public static readonly VER_18_2 = PostgresEngineVersion.of('18.2', '18', { s3Import: true, s3Export: true });
+  /** Version "18.3". */
+  public static readonly VER_18_3 = PostgresEngineVersion.of('18.3', '18', { s3Import: true, s3Export: true });
 
   /**
    * Create a new PostgresEngineVersion with an arbitrary version.
@@ -3243,7 +3254,7 @@ abstract class SqlServerInstanceEngineBase extends InstanceEngineBase {
     const s3Role = options.s3ImportRole ?? options.s3ExportRole;
     if (s3Role) {
       if (options.s3ImportRole && options.s3ExportRole && options.s3ImportRole !== options.s3ExportRole) {
-        throw new ValidationError('ImportExportRolesServerEngines', 'S3 import and export roles must be the same for SQL Server engines', scope);
+        throw new ValidationError(lit`ImportExportRolesServerEngines`, 'S3 import and export roles must be the same for SQL Server engines', scope);
       }
 
       if (!optionGroup) {

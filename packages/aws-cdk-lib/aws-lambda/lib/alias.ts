@@ -16,6 +16,7 @@ import { ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IAlias extends IFunction, IAliasRef {
@@ -188,7 +189,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.architecture = this.lambda.architecture;
 
     if (props.provisionedConcurrentExecutions && this.version.lambda.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
-      throw new ValidationError('ProvisionedConcurrencySupportedFunctionsTenant', 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+      throw new ValidationError(lit`ProvisionedConcurrencySupportedFunctionsTenant`, 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
     }
 
     this.alias = new CfnAlias(this, 'Resource', {
@@ -259,7 +260,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   @MethodMetadata()
   public addAutoScaling(options: AutoScalingOptions): IScalableFunctionAttribute {
     if (this.scalableAlias) {
-      throw new ValidationError('AutoScalingAlreadyEnabledAlias', 'AutoScaling already enabled for this alias', this);
+      throw new ValidationError(lit`AutoScalingAlreadyEnabledAlias`, 'AutoScaling already enabled for this alias', this);
     }
     return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
       minCapacity: options.minCapacity ?? 1,
@@ -298,12 +299,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    */
   private validateAdditionalWeights(weights: VersionWeight[]) {
     const total = weights.map(w => {
-      if (w.weight < 0 || w.weight > 1) { throw new ValidationError('AdditionalVersionWeight', `Additional version weight must be between 0 and 1, got: ${w.weight}`, this); }
+      if (w.weight < 0 || w.weight > 1) { throw new ValidationError(lit`AdditionalVersionWeight`, `Additional version weight must be between 0 and 1, got: ${w.weight}`, this); }
       return w.weight;
     }).reduce((a, x) => a + x);
 
     if (total > 1) {
-      throw new ValidationError('SumAdditionalVersionWeightsExceed', `Sum of additional version weights must not exceed 1, got: ${total}`, this);
+      throw new ValidationError(lit`SumAdditionalVersionWeightsExceed`, `Sum of additional version weights must not exceed 1, got: ${total}`, this);
     }
   }
 
@@ -318,7 +319,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     }
 
     if (props.provisionedConcurrentExecutions <= 0) {
-      throw new ValidationError('ProvisionedConcurrentExecutionsValueGreater', 'provisionedConcurrentExecutions must have value greater than or equal to 1', this);
+      throw new ValidationError(lit`ProvisionedConcurrentExecutionsValueGreater`, 'provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };

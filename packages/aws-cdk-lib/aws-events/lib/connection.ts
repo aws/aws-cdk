@@ -4,6 +4,7 @@ import type { IResource, SecretValue } from '../../core';
 import { Resource, Stack, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { ConnectionReference, IConnectionRef } from '../../interfaces/generated/aws-events-interfaces.generated';
 
@@ -104,7 +105,7 @@ export abstract class Authorization {
    */
   public static oauth(props: OAuthAuthorizationProps): Authorization {
     if (![HttpMethod.POST, HttpMethod.GET, HttpMethod.PUT].includes(props.httpMethod)) {
-      throw new UnscopedValidationError('InvalidHttpMethod', 'httpMethod must be one of GET, POST, PUT');
+      throw new UnscopedValidationError(lit`InvalidHttpMethod`, 'httpMethod must be one of GET, POST, PUT');
     }
 
     return new class extends Authorization {

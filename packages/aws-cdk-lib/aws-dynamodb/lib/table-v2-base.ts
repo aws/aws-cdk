@@ -10,6 +10,7 @@ import { Grant } from '../../aws-iam';
 import type { IKey } from '../../aws-kms';
 import { Resource, ValidationError } from '../../core';
 import { isUnsupportedServicePrincipal } from './private/principal-utils';
+import { lit } from '../../core/lib/private/literal-string';
 import type { TableReference } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
@@ -104,7 +105,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public grant(grantee: IGrantable, ...actions: string[]): Grant {
     if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
       throw new ValidationError(
-        '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
+        lit`ServicePrincipalGrantNotSupported`,
         'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
         'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
         'with required service principal, actions, and conditions',
@@ -134,7 +135,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grantStream(grantee: IGrantable, ...actions: string[]): Grant {
     if (!this.tableStreamArn) {
-      throw new ValidationError('StreamFoundTable', `No stream ARN found on the table ${this.node.path}`, this);
+      throw new ValidationError(lit`StreamFoundTable`, `No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -174,7 +175,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public grantTableListStreams(grantee: IGrantable): Grant {
     if (!this.tableStreamArn) {
-      throw new ValidationError('StreamFoundTable', `No stream ARN found on the table ${this.node.path}`, this);
+      throw new ValidationError(lit`StreamFoundTable`, `No stream ARN found on the table ${this.node.path}`, this);
     }
 
     return Grant.addToPrincipal({
@@ -328,7 +329,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricUserErrors(props?: MetricOptions): Metric {
     if (props?.dimensions) {
-      throw new ValidationError('SupportedMetric', '`dimensions` is not supported for the `UserErrors` metric', this);
+      throw new ValidationError(lit`SupportedMetric`, '`dimensions` is not supported for the `UserErrors` metric', this);
     }
 
     return this.metric('UserErrors', { statistic: 'sum', ...props, dimensionsMap: {} });
@@ -352,7 +353,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   public metricSuccessfulRequestLatency(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
-      throw new ValidationError('MustBeDimensionPassedMetric', '`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric', this);
+      throw new ValidationError(lit`MustBeDimensionPassedMetric`, '`Operation` dimension must be passed for the `SuccessfulRequestLatency` metric', this);
     }
 
     const dimensionsMap = {
@@ -422,7 +423,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   public metricSystemErrors(props?: MetricOptions): Metric {
     if (!props?.dimensions?.Operation && !props?.dimensionsMap?.Operation) {
       // 'Operation' must be passed because its an operational metric.
-      throw new ValidationError('MustBeOperationDimensionPassed', "'Operation' dimension must be passed for the 'SystemErrors' metric.", this);
+      throw new ValidationError(lit`MustBeOperationDimensionPassed`, "'Operation' dimension must be passed for the 'SystemErrors' metric.", this);
     }
 
     const dimensionsMap = {
@@ -439,7 +440,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
    */
   private sumMetricsForOperations(metricName: string, expressionLabel: string, props?: OperationsMetricOptions) {
     if (props?.dimensions?.Operation) {
-      throw new ValidationError('OperationDimensionSupported', 'The Operation dimension is not supported. Use the `operations` property', this);
+      throw new ValidationError(lit`OperationDimensionSupported`, 'The Operation dimension is not supported. Use the `operations` property', this);
     }
 
     const operations = props?.operations ?? Object.values(Operation);
@@ -467,7 +468,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
     const mapper = metricNameMapper ?? (op => op.toLowerCase());
 
     if (props?.dimensions?.Operation) {
-      throw new ValidationError('InvalidPropertiesOperationDimensionSupported', 'Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
+      throw new ValidationError(lit`InvalidPropertiesOperationDimensionSupported`, 'Invalid properties. Operation dimension is not supported when calculating operational metrics', this);
     }
 
     for (const operation of operations) {
@@ -479,7 +480,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       const operationMetricName = mapper(operation);
       const firstChar = operationMetricName.charAt(0);
       if (firstChar === firstChar.toUpperCase()) {
-        throw new ValidationError('MapperGeneratedIllegalOperationMetric', `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
+        throw new ValidationError(lit`MapperGeneratedIllegalOperationMetric`, `Mapper generated an illegal operation metric name: ${operationMetricName}. Must start with a lowercase letter`, this);
       }
 
       metrics[operationMetricName] = metric;
@@ -502,7 +503,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
   }) {
     if (isUnsupportedServicePrincipal(grantee.grantPrincipal)) {
       throw new ValidationError(
-        '@aws-cdk/aws-dynamodb:servicePrincipalGrantNotSupported',
+        lit`ServicePrincipalGrantNotSupported`,
         'DynamoDB grant* methods do not support ServicePrincipal grantees. ' +
         'Use table.addToResourcePolicy() for an explicit service-specific table policy ' +
         'with required service principal, actions, and conditions',
@@ -540,7 +541,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
 
     if (options.streamActions) {
       if (!this.tableStreamArn) {
-        throw new ValidationError('StreamNsFoundTable', `No stream ARNs found on the table ${this.node.path}`, this);
+        throw new ValidationError(lit`StreamNsFoundTable`, `No stream ARNs found on the table ${this.node.path}`, this);
       }
 
       return Grant.addToPrincipal({
@@ -550,7 +551,7 @@ export abstract class TableBaseV2 extends Resource implements ITableV2, IResourc
       });
     }
 
-    throw new ValidationError('UnexpectedAction', `Unexpected 'action', ${options.tableActions || options.streamActions}`, this);
+    throw new ValidationError(lit`UnexpectedAction`, `Unexpected 'action', ${options.tableActions || options.streamActions}`, this);
   }
 
   private configureMetric(props: MetricProps) {

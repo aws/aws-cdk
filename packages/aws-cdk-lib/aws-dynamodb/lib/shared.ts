@@ -4,6 +4,7 @@ import type * as cloudwatch from '../../aws-cloudwatch';
 import type * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import { ValidationError, type IResource } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import type { ITableRef } from '../../interfaces/generated/aws-dynamodb-interfaces.generated';
 
 /**
@@ -557,7 +558,7 @@ export function validateContributorInsights(
   construct: Construct,
 ): ContributorInsightsSpecification | undefined {
   if (contributorInsightsSpecification !== undefined && contributorInsights !== undefined) {
-    throw new ValidationError('ContributorInsightsConflict', `\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
+    throw new ValidationError(lit`ContributorInsightsConflict`, `\`contributorInsightsSpecification\` and \`${deprecatedPropertyName}\` are set. Use \`contributorInsightsSpecification\` only.`, construct);
   }
 
   return contributorInsightsSpecification ??
@@ -597,24 +598,24 @@ type CompatibleKeySchema = Pick<GlobalSecondaryIndexProps, 'partitionKey' | 'par
  */
 export function parseKeySchema(schema: CompatibleKeySchema, scope: IConstruct): KeySchema {
   if ((schema.partitionKey === undefined) === (schema.partitionKeys === undefined)) {
-    throw new ValidationError('ExactlyOnePartitionKey', 'Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
+    throw new ValidationError(lit`ExactlyOnePartitionKey`, 'Exactly one of \'partitionKey\', \'partitionKeys\' must be specified', scope);
   }
   if ((schema.sortKey !== undefined) && (schema.sortKeys !== undefined)) {
-    throw new ValidationError('AtMostOneSortKey', 'At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
+    throw new ValidationError(lit`AtMostOneSortKey`, 'At most one of \'sortKey\', \'sortKeys\' may be specified', scope);
   }
 
   const partitionKeys = schema.partitionKeys ?? (schema.partitionKey ? [schema.partitionKey] : []);
   const sortKeys = schema.sortKeys ?? (schema.sortKey ? [schema.sortKey] : []);
 
   if (partitionKeys.length === 0) {
-    throw new ValidationError('PartitionKeysRequired', '\'partitionKeys\' must contain at least one element', scope);
+    throw new ValidationError(lit`PartitionKeysRequired`, '\'partitionKeys\' must contain at least one element', scope);
   }
 
   if (partitionKeys.length > 4) {
-    throw new ValidationError('MaxPartitionKeysExceeded', 'Maximum of 4 partition keys allowed', scope);
+    throw new ValidationError(lit`MaxPartitionKeysExceeded`, 'Maximum of 4 partition keys allowed', scope);
   }
   if (sortKeys.length > 4) {
-    throw new ValidationError('MaxSortKeysExceeded', 'Maximum of 4 sort keys allowed', scope);
+    throw new ValidationError(lit`MaxSortKeysExceeded`, 'Maximum of 4 sort keys allowed', scope);
   }
 
   return { partitionKeys, sortKeys };
