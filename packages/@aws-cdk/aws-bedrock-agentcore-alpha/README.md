@@ -26,10 +26,12 @@
 
 All constructs except Policy have moved to `aws-cdk-lib/aws-bedrockagentcore`:
 
-```ts
+```ts nofixture
 // Before
 import * as agentcore from '@aws-cdk/aws-bedrock-agentcore-alpha';
+```
 
+```ts nofixture
 // After (for all non-Policy constructs)
 import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 ```
@@ -461,7 +463,7 @@ Since Gateway is now in `aws-cdk-lib/aws-bedrockagentcore` but Policy remains in
 
 > Proper L2 integration will be added in a future update.
 
-```ts
+```ts fixture=policy
 import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 import * as agentcoreAlpha from '@aws-cdk/aws-bedrock-agentcore-alpha';
 
