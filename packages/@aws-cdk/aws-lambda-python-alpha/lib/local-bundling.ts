@@ -2,7 +2,7 @@ import * as os from 'os';
 import { FileSystem, SymlinkFollowMode, UnscopedValidationError } from 'aws-cdk-lib';
 import type { Architecture, Runtime } from 'aws-cdk-lib/aws-lambda';
 import type * as cdk from 'aws-cdk-lib/core';
-import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { lit, profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Packaging } from './packaging';
 import { DependenciesFile } from './packaging';
 import { defaultManyLinuxTags, runtimeToPythonVersion, validateArchitecture } from './platform';
@@ -41,6 +41,7 @@ export class LocalBundling implements cdk.ILocalBundling {
   }
 
   public tryBundle(outputDir: string): boolean {
+    using _span = profileSpan('PythonFunction#tryBundle', { telemetry: true });
     const { entry, packaging, excludes, commandHooks } = this.props;
     const osPlatform = os.platform();
 
