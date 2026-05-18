@@ -748,11 +748,10 @@ export class Cluster extends ClusterBase {
     if (props.logging) {
       loggingProperties = props.logging._renderLoggingProperty(this);
 
-      const usesCloudWatch = loggingProperties.logDestinationType === LogDestinationType.CLOUDWATCH;
-      const includesUserActivityLog = loggingProperties.logExports
-        ? loggingProperties.logExports.includes(LogExport.USER_ACTIVITY_LOG)
-        : usesCloudWatch;
-      if (includesUserActivityLog) {
+      if (
+        loggingProperties.logExports?.includes(LogExport.USER_ACTIVITY_LOG) ||
+        (loggingProperties.logDestinationType === LogDestinationType.CLOUDWATCH && !loggingProperties.logExports)
+      ) {
         Annotations.of(this).addWarningV2(
           '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
           'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
