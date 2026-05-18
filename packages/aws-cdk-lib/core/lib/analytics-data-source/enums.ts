@@ -163,7 +163,9 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "PYTHON_3_10",
     "PYTHON_3_11",
     "PYTHON_3_12",
-    "PYTHON_3_13"
+    "PYTHON_3_13",
+    "PYTHON_3_14",
+    "NODE_22"
   ],
   "AgentStepType": [
     "PRE_PROCESSING",
@@ -435,6 +437,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DEPLOYMENT_FAILURE",
     "DEPLOYMENT_STOP_ON_ALARM",
     "DEPLOYMENT_STOP_ON_REQUEST"
+  ],
+  "AutoValidationThreshold": [
+    "MEDIUM",
+    "HIGH",
+    "MANAGED"
   ],
   "AvailabilityZoneRebalancing": [
     "ENABLED",
@@ -2999,6 +3006,33 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "SET_TO_NULL",
     "DROP_ROW"
   ],
+  "OAuth2CredentialProviderVendor": [
+    "GoogleOauth2",
+    "GithubOauth2",
+    "SlackOauth2",
+    "SalesforceOauth2",
+    "MicrosoftOauth2",
+    "CustomOauth2",
+    "AtlassianOauth2",
+    "LinkedinOauth2",
+    "XOauth2",
+    "OktaOauth2",
+    "OneLoginOauth2",
+    "PingOneOauth2",
+    "FacebookOauth2",
+    "YandexOauth2",
+    "RedditOauth2",
+    "ZoomOauth2",
+    "TwitchOauth2",
+    "SpotifyOauth2",
+    "DropboxOauth2",
+    "NotionOauth2",
+    "HubspotOauth2",
+    "CyberArkOauth2",
+    "FusionAuthOauth2",
+    "Auth0Oauth2",
+    "CognitoOauth2"
+  ],
   "OCSFSourceType": [
     "CloudTrail",
     "Route53Resolver",
@@ -3433,7 +3467,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "ProtocolType": [
     "MCP",
     "HTTP",
-    "A2A"
+    "A2A",
+    "AGUI"
   ],
   "ProviderType": [
     "CodeStarSourceConnection"
