@@ -29,7 +29,6 @@ import { PolicyValidationReportFormatter } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
-const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
 
 /**
  * Options for `synthesize()`
@@ -199,7 +198,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? true;
     const formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? true;
     const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
     if (formatPretty) {
@@ -207,20 +205,13 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
       // eslint-disable-next-line no-console
       console.error(output);
     }
-    if (formatJson) {
-      const jsonOutput = formatter.formatJson(reports);
-      fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
-    }
+    const jsonOutput = formatter.formatJson(reports);
+    fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
     const failed = reports.some(r => !r.success);
     if (failed) {
-      let message: string;
-      if (formatPretty && formatJson) {
-        message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
-      } else if (formatJson) {
-        message = `Validation failed. See the validation report in '${reportFile}' for details`;
-      } else {
-        message = 'Validation failed. See the validation report above for details';
-      }
+      const message = formatPretty
+        ? `Validation failed. See the validation report in '${reportFile}' and above for details`
+        : `Validation failed. See the validation report in '${reportFile}' for details`;
       // eslint-disable-next-line no-console
       console.error(message);
       process.exitCode = 1;

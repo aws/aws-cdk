@@ -760,7 +760,7 @@ Policy Validation Report Summary
     expect(consoleReport).toContain('Validation Report');
   });
 
-  test('disable JSON report via context', () => {
+  test('JSON report is always written regardless of context', () => {
     const app = new core.App({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
@@ -774,7 +774,7 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportJson': false,
+        '@aws-cdk/core:validationReportPrettyPrint': false,
       },
     });
     const stack = new core.Stack(app);
@@ -785,17 +785,16 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
 
-    // JSON file should NOT be written
+    // JSON file is ALWAYS written
     const file = path.join(app.outdir, 'policy-validation-report.json');
-    expect(fs.existsSync(file)).toBe(false);
+    expect(fs.existsSync(file)).toBe(true);
 
-    // Pretty print still output
-    const consoleReport = consoleErrorMock.mock.calls[1][0];
-    expect(consoleReport).toContain('Validation Report');
+    // Pretty print should NOT be output
+    const allOutput = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(allOutput).not.toContain('Validation Report\n-');
 
-    // Message should not reference the file
-    const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain('Validation failed. See the validation report above for details');
+    // Message should reference the file only (no "above")
+    expect(allOutput).toContain(`Validation failed. See the validation report in '${file}' for details`);
   });
 
   test('Multi format', () => {
@@ -815,7 +814,6 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportJson': true,
         '@aws-cdk/core:validationReportPrettyPrint': true,
       },
     });
