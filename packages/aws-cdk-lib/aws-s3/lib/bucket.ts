@@ -2408,35 +2408,35 @@ export class Bucket extends BucketBase {
   private static validateBucketNamePrefixScoped(scope: IConstruct, prefix?: string): void {
     const errors = Bucket._validateBucketNamePrefix(prefix);
     if (errors.length > 0) {
-      throw new ValidationError('InvalidBucketNamePrefixValue', `Invalid S3 bucket name prefix (value: ${prefix})${EOL}${errors.join(EOL)}`, scope);
+      throw new ValidationError(lit`InvalidBucketNamePrefixValue`, `Invalid S3 bucket name prefix (value: ${prefix})${EOL}${errors.join(EOL)}`, scope);
     }
   }
 
   private static validateBucketNamingCombination(scope: IConstruct, props: BucketProps): void {
     if (props.bucketName && props.bucketNamePrefix) {
       throw new ValidationError(
-        'BucketNameConflictsWithPrefix',
+        lit`BucketNameConflictsWithPrefix`,
         '\'bucketName\' and \'bucketNamePrefix\' cannot be used together',
         scope,
       );
     }
     if (props.bucketName && props.bucketNamespace && props.bucketNamespace !== BucketNamespace.GLOBAL) {
       throw new ValidationError(
-        'BucketNameConflictsWithNamespace',
+        lit`BucketNameConflictsWithNamespace`,
         '\'bucketName\' cannot be used with \'bucketNamespace\' (except GLOBAL). Use \'bucketNamePrefix\' with \'bucketNamespace\' instead',
         scope,
       );
     }
     if (props.bucketNamePrefix && props.bucketNamespace !== BucketNamespace.ACCOUNT_REGIONAL) {
       throw new ValidationError(
-        'BucketNamePrefixRequiresAccountRegional',
+        lit`BucketNamePrefixRequiresAccountRegional`,
         '\'bucketNamePrefix\' requires \'bucketNamespace\' to be set to ACCOUNT_REGIONAL',
         scope,
       );
     }
     if (props.bucketNamespace === BucketNamespace.ACCOUNT_REGIONAL && !props.bucketNamePrefix) {
       throw new ValidationError(
-        'AccountRegionalNamespaceRequiresPrefix',
+        lit`AccountRegionalNamespaceRequiresPrefix`,
         '\'bucketNamespace\' ACCOUNT_REGIONAL requires \'bucketNamePrefix\' to be specified',
         scope,
       );
