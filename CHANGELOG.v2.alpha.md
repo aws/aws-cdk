@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.255.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.254.0-alpha.0...v2.255.0-alpha.0) (2026-05-18)
 
+### Features
+
+* **bedrock-agentcore-alpha:** add tags support to Evaluator and OnlineEvaluationConfig ([#37804](https://github.com/aws/aws-cdk/issues/37804)) ([adbf88f](https://github.com/aws/aws-cdk/commit/adbf88faeb4d2b762563389aea160cfda496f200))
+
+
 ## [2.254.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.1-alpha.0...v2.254.0-alpha.0) (2026-05-13)
 
 
