@@ -97,6 +97,11 @@
   },
   "stability": "experimental",
   "maturity": "developer-preview",
+  "pkglint": {
+    "exclude": [
+      "package-info/maturity"
+    ]
+  },
   "awscdkio": {
     "announce": false
   },
