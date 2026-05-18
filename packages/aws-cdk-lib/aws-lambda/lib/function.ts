@@ -724,6 +724,7 @@ export class Function extends FunctionBase {
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
+    // eslint-disable-next-line no-restricted-syntax
     cfn.overrideLogicalId(Lazy.uncachedString({
       produce: () => {
         const hash = calculateFunctionHash(this, this.hashMixins.join(''));
