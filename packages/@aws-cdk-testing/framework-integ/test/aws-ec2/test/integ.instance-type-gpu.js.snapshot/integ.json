@@ -1,0 +1,14 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "GpuInstanceTypeTest/DefaultTest": {
+      "stacks": [
+        "integ-ec2-instance-type-gpu"
+      ],
+      "diffAssets": false,
+      "assertionStack": "GpuInstanceTypeTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GpuInstanceTypeTestDefaultTestDeployAssert24721B25"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}

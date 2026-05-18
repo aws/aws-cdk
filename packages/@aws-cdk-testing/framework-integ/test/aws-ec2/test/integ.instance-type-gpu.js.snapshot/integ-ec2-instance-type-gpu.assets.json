@@ -1,0 +1,19 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "ce5e02c8ef34fc019e24737a6fc123ae09d503e886b3d640dbdcb2286bc532e2": {
+      "source": {
+        "path": "integ-ec2-instance-type-gpu.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-29c1e9e7": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "ce5e02c8ef34fc019e24737a6fc123ae09d503e886b3d640dbdcb2286bc532e2.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

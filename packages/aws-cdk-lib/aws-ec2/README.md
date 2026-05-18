@@ -1362,6 +1362,21 @@ new ec2.Instance(this, 'Instance5', {
     cpuType: ec2.AmazonLinuxCpuType.ARM_64,
   }),
 });
+
+// NVIDIA L40S GPU (g7e)
+new ec2.LaunchTemplate(this, 'G7eLaunchTemplate', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.G7E, ec2.InstanceSize.XLARGE),
+});
+
+// NVIDIA B200 Blackwell GPU (p6-b200)
+new ec2.LaunchTemplate(this, 'P6b200LaunchTemplate', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.P6_B200, ec2.InstanceSize.XLARGE48),
+});
+
+// NVIDIA B300 Blackwell Ultra GPU (p6-b300)
+new ec2.LaunchTemplate(this, 'P6b300LaunchTemplate', {
+  instanceType: ec2.InstanceType.of(ec2.InstanceClass.P6_B300, ec2.InstanceSize.XLARGE48),
+});
 ```
 
 ### Latest Amazon Linux Images
