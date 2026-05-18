@@ -12,6 +12,12 @@ export const RUNTIME_INVOKE_PERMS = ['bedrock-agentcore:InvokeAgentRuntime'];
  */
 export const RUNTIME_INVOKE_USER_PERMS = ['bedrock-agentcore:InvokeAgentRuntimeForUser'];
 
+/**
+ * Permissions to invoke the agent runtime via WebSocket stream
+ * Required when signing WebSocket connection requests to the agent runtime
+ */
+export const RUNTIME_INVOKE_WEBSOCKET_STREAM_PERMS = ['bedrock-agentcore:InvokeAgentRuntimeWithWebSocketStream'];
+
 /******************************************************************************
  *                         Control Plane Permissions
  *****************************************************************************/
