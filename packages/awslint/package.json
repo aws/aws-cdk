@@ -52,6 +52,11 @@
   ],
   "maturity": "developer-preview",
   "stability": "experimental",
+  "pkglint": {
+    "exclude": [
+      "package-info/maturity"
+    ]
+  },
   "engines": {
     "node": ">= 20.0.0"
   },
