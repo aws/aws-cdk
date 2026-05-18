@@ -3,11 +3,9 @@ import { Connections } from './connections';
 import { Token, UnscopedValidationError } from '../../core';
 
 /**
- * Configuration for an ingress security group rule
- *
- * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ec2-securitygroup-ingress.html
+ * Common configuration properties shared by ingress and egress security group rules
  */
-export interface IngressRuleConfig {
+export interface RuleConfig {
   /**
    * The IPv4 address range, in CIDR format
    *
@@ -21,7 +19,14 @@ export interface IngressRuleConfig {
    * @default - No IPv6 CIDR
    */
   readonly cidrIpv6?: string;
+}
 
+/**
+ * Configuration for an ingress security group rule
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ec2-securitygroup-ingress.html
+ */
+export interface IngressRuleConfig extends RuleConfig {
   /**
    * The ID of a source prefix list
    *
@@ -49,21 +54,7 @@ export interface IngressRuleConfig {
  *
  * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ec2-securitygroup-egress.html
  */
-export interface EgressRuleConfig {
-  /**
-   * The IPv4 address range, in CIDR format
-   *
-   * @default - No IPv4 CIDR
-   */
-  readonly cidrIp?: string;
-
-  /**
-   * The IPv6 address range, in CIDR format
-   *
-   * @default - No IPv6 CIDR
-   */
-  readonly cidrIpv6?: string;
-
+export interface EgressRuleConfig extends RuleConfig {
   /**
    * The ID of a destination prefix list
    *
