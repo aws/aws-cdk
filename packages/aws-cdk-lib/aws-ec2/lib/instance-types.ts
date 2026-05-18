@@ -1323,6 +1323,16 @@ export enum InstanceClass {
   P6_B200 = 'p6-b200',
 
   /**
+   * Parallel-processing optimized instances powered by NVIDIA B300 Blackwell Ultra GPUs, 6th generation
+   */
+  PARALLEL6_B300 = 'parallel6-b300',
+
+  /**
+   * Parallel-processing optimized instances powered by NVIDIA B300 Blackwell Ultra GPUs, 6th generation
+   */
+  P6_B300 = 'p6-b300',
+
+  /**
    * Arm processor based instances, 1st generation
    */
   ARM1 = 'arm1',
@@ -2106,6 +2116,8 @@ export class InstanceType {
       [InstanceClass.P5EN]: 'p5en',
       [InstanceClass.PARALLEL6_B200]: 'p6-b200',
       [InstanceClass.P6_B200]: 'p6-b200',
+      [InstanceClass.PARALLEL6_B300]: 'p6-b300',
+      [InstanceClass.P6_B300]: 'p6-b300',
       [InstanceClass.ARM1]: 'a1',
       [InstanceClass.A1]: 'a1',
       [InstanceClass.STANDARD6_GRAVITON]: 'm6g',
