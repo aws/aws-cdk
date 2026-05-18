@@ -1,4 +1,6 @@
 import * as cdk from 'aws-cdk-lib/core';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as rds from 'aws-cdk-lib/aws-rds';
@@ -7,7 +9,7 @@ import * as ds from 'aws-cdk-lib/aws-directoryservice';
 
 const app = new cdk.App();
 
-const stack = new cdk.Stack(app, 'cluster-kerberos');
+const stack = new IntegTestBaseStack(app, 'cluster-kerberos');
 const vpc = new ec2.Vpc(stack, 'VPC');
 
 const iamRole = new iam.Role(stack, 'Role', {
@@ -30,7 +32,7 @@ const activeDirectory = new ds.CfnMicrosoftAD(stack, 'AD', {
 });
 
 new rds.DatabaseCluster(stack, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_06_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: INTEG_TEST_LATEST_AURORA_MYSQL }),
   writer: rds.ClusterInstance.provisioned('Instance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   }),
@@ -43,4 +45,3 @@ new integ.IntegTest(app, 'integ-cluster-kerberos', {
   testCases: [stack],
 });
 
-app.synth();

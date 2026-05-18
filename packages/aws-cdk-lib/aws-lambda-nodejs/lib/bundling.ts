@@ -1,3 +1,4 @@
+import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import type { IConstruct } from 'constructs';
@@ -5,11 +6,13 @@ import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
 import { OutputFormat, SourceMapMode } from './types';
-import { exec, extractDependencies, findUp, getTsconfigCompilerOptions, isSdkV2Runtime } from './util';
+import { exec, extractDependencies, findUp, getTsconfigCompilerOptionsArray, isSdkV2Runtime } from './util';
 import type { Architecture, AssetCode } from '../../aws-lambda';
 import { Code, Runtime } from '../../aws-lambda';
 import * as cdk from '../../core';
-import { ValidationError } from '../../core';
+import { AssumptionError, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
+import { profileFn, profileSpan } from '../../core/lib/private/perf';
 import { LAMBDA_NODEJS_SDK_V3_EXCLUDE_SMITHY_PACKAGES } from '../../cx-api';
 
 const ESBUILD_MAJOR_VERSION = '0';
@@ -82,6 +85,8 @@ export class Bundling implements cdk.BundlingOptions {
   private static esbuildInstallation?: PackageInstallation;
   private static tscInstallation?: PackageInstallation;
 
+  public readonly [cdk.PERF_BUNDLING_SRC_SYM] = 'NodejsFunction';
+
   // Core bundling options
   public readonly image: cdk.DockerImage;
   public readonly entrypoint?: string[];
@@ -113,8 +118,12 @@ export class Bundling implements cdk.BundlingOptions {
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
     this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
 
+    if (this.relativeEntryPath.includes('..')) {
+      throw new ValidationError(lit`PathNotUnderRoot`, `entryPath (${props.entry}) should be under projectRoot (${this.projectRoot})`, scope);
+    }
+
     if (this.relativeDepsLockFilePath.includes('..')) {
-      throw new ValidationError(`Expected depsLockFilePath: ${props.depsLockFilePath} to be under projectRoot: ${this.projectRoot} (${this.relativeDepsLockFilePath})`, scope);
+      throw new ValidationError(lit`PathNotUnderRoot`, `depsLockFilePath (${props.depsLockFilePath}) should be under projectRoot (${this.projectRoot})`, scope);
     }
 
     if (props.tsconfig) {
@@ -122,11 +131,11 @@ export class Bundling implements cdk.BundlingOptions {
     }
 
     if (props.preCompilation && !/\.tsx?$/.test(props.entry)) {
-      throw new ValidationError('preCompilation can only be used with typescript files', scope);
+      throw new ValidationError(lit`PreCompilationTypescriptFiles`, 'preCompilation can only be used with typescript files', scope);
     }
 
     if (props.format === OutputFormat.ESM && !isEsmRuntime(props.runtime)) {
-      throw new ValidationError(`ECMAScript module output format is not supported by the ${props.runtime.name} runtime`, scope);
+      throw new ValidationError(lit`ScriptModuleOutputFormatSupported`, `ECMAScript module output format is not supported by the ${props.runtime.name} runtime`, scope);
     }
 
     /**
@@ -177,8 +186,17 @@ export class Bundling implements cdk.BundlingOptions {
 
     // Docker bundling
     const shouldBuildImage = props.forceDockerBundling || !Bundling.esbuildInstallation;
-    this.image = shouldBuildImage ? props.dockerImage ?? cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'),
-      {
+
+    if (shouldBuildImage && props.dockerImage) {
+      // Use the user's image
+      this.image = props.dockerImage;
+    } else if (shouldBuildImage && !props.dockerImage) {
+      // Build our own image to run esbuild in. We do some counter trickery here: we do want to count
+      // the time spent here as part of 'bundle:NodejsFunction', but by default only the RUNNING of the Docker
+      // image would count as that. So we add an additional timer span just for the building of the runner image.
+      using _span = profileSpan(`bundle:${this[cdk.PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
+
+      this.image = cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           // If runtime isn't passed use regional default, lowest common denominator is node18
@@ -187,8 +205,11 @@ export class Bundling implements cdk.BundlingOptions {
         },
         platform: props.architecture.dockerPlatform,
         network: props.network,
-      })
-      : cdk.DockerImage.fromRegistry('dummy'); // Do not build if we don't need to
+      });
+    } else {
+      // We won't use a Docker image, but this field must have a value.
+      this.image = cdk.DockerImage.fromRegistry('dummy');
+    }
 
     const bundlingCommand = this.createBundlingCommand(scope, {
       inputDir: cdk.AssetStaging.BUNDLING_INPUT_DIR,
@@ -216,145 +237,306 @@ export class Bundling implements cdk.BundlingOptions {
     }
   }
 
-  private createBundlingCommand(scope: IConstruct, options: BundlingCommandOptions): string {
-    const pathJoin = osPathJoin(options.osPlatform);
-    let relativeEntryPath = pathJoin(options.inputDir, this.relativeEntryPath);
-    let tscCommand = '';
-
-    if (this.props.preCompilation) {
-      const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
-      if (!tsconfig) {
-        throw new ValidationError('Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
-      }
-      const compilerOptions = getTsconfigCompilerOptions(tsconfig);
-      tscCommand = `${options.tscRunner} "${relativeEntryPath}" ${compilerOptions}`;
-      relativeEntryPath = relativeEntryPath.replace(/\.ts(x?)$/, '.js$1');
-    }
-
-    const loaders = Object.entries(this.props.loader ?? {});
-    const defines = Object.entries(this.props.define ?? {});
-
+  /**
+   * Builds the raw esbuild CLI arguments as an array of strings.
+   * No shell quoting — callers apply their own formatting.
+   */
+  private buildEsbuildArgs(
+    scope: IConstruct,
+    inputDir: string,
+    outputDir: string,
+    pathJoin: (...parts: string[]) => string,
+  ): string[] {
     if (this.props.sourceMap === false && this.props.sourceMapMode) {
-      throw new ValidationError('sourceMapMode cannot be used when sourceMap is false', scope);
+      throw new ValidationError(lit`SourceMapModeCannotSource`, 'sourceMapMode cannot be used when sourceMap is false', scope);
     }
 
     const sourceMapEnabled = this.props.sourceMapMode ?? this.props.sourceMap;
     const sourceMapMode = this.props.sourceMapMode ?? SourceMapMode.DEFAULT;
     const sourceMapValue = sourceMapMode === SourceMapMode.DEFAULT ? '' : `=${this.props.sourceMapMode}`;
     const sourcesContent = this.props.sourcesContent ?? true;
-
     const outFile = this.props.format === OutputFormat.ESM ? 'index.mjs' : 'index.js';
-    const esbuildCommand: string[] = [
-      options.esbuildRunner,
-      '--bundle', `"${relativeEntryPath}"`,
+
+    return [
       `--target=${this.props.target ?? toTarget(scope, this.props.runtime)}`,
       '--platform=node',
       ...this.props.format ? [`--format=${this.props.format}`] : [],
-      `--outfile="${pathJoin(options.outputDir, outFile)}"`,
+      `--outfile=${pathJoin(outputDir, outFile)}`,
       ...this.props.minify ? ['--minify'] : [],
       ...sourceMapEnabled ? [`--sourcemap${sourceMapValue}`] : [],
       ...sourcesContent ? [] : [`--sources-content=${sourcesContent}`],
       ...this.externals.map(external => `--external:${external}`),
-      ...loaders.map(([ext, name]) => `--loader:${ext}=${name}`),
-      ...defines.map(([key, value]) => `--define:${key}=${JSON.stringify(value)}`),
+      ...Object.entries(this.props.loader ?? {}).map(([ext, name]) => `--loader:${ext}=${name}`),
+      ...Object.entries(this.props.define ?? {}).map(([key, value]) => `--define:${key}=${value}`),
       ...this.props.logLevel ? [`--log-level=${this.props.logLevel}`] : [],
       ...this.props.keepNames ? ['--keep-names'] : [],
-      ...this.relativeTsconfigPath ? [`--tsconfig="${pathJoin(options.inputDir, this.relativeTsconfigPath)}"`] : [],
-      ...this.props.metafile ? [`--metafile="${pathJoin(options.outputDir, 'index.meta.json')}"`] : [],
-      ...this.props.banner ? [`--banner:js=${JSON.stringify(this.props.banner)}`] : [],
-      ...this.props.footer ? [`--footer:js=${JSON.stringify(this.props.footer)}`] : [],
+      ...this.relativeTsconfigPath ? [`--tsconfig=${pathJoin(inputDir, this.relativeTsconfigPath)}`] : [],
+      ...this.props.metafile ? [`--metafile=${pathJoin(outputDir, 'index.meta.json')}`] : [],
+      ...this.props.banner ? [`--banner:js=${this.props.banner}`] : [],
+      ...this.props.footer ? [`--footer:js=${this.props.footer}`] : [],
       ...this.props.mainFields ? [`--main-fields=${this.props.mainFields.join(',')}`] : [],
-      ...this.props.inject ? this.props.inject.map(i => `--inject:"${i}"`) : [],
-      ...this.props.esbuildArgs ? [toCliArgs(this.props.esbuildArgs)] : [],
+      ...this.props.inject ? this.props.inject.map(i => `--inject:${i}`) : [],
     ];
+  }
 
-    let depsCommand = '';
-    if (this.props.nodeModules) {
-      // Find 'package.json' closest to entry folder, we are going to extract the
-      // modules versions from it.
-      const pkgPath = findUp('package.json', path.dirname(this.props.entry));
-      if (!pkgPath) {
-        throw new ValidationError('Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
-      }
+  private createBundlingCommand(scope: IConstruct, options: BundlingCommandOptions): string {
+    const pathJoin = osPathJoin(options.osPlatform);
+    const osCommand = new OsCommand(options.osPlatform);
 
-      // Determine dependencies versions, lock file and installer
-      const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
-      const osCommand = new OsCommand(options.osPlatform);
+    const steps = this.createBundlingSteps(scope, {
+      inputDir: options.inputDir,
+      outputDir: options.outputDir,
+      pathJoin,
+      esbuildRunner: [options.esbuildRunner],
+      tscRunner: options.tscRunner ? [options.tscRunner] : undefined,
+      createFileOps: (deps) => this.dockerFileOps(osCommand, pathJoin, options, deps),
+    });
 
-      const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
+    return stepsToPosixShellCommand(steps);
+  }
 
-      const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
-      const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
+  /**
+   * Produces shell-command steps for file operations in Docker bundling.
+   */
+  private dockerFileOps(
+    osCommand: OsCommand,
+    pathJoin: (...parts: string[]) => string,
+    options: BundlingCommandOptions,
+    deps: NodeModuleDeps,
+  ): BundlingStep[] {
+    const lockFilePath = pathJoin(options.inputDir, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
+    const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
+    const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
 
-      // Create dummy package.json, copy lock file if any and then install
-      depsCommand = chain([
-        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), ''): '', // Ensure node_modules directory is installed locally by creating local 'pnpm-workspace.yaml' file
-        osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies }),
+    return [{
+      type: 'shell',
+      commands: [chain([
+        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), '') : '',
+        osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies: deps.dependencies }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
         this.packageManager.installCommand.join(' '),
-        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '', // Remove '.modules.yaml' file which changes on each deployment
-        isBun ? osCommand.removeDir(pathJoin(options.outputDir, 'node_modules', '.cache')) : '', // Remove node_modules/.cache folder since you can't disable its creation
-      ]);
+        isPnpm ? osCommand.remove(pathJoin(options.outputDir, 'node_modules', '.modules.yaml'), true) : '',
+        isBun ? osCommand.removeDir(pathJoin(options.outputDir, 'node_modules', '.cache')) : '',
+      ])],
+    }];
+  }
+
+  /**
+   * Produces callback+spawn steps for file operations in local bundling.
+   */
+  private localFileOps(outputDir: string, deps: NodeModuleDeps): BundlingStep[] {
+    const lockFilePath = path.join(this.projectRoot, this.relativeDepsLockFilePath ?? this.packageManager.lockFile);
+    const isPnpm = this.packageManager.lockFile === LockFile.PNPM;
+    const isBun = this.packageManager.lockFile === LockFile.BUN_LOCK || this.packageManager.lockFile === LockFile.BUN;
+
+    const steps: BundlingStep[] = [];
+
+    steps.push({
+      type: 'callback',
+      operation: () => {
+        if (isPnpm) {
+          fs.writeFileSync(path.join(outputDir, 'pnpm-workspace.yaml'), '');
+        }
+        fs.writeFileSync(path.join(outputDir, 'package.json'), JSON.stringify({ dependencies: deps.dependencies }));
+        fs.copyFileSync(lockFilePath, path.join(outputDir, this.packageManager.lockFile));
+      },
+    });
+
+    steps.push({ type: 'spawn', command: [...this.packageManager.installCommand], cwd: outputDir });
+
+    if (isPnpm) {
+      steps.push({
+        type: 'callback',
+        operation: () => {
+          const modulesYaml = path.join(outputDir, 'node_modules', '.modules.yaml');
+          if (fs.existsSync(modulesYaml)) {
+            fs.rmSync(modulesYaml, { force: true });
+          }
+        },
+      });
+    }
+    if (isBun) {
+      steps.push({
+        type: 'callback',
+        operation: () => {
+          const cacheDir = path.join(outputDir, 'node_modules', '.cache');
+          if (fs.existsSync(cacheDir)) {
+            fs.rmSync(cacheDir, { recursive: true, force: true });
+          }
+        },
+      });
     }
 
-    return chain([
-      ...this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [],
-      tscCommand,
-      esbuildCommand.join(' '),
-      ...(this.props.nodeModules && this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir)) ?? [],
-      depsCommand,
-      ...this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [],
-    ]);
+    return steps;
   }
 
   private getLocalBundlingProvider(scope: IConstruct): cdk.ILocalBundling {
-    const osPlatform = os.platform();
-    const createLocalCommand = (outputDir: string, esbuild: PackageInstallation, tsc?: PackageInstallation) => this.createBundlingCommand(scope, {
-      inputDir: this.projectRoot,
-      outputDir,
-      esbuildRunner: esbuild.isLocal ? this.packageManager.runBinCommand('esbuild') : 'esbuild',
-      tscRunner: tsc && (tsc.isLocal ? this.packageManager.runBinCommand('tsc') : 'tsc'),
-      osPlatform,
-    });
-    const environment = this.props.environment ?? {};
     const cwd = this.projectRoot;
 
     return {
-      tryBundle(outputDir: string) {
+      tryBundle: (outputDir: string) => {
         if (!Bundling.esbuildInstallation) {
           process.stderr.write('esbuild cannot run locally. Switching to Docker bundling.\n');
           return false;
         }
 
         if (!Bundling.esbuildInstallation.version.startsWith(`${ESBUILD_MAJOR_VERSION}.`)) {
-          throw new ValidationError(`Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
+          throw new ValidationError(lit`ExpectedEsbuildVersion`, `Expected esbuild version ${ESBUILD_MAJOR_VERSION}.x but got ${Bundling.esbuildInstallation.version}`, scope);
         }
 
-        const localCommand = createLocalCommand(outputDir, Bundling.esbuildInstallation, Bundling.tscInstallation);
+        const esbuild = Bundling.esbuildInstallation!;
+        const tsc = Bundling.tscInstallation;
 
-        exec(
-          osPlatform === 'win32' ? 'cmd' : 'bash',
-          [
-            osPlatform === 'win32' ? '/c' : '-c',
-            localCommand,
-          ],
-          {
-            env: { ...process.env, ...environment },
-            stdio: [ // show output
-              'ignore', // ignore stdio
-              process.stderr, // redirect stdout to stderr
-              'inherit', // inherit stderr
-            ],
-            cwd,
-            windowsVerbatimArguments: osPlatform === 'win32',
-          });
+        const steps = this.createBundlingSteps(scope, {
+          inputDir: cwd,
+          outputDir,
+          pathJoin: (...args: string[]) => path.join(...args),
+          esbuildRunner: esbuild.isWorkspacePackage ? this.packageManager.runBinCommand('esbuild') : ['esbuild'],
+          tscRunner: tsc && (tsc.isWorkspacePackage ? this.packageManager.runBinCommand('tsc') : ['tsc']),
+          createFileOps: (deps) => this.localFileOps(outputDir, deps),
+        });
+
+        this.executeBundlingSteps(scope, steps);
 
         return true;
       },
     };
   }
+
+  /**
+   * Creates the sequence of bundling steps.
+   *
+   * This is the single source of truth for the bundling pipeline, used by both
+   * Docker bundling (rendered to a shell command) and local bundling (executed directly).
+   */
+  private createBundlingSteps(
+    scope: IConstruct,
+    options: StepBuilderOptions,
+  ): BundlingStep[] {
+    const steps: BundlingStep[] = [];
+
+    let entryPath = options.pathJoin(options.inputDir, this.relativeEntryPath);
+
+    // 1. Before bundling hooks
+    const beforeBundling = this.props.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? [];
+    if (beforeBundling.length) {
+      steps.push({ type: 'shell', commands: beforeBundling });
+    }
+
+    // 2. Pre-compilation with tsc
+    if (this.props.preCompilation) {
+      const tsconfig = this.props.tsconfig ?? findUp('tsconfig.json', path.dirname(this.props.entry));
+      if (!tsconfig) {
+        throw new ValidationError(lit`CannotFindTsconfigJsonPre`, 'Cannot find a `tsconfig.json` but `preCompilation` is set to `true`, please specify it via `tsconfig`', scope);
+      }
+      const compilerOptionsArray = getTsconfigCompilerOptionsArray(tsconfig);
+      if (options.tscRunner) {
+        steps.push({ type: 'spawn', command: [...options.tscRunner, entryPath, ...compilerOptionsArray] });
+      }
+      entryPath = entryPath.replace(/\.ts(x?)$/, '.js$1');
+    }
+
+    // 3. Esbuild
+    const esbuildArgs: string[] = [
+      ...this.buildEsbuildArgs(scope, options.inputDir, options.outputDir, options.pathJoin),
+      ...this.props.esbuildArgs ? toCliArgsArray(this.props.esbuildArgs) : [],
+    ];
+    steps.push({ type: 'spawn', command: [...options.esbuildRunner, '--bundle', entryPath, ...esbuildArgs] });
+
+    // 4-5. Node modules installation
+    if (this.props.nodeModules) {
+      const pkgPath = findUp('package.json', path.dirname(this.props.entry));
+      if (!pkgPath) {
+        throw new ValidationError(lit`CannotFindPackageJsonProject`, 'Cannot find a `package.json` in this project. Using `nodeModules` requires a `package.json`.', scope);
+      }
+
+      // Before install hooks
+      const beforeInstall = this.props.commandHooks?.beforeInstall(options.inputDir, options.outputDir) ?? [];
+      if (beforeInstall.length) {
+        steps.push({ type: 'shell', commands: beforeInstall });
+      }
+
+      const dependencies = extractDependencies(pkgPath, this.props.nodeModules);
+      steps.push(...options.createFileOps({ dependencies }));
+    }
+
+    // 6. After bundling hooks
+    const afterBundling = this.props.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? [];
+    if (afterBundling.length) {
+      steps.push({ type: 'shell', commands: afterBundling });
+    }
+
+    return steps;
+  }
+
+  @profileFn('NodejsFunction#tryBundle', { telemetry: true })
+  private executeBundlingSteps(scope: IConstruct, steps: BundlingStep[]) {
+    const cwd = this.projectRoot;
+    const osPlatform = os.platform();
+    const isWindows = osPlatform === 'win32';
+    const environment = this.props.environment ?? {};
+
+    const execOptions = {
+      env: { ...process.env, ...environment },
+      stdio: [
+        'ignore', // ignore stdio
+        process.stderr, // redirect stdout to stderr
+        'inherit', // inherit stderr
+      ] as ['ignore', NodeJS.WriteStream, 'inherit'],
+      cwd,
+    };
+
+    for (const step of steps) {
+      switch (step.type) {
+        case 'shell':
+          for (const cmd of step.commands) {
+            if (isWindows) {
+              exec(process.env.COMSPEC ?? 'cmd', ['/c', cmd], {
+                ...execOptions,
+                windowsVerbatimArguments: true,
+              });
+            } else {
+              exec('bash', ['-c', cmd], execOptions);
+            }
+          }
+          break;
+        case 'spawn':
+          // On Windows, spawnSync fails with EINVAL when invoking .cmd shims
+          // (e.g. npx.cmd, npx.bat) directly. We need to route through a shell.
+          // Powershell.exe instead of cmd.exe because the quoting rules are saner.
+          // See https://github.com/aws/aws-cdk/issues/37387
+          if (isWindows) {
+            exec('powershell.exe', ['-NoProfile', '-Command', `& ${step.command.map(powershellEscape).join(' ')}`], {
+              ...execOptions,
+              cwd: step.cwd ?? cwd,
+            });
+          } else {
+            exec(step.command[0], step.command.slice(1), {
+              ...execOptions,
+              cwd: step.cwd ?? cwd,
+            });
+          }
+          break;
+        case 'callback':
+          try {
+            step.operation();
+          } catch (err) {
+            throw new ValidationError(lit`LocalBundlingFileOperationFailed`, `Local bundling file operation failed: ${err instanceof Error ? err.message : String(err)}`, scope);
+          }
+          break;
+      }
+    }
+  }
 }
+
+/**
+ * A single step in the local bundling process.
+ */
+type BundlingStep =
+  | { type: 'shell'; commands: string[] }
+  | { type: 'spawn'; command: string[]; cwd?: string }
+  | { type: 'callback'; operation: () => void };
 
 interface BundlingCommandOptions {
   readonly inputDir: string;
@@ -362,6 +544,54 @@ interface BundlingCommandOptions {
   readonly esbuildRunner: string;
   readonly tscRunner?: string;
   readonly osPlatform: NodeJS.Platform;
+}
+
+/**
+ * Dependencies extracted for nodeModules installation.
+ */
+interface NodeModuleDeps {
+  readonly dependencies: { [key: string]: string };
+}
+
+/**
+ * Options for the unified step builder.
+ */
+interface StepBuilderOptions {
+  /** The input directory (project root for local, /asset-input for Docker) */
+  readonly inputDir: string;
+  /** The output directory */
+  readonly outputDir: string;
+  /** Platform-aware path join */
+  readonly pathJoin: (...parts: string[]) => string;
+  /** The esbuild command as an argv array */
+  readonly esbuildRunner: string[];
+  /** The tsc command as an argv array, or undefined if not available */
+  readonly tscRunner?: string[];
+  /** Produces steps for nodeModules file operations (differs between local and Docker) */
+  readonly createFileOps: (deps: NodeModuleDeps) => BundlingStep[];
+}
+
+/**
+ * Renders an array of BundlingSteps into a single shell command string for Docker execution.
+ * `spawn` steps are converted to shell commands via posixShellEscape.
+ * `shell` steps are included as-is.
+ * `callback` steps are not supported (they should not appear in Docker steps).
+ */
+function stepsToPosixShellCommand(steps: BundlingStep[]): string {
+  const commands: string[] = [];
+  for (const step of steps) {
+    switch (step.type) {
+      case 'shell':
+        commands.push(...step.commands);
+        break;
+      case 'spawn':
+        commands.push(preparePosixShellCommand(step.command));
+        break;
+      case 'callback':
+        throw new AssumptionError(lit`CallbackNotRenderable`, 'callback steps cannot be rendered to a shell command');
+    }
+  }
+  return chain(commands);
 }
 
 /**
@@ -417,6 +647,28 @@ class OsCommand {
 }
 
 /**
+ * Converts a clean argv array into a single POSIX shell command string.
+ * Each argument is escaped if it contains characters that have special
+ * meaning in a shell. Safe characters (alphanumeric plus a few punctuation
+ * marks commonly found in CLI flags) are left unquoted for readability.
+ */
+function preparePosixShellCommand(argv: string[]): string {
+  return argv.map(posixShellEscape).join(' ');
+}
+
+/**
+ * Escapes a single argument for safe inclusion in a POSIX shell command.
+ * Every argument is single-quoted unconditionally (like Python's shlex.quote).
+ */
+function posixShellEscape(arg: string): string {
+  return "'" + arg.replace(/'/g, "'\\''") + "'";
+}
+
+function powershellEscape(arg: string): string {
+  return "'" + arg.replace(/'/g, "''") + "'";
+}
+
+/**
  * Chain commands
  */
 function chain(commands: string[]): string {
@@ -444,27 +696,30 @@ function toTarget(scope: IConstruct, runtime: Runtime): string {
   const match = runtime.name.match(/nodejs(\d+)/);
 
   if (!match) {
-    throw new ValidationError('Cannot extract version from runtime.', scope);
+    throw new ValidationError(lit`CannotExtractVersionRuntime`, 'Cannot extract version from runtime.', scope);
   }
 
   return `node${match[1]}`;
 }
 
-function toCliArgs(esbuildArgs: { [key: string]: string | boolean }): string {
-  const args = new Array<string>();
+/**
+ * Converts esbuild args to an array of CLI arguments for direct spawn (no shell quoting).
+ */
+function toCliArgsArray(esbuildArgs: { [key: string]: string | boolean }): string[] {
+  const args: string[] = [];
   const reSpecifiedKeys = ['--alias', '--drop', '--pure', '--log-override', '--out-extension'];
 
   for (const [key, value] of Object.entries(esbuildArgs)) {
     if (value === true || value === '') {
       args.push(key);
     } else if (reSpecifiedKeys.includes(key)) {
-      args.push(`${key}:"${value}"`);
+      args.push(`${key}:${value}`);
     } else if (value) {
-      args.push(`${key}="${value}"`);
+      args.push(`${key}=${value}`);
     }
   }
 
-  return args.join(' ');
+  return args;
 }
 
 /**

@@ -44,28 +44,27 @@ const containerDefinition = taskDefinition.addContainer('Container', {
 const definition = new sfn.Pass(stack, 'Start', {
   result: sfn.Result.fromObject({ SomeKey: 'SomeValue' }),
 }).next(
-  new sfn.Task(stack, 'Run', {
-    task: new tasks.RunEcsEc2Task({
-      integrationPattern: sfn.ServiceIntegrationPattern.SYNC,
-      cluster,
-      taskDefinition,
-      containerOverrides: [
-        {
-          containerDefinition,
-          environment: [
-            {
-              name: 'SOME_KEY',
-              value: sfn.JsonPath.stringAt('$.SomeKey'),
-            },
-          ],
-        },
-      ],
-    }),
+  new tasks.EcsRunTask(stack, 'Run', {
+    integrationPattern: sfn.IntegrationPattern.RUN_JOB,
+    cluster,
+    taskDefinition,
+    containerOverrides: [
+      {
+        containerDefinition,
+        environment: [
+          {
+            name: 'SOME_KEY',
+            value: sfn.JsonPath.stringAt('$.SomeKey'),
+          },
+        ],
+      },
+    ],
+    launchTarget: new tasks.EcsEc2LaunchTarget(),
   }),
 );
 
 new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 new IntegTest(app, 'SfnTasksEcsEc2TaskTest', {

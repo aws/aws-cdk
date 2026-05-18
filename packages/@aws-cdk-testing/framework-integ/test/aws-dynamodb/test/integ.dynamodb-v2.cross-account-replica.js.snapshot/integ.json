@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "50.0.0",
   "testCases": {
     "MultiAccountReplicaIntegTestV2/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "MultiAccountReplicaIntegTestV2DefaultTestDeployAssertB27D854A"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1105.0"
 }

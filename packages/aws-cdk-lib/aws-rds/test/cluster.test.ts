@@ -141,6 +141,29 @@ describe('cluster new api', () => {
     });
 
     test.each([
+      -1, 16,
+    ])('when promotionTier is %s', (promotionTier) => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      expect(() => {
+        // WHEN
+        new DatabaseCluster(stack, 'Database', {
+          engine: DatabaseClusterEngine.AURORA_MYSQL,
+          vpc,
+          writer: ClusterInstance.provisioned('writer'),
+          readers: [
+            ClusterInstance.provisioned('reader', {
+              promotionTier,
+            }),
+          ],
+        });
+        // THEN
+      }).toThrow(/promotionTier must be between 0-15/);
+    });
+
+    test.each([
       [0.5, 300, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [0.5, 0, /serverlessV2MaxCapacity must be >= 1 & <= 256/],
       [-1, 1, /serverlessV2MinCapacity must be >= 0 & <= 256/],
@@ -1723,6 +1746,29 @@ describe('cluster new api', () => {
         ApplyImmediately: applyImmediately,
       });
     });
+  });
+});
+
+describe('instance', () => {
+  test('creating an CfnDBInstance does not throw any errors', () => {
+    // We want to make sure we are using the jsii compiled code
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const generated = require('../lib/rds.generated.js');
+
+    try {
+      process.env.JSII_DEPRECATED = 'fail';
+
+      const stack = testStack();
+      new generated.CfnDBInstance(stack, 'Instance', {
+        allowMajorVersionUpgrade: true,
+      });
+
+      // Since we didn't pass any deprecated property to the constructor,
+      // no error should be thrown.
+      expect(() => Template.fromStack(stack)).not.toThrow();
+    } finally {
+      delete process.env.JSII_DEPRECATED;
+    }
   });
 });
 

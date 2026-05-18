@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * What class and generation of instance to use
@@ -1251,12 +1252,12 @@ export enum InstanceClass {
   P3DN = 'p3dn',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation
    */
   PARALLEL4_NVME_DRIVE_EXTENDED = 'parallel4-nvme-drive-extended',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation
    */
   P4DE = 'p4de',
 
@@ -2180,7 +2181,7 @@ export class InstanceType {
     // capture the family, generation, capabilities, and size portions of the instance type id
     const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
-      throw new UnscopedValidationError('Malformed instance type identifier');
+      throw new UnscopedValidationError(lit`MalformedInstanceTypeIdentifier`, 'Malformed instance type identifier');
     }
 
     const family = instanceTypeComponents[1];
@@ -2200,7 +2201,7 @@ export class InstanceType {
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {
-      throw new UnscopedValidationError('Malformed instance type identifier');
+      throw new UnscopedValidationError(lit`MalformedInstanceTypeIdentifier`, 'Malformed instance type identifier');
     }
     return instanceClassId[1] === otherInstanceClassId[1];
   }
