@@ -1063,6 +1063,7 @@
     "CreateNamespace": true
    },
    "DependsOn": [
+    "ClusterKubectlHandlerRoleDefaultPolicyE44083DD",
     "ClusterKubectlReadyBarrier200052AF"
    ],
    "UpdateReplacePolicy": "Delete",
@@ -1493,7 +1494,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/786e9c78550ffc93ef8030f59ac9e37ed929eee2b24146a04c41fc0fdb1cbf83.json"
+       "/e4035c6e06cd527c3a469d9bb9077b8f643cc461a3b59e9d8ef340677acfa09c.json"
       ]
      ]
     }
@@ -1543,7 +1544,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/ca4c3ff6da518f4a4549e99f19413f8eab5af78b2e38d0532ebac2a35d907d1f.json"
+       "/ad83ef469c91b83865a56f053d627ddc2f21397ee1f8ac2137683a5a4a6cef24.json"
       ]
      ]
     }

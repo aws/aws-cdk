@@ -27,6 +27,7 @@ import { PropertyInjectors } from './prop-injectors';
 import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
+import { profileFn } from './private/perf';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -467,6 +468,10 @@ export class Stack extends Construct implements ITaggable {
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
+    if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
+    }
+
     this._logicalIds = new LogicalIDs();
 
     const { account, region, environment } = this.parseEnvironment(props.env);
@@ -624,6 +629,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Resolve a tokenized value in the context of the current stack.
    */
+  @profileFn('Stack.resolve', { telemetry: true })
   public resolve(obj: any): any {
     return resolve(obj, {
       scope: this,
@@ -1903,4 +1909,6 @@ import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
+import { debugModeEnabled } from './debug';
+import { captureStackTrace } from './stack-trace';
 /* eslint-enable import/order */

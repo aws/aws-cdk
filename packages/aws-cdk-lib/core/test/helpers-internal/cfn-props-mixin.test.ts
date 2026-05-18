@@ -103,6 +103,16 @@ describe('CfnPropsMixin', () => {
     expect(bucket.tagsRaw).toEqual([{ key: 'New', value: 'Tag' }]);
   });
 
+  test('accepts a plain object with CFN_RESOURCE_TYPE_NAME instead of a class', () => {
+    const bucket = new CfnBucket(stack, 'Bucket');
+
+    bucket.with(CfnPropsMixin.of<CfnBucket>('AWS::S3::Bucket', {
+      bucketName: 'from-plain-object',
+    }));
+
+    expect(bucket.bucketName).toBe('from-plain-object');
+  });
+
   test('only applies keys present in props', () => {
     const bucket = new CfnBucket(stack, 'Bucket');
     bucket.bucketName = 'original';
