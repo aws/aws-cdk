@@ -546,6 +546,28 @@ const newPolicy = new iam.Policy(this, 'MyNewPolicy', {
 });
 ```
 
+## Identity Policy Statement SID Validation
+
+The `Sid` (statement ID) element in IAM identity policies must be alphanumeric (A-Z, a-z, 0-9) according to AWS IAM requirements. CDK validates identity policy SIDs at synthesis time.
+
+```ts
+// This will throw an error when used in an identity policy
+new iam.PolicyStatement({
+  sid: 'Allow access for S3.',  // Invalid: contains spaces and period
+  actions: ['s3:GetObject'],
+  resources: ['*'],
+});
+
+// Valid SID - alphanumeric only
+new iam.PolicyStatement({
+  sid: 'AllowAccessForS3',  // Valid: alphanumeric only
+  actions: ['s3:GetObject'],
+  resources: ['*'],
+});
+```
+
+This validation helps catch SID errors early in development rather than at deployment time.
+
 ## Permissions Boundaries
 
 [Permissions
