@@ -1210,6 +1210,16 @@ export enum InstanceClass {
   G6E = 'g6e',
 
   /**
+   * Graphics-optimized instances powered by NVIDIA L40S Tensor Core GPUs, 7th generation
+   */
+  GRAPHICS7_EFFICIENT = 'graphics7-efficient',
+
+  /**
+   * Graphics-optimized instances powered by NVIDIA L40S Tensor Core GPUs, 7th generation
+   */
+  G7E = 'g7e',
+
+  /**
    * Graphics-optimized instances, 6th generation
    * Gr6 instances offer a 1:8 vCPU to RAM ratio, making them better suited for graphics workloads with higher memory requirements.
    */
@@ -1301,6 +1311,16 @@ export enum InstanceClass {
    * Parallel-processing optimized instances, 5th generation
    */
   P5EN = 'p5en',
+
+  /**
+   * Parallel-processing optimized instances powered by NVIDIA B200 Blackwell GPUs, 6th generation
+   */
+  PARALLEL6_B200 = 'parallel6-b200',
+
+  /**
+   * Parallel-processing optimized instances powered by NVIDIA B200 Blackwell GPUs, 6th generation
+   */
+  P6_B200 = 'p6-b200',
 
   /**
    * Arm processor based instances, 1st generation
@@ -2064,6 +2084,8 @@ export class InstanceType {
       [InstanceClass.G6]: 'g6',
       [InstanceClass.GRAPHICS6_EFFICIENT]: 'g6e',
       [InstanceClass.G6E]: 'g6e',
+      [InstanceClass.GRAPHICS7_EFFICIENT]: 'g7e',
+      [InstanceClass.G7E]: 'g7e',
       [InstanceClass.GRAPHICS_RAM_6]: 'gr6',
       [InstanceClass.GR6]: 'gr6',
       [InstanceClass.PARALLEL2]: 'p2',
@@ -2082,6 +2104,8 @@ export class InstanceType {
       [InstanceClass.P5E]: 'p5e',
       [InstanceClass.PARALLEL5_EXTENDED_NETWORK]: 'parallel5-extended-network',
       [InstanceClass.P5EN]: 'p5en',
+      [InstanceClass.PARALLEL6_B200]: 'p6-b200',
+      [InstanceClass.P6_B200]: 'p6-b200',
       [InstanceClass.ARM1]: 'a1',
       [InstanceClass.A1]: 'a1',
       [InstanceClass.STANDARD6_GRAVITON]: 'm6g',
