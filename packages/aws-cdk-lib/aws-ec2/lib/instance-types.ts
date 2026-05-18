@@ -1242,12 +1242,12 @@ export enum InstanceClass {
   P3DN = 'p3dn',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation
    */
   PARALLEL4_NVME_DRIVE_EXTENDED = 'parallel4-nvme-drive-extended',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation
    */
   P4DE = 'p4de',
 
