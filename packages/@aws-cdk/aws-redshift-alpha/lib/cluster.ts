@@ -139,6 +139,8 @@ export enum LogExport {
 export interface S3LoggingOptions {
   /**
    * The S3 bucket where the log files are stored.
+   *
+   * [disable-awslint:prefer-ref-interface]
    */
   readonly bucket: s3.IBucket;
 
@@ -162,11 +164,13 @@ export interface CloudWatchLoggingOptions {
   readonly logExports?: LogExport[];
 }
 
-/**
- * @internal
- */
-export interface ClusterLoggingConfig {
-  readonly logDestinationType: string;
+enum LogDestinationType {
+  S3 = 's3',
+  CLOUDWATCH = 'cloudwatch',
+}
+
+interface ClusterLoggingConfig {
+  readonly logDestinationType: LogDestinationType;
   readonly bucketName?: string;
   readonly s3KeyPrefix?: string;
   readonly logExports?: string[];
@@ -213,7 +217,7 @@ class S3ClusterLogging extends ClusterLogging {
 
   public _renderLoggingProperty(_scope: Construct): ClusterLoggingConfig {
     return {
-      logDestinationType: 's3',
+      logDestinationType: LogDestinationType.S3,
       bucketName: this.options.bucket.bucketName,
       s3KeyPrefix: this.options.keyPrefix,
     };
@@ -232,7 +236,7 @@ class CloudWatchClusterLogging extends ClusterLogging {
       throw new ValidationError(lit`DuplicateLogExports`, 'logExports must not contain duplicate values.', scope);
     }
     return {
-      logDestinationType: 'cloudwatch',
+      logDestinationType: LogDestinationType.CLOUDWATCH,
       logExports: this.options.logExports,
     };
   }
@@ -742,7 +746,11 @@ export class Cluster extends ClusterBase {
     if (props.logging) {
       loggingProperties = props.logging._renderLoggingProperty(this);
 
-      if (loggingProperties.logExports?.includes(LogExport.USER_ACTIVITY_LOG)) {
+      const usesCloudWatch = loggingProperties.logDestinationType === LogDestinationType.CLOUDWATCH;
+      const includesUserActivityLog = loggingProperties.logExports
+        ? loggingProperties.logExports.includes(LogExport.USER_ACTIVITY_LOG)
+        : usesCloudWatch;
+      if (includesUserActivityLog) {
         Annotations.of(this).addWarningV2(
           '@aws-cdk/aws-redshift-alpha:enableUserActivityLogging',
           'To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter. ' +
@@ -763,6 +771,11 @@ export class Cluster extends ClusterBase {
           principals: [
             new iam.ServicePrincipal('redshift.amazonaws.com'),
           ],
+          conditions: {
+            StringEquals: {
+              'aws:SourceAccount': Stack.of(this).account,
+            },
+          },
         });
         const result = props.logging._bucket.addToResourcePolicy(statement);
         if (!result.statementAdded) {

@@ -759,6 +759,13 @@
         "s3:GetBucketAcl",
         "s3:PutObject"
        ],
+       "Condition": {
+        "StringEquals": {
+         "aws:SourceAccount": {
+          "Ref": "AWS::AccountId"
+         }
+        }
+       },
        "Effect": "Allow",
        "Principal": {
         "Service": "redshift.amazonaws.com"

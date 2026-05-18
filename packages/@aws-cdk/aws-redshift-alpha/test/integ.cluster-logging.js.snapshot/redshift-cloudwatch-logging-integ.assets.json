@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "redshift-cloudwatch-logging-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "c4b26fd002cfdbd274f4174a75ef95c68592b379601853541c7277d4f9fb9d4b": {
+    "4659f7b4a0da38295e76674c72bab179bccb25b06777ce9423b6949b97758c63": {
       "displayName": "redshift-cloudwatch-logging-integ Template",
       "source": {
         "path": "redshift-cloudwatch-logging-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4c410d72": {
+        "current_account-current_region-5591cc2d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c4b26fd002cfdbd274f4174a75ef95c68592b379601853541c7277d4f9fb9d4b.json",
+          "objectKey": "4659f7b4a0da38295e76674c72bab179bccb25b06777ce9423b6949b97758c63.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

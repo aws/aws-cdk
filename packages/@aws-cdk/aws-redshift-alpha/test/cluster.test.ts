@@ -557,6 +557,53 @@ describe('logging', () => {
     Annotations.fromStack(stack).hasWarning('/Default/Redshift', Match.stringLikeRegexp('To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter.*'));
   });
 
+  test('adds warning for CloudWatch logging when logExports is omitted (defaults to all log types)', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudwatch(),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasWarning('/Default/Redshift', Match.stringLikeRegexp('To capture user activity logs, you must also enable the "enable_user_activity_logging" database parameter.*'));
+  });
+
+  test('does not add user-activity-logging warning when only non-user-activity logs are exported', () => {
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.cloudwatch({
+        logExports: [LogExport.CONNECTION_LOG, LogExport.USER_LOG],
+      }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/Redshift', Match.stringLikeRegexp('To capture user activity logs.*'));
+  });
+
+  test('does not add user-activity-logging warning for S3 logging by default', () => {
+    // GIVEN
+    const bucket = new s3.Bucket(stack, 'Bucket');
+
+    // WHEN
+    new Cluster(stack, 'Redshift', {
+      masterUser: {
+        masterUsername: 'admin',
+      },
+      vpc,
+      logging: ClusterLogging.s3({ bucket }),
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Default/Redshift', Match.stringLikeRegexp('To capture user activity logs.*'));
+  });
+
   test('S3 logging', () => {
     // GIVEN
     const bucket = new s3.Bucket(stack, 'Bucket');
@@ -590,6 +637,11 @@ describe('logging', () => {
             Action: ['s3:GetBucketAcl', 's3:PutObject'],
             Principal: {
               Service: 'redshift.amazonaws.com',
+            },
+            Condition: {
+              StringEquals: {
+                'aws:SourceAccount': '12345',
+              },
             },
           }),
         ]),

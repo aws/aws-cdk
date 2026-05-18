@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "redshift-cloudwatch-logging-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4b26fd002cfdbd274f4174a75ef95c68592b379601853541c7277d4f9fb9d4b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4659f7b4a0da38295e76674c72bab179bccb25b06777ce9423b6949b97758c63.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,541 +33,7 @@
       "dependencies": [
         "redshift-cloudwatch-logging-integ.assets"
       ],
-      "metadata": {
-        "/redshift-cloudwatch-logging-integ/Vpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2EIP3C605A87"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PublicSubnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2NATGateway9182C01D"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:info",
-            "data": "To capture user activity logs, you must also enable the \"enable_user_activity_logging\" database parameter. Use cluster.addToParameterGroup('enable_user_activity_logging', 'true') to enable it. See https://docs.aws.amazon.com/redshift/latest/mgmt/db-auditing.html for more details."
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/Subnets": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/Subnets/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CloudwatchLoggingClusterSubnets79CB165B"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "vpc": "*"
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CloudwatchLoggingClusterSecurityGroupC9AA90DB"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/Secret": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/Secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CloudwatchLoggingClusterSecretD1A4B93A"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/Secret/Attachment": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "secret": "*",
-              "target": "*"
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/Secret/Attachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CloudwatchLoggingClusterSecretAttachment8A2B9A78"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CloudwatchLoggingCluster992E10EE"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/ParameterGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CloudwatchLoggingCluster/ParameterGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CloudwatchLoggingClusterParameterGroupB2AFC4C7"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/LoggingBucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/LoggingBucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LoggingBucket1E5A6F3B"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/LoggingBucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/LoggingBucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LoggingBucketPolicy21938756"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/LoggingBucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/LoggingBucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LoggingBucketAutoDeleteObjectsCustomResource3835D361"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/Subnets": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/Subnets/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3LoggingClusterSubnets6C305447"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "vpc": "*"
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3LoggingClusterSecurityGroup18E3C422"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/Secret": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/Secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3LoggingClusterSecret98D38D65"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/Secret/Attachment": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "secret": "*",
-              "target": "*"
-            }
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/Secret/Attachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3LoggingClusterSecretAttachment5D8EF203"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/S3LoggingCluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "S3LoggingCluster09CB68B6"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/redshift-cloudwatch-logging-integ/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "redshift-cloudwatch-logging-integ.metadata.json",
       "displayName": "redshift-cloudwatch-logging-integ"
     },
     "CloudWatchLoggingIntegDefaultTestDeployAssertEDAD8A84.assets": {
@@ -602,20 +68,7 @@
       "dependencies": [
         "CloudWatchLoggingIntegDefaultTestDeployAssertEDAD8A84.assets"
       ],
-      "metadata": {
-        "/CloudWatchLoggingInteg/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/CloudWatchLoggingInteg/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "CloudWatchLoggingIntegDefaultTestDeployAssertEDAD8A84.metadata.json",
       "displayName": "CloudWatchLoggingInteg/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -915,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -946,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1102,6 +550,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1113,16 +562,48 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1108.0"
 }
