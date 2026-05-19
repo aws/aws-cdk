@@ -594,13 +594,8 @@ export interface ApiGatewayTargetConfigurationProps {
 
   /**
    * Metadata configuration for passing headers and query parameters
-   * Allows you to pass additional context through headers and query parameters
    *
-   * @deprecated Use `metadataConfiguration` on the target props (e.g. `GatewayTargetApiGatewayProps`
-   * via `GatewayTargetCommonProps`) instead. Metadata configuration is a top-level property of the
-   * GatewayTarget resource and applies to all target types — it does not belong to the target
-   * configuration. This field will continue to work for backward compatibility, but values set via
-   * the target props take precedence.
+   * @deprecated Set `metadataConfiguration` on `GatewayTargetCommonProps` instead. The top-level prop wins if both are set.
    * @default - No metadata configuration
    */
   readonly metadataConfiguration?: MetadataConfiguration;
@@ -656,10 +651,7 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
   /**
    * Metadata configuration for the API Gateway target
    *
-   * @deprecated Use `metadataConfiguration` on the target props (e.g. `GatewayTargetApiGatewayProps`
-   * via `GatewayTargetCommonProps`) instead. Metadata configuration is a top-level property of the
-   * GatewayTarget resource and applies to all target types — it does not belong to the target
-   * configuration.
+   * @deprecated Set `metadataConfiguration` on `GatewayTargetCommonProps` instead. The top-level prop wins if both are set.
    */
   public readonly metadataConfiguration?: MetadataConfiguration;
 
