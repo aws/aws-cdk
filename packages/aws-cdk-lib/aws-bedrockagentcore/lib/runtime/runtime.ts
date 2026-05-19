@@ -17,7 +17,7 @@ import type { AgentRuntimeArtifact } from './runtime-artifact';
 import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
+import type { LifecycleConfiguration, RequestHeaderConfiguration, FilesystemConfiguration } from './types';
 import { ProtocolType } from './types';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as ec2 from '../../../aws-ec2';
@@ -146,6 +146,12 @@ export interface RuntimeProps {
    * @default - No logging configured
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * The filesystem configuration for the AgentCore Runtime.
+   * @default - No filesystem configuration
+   */
+  readonly filesystemConfiguration?: FilesystemConfiguration;
 }
 
 /**
@@ -319,6 +325,10 @@ export class Runtime extends RuntimeBase {
       this.validateLifecycleConfiguration(this.lifecycleConfiguration);
     }
 
+    if (props.filesystemConfiguration) {
+      this.validateFilesystemConfiguration(props.filesystemConfiguration);
+    }
+
     if (props.executionRole) {
       this.role = props.executionRole;
       if (!Token.isUnresolved(props.executionRole.roleArn)) {
@@ -371,6 +381,12 @@ export class Runtime extends RuntimeBase {
     }
     if (props.authorizerConfiguration) {
       cfnProps.authorizerConfiguration = Lazy.any({ produce: () => this.authorizerConfiguration!._render() });
+    }
+    if (props.filesystemConfiguration) {
+      const rendered = this.renderFilesystemConfigurations(props.filesystemConfiguration);
+      if (rendered) {
+        cfnProps.filesystemConfigurations = rendered;
+      }
     }
 
     this.runtimeResource = new bedrockagentcore.CfnRuntime(this, 'Resource', cfnProps as bedrockagentcore.CfnRuntimeProps);
@@ -522,6 +538,22 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
+   * Renders the filesystem configurations for CloudFormation.
+   * The L2 accepts a single configuration; CFN expects an array (MaxItems=1).
+   * Returns undefined when there are no sub-properties to render, so that
+   * the optional L1 property is omitted entirely (no empty `[{}]`).
+   * @internal
+   */
+  private renderFilesystemConfigurations(config: FilesystemConfiguration): any[] | undefined {
+    if (!config.sessionStorage) {
+      return undefined;
+    }
+    return [{
+      sessionStorage: { mountPath: config.sessionStorage.mountPath },
+    }];
+  }
+
+  /**
    * Validates the request header configuration
    * @throws Error if validation fails
    */
@@ -572,6 +604,36 @@ export class Runtime extends RuntimeBase {
         || lifecycleConfiguration.maxLifetime.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
         throw new ValidationError(lit`InvalidMaxLifetime`, `Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
       }
+    }
+  }
+
+  /**
+   * Validates the filesystem configuration.
+   * @throws ValidationError if validation fails
+   */
+  private validateFilesystemConfiguration(config: FilesystemConfiguration): void {
+    const mountPath = config.sessionStorage?.mountPath;
+    if (!mountPath || Token.isUnresolved(mountPath)) {
+      return;
+    }
+
+    const allErrors: string[] = [
+      ...validateStringFieldLength({
+        value: mountPath,
+        fieldName: 'Session storage mount path',
+        minLength: 6,
+        maxLength: 200,
+      }),
+      ...validateFieldPattern(
+        mountPath,
+        'Session storage mount path',
+        /^\/mnt\/[a-zA-Z0-9._-]+\/?$/,
+        'Session storage mount path must be under /mnt with one subdirectory level (for example, /mnt/data)',
+      ),
+    ];
+
+    if (allErrors.length > 0) {
+      throw new ValidationError(lit`InvalidFilesystemConfiguration`, allErrors.join('\n'), this);
     }
   }
 
