@@ -184,11 +184,11 @@ the cluster cannot be deleted until protection is disabled. This setting only ap
 > For more details visit [Deletion protection](https://docs.aws.amazon.com/eks/latest/userguide/deletion-protection.html).
 
 ```ts
-import { KubectlV34Layer } from '@aws-cdk/lambda-layer-kubectl-v34';
+import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 
 new eks.Cluster(this, 'HelloEKS', {
-  version: eks.KubernetesVersion.V1_34,
-  kubectlLayer: new KubectlV34Layer(this, 'kubectl'),
+  version: eks.KubernetesVersion.V1_35,
+  kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
   deletionProtection: true,
 });
 ```
