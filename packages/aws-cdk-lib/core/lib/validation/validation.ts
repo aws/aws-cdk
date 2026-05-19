@@ -1,4 +1,4 @@
-import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1 } from './report';
+import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1, PolicyViolatingResourceBeta1, PolicyViolationBeta1 } from './report';
 
 /**
  * Represents a validation plugin that will be executed during synthesis
@@ -121,3 +121,42 @@ export interface IPolicyValidationContextBeta1 {
    */
   readonly templatePaths: string[];
 }
+
+/**
+ * Convert an `IPolicyValidationPlugin` to an `IPolicyValidationPluginBeta1`.
+ *
+ * The stable `PolicyViolatingResource` interface has optional `resourceLogicalId`
+ * and `templatePath` fields to support annotation-sourced violations. The Beta1
+ * interface keeps those fields required. This adapter bridges the gap by
+ * providing fallback values for the optional fields.
+ *
+ * @internal
+ */
+export function _toBeta1Plugin(plugin: IPolicyValidationPlugin): IPolicyValidationPluginBeta1 {
+  return {
+    name: plugin.name,
+    version: plugin.version,
+    ruleIds: plugin.ruleIds,
+    validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+      const report = plugin.validate(context);
+      return {
+        success: report.success,
+        pluginVersion: report.pluginVersion,
+        metadata: report.metadata,
+        violations: report.violations.map((v): PolicyViolationBeta1 => ({
+          ruleName: v.ruleName,
+          description: v.description,
+          fix: v.fix,
+          severity: v.severity,
+          ruleMetadata: v.ruleMetadata,
+          violatingResources: v.violatingResources.map((r): PolicyViolatingResourceBeta1 => ({
+            resourceLogicalId: r.resourceLogicalId ?? '',
+            templatePath: r.templatePath ?? '',
+            locations: r.locations,
+          })),
+        })),
+      };
+    },
+  };
+}
+
