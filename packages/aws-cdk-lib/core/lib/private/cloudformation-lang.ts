@@ -29,6 +29,7 @@ export class CloudFormationLang {
    * @param space Indentation to use (default: no pretty-printing)
    */
   public static toJSON(obj: any, space?: number): string {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString({
       // We used to do this by hooking into `JSON.stringify()` by adding in objects
       // with custom `toJSON()` functions, but it's ultimately simpler just to
@@ -50,6 +51,7 @@ export class CloudFormationLang {
    * @param obj The object to stringify
    */
   public static toYAML(obj: any): string {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString({
       produce: () => yaml_cfn.serialize(obj),
     });

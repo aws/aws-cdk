@@ -118,10 +118,10 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/cloud-assembly-api": "^2.2.3",
+    "@aws-cdk/cloud-assembly-api": "^2.2.4",
     "@aws-cdk/asset-awscli-v1": "2.2.273",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.1",
-    "@aws-cdk/cloud-assembly-schema": "^53.21.0",
+    "@aws-cdk/cloud-assembly-schema": "^53.25.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
