@@ -385,6 +385,174 @@ each([testedOpenSearchVersions]).test('can set a self-referencing custom policy'
   });
 });
 
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES sets AccessPolicies inline and skips the custom resource', (engineVersion) => {
+  stack.node.setContext(cxapi.ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES, true);
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    accessPolicies: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.AccountPrincipal('1234')],
+        actions: ['es:ESHttp*'],
+        // Use a constructed ARN, not domain.domainArn — self-referencing CFN intrinsics on the
+        // domain itself would create a CloudFormation cycle when written to AccessPolicies inline.
+        resources: ['arn:aws:es:us-east-1:1234:domain/test/*'],
+      }),
+    ],
+  });
+
+  Template.fromStack(stack).resourceCountIs('Custom::OpenSearchAccessPolicy', 0);
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+    AccessPolicies: {
+      Statement: [{
+        Action: 'es:ESHttp*',
+        Effect: 'Allow',
+        Principal: { AWS: { 'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::1234:root']] } },
+        Resource: 'arn:aws:es:us-east-1:1234:domain/test/*',
+      }],
+      Version: '2012-10-17',
+    },
+  });
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES merges addAccessPolicies into the inline document', (engineVersion) => {
+  stack.node.setContext(cxapi.ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES, true);
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    fineGrainedAccessControl: { masterUserName: 'master-user' },
+    encryptionAtRest: { enabled: true },
+    nodeToNodeEncryption: true,
+    enforceHttps: true,
+    accessPolicies: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.AccountPrincipal('1234')],
+        actions: ['es:ESHttp*'],
+        resources: ['arn:aws:es:us-east-1:1234:domain/test/*'],
+      }),
+    ],
+  });
+
+  domain.addAccessPolicies(new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('5678')],
+    actions: ['es:ESHttpGet'],
+    resources: ['arn:aws:es:us-east-1:5678:domain/test/*'],
+  }));
+
+  Template.fromStack(stack).resourceCountIs('Custom::OpenSearchAccessPolicy', 0);
+  const tpl = Template.fromStack(stack).toJSON();
+  const domainResource = Object.values(tpl.Resources as Record<string, any>).find(
+    (r: any) => r.Type === 'AWS::OpenSearchService::Domain',
+  ) as any;
+  expect(domainResource.Properties.AccessPolicies.Statement).toHaveLength(2);
+  expect(domainResource.Properties.AccessPolicies.Statement[0].Action).toEqual('es:ESHttp*');
+  expect(domainResource.Properties.AccessPolicies.Statement[1].Action).toEqual('es:ESHttpGet');
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES auto-falls-back to the custom resource when useUnsignedBasicAuth is enabled without a domainName', (engineVersion) => {
+  stack.node.setContext(cxapi.ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES, true);
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    useUnsignedBasicAuth: true,
+    fineGrainedAccessControl: { masterUserName: 'master-user' },
+    encryptionAtRest: { enabled: true },
+    nodeToNodeEncryption: true,
+    enforceHttps: true,
+  });
+
+  // Without a synth-time-resolvable domainName, the unsigned-basic-auth statement's
+  // `${domain.domainArn}/*` cannot be rewritten to a literal ARN, so the construct must
+  // fall back to the Custom::OpenSearchAccessPolicy resource rather than producing a
+  // CloudFormation self-cycle.
+  Template.fromStack(stack).resourceCountIs('Custom::OpenSearchAccessPolicy', 1);
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES auto-falls-back when accessPolicies references the domain ARN and no domainName is set', (engineVersion) => {
+  stack.node.setContext(cxapi.ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES, true);
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+  });
+  domain.addAccessPolicies(new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('1234')],
+    actions: ['es:ESHttp*'],
+    resources: [`${domain.domainArn}/*`],
+  }));
+
+  Template.fromStack(stack).resourceCountIs('Custom::OpenSearchAccessPolicy', 1);
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES rewrites self-references to a literal ARN when domainName is set', (engineVersion) => {
+  stack.node.setContext(cxapi.ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES, true);
+  const domain = new Domain(stack, 'Domain', {
+    version: engineVersion,
+    domainName: 'my-named-domain',
+  });
+  domain.addAccessPolicies(new iam.PolicyStatement({
+    effect: iam.Effect.ALLOW,
+    principals: [new iam.AccountPrincipal('1234')],
+    actions: ['es:ESHttp*'],
+    resources: [domain.domainArn, `${domain.domainArn}/*`, `${domain.domainArn}/index/sensitive/*`],
+  }));
+
+  // Self-references are replaced with a literal ARN built from the resolved domainName,
+  // so the policy is safe to write inline and no custom resource is synthesized.
+  Template.fromStack(stack).resourceCountIs('Custom::OpenSearchAccessPolicy', 0);
+  const tpl = Template.fromStack(stack).toJSON();
+  const domainResource = Object.values(tpl.Resources as Record<string, any>).find(
+    (r: any) => r.Type === 'AWS::OpenSearchService::Domain',
+  ) as any;
+  // The domain's own logical id should not appear under any Fn::GetAtt / Ref inside the
+  // AccessPolicies tree (which would otherwise be a self-cycle).
+  const accessPoliciesJson = JSON.stringify(domainResource.Properties.AccessPolicies);
+  expect(accessPoliciesJson).not.toContain('"Fn::GetAtt":["Domain');
+  expect(accessPoliciesJson).not.toContain('"Ref":"Domain');
+  // And the literal ARN materializes inside the rewritten document.
+  expect(accessPoliciesJson).toContain(':domain/my-named-domain');
+});
+
+each([testedOpenSearchVersions]).test('ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES rewrites useUnsignedBasicAuth self-reference when domainName is set', (engineVersion) => {
+  stack.node.setContext(cxapi.ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES, true);
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    domainName: 'my-named-domain',
+    useUnsignedBasicAuth: true,
+    fineGrainedAccessControl: { masterUserName: 'master-user' },
+    encryptionAtRest: { enabled: true },
+    nodeToNodeEncryption: true,
+    enforceHttps: true,
+  });
+
+  // With a resolvable domainName, useUnsignedBasicAuth's `${domain.domainArn}/*` rewrites
+  // to a literal ARN inline; the custom resource is no longer needed.
+  Template.fromStack(stack).resourceCountIs('Custom::OpenSearchAccessPolicy', 0);
+  const tpl = Template.fromStack(stack).toJSON();
+  const domainResource = Object.values(tpl.Resources as Record<string, any>).find(
+    (r: any) => r.Type === 'AWS::OpenSearchService::Domain',
+  ) as any;
+  expect(domainResource.Properties.AccessPolicies).toBeDefined();
+});
+
+each([testedOpenSearchVersions]).test('default behavior (flag unset) still uses the Custom::OpenSearchAccessPolicy resource', (engineVersion) => {
+  new Domain(stack, 'Domain', {
+    version: engineVersion,
+    accessPolicies: [
+      new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        principals: [new iam.AccountPrincipal('1234')],
+        actions: ['es:ESHttp*'],
+        resources: ['arn:aws:es:us-east-1:1234:domain/test/*'],
+      }),
+    ],
+  });
+
+  Template.fromStack(stack).resourceCountIs('Custom::OpenSearchAccessPolicy', 1);
+  Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', Match.not({
+    AccessPolicies: Match.anyValue(),
+  }));
+});
+
 each([testedOpenSearchVersions]).describe('UltraWarm instances', (engineVersion) => {
   test('can enable UltraWarm instances', () => {
     new Domain(stack, 'Domain', {

@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "OpenSearchInlineAccessPoliciesInteg/DefaultTest": {
+      "stacks": [
+        "cdk-integ-opensearch-inline-access-policies"
+      ],
+      "assertionStack": "OpenSearchInlineAccessPoliciesInteg/DefaultTest/DeployAssert",
+      "assertionStackName": "OpenSearchInlineAccessPoliciesIntegDefaultTestDeployAssert650BF078"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

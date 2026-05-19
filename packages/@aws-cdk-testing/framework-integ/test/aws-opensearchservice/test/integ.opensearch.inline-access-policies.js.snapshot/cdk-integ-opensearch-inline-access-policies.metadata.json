@@ -1,0 +1,95 @@
+{
+  "/cdk-integ-opensearch-inline-access-policies": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/akurait/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.inline-access-policies.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-opensearch-inline-access-policies/domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "version": "*",
+        "removalPolicy": "destroy",
+        "capacity": {
+          "multiAzWithStandbyEnabled": false
+        },
+        "enforceHttps": true
+      }
+    },
+    {
+      "type": "aws:cdk:hasPhysicalName",
+      "data": "inline-policy-domain"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAccessPolicies": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-opensearch-inline-access-policies/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
+        "visit (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
+        "visit (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
+        "synthesizeTree (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
+        "synthesize (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/cdk-integ-opensearch-inline-access-policies/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
+        "visit (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
+        "visit (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
+        "synthesizeTree (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
+        "synthesize (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/cdk-integ-opensearch-inline-access-policies/domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "domainFBFFA2F6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Domain (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1006:27)",
+        "new Domain (/Users/akurait/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/akurait/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.inline-access-policies.js:31:24)",
+        "<anonymous> (/Users/akurait/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.inline-access-policies.js:54:15)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
