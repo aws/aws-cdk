@@ -17,7 +17,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **core:** handle token-wrapped Boxes in property merge strategies ([#37902](https://github.com/aws/aws-cdk/issues/37902)) ([18435e3](https://github.com/aws/aws-cdk/commit/18435e3c52df17be5a23931e18a1fd8fb7c4c4c3))
 * **core:** prevent stack overflow on large construct trees ([#37901](https://github.com/aws/aws-cdk/issues/37901)) ([10163cb](https://github.com/aws/aws-cdk/commit/10163cb8ca2b650f19a38afa04e78bd5f45d39f5)), closes [#37903](https://github.com/aws/aws-cdk/issues/37903)
-* **merge-back:** move dispose-polyfill to lib/private where perf.ts expects it ([3c5e5f8](https://github.com/aws/aws-cdk/commit/3c5e5f83dd5d7cf3e51620433d02c4281d56a6de))
 
 ## [2.255.0](https://github.com/aws/aws-cdk/compare/v2.254.0...v2.255.0) (2026-05-18)
 
