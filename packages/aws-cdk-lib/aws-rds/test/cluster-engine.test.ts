@@ -253,4 +253,14 @@ describe('cluster engine', () => {
     // THEN
     expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql8.0');
   });
+
+  test.each([
+    AuroraMysqlEngineVersion.VER_8_4_7,
+  ])('cluster parameter group correctly determined for AURORA_MYSQL 8.4 and given version $auroraMysqlFullVersion', (version: AuroraMysqlEngineVersion) => {
+    // GIVEN
+    const engine_ver = DatabaseClusterEngine.auroraMysql({ version });
+
+    // THEN
+    expect(engine_ver.parameterGroupFamily).toEqual('aurora-mysql8.4');
+  });
 });
