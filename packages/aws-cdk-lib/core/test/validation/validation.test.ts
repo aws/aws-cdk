@@ -612,7 +612,7 @@ Policy Validation Report Summary
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
   });
 
-  test('JSON format', () => {
+  test('JSON format only', () => {
     const app = new core.App({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
@@ -629,7 +629,7 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportJson': true,
+        '@aws-cdk/core:validationReportPrettyPrint': false,
       },
     });
     const stack = new core.Stack(app);
@@ -723,9 +723,78 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
     const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain('Validation failed. See the validation report above for details');
+    expect(consoleOut).toContain('Validation failed. See the validation report in');
+    expect(consoleOut).toContain('and above for details');
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('both formats enabled by default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+    expect(process.exitCode).toEqual(1);
+
+    // JSON file written
+    const file = path.join(app.outdir, 'policy-validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+
+    // Pretty print also output
+    const consoleReport = consoleErrorMock.mock.calls[1][0];
+    expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('JSON report is always written regardless of context', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:validationReportPrettyPrint': false,
+      },
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+    expect(process.exitCode).toEqual(1);
+
+    // JSON file is ALWAYS written
+    const file = path.join(app.outdir, 'policy-validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+
+    // Pretty print should NOT be output
+    const allOutput = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(allOutput).not.toContain('Validation Report\n-');
+
+    // Message should reference the file only (no "above")
+    expect(allOutput).toContain(`Validation failed. See the validation report in '${file}' for details`);
   });
 
   test('Multi format', () => {
@@ -745,7 +814,6 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportJson': true,
         '@aws-cdk/core:validationReportPrettyPrint': true,
       },
     });
@@ -1140,6 +1208,27 @@ Policy Validation Report Summary
 
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).not.toContain('MY RULE');
+    });
+
+    test('validation report JSON is always written to assembly directory', () => {
+      const app = new core.App({
+        context: annotationReportContext,
+      });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:AlwaysWritten', 'Report always in assembly');
+
+      const assembly = app.synth();
+
+      const reportPath = path.join(assembly.directory, 'policy-validation-report.json');
+      expect(fs.existsSync(reportPath)).toBe(true);
+      const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+      expect(report.pluginReports[0].summary.pluginName).toEqual('Construct Annotations');
     });
   });
 
