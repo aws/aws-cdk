@@ -5,6 +5,8 @@ import { Arn, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
 import { ValidationError } from './errors';
+import type { IBox } from './helpers-internal';
+import { Box } from './helpers-internal';
 import { memoizedGetter } from './helpers-internal/memoize';
 import type { IStringProducer } from './lazy';
 import { Lazy } from './lazy';
@@ -16,6 +18,7 @@ import { Stack } from './stack';
 import { Token, Tokenization } from './token';
 import type { IEnvironmentAware, ResourceEnvironment } from '../../interfaces/environment-aware';
 import { withMixins } from './mixins/private/mixin-metadata';
+import { lit } from './private/literal-string';
 
 /**
  * Interface for L2 Resource constructs.
@@ -115,13 +118,13 @@ export abstract class Resource extends Construct implements IResource {
   /** The physicalName supplied into the constructor */
   private _givenPhysicalName: string | undefined;
   /** The generated physical name, in case of cross-env access */
-  private _generatedPhysicalName: string | undefined;
+  private _generatedPhysicalName: IBox<string | undefined> = Box.fromValue(undefined);
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
 
     if ((props.account !== undefined || props.region !== undefined) && props.environmentFromArn !== undefined) {
-      throw new ValidationError('ConflictingEnvironmentOptions', `Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`, this);
+      throw new ValidationError(lit`ConflictingEnvironmentOptions`, `Supply at most one of 'account'/'region' (${props.account}/${props.region}) and 'environmentFromArn' (${props.environmentFromArn})`, this);
     }
 
     Object.defineProperty(this, RESOURCE_SYMBOL, { value: true });
@@ -187,7 +190,7 @@ export abstract class Resource extends Construct implements IResource {
   protected get physicalName(): string {
     switch (this._physicalNameMode) {
       case 'generate':
-        return Lazy.string({ produce: () => this._generatedPhysicalName });
+        return Token.asString(this._generatedPhysicalName);
       case 'given-resolved':
         // Will definitely be set
         return this._givenPhysicalName!;
@@ -208,13 +211,13 @@ export abstract class Resource extends Construct implements IResource {
   public _enableCrossEnvironment(): void {
     if (!this._allowCrossEnvironment) {
       // error out - a deploy-time name cannot be used across environments
-      throw new ValidationError('CannotUseCrossEnvironment', `Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
+      throw new ValidationError(lit`CannotUseCrossEnvironment`, `Cannot use resource '${this.node.path}' in a cross-environment fashion, ` +
         "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`", this);
     }
 
-    if (this._physicalNameMode === 'generate' && !this._generatedPhysicalName) {
-      this._generatedPhysicalName = this.generatePhysicalName();
-    }
+    this._generatedPhysicalName.update(name =>
+      this._physicalNameMode === 'generate' && !name ? this.generatePhysicalName() : name,
+    );
   }
 
   /**
@@ -231,7 +234,7 @@ export abstract class Resource extends Construct implements IResource {
   public applyRemovalPolicy(policy: RemovalPolicy) {
     const child = this.node.defaultChild;
     if (!child || !CfnResource.isCfnResource(child)) {
-      throw new ValidationError('CannotApplyRemovalPolicy', 'Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
+      throw new ValidationError(lit`CannotApplyRemovalPolicy`, 'Cannot apply RemovalPolicy: no child or not a CfnResource. Apply the removal policy on the CfnResource directly.', this);
     }
     child.applyRemovalPolicy(policy);
   }
@@ -317,6 +320,7 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
     failConcat: false,
   });
   if (!Reference.isReference(reference)) {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString(producer);
   }
 

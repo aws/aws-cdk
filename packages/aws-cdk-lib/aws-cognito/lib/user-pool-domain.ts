@@ -5,6 +5,7 @@ import type { IResource } from '../../core';
 import { Resource, Stack, Token } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { AwsSdkCall } from '../../custom-resources';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from '../../custom-resources';
@@ -125,7 +126,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
         return {
           domain: userPoolDomainName,
           get userPoolId(): string {
-            throw new UnscopedValidationError('UserPoolDomainRefAvailable', 'userPoolDomainRef is not available on imported UserPoolDomain.');
+            throw new UnscopedValidationError(lit`UserPoolDomainRefAvailable`, 'userPoolDomainRef is not available on imported UserPoolDomain.');
           },
         };
       }
@@ -156,13 +157,13 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     this._userPool = props.userPool;
 
     if (!!props.customDomain === !!props.cognitoDomain) {
-      throw new ValidationError('ExactlyOneDomainRequired', 'One of, and only one of, cognitoDomain or customDomain must be specified', this);
+      throw new ValidationError(lit`ExactlyOneDomainRequired`, 'One of, and only one of, cognitoDomain or customDomain must be specified', this);
     }
 
     if (props.cognitoDomain?.domainPrefix &&
       !Token.isUnresolved(props.cognitoDomain?.domainPrefix) &&
       !/^[a-z0-9-]+$/.test(props.cognitoDomain.domainPrefix)) {
-      throw new ValidationError('DomainPrefixCognitoDomainContain', 'domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
+      throw new ValidationError(lit`DomainPrefixCognitoDomainContain`, 'domainPrefix for cognitoDomain can contain only lowercase alphabets, numbers and hyphens', this);
     }
 
     this.isCognitoDomain = !!props.cognitoDomain;
@@ -245,7 +246,7 @@ export class UserPoolDomain extends Resource implements IUserPoolDomain {
     } else if (client.oAuthFlows.implicitCodeGrant) {
       responseType = 'token';
     } else {
-      throw new ValidationError('SignUrlSupportedClientsWithout', 'signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
+      throw new ValidationError(lit`SignUrlSupportedClientsWithout`, 'signInUrl is not supported for clients without authorizationCodeGrant or implicitCodeGrant flow enabled', this);
     }
     const path = options.signInPath ?? '/login';
     return `${this.baseUrl(options)}${path}?client_id=${client.userPoolClientId}&response_type=${responseType}&redirect_uri=${options.redirectUri}`;

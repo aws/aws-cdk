@@ -3,6 +3,7 @@ import * as iam from '../../../aws-iam';
 import type * as sns from '../../../aws-sns';
 import * as sfn from '../../../aws-stepfunctions';
 import { Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -190,22 +191,22 @@ export class SnsPublish extends sfn.TaskStateBase {
 
     if (this.integrationPattern === sfn.IntegrationPattern.WAIT_FOR_TASK_TOKEN) {
       if (!sfn.FieldUtils.containsTaskToken(props.message)) {
-        throw new ValidationError('TaskTokenRequired', 'Task Token is required in `message` Use JsonPath.taskToken to set the token.', this);
+        throw new ValidationError(lit`TaskTokenRequired`, 'Task Token is required in `message` Use JsonPath.taskToken to set the token.', this);
       }
     }
 
     if (props.topic.fifo) {
       if (!props.messageGroupId) {
-        throw new ValidationError('MessageGroupIdRequiredForFifoTopics', '\'messageGroupId\' is required for FIFO topics', this);
+        throw new ValidationError(lit`MessageGroupIdRequiredForFifoTopics`, '\'messageGroupId\' is required for FIFO topics', this);
       }
       if (props.messageGroupId.length > 128) {
-        throw new ValidationError('MessageGroupIdMustBeAtMost128Characters', `\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`, this);
+        throw new ValidationError(lit`MessageGroupIdMustBeAtMost128Characters`, `\'messageGroupId\' must be at most 128 characters long, got ${props.messageGroupId.length}`, this);
       }
       if (!props.topic.contentBasedDeduplication && !props.messageDeduplicationId) {
-        throw new ValidationError('MessageDeduplicationIdRequiredForFifoTopics', '\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled', this);
+        throw new ValidationError(lit`MessageDeduplicationIdRequiredForFifoTopics`, '\'messageDeduplicationId\' is required for FIFO topics with \'contentBasedDeduplication\' disabled', this);
       }
       if (props.messageDeduplicationId && props.messageDeduplicationId.length > 128) {
-        throw new ValidationError('MessageDeduplicationIdMustBeAtMost128Characters', `\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`, this);
+        throw new ValidationError(lit`MessageDeduplicationIdMustBeAtMost128Characters`, `\'messageDeduplicationId\' must be at most 128 characters long, got ${props.messageDeduplicationId.length}`, this);
       }
     }
 
@@ -290,12 +291,12 @@ function validateMessageAttribute(scope: Construct, attribute: MessageAttribute)
   }
   if (Array.isArray(value)) {
     if (dataType !== MessageAttributeDataType.STRING_ARRAY) {
-      throw new ValidationError('RequestedMessageAttributeTypeInvalid', `Requested SNS message attribute type was ${dataType} but ${value} was of type Array`, scope);
+      throw new ValidationError(lit`RequestedMessageAttributeTypeInvalid`, `Requested SNS message attribute type was ${dataType} but ${value} was of type Array`, scope);
     }
     const validArrayTypes = ['string', 'boolean', 'number'];
     value.forEach((v) => {
       if (v !== null || !validArrayTypes.includes(typeof v)) {
-        throw new ValidationError('RequestedMessageAttributeTypeInvalidForArray', `Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`, scope);
+        throw new ValidationError(lit`RequestedMessageAttributeTypeInvalidForArray`, `Requested SNS message attribute type was ${typeof value} but Array values must be one of ${validArrayTypes}`, scope);
       }
     });
     return;

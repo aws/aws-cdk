@@ -6,6 +6,7 @@ import type * as kms from '../../../aws-kms';
 import type * as s3 from '../../../aws-s3';
 import * as sfn from '../../../aws-stepfunctions';
 import { Stack, Token, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, validatePatternSupported } from '../private/task-utils';
 
 /**
@@ -261,7 +262,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     validatePatternSupported(this.integrationPattern, BedrockCreateModelCustomizationJob.SUPPORTED_INTEGRATION_PATTERNS);
 
     if (!this.props.validationData && !this.props.hyperParameters?.['Evaluation percentage']) {
-      throw new ValidationError('ValidationDataEvaluationPercentageHyperparameter', 'validationData or Evaluation percentage hyperparameter must be provided.', this);
+      throw new ValidationError(lit`ValidationDataEvaluationPercentageHyperparameter`, 'validationData or Evaluation percentage hyperparameter must be provided.', this);
     }
 
     this._role = this.renderBedrockCreateModelCustomizationJobRole();
@@ -283,7 +284,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
       const result = this.props.customModelKmsKey.addToResourcePolicy(poliyStatement, true);
 
       if (result.statementAdded === false) {
-        throw new ValidationError('ImportedUsed', 'Imported KMS key is not used as the `customModelKmsKey`.', this);
+        throw new ValidationError(lit`ImportedUsed`, 'Imported KMS key is not used as the `customModelKmsKey`.', this);
       }
     }
   }
@@ -295,7 +296,7 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
     if ('grant' in this._role) {
       return this._role as iam.IRole;
     }
-    throw new ValidationError('RoleInstanceRole', `Role is not an instance of IRole: ${this._role.constructor.name}`, this);
+    throw new ValidationError(lit`RoleInstanceRole`, `Role is not an instance of IRole: ${this._role.constructor.name}`, this);
   }
 
   /**
@@ -494,19 +495,19 @@ export class BedrockCreateModelCustomizationJob extends sfn.TaskStateBase {
 
   private validateStringLength(name: string, min: number, max: number, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && (value.length < min || value.length > max)) {
-      throw new ValidationError('StringLengthOutOfRange', `${name} must be between ${min} and ${max} characters long, got: ${value.length}.`, this);
+      throw new ValidationError(lit`StringLengthOutOfRange`, `${name} must be between ${min} and ${max} characters long, got: ${value.length}.`, this);
     }
   }
 
   private validatePattern(name: string, pattern: RegExp, value?: string): void {
     if (value !== undefined && !Token.isUnresolved(value) && !pattern.test(value)) {
-      throw new ValidationError('PatternMismatch', `${name} must match the pattern ${pattern.toString()}, got: ${value}.`, this);
+      throw new ValidationError(lit`PatternMismatch`, `${name} must match the pattern ${pattern.toString()}, got: ${value}.`, this);
     }
   }
 
   private validateArrayLength(name: string, min: number, max: number, value?: any[]): void {
     if (value !== undefined && (value.length < min || value.length > max)) {
-      throw new ValidationError('ArrayLengthOutOfRange', `${name} must be between ${min} and ${max} items long, got: ${value.length}.`, this);
+      throw new ValidationError(lit`ArrayLengthOutOfRange`, `${name} must be between ${min} and ${max} items long, got: ${value.length}.`, this);
     }
   }
 

@@ -302,19 +302,14 @@ other.
 
 ## Accessing resources in a different stack and region
 
-> **This feature is currently experimental**
-
-You can enable the Stack property `crossRegionReferences`
-in order to access resources in a different stack *and* region. With this feature flag
-enabled it is possible to do something like creating a CloudFront distribution in `us-east-2` and
-an ACM certificate in `us-east-1`.
+You can access resources in a different stack and region. For example, you can create
+a CloudFront distribution in `us-east-2` that references an ACM certificate in `us-east-1`.
 
 ```ts
 const stack1 = new Stack(app, 'Stack1', {
   env: {
     region: 'us-east-1',
   },
-  crossRegionReferences: true,
 });
 const cert = new acm.Certificate(stack1, 'Cert', {
   domainName: '*.example.com',
@@ -325,7 +320,6 @@ const stack2 = new Stack(app, 'Stack2', {
   env: {
     region: 'us-east-2',
   },
-  crossRegionReferences: true,
 });
 new cloudfront.Distribution(stack2, 'Distribution', {
   defaultBehavior: {
@@ -336,27 +330,86 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 });
 ```
 
-When the AWS CDK determines that the resource is in a different stack *and* is in a different
-region, it will "export" the value by creating a custom resource in the producing stack which
-creates SSM Parameters in the consuming region for each exported value. The parameters will be
-created with the name '/cdk/exports/${consumingStackName}/${export-name}'.
-In order to "import" the exports into the consuming stack a [SSM Dynamic reference](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/dynamic-references.html#dynamic-references-ssm)
-is used to reference the SSM parameter which was created.
+### Cross-stack reference strength
 
-In order to mimic strong references, a Custom Resource is also created in the consuming
-stack which marks the SSM parameters as being "imported". When a parameter has been successfully
-imported, the producing stack cannot update the value.
+The context key `@aws-cdk/core:defaultCrossStackReferences` controls the mechanism used for
+cross-stack references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
+
+**Strong references** (default) create a tight coupling between stacks. For same-region references,
+the producer creates a CloudFormation Export and the consumer uses `Fn::ImportValue`. For
+cross-region references, a pair of Custom Resources (ExportWriter/ExportReader) write values to
+SSM Parameters in the consuming region. In both cases, the producing stack cannot be deleted
+while consumers exist.
+
+**Weak references** use `Fn::GetStackOutput`, a CloudFormation intrinsic that reads an output
+directly from the producing stack. This is simpler (no extra infrastructure), but the producing
+stack can be deleted independently of its consumers.
+
+**Both** is a transitional state used during migration from strong to weak. The producer keeps
+the strong-side artifacts (Export for same-region, ExportWriter for cross-region), and also adds
+a plain Output. The consumer switches to `Fn::GetStackOutput`. This ensures the consumer is no
+longer dependent on the strong mechanism before it is removed.
+
+Configure the reference strength in your `cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:defaultCrossStackReferences": "strong"
+  }
+}
+```
 
 > [!NOTE]
-> As a consequence of this feature being built on a Custom Resource, we are restricted to a
-> CloudFormation response body size limitation of [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
-> To prevent deployment errors related to the Custom Resource Provider response body being too
-> large, we recommend limiting the use of nested stacks and minimizing the length of stack names.
-> Doing this will prevent SSM parameter names from becoming too long which will reduce the size of the
-> response body.
+> When using `"strong"` references, the feature is built on Custom Resources, which are restricted
+> to a CloudFormation response body size limitation of
+> [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
+> To prevent deployment errors, we recommend limiting the use of nested stacks and minimizing
+> the length of stack names.
 
-See the [adr](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/core/adr/cross-region-stack-references.md)
-for more details on this feature.
+The full behavior is summarized in the following table:
+
+|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                  |
+|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                 |
+| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                 |
+| Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
+
+
+### Migrating from strong to weak references
+
+If you have existing stacks deployed with strong references and want to switch to weak
+references, you must do so in two deployments to avoid the
+[deadly embrace](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/best-practices.html)
+problem:
+
+**DEPLOYMENT 1**: set the flag to `"both"` and deploy.
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:defaultCrossStackReferences": "both"
+  }
+}
+```
+
+This adds `Fn::GetStackOutput` references in the consumers (weak) while keeping the
+strong-side artifacts in the producer (Export for same-region, ExportWriter for cross-region).
+After this deployment, consumers no longer depend on the strong mechanism.
+
+**DEPLOYMENT 2**: set the flag to `"weak"` and deploy.
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:defaultCrossStackReferences": "weak"
+  }
+}
+```
+
+This removes the strong-side infrastructure entirely (Exports for same-region,
+ExportWriter/ExportReader for cross-region). All references now use the lightweight
+`Fn::GetStackOutput` mechanism.
 
 ### Removing automatic cross-stack references
 
@@ -1614,31 +1667,20 @@ generated CloudFormation templates against your policies immediately after
 synthesis. If there are any violations, the synthesis will fail and a report
 will be printed to the console or to a file (see below).
 
-> [!NOTE]
-> This feature is considered experimental, and both the plugin API and the
-> format of the validation report are subject to change in the future.
-
 ### For application developers
 
 To use one or more validation plugins in your application, use the
-`policyValidationBeta1` property of `Stage`:
+`Validations.of()` API:
 
 ```ts fixture=validation-plugin
 // globally for the entire app (an app is a stage)
-const app = new App({
-  policyValidationBeta1: [
-    // These hypothetical classes implement IPolicyValidationPluginBeta1:
-    new ThirdPartyPluginX(),
-    new ThirdPartyPluginY(),
-  ],
-});
+const app = new App();
+Validations.of(app).addPlugins(new ThirdPartyPluginX());
+Validations.of(app).addPlugins(new ThirdPartyPluginY());
 
 // only apply to a particular stage
-const prodStage = new Stage(app, 'ProdStage', {
-  policyValidationBeta1: [
-    new ThirdPartyPluginX(),
-  ],
-});
+const prodStage = new Stage(app, 'ProdStage');
+Validations.of(prodStage).addPlugins(new ThirdPartyPluginX());
 ```
 
 Immediately after synthesis, all plugins registered this way will be invoked to
@@ -1652,55 +1694,38 @@ validation.
 > etc. It's your responsibility as the consumer of a plugin to verify that it is
 > secure to use.
 
-By default, the report will be printed in a human-readable format. If you want a
-report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
-context passing it directly to the application:
+By default, the report is output in two ways:
 
-```ts
+- A JSON file called `policy-validation-report.json` is written to the cloud assembly directory.
+- A human-readable format is printed to the standard error output.
+
+To disable either format, explicitly set the corresponding context key to `false`:
+
+```ts fixture=validation-plugin
+// Disable pretty-printed console output (JSON file still written)
 const app = new App({
-  context: { '@aws-cdk/core:validationReportJson': true },
+  context: { '@aws-cdk/core:validationReportPrettyPrint': false },
 });
 ```
-
-Alternatively, you can set this context key-value pair using the `cdk.json` or
-`cdk.context.json` files in your project directory (see
-[Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
-
-It is also possible to enable both JSON and human-readable formats by setting
-`@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
-
-```ts
-const app = new App({
-  context: {
-    '@aws-cdk/core:validationReportJson': true,
-    '@aws-cdk/core:validationReportPrettyPrint': true,
-  },
-});
-```
-
-If you choose the JSON format, the CDK will print the policy validation report
-to a file called `policy-validation-report.json` in the cloud assembly
-directory. For the default, human-readable format, the report will be printed to
-the standard output.
 
 ### For plugin authors
 
 The communication protocol between the CDK core module and your policy tool is
-defined by the `IPolicyValidationPluginBeta1` interface. To create a new plugin you must
+defined by the `IPolicyValidationPlugin` interface. To create a new plugin you must
 write a class that implements this interface. There are two things you need to
 implement: the plugin name (by overriding the `name` property), and the
 `validate()` method.
 
-The framework will call `validate()`, passing an `IPolicyValidationContextBeta1` object.
+The framework will call `validate()`, passing an `IPolicyValidationContext` object.
 The location of the templates to be validated is given by `templatePaths`. The
-plugin should return an instance of `PolicyValidationPluginReportBeta1`. This object
-represents the report that the user wil receive at the end of the synthesis.
+plugin should return an instance of `PolicyValidationPluginReport`. This object
+represents the report that the user will receive at the end of the synthesis.
 
 ```ts fixture=validation-plugin
-class MyPlugin implements IPolicyValidationPluginBeta1 {
+class MyPlugin implements IPolicyValidationPlugin {
   public readonly name = 'MyPlugin';
 
-  public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+  public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
     // First read the templates using context.templatePaths...
 
     // ...then perform the validation, and then compose and return the report.
@@ -1723,7 +1748,7 @@ class MyPlugin implements IPolicyValidationPluginBeta1 {
 ```
 
 In addition to the name, plugins may optionally report their version (`version`
-property ) and a list of IDs of the rules they are going to evaluate (`ruleIds`
+property) and a list of IDs of the rules they are going to evaluate (`ruleIds`
 property).
 
 Note that plugins are not allowed to modify anything in the cloud assembly. Any

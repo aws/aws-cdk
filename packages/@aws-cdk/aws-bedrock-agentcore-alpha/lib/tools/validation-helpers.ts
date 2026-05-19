@@ -1,5 +1,6 @@
 import { Token } from 'aws-cdk-lib';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 interface IntervalValidation {
   fieldName: string;
@@ -96,7 +97,7 @@ export type ValidationFn<T> = (param: T) => string[];
 export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T): T {
   const errors = validationFn(param);
   if (errors.length > 0) {
-    throw new UnscopedValidationError('ValidationFailed', errors.join('\n'));
+    throw new UnscopedValidationError(lit`ValidationFailed`, errors.join('\n'));
   }
   return param;
 }

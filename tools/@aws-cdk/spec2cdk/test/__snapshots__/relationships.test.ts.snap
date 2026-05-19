@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+// Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`resource with array of nested properties with relationship 1`] = `
 "/* eslint-disable prettier/prettier, @stylistic/max-len */
@@ -33,7 +33,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnRolePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnRole(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -53,6 +53,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::IAM::Role\`.
@@ -93,6 +95,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -175,7 +178,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnResourcePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnResource(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -193,6 +196,10 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
   }
 
   private _permissions?: Array<cdk.IResolvable | CfnResource.PermissionProperty> | cdk.IResolvable;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    permissions: "Permissions"
+  };
 
   /**
    * Create a new \`AWS::IAM::Resource\`.
@@ -224,7 +231,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      permissions: this.permissions
+      permissions: this._permissions
     };
   }
 
@@ -235,6 +242,7 @@ export class CfnResource extends cdk.CfnResource implements cdk.IInspectable, IR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnResource.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -392,7 +400,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnRolePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnRole(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -412,6 +420,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::IAM::Role\`.
@@ -452,6 +462,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -534,7 +545,7 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnUserPropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnUser(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -554,6 +565,8 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
   public static arnForUser(resource: IUserRef): string {
     return resource.userRef.userArn;
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::IAM::User\`.
@@ -594,6 +607,7 @@ export class CfnUser extends cdk.CfnResource implements cdk.IInspectable, IUserR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnUser.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -676,7 +690,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnPolicyPropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnPolicy(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -694,6 +708,10 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
   }
 
   private _principalArn?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    principalArn: "PrincipalArn"
+  };
 
   /**
    * Create a new \`AWS::IAM::Policy\`.
@@ -725,7 +743,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      principalArn: this.principalArn
+      principalArn: this._principalArn
     };
   }
 
@@ -736,6 +754,7 @@ export class CfnPolicy extends cdk.CfnResource implements cdk.IInspectable, IPol
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnPolicy.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -837,7 +856,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnRolePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnRole(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -857,6 +876,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::IAM::Role\`.
@@ -897,6 +918,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -979,7 +1001,7 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnTaskPropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnTask(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -997,6 +1019,10 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
   }
 
   private _executionConfig?: CfnTask.ExecutionConfigProperty | cdk.IResolvable;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    executionConfig: "ExecutionConfig"
+  };
 
   /**
    * Create a new \`AWS::IAM::Task\`.
@@ -1028,7 +1054,7 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      executionConfig: this.executionConfig
+      executionConfig: this._executionConfig
     };
   }
 
@@ -1039,6 +1065,7 @@ export class CfnTask extends cdk.CfnResource implements cdk.IInspectable, ITaskR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnTask.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1195,7 +1222,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnRolePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnRole(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1215,6 +1242,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::IAM::Role\`.
@@ -1255,6 +1284,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1337,7 +1367,7 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnJobPropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnJob(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1355,6 +1385,10 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
   }
 
   private _config?: cdk.IResolvable | CfnJob.OldConfigProperty;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    config: "Config"
+  };
 
   /**
    * Create a new \`AWS::IAM::Job\`.
@@ -1386,7 +1420,7 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      config: this.config
+      config: this._config
     };
   }
 
@@ -1397,6 +1431,7 @@ export class CfnJob extends cdk.CfnResource implements cdk.IInspectable, IJobRef
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnJob.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1616,7 +1651,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnRolePropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnRole(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1636,6 +1671,8 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
   public static arnForRole(resource: IRoleRef): string {
     return resource.roleRef.roleArn;
   }
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Create a new \`AWS::IAM::Role\`.
@@ -1676,6 +1713,7 @@ export class CfnRole extends cdk.CfnResource implements cdk.IInspectable, IRoleR
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnRole.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 
@@ -1758,7 +1796,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
     const resourceProperties = options.parser.parseValue(resourceAttributes.Properties);
     const propsResult = CfnFunctionPropsFromCloudFormation(resourceProperties);
     if (cdk.isResolvableObject(propsResult.value)) {
-      throw new cdk_errors.ValidationError("UnexpectedIResolvable", "Unexpected IResolvable", scope);
+      throw new cdk_errors.ValidationError(cfn_parse.lit\`UnexpectedIResolvable\`, "Unexpected IResolvable", scope);
     }
     const ret = new CfnFunction(scope, id, propsResult.value);
     for (const [propKey, propVal] of Object.entries(propsResult.extraProperties)) {
@@ -1776,6 +1814,10 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
   }
 
   private _roleArn?: string;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {
+    roleArn: "RoleArn"
+  };
 
   /**
    * Create a new \`AWS::IAM::Function\`.
@@ -1807,7 +1849,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
 
   protected get cfnProperties(): Record<string, any> {
     return {
-      roleArn: this.roleArn
+      roleArn: this._roleArn
     };
   }
 
@@ -1818,6 +1860,7 @@ export class CfnFunction extends cdk.CfnResource implements cdk.IInspectable, IF
    */
   public inspect(inspector: cdk.TreeInspector): void {
     inspector.addAttribute("aws:cdk:cloudformation:type", CfnFunction.CFN_RESOURCE_TYPE_NAME);
+    inspector.addAttribute("aws:cdk:cloudformation:logicalId", this._synthesizeLogicalId());
     inspector.addAttribute("aws:cdk:cloudformation:props", this.cfnProperties);
   }
 

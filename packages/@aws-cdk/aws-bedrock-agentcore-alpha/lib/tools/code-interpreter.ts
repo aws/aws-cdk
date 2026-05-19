@@ -23,6 +23,7 @@ import {
 } from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -200,7 +201,7 @@ export abstract class CodeInterpreterCustomBase extends Resource implements ICod
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('VpcNotConfigured', 'Cannot manage network access without configuring a VPC', this);
+      throw new ValidationError(lit`VpcNotConfigured`, 'Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }

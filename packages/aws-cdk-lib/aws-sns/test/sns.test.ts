@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { AssertionError } from '../../assertions/lib/private/error';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
@@ -21,6 +21,15 @@ describe('Topic', () => {
       new sns.Topic(stack, 'MyTopic');
 
       Template.fromStack(stack).resourceCountIs('AWS::SNS::Topic', 1);
+    });
+
+    test('topic without logging configs omits DeliveryStatusLogging', () => {
+      const stack = new cdk.Stack();
+      new sns.Topic(stack, 'MyTopic');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        DeliveryStatusLogging: Match.absent(),
+      });
     });
 
     test('specify topicName', () => {
@@ -1086,39 +1095,16 @@ describe('Topic', () => {
       ).toThrow('`fifoThroughputScope` can only be set for FIFO SNS topics.');
     });
   });
+});
 
-  /*
-  This is a representative test suite for source tracing.
-  What we are asserting here about CfnTopic applies to all L1 constructs.
-   */
-  describe('Source tracing', () => {
-    test('Metadata contains propertyAssignment and stack trace with CDK_DEBUG=1', () => {
-      try {
-        process.env.CDK_DEBUG = '1';
-        const stack = new cdk.Stack();
-
-        const topic = new sns.CfnTopic(stack, 'MyTopic', {
-          topicName: 'topicName',
-        });
-
-        topic.displayName = 'something';
-        const lineWherePropertyWasSet = getLineNumber() - 1; // the one before this one
-
-        const asm = synth(stack);
-        const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
-        const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
-
-        expect(propertyAssignmentEntry).toBeDefined();
-        expect(propertyAssignmentEntry.data.propertyName).toEqual('DisplayName');
-        expect(propertyAssignmentEntry.data.stackTrace.some(
-          (t: string) => t.includes(`${__filename}:${lineWherePropertyWasSet}`)),
-        ).toBe(true);
-      } finally {
-        delete process.env.CDK_DEBUG;
-      }
-    });
-
-    test('Metadata does not contain propertyAssignment by default', () => {
+/*
+This is a representative test suite for source tracing.
+What we are asserting here about CfnTopic applies to all L1 constructs.
+ */
+describe('Source tracing', () => {
+  test('Metadata contains propertyAssignment and stack trace with CDK_DEBUG=1', () => {
+    try {
+      process.env.CDK_DEBUG = '1';
       const stack = new cdk.Stack();
 
       const topic = new sns.CfnTopic(stack, 'MyTopic', {
@@ -1126,13 +1112,36 @@ describe('Topic', () => {
       });
 
       topic.displayName = 'something';
+      const lineWherePropertyWasSet = getLineNumber() - 1; // the one before this one
 
       const asm = synth(stack);
       const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
       const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
 
-      expect(propertyAssignmentEntry).toBeUndefined();
+      expect(propertyAssignmentEntry).toBeDefined();
+      expect(propertyAssignmentEntry.data.propertyName).toEqual('DisplayName');
+      expect(propertyAssignmentEntry.data.stackTrace.some(
+        (t: string) => t.includes(`${__filename}:${lineWherePropertyWasSet}`)),
+      ).toBe(true);
+    } finally {
+      delete process.env.CDK_DEBUG;
+    }
+  });
+
+  test('Metadata does not contain propertyAssignment by default', () => {
+    const stack = new cdk.Stack();
+
+    const topic = new sns.CfnTopic(stack, 'MyTopic', {
+      topicName: 'topicName',
     });
+
+    topic.displayName = 'something';
+
+    const asm = synth(stack);
+    const metadata = JSON.parse(fs.readFileSync(path.join(asm.directory, 'Default.metadata.json'), 'utf8'));
+    const propertyAssignmentEntry = metadata['/Default/MyTopic'].find((e: any) => e.type === 'aws:cdk:propertyAssignment');
+
+    expect(propertyAssignmentEntry).toBeUndefined();
   });
 });
 

@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "GatewayNoAuthIntegTest/DefaultTest": {
+      "stacks": [
+        "BedrockAgentCoreGatewayNoAuthIntegTest"
+      ],
+      "assertionStack": "GatewayNoAuthIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "GatewayNoAuthIntegTestDefaultTestDeployAssertC9FEE383"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
