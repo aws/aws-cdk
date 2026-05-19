@@ -4,10 +4,15 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import type { StackProps } from 'aws-cdk-lib';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { Template } from 'aws-cdk-lib/assertions';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
 import * as eks from 'aws-cdk-lib/aws-eks';
 
+const stackName = 'aws-cdk-eks-cluster-deletion-protection';
+
 class EksClusterDeletionProtectionStack extends Stack {
+  public readonly cluster: eks.Cluster;
+
   constructor(scope: App, id: string, props?: StackProps) {
     super(scope, id, props);
 
@@ -20,7 +25,7 @@ class EksClusterDeletionProtectionStack extends Stack {
     const vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2, natGateways: 1, restrictDefaultSecurityGroup: false });
 
     // create cluster with deletion protection enabled
-    const clusterWithProtection = new eks.Cluster(this, 'ClusterWithProtection', {
+    this.cluster = new eks.Cluster(this, 'ClusterWithProtection', {
       vpc,
       mastersRole,
       defaultCapacity: 1,
@@ -28,16 +33,49 @@ class EksClusterDeletionProtectionStack extends Stack {
       deletionProtection: true,
     });
 
-    new CfnOutput(this, 'ClusterWithProtectionName', { value: clusterWithProtection.clusterName });
+    new CfnOutput(this, 'ClusterWithProtectionName', { value: this.cluster.clusterName });
   }
 }
 
 const app = new App();
 
-const stack = new EksClusterDeletionProtectionStack(app, 'aws-cdk-eks-cluster-deletion-protection', {
+const stack = new EksClusterDeletionProtectionStack(app, stackName, {
   env: { region: 'us-east-1' },
 });
 
-new integ.IntegTest(app, 'aws-cdk-eks-cluster-deletion-protection-integ', {
+const test = new integ.IntegTest(app, 'aws-cdk-eks-cluster-deletion-protection-integ', {
   testCases: [stack],
 });
+
+// Generate a template with deletionProtection disabled for cleanup.
+// We temporarily override the property to capture the template, then restore it
+// so the deployed stack has deletionProtection: true.
+const clusterResource = stack.cluster.node.findChild('Resource');
+const customResource = clusterResource.node.findChild('Resource');
+const cfnResource = customResource.node.defaultChild as import('aws-cdk-lib').CfnResource;
+cfnResource.addPropertyOverride('Config.deletionProtection', false);
+const templateWithProtectionDisabled = JSON.stringify(Template.fromStack(stack).toJSON(), null, 2);
+cfnResource.addPropertyOverride('Config.deletionProtection', true);
+
+// Test: attempt to delete the stack - should fail because deletionProtection is enabled
+test.assertions.awsApiCall('CloudFormation', 'deleteStack', {
+  StackName: stackName,
+}).next(
+  // Verify the stack deletion failed
+  test.assertions.awsApiCall('CloudFormation', 'describeStacks', {
+    StackName: stackName,
+  }).expect(integ.ExpectedResult.objectLike({
+    Stacks: integ.Match.arrayWith([
+      integ.Match.objectLike({
+        StackName: stackName,
+        StackStatus: 'DELETE_FAILED',
+      }),
+    ]),
+  })).waitForAssertions(),
+).next(
+  // Update the stack to disable deletionProtection so it can be cleaned up
+  test.assertions.awsApiCall('CloudFormation', 'updateStack', {
+    StackName: stackName,
+    TemplateBody: templateWithProtectionDisabled,
+  }),
+);

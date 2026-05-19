@@ -788,7 +788,7 @@
       "endpointPrivateAccess": true
      },
      "accessConfig": {},
-     "deletionProtection": true
+     "deletionProtection": false
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [
@@ -996,7 +996,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/5814669a47c820c37bbb1a042d28504d744ddc307ea9c3d486ce24d404695117.json"
+       "/889e80fdc307fce7497d5789d087b42b0d4fc2ef9d581a4d68552d67fb26015a.json"
       ]
      ]
     }
@@ -1042,7 +1042,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/e23fcd463a3076f16d8a14f42c3c18801e7a2ec1e88fbd7a181cfeb823d29fd0.json"
+       "/a96fa94c0fd9ad2ff67206ea3a2a95803e6d7719e208c25d0ad8d57c5aa9dd6b.json"
       ]
      ]
     }
