@@ -23,12 +23,6 @@ import { Box } from '../helpers-internal/box';
 const tokenMap = TokenMap.instance();
 const lookupToken = tokenMap.lookupToken.bind(tokenMap);
 
-// Pre-computed string indices for array elements (avoids String(i) allocation per element)
-const INDEX_STRINGS: string[] = [];
-for (let i = 0; i < 1024; i++) {
-  INDEX_STRINGS.push(String(i));
-}
-
 /**
  * Minimum length a string must have to possibly contain a stringified number token.
  * Pattern: -1.\d{10,16}e+289 → minimum 16 chars
@@ -254,7 +248,7 @@ function resolveArray(obj: any[], options: IResolveOptions, prefix: string[], le
   const len = obj.length;
   const arr: any[] = [];
   for (let i = 0; i < len; i++) {
-    prefix.push(i < INDEX_STRINGS.length ? INDEX_STRINGS[i] : String(i));
+    prefix.push(String(i));
     const value = _resolve(obj[i], options, prefix, leaveEmpty);
     prefix.pop();
 
