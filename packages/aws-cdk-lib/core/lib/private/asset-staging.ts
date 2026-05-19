@@ -3,10 +3,9 @@ import { spawnSync } from 'child_process';
 import * as crypto from 'crypto';
 import * as os from 'os';
 import { AssetStaging } from '../asset-staging';
-import { type BundlingOptions } from '../bundling';
+import type { BundlingOptions } from '../bundling';
 import { ExecutionError } from '../errors';
 import { lit } from './literal-string';
-import { profileFn } from './perf';
 
 /**
  * Options for Docker based bundling of assets
@@ -53,7 +52,6 @@ export class AssetBundlingBindMount extends AssetBundlingBase {
   /**
    * Bundle files with bind mount as copy method
    */
-  @profileFn('AssetBundlingBindMount.run', { telemetry: true })
   public run() {
     this.options.image.run({
       command: this.options.command,
@@ -176,7 +174,6 @@ export class AssetBundlingVolumeCopy extends AssetBundlingBase {
   /**
    * Bundle files with VOLUME_COPY method
    */
-  @profileFn('AssetBundlingVolumeCopy.run', { telemetry: true })
   public run() {
     const user = this.determineUser();
     this.prepareVolumes();
