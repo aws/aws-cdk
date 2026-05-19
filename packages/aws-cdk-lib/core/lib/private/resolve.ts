@@ -1,5 +1,5 @@
 import type { IConstruct } from 'constructs';
-import { TokenString, unresolved, BEGIN_LIST_TOKEN_MARKER } from './encoding';
+import { TokenString, unresolved, BEGIN_LIST_TOKEN_MARKER, ANY_TOKEN_MARKER } from './encoding';
 import { TokenMap } from './token-map';
 import { UnscopedValidationError } from '../errors';
 import type {
@@ -36,7 +36,7 @@ const MIN_NUMBER_TOKEN_LENGTH = 16;
  * One check for 'Token[' covers both marker types; a length-gated check covers numbers.
  */
 function couldContainToken(s: string): boolean {
-  return s.includes('Token[') || (s.length >= MIN_NUMBER_TOKEN_LENGTH && s.includes('e+289'));
+  return s.includes(ANY_TOKEN_MARKER) || (s.length >= MIN_NUMBER_TOKEN_LENGTH && s.includes('e+289'));
 }
 
 /**
