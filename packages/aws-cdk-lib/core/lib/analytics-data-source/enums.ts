@@ -545,6 +545,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DSSE_MANAGED",
     "DSSE"
   ],
+  "BucketNamespace": [
+    "global",
+    "account-regional"
+  ],
   "BucketNotificationDestinationType": [
     0,
     1,

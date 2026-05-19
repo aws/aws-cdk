@@ -656,6 +656,7 @@ export class AwsCustomResource extends Construct implements iam.IGrantable {
   }
 
   private encodeJson(obj: any) {
+    // eslint-disable-next-line no-restricted-syntax
     return cdk.Lazy.uncachedString({ produce: () => cdk.Stack.of(this).toJsonString(obj) });
   }
 }
