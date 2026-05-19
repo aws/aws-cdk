@@ -149,6 +149,7 @@ export class NestedStack extends Stack {
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       // This value cannot be cached since it changes during the synthesis phase
+      // eslint-disable-next-line no-restricted-syntax
       templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
       parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notificationArns,

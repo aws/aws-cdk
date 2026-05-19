@@ -320,6 +320,7 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
     failConcat: false,
   });
   if (!Reference.isReference(reference)) {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString(producer);
   }
 

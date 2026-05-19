@@ -362,6 +362,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+    // eslint-disable-next-line no-restricted-syntax
     this._arnForPolicies = Lazy.uncachedString({
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
