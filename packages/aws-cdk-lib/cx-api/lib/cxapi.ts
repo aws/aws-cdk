@@ -10,6 +10,11 @@ export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 export const ERRORFILE_ENV = 'CDK_ERROR_FILE';
 
 /**
+ * If this environment variable is set, performance counters will be written to this file.
+ */
+export const PERF_COUNTERS_FILE_ENV = 'CDK_PERF_COUNTERS_FILE';
+
+/**
  * The name of the temporary file where the context is stored.
  */
 export const CONTEXT_OVERFLOW_LOCATION_ENV = 'CONTEXT_OVERFLOW_LOCATION_ENV';
@@ -47,3 +52,4 @@ export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
  * In the format "<package>@x.y.z", e.g  "aws-cdk@2.1006.0" or "@aws-cdk/toolkit-lib@1.0.0"
  */
 export const TOOLKIT_VERSION_ENV = 'CDK_TOOLKIT_VERSION';
+
