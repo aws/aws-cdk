@@ -2,7 +2,7 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import type { StackProps } from 'aws-cdk-lib';
-import { App, CfnOutput, Stack } from 'aws-cdk-lib';
+import { App, CfnOutput, CfnResource, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { Template } from 'aws-cdk-lib/assertions';
 import { getClusterVersionConfig } from './integ-tests-kubernetes-version';
@@ -52,7 +52,7 @@ const test = new integ.IntegTest(app, 'aws-cdk-eks-cluster-deletion-protection-i
 // so the deployed stack has deletionProtection: true.
 const clusterResource = stack.cluster.node.findChild('Resource');
 const customResource = clusterResource.node.findChild('Resource');
-const cfnResource = customResource.node.defaultChild as import('aws-cdk-lib').CfnResource;
+const cfnResource = customResource.node.defaultChild as CfnResource;
 cfnResource.addPropertyOverride('Config.deletionProtection', false);
 const templateWithProtectionDisabled = JSON.stringify(Template.fromStack(stack).toJSON(), null, 2);
 cfnResource.addPropertyOverride('Config.deletionProtection', true);
