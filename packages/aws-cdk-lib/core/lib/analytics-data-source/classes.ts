@@ -22458,6 +22458,8 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'enforceSSL': 'boolean',
       'bucketKeyEnabled': 'boolean',
       'bucketName': '*',
+      'bucketNamePrefix': '*',
+      'bucketNamespace': 'BucketNamespace',
       'removalPolicy': 'RemovalPolicy',
       'autoDeleteObjects': 'boolean',
       'versioned': 'boolean',
