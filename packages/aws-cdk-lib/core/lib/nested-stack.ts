@@ -15,6 +15,7 @@ import { Stack } from './stack';
 import { NestedStackSynthesizer } from './stack-synthesizers';
 import { Token } from './token';
 import * as cxapi from '../../cx-api';
+import { lit } from './private/literal-string';
 
 const NESTED_STACK_SYMBOL = Symbol.for('@aws-cdk/core.NestedStack');
 
@@ -148,6 +149,7 @@ export class NestedStack extends Stack {
 
     this.resource = new CfnStack(parentScope, `${id}.NestedStackResource`, {
       // This value cannot be cached since it changes during the synthesis phase
+      // eslint-disable-next-line no-restricted-syntax
       templateUrl: Lazy.uncachedString({ produce: () => this._templateUrl || '<unresolved>' }),
       parameters: Lazy.any({ produce: () => Object.keys(this.parameters).length > 0 ? this.parameters : undefined }),
       notificationArns: props.notificationArns,
@@ -285,12 +287,12 @@ export class NestedStack extends Stack {
  */
 function findParentStack(scope: Construct): Stack {
   if (!scope) {
-    throw new UnscopedValidationError('Nested stacks cannot be defined as a root construct');
+    throw new UnscopedValidationError(lit`NestedStacksCannotDefined`, 'Nested stacks cannot be defined as a root construct');
   }
 
   const parentStack = Node.of(scope).scopes.reverse().find(p => Stack.isStack(p));
   if (!parentStack) {
-    throw new UnscopedValidationError('Nested stacks must be defined within scope of another non-nested stack');
+    throw new UnscopedValidationError(lit`MustBeNestedStacksDefined`, 'Nested stacks must be defined within scope of another non-nested stack');
   }
 
   return parentStack as Stack;

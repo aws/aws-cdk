@@ -1,0 +1,38 @@
+{
+  "/aws-cdk-codedeploy-lambda-config/LinearConfig": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-codedeploy-lambda-config/CustomConfig": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-codedeploy-lambda-config/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-codedeploy-lambda-config/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-codedeploy-lambda-config/LinearConfig/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LinearConfig531CF4AA"
+    }
+  ],
+  "/aws-cdk-codedeploy-lambda-config/CustomConfig/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomConfig7A6AC60F"
+    }
+  ]
+}

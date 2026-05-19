@@ -43,20 +43,22 @@ jobs:
 
       - name: Commit & Push changes
         if: steps.git-check.outputs.changes == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_HEAD: ${{ github.event.pull_request.head.ref }}
         run: |
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
 
-          git fetch origin ${{ github.event.pull_request.head.ref }}
+          git fetch origin "$PR_HEAD"
 
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/${{ github.event.pull_request.head.ref }})" ]; then
+          PR_HEAD_REV="$(git rev-parse origin/"$PR_HEAD")"
+          if [ "$(git rev-parse HEAD)" != "$PR_HEAD_REV" ]; then
             echo "Remote branch updated since approved commit; aborting."
             exit 1
           fi
 
-          git checkout -B ${{ github.event.pull_request.head.ref }}
+          git checkout -B "$PR_HEAD"
           git add .
           git commit -m "chore: update analytics metadata blueprints"
-          git push origin ${{ github.event.pull_request.head.ref }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git push origin "$PR_HEAD"

@@ -40,7 +40,7 @@ const stream = new firehose.DeliveryStream(stack, 'Delivery Stream No Source Or 
 
 new events.Rule(stack, 'EveryMinute', {
   schedule: events.Schedule.rate(cdk.Duration.minutes(1)),
-}).addTarget(new targets.KinesisFirehoseStreamV2(firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)));
+}).addTarget(new targets.FirehoseDeliveryStream(firehose.DeliveryStream.fromDeliveryStreamArn(stack, 'firehose', stream.deliveryStreamArn)));
 
 const integTest = new IntegTest(app, 'integ-tests', {
   testCases: [stack],

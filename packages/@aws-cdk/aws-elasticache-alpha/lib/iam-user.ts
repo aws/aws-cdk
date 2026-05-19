@@ -1,6 +1,7 @@
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -90,7 +91,7 @@ export class IamUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (this.userName !== this.userId) {
-      throw new ValidationError('For IAM authentication, userName must be equal to userId.', this);
+      throw new ValidationError(lit`IamUserNameMustEqualUserId`, 'For IAM authentication, userName must be equal to userId.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {

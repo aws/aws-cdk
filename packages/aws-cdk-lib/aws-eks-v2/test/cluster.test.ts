@@ -5,7 +5,7 @@ import * as cdk8s from 'cdk8s';
 import { Construct } from 'constructs';
 import * as YAML from 'yaml';
 import { testFixture, testFixtureNoVpc } from './util';
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as asg from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -13,8 +13,7 @@ import * as kms from '../../aws-kms';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
 import * as eks from '../lib';
-import { HelmChart } from '../lib';
-import { KubectlProvider } from '../lib/kubectl-provider';
+import { HelmChart, KubectlProvider } from '../lib';
 import { BottleRocketImage } from '../lib/private/bottlerocket';
 
 const CLUSTER_VERSION = eks.KubernetesVersion.V1_33;
@@ -1346,6 +1345,80 @@ describe('cluster', () => {
         ClusterName: {
           Ref: 'MyCluster4C1BA579',
         },
+      });
+    });
+
+    test('warns when kubectl subnets include isolated subnets', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 0,
+        subnetConfiguration: [
+          { name: 'Isolated', subnetType: ec2.SubnetType.PRIVATE_ISOLATED, cidrMask: 24 },
+        ],
+      });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        },
+        prune: false,
+      });
+
+      // THEN
+      Annotations.fromStack(stack).hasWarning('/Stack/Cluster', Match.stringLikeRegexp('Isolated subnets are being used for kubectl private subnets'));
+    });
+
+    test('does not throw when kubectl subnets are PRIVATE_WITH_EGRESS', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = new ec2.Vpc(stack, 'Vpc', {
+        maxAzs: 2,
+        natGateways: 1,
+        subnetConfiguration: [
+          { name: 'Public', subnetType: ec2.SubnetType.PUBLIC, cidrMask: 24 },
+          { name: 'Private', subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS, cidrMask: 24 },
+        ],
+      });
+
+      // THEN - should not throw
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        },
+        prune: false,
+      });
+    });
+
+    test('does not throw for imported VPC with isolated subnets (may have VPC endpoints)', () => {
+      // GIVEN
+      const { stack } = testFixtureNoVpc();
+      const vpc = ec2.Vpc.fromVpcAttributes(stack, 'Vpc', {
+        vpcId: 'vpc-123',
+        availabilityZones: ['us-east-1a', 'us-east-1b'],
+        isolatedSubnetIds: ['subnet-1', 'subnet-2'],
+      });
+
+      // THEN - should not throw because imported VPCs may have VPC endpoints
+      new eks.Cluster(stack, 'Cluster', {
+        version: CLUSTER_VERSION,
+        vpc,
+        vpcSubnets: [{ subnets: vpc.isolatedSubnets }],
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'kubectlLayer'),
+        },
+        prune: false,
       });
     });
 
@@ -3054,6 +3127,145 @@ describe('cluster', () => {
 
       Template.fromStack(stack).hasResource('AWS::EKS::Addon', {
         DeletionPolicy: 'Retain',
+      });
+    });
+  });
+
+  describe('kubectl security groups', () => {
+    test('respects securityGroups when specified', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+      const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          securityGroups: [sg1, sg2],
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['SG1BA065B6E', 'GroupId'] },
+            { 'Fn::GetAtt': ['SG20CE3219C', 'GroupId'] },
+          ],
+        },
+      });
+    });
+
+    test('respects securityGroup when specified (backwards compatibility)', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const customSg = new ec2.SecurityGroup(stack, 'CustomSG', { vpc });
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          securityGroup: customSg,
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            { 'Fn::GetAtt': ['CustomSG353C444F', 'GroupId'] },
+          ],
+        },
+      });
+    });
+
+    test('throws when both securityGroup and securityGroups are specified', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+      const sg1 = new ec2.SecurityGroup(stack, 'SG1', { vpc });
+      const sg2 = new ec2.SecurityGroup(stack, 'SG2', { vpc });
+      const singleSg = new ec2.SecurityGroup(stack, 'SingleSG', { vpc });
+
+      // THEN
+      expect(() => {
+        new eks.Cluster(stack, 'Cluster', {
+          ...commonProps,
+          vpc,
+          endpointAccess: eks.EndpointAccess.PRIVATE,
+          kubectlProviderOptions: {
+            kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+            privateSubnets: vpc.privateSubnets,
+            securityGroup: singleSg,
+            securityGroups: [sg1, sg2],
+          },
+        });
+      }).toThrow(/Cannot specify both "securityGroup" and "securityGroups"/);
+    });
+
+    test('uses cluster security group when neither is specified (default behavior)', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          // No securityGroup or securityGroups specified
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            // Cluster security group should be used
+            { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
+          ],
+        },
+      });
+    });
+
+    test('empty securityGroups array is treated as unspecified', () => {
+      // GIVEN
+      const { stack, vpc } = testFixture();
+
+      // WHEN
+      new eks.Cluster(stack, 'Cluster', {
+        ...commonProps,
+        vpc,
+        endpointAccess: eks.EndpointAccess.PRIVATE,
+        kubectlProviderOptions: {
+          kubectlLayer: new KubectlV33Layer(stack, 'KubectlLayer'),
+          privateSubnets: vpc.privateSubnets,
+          securityGroups: [], // Empty array
+        },
+      });
+
+      // THEN
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::Lambda::Function', {
+        VpcConfig: {
+          SecurityGroupIds: [
+            // Should fall back to cluster security group
+            { 'Fn::GetAtt': ['ClusterEB0386A7', 'ClusterSecurityGroupId'] },
+          ],
+        },
       });
     });
   });
