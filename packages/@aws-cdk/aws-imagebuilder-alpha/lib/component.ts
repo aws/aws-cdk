@@ -1,15 +1,15 @@
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnComponent } from 'aws-cdk-lib/aws-imagebuilder';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import * as s3 from 'aws-cdk-lib/aws-s3';
+import type * as kms from 'aws-cdk-lib/aws-kms';
+import type * as s3 from 'aws-cdk-lib/aws-s3';
 import * as s3assets from 'aws-cdk-lib/aws-s3-assets';
-import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as yaml from 'yaml';
-import { OSVersion, Platform } from './os-version';
+import type { OSVersion, Platform } from './os-version';
 
 const COMPONENT_SYMBOL = Symbol.for('@aws-cdk/aws-imagebuilder-alpha.Component');
 
@@ -956,13 +956,14 @@ export class Component extends ComponentBase {
   public static fromComponentAttributes(scope: Construct, id: string, attrs: ComponentAttributes): IComponent {
     if (attrs.componentArn && (attrs.componentName || attrs.componentVersion)) {
       throw new cdk.ValidationError(
+        lit`ConflictingComponentAttributes`,
         'a componentName or componentVersion cannot be provided when a componentArn is provided',
         scope,
       );
     }
 
     if (!attrs.componentArn && !attrs.componentName) {
-      throw new cdk.ValidationError('either componentArn or componentName is required', scope);
+      throw new cdk.ValidationError(lit`MissingComponentIdentifier`, 'either componentArn or componentName is required', scope);
     }
 
     const componentArn =
@@ -1039,6 +1040,7 @@ export class Component extends ComponentBase {
     props.supportedOsVersions?.forEach((osVersion) => {
       if (osVersion.platform !== props.platform) {
         throw new cdk.ValidationError(
+          lit`IncompatibleOsVersion`,
           `os version ${osVersion.osVersion} is not compatible with platform ${props.platform}`,
           this,
         );
@@ -1098,21 +1100,22 @@ export class Component extends ComponentBase {
 
     if (this.physicalName.length > 128) {
       throw new cdk.ValidationError(
+        lit`ComponentNameTooLong`,
         `the componentName cannot be longer than 128 characters, got: '${this.physicalName}'`,
         this,
       );
     }
 
     if (this.physicalName.includes(' ')) {
-      throw new cdk.ValidationError(`the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ComponentNameContainsSpaces`, `the componentName cannot contain spaces, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName.includes('_')) {
-      throw new cdk.ValidationError(`the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ComponentNameContainsUnderscores`, `the componentName cannot contain underscores, got: '${this.physicalName}'`, this);
     }
 
     if (this.physicalName !== this.physicalName.toLowerCase()) {
-      throw new cdk.ValidationError(`the componentName must be lowercase, got: '${this.physicalName}'`, this);
+      throw new cdk.ValidationError(lit`ComponentNameNotLowercase`, `the componentName must be lowercase, got: '${this.physicalName}'`, this);
     }
   }
 }

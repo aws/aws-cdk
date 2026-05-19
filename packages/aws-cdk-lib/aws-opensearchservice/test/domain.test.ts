@@ -1,7 +1,8 @@
 import each from 'jest-each';
 import { Match, Template } from '../../assertions';
 import * as acm from '../../aws-certificatemanager';
-import { Metric, Statistic } from '../../aws-cloudwatch';
+import type { Metric } from '../../aws-cloudwatch';
+import { Statistic } from '../../aws-cloudwatch';
 import { Vpc, EbsDeviceVolumeType, Port, SecurityGroup, SubnetType } from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
@@ -9,7 +10,8 @@ import * as logs from '../../aws-logs';
 import * as route53 from '../../aws-route53';
 import { App, Stack, Duration, SecretValue, CfnParameter, Token } from '../../core';
 import * as cxapi from '../../cx-api';
-import { Domain, DomainProps, EngineVersion, IpAddressType, NodeOptions, NodeType, TLSSecurityPolicy } from '../lib';
+import type { DomainProps, NodeOptions } from '../lib';
+import { Domain, EngineVersion, IpAddressType, NodeType, TLSSecurityPolicy } from '../lib';
 
 let app: App;
 let stack: Stack;
@@ -47,6 +49,7 @@ const testedOpenSearchVersions = [
   EngineVersion.OPENSEARCH_2_19,
   EngineVersion.OPENSEARCH_3_1,
   EngineVersion.OPENSEARCH_3_3,
+  EngineVersion.OPENSEARCH_3_5,
 ];
 
 each(testedOpenSearchVersions).test('connections throws if domain is not placed inside a vpc', (engineVersion) => {
@@ -2302,6 +2305,96 @@ each(testedOpenSearchVersions).describe('custom error responses', (engineVersion
   });
 });
 
+describe('S3 Vectors Engine', () => {
+  test.each([true, false])('configure to %s', (enabled) => {
+    new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: enabled,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: {
+        S3VectorsEngine: {
+          Enabled: enabled,
+        },
+      },
+    });
+  });
+
+  test('default is undefined', () => {
+    new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      AIMLOptions: Match.absent(),
+    });
+  });
+
+  test('throws error for Elasticsearch versions', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.ELASTICSEARCH_7_10,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch version 2.19 or later. Elasticsearch versions are not supported.');
+  });
+
+  test('throws error for OpenSearch versions below 2.19', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_17,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch version 2.19 or later. Got version 2.17.');
+  });
+
+  test('throws error for non-OpenSearch Optimized instance types', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 't3.small.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: true,
+      },
+    })).toThrow('S3 Vectors Engine requires OpenSearch Optimized instance types (OR*, OM*, OI*). Got t3.small.search.');
+  });
+
+  test('throws error when encryption at rest is disabled', () => {
+    expect(() => new Domain(stack, 'Domain', {
+      version: EngineVersion.OPENSEARCH_2_19,
+      s3VectorsEngineEnabled: true,
+      capacity: {
+        dataNodeInstanceType: 'or1.medium.search',
+        multiAzWithStandbyEnabled: false,
+      },
+      encryptionAtRest: {
+        enabled: false,
+      },
+    })).toThrow('S3 Vectors Engine requires encryption at rest to be enabled.');
+  });
+});
+
 test('can specify future version', () => {
   new Domain(stack, 'Domain', { version: EngineVersion.elasticsearch('8.2') });
 
@@ -2579,6 +2672,29 @@ each(testedOpenSearchVersions).describe('offPeakWindow and softwareUpdateOptions
       SoftwareUpdateOptions: {
         AutoSoftwareUpdateEnabled: true,
       },
+    });
+  });
+
+  test('with autoSoftwareUpdateEnabled set to false', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+      enableAutoSoftwareUpdate: false,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: {
+        AutoSoftwareUpdateEnabled: false,
+      },
+    });
+  });
+
+  test('SoftwareUpdateOptions is absent when enableAutoSoftwareUpdate is not specified', () => {
+    new Domain(stack, 'Domain', {
+      version: engineVersion,
+    });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
+      SoftwareUpdateOptions: Match.absent(),
     });
   });
 

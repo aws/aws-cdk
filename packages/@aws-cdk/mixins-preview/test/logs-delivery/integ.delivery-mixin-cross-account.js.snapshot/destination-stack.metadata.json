@@ -1,0 +1,190 @@
+{
+  "/destination-stack/DeliveryBucketKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "enabled": true
+      }
+    }
+  ],
+  "/destination-stack/DeliveryBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true,
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/destination-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/destination-stack/FirehoseBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true,
+        "encryption": "S3_MANAGED"
+      }
+    }
+  ],
+  "/destination-stack/FirehoseRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "inlinePolicies": "*"
+      }
+    }
+  ],
+  "/destination-stack/DeliveryStream": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStream"
+    }
+  ],
+  "/destination-stack/S3DeliveryDestination": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "S3DeliveryDestination"
+    }
+  ],
+  "/destination-stack/FHDeliveryDestination": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FHDeliveryDestination"
+    }
+  ],
+  "/destination-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/destination-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/destination-stack/DeliveryBucketKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryBucketKey146CC85D"
+    }
+  ],
+  "/destination-stack/DeliveryBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryBucketA9AE6474"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/destination-stack/DeliveryBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/destination-stack/DeliveryBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/destination-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/destination-stack/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/destination-stack/FirehoseBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseBucket407758F1"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/destination-stack/FirehoseBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/destination-stack/FirehoseBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/destination-stack/FirehoseRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseRoleAA67C190"
+    }
+  ],
+  "/destination-stack/DeliveryBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryBucketPolicyB86375F3"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/destination-stack/DeliveryBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryBucketAutoDeleteObjectsCustomResource70EC3C75"
+    }
+  ],
+  "/destination-stack/FirehoseBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseBucketPolicy005BD2F0"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/destination-stack/FirehoseBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FirehoseBucketAutoDeleteObjectsCustomResourceD3E44B23"
+    }
+  ]
+}

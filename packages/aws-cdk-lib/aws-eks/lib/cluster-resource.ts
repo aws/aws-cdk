@@ -1,12 +1,14 @@
 import { Construct } from 'constructs';
 import { CLUSTER_RESOURCE_TYPE } from './cluster-resource-handler/consts';
 import { ClusterResourceProvider } from './cluster-resource-provider';
-import { CfnCluster } from './eks.generated';
-import * as ec2 from '../../aws-ec2';
+import type { CfnCluster } from './eks.generated';
+import type * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
-import * as kms from '../../aws-kms';
-import * as lambda from '../../aws-lambda';
-import { ArnComponents, CustomResource, Token, Stack, Lazy, ValidationError } from '../../core';
+import type * as kms from '../../aws-kms';
+import type * as lambda from '../../aws-lambda';
+import type { ArnComponents } from '../../core';
+import { CustomResource, Token, Stack, Lazy, ValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 export interface ClusterResourceProps {
   readonly resourcesVpcConfig: CfnCluster.ResourcesVpcConfigProperty;
@@ -52,7 +54,7 @@ export class ClusterResource extends Construct {
     super(scope, id);
 
     if (!props.roleArn) {
-      throw new ValidationError('"roleArn" is required', this);
+      throw new ValidationError(lit`IsRequiredRolearnRequired`, '"roleArn" is required', this);
     }
 
     const provider = ClusterResourceProvider.getOrCreate(this, {

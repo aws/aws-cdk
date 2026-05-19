@@ -1,10 +1,12 @@
-import { Construct, Node } from 'constructs';
-import { IDestination } from './destination';
-import { StreamEncryption } from './encryption';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { IDestination } from './destination';
+import type { StreamEncryption } from './encryption';
 import { FirehoseMetrics } from './kinesisfirehose-canned-metrics.generated';
 import { DeliveryStreamGrants } from './kinesisfirehose-grants.generated';
-import { CfnDeliveryStream, DeliveryStreamReference, IDeliveryStreamRef } from './kinesisfirehose.generated';
-import { ISource } from './source';
+import type { DeliveryStreamReference, IDeliveryStreamRef } from './kinesisfirehose.generated';
+import { CfnDeliveryStream } from './kinesisfirehose.generated';
+import type { ISource } from './source';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
@@ -12,6 +14,7 @@ import * as kms from '../../aws-kms';
 import * as cdk from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
@@ -131,6 +134,9 @@ abstract class DeliveryStreamBase extends cdk.Resource implements IDeliveryStrea
   }
 
   /**
+   *
+   * The use of this method is discouraged. Please use `grants.putRecords()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantPutRecords(grantee: iam.IGrantable): iam.Grant {
@@ -297,13 +303,13 @@ export class DeliveryStream extends DeliveryStreamBase {
    */
   static fromDeliveryStreamAttributes(scope: Construct, id: string, attrs: DeliveryStreamAttributes): IDeliveryStream {
     if (!attrs.deliveryStreamName && !attrs.deliveryStreamArn) {
-      throw new cdk.ValidationError('Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes', scope);
+      throw new cdk.ValidationError(lit`DeliveryStreamNameOrArnRequired`, 'Either deliveryStreamName or deliveryStreamArn must be provided in DeliveryStreamAttributes', scope);
     }
     const deliveryStreamName = attrs.deliveryStreamName ??
       cdk.Stack.of(scope).splitArn(attrs.deliveryStreamArn!, cdk.ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
     if (!deliveryStreamName) {
-      throw new cdk.ValidationError(`No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`, scope);
+      throw new cdk.ValidationError(lit`DeliveryStreamNameNotFoundInArn`, `No delivery stream name found in ARN: '${attrs.deliveryStreamArn}'`, scope);
     }
     const deliveryStreamArn = attrs.deliveryStreamArn ?? cdk.Stack.of(scope).formatArn({
       service: 'firehose',
@@ -364,7 +370,7 @@ export class DeliveryStream extends DeliveryStreamBase {
       props.source &&
         (props.encryption?.type === StreamEncryptionType.AWS_OWNED || props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED)
     ) {
-      throw new cdk.ValidationError('Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.', this);
+      throw new cdk.ValidationError(lit`ServerSideEncryptionNotSupportedWithKinesisSource`, 'Requested server-side encryption but delivery stream source is a Kinesis data stream. Specify server-side encryption on the data stream instead.', this);
     }
     const encryptionKey = props.encryption?.encryptionKey ?? (props.encryption?.type === StreamEncryptionType.CUSTOMER_MANAGED ? new kms.Key(this, 'Key') : undefined);
     const encryptionConfig = (encryptionKey || (props.encryption?.type === StreamEncryptionType.AWS_OWNED)) ? {

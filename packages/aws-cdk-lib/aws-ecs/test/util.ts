@@ -1,6 +1,6 @@
 import * as autoscaling from '../../aws-autoscaling';
 import * as ec2 from '../../aws-ec2';
-import * as cdk from '../../core';
+import type * as cdk from '../../core';
 import * as ecs from '../lib';
 
 export function addDefaultCapacityProvider(cluster: ecs.Cluster,

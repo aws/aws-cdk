@@ -1,7 +1,8 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { ModuleDefinition } from '@aws-cdk/pkglint';
-import { namespaceToModuleDefinition, PackageBaseNames } from './util/jsii';
+import type { PackageBaseNames } from './util/jsii';
+import { namespaceToModuleDefinition } from './util/jsii';
 
 /**
  * A data structure holding information about a single scope in a generated module.
@@ -34,6 +35,26 @@ export interface ModuleMapEntry {
  */
 export interface ModuleMap {
   [moduleName: string]: ModuleMapEntry;
+}
+
+/**
+ * Describes what a generator contributes to a submodule's barrel files.
+ */
+export interface SubmoduleContribution {
+  /** The barrel file to add export lines to, e.g. 'mixins.ts' or 'events.ts' */
+  readonly barrelFile: string;
+  /** Export lines to add to the barrel file, e.g. "export * from './cfn-props-mixins.generated'" */
+  readonly exportLines: string[];
+  /** The jsiirc namespace for this barrel, e.g. 'mixins' or 'events' */
+  readonly jsiircNamespace: string;
+}
+
+/**
+ * Result of a generator run: a ModuleMap plus submodule contributions.
+ */
+export interface GeneratorResult {
+  readonly moduleMap: ModuleMap;
+  readonly contributions: SubmoduleContribution[];
 }
 
 export interface ModuleMapLoadingOptions {
@@ -116,6 +137,27 @@ export function writeModuleMap(modules: ModuleMap) {
     }, {});
 
   fs.writeFileSync(moduleMapPath, JSON.stringify(newScopeMap, null, 2) + '\n');
+}
+
+/**
+ * Merge multiple module maps into one, combining files and resources.
+ */
+export function mergeModuleMaps(...maps: ModuleMap[]): ModuleMap {
+  const merged: ModuleMap = {};
+  for (const map of maps) {
+    for (const [name, entry] of Object.entries(map)) {
+      if (!merged[name]) {
+        merged[name] = entry;
+      } else {
+        merged[name] = {
+          ...entry,
+          files: [...new Set([...merged[name].files, ...entry.files])],
+          resources: { ...merged[name].resources, ...entry.resources },
+        };
+      }
+    }
+  }
+  return merged;
 }
 
 function noEmpty<A extends object>(x: A | undefined): A | undefined {

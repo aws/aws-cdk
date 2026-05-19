@@ -3,10 +3,12 @@ import { CfnApplication, CfnAttributeGroupAssociation, CfnResourceAssociation } 
 import * as cdk from 'aws-cdk-lib/core';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { StageStackAssociator } from './aspects/stack-associator';
-import { AttributeGroup, IAttributeGroup } from './attribute-group';
-import { getPrincipalsforSharing, hashValues, ShareOptions, SharePermission } from './common';
+import type { IAttributeGroup } from './attribute-group';
+import { AttributeGroup } from './attribute-group';
+import type { ShareOptions } from './common';
+import { getPrincipalsforSharing, hashValues, SharePermission } from './common';
 import { isAccountUnresolved } from './private/utils';
 import { InputValidator } from './private/validation';
 

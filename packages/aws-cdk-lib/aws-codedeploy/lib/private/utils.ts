@@ -1,10 +1,12 @@
-import { Construct } from 'constructs';
-import { Token, Stack, ArnFormat, Arn, Fn, Aws, ValidationError, IEnvironmentAware } from '../../../core';
+import type { Construct } from 'constructs';
+import type { Stack, IEnvironmentAware } from '../../../core';
+import { Token, ArnFormat, Arn, Aws, ValidationError } from '../../../core';
 import { DetachedConstruct } from '../../../core/lib/private/detached-construct';
-import { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
-import { IBaseDeploymentConfig, IBindableDeploymentConfig } from '../base-deployment-config';
-import { CfnDeploymentGroup, IDeploymentConfigRef, IDeploymentGroupRef } from '../codedeploy.generated';
-import { AutoRollbackConfig } from '../rollback-config';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { IAlarmRef } from '../../../interfaces/generated/aws-cloudwatch-interfaces.generated';
+import type { IBaseDeploymentConfig, IBindableDeploymentConfig } from '../base-deployment-config';
+import type { CfnDeploymentGroup, IDeploymentConfigRef, IDeploymentGroupRef } from '../codedeploy.generated';
+import type { AutoRollbackConfig } from '../rollback-config';
 
 export function arnForApplication(stack: Stack, applicationName: string): string {
   return stack.formatArn({
@@ -13,11 +15,6 @@ export function arnForApplication(stack: Stack, applicationName: string): string
     resourceName: applicationName,
     arnFormat: ArnFormat.COLON_RESOURCE_NAME,
   });
-}
-
-export function nameFromDeploymentGroupArn(deploymentGroupArn: string): string {
-  const components = Arn.split(deploymentGroupArn, ArnFormat.COLON_RESOURCE_NAME);
-  return Fn.select(1, Fn.split('/', components.resourceName ?? ''));
 }
 
 export function arnForDeploymentConfig(name: string, resource?: IEnvironmentAware): string {
@@ -121,6 +118,7 @@ CfnDeploymentGroup.AutoRollbackConfigurationProperty | undefined {
       events.push(AutoRollbackEvent.DEPLOYMENT_STOP_ON_ALARM);
     } else if (autoRollbackConfig.deploymentInAlarm === true) {
       throw new ValidationError(
+        lit`DeploymentInAlarmRequiresCloudWatchAlarms`,
         "The auto-rollback setting 'deploymentInAlarm' does not have any effect unless you associate " +
         'at least one CloudWatch alarm with the Deployment Group', scope);
     }

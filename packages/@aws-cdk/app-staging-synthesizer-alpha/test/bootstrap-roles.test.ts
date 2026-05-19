@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { App, Stack, CfnResource } from 'aws-cdk-lib';
 import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import type * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import { APP_ID, isAssetManifest } from './util';
 import { AppStagingSynthesizer, BootstrapRole, DeploymentIdentities } from '../lib';
 

@@ -891,6 +891,155 @@ describe('vpc endpoint', () => {
       });
     });
 
+    test.each([
+      ['us-iso-east-1', 'gov.ic.c2s'],
+      ['us-iso-west-1', 'gov.ic.c2s'],
+    ])('test vpc interface endpoint with %s prefix can be created correctly in %s', (region: string, prefix: string) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECR Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECR,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `${prefix}.${region}.ecr.api`,
+      });
+    });
+
+    test.each([
+      ['us-iso-east-1'],
+      ['us-iso-west-1'],
+    ])('test vpc interface endpoint without gov.ic.c2s prefix can be created correctly in %s', (region: string) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECS Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECS,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `com.amazonaws.${region}.ecs`,
+      });
+    });
+
+    test.each([
+      ['us-isob-east-1', 'gov.sgov.sc2s'],
+      ['us-isob-west-1', 'gov.sgov.sc2s'],
+    ])('test vpc interface endpoint with %s prefix can be created correctly in %s', (region: string, prefix: string) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECR Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECR,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `${prefix}.${region}.ecr.api`,
+      });
+    });
+
+    test.each([
+      ['us-isob-east-1'],
+      ['us-isob-west-1'],
+    ])('test vpc interface endpoint without gov.sgov.sc2s prefix can be created correctly in %s', (region: string) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECS Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECS,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `com.amazonaws.${region}.ecs`,
+      });
+    });
+
+    test.each([
+      ['us-isof-south-1', 'gov.ic.hci.csp'],
+      ['us-isof-east-1', 'gov.ic.hci.csp'],
+    ])('test vpc interface endpoint with %s prefix can be created correctly in %s', (region: string, prefix: string) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECR Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECR,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `${prefix}.${region}.ecr.api`,
+      });
+    });
+
+    test.each([
+      ['us-isof-south-1'],
+      ['us-isof-east-1'],
+    ])('test vpc interface endpoint without gov.ic.hci.csp prefix can be created correctly in %s', (region: string) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECS Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECS,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `com.amazonaws.${region}.ecs`,
+      });
+    });
+
+    test.each([
+      ['ebs', InterfaceVpcEndpointAwsService.EBS_DIRECT],
+      ['ecr.api', InterfaceVpcEndpointAwsService.ECR],
+      ['ecr.dkr', InterfaceVpcEndpointAwsService.ECR_DOCKER],
+      ['execute-api', InterfaceVpcEndpointAwsService.APIGATEWAY],
+    ])('test vpc interface endpoint for %s can be created correctly in eu-isoe-west-1', (name: string, service: InterfaceVpcEndpointAwsService) => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eu-isoe-west-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('Endpoint', { service });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: `uk.adc-e.cloud.eu-isoe-west-1.${name}`,
+      });
+    });
+
+    test('test vpc interface endpoint without uk.adc-e.cloud prefix can be created correctly in eu-isoe-west-1', () => {
+      // GIVEN
+      const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'eu-isoe-west-1' } });
+      const vpc = new Vpc(stack, 'VPC');
+
+      // WHEN
+      vpc.addInterfaceEndpoint('ECS Endpoint', {
+        service: InterfaceVpcEndpointAwsService.ECS,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::VPCEndpoint', {
+        ServiceName: 'com.amazonaws.eu-isoe-west-1.ecs',
+      });
+    });
+
     test('test codeartifact vpc interface endpoint in us-west-2', () => {
       // GIVEN
       const stack = new Stack(undefined, 'TestStack', { env: { account: '123456789012', region: 'us-west-2' } });

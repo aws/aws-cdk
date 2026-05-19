@@ -3,10 +3,12 @@
  *                                 Enums
  *****************************************************************************/
 
-import { Duration } from 'aws-cdk-lib';
+import type { Duration } from 'aws-cdk-lib';
 
 /**
  * Protocol configuration for Agent Runtime
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-bedrockagentcore-runtime.html#cfn-bedrockagentcore-runtime-protocolconfiguration
  */
 export enum ProtocolType {
   /**
@@ -23,6 +25,11 @@ export enum ProtocolType {
    * A2A protocol
    */
   A2A = 'A2A',
+
+  /**
+   * Agent User Interaction (AGUI) protocol
+   */
+  AGUI = 'AGUI',
 }
 
 /**

@@ -17,7 +17,8 @@ import { App } from '../../../core';
 import * as cxapi from '../../../cx-api';
 import { ECS_ARN_FORMAT_INCLUDES_CLUSTER_NAME } from '../../../cx-api';
 import * as ecs from '../../lib';
-import { DeploymentControllerType, LaunchType, PropagatedTagSource, ServiceConnectProps } from '../../lib/base/base-service';
+import type { ServiceConnectProps } from '../../lib/base/base-service';
+import { DeploymentControllerType, LaunchType, PropagatedTagSource } from '../../lib/base/base-service';
 import { ServiceManagedVolume } from '../../lib/base/service-managed-volume';
 import { addDefaultCapacityProvider } from '../util';
 
@@ -3645,6 +3646,7 @@ describe('fargate service', () => {
         cluster,
         taskDefinition,
         minHealthyPercent: 50, // must be set to avoid warning causing test failure
+        circuitBreaker: {}, // Set to silence an unrelated warning
       });
 
       // WHEN

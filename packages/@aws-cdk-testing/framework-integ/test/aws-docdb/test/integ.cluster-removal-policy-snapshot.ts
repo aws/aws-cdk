@@ -1,9 +1,10 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
-import * as constructs from 'constructs';
+import type * as constructs from 'constructs';
 import { DatabaseCluster, ClusterParameterGroup } from 'aws-cdk-lib/aws-docdb';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { DOCDB_ENGINE_VERSION, DOCDB_PARAMETER_GROUP_FAMILY } from './docdb-integ-test-constraints';
 
 /*
  * Stack verification steps:
@@ -17,7 +18,7 @@ class TestStack extends cdk.Stack {
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     const params = new ClusterParameterGroup(this, 'Params', {
-      family: 'docdb3.6',
+      family: DOCDB_PARAMETER_GROUP_FAMILY,
       description: 'A nice parameter group',
       parameters: {
         audit_logs: 'disabled',
@@ -31,7 +32,7 @@ class TestStack extends cdk.Stack {
     });
 
     const cluster = new DatabaseCluster(this, 'Database', {
-      engineVersion: '3.6.0',
+      engineVersion: DOCDB_ENGINE_VERSION,
       masterUser: {
         username: 'docdb',
         password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6'),

@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnPlacementGroup, IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
-import { IResource, Resource, ValidationError } from '../../core';
+import type { Construct } from 'constructs';
+import type { IPlacementGroupRef, PlacementGroupReference } from './ec2.generated';
+import { CfnPlacementGroup } from './ec2.generated';
+import type { IResource } from '../../core';
+import { Resource, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
@@ -199,7 +202,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
 
     if (this.partitions && this.strategy) {
       if (this.strategy !== PlacementGroupStrategy.PARTITION) {
-        throw new ValidationError(`PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`, this);
+        throw new ValidationError(lit`PlacementgroupOnlySpecifyPartitions`, `PlacementGroup '${id}' can only specify 'partitions' with the 'PARTITION' strategy`, this);
       }
     } else if (this.partitions && !this.strategy) {
       this.strategy = PlacementGroupStrategy.PARTITION;
@@ -210,7 +213,7 @@ export class PlacementGroup extends Resource implements IPlacementGroup {
         this.strategy = PlacementGroupStrategy.SPREAD;
       }
       if (this.strategy !== PlacementGroupStrategy.SPREAD) {
-        throw new ValidationError(`PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`, this);
+        throw new ValidationError(lit`PlacementgroupOnlySpecifySpreadlevel`, `PlacementGroup '${id}' can only specify 'spreadLevel' with the 'SPREAD' strategy`, this);
       }
     }
 

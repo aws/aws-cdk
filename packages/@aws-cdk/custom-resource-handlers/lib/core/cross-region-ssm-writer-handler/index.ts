@@ -1,7 +1,7 @@
 
 /* eslint-disable import/no-extraneous-dependencies */
 import { SSM } from '@aws-sdk/client-ssm';
-import { CrossRegionExports, ExportWriterCRProps } from '../types';
+import type { CrossRegionExports, ExportWriterCRProps } from '../types';
 
 export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent) {
   const props: ExportWriterCRProps = event.ResourceProperties.WriterProps;
@@ -66,6 +66,7 @@ async function putParameters(ssm: SSM, parameters: CrossRegionExports): Promise<
       Name: name,
       Value: value,
       Type: 'String',
+      Overwrite: true, // if, for whatever reason, we encounter this parameter lying around, just overwrite it.
     });
   }));
 }
@@ -157,7 +158,7 @@ function except(source: CrossRegionExports, filter: CrossRegionExports): CrossRe
 }
 
 /**
- * Return items that exist in both the the old parameters and the new parameters,
+ * Return items that exist in both the old parameters and the new parameters,
  * but have different values
  *
  * @param oldParams the exports that existed previous to this execution

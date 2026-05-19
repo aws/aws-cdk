@@ -1,18 +1,22 @@
-import { Construct } from 'constructs';
-import { Architecture } from './architecture';
-import { EventInvokeConfigOptions } from './event-invoke-config';
-import { IFunction, QualifiedFunctionBase } from './function-base';
-import { extractQualifierFromArn, IVersion } from './lambda-version';
-import { AliasReference, CfnAlias, IAliasRef } from './lambda.generated';
+import type { Construct } from 'constructs';
+import type { Architecture } from './architecture';
+import type { EventInvokeConfigOptions } from './event-invoke-config';
+import type { IFunction } from './function-base';
+import { QualifiedFunctionBase } from './function-base';
+import type { IVersion } from './lambda-version';
+import { extractQualifierFromArn } from './lambda-version';
+import type { AliasReference, IAliasRef } from './lambda.generated';
+import { CfnAlias } from './lambda.generated';
 import { ScalableFunctionAttribute } from './private/scalable-function-attribute';
-import { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
+import type { AutoScalingOptions, IScalableFunctionAttribute } from './scalable-attribute-api';
 import * as appscaling from '../../aws-applicationautoscaling';
-import * as cloudwatch from '../../aws-cloudwatch';
+import type * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 export interface IAlias extends IFunction, IAliasRef {
@@ -185,7 +189,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     this.architecture = this.lambda.architecture;
 
     if (props.provisionedConcurrentExecutions && this.version.lambda.tenancyConfig?.tenancyConfigProperty?.tenantIsolationMode !== undefined) {
-      throw new ValidationError('Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
+      throw new ValidationError(lit`ProvisionedConcurrencySupportedFunctionsTenant`, 'Provisioned Concurrency is not supported for functions with tenant isolation mode', this);
     }
 
     this.alias = new CfnAlias(this, 'Resource', {
@@ -256,7 +260,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
   @MethodMetadata()
   public addAutoScaling(options: AutoScalingOptions): IScalableFunctionAttribute {
     if (this.scalableAlias) {
-      throw new ValidationError('AutoScaling already enabled for this alias', this);
+      throw new ValidationError(lit`AutoScalingAlreadyEnabledAlias`, 'AutoScaling already enabled for this alias', this);
     }
     return this.scalableAlias = new ScalableFunctionAttribute(this, 'AliasScaling', {
       minCapacity: options.minCapacity ?? 1,
@@ -295,12 +299,12 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
    */
   private validateAdditionalWeights(weights: VersionWeight[]) {
     const total = weights.map(w => {
-      if (w.weight < 0 || w.weight > 1) { throw new ValidationError(`Additional version weight must be between 0 and 1, got: ${w.weight}`, this); }
+      if (w.weight < 0 || w.weight > 1) { throw new ValidationError(lit`AdditionalVersionWeight`, `Additional version weight must be between 0 and 1, got: ${w.weight}`, this); }
       return w.weight;
     }).reduce((a, x) => a + x);
 
     if (total > 1) {
-      throw new ValidationError(`Sum of additional version weights must not exceed 1, got: ${total}`, this);
+      throw new ValidationError(lit`SumAdditionalVersionWeightsExceed`, `Sum of additional version weights must not exceed 1, got: ${total}`, this);
     }
   }
 
@@ -315,7 +319,7 @@ export class Alias extends QualifiedFunctionBase implements IAlias {
     }
 
     if (props.provisionedConcurrentExecutions <= 0) {
-      throw new ValidationError('provisionedConcurrentExecutions must have value greater than or equal to 1', this);
+      throw new ValidationError(lit`ProvisionedConcurrentExecutionsValueGreater`, 'provisionedConcurrentExecutions must have value greater than or equal to 1', this);
     }
 
     return { provisionedConcurrentExecutions: props.provisionedConcurrentExecutions };

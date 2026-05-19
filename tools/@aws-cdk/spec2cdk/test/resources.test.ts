@@ -1,5 +1,6 @@
-import { Resource, Service, SpecDatabase, emptyDatabase } from '@aws-cdk/service-spec-types';
-import { Plain } from '@cdklabs/tskb';
+import type { Resource, Service, SpecDatabase } from '@aws-cdk/service-spec-types';
+import { emptyDatabase } from '@aws-cdk/service-spec-types';
+import type { Plain } from '@cdklabs/tskb';
 import { TypeScriptRenderer } from '@cdklabs/typewriter';
 import { moduleForResource } from './util';
 import { AwsCdkLibBuilder } from '../lib/cdk/aws-cdk-lib';

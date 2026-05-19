@@ -1,7 +1,8 @@
-import { addToDeadLetterQueueResourcePolicy, TargetBaseProps, bindBaseTargetConfig } from './util';
+import type { TargetBaseProps } from './util';
+import { addToDeadLetterQueueResourcePolicy, bindBaseTargetConfig } from './util';
 import * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as sqs from '../../aws-sqs';
+import type * as sqs from '../../aws-sqs';
 import { FeatureFlags } from '../../core';
 import * as cxapi from '../../cx-api';
 

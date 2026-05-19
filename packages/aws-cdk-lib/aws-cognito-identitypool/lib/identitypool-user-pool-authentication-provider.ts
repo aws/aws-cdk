@@ -1,6 +1,7 @@
-import { Construct, Node } from 'constructs';
-import { IIdentityPool } from './identitypool';
-import { IUserPool, IUserPoolClientRef } from '../../aws-cognito';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { IIdentityPool } from './identitypool';
+import type { IUserPool, IUserPoolClientRef } from '../../aws-cognito';
 import { Stack } from '../../core';
 
 /**
