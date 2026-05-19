@@ -5,7 +5,7 @@ import * as fs from 'fs-extra';
 import type { AssetOptions } from './assets';
 import { AssetHashType, FileAssetPackaging } from './assets';
 import type { BundlingOptions } from './bundling';
-import { BundlingFileAccess, BundlingOutput, PERF_BUNDLING_SRC_SYM } from './bundling';
+import { BundlingFileAccess, BundlingOutput } from './bundling';
 import { AssumptionError, ValidationError } from './errors';
 import type { FingerprintOptions } from './fs';
 import { FileSystem } from './fs';
@@ -17,7 +17,6 @@ import { Stack } from './stack';
 import { Stage } from './stage';
 import * as cxapi from '../../cx-api';
 import { lit } from './private/literal-string';
-import { profileSpan } from './private/perf';
 
 const ARCHIVE_EXTENSIONS = ['.tar.gz', '.zip', '.jar', '.tar', '.tgz'];
 
@@ -471,8 +470,6 @@ export class AssetStaging extends Construct {
     try {
       process.stderr.write(`Bundling asset ${this.node.path}...\n`);
 
-      using _span = timerSpanFromOptions(options);
-
       localBundling = options.local?.tryBundle(tempDir, options);
       if (!localBundling) {
         const assetStagingOptions = {
@@ -690,17 +687,3 @@ function getExtension(source: string): string {
   return path.extname(source);
 }
 
-function timerSpanFromOptions(x: any): Disposable | undefined {
-  const src = bundlingSourceFromOptions(x);
-  return src ? profileSpan(`bundle:${src}`, { telemetry: true }) : undefined;
-}
-
-/**
- * Get the bundling source from the options object
- *
- * If this is a built-in CDK bundling source, it will have a value here we use to log a timer
- */
-function bundlingSourceFromOptions(x: any): string | undefined {
-  const value = x[PERF_BUNDLING_SRC_SYM];
-  return typeof value === 'string' ? value : undefined;
-}

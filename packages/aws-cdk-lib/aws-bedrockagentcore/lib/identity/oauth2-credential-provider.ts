@@ -29,7 +29,7 @@ import * as iam from '../../../aws-iam';
 import type { IResource, ResourceProps, SecretValue } from '../../../core';
 import { Lazy, Names, Resource, Token, ValidationError } from '../../../core';
 import { lit } from '../../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /******************************************************************************
@@ -1143,6 +1143,7 @@ export class OAuth2CredentialProvider extends OAuth2CredentialProviderBase {
    * @param scopes OAuth scopes the gateway target should request (see vendor documentation).
    * @param customParameters Optional custom parameters for the OAuth flow.
    */
+  @MethodMetadata()
   public bindForGatewayOAuthTarget(
     scopes: string[],
     customParameters?: { [key: string]: string },

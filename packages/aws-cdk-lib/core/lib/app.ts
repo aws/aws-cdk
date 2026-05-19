@@ -1,30 +1,16 @@
-import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
-import { readPerfCounters, TELEMETRY_FIELD } from './helpers-internal';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
 import { addCustomSynthesis } from './private/synthesis';
 import type { IPropertyInjector } from './prop-injectors';
 import { PropertyInjectors } from './prop-injectors';
 import type { IReusableStackSynthesizer } from './stack-synthesizers';
-import type { StageSynthesisOptions } from './stage';
 import { Stage } from './stage';
 import type { IPolicyValidationPluginBeta1 } from './validation/validation';
 import * as cxapi from '../../cx-api';
-import type * as public_cxapi from '../../cx-api';
 
 const APP_SYMBOL = Symbol.for('@aws-cdk/core.App');
-
-/**
- * Report performance counters if synthesis time exceeds this
- */
-const DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS = 10_000;
-
-/**
- * A context key that can be set to control the emission threshold
- */
-const SLOW_SYNTH_THRESHOLD_CTX = '@aws-cdk/core.slowSynthThreshold';
 
 /**
  * Initialization props for apps.
@@ -65,7 +51,7 @@ export interface AppProps {
   /**
    * Include runtime versioning information in the Stacks of this app
    *
-   * @deprecated use `analyticsReporting` instead
+   * @deprecated use `versionReporting` instead
    * @default Value of 'aws:cdk:version-reporting' context key
    */
   readonly runtimeInfo?: boolean;
@@ -76,17 +62,6 @@ export interface AppProps {
    * @default Value of 'aws:cdk:version-reporting' context key
    */
   readonly analyticsReporting?: boolean;
-
-  /**
-   * Produce a performance counter report if supported by the CLI
-   *
-   * The performance report will be produced if the total synthesis time
-   * exceeds 10 seconds/stack, unless this property is used to switch the
-   * report off altogether (set to `false`).
-   *
-   * @default Value of 'aws:cdk:performance-reporting' context key
-   */
-  readonly performanceReporting?: boolean;
 
   /**
    * Additional context values for the application.
@@ -204,11 +179,6 @@ export class App extends Stage {
    */
   public readonly _treeMetadata: boolean;
 
-  private readonly initMark: number;
-  private readonly performanceReporting: boolean;
-
-  private alreadySynthed = false;
-
   /**
    * Initializes a CDK application.
    * @param props initialization properties
@@ -217,17 +187,6 @@ export class App extends Stage {
     super(undefined as any, '', {
       outdir: props.outdir ?? process.env[cxapi.OUTDIR_ENV],
     });
-
-    this.initMark = performance.now();
-    if (!PERF_STATE.loadTimeMeasured) {
-      // Measure the load time of the application -- up until the construction of the first App
-      // object is considered "Load Time" (executing all require()s).
-      performance.measure('phase:Load', {
-        end: this.initMark,
-        detail: { [TELEMETRY_FIELD]: true },
-      });
-      PERF_STATE.loadTimeMeasured = true;
-    }
 
     if (props.propertyInjectors) {
       const injectors = PropertyInjectors.of(this);
@@ -264,8 +223,6 @@ export class App extends Stage {
     }
 
     this._treeMetadata = props.treeMetadata ?? true;
-
-    this.performanceReporting = props.performanceReporting ?? this.node.tryGetContext(cxapi.PERFORMANCE_REPORTING_ENABLED_CONTEXT) ?? true;
   }
 
   private loadContext(defaults: { [key: string]: string } = { }, final: { [key: string]: string } = {}) {
@@ -290,44 +247,6 @@ export class App extends Stage {
     }
   }
 
-  /**
-   * Synthesize this App into a cloud assembly.
-   *
-   * Once an assembly has been synthesized, it cannot be modified. Subsequent
-   * calls will return the same assembly.
-   */
-  public synth(options: StageSynthesisOptions = { }): public_cxapi.CloudAssembly {
-    // Synth may be called multiple times, we do not emit performance counters the
-    // second time. super.synth() already does caching.
-    if (this.alreadySynthed) {
-      return super.synth(options);
-    }
-    this.alreadySynthed = true;
-
-    const startSynthMark = performance.now();
-    performance.measure('phase:Construction', {
-      start: this.initMark,
-      end: startSynthMark,
-      detail: { [TELEMETRY_FIELD]: true },
-    });
-
-    const ret = super.synth(options);
-
-    performance.measure('phase:Synthesis', {
-      start: startSynthMark,
-      detail: { [TELEMETRY_FIELD]: true },
-    });
-
-    const totalAppTimeMs = performance.now() - this.initMark;
-    const stackCount = ret.stacksRecursively.length;
-    if (this.shouldReportSlowSynth(totalAppTimeMs / stackCount)) {
-      emitPerformanceCountersFile();
-    }
-    performance.clearMeasures();
-
-    return ret;
-  }
-
   private readContextFromTempFile() {
     const location = process.env[cxapi.CONTEXT_OVERFLOW_LOCATION_ENV];
     return location ? fs.readJSONSync(location) : {};
@@ -336,14 +255,6 @@ export class App extends Stage {
   private readContextFromEnvironment() {
     const contextJson = process.env[cxapi.CONTEXT_ENV];
     return contextJson ? JSON.parse(contextJson) : {};
-  }
-
-  private shouldReportSlowSynth(perStackTime: number): boolean {
-    if (!this.performanceReporting) {
-      return false;
-    }
-    const threshold = parseAsNumber(this.node.tryGetContext(SLOW_SYNTH_THRESHOLD_CTX)) ?? DEFAULT_SLOW_SYNTH_PER_STACK_THRESHOLD_MS;
-    return perStackTime >= threshold;
   }
 }
 
@@ -361,56 +272,4 @@ export function attachCustomSynthesis(construct: Construct, synthesis: ICustomSy
   // synthesis.ts where the implementation lives is not exported. So
   // this function is just a re-export of that function.
   addCustomSynthesis(construct, synthesis);
-}
-
-/**
- * Emit the performance counters file if requested by the CLI
- *
- * The file will look like this:
- *
- * ```
- * {
- *   "counters": {
- *     "counter1": 3582,
- *     "counter1(cnt)": 3
- *     ...
- *   }
- * }
- * ```
- */
-function emitPerformanceCountersFile() {
-  const filename = process.env[cxapi.PERF_COUNTERS_FILE_ENV];
-  if (!filename) {
-    return;
-  }
-
-  const counters: Record<string, number> = {};
-  for (const [name, ctr] of Object.entries(readPerfCounters({ telemetry: true }))) {
-    counters[name] = ctr.total;
-    counters[`${name}(cnt)`] = ctr.count;
-  }
-
-  fs.writeFileSync(filename, JSON.stringify({ counters }, undefined, 2), 'utf-8');
-}
-
-/**
- * Global state, made unique across multiple instances, to read perf counters
- */
-interface AppPerfState {
-  loadTimeMeasured: boolean;
-}
-
-const PERF_STATE: AppPerfState = ((global as any)[Symbol.for('@aws-cdk/core.AppPerfState')] ??= {
-  loadTimeMeasured: false,
-} satisfies AppPerfState);
-
-/**
- * Froces a string or number to a number, or return undefined
- */
-function parseAsNumber(x: unknown) {
-  if (typeof x === 'number') {
-    return x;
-  }
-  const r = parseInt(`${x}`, 10);
-  return isNaN(r) ? undefined : r;
 }
