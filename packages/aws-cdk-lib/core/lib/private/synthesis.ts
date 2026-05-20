@@ -2,29 +2,32 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
 import type { IConstruct } from 'constructs';
+import { AnnotationPlugin } from './annotation-plugin';
+import { collectAcknowledgedRuleIds } from './collect-acknowledged-rule-ids';
+import { collectAnnotationReport } from './collect-annotation-report';
+import { generateFeatureFlagReport } from './feature-flag-report';
+import { lit } from './literal-string';
 import { MetadataResource } from './metadata-resource';
 import { prepareApp } from './prepare-app';
 import { TreeMetadata } from './tree-metadata';
+import * as cxapi from '../../../cx-api';
 import { _convertCloudAssemblyBuilder } from '../../../cx-api/lib/legacy-moved';
 import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { FeatureFlags } from '../feature-flags';
 import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
-import { generateFeatureFlagReport } from './feature-flag-report';
-import { lit } from './literal-string';
 import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
 
 const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
-const VALIDATION_REPORT_PRETTY_CONTEXT = '@aws-cdk/core:validationReportPrettyPrint';
-const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
 
 /**
  * Options for `synthesize()`
@@ -107,7 +110,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
     if (Stage.isStage(construct)) {
-      for (const plugin of construct.policyValidationBeta1) {
+      for (const plugin of construct._validationPlugins) {
         if (!templatePathsByPlugin.has(plugin)) {
           templatePathsByPlugin.set(plugin, []);
         }
@@ -118,20 +121,37 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     }
   });
 
-  const reports: NamedValidationPluginReport[] = [];
-  if (templatePathsByPlugin.size > 0) {
-    // eslint-disable-next-line no-console
-    console.error('Performing Policy Validations\n');
+  // Build the unified list of plugins to run
+  const plugins: Array<{ plugin: IPolicyValidationPlugin; templatePaths: string[] }> = [];
+
+  // 1. User-registered plugins
+  for (const [plugin, paths] of templatePathsByPlugin.entries()) {
+    plugins.push({ plugin, templatePaths: paths });
   }
+
+  // 2. Construct annotations (as a plugin, only if there are annotations to report)
+  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
+    const annotationReport = collectAnnotationReport(root, assembly.directory);
+    if (annotationReport) {
+      plugins.push({ plugin: new AnnotationPlugin(annotationReport), templatePaths: [] });
+    }
+  }
+
+  if (plugins.length === 0) return;
+
+  // eslint-disable-next-line no-console
+  console.error('Performing Policy Validations\n');
 
   if (templatePathsByPlugin.size > 0) {
     hash = FileSystem.fingerprint(outdir);
   }
 
-  for (const [plugin, paths] of templatePathsByPlugin.entries()) {
+  // Run all plugins through the same loop
+  const reports: NamedValidationPluginReport[] = [];
+  for (const { plugin, templatePaths } of plugins) {
     try {
-      const report = plugin.validate({ templatePaths: paths });
-      reports.push({ ...report, pluginName: plugin.name });
+      const report = plugin.validate({ templatePaths });
+      reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
     } catch (e: any) {
       reports.push({
         success: false,
@@ -143,41 +163,54 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         },
       });
     }
-    if (FileSystem.fingerprint(outdir) !== hash) {
+    if (hash && FileSystem.fingerprint(outdir) !== hash) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
+    }
+  }
+
+  // Filter out suppressed violations. Collect all acknowledged rule IDs
+  // from construct metadata across the tree, then remove matching violations
+  // from reports. Fatal violations cannot be suppressed.
+  //
+  // Rule matching: violations are matched as <pluginName>::<ruleName> with
+  // spaces replaced by dashes. Users suppress with:
+  //   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
+  const acknowledgedRuleIds = collectAcknowledgedRuleIds(root);
+  if (acknowledgedRuleIds.size > 0) {
+    for (let i = 0; i < reports.length; i++) {
+      const pluginName = reports[i].pluginName.replace(/ /g, '-');
+      const filtered = reports[i].violations.filter(v => {
+        if (v.severity === 'fatal') return true;
+        const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
+        return !acknowledgedRuleIds.has(ruleId);
+      });
+      if (filtered.length !== reports[i].violations.length) {
+        reports[i] = {
+          ...reports[i],
+          violations: filtered,
+          success: filtered.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
+        };
+      }
     }
   }
 
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    let formatPretty = root.node.tryGetContext(VALIDATION_REPORT_PRETTY_CONTEXT) ?? false;
-    const formatJson = root.node.tryGetContext(VALIDATION_REPORT_JSON_CONTEXT) ?? false;
-    formatPretty = formatPretty || !(formatPretty || formatJson); // if neither is set, default to pretty print
+    const failOnErrors = root.node.tryGetContext(cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT) ?? true;
     const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    if (formatPretty) {
+    const jsonOutput = formatter.formatJson(reports);
+    fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
+    if (failOnErrors) {
       const output = formatter.formatPrettyPrinted(reports);
       // eslint-disable-next-line no-console
       console.error(output);
-    }
-    if (formatJson) {
-      const output = formatter.formatJson(reports);
-      fs.writeFileSync(reportFile, JSON.stringify(output, undefined, 2));
-    }
-    const failed = reports.some(r => !r.success);
-    if (failed) {
-      let message = formatJson
-        ? `Validation failed. See the validation report in '${reportFile}' for details`
-        : 'Validation failed. See the validation report above for details';
-      if (formatPretty && formatJson) {
-        message = `Validation failed. See the validation report in '${reportFile}' and above for details`;
+      const failed = reports.some(r => !r.success);
+      if (failed) {
+        // eslint-disable-next-line no-console
+        console.error(`Validation failed. A copy of this report can be found in '${reportFile}'`);
+        process.exitCode = 1;
       }
-      // eslint-disable-next-line no-console
-      console.error(message);
-      process.exitCode = 1;
-    } else {
-      // eslint-disable-next-line no-console
-      console.error('Policy Validation Successful!');
     }
   }
 }
