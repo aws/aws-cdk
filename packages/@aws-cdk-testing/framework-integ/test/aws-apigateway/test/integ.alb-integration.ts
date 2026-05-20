@@ -1,35 +1,42 @@
+/**
+ * Integration test for `AlbIntegration` covering both HTTP and HTTPS listeners
+ * on the same internal Application Load Balancer.
+ *
+ * Required env vars (the test owner must own the hosted zone):
+ *   HOSTED_ZONE_ID    e.g. Z01234567890ABCDEFGHI
+ *   HOSTED_ZONE_NAME  e.g. example.com
+ *
+ * The ALB is exposed under `alb-integ.<HOSTED_ZONE_NAME>` via a Route53 alias,
+ * so the HTTPS listener's certificate matches the URI hostname seen by API
+ * Gateway when calling the backend through VPC Link V2.
+ */
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as elbv2_targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as route53 from 'aws-cdk-lib/aws-route53';
+import * as route53_targets from 'aws-cdk-lib/aws-route53-targets';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 
-/**
- * This integration test validates that the AlbIntegration class correctly
- * creates a REST API with VPC Link V2 integration to an Application Load Balancer.
- *
- * The test:
- * 1. Creates an ALB with a Lambda function as the backend target
- * 2. Creates a REST API with AlbIntegration
- * 3. Verifies the integration configuration (type, connectionType)
- * 4. Makes an HTTP call to the API and verifies the Lambda response
- */
+interface AlbIntegrationStackProps extends cdk.StackProps {
+  readonly hostedZoneId: string;
+  readonly hostedZoneName: string;
+  readonly domainName: string;
+}
+
 class AlbIntegrationStack extends cdk.Stack {
   public readonly api: apigateway.RestApi;
 
-  constructor(scope: cdk.App, id: string) {
-    super(scope, id);
+  constructor(scope: cdk.App, id: string, props: AlbIntegrationStackProps) {
+    super(scope, id, props);
 
-    // Create VPC with private subnets for the ALB
-    const vpc = new ec2.Vpc(this, 'Vpc', {
-      natGateways: 1,
-    });
+    const vpc = new ec2.Vpc(this, 'Vpc', { natGateways: 1 });
 
-    // Create a Lambda function that will serve as the ALB backend
     const backendFunction = new lambda.Function(this, 'BackendFunction', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: lambda.Runtime.NODEJS_24_X,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
         exports.handler = async function(event) {
@@ -37,9 +44,7 @@ class AlbIntegrationStack extends cdk.Stack {
             statusCode: 200,
             statusDescription: '200 OK',
             isBase64Encoded: false,
-            headers: {
-              'Content-Type': 'application/json',
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               message: 'Hello from ALB Integration!',
               path: event.path,
@@ -51,60 +56,93 @@ class AlbIntegrationStack extends cdk.Stack {
       vpc,
     });
 
-    // Create an internal Application Load Balancer
     const alb = new elbv2.ApplicationLoadBalancer(this, 'Alb', {
       vpc,
       internetFacing: false,
     });
 
-    // Add a listener on port 80
-    const listener = alb.addListener('Listener', {
+    const hostedZone = route53.HostedZone.fromHostedZoneAttributes(this, 'HostedZone', {
+      hostedZoneId: props.hostedZoneId,
+      zoneName: props.hostedZoneName,
+    });
+
+    const certificate = new acm.Certificate(this, 'Certificate', {
+      domainName: props.domainName,
+      validation: acm.CertificateValidation.fromDns(hostedZone),
+    });
+
+    new route53.ARecord(this, 'AliasRecord', {
+      zone: hostedZone,
+      recordName: props.domainName,
+      target: route53.RecordTarget.fromAlias(new route53_targets.LoadBalancerTarget(alb)),
+    });
+
+    const httpListener = alb.addListener('HttpListener', {
       port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP,
       open: false,
     });
-
-    // Add the Lambda function as a target
-    listener.addTargets('LambdaTarget', {
+    httpListener.addTargets('HttpTarget', {
       targets: [new elbv2_targets.LambdaTarget(backendFunction)],
-      healthCheck: {
-        enabled: true,
-        healthyHttpCodes: '200',
-      },
+      healthCheck: { enabled: true, healthyHttpCodes: '200' },
     });
 
-    // Create REST API with ALB integration
+    const httpsListener = alb.addListener('HttpsListener', {
+      port: 443,
+      protocol: elbv2.ApplicationProtocol.HTTPS,
+      certificates: [certificate],
+      open: false,
+    });
+    httpsListener.addTargets('HttpsTarget', {
+      targets: [new elbv2_targets.LambdaTarget(backendFunction)],
+      healthCheck: { enabled: true, healthyHttpCodes: '200' },
+    });
+
     this.api = new apigateway.RestApi(this, 'RestApi', {
       cloudWatchRole: true,
-      deployOptions: {
-        stageName: 'prod',
-      },
+      deployOptions: { stageName: 'prod' },
     });
 
-    // Create ALB integration (using ALB directly, not the listener)
-    const albIntegration = new apigateway.AlbIntegration(alb);
+    // HTTP listener — URI hostname does not need to match any cert; use the
+    // load balancer's default DNS name (derived from the listener).
+    this.api.root.addResource('http').addMethod('GET', new apigateway.AlbIntegration(httpListener));
 
-    // Add GET method with ALB integration
-    this.api.root.addMethod('GET', albIntegration);
+    // HTTPS listener — URI hostname MUST match the cert, so use the alias.
+    this.api.root.addResource('https').addMethod('GET', new apigateway.AlbIntegration(httpsListener, {
+      loadBalancerDnsName: props.domainName,
+    }));
   }
 }
 
+const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
+if (!hostedZoneId) throw new Error('Set HOSTED_ZONE_ID env var to a hosted zone you own.');
+const hostedZoneName = process.env.CDK_INTEG_HOSTED_ZONE_NAME ?? process.env.HOSTED_ZONE_NAME;
+if (!hostedZoneName) throw new Error('Set HOSTED_ZONE_NAME env var (e.g. pricoach.com).');
+const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME ?? `alb-integ.${hostedZoneName}`;
+
 const app = new cdk.App();
-const stack = new AlbIntegrationStack(app, 'AlbIntegrationTestStack');
+const stack = new AlbIntegrationStack(app, 'AlbIntegrationTestStack', {
+  hostedZoneId,
+  hostedZoneName,
+  domainName,
+});
 cdk.RemovalPolicies.of(stack).apply(cdk.RemovalPolicy.DESTROY);
 
 const integ = new IntegTest(app, 'AlbIntegrationInteg', {
   testCases: [stack],
 });
 
-// Make an HTTP call to the API endpoint and verify the response from the Lambda backend
-const httpCall = integ.assertions.httpApiCall(stack.api.urlForPath('/'));
-httpCall.expect(
-  ExpectedResult.objectLike({
-    body: {
-      message: 'Hello from ALB Integration!',
-      path: '/',
-      method: 'GET',
-    },
-  }),
+// API Gateway forwards to the ALB without a path, so Lambda sees `/` for both
+// routes. We only assert the message + method, which proves both listeners are
+// reachable through their respective `AlbIntegration`s.
+const expectedBody = {
+  message: 'Hello from ALB Integration!',
+  method: 'GET',
+};
+
+integ.assertions.httpApiCall(stack.api.urlForPath('/http')).expect(
+  ExpectedResult.objectLike({ body: expectedBody }),
+);
+integ.assertions.httpApiCall(stack.api.urlForPath('/https')).expect(
+  ExpectedResult.objectLike({ body: expectedBody }),
 );

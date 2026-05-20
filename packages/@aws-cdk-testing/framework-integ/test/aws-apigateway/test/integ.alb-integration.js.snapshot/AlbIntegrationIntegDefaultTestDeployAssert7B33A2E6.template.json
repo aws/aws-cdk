@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "HttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c": {
+  "HttpApiCall544b56d3c9fd35c71f70adc378c7d560": {
    "Type": "Custom::DeployAssert@HttpCall",
    "Properties": {
     "ServiceToken": {
@@ -30,14 +30,14 @@
         {
          "Fn::ImportValue": "AlbIntegrationTestStack:ExportsOutputRefRestApiDeploymentStageprod3855DE66D0316BB8"
         },
-        "/"
+        "/http"
        ]
       ]
      }
     },
-    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello from ALB Integration!\",\"path\":\"/\",\"method\":\"GET\"}}}",
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello from ALB Integration!\",\"method\":\"GET\"}}}",
     "flattenResponse": "false",
-    "salt": "1778552591778"
+    "salt": "1779240476990"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -83,13 +83,63 @@
      ]
     }
    }
+  },
+  "HttpApiCalla42c42407399f76d1e4522998e396e4f": {
+   "Type": "Custom::DeployAssert@HttpCall",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
+      "Arn"
+     ]
+    },
+    "parameters": {
+     "url": {
+      "Fn::Join": [
+       "",
+       [
+        "https://",
+        {
+         "Fn::ImportValue": "AlbIntegrationTestStack:ExportsOutputRefRestApi0C43BF4B00053745"
+        },
+        ".execute-api.",
+        {
+         "Ref": "AWS::Region"
+        },
+        ".",
+        {
+         "Ref": "AWS::URLSuffix"
+        },
+        "/",
+        {
+         "Fn::ImportValue": "AlbIntegrationTestStack:ExportsOutputRefRestApiDeploymentStageprod3855DE66D0316BB8"
+        },
+        "/https"
+       ]
+      ]
+     }
+    },
+    "expected": "{\"$ObjectLike\":{\"body\":{\"message\":\"Hello from ALB Integration!\",\"method\":\"GET\"}}}",
+    "flattenResponse": "false",
+    "salt": "1779240476991"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsHttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c": {
+  "AssertionResultsHttpApiCall544b56d3c9fd35c71f70adc378c7d560": {
    "Value": {
     "Fn::GetAtt": [
-     "HttpApiCallbdcb0ddf00aaf01eeb081e99a497f37c",
+     "HttpApiCall544b56d3c9fd35c71f70adc378c7d560",
+     "assertion"
+    ]
+   }
+  },
+  "AssertionResultsHttpApiCalla42c42407399f76d1e4522998e396e4f": {
+   "Value": {
+    "Fn::GetAtt": [
+     "HttpApiCalla42c42407399f76d1e4522998e396e4f",
      "assertion"
     ]
    }

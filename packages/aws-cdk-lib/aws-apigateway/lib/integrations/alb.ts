@@ -1,6 +1,6 @@
 import * as apigwv2 from '../../../aws-apigatewayv2';
-import type * as ec2 from '../../../aws-ec2';
-import type * as elbv2 from '../../../aws-elasticloadbalancingv2';
+import * as ec2 from '../../../aws-ec2';
+import * as elbv2 from '../../../aws-elasticloadbalancingv2';
 import { Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/private/literal-string';
@@ -9,15 +9,32 @@ import { ConnectionType, Integration, IntegrationType } from '../integration';
 import type { Method } from '../method';
 
 /**
+ * The URI scheme used by `AlbIntegration` when calling the backend listener.
+ */
+export enum AlbIntegrationProtocol {
+  /**
+   * Plain HTTP. Use with HTTP listeners.
+   */
+  HTTP = 'http',
+
+  /**
+   * HTTPS. Use with HTTPS listeners.
+   */
+  HTTPS = 'https',
+}
+
+/**
  * Properties for `AlbIntegration`.
  */
 export interface AlbIntegrationProps {
   /**
    * The VPC link V2 to use for the integration.
    *
-   * If not specified, a new VPC link will be created for the ALB's VPC.
+   * When provided, security groups are not auto-configured. The caller is
+   * responsible for authorizing traffic from the VPC Link to the ALB listener.
    *
-   * @default - A new VPC link is created
+   * @default - A new VPC link is created with an auto-generated security group
+   * that is authorized to reach the listener.
    */
   readonly vpcLink?: apigwv2.IVpcLink;
 
@@ -39,6 +56,53 @@ export interface AlbIntegrationProps {
   readonly httpMethod?: string;
 
   /**
+   * The ARN of the Application Load Balancer that owns the listener.
+   *
+   * Only allowed when the listener was imported via
+   * `ApplicationListener.fromApplicationListenerAttributes`; required in that
+   * case. Must NOT be specified for listeners created in the same CDK app —
+   * the ARN is read from the listener's load balancer.
+   *
+   * @default - Derived from the listener's load balancer.
+   */
+  readonly loadBalancerArn?: string;
+
+  /**
+   * The DNS name used in the integration URI to reach the load balancer.
+   *
+   * Becomes the `Host` header and TLS SNI value when API Gateway calls the
+   * backend, so it must match a name the load balancer responds to (and, for
+   * HTTPS, must match a name on the listener's certificate). Routing itself is
+   * handled by the VPC Link / `loadBalancerArn`, so this hostname does not
+   * have to be the ALB's default DNS name — for example, you may pass a
+   * Route53 alias that points at the ALB and matches the certificate.
+   *
+   * Required when the listener was imported via
+   * `ApplicationListener.fromApplicationListenerAttributes`.
+   *
+   * @default - The load balancer's default DNS name, derived from the listener.
+   */
+  readonly loadBalancerDnsName?: string;
+
+  /**
+   * The port that the listener is listening on.
+   *
+   * Only allowed when the listener was imported; required in that case. Must
+   * NOT be specified for listeners created in the same CDK app — the port is
+   * read from the listener.
+   *
+   * @default - Derived from the listener.
+   */
+  readonly port?: number;
+
+  /**
+   * The URI scheme used to talk to the listener.
+   *
+   * @default - `HTTPS` when the listener's protocol is HTTPS, otherwise `HTTP`.
+   */
+  readonly protocol?: AlbIntegrationProtocol;
+
+  /**
    * Integration options, such as request/response mapping, content handling, etc.
    *
    * `vpcLinkV2` and `integrationTarget` options are automatically configured and should not be specified here.
@@ -49,24 +113,26 @@ export interface AlbIntegrationProps {
 }
 
 /**
- * Integrates an Application Load Balancer to an API Gateway REST API method.
+ * Integrates an Application Load Balancer listener to an API Gateway REST API method.
  *
  * This integration uses VPC Link V2 to connect API Gateway directly to an internal
  * Application Load Balancer without requiring a Network Load Balancer as an intermediary.
  *
- * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-private-integration.html
+ * Unless a `vpcLink` is supplied, a VPC Link V2 and a security group are
+ * created automatically and the listener is authorized to receive traffic from
+ * that security group.
  *
+ * @see https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-private-integration.html
  */
 export class AlbIntegration extends Integration {
-  private readonly alb: elbv2.IApplicationLoadBalancer;
+  private readonly listener: elbv2.IApplicationListener;
   private readonly albProps: AlbIntegrationProps;
-  private vpcLink?: apigwv2.IVpcLink;
 
   /**
-   * @param alb The Application Load Balancer to integrate with
+   * @param listener The ALB listener to integrate with
    * @param props Properties to configure the integration
    */
-  constructor(alb: elbv2.IApplicationLoadBalancer, props: AlbIntegrationProps = {}) {
+  constructor(listener: elbv2.IApplicationListener, props: AlbIntegrationProps = {}) {
     const proxy = props.proxy ?? true;
 
     super({
@@ -76,61 +142,127 @@ export class AlbIntegration extends Integration {
       options: props.options,
     });
 
-    this.alb = alb;
+    this.listener = listener;
     this.albProps = props;
   }
 
   public bind(method: Method): IntegrationConfig {
     const bindResult = super.bind(method);
 
-    const vpc = this.albProps.vpcLink?.vpc ?? this.alb.vpc;
-    if (!vpc) {
+    const concrete = this.listener instanceof elbv2.ApplicationListener ? this.listener : undefined;
+
+    if (concrete) {
+      if (this.albProps.loadBalancerArn !== undefined) {
+        throw new ValidationError(
+          lit`LoadBalancerArnNotAllowed`,
+          'loadBalancerArn must not be specified when the Application Listener is created in the same CDK app; the value is derived from the listener',
+          method,
+        );
+      }
+      if (this.albProps.port !== undefined) {
+        throw new ValidationError(
+          lit`PortNotAllowed`,
+          'port must not be specified when the Application Listener is created in the same CDK app; the value is derived from the listener',
+          method,
+        );
+      }
+    }
+
+    const loadBalancerArn = this.albProps.loadBalancerArn ?? concrete?.loadBalancer.loadBalancerArn;
+    if (loadBalancerArn === undefined) {
       throw new ValidationError(
-        lit`CannotDetermineVpc`,
-        'Cannot determine VPC from the imported Application Load Balancer. Specify the vpc property when importing the ALB, or provide a vpcLink to AlbIntegration.',
+        lit`LoadBalancerArnRequired`,
+        'loadBalancerArn must be specified when using an imported Application Listener',
         method,
       );
     }
 
-    this.vpcLink = this.albProps.vpcLink ?? this.createVpcLink(method, vpc);
+    const dnsName = this.albProps.loadBalancerDnsName ?? concrete?.loadBalancer.loadBalancerDnsName;
+    if (dnsName === undefined) {
+      throw new ValidationError(
+        lit`LoadBalancerDnsNameRequired`,
+        'loadBalancerDnsName must be specified when using an imported Application Listener',
+        method,
+      );
+    }
+
+    const port = this.albProps.port ?? concrete?.port;
+    if (port === undefined) {
+      throw new ValidationError(
+        lit`PortRequired`,
+        'port must be specified when using an imported Application Listener',
+        method,
+      );
+    }
+
+    const scheme = this.albProps.protocol
+      ?? (concrete?.protocol === elbv2.ApplicationProtocol.HTTPS ? AlbIntegrationProtocol.HTTPS : AlbIntegrationProtocol.HTTP);
+
+    let vpcLink: apigwv2.IVpcLink;
+    if (this.albProps.vpcLink) {
+      vpcLink = this.albProps.vpcLink;
+    } else {
+      const vpc = concrete?.loadBalancer.vpc;
+      if (!vpc) {
+        throw new ValidationError(
+          lit`CannotDetermineVpc`,
+          'Cannot determine VPC from the imported Application Listener. Provide vpcLink to AlbIntegration.',
+          method,
+        );
+      }
+      const created = this.getOrCreateVpcLink(method, vpc);
+      vpcLink = created.vpcLink;
+      this.listener.connections.allowFrom(
+        created.securityGroup,
+        ec2.Port.tcp(port),
+        'Allow API Gateway VPC Link to reach ALB listener',
+      );
+    }
 
     // loadBalancerArn is included only when resolved; vpcLinkId is always included so a VPC link swap triggers redeployment even if the ARN is a token.
     const deploymentToken = JSON.stringify({
-      ...(Token.isUnresolved(this.alb.loadBalancerArn)
+      ...(Token.isUnresolved(loadBalancerArn)
         ? {}
-        : { loadBalancerArn: this.alb.loadBalancerArn }),
-      vpcLinkId: this.vpcLink.vpcLinkId,
+        : { loadBalancerArn }),
+      vpcLinkId: vpcLink.vpcLinkId,
     });
 
     return {
       ...bindResult,
-      uri: `http://${this.alb.loadBalancerDnsName}`,
+      uri: `${scheme}://${dnsName}:${port}`,
       integrationHttpMethod: this.albProps.httpMethod ?? method.httpMethod,
       options: {
         ...bindResult.options,
         connectionType: ConnectionType.VPC_LINK,
-        vpcLinkV2: this.vpcLink,
-        integrationTarget: this.alb.loadBalancerArn,
+        vpcLinkV2: vpcLink,
+        integrationTarget: loadBalancerArn,
       },
       deploymentToken,
     };
   }
 
   /**
-   * Creates a new VPC Link for the VPC, or returns an existing one if already created.
+   * Reuses or creates a VPC Link + security group pair for the given VPC.
    *
-   * VPC Links are shared per VPC, similar to the API Gateway V2 implementation.
+   * Both the VPC Link and its security group live under the RestApi so they are
+   * shared across every `AlbIntegration` attached to the same API and VPC.
    */
-  private createVpcLink(method: Method, vpc: ec2.IVpc): apigwv2.VpcLink {
-    const id = `VpcLink-${vpc.node.id}`;
+  private getOrCreateVpcLink(method: Method, vpc: ec2.IVpc): { vpcLink: apigwv2.VpcLink; securityGroup: ec2.SecurityGroup } {
+    const sgId = `VpcLinkSg-${vpc.node.id}`;
+    const vpcLinkId = `VpcLink-${vpc.node.id}`;
 
-    const existingVpcLink = method.api.node.tryFindChild(id) as apigwv2.VpcLink | undefined;
-    if (existingVpcLink) {
-      return existingVpcLink;
-    }
+    const securityGroup = (method.api.node.tryFindChild(sgId) as ec2.SecurityGroup | undefined)
+      ?? new ec2.SecurityGroup(method.api, sgId, {
+        vpc,
+        description: 'Automatic security group for API Gateway VPC Link',
+      });
 
-    return new apigwv2.VpcLink(method.api, id, {
-      vpc,
-    });
+    const vpcLink = (method.api.node.tryFindChild(vpcLinkId) as apigwv2.VpcLink | undefined)
+      ?? new apigwv2.VpcLink(method.api, vpcLinkId, {
+        vpc,
+        securityGroups: [securityGroup],
+      });
+
+    return { vpcLink, securityGroup };
   }
 }

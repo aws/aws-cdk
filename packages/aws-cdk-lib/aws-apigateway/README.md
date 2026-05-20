@@ -1648,35 +1648,55 @@ API Gateway REST APIs can integrate directly with Application Load Balancers (AL
 VPC Link V2, without requiring a Network Load Balancer as an intermediary. This provides a
 simpler architecture for exposing internal ALB-based services through API Gateway.
 
-Use the `AlbIntegration` class for a simplified ALB integration experience:
+Pass an `ApplicationListener` to `AlbIntegration`. A VPC Link V2 (with a dedicated security
+group) is created automatically, and the listener is authorized to receive traffic from
+that security group:
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 declare const vpc: ec2.Vpc;
 const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc });
+const listener = alb.addListener('Listener', { port: 80, open: false });
+declare const target: elbv2.IApplicationLoadBalancerTarget;
+listener.addTargets('Target', { port: 80, targets: [target] });
 
 const api = new apigateway.RestApi(this, 'my-api');
-const integration = new apigateway.AlbIntegration(alb);
-api.root.addMethod('GET', integration);
+api.root.addMethod('GET', new apigateway.AlbIntegration(listener));
 ```
 
-The `AlbIntegration` automatically creates a VPC Link V2 for the ALB's VPC if one is not provided.
-You can also specify an existing VPC Link V2:
+The auto-created VPC Link V2 and security group are scoped to the `RestApi` and shared
+across every `AlbIntegration` attached to the same API and VPC.
+
+To bring your own `VpcLink`, pass it explicitly. **In this case the integration does not
+configure security groups; you are responsible for authorizing traffic from the VPC Link's
+security groups to the listener.**
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
 
 declare const vpc: ec2.Vpc;
-declare const alb: elbv2.ApplicationLoadBalancer;
+declare const listener: elbv2.ApplicationListener;
 
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
 const api = new apigateway.RestApi(this, 'my-api');
-const integration = new apigateway.AlbIntegration(alb, {
-  vpcLink,
-});
-api.root.addMethod('GET', integration);
+api.root.addMethod('GET', new apigateway.AlbIntegration(listener, { vpcLink }));
+```
+
+HTTPS listeners are detected automatically, and non-default ports are reflected in the
+backend URI. Use `protocol` or `port` to override:
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+
+declare const listener: elbv2.ApplicationListener;
+
+const api = new apigateway.RestApi(this, 'my-api');
+api.root.addMethod('GET', new apigateway.AlbIntegration(listener, {
+  protocol: apigateway.AlbIntegrationProtocol.HTTPS,
+  port: 8443,
+}));
 ```
 
 By default, `AlbIntegration` uses HTTP proxy integration. You can disable proxy mode:
@@ -1684,11 +1704,37 @@ By default, `AlbIntegration` uses HTTP proxy integration. You can disable proxy 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
-declare const alb: elbv2.ApplicationLoadBalancer;
+declare const listener: elbv2.ApplicationListener;
 
-const integration = new apigateway.AlbIntegration(alb, {
+const integration = new apigateway.AlbIntegration(listener, {
   proxy: false,
 });
+```
+
+When the listener is imported via `ApplicationListener.fromApplicationListenerAttributes`,
+the integration cannot derive the underlying load balancer's ARN, DNS name, port, or VPC.
+Supply `loadBalancerArn`, `loadBalancerDnsName`, `port`, and `vpcLink` explicitly:
+
+```ts
+import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as apigwv2 from 'aws-cdk-lib/aws-apigatewayv2';
+
+declare const vpc: ec2.Vpc;
+declare const importedListenerSg: ec2.ISecurityGroup;
+
+const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(this, 'Listener', {
+  listenerArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:listener/app/my-alb/abc/def',
+  securityGroup: importedListenerSg,
+});
+const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
+
+const api = new apigateway.RestApi(this, 'my-api');
+api.root.addMethod('GET', new apigateway.AlbIntegration(listener, {
+  vpcLink,
+  loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/abc',
+  loadBalancerDnsName: 'internal-my-alb-123.us-east-1.elb.amazonaws.com',
+  port: 80,
+}));
 ```
 
 ## Gateway response
