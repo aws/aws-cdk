@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.256.1](https://github.com/aws/aws-cdk/compare/v2.256.0...v2.256.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* invalid lock file ([#37943](https://github.com/aws/aws-cdk/issues/37943)) ([73ae91d](https://github.com/aws/aws-cdk/commit/73ae91d5eb074cb975a07de04238cf205111e2fb)), closes [#37726](https://github.com/aws/aws-cdk/issues/37726) [#37929](https://github.com/aws/aws-cdk/issues/37929) [#37870](https://github.com/aws/aws-cdk/issues/37870)
+
 ## [2.256.0](https://github.com/aws/aws-cdk/compare/v2.255.0...v2.256.0) (2026-05-19)
 
 
