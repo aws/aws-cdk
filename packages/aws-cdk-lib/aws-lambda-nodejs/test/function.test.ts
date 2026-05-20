@@ -383,7 +383,7 @@ describe('Node 18+ runtimes', () => {
     new NodejsFunction(stackFF, 'handler1');
 
     Template.fromStack(stackFF).hasResourceProperties('AWS::Lambda::Function', {
-      Runtime: 'nodejs22.x',
+      Runtime: 'nodejs24.x',
     });
   });
 

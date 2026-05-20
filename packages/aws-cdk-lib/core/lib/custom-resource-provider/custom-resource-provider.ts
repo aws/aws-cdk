@@ -65,6 +65,11 @@ export enum CustomResourceProviderRuntime {
    * Node.js 22.x
    */
   NODEJS_22_X = 'nodejs22.x',
+
+  /**
+   * Node.js 24.x
+   */
+  NODEJS_24_X = 'nodejs24.x',
 }
 
 /**
@@ -149,6 +154,8 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
       return 'nodejs20.x';
     case CustomResourceProviderRuntime.NODEJS_22_X:
       return 'nodejs22.x';
+    case CustomResourceProviderRuntime.NODEJS_24_X:
+      return 'nodejs24.x';
   }
 }
 
@@ -156,5 +163,5 @@ function customResourceProviderRuntimeToString(x: CustomResourceProviderRuntime)
  * The name of the latest Lambda node runtime available by AWS region.
  */
 export function determineLatestNodeRuntimeName(scope: Construct): string {
-  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs22.x');
+  return Stack.of(scope).regionalFact(FactName.LATEST_NODE_RUNTIME, 'nodejs24.x');
 }
