@@ -97,9 +97,6 @@ describe('validations', () => {
     expect(consoleErrorMock.mock.calls[0]).toEqual([
       expect.stringMatching(/Performing Policy Validations/),
     ]);
-    expect(consoleErrorMock.mock.calls[2]).toEqual([
-      expect.stringMatching(/Policy Validation Successful!/),
-    ]);
     expect(consoleErrorMock.mock.calls[1][0]).toEqual(`Validation Report
 -----------------
 
@@ -612,7 +609,7 @@ Policy Validation Report Summary
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
   });
 
-  test('JSON format', () => {
+  test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
     const app = new core.App({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
@@ -629,7 +626,7 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportJson': true,
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
       },
     });
     const stack = new core.Stack(app);
@@ -640,7 +637,11 @@ Policy Validation Report Summary
       },
     });
     app.synth();
-    expect(process.exitCode).toEqual(1);
+
+    // No exit code set
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is written
     const file = path.join(app.outdir, 'policy-validation-report.json');
     const report = fs.readFileSync(file).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
@@ -690,8 +691,11 @@ Policy Validation Report Summary
         },
       ],
     }));
-    const consoleOut = consoleErrorMock.mock.calls[1][0];
-    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' for details`);
+
+    // No console output about validation
+    const allOutput = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(allOutput).not.toContain('Validation failed');
+    expect(allOutput).not.toContain('Validation Report');
   });
 
   test('Pretty print as default', () => {
@@ -723,9 +727,74 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
     const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain('Validation failed. See the validation report above for details');
+    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('both formats enabled by default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+    expect(process.exitCode).toEqual(1);
+
+    // JSON file written
+    const file = path.join(app.outdir, 'policy-validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+
+    // Pretty print also output
+    const consoleReport = consoleErrorMock.mock.calls[1][0];
+    expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('failSynthOnValidationErrors=false succeeds even with validation failures', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
+      },
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+
+    // No failure exit code
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is still written
+    const file = path.join(app.outdir, 'policy-validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+    const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    expect(report.pluginReports[0].summary.status).toEqual('failure');
   });
 
   test('Multi format', () => {
@@ -744,10 +813,6 @@ Policy Validation Report Summary
           }],
         }]),
       ],
-      context: {
-        '@aws-cdk/core:validationReportJson': true,
-        '@aws-cdk/core:validationReportPrettyPrint': true,
-      },
     });
     const stack = new core.Stack(app);
     new core.CfnResource(stack, 'Fake', {
@@ -808,7 +873,7 @@ Policy Validation Report Summary
       ],
     }));
     const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' and above for details`);
+    expect(consoleOut).toContain(`Validation failed. A copy of this report can be found in '${file}'`);
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
   });
@@ -847,7 +912,6 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
       expect(output).toContain('my-lib:SomeWarning');
-      expect(output).toContain('Policy Validation Successful!');
     });
 
     test('annotation errors cause validation failure', () => {
@@ -1048,6 +1112,119 @@ Policy Validation Report Summary
       app.synth();
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('my-lib:TestId (');
+    });
+
+    test('plugin violations can be suppressed via Validations.acknowledge()', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: 'MyBucket',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress the error-level violation using <pluginName>::<ruleId>
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
+    });
+
+    test('fatal plugin violations cannot be suppressed', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'Unknown resource type',
+          ruleName: 'E9001',
+          severity: 'fatal',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'BadResource',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Attempt to suppress the fatal violation
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::E9001', reason: 'Trying to suppress fatal' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      // Fatal violations remain despite acknowledgment
+      expect(output).toContain('E9001');
+      expect(output).toContain('Unknown resource type');
+    });
+
+    test('plugin names with spaces use dashes in suppression IDs', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'Fake', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('My Plugin', [{
+          description: 'Some violation',
+          ruleName: 'MY RULE',
+          severity: 'error',
+          violatingResources: [{
+            locations: [],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      // Suppress using dashes instead of spaces
+      core.Validations.of(stack).acknowledge({ id: 'My-Plugin::MY-RULE', reason: 'OK' });
+
+      app.synth();
+
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('MY RULE');
+    });
+
+    test('validation report JSON is always written to assembly directory', () => {
+      const app = new core.App({
+        context: annotationReportContext,
+      });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:AlwaysWritten', 'Report always in assembly');
+
+      const assembly = app.synth();
+
+      const reportPath = path.join(assembly.directory, 'policy-validation-report.json');
+      expect(fs.existsSync(reportPath)).toBe(true);
+      const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+      expect(report.pluginReports[0].summary.pluginName).toEqual('Construct Annotations');
     });
   });
 
