@@ -151,6 +151,8 @@ export class AlbIntegration extends Integration {
 
     const concrete = this.listener instanceof elbv2.ApplicationListener ? this.listener : undefined;
 
+    // For a concrete listener, loadBalancerArn and port are derived from the listener itself;
+    // they are only needed for imported listeners. Reject them here when redundant.
     if (concrete) {
       if (this.albProps.loadBalancerArn !== undefined) {
         throw new ValidationError(
