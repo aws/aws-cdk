@@ -43,11 +43,7 @@
         "Fn::Join": [
          "",
          [
-          "arn:",
-          {
-           "Ref": "AWS::Partition"
-          },
-          ":lambda:us-east-1:",
+          "arn:aws:lambda:us-east-1:",
           {
            "Ref": "AWS::AccountId"
           },
@@ -72,7 +68,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": {
-      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
      "S3Key": "e1c20a4808d556faa2fc55b65ebe08053d2625201f06e4dcf4c10f0dc1dde80e.zip"
     },
@@ -157,11 +153,7 @@
      "Fn::Join": [
       "",
       [
-       "{\"StartAt\":\"CrossRegionLambdaInvoke\",\"States\":{\"CrossRegionLambdaInvoke\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Arguments\":{\"region\":\"us-east-1\",\"action\":\"invoke\",\"service\":\"lambda\",\"parameters\":{\"FunctionName\":\"arn:",
-       {
-        "Ref": "AWS::Partition"
-       },
-       ":lambda:us-east-1:",
+       "{\"StartAt\":\"CrossRegionLambdaInvoke\",\"States\":{\"CrossRegionLambdaInvoke\":{\"QueryLanguage\":\"JSONata\",\"End\":true,\"Retry\":[{\"ErrorEquals\":[\"Lambda.ClientExecutionTimeoutException\",\"Lambda.ServiceException\",\"Lambda.AWSLambdaException\",\"Lambda.SdkClientException\"],\"IntervalSeconds\":2,\"MaxAttempts\":6,\"BackoffRate\":2}],\"Type\":\"Task\",\"Arguments\":{\"region\":\"us-east-1\",\"action\":\"invoke\",\"service\":\"lambda\",\"parameters\":{\"FunctionName\":\"arn:aws:lambda:us-east-1:",
        {
         "Ref": "AWS::AccountId"
        },
@@ -181,7 +173,8 @@
       "TestStateMachineRole2476F720",
       "Arn"
      ]
-    }
+    },
+    "StateMachineName": "integ-cross-region-lambda-test-sm"
    },
    "DependsOn": [
     "TestStateMachineRoleDefaultPolicyB28F488D",

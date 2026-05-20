@@ -9,9 +9,12 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
  * function in a different region and properly serializes the response as JSON
  * (not as a byte array). See https://github.com/aws/aws-cdk/issues/34768
  *
- * The state machine is deployed in us-west-2 (via regions constraint) and
- * invokes a Lambda in us-east-1 using CallAwsServiceCrossRegion, exercising
- * the cross-region code path and verifying proper response deserialization.
+ * The state machine is deployed in us-west-2 and invokes a Lambda in us-east-1
+ * using CallAwsServiceCrossRegion, exercising the cross-region code path and
+ * verifying proper response deserialization.
+ *
+ * Note: The regions constraint does not yet control deployment region allocation
+ * but is added in anticipation of integ-runner supporting it.
  */
 
 const TARGET_REGION = 'us-east-1';
@@ -47,8 +50,10 @@ new lambda.Function(targetStack, 'TargetLambda', {
   `),
 });
 
-// Caller stack — no explicit env so assertions work without cross-env issues
-const callerStack = new cdk.Stack(app, 'aws-sfn-call-aws-service-cross-region-lambda');
+// Caller stack in us-west-2
+const callerStack = new cdk.Stack(app, 'aws-sfn-call-aws-service-cross-region-lambda', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'us-west-2' },
+});
 
 // Construct the target Lambda ARN using the known function name and target region
 const targetLambdaArn = callerStack.formatArn({
@@ -74,6 +79,7 @@ const crossRegionInvokeTask = tasks.CallAwsServiceCrossRegion.jsonata(
 );
 
 const stateMachine = new sfn.StateMachine(callerStack, 'TestStateMachine', {
+  stateMachineName: 'integ-cross-region-lambda-test-sm',
   definitionBody: sfn.DefinitionBody.fromChainable(crossRegionInvokeTask),
   timeout: cdk.Duration.minutes(5),
 });
@@ -83,7 +89,10 @@ callerStack.addDependency(targetStack);
 
 const integ = new IntegTest(app, 'IntegTest', {
   testCases: [callerStack],
-  regions: ['us-west-2'],
+  assertionStack: new cdk.Stack(app, 'AssertionStack', {
+    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: 'us-west-2' },
+  }),
+  regions: ['us-east-1', 'us-west-2'],
 });
 
 // Start the Step Functions execution

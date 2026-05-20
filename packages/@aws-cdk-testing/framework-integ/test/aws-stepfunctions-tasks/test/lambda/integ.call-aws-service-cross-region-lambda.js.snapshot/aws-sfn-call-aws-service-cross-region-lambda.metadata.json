@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:47:21)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:50:21)",
         "...node internals..."
       ]
     }
@@ -31,6 +31,7 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
+        "stateMachineName": "*",
         "definitionBody": "*",
         "timeout": "*"
       }
@@ -175,7 +176,7 @@
         "new CrossRegionAwsSdkSingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated.js:9:9)",
         "new CallAwsServiceCrossRegion (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:96:31)",
         "CallAwsServiceCrossRegion.jsonata (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:52:16)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:56:63)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:61:63)",
         "...node internals..."
       ]
     }
@@ -225,7 +226,7 @@
       "data": [
         "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:447:30)",
         "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:67:22)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:72:22)",
         "...node internals..."
       ]
     }
@@ -268,7 +269,7 @@
         "new CrossRegionAwsSdkSingletonFunction (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-stepfunctions-tasks/cross-region-aws-sdk-provider.generated.js:9:9)",
         "new CallAwsServiceCrossRegion (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:96:31)",
         "CallAwsServiceCrossRegion.jsonata (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:52:16)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:56:63)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:61:63)",
         "...node internals..."
       ]
     }
@@ -321,7 +322,7 @@
         "new Role (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:392:39)",
         "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:67:22)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:72:22)",
         "...node internals..."
       ]
     }
@@ -373,7 +374,7 @@
         "Array.forEach (:)",
         "new CallAwsServiceCrossRegion (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:109:11)",
         "CallAwsServiceCrossRegion.jsonata (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions-tasks/lib/lambda/call-aws-service-cross-region.js:52:16)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:56:63)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:61:63)",
         "...node internals..."
       ]
     }
@@ -394,7 +395,7 @@
         "WrappedClass.<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:402:26)",
         "new StateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:67:22)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:72:22)",
         "...node internals..."
       ]
     }

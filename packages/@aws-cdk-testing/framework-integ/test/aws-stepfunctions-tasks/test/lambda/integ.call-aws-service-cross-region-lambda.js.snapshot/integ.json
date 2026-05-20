@@ -6,10 +6,11 @@
         "aws-sfn-call-aws-service-cross-region-lambda"
       ],
       "regions": [
+        "us-east-1",
         "us-west-2"
       ],
-      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+      "assertionStack": "AssertionStack",
+      "assertionStackName": "AssertionStack"
     }
   },
   "minimumCliVersion": "2.1119.0"

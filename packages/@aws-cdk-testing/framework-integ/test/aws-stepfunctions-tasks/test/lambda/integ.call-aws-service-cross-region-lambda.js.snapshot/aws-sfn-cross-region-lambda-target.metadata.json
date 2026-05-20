@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:26:21)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:29:21)",
         "...node internals..."
       ]
     }
@@ -89,7 +89,7 @@
       "data": [
         "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:29:1)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:32:1)",
         "...node internals..."
       ]
     }
@@ -106,7 +106,7 @@
         "new Role (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
         "new Function (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:29:1)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:32:1)",
         "...node internals..."
       ]
     }

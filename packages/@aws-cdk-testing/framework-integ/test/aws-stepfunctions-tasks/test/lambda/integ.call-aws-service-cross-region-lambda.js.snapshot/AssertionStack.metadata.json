@@ -1,17 +1,14 @@
 {
-  "/IntegTest/DefaultTest/DeployAssert": [
+  "/AssertionStack": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new DeployAssert (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
-        "new IntegTestCase (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
-        "new IntegTest (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:73:15)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:81:21)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/AssertionStack/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -25,8 +22,6 @@
         "/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
         "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
         "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
         "synthesizeTree (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
@@ -35,7 +30,7 @@
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/AssertionStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
@@ -49,8 +44,6 @@
         "/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
         "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
         "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "visit (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
         "synthesizeTree (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
         "synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
         "App.synth (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
@@ -59,7 +52,7 @@
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution35b0a9d12ae4d5363f5b001a832be9fa/Default": [
+  "/AssertionStack/AwsApiCallStepFunctionsstartExecution35b0a9d12ae4d5363f5b001a832be9fa/Default": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -73,7 +66,7 @@
       "data": "*"
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+  "/AssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
@@ -87,12 +80,12 @@
         "new AssertionsProvider (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new AwsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
         "DeployAssert.awsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:78:30)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:87:30)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+  "/AssertionStack/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
@@ -106,12 +99,12 @@
         "new AssertionsProvider (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new AwsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
         "DeployAssert.awsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:78:30)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:87:30)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/Default": [
+  "/AssertionStack/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/Default": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
@@ -125,7 +118,7 @@
       "data": "*"
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/AssertionResults": [
+  "/AssertionStack/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/AssertionResults": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AssertionResultsAwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c"
@@ -137,8 +130,6 @@
         "recurse (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:369:38)",
         "recurse (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
         "recurse (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
-        "recurse (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
-        "recurse (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:383:43)",
         "invokeAspectsV2 (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:341:5)",
         "synthesize (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:36:9)",
         "App.synth (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
@@ -147,7 +138,7 @@
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
+  "/AssertionStack/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
@@ -161,12 +152,12 @@
         "new AssertionsProvider (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
+  "/AssertionStack/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
@@ -180,12 +171,12 @@
         "new AssertionsProvider (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:62:35)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
+  "/AssertionStack/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
@@ -199,12 +190,12 @@
         "new AssertionsProvider (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
+  "/AssertionStack/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
@@ -218,12 +209,12 @@
         "new AssertionsProvider (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:66:33)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsstartExecution35b0a9d12ae4d5363f5b001a832be9fa/Default/Default": [
+  "/AssertionStack/AwsApiCallStepFunctionsstartExecution35b0a9d12ae4d5363f5b001a832be9fa/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallStepFunctionsstartExecution35b0a9d12ae4d5363f5b001a832be9fa"
@@ -236,12 +227,12 @@
         "new CustomResource (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new AwsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
         "DeployAssert.awsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:78:30)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:87:30)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/Default/Default": [
+  "/AssertionStack/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/Default/Default": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c"
@@ -254,12 +245,12 @@
         "new CustomResource (/local/home/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new AwsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
         "DeployAssert.awsApiCall (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:47:16)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:84:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:93:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/Role": [
+  "/AssertionStack/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/Role": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForRoleD9C2DF7E"
@@ -269,12 +260,12 @@
       "data": [
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:70:22)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/Resource": [
+  "/AssertionStack/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForEDC8A739"
@@ -284,12 +275,12 @@
       "data": [
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:120:26)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/IsCompleteProvider/Invoke": [
+  "/AssertionStack/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/IsCompleteProvider/Invoke": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForIsCompleteProviderInvokeEF8ACA63"
@@ -300,12 +291,12 @@
         "AssertionsProvider.grantInvoke (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:130:33)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }
   ],
-  "/IntegTest/DefaultTest/DeployAssert/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/TimeoutProvider/Invoke": [
+  "/AssertionStack/AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11c/WaitFor/TimeoutProvider/Invoke": [
     {
       "type": "aws:cdk:logicalId",
       "data": "AwsApiCallStepFunctionsdescribeExecutionc1260931b5d4e71b1ac6f9bbc15dd11cWaitForTimeoutProviderInvokeFCAFDA76"
@@ -316,7 +307,7 @@
         "AssertionsProvider.grantInvoke (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:287:9)",
         "new WaiterStateMachine (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/waiter-state-machine.js:131:25)",
         "AwsApiCall.waitForAssertions (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:121:24)",
-        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:90:6)",
+        "<anonymous> (/local/home/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js:99:6)",
         "...node internals..."
       ]
     }

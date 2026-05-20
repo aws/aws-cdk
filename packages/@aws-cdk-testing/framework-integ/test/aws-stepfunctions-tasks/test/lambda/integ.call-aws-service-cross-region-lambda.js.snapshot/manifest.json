@@ -46,21 +46,21 @@
     },
     "aws-sfn-call-aws-service-cross-region-lambda": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-west-2",
       "properties": {
         "templateFile": "aws-sfn-call-aws-service-cross-region-lambda.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/d14ca8725888fed12e508ea2b92f3399e4e75ade23f5e8fae4864679726d5675.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/fe59ecfb1dc29b8385e5e19479c610cace70087184c9ed6ea35a6adf2c066162.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "aws-sfn-call-aws-service-cross-region-lambda.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -72,41 +72,41 @@
       "additionalMetadataFile": "aws-sfn-call-aws-service-cross-region-lambda.metadata.json",
       "displayName": "aws-sfn-call-aws-service-cross-region-lambda"
     },
-    "IntegTestDefaultTestDeployAssertE3E7D2A4.assets": {
+    "AssertionStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "IntegTestDefaultTestDeployAssertE3E7D2A4.assets.json",
+        "file": "AssertionStack.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "IntegTestDefaultTestDeployAssertE3E7D2A4": {
+    "AssertionStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
+      "environment": "aws://unknown-account/us-west-2",
       "properties": {
-        "templateFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.template.json",
+        "templateFile": "AssertionStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/69f968e964794c047d977b37389feb48f146f97847d9d92e173d33ff666d14a4.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/53fa162ec1653b92dcaba72540a3241b15652fc3ccba51bc3433c9f243db3a83.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
+          "AssertionStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-west-2",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
       },
       "dependencies": [
         "aws-sfn-call-aws-service-cross-region-lambda",
-        "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
+        "AssertionStack.assets"
       ],
-      "additionalMetadataFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.metadata.json",
-      "displayName": "IntegTest/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "AssertionStack.metadata.json",
+      "displayName": "AssertionStack"
     },
     "Tree": {
       "type": "cdk:tree",
