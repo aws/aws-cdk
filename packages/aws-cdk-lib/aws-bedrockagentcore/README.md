@@ -47,6 +47,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Other configuration](#other-configuration)
       - [Lifecycle configuration](#lifecycle-configuration)
       - [Request header configuration](#request-header-configuration)
+      - [Application log group](#application-log-group)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -839,6 +840,30 @@ new agentcore.Runtime(this, 'test-runtime', {
   ],
 });
 ```
+
+#### Application log group
+
+Every Runtime has a default endpoint whose stdout is written to the AgentCore-managed log group at `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`. The Runtime construct exposes this log group as `applicationLogGroup` so you can attach metric filters, subscription filters, or alarms without hardcoding the path:
+
+```ts
+import * as logs from 'aws-cdk-lib/aws-logs';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+
+declare const repository: ecr.Repository;
+
+const runtime = new agentcore.Runtime(this, 'Runtime', {
+  agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
+});
+
+new logs.MetricFilter(this, 'ToolErrors', {
+  logGroup: runtime.applicationLogGroup,
+  filterPattern: logs.FilterPattern.stringValue('$.tool_status', '=', 'error'),
+  metricNamespace: 'MyApp',
+  metricName: 'ToolExecutionErrors',
+});
+```
+
+The log group itself is created by the AgentCore service on the runtime's first invocation, not by CDK. Constructs that require the log group to exist at deploy time may race the first invocation; if that is a concern, pre-create the log group with a `LogRetention` resource using the same name.
 
 ## Browser
 
