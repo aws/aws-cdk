@@ -10,6 +10,7 @@ import { ResolutionTypeHint } from '../type-hints';
 import { makeUniqueId } from './uniqueid';
 import { UnscopedValidationError } from '../errors';
 import { lit } from './literal-string';
+import { Box } from '../helpers-internal';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -51,10 +52,7 @@ export class CloudFormationLang {
    * @param obj The object to stringify
    */
   public static toYAML(obj: any): string {
-    // eslint-disable-next-line no-restricted-syntax
-    return Lazy.uncachedString({
-      produce: () => yaml_cfn.serialize(obj),
-    });
+    return Token.asString(Box.fromValue(obj).derive((data) => yaml_cfn.serialize(data)));
   }
 
   /**
