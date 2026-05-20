@@ -48,3 +48,12 @@ export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
  */
 export const TOOLKIT_VERSION_ENV = 'CDK_TOOLKIT_VERSION';
 
+/**
+ * Context key to control whether validation errors cause synthesis to fail.
+ *
+ * When set to `true` (the default), validation failures will print errors to
+ * stderr and set a non-zero exit code. Set to `false` to only write the JSON
+ * report without failing synthesis.
+ */
+export const FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT = '@aws-cdk/core:failSynthOnValidationErrors';
+

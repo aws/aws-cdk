@@ -97,9 +97,6 @@ describe('validations', () => {
     expect(consoleErrorMock.mock.calls[0]).toEqual([
       expect.stringMatching(/Performing Policy Validations/),
     ]);
-    expect(consoleErrorMock.mock.calls[2]).toEqual([
-      expect.stringMatching(/Policy Validation Successful!/),
-    ]);
     expect(consoleErrorMock.mock.calls[1][0]).toEqual(`Validation Report
 -----------------
 
@@ -612,7 +609,7 @@ Policy Validation Report Summary
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
   });
 
-  test('JSON format only', () => {
+  test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
     const app = new core.App({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
@@ -629,7 +626,7 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportPrettyPrint': false,
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
       },
     });
     const stack = new core.Stack(app);
@@ -640,7 +637,11 @@ Policy Validation Report Summary
       },
     });
     app.synth();
-    expect(process.exitCode).toEqual(1);
+
+    // No exit code set
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is written
     const file = path.join(app.outdir, 'policy-validation-report.json');
     const report = fs.readFileSync(file).toString('utf-8');
     expect(JSON.parse(report)).toEqual(expect.objectContaining({
@@ -690,8 +691,11 @@ Policy Validation Report Summary
         },
       ],
     }));
-    const consoleOut = consoleErrorMock.mock.calls[1][0];
-    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' for details`);
+
+    // No console output about validation
+    const allOutput = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(allOutput).not.toContain('Validation failed');
+    expect(allOutput).not.toContain('Validation Report');
   });
 
   test('Pretty print as default', () => {
@@ -723,8 +727,7 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
     const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain('Validation failed. See the validation report in');
-    expect(consoleOut).toContain('and above for details');
+    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
   });
@@ -760,7 +763,7 @@ Policy Validation Report Summary
     expect(consoleReport).toContain('Validation Report');
   });
 
-  test('JSON report is always written regardless of context', () => {
+  test('failSynthOnValidationErrors=false succeeds even with validation failures', () => {
     const app = new core.App({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
@@ -774,7 +777,7 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportPrettyPrint': false,
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
       },
     });
     const stack = new core.Stack(app);
@@ -783,18 +786,15 @@ Policy Validation Report Summary
       properties: { result: 'failure' },
     });
     app.synth();
-    expect(process.exitCode).toEqual(1);
 
-    // JSON file is ALWAYS written
+    // No failure exit code
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is still written
     const file = path.join(app.outdir, 'policy-validation-report.json');
     expect(fs.existsSync(file)).toBe(true);
-
-    // Pretty print should NOT be output
-    const allOutput = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
-    expect(allOutput).not.toContain('Validation Report\n-');
-
-    // Message should reference the file only (no "above")
-    expect(allOutput).toContain(`Validation failed. See the validation report in '${file}' for details`);
+    const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    expect(report.pluginReports[0].summary.status).toEqual('failure');
   });
 
   test('Multi format', () => {
@@ -813,9 +813,6 @@ Policy Validation Report Summary
           }],
         }]),
       ],
-      context: {
-        '@aws-cdk/core:validationReportPrettyPrint': true,
-      },
     });
     const stack = new core.Stack(app);
     new core.CfnResource(stack, 'Fake', {
@@ -876,7 +873,7 @@ Policy Validation Report Summary
       ],
     }));
     const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' and above for details`);
+    expect(consoleOut).toContain(`Validation failed. A copy of this report can be found in '${file}'`);
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
   });
@@ -915,7 +912,6 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
       expect(output).toContain('my-lib:SomeWarning');
-      expect(output).toContain('Policy Validation Successful!');
     });
 
     test('annotation errors cause validation failure', () => {
