@@ -1656,12 +1656,13 @@ that security group:
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 declare const vpc: ec2.Vpc;
+declare const target: elbv2.IApplicationLoadBalancerTarget;
+
 const alb = new elbv2.ApplicationLoadBalancer(this, 'ALB', { vpc });
 const listener = alb.addListener('Listener', { port: 80, open: false });
-declare const target: elbv2.IApplicationLoadBalancerTarget;
 listener.addTargets('Target', { port: 80, targets: [target] });
 
-const api = new apigateway.RestApi(this, 'my-api');
+const api = new apigateway.RestApi(this, 'Api');
 api.root.addMethod('GET', new apigateway.AlbIntegration(listener));
 ```
 
@@ -1680,24 +1681,37 @@ declare const vpc: ec2.Vpc;
 declare const listener: elbv2.ApplicationListener;
 
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
-const api = new apigateway.RestApi(this, 'my-api');
+const api = new apigateway.RestApi(this, 'Api');
 api.root.addMethod('GET', new apigateway.AlbIntegration(listener, { vpcLink }));
 ```
 
-HTTPS listeners are detected automatically, and non-default ports are reflected in the
-backend URI. Use `protocol` or `port` to override:
+For **HTTPS listeners**, API Gateway connects to the backend over TLS and sends the
+URI hostname as both the `Host` header and the TLS SNI value, so it must match a name
+on the listener's certificate. The load balancer's default DNS name lives in an
+AWS-owned domain and cannot be covered by a custom certificate, so supply
+`loadBalancerDnsName` with a name the certificate covers — typically a Route53 alias
+record pointing at the ALB:
 
 ```ts
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
-declare const listener: elbv2.ApplicationListener;
+declare const httpsListener: elbv2.ApplicationListener;
 
-const api = new apigateway.RestApi(this, 'my-api');
-api.root.addMethod('GET', new apigateway.AlbIntegration(listener, {
-  protocol: apigateway.AlbIntegrationProtocol.HTTPS,
-  port: 8443,
+const api = new apigateway.RestApi(this, 'Api');
+api.root.addMethod('GET', new apigateway.AlbIntegration(httpsListener, {
+  loadBalancerDnsName: 'api.example.com',
 }));
 ```
+
+Routing still goes through the VPC Link, so `loadBalancerDnsName` only sets the
+`Host`/SNI value and does not have to be the ALB's own DNS name. For plain HTTP
+listeners the hostname is not security-sensitive, so `loadBalancerDnsName` can be
+omitted — it then defaults to the load balancer's DNS name.
+
+The URI scheme and port are otherwise derived from the listener — an HTTPS listener
+produces an `https://` URI on the listener's port. Use the `protocol` prop to override
+the scheme when it cannot be derived, such as for an imported HTTPS listener whose
+protocol is not known to CDK.
 
 By default, `AlbIntegration` uses HTTP proxy integration. You can disable proxy mode:
 
@@ -1728,7 +1742,7 @@ const listener = elbv2.ApplicationListener.fromApplicationListenerAttributes(thi
 });
 const vpcLink = new apigwv2.VpcLink(this, 'VpcLink', { vpc });
 
-const api = new apigateway.RestApi(this, 'my-api');
+const api = new apigateway.RestApi(this, 'Api');
 api.root.addMethod('GET', new apigateway.AlbIntegration(listener, {
   vpcLink,
   loadBalancerArn: 'arn:aws:elasticloadbalancing:us-east-1:123456789012:loadbalancer/app/my-alb/abc',
