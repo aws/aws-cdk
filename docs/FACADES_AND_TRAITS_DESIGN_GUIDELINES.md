@@ -25,14 +25,17 @@ Key characteristics:
 - **Static factory method** — e.g., `BucketGrants.fromBucket(bucket)`.
 - **Accept the resource reference interface** (`IBucketRef`) — enabling use with
   both L1 and L2 constructs and imported resources.
-- **Exposed as properties on the construct interface** — e.g.,
-  `readonly grants: BucketGrants`.
+- **Exposed as properties on the construct interface** — for first-party Facades
+  in `aws-cdk-lib`, e.g., `readonly grants: BucketGrants`. This provides
+  convenient access on L2 constructs.
 - **Non-mutating on the target** — a Facade reads the resource's ARN/id and
   emits IAM/policy resources elsewhere. Calling the factory method multiple
   times is safe.
 - **Third-party extensible** — because they only depend on the resource
-  reference interface, anyone can provide Facades without modifying
-  `aws-cdk-lib`.
+  reference interface, anyone can create Facades without modifying
+  `aws-cdk-lib`. Third-party Facades are used via the static factory method
+  directly (e.g., `MyCustomGrants.fromBucket(bucket)`) since they cannot be
+  added to the construct interface.
 
 ### When to Use Facades
 
@@ -220,12 +223,28 @@ Traits are _not_ appropriate when:
 
 ### Registering a Trait
 
-Each trait has registry classes. The existing traits use
-`DefaultPolicyFactories` / `ResourceWithPolicies` (resource policies) and
-`DefaultEncryptedResourceFactories` / `EncryptedResources` (encryption).
+Each trait has a two-layer registry architecture:
 
-To register a Trait for a CloudFormation resource type, implement the factory
-and register it in `lib/private/default-traits.ts`:
+- **`DefaultPolicyFactories` / `DefaultEncryptedResourceFactories`** — a global
+  static map of CloudFormation resource type → factory instance. This is the
+  *default* set of factories shipped with `aws-cdk-lib`. Service modules
+  register their factories here at module load time via `.set()`. This is where
+  library authors add new factory registrations.
+- **`ResourceWithPolicies` / `EncryptedResources`** — the *runtime lookup*
+  class that Facades call (e.g., `ResourceWithPolicies.of(resource)`). It first
+  walks up the construct tree looking for scope-specific overrides (registered
+  via `.register()`), then falls back to the defaults above. This is what
+  Facades consume — you do not register here unless you are a CDK user
+  overriding a default.
+
+In short: **library authors register in `DefaultPolicyFactories`** (via
+`.set()`); **Facades consume via `ResourceWithPolicies`** (via `.of()`);
+**CDK users override via `ResourceWithPolicies.register()`** for
+scope-specific customization.
+
+To add support for a new CloudFormation resource type to an existing trait,
+implement the factory and register it in the service module's
+`lib/private/default-traits.ts`:
 
 ```ts
 class MyResourcePolicyFactory implements IResourcePolicyFactory {
@@ -316,8 +335,8 @@ Every Facade and Trait factory should have unit tests covering:
 - Works with L2 constructs (via the construct interface property).
 - Works with imported (unowned) resources.
 
-Integration tests should verify end-to-end functionality with both L1 and L2
-constructs.
+Integration tests for the service module should cover the Facade functionality
+as part of broader resource deployment verification.
 
 ## User-Facing API
 
