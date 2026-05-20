@@ -20,6 +20,12 @@ export async function shell(command: string[], options: ShellOptions = {}): Prom
 
   await makeShellScriptExecutable(cmd);
 
+  // On Windows, cmd.exe cannot execute extension-less JS files (Node shebang scripts)
+  // even via `shell: true`. Prepend `node` so the script runs correctly.
+  if (process.platform === 'win32' && command[0] !== 'node' && await isShellScript(cmd).catch(() => false)) {
+    command = ['node', ...command];
+  }
+
   // yarn exec runs the provided command with the correct environment for the workspace.
   const child = child_process.spawn(
     command.join(' '),
