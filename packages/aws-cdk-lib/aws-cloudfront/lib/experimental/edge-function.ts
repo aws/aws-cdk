@@ -7,13 +7,13 @@ import * as ssm from '../../../aws-ssm';
 import type { CfnResource } from '../../../core';
 import {
   CustomResource,
-  Lazy,
   Resource,
   Stack,
   Stage,
   Token,
   ValidationError,
 } from '../../../core';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -281,12 +281,10 @@ export class EdgeFunction extends Resource implements lambda.IVersion {
         //
         // Use the logical id of the function version. Whenever a function version changes, the logical id must be
         // changed for it to take effect - a good candidate for RefreshToken.
-        RefreshToken: Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
-          produce: () => {
-            const cfn = version.node.defaultChild as CfnResource;
-            return this.stack.resolve(cfn.logicalId);
-          },
-        }),
+        RefreshToken: Token.asString(Box.fromValue(version).derive((v) => {
+          const cfn = v.node.defaultChild as CfnResource;
+          return this.stack.resolve(cfn.logicalId);
+        })),
       },
     });
 
