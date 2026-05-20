@@ -46,6 +46,8 @@ export const deployIntegTests = async (props: {
         SOURCE_BRANCH_COMMIT: process.env.SOURCE_BRANCH_COMMIT,
       };
 
+      console.log('DEBUG key_id length: %d', allocation.allocation.credentials.accessKeyId.length)
+
       await bootstrap(env);
       await deployIntegrationTest(env, batch);
       outcome = 'success';
