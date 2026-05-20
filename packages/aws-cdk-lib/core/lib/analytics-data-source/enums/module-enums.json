@@ -5808,6 +5808,10 @@
       "all_storage_classes_128K",
       "varies_by_storage_class"
     ],
+    "BucketNamespace": [
+      "global",
+      "account-regional"
+    ],
     "BucketEncryption": [
       "UNENCRYPTED",
       "KMS_MANAGED",
