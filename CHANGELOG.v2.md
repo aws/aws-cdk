@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.256.0](https://github.com/aws/aws-cdk/compare/v2.255.0...v2.256.0) (2026-05-19)
+
+
+### Features
+
+* **aws-cdk-lib:** emits performance counters if synthesis is slow  ([#37919](https://github.com/aws/aws-cdk/issues/37919)) ([caa0f4c](https://github.com/aws/aws-cdk/commit/caa0f4c1eea4e9d47843b1fa2aee661ef0c3fa24)), closes [#37843](https://github.com/aws/aws-cdk/issues/37843)
+* **core:** validations report is always written to cloud assembly ([#37867](https://github.com/aws/aws-cdk/issues/37867)) ([dddc6e0](https://github.com/aws/aws-cdk/commit/dddc6e09fd9736126eacf40811450550b1c0695d))
+* **ec2:** replace `any` return types with specific interfaces in `IPeer` methods ([#36637](https://github.com/aws/aws-cdk/issues/36637)) ([626e44d](https://github.com/aws/aws-cdk/commit/626e44dfeff7d65bad094e744aaa0209c67fdbee)), closes [#36636](https://github.com/aws/aws-cdk/issues/36636)
+* **s3:** support `bucketNamePrefix` and `bucketNamespace` properties ([#37386](https://github.com/aws/aws-cdk/issues/37386)) ([997b003](https://github.com/aws/aws-cdk/commit/997b0039662034df9b01228bc45d4cb0ffabb40c)), closes [#37760](https://github.com/aws/aws-cdk/issues/37760)
+
+
+### Bug Fixes
+
+* **core:** handle token-wrapped Boxes in property merge strategies ([#37902](https://github.com/aws/aws-cdk/issues/37902)) ([18435e3](https://github.com/aws/aws-cdk/commit/18435e3c52df17be5a23931e18a1fd8fb7c4c4c3))
+* **core:** prevent stack overflow on large construct trees ([#37901](https://github.com/aws/aws-cdk/issues/37901)) ([10163cb](https://github.com/aws/aws-cdk/commit/10163cb8ca2b650f19a38afa04e78bd5f45d39f5)), closes [#37903](https://github.com/aws/aws-cdk/issues/37903)
+
+## [2.255.0](https://github.com/aws/aws-cdk/compare/v2.254.0...v2.255.0) (2026-05-18)
+
+
+### Features
+
+* **aws-cdk-lib:** emits performance counters if synthesis is slow ([#37843](https://github.com/aws/aws-cdk/issues/37843)) ([ea33967](https://github.com/aws/aws-cdk/commit/ea339670cb537e0e9aeb6b419c8bd43591aec32b))
+* **bedrockagentcore:** graduate to stable 🚀 ([#37876](https://github.com/aws/aws-cdk/issues/37876)) ([00cf601](https://github.com/aws/aws-cdk/commit/00cf6015f30755653de7a541f79c944d4a68f423))
+* **core:** builtin `PropertyMergeStrategy`s are now compatible with deferred `Box` values ([#37844](https://github.com/aws/aws-cdk/issues/37844)) ([ca4b722](https://github.com/aws/aws-cdk/commit/ca4b72234cf17aa29dfe47ce11a9d6f262168173))
+* **core:** persist asset fingerprinting cache ([#37822](https://github.com/aws/aws-cdk/issues/37822)) ([605a776](https://github.com/aws/aws-cdk/commit/605a776f7708c1120e62d1cfdf2780b0dbe10552))
+* **ec2:** add C8A instance type support ([#36736](https://github.com/aws/aws-cdk/issues/36736)) ([0d088ca](https://github.com/aws/aws-cdk/commit/0d088ca0a6e720c25132d177e675ecfe08caff2f)), closes [#36722](https://github.com/aws/aws-cdk/issues/36722)
+
+
+### Bug Fixes
+
+* **core:** cached `Lazy`s use the Box API internally ([#37889](https://github.com/aws/aws-cdk/issues/37889)) ([464fa3d](https://github.com/aws/aws-cdk/commit/464fa3dfcc04f2adeb0b9f877ceaac2223afc0b8))
+* **core:** default stack trace size adds unnecessary overhead ([#37827](https://github.com/aws/aws-cdk/issues/37827)) ([0b1fb2b](https://github.com/aws/aws-cdk/commit/0b1fb2bb08ce338fe73b8ebb24be6b88d9210c1c))
+* **core:** share a single IAM role across cross-account Fn::GetStackOutput consumers ([#37871](https://github.com/aws/aws-cdk/issues/37871)) ([fee8b90](https://github.com/aws/aws-cdk/commit/fee8b90d07a70ad0d0fb4e963015df1d45ed1cb8))
+* **dynamodb:** remove deprecated scope for stream grants ([#36680](https://github.com/aws/aws-cdk/issues/36680)) ([570d552](https://github.com/aws/aws-cdk/commit/570d55285d9d0161545af6fe89b9bac052496add)), closes [#36289](https://github.com/aws/aws-cdk/issues/36289)
+* **iam:** validate PolicyStatement SID is alphanumeric for identity policies ([#36150](https://github.com/aws/aws-cdk/issues/36150)) ([a7edd72](https://github.com/aws/aws-cdk/commit/a7edd72c0181d7ff536ba870c8811c4abbb36754)), closes [#34819](https://github.com/aws/aws-cdk/issues/34819) [#34828](https://github.com/aws/aws-cdk/issues/34828) [#34819](https://github.com/aws/aws-cdk/issues/34819)
+
 ## [2.254.0](https://github.com/aws/aws-cdk/compare/v2.253.1...v2.254.0) (2026-05-13)
 
 
