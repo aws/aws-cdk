@@ -202,7 +202,7 @@ test('esbuild bundling with externals and dependencies', () => {
         'bash', '-c',
         [
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
-          `echo \'{"dependencies":{"delay":"${delayVersion}"}}\' > "/asset-output/package.json"`,
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
           'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
           'cd "/asset-output"',
           'npm ci',
