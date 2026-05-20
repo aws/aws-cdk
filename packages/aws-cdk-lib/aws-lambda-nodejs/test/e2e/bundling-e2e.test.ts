@@ -258,6 +258,57 @@ describeDockerSuite((forceDockerBundling) => {
       const files = assetFiles(project.outdir);
       expect(files).toContain('install-marker.txt');
     });
+
+    test('nodeModules forwards devEngines from parent package.json into output package.json', () => {
+      project = createProject(pkgManager, '.ts');
+      // Overwrite handler with one that imports delay
+      fs.writeFileSync(project.entryFile, TS_HANDLER_WITH_DELAY);
+      // Overwrite package.json to include devEngines alongside the delay dependency
+      const devEngines = {
+        packageManager: { name: 'npm', version: '>=10', onFail: 'warn' as const },
+      };
+      fs.writeFileSync(path.join(project.dir, 'package.json'), JSON.stringify({
+        name: 'test', version: '1.0.0', dependencies: { delay: '5.0.0' }, devEngines,
+      }));
+      fs.writeFileSync(path.join(project.dir, LOCK_FILES[pkgManager].name), NPM_LOCK_WITH_DELAY);
+
+      cdkSynth(project, {
+        entry: project.entryFile,
+        bundling: {
+          forceDockerBundling,
+          nodeModules: ['delay'],
+        },
+      });
+
+      const outputPkgJson = JSON.parse(
+        fs.readFileSync(path.join(findAssetDir(project.outdir), 'package.json'), 'utf-8'),
+      );
+      expect(outputPkgJson.devEngines).toEqual(devEngines);
+    });
+
+    test('nodeModules does not add devEngines to output package.json when absent from parent', () => {
+      project = createProject(pkgManager, '.ts');
+      // Overwrite handler with one that imports delay
+      fs.writeFileSync(project.entryFile, TS_HANDLER_WITH_DELAY);
+      // Overwrite package.json without devEngines
+      fs.writeFileSync(path.join(project.dir, 'package.json'), JSON.stringify({
+        name: 'test', version: '1.0.0', dependencies: { delay: '5.0.0' },
+      }));
+      fs.writeFileSync(path.join(project.dir, LOCK_FILES[pkgManager].name), NPM_LOCK_WITH_DELAY);
+
+      cdkSynth(project, {
+        entry: project.entryFile,
+        bundling: {
+          forceDockerBundling,
+          nodeModules: ['delay'],
+        },
+      });
+
+      const outputPkgJson = JSON.parse(
+        fs.readFileSync(path.join(findAssetDir(project.outdir), 'package.json'), 'utf-8'),
+      );
+      expect(outputPkgJson.devEngines).toBeUndefined();
+    });
   });
 });
 
