@@ -442,7 +442,7 @@ export enum Charset {
 /**
  * A single dependency entry in the `devEngines` field of a `package.json`.
  *
- * @see https://github.com/nicolo-ribaudo/tc39-proposal-pkg-manager-keys
+ * @see https://github.com/openjs-foundation/package-metadata-interoperability-working-group/blob/main/devengines-field-proposal.md
  */
 export interface DevEngineDependency {
   /**
@@ -452,15 +452,11 @@ export interface DevEngineDependency {
 
   /**
    * A semver version range that specifies which versions are acceptable.
-   *
-   * @default - any version is acceptable
    */
   readonly version?: string;
 
   /**
    * What to do if the validation for this entry fails.
-   *
-   * @default 'error'
    */
   readonly onFail?: 'ignore' | 'warn' | 'error' | 'download';
 }
@@ -475,34 +471,26 @@ export interface DevEngineDependency {
  * that understand `devEngines` (e.g. npm >= 10.4 with Corepack) will then use
  * the declared package manager to perform the install.
  *
- * @see https://github.com/nicolo-ribaudo/tc39-proposal-pkg-manager-keys
+ * @see https://github.com/openjs-foundation/package-metadata-interoperability-working-group/blob/main/devengines-field-proposal.md
  */
 export interface DevEngines {
   /**
    * The operating system requirements.
-   *
-   * @default - no constraint
    */
   readonly os?: DevEngineDependency | DevEngineDependency[];
 
   /**
    * The CPU architecture requirements.
-   *
-   * @default - no constraint
    */
   readonly cpu?: DevEngineDependency | DevEngineDependency[];
 
   /**
    * The C standard library requirements.
-   *
-   * @default - no constraint
    */
   readonly libc?: DevEngineDependency | DevEngineDependency[];
 
   /**
    * The JavaScript runtime requirements.
-   *
-   * @default - no constraint
    */
   readonly runtime?: DevEngineDependency | DevEngineDependency[];
 
@@ -512,8 +500,6 @@ export interface DevEngines {
    * When set, the declared package manager (and optionally a specific version)
    * will be used to install `nodeModules` during bundling, provided the tool
    * supports this field.
-   *
-   * @default - no constraint
    */
   readonly packageManager?: DevEngineDependency | DevEngineDependency[];
 }
