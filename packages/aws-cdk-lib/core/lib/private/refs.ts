@@ -495,8 +495,11 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   let output = scope.node.tryFindChild(outputId) as CfnOutput;
   if (output == null) {
+    const isStringList = reference.typeHint === ResolutionTypeHint.STRING_LIST;
     output = new CfnOutput(scope, outputId, {
-      value: Token.asString(reference),
+      value: isStringList
+        ? Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(reference))
+        : Token.asString(reference),
     });
   }
 
@@ -532,9 +535,15 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
     }
   }
 
-  return Tokenization.reverseCompleteString(
-    Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn),
-  ) as Intrinsic;
+  const getStackOutputString = Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn);
+
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+    return Tokenization.reverseList(
+      Fn.split(STRING_LIST_REFERENCE_DELIMITER, getStackOutputString),
+    ) as Intrinsic;
+  }
+
+  return Tokenization.reverseCompleteString(getStackOutputString) as Intrinsic;
 }
 
 export function getExportable(stack: Stack, reference: Reference): Intrinsic {

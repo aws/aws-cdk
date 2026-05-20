@@ -1334,6 +1334,75 @@ describe('stack', () => {
     expect(template2.Resources.SomeResource.Properties.Name).not.toHaveProperty('Fn::ImportValue');
   });
 
+  test('same-region weak references with STRING_LIST attribute serialize value with Fn::Join and deserialize with Fn::Split', () => {
+    // Regression test for https://github.com/aws/aws-cdk/issues/37910
+    // PublishOutput path must not emit a raw list as the CFN output value — CloudFormation
+    // requires all Output.Value fields to be strings.
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::VPC::Endpoint',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN - consume a list-type attribute across stacks
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { DnsEntries: exportResource.getAtt('DnsEntries', ResolutionTypeHint.STRING_LIST) },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer output value is a joined string, not a raw list
+    const outputs = Object.values(template1.Outputs ?? {}) as any[];
+    expect(outputs.length).toBeGreaterThan(0);
+    const publishOutput = outputs.find((o: any) => o.Export === undefined);
+    expect(publishOutput).toBeDefined();
+    expect(publishOutput.Value).toHaveProperty('Fn::Join');
+    expect(publishOutput.Value['Fn::Join'][0]).toBe('||');
+
+    // THEN - consumer splits the joined string back into a list
+    const dnsEntries = template2.Resources.SomeResource.Properties.DnsEntries;
+    expect(dnsEntries).toHaveProperty('Fn::Split');
+    expect(dnsEntries['Fn::Split'][0]).toBe('||');
+    expect(dnsEntries['Fn::Split'][1]).toHaveProperty('Fn::GetStackOutput');
+  });
+
+  test('same-region both references with STRING_LIST attribute serialize value with Fn::Join and deserialize with Fn::Split', () => {
+    // Regression test for https://github.com/aws/aws-cdk/issues/37910
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::VPC::Endpoint',
+    });
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN - consume a list-type attribute across stacks
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { DnsEntries: exportResource.getAtt('DnsEntries', ResolutionTypeHint.STRING_LIST) },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - the PublishOutput (no Export) uses Fn::Join, not a raw list
+    const outputs = Object.values(template1.Outputs ?? {}) as any[];
+    const publishOutput = outputs.find((o: any) => o.Export === undefined);
+    expect(publishOutput).toBeDefined();
+    expect(publishOutput.Value).toHaveProperty('Fn::Join');
+    expect(publishOutput.Value['Fn::Join'][0]).toBe('||');
+
+    // THEN - consumer splits the joined string back into a list
+    const dnsEntries = template2.Resources.SomeResource.Properties.DnsEntries;
+    expect(dnsEntries).toHaveProperty('Fn::Split');
+    expect(dnsEntries['Fn::Split'][0]).toBe('||');
+    expect(dnsEntries['Fn::Split'][1]).toHaveProperty('Fn::GetStackOutput');
+  });
+
   test('invalid cross stack reference strength throws', () => {
     // GIVEN
     const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'invalid' } });
