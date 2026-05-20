@@ -845,11 +845,8 @@ new agentcore.Runtime(this, 'test-runtime', {
 
 Every Runtime has a default endpoint whose stdout is written to the AgentCore-managed log group at `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`. The Runtime construct exposes this log group as `applicationLogGroup` so you can attach metric filters, subscription filters, or alarms without hardcoding the path:
 
-```ts
-import * as logs from 'aws-cdk-lib/aws-logs';
-import * as ecr from 'aws-cdk-lib/aws-ecr';
-
-declare const repository: ecr.Repository;
+```typescript fixture=default
+const repository = new ecr.Repository(this, 'TestRepository');
 
 const runtime = new agentcore.Runtime(this, 'Runtime', {
   agentRuntimeArtifact: agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0'),
