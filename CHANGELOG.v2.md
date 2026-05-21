@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.256.1](https://github.com/aws/aws-cdk/compare/v2.256.0...v2.256.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* invalid lock file ([#37943](https://github.com/aws/aws-cdk/issues/37943)) ([73ae91d](https://github.com/aws/aws-cdk/commit/73ae91d5eb074cb975a07de04238cf205111e2fb)), closes [#37726](https://github.com/aws/aws-cdk/issues/37726) [#37929](https://github.com/aws/aws-cdk/issues/37929) [#37870](https://github.com/aws/aws-cdk/issues/37870)
+
+## [2.256.0](https://github.com/aws/aws-cdk/compare/v2.255.0...v2.256.0) (2026-05-19)
+
+
+### Features
+
+* **aws-cdk-lib:** emits performance counters if synthesis is slow  ([#37919](https://github.com/aws/aws-cdk/issues/37919)) ([caa0f4c](https://github.com/aws/aws-cdk/commit/caa0f4c1eea4e9d47843b1fa2aee661ef0c3fa24)), closes [#37843](https://github.com/aws/aws-cdk/issues/37843)
+* **core:** validations report is always written to cloud assembly ([#37867](https://github.com/aws/aws-cdk/issues/37867)) ([dddc6e0](https://github.com/aws/aws-cdk/commit/dddc6e09fd9736126eacf40811450550b1c0695d))
+* **ec2:** replace `any` return types with specific interfaces in `IPeer` methods ([#36637](https://github.com/aws/aws-cdk/issues/36637)) ([626e44d](https://github.com/aws/aws-cdk/commit/626e44dfeff7d65bad094e744aaa0209c67fdbee)), closes [#36636](https://github.com/aws/aws-cdk/issues/36636)
+* **s3:** support `bucketNamePrefix` and `bucketNamespace` properties ([#37386](https://github.com/aws/aws-cdk/issues/37386)) ([997b003](https://github.com/aws/aws-cdk/commit/997b0039662034df9b01228bc45d4cb0ffabb40c)), closes [#37760](https://github.com/aws/aws-cdk/issues/37760)
+
+
+### Bug Fixes
+
+* **core:** handle token-wrapped Boxes in property merge strategies ([#37902](https://github.com/aws/aws-cdk/issues/37902)) ([18435e3](https://github.com/aws/aws-cdk/commit/18435e3c52df17be5a23931e18a1fd8fb7c4c4c3))
+* **core:** prevent stack overflow on large construct trees ([#37901](https://github.com/aws/aws-cdk/issues/37901)) ([10163cb](https://github.com/aws/aws-cdk/commit/10163cb8ca2b650f19a38afa04e78bd5f45d39f5)), closes [#37903](https://github.com/aws/aws-cdk/issues/37903)
+
 ## [2.255.0](https://github.com/aws/aws-cdk/compare/v2.254.0...v2.255.0) (2026-05-18)
 
 
