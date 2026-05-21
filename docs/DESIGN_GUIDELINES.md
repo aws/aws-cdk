@@ -305,6 +305,9 @@ When to use a Facade:
 - The feature should work with both L1 and L2 constructs.
 - The feature is not *about* the target resource's own behavior.
 
+For detailed implementation guidelines, see the
+[Facades and Traits Design Guidelines](./FACADES_AND_TRAITS_DESIGN_GUIDELINES.md).
+
 The [Grants](#grants) section below describes the most common Facade in detail.
 
 ### Traits
@@ -329,6 +332,9 @@ Examples: `IEncryptedResource` (via `IEncryptedResourceFactory`),
 Traits are primarily an implementation detail used by Facades and the grant
 system. They are not typically part of the public-facing API that end users
 interact with directly.
+
+For detailed implementation guidelines for both Facades and Traits, see the
+[Facades and Traits Design Guidelines](./FACADES_AND_TRAITS_DESIGN_GUIDELINES.md).
 
 ### When to use which
 
