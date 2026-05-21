@@ -31,7 +31,6 @@
     "stripDeprecated": true,
     "compressAssembly": true,
     "pre": [
-      "ts-node ./scripts/strip-nested-bundled-deps.ts",
       "ts-node region-info/build-tools/generate-static-data.ts",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzf fixtures.tar.gz)",
@@ -118,10 +117,10 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/cloud-assembly-api": "^2.2.3",
+    "@aws-cdk/cloud-assembly-api": "^2.2.4",
     "@aws-cdk/asset-awscli-v1": "2.2.273",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.1",
-    "@aws-cdk/cloud-assembly-schema": "^53.21.0",
+    "@aws-cdk/cloud-assembly-schema": "^53.25.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
