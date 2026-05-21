@@ -1,0 +1,961 @@
+{
+  "/aws-cdk-bedrock-agentcore-identity-grants-1": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:19:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/ApiKeyProvider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "The secret ARN is an unresolved token. Granting access using a wildcard prefix (bedrock-agentcore-identity!*). To scope the grant to a specific secret, import the credential provider with an explicit secretArn. [ack: @aws-cdk/aws-bedrock-agentcore-alpha:wildcardSecretArnGrant]",
+      "trace": [
+        "Annotations.addMessage (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:200:29)",
+        "Annotations.addWarningV2 (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
+        "grantCredentialSecret (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/grant-helpers.js:113:45)",
+        "WrappedClass.grantAdmin (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:82:66)",
+        "Object.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:229:16)",
+        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
+        "Object..js (node:internal/modules/cjs/loader:1839:10)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Function._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/OAuthProvider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "The secret ARN is an unresolved token. Granting access using a wildcard prefix (bedrock-agentcore-identity!*). To scope the grant to a specific secret, import the credential provider with an explicit secretArn. [ack: @aws-cdk/aws-bedrock-agentcore-alpha:wildcardSecretArnGrant]",
+      "trace": [
+        "Annotations.addMessage (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:200:29)",
+        "Annotations.addWarningV2 (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
+        "grantCredentialSecret (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/grant-helpers.js:113:45)",
+        "WrappedClass.grantAdmin (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:183:66)",
+        "Object.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:230:15)",
+        "Module._compile (node:internal/modules/cjs/loader:1706:14)",
+        "Object..js (node:internal/modules/cjs/loader:1839:10)",
+        "Module.load (node:internal/modules/cjs/loader:1441:32)",
+        "Function._load (node:internal/modules/cjs/loader:1263:12)",
+        "TracingChannel.traceSync (node:diagnostics_channel:322:14)",
+        "wrapModuleLoad (node:internal/modules/cjs/loader:237:24)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:171:5)",
+        "node:internal/main/run_main_module:36:49"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/WorkloadIdentity": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "environment": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/ApiKeyProvider/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiKeyProvider7AFC53BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ApiKeyCredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:220:31)",
+        "new ApiKeyCredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:21:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/OAuthProvider/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OAuthProvider867E90F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:828:31)",
+        "new OAuth2CredentialProvider (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "OAuth2CredentialProvider.usingGithub (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.js:312:20)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:26:58)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/WorkloadIdentity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WorkloadIdentityC18104DE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WorkloadIdentity (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/workload-identity.js:202:30)",
+        "new WorkloadIdentity (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:32:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantReadFnE0C69452"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:680:29)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:194:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantAdminFn61A4D6B3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:680:29)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:214:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantFullAccessFn15A36E8E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:680:29)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:234:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/Exports/Output{\"Ref\":\"GrantReadFnE0C69452\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefGrantReadFnE0C69452F3C669D5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:34)",
+        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
+        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/Exports/Output{\"Ref\":\"GrantAdminFn61A4D6B3\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefGrantAdminFn61A4D6B3748122D7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:34)",
+        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
+        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/Exports/Output{\"Ref\":\"GrantFullAccessFn15A36E8E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefGrantFullAccessFn15A36E8E4FA10F3E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:186:33)",
+        "resolveValue (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:120:12)",
+        "resolveReferences (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:37:30)",
+        "prepareApp (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:32:34)",
+        "synthesize (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:34)",
+        "App.synth (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:92)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:289:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantReadFnServiceRole2BDB7895"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:437:34)",
+        "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:595:39)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:194:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantReadFnLogGroupCA43EA14"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:524:29)",
+        "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:764:34)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:194:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantAdminFnServiceRoleC7CF110A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:437:34)",
+        "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:595:39)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:214:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantAdminFnLogGroup6CF7EC6F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:524:29)",
+        "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:764:34)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:214:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantFullAccessFnServiceRole8147BD37"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:437:34)",
+        "new Role (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:595:39)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:234:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantFullAccessFnLogGroup6B6F1B5A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:524:29)",
+        "new LogGroup (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:764:34)",
+        "new Function (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:234:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantReadFn/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantReadFnServiceRoleDefaultPolicy2D760BAD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:143:30)",
+        "new Policy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:498:42)",
+        "WrappedClass.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "grantReadWithList (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/grant-helpers.js:87:22)",
+        "WrappedClass.grantRead (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:75:54)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:209:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantAdminFn/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantAdminFnServiceRoleDefaultPolicy930D9FD6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:143:30)",
+        "new Policy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:498:42)",
+        "WrappedClass.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "WrappedClass.grant (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:64:26)",
+        "WrappedClass.grantAdmin (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:81:30)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:229:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-identity-grants-1/GrantFullAccessFn/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GrantFullAccessFnServiceRoleDefaultPolicy8EEDD57B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:143:30)",
+        "new Policy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:498:42)",
+        "WrappedClass.<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/Users/alkrok/Projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "WrappedClass.grantFullAccess (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/api-key-credential-provider.js:102:35)",
+        "<anonymous> (/Users/alkrok/Projects/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/identity/integ.identity-grants.js:249:16)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

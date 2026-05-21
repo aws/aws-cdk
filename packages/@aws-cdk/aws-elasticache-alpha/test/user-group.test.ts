@@ -176,6 +176,19 @@ describe('UserGroup', () => {
       });
     });
 
+    test('creates Redis user group with empty UserIds array when the input users property is empty', () => {
+      new UserGroup(stack, 'TestUserGroup', {
+        users: [],
+      });
+
+      const template = Template.fromStack(stack);
+      template.hasResourceProperties('AWS::ElastiCache::UserGroup', {
+        Engine: 'valkey',
+        UserGroupId: 'testusergroup',
+        UserIds: [],
+      });
+    });
+
     test('creates Redis user group with minimal required properties', () => {
       const user = new NoPasswordUser(stack, 'TestUser', {
         userId: 'default',

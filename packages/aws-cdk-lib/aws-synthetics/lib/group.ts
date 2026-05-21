@@ -3,9 +3,12 @@ import type { ICanary } from './canary';
 import type { GroupReference, IGroupRef } from './synthetics.generated';
 import { CfnGroup } from './synthetics.generated';
 import * as cdk from '../../core';
+import { Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
-import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import type { ISetBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
+import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -64,6 +67,7 @@ export interface GroupProps {
  * view aggregated run results and statistics for all canaries in a group.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Group extends cdk.Resource implements IGroup {
   /**
    * Uniquely identifies this class.
@@ -134,7 +138,7 @@ export class Group extends cdk.Resource implements IGroup {
   }
 
   private readonly _resource: CfnGroup;
-  private readonly _canaries: Set<ICanary> = new Set();
+  private readonly _canaries: ISetBox<ICanary> = Box.fromSet();
 
   constructor(scope: Construct, id: string, props: GroupProps = {}) {
     super(scope, id, {
@@ -163,9 +167,9 @@ export class Group extends cdk.Resource implements IGroup {
 
     this._resource = new CfnGroup(this, 'Resource', {
       name: this.physicalName,
-      resourceArns: cdk.Lazy.list({
-        produce: () => Array.from(this._canaries).map(canary => canary.canaryArn),
-      }, { omitEmpty: true }),
+      resourceArns: Token.asList(this._canaries.derive(canaries =>
+        canaries.size > 0 ? Array.from(canaries).map(canary => canary.canaryArn) : undefined,
+      )),
     });
 
     this.groupId = this._resource.attrId;
@@ -182,6 +186,7 @@ export class Group extends cdk.Resource implements IGroup {
    *
    * @param canary The canary to add to the group [disable-awslint:prefer-ref-interface]
    */
+  @MethodMetadata()
   public addCanary(canary: ICanary): void {
     if (this._canaries.size >= 10) {
       throw new ValidationError(lit`TooManyCanaries`, 'A group can contain at most 10 canaries', this);
