@@ -16,11 +16,6 @@ All notable changes to this project will be documented in this file. See [standa
 * update L1 CloudFormation resource definitions ([#37955](https://github.com/aws/aws-cdk/issues/37955)) ([211b06c](https://github.com/aws/aws-cdk/commit/211b06c28f20dbd2ff7c3fe37efa12636aee46c0))
 * **core:** failSynthOnValidationErrors context key to suppress console output and exit code ([#37909](https://github.com/aws/aws-cdk/issues/37909)) ([deb968f](https://github.com/aws/aws-cdk/commit/deb968fe326a850cdbcf434881839ae9a8b231e7)), closes [aws/aws-cdk-cli#1515](https://github.com/aws/aws-cdk-cli/issues/1515)
 
-
-### Bug Fixes
-
-* invalid lock file ([#37943](https://github.com/aws/aws-cdk/issues/37943)) ([95284c5](https://github.com/aws/aws-cdk/commit/95284c58ea31499aec8c4a28bdd3604fd48abcb1)), closes [#37726](https://github.com/aws/aws-cdk/issues/37726) [#37929](https://github.com/aws/aws-cdk/issues/37929) [#37870](https://github.com/aws/aws-cdk/issues/37870)
-
 ## [2.256.1](https://github.com/aws/aws-cdk/compare/v2.256.0...v2.256.1) (2026-05-20)
 
 
