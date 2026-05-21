@@ -263,7 +263,12 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": "ssm:*",
+       "Action": [
+        "ssm:DescribeParameters",
+        "ssm:GetParameter",
+        "ssm:GetParameters",
+        "ssm:GetParametersByPath"
+       ],
        "Effect": "Allow",
        "Resource": "*"
       }
