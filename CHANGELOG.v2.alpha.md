@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.256.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.256.0-alpha.0...v2.256.1-alpha.0) (2026-05-20)
+
+## [2.256.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.255.0-alpha.0...v2.256.0-alpha.0) (2026-05-19)
+
+## [2.255.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.254.0-alpha.0...v2.255.0-alpha.0) (2026-05-18)
+
+### Features
+
+* **bedrock-agentcore-alpha:** Graduation of the library to stable. The **Policy** submodule is the only submodule that remains in alpha. All other constructs have graduated to stable in `aws-cdk-lib/aws-bedrockagentcore` and we recommend migrating to the stable versions  ([#37876](https://github.com/aws/aws-cdk/issues/37876)) ([00cf601](https://github.com/aws/aws-cdk/commit/00cf6015f30755653de7a541f79c944d4a68f423))
+
+
 ## [2.254.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.1-alpha.0...v2.254.0-alpha.0) (2026-05-13)
 
 
