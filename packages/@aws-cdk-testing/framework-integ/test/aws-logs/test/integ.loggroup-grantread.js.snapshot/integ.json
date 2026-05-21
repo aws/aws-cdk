@@ -1,5 +1,5 @@
 {
-  "version": "22.0.0",
+  "version": "53.0.0",
   "testCases": {
     "loggroup-grantreads/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "loggroup-grantreads/DefaultTest/DeployAssert",
       "assertionStackName": "loggroupgrantreadsDefaultTestDeployAssert7C1C7FAA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

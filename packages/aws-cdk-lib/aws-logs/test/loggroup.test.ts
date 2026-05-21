@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { Bucket } from '../../aws-s3';
@@ -471,9 +471,9 @@ describe('log group', () => {
     });
   });
 
-  test('when added to log groups, IAM users are converted into account IDs in the resource policy', () => {
+  test('when added to log groups, IAM users are converted into root ARNs in the resource policy to avoid CloudFormation drift', () => {
     // GIVEN
-    const stack = new Stack();
+    const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
     const lg = new LogGroup(stack, 'LogGroup');
 
     // WHEN
@@ -483,9 +483,10 @@ describe('log group', () => {
       principals: [new iam.ArnPrincipal('arn:aws:iam::123456789012:user/user-name')],
     }));
 
-    // THEN
+    // THEN - emits the root ARN form that CloudFormation normalizes to on the deployed
+    // resource, preventing permanent false-positive drift detection results.
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
-      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"123456789012"},"Resource":"*"}],"Version":"2012-10-17"}',
+      PolicyDocument: '{"Statement":[{"Action":"logs:PutLogEvents","Effect":"Allow","Principal":{"AWS":"arn:aws:iam::123456789012:root"},"Resource":"*"}],"Version":"2012-10-17"}',
       PolicyName: 'LogGroupPolicy643B329C',
     });
   });
@@ -516,7 +517,7 @@ describe('log group', () => {
     });
   });
 
-  test('imported values are treated as if they are ARNs and converted to account IDs via CFN pseudo parameters', () => {
+  test('imported values are treated as if they are ARNs and converted to root ARNs via CFN pseudo parameters', () => {
     // GIVEN
     const stack = new Stack();
     const lg = new LogGroup(stack, 'LogGroup');
@@ -528,23 +529,44 @@ describe('log group', () => {
       principals: [iam.Role.fromRoleArn(stack, 'Role', Fn.importValue('SomeRole'))],
     }));
 
-    // THEN
+    // THEN - emits the canonical root ARN so drift detection is a no-op.
+    // The account is extracted from the imported ARN token via Fn::Select, then
+    // reassembled into the root ARN form CloudFormation stores on the resource.
     Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
       PolicyDocument: {
         'Fn::Join': [
           '',
           [
-            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"',
+            '{\"Statement\":[{\"Action\":\"logs:PutLogEvents\",\"Effect\":\"Allow\",\"Principal\":{\"AWS\":\"arn:',
+            { Ref: 'AWS::Partition' },
+            ':iam::',
             {
               'Fn::Select': [
                 4,
                 { 'Fn::Split': [':', { 'Fn::ImportValue': 'SomeRole' }] },
               ],
             },
-            '\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
+            ':root\"},\"Resource\":\"*\"}],\"Version\":\"2012-10-17\"}',
           ],
         ],
       },
+    });
+  });
+
+  test('grantRead with cross-account role emits root ARN to prevent CloudFormation drift', () => {
+    // Regression test for https://github.com/aws/aws-cdk/issues/37797
+    // CloudFormation normalizes "211125612616" → "arn:aws:iam::211125612616:root" on
+    // the deployed resource. Emitting the bare account ID causes permanent false-positive
+    // drift on every evaluation cycle.
+    const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-1' } });
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    // WHEN
+    lg.grantRead(new iam.ArnPrincipal('arn:aws:iam::211125612616:role/Reader'));
+
+    // THEN - principal is the root ARN, not the bare account ID
+    Template.fromStack(stack).hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: Match.stringLikeRegexp('"AWS":"arn:aws:iam::211125612616:root"'),
     });
   });
 
