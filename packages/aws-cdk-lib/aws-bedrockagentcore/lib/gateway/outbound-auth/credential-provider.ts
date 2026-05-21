@@ -1,5 +1,6 @@
 import type { ApiKeyCredentialLocation, ApiKeyCredentialProviderOptions } from './api-key';
 import { ApiKeyCredentialProviderConfiguration } from './api-key';
+import type { GatewayIamRoleCredentialProviderProps } from './iam-role';
 import { GatewayIamRoleCredentialProviderConfig } from './iam-role';
 import type { OAuthConfiguration } from './oauth';
 import { OAuthCredentialProviderConfiguration } from './oauth';
@@ -148,10 +149,15 @@ export abstract class GatewayCredentialProvider {
   }
 
   /**
-   * Create an IAM role credential provider
-   * @returns IIamRoleCredentialProvider configured for IAM role authentication
+   * Create an IAM role credential provider.
+   *
+   * The gateway authenticates outbound requests using its own execution role (SigV4).
+   * Provide `service` and optionally `region` to explicitly choose the SigV4 signing
+   * service / region instead of relying on the gateway's inference from the target
+   * endpoint. Useful for cross-region calls and for targets where the service can't be
+   * inferred from the URL.
    */
-  public static fromIamRole(): ICredentialProviderConfig {
-    return new GatewayIamRoleCredentialProviderConfig();
+  public static fromIamRole(props?: GatewayIamRoleCredentialProviderProps): ICredentialProviderConfig {
+    return new GatewayIamRoleCredentialProviderConfig(props);
   }
 }
