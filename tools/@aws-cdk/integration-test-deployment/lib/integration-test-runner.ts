@@ -1,6 +1,6 @@
 
 import { spawn } from 'child_process';
-import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
+import { STSClient, AssumeRoleCommand, GetCallerIdentityCommand } from '@aws-sdk/client-sts';
 import { AtmosphereAllocation } from './atmosphere';
 import { getChangedSnapshots } from './utils';
 
@@ -47,7 +47,8 @@ export const deployIntegTests = async (props: {
       };
 
       await bootstrap(env);
-      await deployIntegrationTest(env, batch);
+      const roleArn = await getCfnExecutionRoleArn(env);
+      await deployIntegrationTest(env, batch, roleArn);
       outcome = 'success';
     } catch (e) {
       console.error(e);
@@ -88,6 +89,24 @@ export const assumeAtmosphereRole = async (roleArn: string) => {
   return response.Credentials;
 };
 
+export const getCfnExecutionRoleArn = async (env: NodeJS.ProcessEnv): Promise<string> => {
+  const sts = new STSClient({
+    credentials: {
+      accessKeyId: env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: env.AWS_SECRET_ACCESS_KEY!,
+      sessionToken: env.AWS_SESSION_TOKEN,
+    },
+    region: env.AWS_REGION,
+  });
+  const identity = await sts.send(new GetCallerIdentityCommand({}));
+  // Arn is in the format arn:aws:sts::{account}:assumed-role/{role-name}/{session}
+  // Convert to arn:aws:iam::{account}:role/{role-name}
+  const account = identity.Account!;
+  const arnParts = identity.Arn!.split('/');
+  const roleName = arnParts[1];
+  return `arn:aws:iam::${account}:role/${roleName}`;
+};
+
 export const bootstrap = async (env: NodeJS.ProcessEnv) => {
   console.log('Bootstrapping AWS account.');
   const spawnProcess = spawn('npx', ['cdk', 'bootstrap', ...['us-east-1', 'us-east-2', 'us-west-2'].map((region) => `aws://${env.AWS_ACCOUNT_ID}/${region}`)], {
@@ -101,10 +120,12 @@ export const bootstrap = async (env: NodeJS.ProcessEnv) => {
   }));
 };
 
-export const deployIntegrationTest = async (env: NodeJS.ProcessEnv, snapshotPaths: string[]) => {
+export const deployIntegrationTest = async (env: NodeJS.ProcessEnv, snapshotPaths: string[], roleArn: string) => {
   console.log(`Deploying snapshots:\n${snapshotPaths.join('\n')}`);
 
-  const spawnProcess = spawn('yarn', ['integ-runner', '--disable-update-workflow', '--strict', '--directory', 'packages', '--force', ...snapshotPaths], {
+  const args = ['integ-runner', '--disable-update-workflow', '--strict', '--directory', 'packages', '--force', '--role-arn', roleArn, ...snapshotPaths];
+
+  const spawnProcess = spawn('yarn', args, {
     stdio: ['ignore', 'inherit', 'inherit'],
     env,
   });

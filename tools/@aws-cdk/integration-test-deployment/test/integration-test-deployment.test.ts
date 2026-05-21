@@ -51,6 +51,7 @@ describe('Run Integration Tests with Atmosphere', () => {
     expect(deployIntegrationTestCalls.length).toEqual(numberOfCommands);
     const snapshotCalls = deployIntegrationTestCalls.map((call) => {
       expect(call[0]).toEqual(expect.objectContaining(env));
+      expect(call[2]).toEqual('arn:aws:iam::123456789:role/TestRole');
       return call[1];
     }).flat() as string[];
     expect(new Set(snapshotCalls).size).toEqual(snapshotCalls.length); // All snapshots are tested only once.
@@ -70,6 +71,7 @@ describe('Run Integration Tests with Atmosphere', () => {
     jest.spyOn(mockAtmosphereAllocation, 'release');
     jest.spyOn(integRunner, 'deployIntegrationTest').mockImplementation(async () => {});
     jest.spyOn(integRunner, 'bootstrap').mockImplementation(async () => {});
+    jest.spyOn(integRunner, 'getCfnExecutionRoleArn').mockImplementation(async () => 'arn:aws:iam::123456789:role/TestRole');
     jest.spyOn(integRunner, 'assumeAtmosphereRole').mockImplementation(async (_roleArn: string) => ({
       AccessKeyId: env.AWS_ACCESS_KEY_ID,
       SecretAccessKey: env.AWS_SECRET_ACCESS_KEY,
