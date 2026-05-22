@@ -6,7 +6,6 @@ import { lit } from './private/literal-string';
 import { Reference } from './reference';
 import type { IResolvable, IResolveContext } from './resolvable';
 import { Stack } from './stack';
-import { captureStackTrace } from './stack-trace';
 import { Token } from './token';
 
 /**
@@ -213,6 +212,22 @@ export class Fn {
    */
   public static importValue(sharedValueToImport: string): string {
     return new FnImportValue(sharedValueToImport).toString();
+  }
+
+  /**
+   * The intrinsic function `Fn::GetStackOutput` returns the value of an output
+   * from another stack. This is similar to `Fn::ImportValue`, but it can reference
+   * a normal output, without the need to export anything. As with `Fn::ImportValue`,
+   * you typically use this function to create cross-stack references.
+   * @param stackName The name of the producer stack.
+   * @param outputName The name of the output to get the value from.
+   * @param region The region where the producer stack is deployed. If not provided,
+   * it will default to the same region as the consumer stack.
+   * @param roleArn The role to be used when describing the producer stack. If not
+   * provided, it will default to the role used to create the producer stack.
+   */
+  public static getStackOutput(stackName: string, outputName: string, region?: string, roleArn?: string): string {
+    return new FnGetStackOutput(stackName, outputName, region, roleArn).toString();
   }
 
   /**
@@ -590,6 +605,23 @@ class FnImportValue extends FnBase {
 }
 
 /**
+ * The intrinsic function `Fn::GetStackOutput` returns the value of an output
+ * from another stack. This is similar to `Fn::ImportValue`, but it can reference
+ * a normal output, without the need to export anything. As with `Fn::ImportValue`,
+ * you typically use this function to create cross-stack references.
+ */
+class FnGetStackOutput extends FnBase {
+  constructor(stackName: string, outputName: string, region?: string, roleArn?: string) {
+    super('Fn::GetStackOutput', {
+      StackName: stackName,
+      Region: region,
+      RoleArn: roleArn,
+      OutputName: outputName,
+    });
+  }
+}
+
+/**
  * The intrinsic function ``Fn::Select`` returns a single object from a list of objects by index.
  */
 class FnSelect extends FnBase {
@@ -847,7 +879,7 @@ class FnValueOfAll extends FnBase {
  * with no delimiter.
  */
 class FnJoin implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly delimiter: string;
   private readonly listOfValues: any[];
@@ -865,7 +897,6 @@ class FnJoin implements IResolvable {
 
     this.delimiter = delimiter;
     this.listOfValues = listOfValues;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -898,19 +929,20 @@ class FnJoin implements IResolvable {
     return minimalCloudFormationJoin(this.delimiter, resolvedValues);
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnJoin.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The `Fn::ToJsonString` intrinsic function converts an object or array to its
  * corresponding JSON string.
  */
 class FnToJsonString implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly object: any;
 
   constructor(object: any) {
     this.object = object;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -926,19 +958,20 @@ class FnToJsonString implements IResolvable {
     return '<Fn::ToJsonString>';
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnToJsonString.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 /**
  * The intrinsic function `Fn::Length` returns the number of elements within an array
  * or an intrinsic function that returns an array.
  */
 class FnLength implements IResolvable {
-  public readonly creationStack: string[];
+  public readonly creationStack!: string[];
 
   private readonly array: any;
 
   constructor(array: any) {
     this.array = array;
-    this.creationStack = captureStackTrace();
   }
 
   public resolve(context: IResolveContext): any {
@@ -954,6 +987,8 @@ class FnLength implements IResolvable {
     return '<Fn::Length>';
   }
 }
+// Setting singleton value on prototype to save memory and allocations
+(FnLength.prototype as any).creationStack = ['Token stack traces are no longer captured'];
 
 function _inGroupsOf<T>(array: T[], maxGroup: number): T[][] {
   const result = new Array<T[]>();

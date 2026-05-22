@@ -12,9 +12,12 @@ import type { ListenerTransform } from './transforms';
 import * as ec2 from '../../../aws-ec2';
 import * as cxschema from '../../../cloud-assembly-schema';
 import type { Duration } from '../../../core';
-import { Annotations, FeatureFlags, Lazy, Resource, Token } from '../../../core';
+import { Annotations, FeatureFlags, Resource, Token } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import * as cxapi from '../../../cx-api';
@@ -211,6 +214,7 @@ export interface ApplicationListenerLookupOptions extends BaseListenerLookupOpti
  * @resource AWS::ElasticLoadBalancingV2::Listener
  */
 @propertyInjectable
+@noBoxStackTraces
 export class ApplicationListener extends BaseListener implements IApplicationListener {
   /**
    * Uniquely identifies this class.
@@ -268,7 +272,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   /**
    * ARNs of certificates added to this listener
    */
-  private readonly certificateArns: string[];
+  private readonly _certificateArns: IArrayBox<string>;
 
   /**
    * Listener protocol for this listener.
@@ -295,9 +299,13 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
       sslPolicy = SslPolicy.TLS13_12_PQ;
     }
 
+    const certificateArns: IArrayBox<string> = Box.fromArray();
+
     super(scope, id, {
       loadBalancerArn: props.loadBalancer.loadBalancerArn,
-      certificates: Lazy.any({ produce: () => this.certificateArns.map(certificateArn => ({ certificateArn })) }, { omitEmptyArray: true }),
+      certificates: certificateArns.derive(arns =>
+        arns.length === 0 ? undefined : arns.map(certificateArn => ({ certificateArn })),
+      ),
       protocol,
       port,
       sslPolicy,
@@ -318,7 +326,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
     this.loadBalancer = props.loadBalancer;
     this.protocol = protocol;
     this.port = port;
-    this.certificateArns = [];
+    this._certificateArns = certificateArns;
 
     // Attach certificates
     if (props.certificateArns && props.certificateArns.length > 0) {
@@ -382,9 +390,9 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
   public addCertificates(id: string, certificates: IListenerCertificate[]): void {
     const additionalCerts = [...certificates];
 
-    if (this.certificateArns.length === 0 && additionalCerts.length > 0) {
+    if (this._certificateArns.length === 0 && additionalCerts.length > 0) {
       const first = additionalCerts.splice(0, 1)[0];
-      this.certificateArns.push(first.certificateArn);
+      this._certificateArns.push(first.certificateArn);
     }
 
     // Only one certificate can be specified per resource, even though
@@ -596,7 +604,7 @@ export class ApplicationListener extends BaseListener implements IApplicationLis
    */
   protected validateListener(): string[] {
     const errors = super.validateListener();
-    if (this.protocol === ApplicationProtocol.HTTPS && this.certificateArns.length === 0) {
+    if (this.protocol === ApplicationProtocol.HTTPS && this._certificateArns.length === 0) {
       errors.push('HTTPS Listener needs at least one certificate (call addCertificates)');
     }
     return errors;

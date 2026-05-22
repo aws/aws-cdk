@@ -100,7 +100,7 @@ const definition = new sfn.Pass(stack, 'Start', {
 );
 
 const sm = new sfn.StateMachine(stack, 'StateMachine', {
-  definition,
+  definitionBody: sfn.DefinitionBody.fromChainable(definition),
 });
 
 const integ = new IntegTest(app, 'SfnTasksEcsFargateRunTaskCapacityProviderTest', {

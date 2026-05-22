@@ -7,6 +7,9 @@ import type { ListenerTransform } from './transforms';
 import { TransformType } from './transforms';
 import * as cdk from '../../../core';
 import { UnscopedValidationError, ValidationError } from '../../../core/lib/errors';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import { CfnListenerRule } from '../elasticloadbalancingv2.generated';
 import type { IListenerAction } from '../shared/listener-action';
@@ -211,23 +214,24 @@ export interface RedirectResponse {
 /**
  * Define a new listener rule
  */
+@noBoxStackTraces
 export class ApplicationListenerRule extends Construct {
   /**
    * The ARN of this rule
    */
   public readonly listenerRuleArn: string;
 
-  private readonly conditions: ListenerCondition[];
+  private readonly conditions: IArrayBox<ListenerCondition>;
   private readonly legacyConditions: {[key: string]: string[]} = {};
   private readonly transforms: ListenerTransform[];
 
   private readonly listener: IApplicationListener;
-  private action?: IListenerAction;
+  private readonly _action: IBox<IListenerAction | undefined>;
 
   constructor(scope: Construct, id: string, props: ApplicationListenerRuleProps) {
     super(scope, id);
 
-    this.conditions = props.conditions || [];
+    this.conditions = Box.fromArray(props.conditions ?? [], { omitEmpty: false });
     this.transforms = props.transforms || [];
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
@@ -245,13 +249,14 @@ export class ApplicationListenerRule extends Construct {
       throw new ValidationError(lit`PriorityValueGreaterEqual`, 'Priority must have value greater than or equal to 1', this);
     }
 
+    this._action = Box.fromValue<IListenerAction | undefined>(undefined);
     this.listener = props.listener;
 
     const resource = new CfnListenerRule(this, 'Resource', {
       listenerArn: props.listener.listenerArn,
       priority: props.priority,
-      conditions: cdk.Lazy.any({ produce: () => this.renderConditions() }),
-      actions: cdk.Lazy.any({ produce: () => this.action ? this.action.renderRuleActions() : [] }),
+      conditions: this.conditions.derive(_ => this.renderConditions()),
+      actions: this._action.derive(a => a ? a.renderRuleActions() : []),
       transforms: cdk.Lazy.any({ produce: () => this.renderTransforms() }),
     });
 
@@ -329,12 +334,12 @@ export class ApplicationListenerRule extends Construct {
     //
     // Instead, signal this through a warning.
     // @deprecate: upon the next major version bump, replace this with a `throw`
-    if (this.action) {
+    if (this._action.get()) {
       cdk.Annotations.of(this).addWarningV2('@aws-cdk/aws-elbv2:albListnerRuleDefaultActionReplaced', 'An Action already existed on this ListenerRule and was replaced. Configure exactly one default Action.');
     }
 
     action.bind(this, this.listener, this);
-    this.action = action;
+    this._action.set(action);
   }
 
   /**
@@ -382,7 +387,7 @@ export class ApplicationListenerRule extends Construct {
    * Validate the rule
    */
   private validateListenerRule() {
-    if (this.action === undefined) {
+    if (this._action.get() === undefined) {
       return ['Listener rule needs at least one action'];
     }
 
@@ -401,7 +406,7 @@ export class ApplicationListenerRule extends Construct {
     const legacyConditions = Object.entries(this.legacyConditions).map(([field, values]) => {
       return { field, values };
     });
-    const conditions = this.conditions.map(condition => condition.renderRawCondition());
+    const conditions = Array.from(this.conditions).map(condition => condition.renderRawCondition());
 
     return [
       ...legacyConditions,

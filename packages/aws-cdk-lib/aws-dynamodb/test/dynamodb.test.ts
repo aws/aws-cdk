@@ -121,6 +121,15 @@ describe('default properties', () => {
     Template.fromStack(stack).hasResource('AWS::DynamoDB::Table', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
   });
 
+  test('table without indexes omits GSI and LSI properties', () => {
+    new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY });
+
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::Table', {
+      GlobalSecondaryIndexes: Match.absent(),
+      LocalSecondaryIndexes: Match.absent(),
+    });
+  });
+
   test('removalPolicy is DESTROY', () => {
     new Table(stack, CONSTRUCT_NAME, { partitionKey: TABLE_PARTITION_KEY, removalPolicy: RemovalPolicy.DESTROY });
 

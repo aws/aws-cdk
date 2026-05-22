@@ -17,7 +17,7 @@
      }
     ],
     "Name": "QueryDefinition",
-    "QueryString": "fields @timestamp, @message\n| parse @message \"[*] *\" as loggingType, loggingMessage\n| filter loggingType = \"ERROR\"\n| stats count(loggingMessage) as loggingErrors\n| sort @timestamp desc\n| limit 20\n| display loggingMessage"
+    "QueryString": "fields @timestamp, @message\n| parse @message \"[*] *\" as loggingType, loggingMessage\n| stats count(loggingMessage) as loggingErrors\n| sort @timestamp desc\n| limit 20\n| display loggingMessage"
    }
   },
   "QueryDefinitionWithMultipleStatements58A3EF74": {
