@@ -206,6 +206,13 @@
       }
     ]
   },
+  "aws-awsexternalanthropic": {
+    "scopes": [
+      {
+        "namespace": "AWS::AWSExternalAnthropic"
+      }
+    ]
+  },
   "aws-b2bi": {
     "scopes": [
       {
@@ -329,6 +336,13 @@
     "scopes": [
       {
         "namespace": "AWS::Chatbot"
+      }
+    ]
+  },
+  "aws-chime": {
+    "scopes": [
+      {
+        "namespace": "AWS::Chime"
       }
     ]
   },

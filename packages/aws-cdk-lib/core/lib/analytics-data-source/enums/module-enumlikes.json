@@ -62,6 +62,60 @@
       "NODEJS_22"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/evaluation/types.ts": {
+    "BuiltinEvaluator": [
+      "CORRECTNESS",
+      "FAITHFULNESS",
+      "HELPFULNESS",
+      "RESPONSE_RELEVANCE",
+      "CONCISENESS",
+      "COHERENCE",
+      "INSTRUCTION_FOLLOWING",
+      "REFUSAL",
+      "GOAL_SUCCESS_RATE",
+      "TOOL_SELECTION_ACCURACY",
+      "TOOL_PARAMETER_ACCURACY",
+      "HARMFULNESS",
+      "STEREOTYPING"
+    ],
+    "ExecutionStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "FilterOperator": [
+      "EQUAL",
+      "NOT_EQUAL",
+      "GREATER_THAN",
+      "LESS_THAN",
+      "GREATER_THAN_OR_EQUAL",
+      "LESS_THAN_OR_EQUAL",
+      "CONTAINS",
+      "NOT_CONTAINS"
+    ],
+    "EvaluationLevel": [
+      "TOOL_CALL",
+      "TRACE",
+      "SESSION"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.ts": {
+    "PolicyEngineMode": [
+      "LOG_ONLY",
+      "ENFORCE"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-types.ts": {
+    "PolicyValidationMode": [
+      "FAIL_ON_ANY_FINDINGS",
+      "IGNORE_ALL_FINDINGS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/observability.ts": {
+    "LogType": [
+      "APPLICATION_LOGS",
+      "USAGE_LOGS"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-alpha/bedrock/agents/action-group.ts": {
     "ParentActionGroupSignature": [
       "USER_INPUT",
@@ -154,6 +208,7 @@
       "ANTHROPIC_CLAUDE_HAIKU_4_5_V1_0",
       "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_OPUS_4_7",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_OPUS_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
@@ -762,6 +817,7 @@
       "ANTHROPIC_CLAUDE_OPUS_4_1_20250805_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
+      "ANTHROPIC_CLAUDE_OPUS_4_7",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
@@ -835,6 +891,130 @@
       "ZAI_GLM_4_7",
       "ZAI_GLM_4_7_FLASH",
       "ZAI_GLM_5"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/evaluation/types.ts": {
+    "BuiltinEvaluator": [
+      "CORRECTNESS",
+      "FAITHFULNESS",
+      "HELPFULNESS",
+      "RESPONSE_RELEVANCE",
+      "CONCISENESS",
+      "COHERENCE",
+      "INSTRUCTION_FOLLOWING",
+      "REFUSAL",
+      "GOAL_SUCCESS_RATE",
+      "TOOL_SELECTION_ACCURACY",
+      "TOOL_PARAMETER_ACCURACY",
+      "HARMFULNESS",
+      "STEREOTYPING"
+    ],
+    "ExecutionStatus": [
+      "ENABLED",
+      "DISABLED"
+    ],
+    "FilterOperator": [
+      "EQUAL",
+      "NOT_EQUAL",
+      "GREATER_THAN",
+      "LESS_THAN",
+      "GREATER_THAN_OR_EQUAL",
+      "LESS_THAN_OR_EQUAL",
+      "CONTAINS",
+      "NOT_CONTAINS"
+    ],
+    "EvaluationLevel": [
+      "TOOL_CALL",
+      "TRACE",
+      "SESSION"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/gateway-base.ts": {
+    "GatewayExceptionLevel": [
+      "DEBUG"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/protocol.ts": {
+    "MCPProtocolVersion": [
+      "MCP_2025_06_18",
+      "MCP_2025_03_26"
+    ],
+    "McpGatewaySearchType": [
+      "SEMANTIC"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/targets/schema/tool-schema.ts": {
+    "SchemaDefinitionType": [
+      "STRING",
+      "NUMBER",
+      "OBJECT",
+      "ARRAY",
+      "BOOLEAN",
+      "INTEGER"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/targets/target-configuration.ts": {
+    "ApiGatewayHttpMethod": [
+      "GET",
+      "POST",
+      "PUT",
+      "DELETE",
+      "PATCH",
+      "HEAD",
+      "OPTIONS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/identity/oauth2-credential-provider.ts": {
+    "OAuth2CredentialProviderVendor": [
+      "GOOGLE",
+      "GITHUB",
+      "SLACK",
+      "SALESFORCE",
+      "MICROSOFT",
+      "CUSTOM",
+      "ATLASSIAN",
+      "LINKEDIN",
+      "X",
+      "OKTA",
+      "ONE_LOGIN",
+      "PING_ONE",
+      "FACEBOOK",
+      "YANDEX",
+      "REDDIT",
+      "ZOOM",
+      "TWITCH",
+      "SPOTIFY",
+      "DROPBOX",
+      "NOTION",
+      "HUBSPOT",
+      "CYBER_ARK",
+      "FUSION_AUTH",
+      "AUTH0",
+      "COGNITO"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/observability.ts": {
+    "LogType": [
+      "APPLICATION_LOGS",
+      "USAGE_LOGS"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime-artifact.ts": {
+    "AgentCoreRuntime": [
+      "PYTHON_3_10",
+      "PYTHON_3_11",
+      "PYTHON_3_12",
+      "PYTHON_3_13",
+      "PYTHON_3_14",
+      "NODE_22"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/types.ts": {
+    "ProtocolType": [
+      "MCP",
+      "HTTP",
+      "A2A",
+      "AGUI"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -2432,6 +2612,7 @@
       "RUBY_3_2",
       "RUBY_3_3",
       "RUBY_3_4",
+      "RUBY_4_0",
       "PROVIDED",
       "PROVIDED_AL2",
       "PROVIDED_AL2023",
@@ -2606,7 +2787,8 @@
       "OPENSEARCH_2_17",
       "OPENSEARCH_2_19",
       "OPENSEARCH_3_1",
-      "OPENSEARCH_3_3"
+      "OPENSEARCH_3_3",
+      "OPENSEARCH_3_5"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-rds/lib/ca-certificate.ts": {
@@ -2700,6 +2882,7 @@
       "VER_2_12_3",
       "VER_2_12_4",
       "VER_2_12_5",
+      "VER_2_12_6",
       "VER_3_01_0",
       "VER_3_01_1",
       "VER_3_02_0",
@@ -2731,6 +2914,7 @@
       "VER_3_10_1",
       "VER_3_10_2",
       "VER_3_10_3",
+      "VER_3_10_4",
       "VER_3_11_0",
       "VER_3_11_1",
       "VER_3_12_0"
@@ -2830,6 +3014,7 @@
       "VER_14_18",
       "VER_14_19",
       "VER_14_20",
+      "VER_14_22",
       "VER_15_2",
       "VER_15_3",
       "VER_15_4",
@@ -2843,6 +3028,7 @@
       "VER_15_13",
       "VER_15_14",
       "VER_15_15",
+      "VER_15_17",
       "VER_16_0",
       "VER_16_1",
       "VER_16_2",
@@ -2866,7 +3052,8 @@
       "VER_17_4",
       "VER_17_5",
       "VER_17_6",
-      "VER_17_7"
+      "VER_17_7",
+      "VER_17_9"
     ],
     "DatabaseClusterEngine": [
       "AURORA",
@@ -3256,6 +3443,7 @@
       "VER_14_19",
       "VER_14_20",
       "VER_14_21",
+      "VER_14_22",
       "VER_15",
       "VER_15_2",
       "VER_15_3",
@@ -3272,6 +3460,7 @@
       "VER_15_14",
       "VER_15_15",
       "VER_15_16",
+      "VER_15_17",
       "VER_16",
       "VER_16_1",
       "VER_16_2",
@@ -3285,6 +3474,7 @@
       "VER_16_10",
       "VER_16_11",
       "VER_16_12",
+      "VER_16_13",
       "VER_17",
       "VER_17_1",
       "VER_17_2",
@@ -3294,9 +3484,11 @@
       "VER_17_6",
       "VER_17_7",
       "VER_17_8",
+      "VER_17_9",
       "VER_18",
       "VER_18_1",
-      "VER_18_2"
+      "VER_18_2",
+      "VER_18_3"
     ],
     "OracleLegacyEngineVersion": [
       "VER_11_2",
@@ -3695,6 +3887,8 @@
       "SYNTHETICS_NODEJS_PLAYWRIGHT_3_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_4_0",
       "SYNTHETICS_NODEJS_PLAYWRIGHT_5_0",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_5_1",
+      "SYNTHETICS_NODEJS_PLAYWRIGHT_6_0",
       "SYNTHETICS_NODEJS_3_0",
       "SYNTHETICS_NODEJS_3_1",
       "SYNTHETICS_PYTHON_SELENIUM_1_0",
