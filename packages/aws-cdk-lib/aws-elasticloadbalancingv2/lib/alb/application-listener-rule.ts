@@ -223,7 +223,7 @@ export class ApplicationListenerRule extends Construct {
 
   private readonly conditions: IArrayBox<ListenerCondition>;
   private readonly legacyConditions: {[key: string]: string[]} = {};
-  private readonly transforms: ListenerTransform[];
+  private readonly transforms: IArrayBox<ListenerTransform>;
 
   private readonly listener: IApplicationListener;
   private readonly _action: IBox<IListenerAction | undefined>;
@@ -232,7 +232,7 @@ export class ApplicationListenerRule extends Construct {
     super(scope, id);
 
     this.conditions = Box.fromArray(props.conditions ?? [], { omitEmpty: false });
-    this.transforms = props.transforms || [];
+    this.transforms = Box.fromArray(props.transforms ?? [], { omitEmpty: false });
 
     const hasPathPatterns = props.pathPatterns || props.pathPattern;
     if (this.conditions.length === 0 && !props.hostHeader && !hasPathPatterns) {
@@ -257,7 +257,7 @@ export class ApplicationListenerRule extends Construct {
       priority: props.priority,
       conditions: this.conditions.derive(_ => this.renderConditions()),
       actions: this._action.derive(a => a ? a.renderRuleActions() : []),
-      transforms: cdk.Lazy.any({ produce: () => this.renderTransforms() }),
+      transforms: this.transforms.derive(_ => this.renderTransforms()),
     });
 
     if (props.hostHeader) {
@@ -418,12 +418,13 @@ export class ApplicationListenerRule extends Construct {
    * Render the transforms for this rule
    */
   private renderTransforms(): CfnListenerRule.TransformProperty[] | undefined {
-    if (this.transforms.length === 0) {
+    const transforms = Array.from(this.transforms);
+    if (transforms.length === 0) {
       return undefined;
     }
 
-    const hostHeaderRewriteCount = this.transforms.filter(t => t.type === TransformType.HOST_HEADER_REWRITE).length;
-    const urlRewriteCount = this.transforms.filter(t => t.type === TransformType.URL_REWRITE).length;
+    const hostHeaderRewriteCount = transforms.filter(t => t.type === TransformType.HOST_HEADER_REWRITE).length;
+    const urlRewriteCount = transforms.filter(t => t.type === TransformType.URL_REWRITE).length;
 
     if (hostHeaderRewriteCount > 1) {
       throw new ValidationError(lit`HostHeaderRewriteLimit`, 'Only one host-header-rewrite transform is allowed per rule', this);
@@ -432,7 +433,7 @@ export class ApplicationListenerRule extends Construct {
       throw new ValidationError(lit`UrlRewriteLimit`, 'Only one url-rewrite transform is allowed per rule', this);
     }
 
-    return this.transforms.map(transform => transform.renderRawTransform());
+    return transforms.map(transform => transform.renderRawTransform());
   }
 }
 
