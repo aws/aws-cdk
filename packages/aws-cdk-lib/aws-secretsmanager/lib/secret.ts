@@ -362,6 +362,7 @@ abstract class SecretBase extends Resource implements ISecret {
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id, props);
+    // eslint-disable-next-line no-restricted-syntax
     this._arnForPolicies = Lazy.uncachedString({
       produce: (context: IResolveContext) => {
         const consumingStack = Stack.of(context.scope);
@@ -679,7 +680,7 @@ export class Secret extends SecretBase {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    this._replicaRegions = Box.fromArray([]);
+    this._replicaRegions = Box.fromArray();
 
     if (props.generateSecretString &&
         (props.generateSecretString.secretStringTemplate || props.generateSecretString.generateStringKey) &&
