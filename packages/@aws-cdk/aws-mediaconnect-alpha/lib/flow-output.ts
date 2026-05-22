@@ -497,11 +497,23 @@ export class OutputConfiguration {
 }
 
 /**
+ * Shared base for both real and imported flow outputs.
+ * @internal
+ */
+abstract class FlowOutputBase extends Resource implements IFlowOutput {
+  public abstract readonly flowOutputArn: string;
+
+  public get flowOutputRef(): FlowOutputReference {
+    return { outputArn: this.flowOutputArn };
+  }
+}
+
+/**
  * Resource defines the destination address, protocol, and port that
  * AWS Elemental MediaConnect sends the ingested video to.
  */
 @propertyInjectable
-export class FlowOutput extends Resource implements IFlowOutput {
+export class FlowOutput extends FlowOutputBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-mediaconnect-alpha.FlowOutput';
 
@@ -509,30 +521,14 @@ export class FlowOutput extends Resource implements IFlowOutput {
    * Creates a Flow Ouput construct that represents an external (imported) Flow Output.
    */
   public static fromFlowOutputArn(scope: Construct, id: string, flowOutputArn: string): IFlowOutput {
-    class Import extends Resource implements IFlowOutput {
+    class Import extends FlowOutputBase {
       public readonly flowOutputArn = flowOutputArn;
-
-      public get flowOutputRef(): FlowOutputReference {
-        return {
-          outputArn: this.flowOutputArn,
-        };
-      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly flowOutputArn: string;
-
-  /**
-   * A reference to this Flow Output resource.
-   * Required by the auto-generated IFlowOutputRef interface.
-   */
-  public get flowOutputRef(): FlowOutputReference {
-    return {
-      outputArn: this.flowOutputArn,
-    };
-  }
 
   constructor(scope: Construct, id: string, props: FlowOutputProps) {
     super(scope, id, {

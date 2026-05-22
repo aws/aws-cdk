@@ -3,6 +3,7 @@ import { Duration, Resource, Lazy, Names, Token, ValidationError, UnscopedValida
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnBridge } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IBridgeRef, BridgeReference } from 'aws-cdk-lib/aws-mediaconnect';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -103,9 +104,10 @@ export interface EgressBridgeConfiguration extends BridgeConfigurationBase {
 }
 
 /**
- * Reference to a Bridge (for cross-stack/cross-module usage)
+ * Interface for Bridge
  */
-export interface IBridgeRef {
+export interface IBridge extends IResource, IBridgeRef {
+
   /**
    * The Amazon Resource Name (ARN) of the bridge.
    *
@@ -114,24 +116,18 @@ export interface IBridgeRef {
   readonly bridgeArn: string;
 
   /**
-   * The type of bridge (INGRESS or EGRESS).
-   *
-   * @attribute
-   */
-  readonly bridgeType: BridgeType;
-}
-
-/**
- * Interface for Bridge
- */
-export interface IBridge extends IResource, IBridgeRef {
-
-  /**
    * The name of the bridge.
    *
    * @attribute
    */
   readonly bridgeName: string;
+
+  /**
+   * The type of bridge (ingress or egress).
+   *
+   * @attribute
+   */
+  readonly bridgeType: BridgeType;
 
   /**
    * The current state of the bridge.
@@ -509,6 +505,11 @@ abstract class BridgeBase extends Resource implements IBridge {
   public abstract readonly bridgeType: BridgeType;
   public abstract readonly bridgeState?: string;
   public abstract readonly isFailoverEnabled?: boolean;
+
+  /** A reference to this Bridge resource. */
+  public get bridgeRef(): BridgeReference {
+    return { bridgeArn: this.bridgeArn };
+  }
 
   /**
    * Create a CloudWatch metric for this bridge.

@@ -89,10 +89,22 @@ export interface FlowEntitlementProps {
 }
 
 /**
+ * Shared base for both real and imported flow entitlements.
+ * @internal
+ */
+abstract class FlowEntitlementBase extends Resource implements IFlowEntitlement {
+  public abstract readonly entitlementArn: string;
+
+  public get flowEntitlementRef(): FlowEntitlementReference {
+    return { entitlementArn: this.entitlementArn };
+  }
+}
+
+/**
  * Resource defines the permission that an AWS account grants to another AWS account to allow access to the content in a specific AWS Elemental MediaConnect flow.
  */
 @propertyInjectable
-export class FlowEntitlement extends Resource implements IFlowEntitlement {
+export class FlowEntitlement extends FlowEntitlementBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-mediaconnect-alpha.FlowEntitlement';
 
@@ -100,30 +112,14 @@ export class FlowEntitlement extends Resource implements IFlowEntitlement {
    * Creates a FlowEntitlement construct that represents an external (imported) FlowEntitlement.
    */
   public static fromFlowEntitlementArn(scope: Construct, id: string, flowEntitlementArn: string): IFlowEntitlement {
-    class Import extends Resource implements IFlowEntitlement {
+    class Import extends FlowEntitlementBase {
       public readonly entitlementArn = flowEntitlementArn;
-
-      public get flowEntitlementRef(): FlowEntitlementReference {
-        return {
-          entitlementArn: this.entitlementArn,
-        };
-      }
     }
 
     return new Import(scope, id);
   }
 
   public readonly entitlementArn: string;
-
-  /**
-   * A reference to this FlowEntitlement resource.
-   * Required by the auto-generated IFlowEntitlementRef interface.
-   */
-  public get flowEntitlementRef(): FlowEntitlementReference {
-    return {
-      entitlementArn: this.entitlementArn,
-    };
-  }
 
   constructor(scope: Construct, id: string, props: FlowEntitlementProps) {
     super(scope, id, {

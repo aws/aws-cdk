@@ -2,6 +2,7 @@ import type { IResource } from 'aws-cdk-lib';
 import { Annotations, Lazy, Names, Resource, Token, ValidationError } from 'aws-cdk-lib';
 import type { ISecurityGroup, ISubnet } from 'aws-cdk-lib/aws-ec2';
 import { CfnRouterNetworkInterface } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IRouterNetworkInterfaceRef, RouterNetworkInterfaceReference } from 'aws-cdk-lib/aws-mediaconnect';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -9,22 +10,16 @@ import type { Construct } from 'constructs';
 import { isOpenCidr, renderTags } from './shared';
 
 /**
- * Represents a Router Network Interface reference for cross-stack/cross-module usage.
- * Contains only the identifying attributes needed to reference a Router Network Interface.
+ * Interface for Router Network Interface
  */
-export interface IRouterNetworkInterfaceRef {
+export interface IRouterNetworkInterface extends IResource, IRouterNetworkInterfaceRef {
   /**
    * The Amazon Resource Name (ARN) of the router network interface.
    *
    * @attribute
    */
   readonly routerNetworkInterfaceArn: string;
-}
 
-/**
- * Interface for Router Network Interface
- */
-export interface IRouterNetworkInterface extends IResource, IRouterNetworkInterfaceRef {
   /**
    * The unique identifier of the router network interface.
    *
@@ -178,10 +173,23 @@ export class RouterNetworkConfiguration {
 }
 
 /**
+ * Shared base for both real and imported router network interfaces.
+ * @internal
+ */
+abstract class RouterNetworkInterfaceBase extends Resource implements IRouterNetworkInterface {
+  public abstract readonly routerNetworkInterfaceArn: string;
+  public abstract readonly routerNetworkInterfaceId: string;
+
+  public get routerNetworkInterfaceRef(): RouterNetworkInterfaceReference {
+    return { routerNetworkInterfaceArn: this.routerNetworkInterfaceArn };
+  }
+}
+
+/**
  * Defines a AWS Elemental MediaConnect Router Network Interface
  */
 @propertyInjectable
-export class RouterNetworkInterface extends Resource implements IRouterNetworkInterface {
+export class RouterNetworkInterface extends RouterNetworkInterfaceBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-mediaconnect-alpha.RouterNetworkInterface';
 
@@ -213,7 +221,7 @@ export class RouterNetworkInterface extends Resource implements IRouterNetworkIn
     id: string,
     attrs: RouterNetworkInterfaceAttributes,
   ): IRouterNetworkInterface {
-    class Import extends Resource implements IRouterNetworkInterface {
+    class Import extends RouterNetworkInterfaceBase {
       public readonly routerNetworkInterfaceArn = attrs.routerNetworkInterfaceArn;
 
       public get routerNetworkInterfaceId(): string {
@@ -230,7 +238,15 @@ export class RouterNetworkInterface extends Resource implements IRouterNetworkIn
 
   public readonly routerNetworkInterfaceArn: string;
   public readonly routerNetworkInterfaceId: string;
+  /**
+   * The date and time the router network interface was created.
+   * @attribute
+   */
   public readonly createdAt?: string;
+  /**
+   * The date and time the router network interface was last updated.
+   * @attribute
+   */
   public readonly updatedAt?: string;
 
   constructor(scope: Construct, id: string, props: RouterNetworkInterfaceProps) {

@@ -1,30 +1,29 @@
 import type { IResource } from 'aws-cdk-lib';
 import { Resource, Lazy, Names, Token, ValidationError } from 'aws-cdk-lib';
 import { CfnBridgeOutput } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IBridgeOutputRef, BridgeOutputReference } from 'aws-cdk-lib/aws-mediaconnect';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import type { IBridgeRef, BridgeOutputConfiguration } from './bridge';
+import type { IBridge, BridgeOutputConfiguration } from './bridge';
 import { BridgeType } from './bridge';
-
-/**
- * Reference to a Bridge Output (for cross-stack/cross-module usage)
- */
-export interface IBridgeOutputRef {
-  /**
-   * The Amazon Resource Name (ARN) of the bridge that owns this output.
-   *
-   * MediaConnect does not issue a separate ARN for a bridge output — the bridge ARN
-   * combined with the output name locates it.
-   */
-  readonly bridgeArn: string;
-}
 
 /**
  * Interface Bridge output
  */
 export interface IBridgeOutput extends IResource, IBridgeOutputRef {
+  /**
+   * The Amazon Resource Name (ARN) of the bridge that owns this output.
+   */
+  readonly bridgeArn: string;
+
+  /**
+   * The name of the bridge output.
+   *
+   * @attribute
+   */
+  readonly bridgeOutputName: string;
 }
 
 /**
@@ -40,7 +39,7 @@ export interface BridgeOutputProps {
   /**
    * The bridge that you want to update.
    */
-  readonly bridge: IBridgeRef;
+  readonly bridge: IBridge;
 
   /**
    * The network output configuration.
@@ -57,6 +56,19 @@ export class BridgeOutput extends Resource implements IBridgeOutput {
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-mediaconnect-alpha.BridgeOutput';
 
   public readonly bridgeArn: string;
+
+  /**
+   * The name of the bridge output.
+   */
+  public readonly bridgeOutputName: string;
+
+  /** A reference to this BridgeOutput resource. */
+  public get bridgeOutputRef(): BridgeOutputReference {
+    return {
+      bridgeArn: this.bridgeArn,
+      bridgeOutputName: this.bridgeOutputName,
+    };
+  }
 
   constructor(scope: Construct, id: string, props: BridgeOutputProps) {
     super(scope, id, {
@@ -94,5 +106,6 @@ export class BridgeOutput extends Resource implements IBridgeOutput {
     });
 
     this.bridgeArn = props.bridge.bridgeArn;
+    this.bridgeOutputName = this.physicalName;
   }
 }

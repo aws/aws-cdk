@@ -1,6 +1,7 @@
 import type { IResource } from 'aws-cdk-lib';
 import { Resource, Lazy, Names, Token, ValidationError } from 'aws-cdk-lib';
 import { CfnBridgeSource } from 'aws-cdk-lib/aws-mediaconnect';
+import type { IBridgeSourceRef, BridgeSourceReference } from 'aws-cdk-lib/aws-mediaconnect';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
@@ -10,22 +11,20 @@ import { BridgeType } from './bridge';
 import type { BridgeNetworkSource } from './shared';
 
 /**
- * Reference to a Bridge Source (for cross-stack/cross-module usage)
- */
-export interface IBridgeSourceRef {
-  /**
-   * The Amazon Resource Name (ARN) of the bridge that owns this source.
-   *
-   * MediaConnect does not issue a separate ARN for a bridge source — the bridge ARN
-   * combined with the source name locates it.
-   */
-  readonly bridgeArn: string;
-}
-
-/**
  * Interface Bridge source
  */
 export interface IBridgeSource extends IResource, IBridgeSourceRef {
+  /**
+   * The Amazon Resource Name (ARN) of the bridge that owns this source.
+   */
+  readonly bridgeArn: string;
+
+  /**
+   * The name of the bridge source.
+   *
+   * @attribute
+   */
+  readonly bridgeSourceName: string;
 }
 
 /**
@@ -102,6 +101,19 @@ export class BridgeSource extends Resource implements IBridgeSource {
 
   public readonly bridgeArn: string;
 
+  /**
+   * The name of the bridge source.
+   */
+  public readonly bridgeSourceName: string;
+
+  /** A reference to this BridgeSource resource. */
+  public get bridgeSourceRef(): BridgeSourceReference {
+    return {
+      bridgeArn: this.bridgeArn,
+      bridgeSourceName: this.bridgeSourceName,
+    };
+  }
+
   constructor(scope: Construct, id: string, props: BridgeSourceProps) {
     super(scope, id, {
       physicalName: props?.bridgeSourceName ?? Lazy.string({ produce: () => Names.uniqueResourceName(this, { maxLength: 64 }) }),
@@ -164,5 +176,6 @@ export class BridgeSource extends Resource implements IBridgeSource {
     });
 
     this.bridgeArn = props.bridge.bridgeArn;
+    this.bridgeSourceName = this.physicalName;
   }
 }

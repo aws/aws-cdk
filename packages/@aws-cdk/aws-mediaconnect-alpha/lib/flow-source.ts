@@ -83,6 +83,20 @@ export interface FlowSourceAttributes {
 }
 
 /**
+ * Shared base for both real and imported flow sources.
+ * @internal
+ */
+abstract class FlowSourceBase extends Resource implements IFlowSource {
+  public abstract readonly flowSourceArn: string;
+  public abstract readonly ingestIp: string;
+  public abstract readonly sourceIngestPort: string;
+
+  public get flowSourceRef(): FlowSourceReference {
+    return { sourceArn: this.flowSourceArn };
+  }
+}
+
+/**
  * Adds source to an existing flow.
  *
  * Adding an additional source requires Failover to be enabled. When you enable Failover,
@@ -92,7 +106,7 @@ export interface FlowSourceAttributes {
  * other than another AWS Elemental MediaConnect flow, such as an on-premises encoder.
  */
 @propertyInjectable
-export class FlowSource extends Resource implements IFlowSource {
+export class FlowSource extends FlowSourceBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-mediaconnect-alpha.FlowSource';
 
@@ -120,14 +134,8 @@ export class FlowSource extends Resource implements IFlowSource {
    * @returns A Flow Source construct
    */
   public static fromFlowSourceAttributes(scope: Construct, id: string, attrs: FlowSourceAttributes): IFlowSource {
-    class Import extends Resource implements IFlowSource {
+    class Import extends FlowSourceBase {
       public readonly flowSourceArn = attrs.flowSourceArn;
-
-      public get flowSourceRef(): FlowSourceReference {
-        return {
-          sourceArn: this.flowSourceArn,
-        };
-      }
 
       public get ingestIp(): string {
         if (attrs.ingestIp) return attrs.ingestIp;
@@ -153,16 +161,6 @@ export class FlowSource extends Resource implements IFlowSource {
   readonly flowSourceArn: string;
   readonly ingestIp: string;
   readonly sourceIngestPort: string;
-
-  /**
-   * A reference to this FlowSource resource.
-   * Required by the auto-generated IFlowSourceRef interface.
-   */
-  public get flowSourceRef(): FlowSourceReference {
-    return {
-      sourceArn: this.flowSourceArn,
-    };
-  }
 
   constructor(scope: Construct, id: string, props: FlowSourceProps) {
     super(scope, id, {
