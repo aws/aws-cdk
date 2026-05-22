@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "57596c4fc26a219daefa4c6a24a17790c2fb02db1ce2b1fdbb8e1f3899c8228b": {
+      "displayName": "DashboardTaggingIntegrationTest Template",
+      "source": {
+        "path": "DashboardTaggingIntegrationTest.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-f0560d60": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "57596c4fc26a219daefa4c6a24a17790c2fb02db1ce2b1fdbb8e1f3899c8228b.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

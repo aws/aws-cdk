@@ -1,5 +1,5 @@
 import { Annotations, Match, Template } from '../../assertions';
-import { App, Duration, Stack } from '../../core';
+import { App, Duration, Stack, Tags } from '../../core';
 import {
   Dashboard, DashboardVariable, DefaultValue,
   GraphWidget,
@@ -454,6 +454,58 @@ describe('Dashboard', () => {
       metricName: 'CPUUtilization',
       populateFrom: 'DontExist',
     })).toThrow('populateFrom (DontExist) is not present in dimensions');
+  });
+  test('dashboard can be tagged using Tags.of', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dash');
+
+    // WHEN
+    Tags.of(dashboard).add('Environment', 'Production');
+    Tags.of(dashboard).add('Team', 'CloudWatchDashboards');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
+      Tags: [
+        { Key: 'Environment', Value: 'Production' },
+        { Key: 'Team', Value: 'CloudWatchDashboards' },
+      ],
+    });
+  });
+
+  test('dashboard inherits tags from parent construct', () => {
+    // GIVEN
+    const app = new App();
+    const stack = new Stack(app, 'Stack');
+
+    // WHEN
+    Tags.of(stack).add('StackLevel', 'true');
+    new Dashboard(stack, 'Dash');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
+      Tags: [
+        { Key: 'StackLevel', Value: 'true' },
+      ],
+    });
+  });
+
+  test('tags can be removed from dashboard', () => {
+    // GIVEN
+    const stack = new Stack();
+    const dashboard = new Dashboard(stack, 'Dash');
+
+    // WHEN
+    Tags.of(dashboard).add('Environment', 'Production');
+    Tags.of(dashboard).add('Team', 'CloudWatchDashboards');
+    Tags.of(dashboard).remove('Team');
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Dashboard', {
+      Tags: [
+        { Key: 'Environment', Value: 'Production' },
+      ],
+    });
   });
 });
 

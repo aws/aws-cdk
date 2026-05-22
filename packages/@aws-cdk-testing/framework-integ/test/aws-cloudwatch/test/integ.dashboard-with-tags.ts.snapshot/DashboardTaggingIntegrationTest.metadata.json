@@ -1,0 +1,90 @@
+{
+  "/DashboardTaggingIntegrationTest": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Volumes/workplace/personal/aws-cdk-fork/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.dashboard-with-tags.ts:25:15)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/DashboardTaggingIntegrationTest/Dash": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "dashboardName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addWidgets": [
+          {
+            "width": "*",
+            "height": "*",
+            "warnings": "*",
+            "warningsV2": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/DashboardTaggingIntegrationTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/DashboardTaggingIntegrationTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/DashboardTaggingIntegrationTest/Dash/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DashCCD7F836"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Dashboard (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/aws-cloudwatch/lib/dashboard.js:152:31)",
+        "new Dashboard (/Volumes/workplace/personal/aws-cdk-fork/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DashboardTaggingIntegrationTest (/Volumes/workplace/personal/aws-cdk-fork/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.dashboard-with-tags.ts:10:23)",
+        "<anonymous> (/Volumes/workplace/personal/aws-cdk-fork/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.dashboard-with-tags.ts:25:15)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}

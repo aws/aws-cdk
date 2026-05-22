@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-dashboard-with-tags/DefaultTest": {
+      "stacks": [
+        "DashboardTaggingIntegrationTest"
+      ],
+      "assertionStack": "cdk-integ-dashboard-with-tags/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegdashboardwithtagsDefaultTestDeployAssertE063D85E"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}

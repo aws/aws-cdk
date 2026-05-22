@@ -3,7 +3,7 @@ import { CfnDashboard } from './cloudwatch.generated';
 import { Column, Row } from './layout';
 import type { IVariable } from './variable';
 import type { IWidget } from './widget';
-import type { Duration } from '../../core';
+import type { Duration, ITaggableV2, TagManager } from '../../core';
 import { Resource, Stack, Token, Annotations, ValidationError } from '../../core';
 import type { IArrayBox } from '../../core/lib/helpers-internal';
 import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
@@ -104,7 +104,7 @@ export interface DashboardProps {
  * A CloudWatch dashboard
  */
 @propertyInjectable
-export class Dashboard extends Resource {
+export class Dashboard extends Resource implements ITaggableV2 {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-cloudwatch.Dashboard';
   /**
@@ -123,6 +123,8 @@ export class Dashboard extends Resource {
    * @attribute
    */
   public readonly dashboardArn: string;
+
+  readonly cdkTagManager: TagManager;
 
   private readonly rows: IArrayBox<IWidget> = Box.fromArray([], { omitEmpty: false });
 
@@ -173,6 +175,7 @@ export class Dashboard extends Resource {
     });
 
     this.resource = dashboard;
+    this.cdkTagManager = dashboard.cdkTagManager;
 
     (props.widgets || []).forEach(row => {
       this.addWidgets(...row);

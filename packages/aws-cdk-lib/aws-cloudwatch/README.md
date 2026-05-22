@@ -1168,3 +1168,31 @@ dashboard.addWidgets(new cloudwatch.LogQueryWidget({
   ],
 }));
 ```
+
+### Dashboard Tagging
+
+You can tag dashboards using the standard CDK tagging mechanism:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+const dashboard = new cloudwatch.Dashboard(this, 'Dash', {
+  dashboardName: 'MyDashboard',
+});
+
+cdk.Tags.of(dashboard).add('Environment', 'Production');
+cdk.Tags.of(dashboard).add('Team', 'Platform');
+```
+
+Tags applied to parent constructs are automatically inherited:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+// All resources in the stack inherit this tag
+cdk.Tags.of(this).add('CostCenter', '12345');
+
+const dashboard = new cloudwatch.Dashboard(this, 'Dash');
+```
+
+Note: Tagging requires `cloudwatch:TagResource`, `cloudwatch:UntagResource`, and `cloudwatch:ListTagsForResource` permissions.
