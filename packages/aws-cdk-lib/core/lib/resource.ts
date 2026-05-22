@@ -5,6 +5,8 @@ import { Arn, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
 import { ValidationError } from './errors';
+import type { IBox } from './helpers-internal';
+import { Box } from './helpers-internal';
 import { memoizedGetter } from './helpers-internal/memoize';
 import type { IStringProducer } from './lazy';
 import { Lazy } from './lazy';
@@ -116,7 +118,7 @@ export abstract class Resource extends Construct implements IResource {
   /** The physicalName supplied into the constructor */
   private _givenPhysicalName: string | undefined;
   /** The generated physical name, in case of cross-env access */
-  private _generatedPhysicalName: string | undefined;
+  private _generatedPhysicalName: IBox<string | undefined> = Box.fromValue(undefined);
 
   constructor(scope: Construct, id: string, props: ResourceProps = {}) {
     super(scope, id);
@@ -188,7 +190,7 @@ export abstract class Resource extends Construct implements IResource {
   protected get physicalName(): string {
     switch (this._physicalNameMode) {
       case 'generate':
-        return Lazy.string({ produce: () => this._generatedPhysicalName });
+        return Token.asString(this._generatedPhysicalName);
       case 'given-resolved':
         // Will definitely be set
         return this._givenPhysicalName!;
@@ -213,9 +215,9 @@ export abstract class Resource extends Construct implements IResource {
         "the resource's physical name must be explicit set or use `PhysicalName.GENERATE_IF_NEEDED`", this);
     }
 
-    if (this._physicalNameMode === 'generate' && !this._generatedPhysicalName) {
-      this._generatedPhysicalName = this.generatePhysicalName();
-    }
+    this._generatedPhysicalName.update(name =>
+      this._physicalNameMode === 'generate' && !name ? this.generatePhysicalName() : name,
+    );
   }
 
   /**
@@ -318,6 +320,7 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
     failConcat: false,
   });
   if (!Reference.isReference(reference)) {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString(producer);
   }
 
