@@ -644,6 +644,32 @@ describe('node group', () => {
   });
 
   /**
+   * g7e instances (NVIDIA Blackwell B200) should be recognised as GPU and select
+   * AL2_x86_64_GPU automatically, matching the behaviour of g6e instances.
+   */
+  test('amiType should be AL2_x86_64_GPU with g7e instanceType', () => {
+    // GIVEN
+    const { stack, vpc } = testFixture();
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      vpc,
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [new ec2.InstanceType('g7e.2xlarge')],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2_x86_64_GPU',
+    });
+  });
+
+  /**
    * When LaunchTemplate is undefined, amiType is AL2_x86_64 and instanceTypes are not x86_64,
    * we should throw an error.
    */
@@ -1851,6 +1877,7 @@ describe('isGpuInstanceType', () => {
       ec2.InstanceType.of(ec2.InstanceClass.P4D, ec2.InstanceSize.LARGE),
       ec2.InstanceType.of(ec2.InstanceClass.G6, ec2.InstanceSize.MEDIUM),
       ec2.InstanceType.of(ec2.InstanceClass.G6E, ec2.InstanceSize.XLARGE2),
+      ec2.InstanceType.of(ec2.InstanceClass.G7E, ec2.InstanceSize.XLARGE2),
       ec2.InstanceType.of(ec2.InstanceClass.INF1, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.INF2, ec2.InstanceSize.XLARGE),
       ec2.InstanceType.of(ec2.InstanceClass.P3, ec2.InstanceSize.XLARGE),
