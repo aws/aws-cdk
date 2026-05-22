@@ -40,7 +40,7 @@ export const deployIntegTests = async (props: {
         AWS_ACCESS_KEY_ID: allocation.allocation.credentials.accessKeyId,
         AWS_SECRET_ACCESS_KEY: allocation.allocation.credentials.secretAccessKey,
         AWS_SESSION_TOKEN: allocation.allocation.credentials.sessionToken,
-        AWS_REGION: allocation.allocation.environment.region,
+        AWS_REGION: 'us-east-1',
         AWS_ACCOUNT_ID: allocation.allocation.environment.account,
         TARGET_BRANCH_COMMIT: process.env.TARGET_BRANCH_COMMIT,
         SOURCE_BRANCH_COMMIT: process.env.SOURCE_BRANCH_COMMIT,
