@@ -15,7 +15,7 @@
 
 <!--END STABILITY BANNER-->
 
-[Amazon S3 Files](https://aws.amazon.com/s3/) lets you mount an Amazon S3 bucket as
+[Amazon S3 Files](https://aws.amazon.com/s3/features/files/) lets you mount an Amazon S3 bucket as
 a POSIX file system on EC2 instances in a VPC. This module provides L2 constructs for the
 `AWS::S3Files::FileSystem`, `AWS::S3Files::AccessPoint`, `AWS::S3Files::MountTarget`, and
 `AWS::S3Files::FileSystemPolicy` CloudFormation resources.
@@ -160,8 +160,8 @@ returns an `iam.Grant`.
 ```ts fixture=with-filesystem
 declare const taskRole: iam.IRole;
 
-fileSystem.grants.mount(taskRole);
-fileSystem.grants.write(taskRole);
+fileSystem.grants.read(taskRole);
+fileSystem.grants.readWrite(taskRole);
 fileSystem.grants.rootAccess(taskRole);
 ```
 

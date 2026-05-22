@@ -18,9 +18,9 @@ beforeEach(() => {
 });
 
 describe('FileSystemGrants', () => {
-  test('mount grants only s3files:ClientMount', () => {
+  test('read grants only s3files:ClientMount', () => {
     const role = new iam.Role(stack, 'Grantee', { assumedBy: new iam.AccountRootPrincipal() });
-    fileSystem.grants.mount(role);
+    fileSystem.grants.read(role);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: [{ Ref: Match.stringLikeRegexp('^Grantee') }],
@@ -35,9 +35,9 @@ describe('FileSystemGrants', () => {
     });
   });
 
-  test('write grants Mount + ClientWrite', () => {
+  test('readWrite grants Mount + ClientWrite', () => {
     const user = new iam.User(stack, 'User');
-    fileSystem.grants.write(user);
+    fileSystem.grants.readWrite(user);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       PolicyDocument: {
@@ -67,7 +67,7 @@ describe('FileSystemGrants', () => {
 
   test('imported role still receives a grant', () => {
     const role = iam.Role.fromRoleArn(stack, 'Imported', 'arn:aws:iam::123456789012:role/external');
-    fileSystem.grants.mount(role);
+    fileSystem.grants.read(role);
 
     Template.fromStack(stack).hasResourceProperties('AWS::IAM::Policy', {
       Roles: ['external'],

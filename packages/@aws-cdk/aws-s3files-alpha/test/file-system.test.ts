@@ -275,15 +275,19 @@ describe('FileSystem', () => {
     Template.fromStack(stack).resourceCountIs('AWS::S3Files::MountTarget', vpc.publicSubnets.length);
   });
 
-  test('mountTargetIpAddressType DUAL_STACK is passed to mount targets', () => {
+  test.each([
+    MountTargetIpAddressType.IPV4_ONLY,
+    MountTargetIpAddressType.IPV6_ONLY,
+    MountTargetIpAddressType.DUAL_STACK,
+  ])('mountTargetIpAddressType %s is passed to mount targets', (ipAddressType) => {
     new FileSystem(stack, 'FileSystem', {
       bucket,
       vpc,
-      mountTargetIpAddressType: MountTargetIpAddressType.DUAL_STACK,
+      mountTargetIpAddressType: ipAddressType,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::S3Files::MountTarget', {
-      IpAddressType: 'DUAL_STACK',
+      IpAddressType: ipAddressType,
     });
   });
 

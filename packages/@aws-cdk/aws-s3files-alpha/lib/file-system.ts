@@ -23,7 +23,12 @@ export enum MountTargetIpAddressType {
   /**
    * The mount target only accepts IPv4 connections.
    */
-  IPV4 = 'IPV4',
+  IPV4_ONLY = 'IPV4_ONLY',
+
+  /**
+   * The mount target only accepts IPv6 connections.
+   */
+  IPV6_ONLY = 'IPV6_ONLY',
 
   /**
    * The mount target accepts both IPv4 and IPv6 connections.
@@ -179,7 +184,7 @@ export interface FileSystemProps {
   /**
    * IP address type for the mount targets.
    *
-   * @default MountTargetIpAddressType.IPV4
+   * @default MountTargetIpAddressType.IPV4_ONLY
    */
   readonly mountTargetIpAddressType?: MountTargetIpAddressType;
 
