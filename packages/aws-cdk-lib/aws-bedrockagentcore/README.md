@@ -47,6 +47,7 @@ This construct library facilitates the deployment of Bedrock AgentCore primitive
     - [Other configuration](#other-configuration)
       - [Lifecycle configuration](#lifecycle-configuration)
       - [Request header configuration](#request-header-configuration)
+      - [Filesystem configuration](#filesystem-configuration)
   - [Browser](#browser)
     - [Browser Network modes](#browser-network-modes)
     - [Browser Properties](#browser-properties)
@@ -149,6 +150,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
 | `lifecycleConfiguration` | LifecycleConfiguration | No | The life cycle configuration for the AgentCore Runtime. Defaults to 900 seconds (15 minutes) for idle, 28800 seconds (8 hours) for max life time |
 | `requestHeaderConfiguration` | RequestHeaderConfiguration | No | Configuration for HTTP request headers that will be passed through to the runtime. Defaults to no configuration |
+| `filesystems` | `Filesystem[]` | No | Filesystems to mount inside the AgentCore Runtime. Use `Filesystem.sessionStorage()` and/or `Filesystem.fromEfsAccessPoint()`. Up to 5 total (max 1 session storage, max 2 EFS access points). EFS requires VPC network mode. Defaults to no filesystems |
 
 ### Runtime Endpoint Properties
 
@@ -791,6 +793,30 @@ new agentcore.Runtime(this, 'test-runtime', {
   requestHeaderConfiguration: {
     allowlistedHeaders: ['X-Amzn-Bedrock-AgentCore-Runtime-Custom-H1'],
   },
+});
+```
+
+#### Filesystem configuration
+
+The Runtime can mount up to **5 filesystems** at agent-defined mount paths. Today, the L2 supports **managed session storage** — service-managed per-session storage that persists across stop/resume cycles. Bring-your-own filesystems (Amazon EFS, Amazon S3 Files) are exposed through the L1 `CfnRuntime.filesystemConfigurations` property and may be added to this L2 in a future release.
+
+Mount paths must be under `/mnt` with exactly one subdirectory level (for example, `/mnt/data`), must be unique across all configurations, and cannot be subdirectories of each other. The service allows at most 1 managed session storage configuration per Runtime.
+
+For additional information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html).
+
+```typescript fixture=default
+const repository = new ecr.Repository(this, "TestRepository", {
+  repositoryName: "test-agent-runtime",
+});
+
+const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(repository, "v1.0.0");
+
+new agentcore.Runtime(this, 'test-runtime', {
+  runtimeName: 'test_runtime',
+  agentRuntimeArtifact: agentRuntimeArtifact,
+  filesystems: [
+    agentcore.Filesystem.sessionStorage('/mnt/data'),
+  ],
 });
 ```
 

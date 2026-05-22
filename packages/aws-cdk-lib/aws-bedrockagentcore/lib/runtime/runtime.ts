@@ -17,8 +17,8 @@ import type { AgentRuntimeArtifact } from './runtime-artifact';
 import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import type { LifecycleConfiguration, RequestHeaderConfiguration } from './types';
-import { ProtocolType } from './types';
+import type { Filesystem, LifecycleConfiguration, RequestHeaderConfiguration, FilesystemBindResult } from './types';
+import { FilesystemKind, ProtocolType } from './types';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -146,6 +146,14 @@ export interface RuntimeProps {
    * @default - No logging configured
    */
   readonly loggingConfigs?: LoggingConfig[];
+
+  /**
+   * The filesystem configurations for the runtime environment.
+   *
+   * @default - No filesystems configured
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html
+   */
+  readonly filesystems?: Filesystem[];
 }
 
 /**
@@ -372,6 +380,10 @@ export class Runtime extends RuntimeBase {
     if (props.authorizerConfiguration) {
       cfnProps.authorizerConfiguration = Lazy.any({ produce: () => this.authorizerConfiguration!._render() });
     }
+    const filesystemBindings = this.bindFilesystems(props.filesystems);
+    if (filesystemBindings.length > 0) {
+      cfnProps.filesystemConfigurations = filesystemBindings.map(b => b.cfnFilesystemConfiguration);
+    }
 
     this.runtimeResource = new bedrockagentcore.CfnRuntime(this, 'Resource', cfnProps as bedrockagentcore.CfnRuntimeProps);
 
@@ -519,6 +531,66 @@ export class Runtime extends RuntimeBase {
       idleRuntimeSessionTimeout: this.lifecycleConfiguration?.idleRuntimeSessionTimeout?.toSeconds(),
       maxLifetime: this.lifecycleConfiguration?.maxLifetime?.toSeconds(),
     };
+  }
+
+  /**
+   * Binds the filesystems prop and enforces service-side limits.
+   *
+   * @internal
+   */
+  private bindFilesystems(filesystems: Filesystem[] | undefined): FilesystemBindResult[] {
+    if (!filesystems || filesystems.length === 0) {
+      return [];
+    }
+
+    if (filesystems.length > 5) {
+      throw new ValidationError(
+        lit`TooManyFilesystems`,
+        `An AgentCore Runtime supports at most 5 filesystems, got ${filesystems.length}`,
+        this,
+      );
+    }
+
+    const bound = filesystems.map(fs => fs._bind());
+
+    const sessionCount = bound.filter(b => b.kind === FilesystemKind.SESSION_STORAGE).length;
+    if (sessionCount > 1) {
+      throw new ValidationError(
+        lit`TooManySessionStorages`,
+        `An AgentCore Runtime supports at most 1 managed session storage, got ${sessionCount}`,
+        this,
+      );
+    }
+
+    // Mount path uniqueness and subdirectory checks. Skip tokenized values so we
+    // never compare partially-resolved tokens.
+    const concretePaths = bound
+      .map(b => b.mountPath)
+      .filter(p => !Token.isUnresolved(p));
+    const seen = new Set<string>();
+    for (const p of concretePaths) {
+      if (seen.has(p)) {
+        throw new ValidationError(
+          lit`DuplicateMountPath`,
+          `Duplicate filesystem mount path ${JSON.stringify(p)}. Mount paths must be unique across all filesystems.`,
+          this,
+        );
+      }
+      seen.add(p);
+    }
+    for (const a of concretePaths) {
+      for (const b of concretePaths) {
+        if (a !== b && isSubPath(a, b)) {
+          throw new ValidationError(
+            lit`OverlappingMountPaths`,
+            `Filesystem mount path ${JSON.stringify(a)} is a subdirectory of ${JSON.stringify(b)}. Mount paths cannot be subdirectories of each other.`,
+            this,
+          );
+        }
+      }
+    }
+
+    return bound;
   }
 
   /**
@@ -880,4 +952,17 @@ export class Runtime extends RuntimeBase {
 
     return endpoint;
   }
+}
+
+/**
+ * Returns true when `child` is a strict subdirectory of `parent` (e.g.
+ * `/mnt/a/b` is a subdirectory of `/mnt/a`). Trailing slashes on either
+ * side are tolerated.
+ */
+function isSubPath(child: string, parent: string): boolean {
+  const normalize = (p: string) => (p.endsWith('/') ? p.slice(0, -1) : p);
+  const c = normalize(child);
+  const p = normalize(parent);
+  if (c === p) return false;
+  return c.startsWith(p + '/');
 }

@@ -1,0 +1,335 @@
+{
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-filesystem.js:14:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:info",
+      "data": "Container URI validation skipped as it contains unresolved CDK tokens. The URI will be validated at deployment time.",
+      "trace": [
+        "Annotations.addMessage (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addInfo (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:139:14)",
+        "WrappedClass.validateContainerUri (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:669:47)",
+        "WrappedClass.renderAgentRuntimeArtifact (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:418:26)",
+        "Object.produce (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:292:79)",
+        "LazyAny.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:279:66)",
+        "LazyAny.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:347:32)",
+        "LazyBox.get (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/lazy.js:313:27)",
+        "LazyBox.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/helpers-internal/box.js:140:21)",
+        "RememberingTokenResolver.resolveToken (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:66:30)",
+        "RememberingTokenResolver.resolveToken (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "RememberingTokenResolver.resolveToken (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "RememberingTokenResolver.resolveToken (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/resolvable.js:68:32)",
+        "RememberingTokenResolver.resolveToken (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:235:22)",
+        "resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:136:55)",
+        "Object.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "Object.resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:57:48)",
+        "resolve (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:151:51)",
+        "findTokens (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/resolve.js:187:5)",
+        "findAllReferences (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:203:55)",
+        "resolveReferences (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:48:19)",
+        "prepareApp (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
+        "process.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:116:51)",
+        "Object.onceWrapper (node:events:634:26)",
+        "process.emit (node:events:519:28)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*",
+        "maxSessionDuration": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntime65042BB5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Runtime (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:312:36)",
+        "new Runtime (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-filesystem.js:16:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntimeExecutionRoleF819113E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Runtime (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:261:29)",
+        "new Runtime (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-filesystem.js:16:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-runtime-filesystem/TestRuntime/ExecutionRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestRuntimeExecutionRoleDefaultPolicyC7A978D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addExecutionRolePermissions (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:348:23)",
+        "new Runtime (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/runtime/runtime.js:277:18)",
+        "new Runtime (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/ubuntu/ghq/github.com/mazyu36/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/runtime/integ.runtime-filesystem.js:16:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

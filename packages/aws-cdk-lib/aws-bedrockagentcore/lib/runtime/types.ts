@@ -3,7 +3,12 @@
  *                                 Enums
  *****************************************************************************/
 
+import type { CfnRuntime } from '../../../aws-bedrockagentcore';
+import { Token } from '../../../core';
 import type { Duration } from '../../../core';
+import { UnscopedValidationError } from '../../../core/lib/errors';
+import { lit } from '../../../core/lib/helpers-internal';
+import { validateStringFieldLength, validateFieldPattern } from '../common/validation-helpers';
 
 /**
  * Protocol configuration for Agent Runtime
@@ -84,4 +89,110 @@ export interface LifecycleConfiguration {
    * @default undefined - service default setting is 28800 seconds (8 hours)
    */
   readonly maxLifetime?: Duration;
+}
+
+/******************************************************************************
+ *                          Filesystem configurations
+ *****************************************************************************/
+
+const MOUNT_PATH_PATTERN = /^\/mnt\/[a-zA-Z0-9._-]+\/?$/;
+const MOUNT_PATH_MIN = 6;
+const MOUNT_PATH_MAX = 200;
+
+/**
+ * Validates a mount path against the AgentCore service constraints. Skips
+ * validation for tokenized values.
+ *
+ * @internal
+ */
+export function validateMountPath(value: string, fieldName: string): string[] {
+  if (Token.isUnresolved(value)) {
+    return [];
+  }
+  return [
+    ...validateStringFieldLength({
+      value,
+      fieldName,
+      minLength: MOUNT_PATH_MIN,
+      maxLength: MOUNT_PATH_MAX,
+    }),
+    ...validateFieldPattern(
+      value,
+      fieldName,
+      MOUNT_PATH_PATTERN,
+      `${fieldName} must be under /mnt with one subdirectory level (for example, /mnt/data)`,
+    ),
+  ];
+}
+
+/**
+ * The kind of a `Filesystem` configuration. Used internally for validating
+ * service-side limits on combinations.
+ *
+ * @internal
+ */
+export enum FilesystemKind {
+  SESSION_STORAGE = 'sessionStorage',
+}
+
+/**
+ * Result of binding a `Filesystem` to a Runtime.
+ *
+ * @internal
+ */
+export interface FilesystemBindResult {
+  readonly kind: FilesystemKind;
+  readonly mountPath: string;
+  readonly cfnFilesystemConfiguration: CfnRuntime.FilesystemConfigurationProperty;
+}
+
+/**
+ * Configuration for a filesystem mounted into the AgentCore Runtime.
+ *
+ * Use the static factories to create instances:
+ * - `Filesystem.sessionStorage(mountPath)` - service-managed per-session
+ *   storage that persists across stop/resume cycles. No VPC required.
+ *
+ * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html
+ */
+export abstract class Filesystem {
+  /**
+   * Configure managed session storage. Each session gets an isolated directory
+   * at the configured mount path that persists across stop/resume cycles.
+   *
+   * @param mountPath The mount path inside the runtime container. Must be under
+   *   `/mnt` with one subdirectory level (for example, `/mnt/workspace`).
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html
+   */
+  public static sessionStorage(mountPath: string): Filesystem {
+    return new SessionStorageFilesystem(mountPath);
+  }
+
+  /**
+   * Bind this filesystem configuration to the Runtime that consumes it.
+   *
+   * @internal
+   */
+  public abstract _bind(): FilesystemBindResult;
+}
+
+class SessionStorageFilesystem extends Filesystem {
+  constructor(private readonly mountPath: string) {
+    super();
+  }
+
+  public _bind(): FilesystemBindResult {
+    const errors = validateMountPath(this.mountPath, 'Session storage mount path');
+    if (errors.length > 0) {
+      throw new UnscopedValidationError(lit`InvalidFilesystem`, errors.join('\n'));
+    }
+    return {
+      kind: FilesystemKind.SESSION_STORAGE,
+      mountPath: this.mountPath,
+      cfnFilesystemConfiguration: {
+        sessionStorage: { mountPath: this.mountPath },
+      },
+    };
+  }
 }

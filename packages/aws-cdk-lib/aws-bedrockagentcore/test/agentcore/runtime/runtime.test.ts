@@ -19,6 +19,7 @@ import { LoggingDestination, LogType } from '../../../lib/runtime/observability'
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import {
+  Filesystem,
   ProtocolType,
 } from '../../../lib/runtime/types';
 
@@ -3282,6 +3283,135 @@ describe('ProtocolType.of() escape hatch', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
       ProtocolConfiguration: 'CUSTOM_PROTOCOL',
+    });
+  });
+});
+
+describe('Runtime filesystems', () => {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+    const repository = new ecr.Repository(stack, 'TestRepository', {
+      repositoryName: 'test-agent-runtime',
+    });
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+  });
+
+  test('omits FilesystemConfigurations when filesystems prop is not provided', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact,
+    });
+
+    app.synth();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      FilesystemConfigurations: Match.absent(),
+    });
+  });
+
+  test('omits FilesystemConfigurations when filesystems is empty', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact,
+      filesystems: [],
+    });
+
+    app.synth();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      FilesystemConfigurations: Match.absent(),
+    });
+  });
+
+  test('renders session storage filesystem', () => {
+    new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact,
+      filesystems: [Filesystem.sessionStorage('/mnt/data')],
+    });
+
+    app.synth();
+    Template.fromStack(stack).hasResourceProperties('AWS::BedrockAgentCore::Runtime', {
+      FilesystemConfigurations: [{ SessionStorage: { MountPath: '/mnt/data' } }],
+    });
+  });
+
+  describe('mount path validation', () => {
+    test.each([
+      '/tmp/data',
+      '/mnt',
+      '/mnt/',
+      '/mnt/bad path',
+      '/mnt/one/two',
+    ])('fails when mount path does not match the required pattern (%s)', (mountPath) => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage(mountPath)],
+      })).toThrow(/Session storage mount path must be under \/mnt/);
+    });
+
+    test('fails when mount path is shorter than 6 characters', () => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage('/mnt/')],
+      })).toThrow(/must be at least 6 characters/);
+    });
+
+    test('fails when mount path exceeds 200 characters', () => {
+      const longName = 'a'.repeat(196); // '/mnt/' + 196 = 201
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage(`/mnt/${longName}`)],
+      })).toThrow(/must be less than or equal to 200 characters/);
+    });
+
+    test('skips validation for late-bound mount paths', () => {
+      const mountPathParam = new cdk.CfnParameter(stack, 'MountPath', {
+        default: '/mnt/data',
+        type: 'String',
+      });
+
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage(mountPathParam.valueAsString)],
+      })).not.toThrow();
+    });
+  });
+
+  describe('service-side limits', () => {
+    test('fails when more than 5 filesystems are configured', () => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [
+          Filesystem.sessionStorage('/mnt/a'),
+          Filesystem.sessionStorage('/mnt/b'),
+          Filesystem.sessionStorage('/mnt/c'),
+          Filesystem.sessionStorage('/mnt/d'),
+          Filesystem.sessionStorage('/mnt/e'),
+          Filesystem.sessionStorage('/mnt/f'),
+        ],
+      })).toThrow(/at most 5 filesystems, got 6/);
+    });
+
+    test('fails with more than 1 managed session storage', () => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [
+          Filesystem.sessionStorage('/mnt/a'),
+          Filesystem.sessionStorage('/mnt/b'),
+        ],
+      })).toThrow(/at most 1 managed session storage/);
     });
   });
 });
