@@ -84,7 +84,8 @@ export async function onTimeout(timeoutEvent: any) {
   const provider = createResourceHandler(eventPayload, standardContext);
   await provider.respond({
     status: 'FAILED',
-    reason: 'Operation timed out: ' + JSON.stringify({ ...eventPayload, ResponseURL: '...' }),
+    // Only the properties to the IsComplete Resource need to be included.
+    reason: 'Operation timed out: ' + JSON.stringify(eventPayload.ResourceProperties),
   });
 }
 
