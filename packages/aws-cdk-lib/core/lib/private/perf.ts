@@ -85,9 +85,10 @@ export function profileFn(key: string, options?: ProfileOptions) {
         }
       }
     };
-    Object.defineProperty(ret, 'name', {
-      value: fn.name,
-    });
+
+    // Copy members, notably 'name' and sometimes add-on members
+    Object.defineProperties(ret, Object.getOwnPropertyDescriptors(fn));
+
     return ret as any;
   };
 }
@@ -226,7 +227,8 @@ export function printPerfCounters(options?: ReadCountersOptions) {
  * is undoubtedly going to wreak havoc on mocking of globals in test suites.
  */
 function initializeBuiltinProfiling() {
-  if (STATE.builtinsHooked || process.env.NODE_ENV === 'test') {
+  const envYes = ['1', 'yes', 'true'] as Array<string | undefined>;
+  if (STATE.builtinsHooked || process.env.NODE_ENV === 'test' || envYes.includes(process.env.CDK_NO_PERF_BUILTINS)) {
     return;
   }
   STATE.builtinsHooked = true;
