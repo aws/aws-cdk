@@ -4849,11 +4849,11 @@
     tslib "^2.6.2"
 
 "@smithy/config-resolver@^4.4.6", "@smithy/config-resolver@^4.4.9":
-  version "4.5.2"
-  resolved "https://registry.npmjs.org/@smithy/config-resolver/-/config-resolver-4.5.2.tgz#bd009ee0992995230e2391eddf2ff76427db1431"
-  integrity sha512-Gxr1czgeGUKgUJBf3fUSvpb1d+EjEl17f5s8qAzn36QIWmVzNPZQb3C9Rdtfya1yu2qUSAhDGoHUvHI/GJjbBQ==
+  version "4.5.4"
+  resolved "https://registry.npmjs.org/@smithy/config-resolver/-/config-resolver-4.5.4.tgz#37cceecb5ee67eec53af432a2476fd01db2d0534"
+  integrity sha512-jqADOFCkuSqluoEPjxWTFQ/6Xfsmt4Xi3IelA+c+4WdavqCijGGfWi873VqfIZeSFvaBpYeH+PKHC3POE98KlQ==
   dependencies:
-    "@smithy/core" "^3.24.2"
+    "@smithy/core" "^3.24.4"
     tslib "^2.6.2"
 
 "@smithy/core@^2.3.2", "@smithy/core@^2.5.7":
@@ -4902,13 +4902,13 @@
     "@smithy/uuid" "^1.1.1"
     tslib "^2.6.2"
 
-"@smithy/core@^3.24.2":
-  version "3.24.2"
-  resolved "https://registry.npmjs.org/@smithy/core/-/core-3.24.2.tgz#38ae63b029ac5afa156ebd0bfd203bdc3966dd9f"
-  integrity sha512-IKS7qX59fAGCYBmt5JChcDswQDupZqT2Yn2ZBA3UgTlsjRNNkQzZobbn95xoAAdtTyJmBiJB3Y02qR3rgy3Zog==
+"@smithy/core@^3.24.4":
+  version "3.24.4"
+  resolved "https://registry.npmjs.org/@smithy/core/-/core-3.24.4.tgz#aded2ba46962b5cceaaa75f646433ac4813c2e17"
+  integrity sha512-3UNRKEyQyAgVgM0LGlerCLm+ChZWZ1GPfde+jBEW6bm6bSBGU1p0EbblaUV3unbhwvidjLA5Zs3sOs7mnZwvAw==
   dependencies:
     "@aws-crypto/crc32" "5.2.0"
-    "@smithy/types" "^4.14.1"
+    "@smithy/types" "^4.14.2"
     tslib "^2.6.2"
 
 "@smithy/credential-provider-imds@^3.2.0", "@smithy/credential-provider-imds@^3.2.8":
@@ -5611,7 +5611,7 @@
     "@smithy/util-stream" "^4.5.15"
     tslib "^2.6.2"
 
-"@smithy/types@3.5.0", "@smithy/types@3.7.2", "@smithy/types@^3.3.0", "@smithy/types@^3.5.0", "@smithy/types@^3.7.2", "@smithy/types@^4.12.0", "@smithy/types@^4.13.0", "@smithy/types@^4.14.1":
+"@smithy/types@3.5.0", "@smithy/types@3.7.2", "@smithy/types@^3.3.0", "@smithy/types@^3.5.0", "@smithy/types@^3.7.2", "@smithy/types@^4.12.0", "@smithy/types@^4.13.0", "@smithy/types@^4.14.2":
   version "3.5.0"
   resolved "https://registry.npmjs.org/@smithy/types/-/types-3.5.0.tgz#9589e154c50d9c5d00feb7d818112ef8fc285d6e"
   integrity sha512-QN0twHNfe8mNJdH9unwsCK13GURU7oEAZqkBI+rsvpv1jrmserO+WnLE7jidR9W/1dxwZ0u/CB01mV2Gms/K2Q==
