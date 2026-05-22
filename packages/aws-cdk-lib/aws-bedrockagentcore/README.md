@@ -150,7 +150,7 @@ to production by simply updating the endpoint to point to the newer version.
 | `tags` | `{ [key: string]: string }` | No | Tags for the agent runtime. A list of key:value pairs of tags to apply to this Runtime resource |
 | `lifecycleConfiguration` | LifecycleConfiguration | No | The life cycle configuration for the AgentCore Runtime. Defaults to 900 seconds (15 minutes) for idle, 28800 seconds (8 hours) for max life time |
 | `requestHeaderConfiguration` | RequestHeaderConfiguration | No | Configuration for HTTP request headers that will be passed through to the runtime. Defaults to no configuration |
-| `filesystemConfiguration` | FilesystemConfiguration | No | Filesystem configuration for the AgentCore Runtime. Defaults to no filesystem configuration |
+| `filesystems` | `Filesystem[]` | No | Filesystems to mount inside the AgentCore Runtime. Use `Filesystem.sessionStorage()` and/or `Filesystem.fromEfsAccessPoint()`. Up to 5 total (max 1 session storage, max 2 EFS access points). EFS requires VPC network mode. Defaults to no filesystems |
 
 ### Runtime Endpoint Properties
 
@@ -798,13 +798,11 @@ new agentcore.Runtime(this, 'test-runtime', {
 
 #### Filesystem configuration
 
-Session storage is a filesystem mounted inside the AgentCore Runtime that provides persistent
-storage across invocations (stop/resume cycles). Each session gets an isolated directory at
-the configured mount path.
+The Runtime can mount up to **5 filesystems** at agent-defined mount paths. Today, the L2 supports **managed session storage** — service-managed per-session storage that persists across stop/resume cycles. Bring-your-own filesystems (Amazon EFS, Amazon S3 Files) are exposed through the L1 `CfnRuntime.filesystemConfigurations` property and may be added to this L2 in a future release.
 
-The mount path must be under `/mnt` with one subdirectory level (for example, `/mnt/data`).
+Mount paths must be under `/mnt` with exactly one subdirectory level (for example, `/mnt/data`), must be unique across all configurations, and cannot be subdirectories of each other. The service allows at most 1 managed session storage configuration per Runtime.
 
-For additional information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-persistent-filesystems.html).
+For additional information, please refer to the [documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html).
 
 ```typescript fixture=default
 const repository = new ecr.Repository(this, "TestRepository", {
@@ -816,9 +814,9 @@ const agentRuntimeArtifact = agentcore.AgentRuntimeArtifact.fromEcrRepository(re
 new agentcore.Runtime(this, 'test-runtime', {
   runtimeName: 'test_runtime',
   agentRuntimeArtifact: agentRuntimeArtifact,
-  filesystemConfiguration: {
-    sessionStorage: { mountPath: '/mnt/data' },
-  },
+  filesystems: [
+    agentcore.Filesystem.sessionStorage('/mnt/data'),
+  ],
 });
 ```
 

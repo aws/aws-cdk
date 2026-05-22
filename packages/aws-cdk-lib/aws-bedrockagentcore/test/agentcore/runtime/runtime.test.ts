@@ -19,6 +19,7 @@ import { LoggingDestination, LogType } from '../../../lib/runtime/observability'
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import {
+  Filesystem,
   ProtocolType,
 } from '../../../lib/runtime/types';
 
@@ -3286,7 +3287,7 @@ describe('ProtocolType.of() escape hatch', () => {
   });
 });
 
-describe('Runtime filesystem configuration tests', () => {
+describe('Runtime filesystems', () => {
   let app: cdk.App;
   let stack: cdk.Stack;
   let agentRuntimeArtifact: AgentRuntimeArtifact;
@@ -3302,10 +3303,10 @@ describe('Runtime filesystem configuration tests', () => {
     agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
   });
 
-  test('Should omit FilesystemConfigurations when not specified', () => {
+  test('omits FilesystemConfigurations when filesystems prop is not provided', () => {
     new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
+      agentRuntimeArtifact,
     });
 
     app.synth();
@@ -3314,11 +3315,11 @@ describe('Runtime filesystem configuration tests', () => {
     });
   });
 
-  test('Should omit FilesystemConfigurations when sessionStorage is not specified', () => {
+  test('omits FilesystemConfigurations when filesystems is empty', () => {
     new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      filesystemConfiguration: {},
+      agentRuntimeArtifact,
+      filesystems: [],
     });
 
     app.synth();
@@ -3327,13 +3328,11 @@ describe('Runtime filesystem configuration tests', () => {
     });
   });
 
-  test('Should set session storage mount path', () => {
+  test('renders session storage filesystem', () => {
     new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      filesystemConfiguration: {
-        sessionStorage: { mountPath: '/mnt/data' },
-      },
+      agentRuntimeArtifact,
+      filesystems: [Filesystem.sessionStorage('/mnt/data')],
     });
 
     app.synth();
@@ -3342,55 +3341,77 @@ describe('Runtime filesystem configuration tests', () => {
     });
   });
 
-  test.each([
-    '/tmp/data',
-    '/mnt',
-    '/mnt/',
-    '/mnt/bad path',
-    '/mnt/one/two',
-  ])('fails when mountPath does not match the required pattern (%s)', (mountPath) => {
-    expect(() => new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      filesystemConfiguration: {
-        sessionStorage: { mountPath },
-      },
-    })).toThrow(/Session storage mount path must be under \/mnt/);
-  });
-
-  test('fails when mountPath is shorter than 6 characters', () => {
-    expect(() => new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      filesystemConfiguration: {
-        sessionStorage: { mountPath: '/mnt/' },
-      },
-    })).toThrow(/must be at least 6 characters/);
-  });
-
-  test('fails when mountPath exceeds 200 characters', () => {
-    const longName = 'a'.repeat(196); // '/mnt/' + 196 = 201
-    expect(() => new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      filesystemConfiguration: {
-        sessionStorage: { mountPath: `/mnt/${longName}` },
-      },
-    })).toThrow(/must be less than or equal to 200 characters/);
-  });
-
-  test('does not fail validation if mountPath is a late-bound value', () => {
-    const mountPathParam = new cdk.CfnParameter(stack, 'MountPath', {
-      default: '/mnt/data',
-      type: 'String',
+  describe('mount path validation', () => {
+    test.each([
+      '/tmp/data',
+      '/mnt',
+      '/mnt/',
+      '/mnt/bad path',
+      '/mnt/one/two',
+    ])('fails when mount path does not match the required pattern (%s)', (mountPath) => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage(mountPath)],
+      })).toThrow(/Session storage mount path must be under \/mnt/);
     });
 
-    expect(() => new Runtime(stack, 'test-runtime', {
-      runtimeName: 'test_runtime',
-      agentRuntimeArtifact: agentRuntimeArtifact,
-      filesystemConfiguration: {
-        sessionStorage: { mountPath: mountPathParam.valueAsString },
-      },
-    })).not.toThrow();
+    test('fails when mount path is shorter than 6 characters', () => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage('/mnt/')],
+      })).toThrow(/must be at least 6 characters/);
+    });
+
+    test('fails when mount path exceeds 200 characters', () => {
+      const longName = 'a'.repeat(196); // '/mnt/' + 196 = 201
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage(`/mnt/${longName}`)],
+      })).toThrow(/must be less than or equal to 200 characters/);
+    });
+
+    test('skips validation for late-bound mount paths', () => {
+      const mountPathParam = new cdk.CfnParameter(stack, 'MountPath', {
+        default: '/mnt/data',
+        type: 'String',
+      });
+
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [Filesystem.sessionStorage(mountPathParam.valueAsString)],
+      })).not.toThrow();
+    });
+  });
+
+  describe('service-side limits', () => {
+    test('fails when more than 5 filesystems are configured', () => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [
+          Filesystem.sessionStorage('/mnt/a'),
+          Filesystem.sessionStorage('/mnt/b'),
+          Filesystem.sessionStorage('/mnt/c'),
+          Filesystem.sessionStorage('/mnt/d'),
+          Filesystem.sessionStorage('/mnt/e'),
+          Filesystem.sessionStorage('/mnt/f'),
+        ],
+      })).toThrow(/at most 5 filesystems, got 6/);
+    });
+
+    test('fails with more than 1 managed session storage', () => {
+      expect(() => new Runtime(stack, 'test-runtime', {
+        runtimeName: 'test_runtime',
+        agentRuntimeArtifact,
+        filesystems: [
+          Filesystem.sessionStorage('/mnt/a'),
+          Filesystem.sessionStorage('/mnt/b'),
+        ],
+      })).toThrow(/at most 1 managed session storage/);
+    });
   });
 });

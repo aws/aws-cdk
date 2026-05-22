@@ -23,9 +23,9 @@ new agentcore.Runtime(stack, 'TestRuntime', {
   runtimeName: 'integ_test_runtime_filesystem',
   description: 'Integration test runtime with session storage filesystem',
   agentRuntimeArtifact: runtimeArtifact,
-  filesystemConfiguration: {
-    sessionStorage: { mountPath: '/mnt/data' },
-  },
+  filesystems: [
+    agentcore.Filesystem.sessionStorage('/mnt/data'),
+  ],
 });
 
 new integ.IntegTest(app, 'integ-runtime-filesystem', {

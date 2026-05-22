@@ -17,8 +17,8 @@ import type { AgentRuntimeArtifact } from './runtime-artifact';
 import type { IBedrockAgentRuntime, AgentRuntimeAttributes } from './runtime-base';
 import { RuntimeBase } from './runtime-base';
 import { RuntimeEndpoint } from './runtime-endpoint';
-import type { LifecycleConfiguration, RequestHeaderConfiguration, FilesystemConfiguration } from './types';
-import { ProtocolType } from './types';
+import type { Filesystem, LifecycleConfiguration, RequestHeaderConfiguration, FilesystemBindResult } from './types';
+import { FilesystemKind, ProtocolType } from './types';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
@@ -148,10 +148,23 @@ export interface RuntimeProps {
   readonly loggingConfigs?: LoggingConfig[];
 
   /**
-   * The filesystem configuration for the AgentCore Runtime.
-   * @default - No filesystem configuration
+   * Filesystems to mount inside the AgentCore Runtime container.
+   *
+   * AgentCore allows up to 5 filesystems on a single Runtime, with at most one
+   * managed session storage and at most two EFS access points. Mount paths must
+   * be unique and cannot be subdirectories of each other.
+   *
+   * Use `Filesystem.sessionStorage()` for managed per-session storage and
+   * `Filesystem.fromEfsAccessPoint()` to mount an existing Amazon EFS access
+   * point. EFS-backed filesystems require the Runtime to be in VPC network
+   * mode; the construct grants the necessary IAM permissions, allows outbound
+   * NFS traffic to the file system, and adds a CloudFormation dependency on
+   * the EFS mount targets.
+   *
+   * @default - No filesystems configured
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html
    */
-  readonly filesystemConfiguration?: FilesystemConfiguration;
+  readonly filesystems?: Filesystem[];
 }
 
 /**
@@ -325,10 +338,6 @@ export class Runtime extends RuntimeBase {
       this.validateLifecycleConfiguration(this.lifecycleConfiguration);
     }
 
-    if (props.filesystemConfiguration) {
-      this.validateFilesystemConfiguration(props.filesystemConfiguration);
-    }
-
     if (props.executionRole) {
       this.role = props.executionRole;
       if (!Token.isUnresolved(props.executionRole.roleArn)) {
@@ -382,11 +391,9 @@ export class Runtime extends RuntimeBase {
     if (props.authorizerConfiguration) {
       cfnProps.authorizerConfiguration = Lazy.any({ produce: () => this.authorizerConfiguration!._render() });
     }
-    if (props.filesystemConfiguration) {
-      const rendered = this.renderFilesystemConfigurations(props.filesystemConfiguration);
-      if (rendered) {
-        cfnProps.filesystemConfigurations = rendered;
-      }
+    const filesystemBindings = this.bindFilesystems(props.filesystems);
+    if (filesystemBindings.length > 0) {
+      cfnProps.filesystemConfigurations = filesystemBindings.map(b => b.cfnFilesystemConfiguration);
     }
 
     this.runtimeResource = new bedrockagentcore.CfnRuntime(this, 'Resource', cfnProps as bedrockagentcore.CfnRuntimeProps);
@@ -538,19 +545,72 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
-   * Renders the filesystem configurations for CloudFormation.
-   * The L2 accepts a single configuration; CFN expects an array (MaxItems=1).
-   * Returns undefined when there are no sub-properties to render, so that
-   * the optional L1 property is omitted entirely (no empty `[{}]`).
+   * Validates and binds the filesystems prop to bind results that the Runtime
+   * uses to render L1 properties.
+   *
+   * Service-side limits (these all cause the Runtime to fail at deploy time):
+   * - up to 5 total configurations
+   * - at most 1 managed session storage
+   * - mount paths must be unique across all configurations
+   * - mount paths cannot be subdirectories of each other
+   *
+   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html
+   *
    * @internal
    */
-  private renderFilesystemConfigurations(config: FilesystemConfiguration): any[] | undefined {
-    if (!config.sessionStorage) {
-      return undefined;
+  private bindFilesystems(filesystems: Filesystem[] | undefined): FilesystemBindResult[] {
+    if (!filesystems || filesystems.length === 0) {
+      return [];
     }
-    return [{
-      sessionStorage: { mountPath: config.sessionStorage.mountPath },
-    }];
+
+    if (filesystems.length > 5) {
+      throw new ValidationError(
+        lit`TooManyFilesystems`,
+        `An AgentCore Runtime supports at most 5 filesystems, got ${filesystems.length}`,
+        this,
+      );
+    }
+
+    const bound = filesystems.map(fs => fs._bind());
+
+    const sessionCount = bound.filter(b => b.kind === FilesystemKind.SESSION_STORAGE).length;
+    if (sessionCount > 1) {
+      throw new ValidationError(
+        lit`TooManySessionStorages`,
+        `An AgentCore Runtime supports at most 1 managed session storage, got ${sessionCount}`,
+        this,
+      );
+    }
+
+    // Mount path uniqueness and subdirectory checks. Skip tokenized values so we
+    // never compare partially-resolved tokens.
+    const concretePaths = bound
+      .map(b => b.mountPath)
+      .filter(p => !Token.isUnresolved(p));
+    const seen = new Set<string>();
+    for (const p of concretePaths) {
+      if (seen.has(p)) {
+        throw new ValidationError(
+          lit`DuplicateMountPath`,
+          `Duplicate filesystem mount path ${JSON.stringify(p)}. Mount paths must be unique across all filesystems.`,
+          this,
+        );
+      }
+      seen.add(p);
+    }
+    for (const a of concretePaths) {
+      for (const b of concretePaths) {
+        if (a !== b && isSubPath(a, b)) {
+          throw new ValidationError(
+            lit`OverlappingMountPaths`,
+            `Filesystem mount path ${JSON.stringify(a)} is a subdirectory of ${JSON.stringify(b)}. Mount paths cannot be subdirectories of each other.`,
+            this,
+          );
+        }
+      }
+    }
+
+    return bound;
   }
 
   /**
@@ -604,36 +664,6 @@ export class Runtime extends RuntimeBase {
         || lifecycleConfiguration.maxLifetime.toSeconds() > LIFECYCLE_MAX_LIFETIME.toSeconds()) {
         throw new ValidationError(lit`InvalidMaxLifetime`, `Maximum lifetime must be between ${LIFECYCLE_MIN_TIMEOUT.toSeconds()} seconds and ${LIFECYCLE_MAX_LIFETIME.toSeconds()} seconds`, this);
       }
-    }
-  }
-
-  /**
-   * Validates the filesystem configuration.
-   * @throws ValidationError if validation fails
-   */
-  private validateFilesystemConfiguration(config: FilesystemConfiguration): void {
-    const mountPath = config.sessionStorage?.mountPath;
-    if (!mountPath || Token.isUnresolved(mountPath)) {
-      return;
-    }
-
-    const allErrors: string[] = [
-      ...validateStringFieldLength({
-        value: mountPath,
-        fieldName: 'Session storage mount path',
-        minLength: 6,
-        maxLength: 200,
-      }),
-      ...validateFieldPattern(
-        mountPath,
-        'Session storage mount path',
-        /^\/mnt\/[a-zA-Z0-9._-]+\/?$/,
-        'Session storage mount path must be under /mnt with one subdirectory level (for example, /mnt/data)',
-      ),
-    ];
-
-    if (allErrors.length > 0) {
-      throw new ValidationError(lit`InvalidFilesystemConfiguration`, allErrors.join('\n'), this);
     }
   }
 
@@ -942,4 +972,17 @@ export class Runtime extends RuntimeBase {
 
     return endpoint;
   }
+}
+
+/**
+ * Returns true when `child` is a strict subdirectory of `parent` (e.g.
+ * `/mnt/a/b` is a subdirectory of `/mnt/a`). Trailing slashes on either
+ * side are tolerated.
+ */
+function isSubPath(child: string, parent: string): boolean {
+  const normalize = (p: string) => (p.endsWith('/') ? p.slice(0, -1) : p);
+  const c = normalize(child);
+  const p = normalize(parent);
+  if (c === p) return false;
+  return c.startsWith(p + '/');
 }
