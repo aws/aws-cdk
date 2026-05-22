@@ -303,6 +303,19 @@ export interface DistributionProps {
    * @default false
    */
   readonly publishAdditionalMetrics?: boolean;
+
+  /**
+   * The cache tag configuration for the distribution.
+   *
+   * When configured, CloudFront extracts cache tags from the specified HTTP header in origin responses.
+   * You can then invalidate cached objects by tag using the `CreateInvalidation` API with the `#` prefix
+   * (for example, `#product:electronics`).
+   *
+   * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/invalidation-by-tags.html
+   *
+   * @default - no cache tag configuration (tag-based invalidation is not enabled)
+   */
+  readonly cacheTagConfig?: CacheTagConfig;
 }
 
 /**
@@ -433,6 +446,7 @@ export class Distribution extends Resource implements IDistribution {
         cacheBehaviors: this.additionalBehaviors.derive(ab =>
           ab.length === 0 ? undefined : ab.map(b => b._renderBehavior()),
         ),
+        cacheTagConfig: this.renderCacheTagConfig(props.cacheTagConfig),
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
@@ -885,6 +899,17 @@ export class Distribution extends Resource implements IDistribution {
       throw new ValidationError(lit`HttpVersionMustSupportHttp2ForGrpc`, `'httpVersion' must be ${validHttpVersions.join(' or ')} if 'enableGrpc' in 'defaultBehavior' or 'additionalBehaviors' is true, got ${this.httpVersion}`, this);
     }
   }
+
+  private renderCacheTagConfig(cacheTagConfig?: CacheTagConfig): CfnDistribution.CacheTagConfigProperty | undefined {
+    if (!cacheTagConfig) { return undefined; }
+    // Validate headerName is a valid HTTP token (RFC 9110 Section 5.1)
+    if (!Token.isUnresolved(cacheTagConfig.headerName)) {
+      if (!/^[a-zA-Z0-9!#$%&'*+\-.^_`|~]+$/.test(cacheTagConfig.headerName)) {
+        throw new ValidationError(lit`CacheTagConfigHeaderNameInvalid`, `'cacheTagConfig.headerName' must be a valid HTTP header name (token characters only), got '${cacheTagConfig.headerName}'.`, this);
+      }
+    }
+    return { headerName: cacheTagConfig.headerName };
+  }
 }
 
 /** Maximum HTTP version to support */
@@ -1206,4 +1231,28 @@ export interface BehaviorOptions extends AddBehaviorOptions {
    * The origin that you want CloudFront to route requests to when they match this behavior.
    */
   readonly origin: IOrigin;
+}
+
+/**
+ * Configuration for cache tag-based invalidation.
+ *
+ * When configured, CloudFront extracts cache tags from the specified HTTP header in origin responses.
+ * You can then invalidate cached objects by tag using the `CreateInvalidation` API with the `#` prefix.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/invalidation-by-tags.html
+ */
+export interface CacheTagConfig {
+  /**
+   * The name of the HTTP header that your origin includes in responses to provide cache tags.
+   *
+   * CloudFront uses this header to extract cache tags. The header value must contain
+   * comma-separated tag values (for example, `product:electronics, category:tv, brand:example`).
+   *
+   * For S3 origins, you can use object metadata as cache tags. S3 surfaces object metadata as
+   * response headers prefixed with `x-amz-meta-`, so a metadata key of `cache-tag` would be
+   * returned as `x-amz-meta-cache-tag`.
+   *
+   * @example 'x-amz-meta-cache-tag'
+   */
+  readonly headerName: string;
 }

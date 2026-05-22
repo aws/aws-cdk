@@ -130,7 +130,7 @@ export class ClusterResourceHandler extends ResourceHandler {
     }
 
     // validate updates
-    const updateTypes = Object.keys(updates).filter(type => type !== 'updateTags' && type !== 'updateDeletionProtection') as (keyof UpdateMap)[];
+    const updateTypes = Object.keys(updates).filter(type => type !== 'updateTags') as (keyof UpdateMap)[];
     const enabledUpdateTypes = updateTypes.filter((type) => updates[type]);
     console.log(enabledUpdateTypes);
 

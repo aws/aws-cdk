@@ -26,6 +26,13 @@
      ],
      "Version": "2012-10-17"
     }
+   },
+   "Metadata": {
+    "guard": {
+     "SuppressedRules": [
+      "IAM_ROLE_ROOT_PRINCIPAL_NEEDS_CONDITIONS"
+     ]
+    }
    }
   },
   "Vpc8378EB38": {
@@ -996,7 +1003,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
        },
-       "/889e80fdc307fce7497d5789d087b42b0d4fc2ef9d581a4d68552d67fb26015a.json"
+       "/6907d9079192ba75c3cb25c28562454b630c107ce9d95f5ce2432cb0e3950954.json"
       ]
      ]
     }

@@ -6,7 +6,7 @@
         "new DeployAssert (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:60:34)",
         "new IntegTestCase (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:47:20)",
         "new IntegTest (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:160:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:37:14)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:42:14)",
         "...node internals, ts-node..."
       ]
     }
