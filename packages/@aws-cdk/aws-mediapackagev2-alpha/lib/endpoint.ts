@@ -1880,6 +1880,15 @@ export interface OriginEndpointAttributes {
    * @attribute
    */
   readonly originEndpointName: string;
+
+  /**
+   * The AWS region where the origin endpoint lives.
+   *
+   * Required for cross-region imports to construct the correct ARN.
+   *
+   * @default - the importing stack's region
+   */
+  readonly region?: string;
 }
 
 /**
@@ -2538,6 +2547,38 @@ export class Segment {
 
 abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
   /**
+   * Creates an OriginEndpoint construct that represents an external (imported) Origin Endpoint from its ARN.
+   *
+   * The ARN is expected to be in the format:
+   * `arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>/originEndpoint/<endpointName>`
+   */
+  public static fromOriginEndpointArn(scope: Construct, id: string, originEndpointArn: string): IOriginEndpoint {
+    if (Token.isUnresolved(originEndpointArn)) {
+      throw new ValidationError(
+        lit`TokenArnNotSupported`,
+        'Cannot parse a token ARN. Use OriginEndpoint.fromOriginEndpointAttributes() with explicit channelGroupName, channelName, originEndpointName, and region values instead.',
+        scope,
+      );
+    }
+    const parsedArn = Stack.of(scope).splitArn(originEndpointArn, ArnFormat.SLASH_RESOURCE_NAME);
+    // resourceName is "<groupName>/channel/<channelName>/originEndpoint/<endpointName>"
+    const [channelGroupName, , channelName, , originEndpointName] = parsedArn.resourceName?.split('/') ?? [];
+    if (!channelGroupName || !channelName || !originEndpointName) {
+      throw new ValidationError(
+        lit`InvalidOriginEndpointArn`,
+        `Could not parse origin endpoint ARN: ${originEndpointArn}. Expected format: arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>/originEndpoint/<endpointName>`,
+        scope,
+      );
+    }
+    return OriginEndpointBase.fromOriginEndpointAttributes(scope, id, {
+      channelGroupName,
+      channelName,
+      originEndpointName,
+      region: parsedArn.region,
+    });
+  }
+
+  /**
    * Creates an OriginEndpoint construct that represents an external (imported) Origin Endpoint.
    */
   public static fromOriginEndpointAttributes(scope: Construct, id: string, attrs: OriginEndpointAttributes): IOriginEndpoint {
@@ -2563,6 +2604,7 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
         resource: `channelGroup/${attrs.channelGroupName}/channel/${this.channelName}/originEndpoint`,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: this.originEndpointName,
+        region: attrs.region,
       });
     }
 
@@ -2887,6 +2929,23 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
       });
     });
 
+    // Validate manifest name uniqueness across all manifest types
+    const allManifestNames = [
+      ...this.hlsManifests.map(m => m.manifestName),
+      ...this.llHlsManifests.map(m => m.manifestName),
+      ...this.dashManifests.map(m => m.manifestName),
+      ...this.mssManifests.map(m => m.manifestName),
+    ].filter(name => !Token.isUnresolved(name));
+
+    const duplicateNames = [...new Set(allManifestNames.filter((name, i) => allManifestNames.indexOf(name) !== i))];
+    if (duplicateNames.length > 0) {
+      throw new ValidationError(
+        lit`DuplicateManifestName`,
+        `Duplicate manifest names: [${duplicateNames.join(', ')}]. Each manifest in an OriginEndpoint must have a unique manifestName.`,
+        this,
+      );
+    }
+
     // Validate manifest and container type compatibility
     if (this.mssManifests.length > 0 && containerType !== ContainerType.ISM) {
       throw new ValidationError(lit`MssRequiresIsm`, 'MSS manifests require ISM container type. Use Segment.ism() for MSS manifests.', this);
@@ -2911,10 +2970,10 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
       originEndpointName: this.physicalName,
       description: props.description,
       tags: props?.tags ? renderTags(props.tags) : undefined,
-      hlsManifests: Lazy.any({ produce: () => this.hlsManifests }, { omitEmptyArray: true }),
-      lowLatencyHlsManifests: Lazy.any({ produce: () => this.llHlsManifests }, { omitEmptyArray: true }),
-      dashManifests: Lazy.any({ produce: () => this.dashManifests }, { omitEmptyArray: true }),
-      mssManifests: Lazy.any({ produce: () => this.mssManifests }, { omitEmptyArray: true }),
+      hlsManifests: omitEmptyArray(this.hlsManifests),
+      lowLatencyHlsManifests: omitEmptyArray(this.llHlsManifests),
+      dashManifests: omitEmptyArray(this.dashManifests),
+      mssManifests: omitEmptyArray(this.mssManifests),
       containerType: containerType,
       startoverWindowSeconds: props.startoverWindow?.toSeconds(),
       segment: this.segmentValidation(containerType, props.segment),
@@ -2959,3 +3018,8 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     }
   }
 }
+
+function omitEmptyArray<A>(a: Array<A>): Array<A> | undefined {
+  return a.length > 0 ? a : undefined;
+}
+

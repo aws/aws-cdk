@@ -1,0 +1,471 @@
+{
+  "/lambda-python-build-images/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:38:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:258:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:266:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:158:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:299:18)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "visit (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvoke27dacea55ae28848262afba8ca16ad80/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvoke27dacea55ae28848262afba8ca16ad80/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke27dacea55ae28848262afba8ca16ad80Invoke71D9945A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvoke27dacea55ae28848262afba8ca16ad80/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvoke27dacea55ae28848262afba8ca16ad80"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "invokeAspectsV2 (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:78:26)",
+        "SingletonFunction.ensureFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:126:28)",
+        "SingletonFunction.ensureFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:161:16)",
+        "new SingletonFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:152:36)",
+        "new AssertionsProvider (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.js:224:24)",
+        "new AwsApiCall (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:47:25)",
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokef88cb886ad84615afbbcb0f0c3db07f0/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokef88cb886ad84615afbbcb0f0c3db07f0/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokef88cb886ad84615afbbcb0f0c3db07f0InvokeD196D5AF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokef88cb886ad84615afbbcb0f0c3db07f0/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokef88cb886ad84615afbbcb0f0c3db07f0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "invokeAspectsV2 (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb44964fb0d419ef7e8d915cdb662e346/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb44964fb0d419ef7e8d915cdb662e346/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb44964fb0d419ef7e8d915cdb662e346Invoke47E1EFBF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb44964fb0d419ef7e8d915cdb662e346/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeb44964fb0d419ef7e8d915cdb662e346"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "invokeAspectsV2 (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokec96c44400b6e11ce551edcc6cedc0f39/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokec96c44400b6e11ce551edcc6cedc0f39/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec96c44400b6e11ce551edcc6cedc0f39InvokeE744DC6B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokec96c44400b6e11ce551edcc6cedc0f39/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokec96c44400b6e11ce551edcc6cedc0f39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "invokeAspectsV2 (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb77d63ef2a039089f4de703a706d2d3d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb77d63ef2a039089f4de703a706d2d3d/Invoke": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb77d63ef2a039089f4de703a706d2d3dInvokeF93886ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:202:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb77d63ef2a039089f4de703a706d2d3d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsLambdaInvokeb77d63ef2a039089f4de703a706d2d3d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:84:25)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "recurse (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
+        "invokeAspectsV2 (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
+        "synthesize (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
+        "App.synth (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:50:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvoke27dacea55ae28848262afba8ca16ad80/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvoke27dacea55ae28848262afba8ca16ad80"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsApiCall (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokef88cb886ad84615afbbcb0f0c3db07f0/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokef88cb886ad84615afbbcb0f0c3db07f0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsApiCall (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb44964fb0d419ef7e8d915cdb662e346/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb44964fb0d419ef7e8d915cdb662e346"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsApiCall (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokec96c44400b6e11ce551edcc6cedc0f39/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokec96c44400b6e11ce551edcc6cedc0f39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsApiCall (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/lambda-python-build-images/DefaultTest/DeployAssert/LambdaInvokeb77d63ef2a039089f4de703a706d2d3d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaInvokeb77d63ef2a039089f4de703a706d2d3d"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:140:29)",
+        "new CustomResource (/local/home/abidhsn/repository/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsApiCall (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:57:32)",
+        "new LambdaInvokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.js:180:9)",
+        "DeployAssert.invokeFunction (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:75:16)",
+        "/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43: (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:43:3)",
+        "Array.forEach (:)",
+        "<anonymous> (/local/home/abidhsn/repository/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.python.build.images.js:42:24)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

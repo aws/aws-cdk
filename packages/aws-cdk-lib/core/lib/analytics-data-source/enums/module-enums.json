@@ -64,7 +64,8 @@
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/inbound-auth/authorizer.ts": {
     "GatewayAuthorizerType": [
       "CUSTOM_JWT",
-      "AWS_IAM"
+      "AWS_IAM",
+      "NONE"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.ts": {
@@ -131,6 +132,35 @@
       "OPTIONS"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.ts": {
+    "OAuth2CredentialProviderVendor": [
+      "GoogleOauth2",
+      "GithubOauth2",
+      "SlackOauth2",
+      "SalesforceOauth2",
+      "MicrosoftOauth2",
+      "CustomOauth2",
+      "AtlassianOauth2",
+      "LinkedinOauth2",
+      "XOauth2",
+      "OktaOauth2",
+      "OneLoginOauth2",
+      "PingOneOauth2",
+      "FacebookOauth2",
+      "YandexOauth2",
+      "RedditOauth2",
+      "ZoomOauth2",
+      "TwitchOauth2",
+      "SpotifyOauth2",
+      "DropboxOauth2",
+      "NotionOauth2",
+      "HubspotOauth2",
+      "CyberArkOauth2",
+      "FusionAuthOauth2",
+      "Auth0Oauth2",
+      "CognitoOauth2"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
     "MemoryStrategyType": [
       "SUMMARIZATION",
@@ -140,19 +170,41 @@
       "CUSTOM"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-statement.ts": {
+    "PolicyEffect": [
+      "permit",
+      "forbid"
+    ],
+    "PrincipalScope": [
+      "all",
+      "specific"
+    ],
+    "ActionScope": [
+      "all",
+      "specific"
+    ],
+    "ResourceScope": [
+      "all",
+      "type",
+      "specific"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime-artifact.ts": {
     "AgentCoreRuntime": [
       "PYTHON_3_10",
       "PYTHON_3_11",
       "PYTHON_3_12",
-      "PYTHON_3_13"
+      "PYTHON_3_13",
+      "PYTHON_3_14",
+      "NODE_22"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/types.ts": {
     "ProtocolType": [
       "MCP",
       "HTTP",
-      "A2A"
+      "A2A",
+      "AGUI"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/tools/browser.ts": {
@@ -2143,11 +2195,14 @@
     "EcsMachineImageType": [
       "ECS_AL2",
       "ECS_AL2023",
-      "ECS_AL2_NVIDIA"
+      "ECS_AL2_NVIDIA",
+      "ECS_AL2023_NVIDIA"
     ],
     "EksMachineImageType": [
       "EKS_AL2",
-      "EKS_AL2_NVIDIA"
+      "EKS_AL2_NVIDIA",
+      "EKS_AL2023",
+      "EKS_AL2023_NVIDIA"
     ],
     "AllocationStrategy": [
       "BEST_FIT",
@@ -2158,6 +2213,75 @@
     "DefaultInstanceClass": [
       "default_x86_64",
       "default_arm64"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/common/types.ts": {
+    "CustomClaimValueType": [
+      "STRING",
+      "STRING_ARRAY"
+    ],
+    "CustomClaimOperator": [
+      "EQUALS",
+      "CONTAINS",
+      "CONTAINS_ANY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/inbound-auth/authorizer.ts": {
+    "GatewayAuthorizerType": [
+      "CUSTOM_JWT",
+      "AWS_IAM",
+      "NONE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/interceptor.ts": {
+    "InterceptionPoint": [
+      "REQUEST",
+      "RESPONSE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/outbound-auth/api-key.ts": {
+    "ApiKeyCredentialLocationType": [
+      "HEADER",
+      "QUERY_PARAMETER"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/outbound-auth/credential-provider.ts": {
+    "CredentialProviderType": [
+      "API_KEY",
+      "OAUTH",
+      "GATEWAY_IAM_ROLE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/protocol.ts": {
+    "GatewayProtocolType": [
+      "MCP"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/targets/target-base.ts": {
+    "GatewayTargetProtocolType": [
+      "MCP"
+    ],
+    "McpTargetType": [
+      "OPENAPI_SCHEMA",
+      "SMITHY_MODEL",
+      "LAMBDA",
+      "MCP_SERVER",
+      "API_GATEWAY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory-strategy.ts": {
+    "MemoryStrategyType": [
+      "SUMMARIZATION",
+      "SEMANTIC",
+      "USER_PREFERENCE",
+      "EPISODIC",
+      "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.ts": {
+    "BrowserSigning": [
+      "ENABLED",
+      "DISABLED"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -3224,6 +3348,8 @@
       "c8i-flex",
       "compute7-amd",
       "c7a",
+      "compute8-amd",
+      "c8a",
       "storage2",
       "d2",
       "storage3",
@@ -4264,6 +4390,10 @@
     "AlarmBehavior": [
       "ROLLBACK_ON_ALARM",
       "FAIL_ON_ALARM"
+    ],
+    "ServiceConnectAccessLogFormat": [
+      "TEXT",
+      "JSON"
     ],
     "LaunchType": [
       "EC2",
@@ -5678,6 +5808,10 @@
       "all_storage_classes_128K",
       "varies_by_storage_class"
     ],
+    "BucketNamespace": [
+      "global",
+      "account-regional"
+    ],
     "BucketEncryption": [
       "UNENCRYPTED",
       "KMS_MANAGED",
@@ -5830,6 +5964,11 @@
       "BOUNCES_AND_COMPLAINTS",
       "BOUNCES_ONLY",
       "COMPLAINTS_ONLY"
+    ],
+    "AutoValidationThreshold": [
+      "MEDIUM",
+      "HIGH",
+      "MANAGED"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/dedicated-ip-pool.ts": {
@@ -6440,6 +6579,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/validation/report.ts": {
+    "PolicyValidationReportStatus": [
+      "success",
+      "failure"
+    ],
     "PolicyValidationReportStatusBeta1": [
       "success",
       "failure"

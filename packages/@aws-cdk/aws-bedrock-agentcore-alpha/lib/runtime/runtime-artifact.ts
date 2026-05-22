@@ -24,7 +24,7 @@ import type { Runtime } from './runtime';
 
 /**
  * Bedrock AgentCore runtime environment for code execution
- * Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
+ * Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13 | PYTHON_3_14 | NODE_22
  */
 export enum AgentCoreRuntime {
   /**
@@ -43,6 +43,14 @@ export enum AgentCoreRuntime {
    * Python 3.13 runtime
    */
   PYTHON_3_13 = 'PYTHON_3_13',
+  /**
+   * Python 3.14 runtime
+   */
+  PYTHON_3_14 = 'PYTHON_3_14',
+  /**
+   * Node.js 22 runtime
+   */
+  NODE_22 = 'NODE_22',
 }
 
 /**
@@ -89,7 +97,7 @@ export abstract class AgentRuntimeArtifact {
   /**
    * Reference an agent runtime artifact that's constructed directly from an S3 object
    * @param s3Location The source code location and configuration details.
-   * @param runtime The runtime environment for executing the code. Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13
+   * @param runtime The runtime environment for executing the code. Allowed values: PYTHON_3_10 | PYTHON_3_11 | PYTHON_3_12 | PYTHON_3_13 | PYTHON_3_14 | NODE_22
    * @param entrypoint The entry point for the code execution, specifying the function or method that should be invoked when the code runs.
    */
   public static fromS3(s3Location: s3.Location, runtime: AgentCoreRuntime, entrypoint: string[]): AgentRuntimeArtifact {

@@ -5,6 +5,11 @@ export const OUTDIR_ENV = 'CDK_OUTDIR';
 export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 
 /**
+ * If this environment variable is set, error codes of CDK-specific errors will be written to it.
+ */
+export const ERRORFILE_ENV = 'CDK_ERROR_FILE';
+
+/**
  * The name of the temporary file where the context is stored.
  */
 export const CONTEXT_OVERFLOW_LOCATION_ENV = 'CONTEXT_OVERFLOW_LOCATION_ENV';
@@ -42,3 +47,13 @@ export const CLI_VERSION_ENV = 'CDK_CLI_VERSION';
  * In the format "<package>@x.y.z", e.g  "aws-cdk@2.1006.0" or "@aws-cdk/toolkit-lib@1.0.0"
  */
 export const TOOLKIT_VERSION_ENV = 'CDK_TOOLKIT_VERSION';
+
+/**
+ * Context key to control whether validation errors cause synthesis to fail.
+ *
+ * When set to `true` (the default), validation failures will print errors to
+ * stderr and set a non-zero exit code. Set to `false` to only write the JSON
+ * report without failing synthesis.
+ */
+export const FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT = '@aws-cdk/core:failSynthOnValidationErrors';
+
