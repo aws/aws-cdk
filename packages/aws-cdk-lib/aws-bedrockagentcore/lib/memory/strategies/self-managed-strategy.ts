@@ -12,6 +12,8 @@
  */
 
 import type { IConstruct } from 'constructs';
+import type { MetadataSchemaEntry } from './metadata-schema';
+import { renderMemoryRecordSchema, validateMetadataSchema } from './metadata-schema';
 import type * as bedrockagentcore from '../../../../aws-bedrockagentcore';
 import * as iam from '../../../../aws-iam';
 import type { Location } from '../../../../aws-s3';
@@ -141,6 +143,16 @@ export interface SelfManagedStrategyProps extends MemoryStrategyCommonProps {
    * @default - undefined
    */
   readonly triggerConditions?: TriggerConditions;
+  /**
+   * Schema for metadata fields attached to records produced by this strategy.
+   *
+   * Each entry declares a metadata field name (and optional type / extraction rules) that
+   * the service will populate on extracted memory records. Indexed keys can later be used
+   * to filter retrieval. Must contain between 1 and 20 entries.
+   *
+   * @default - No metadata schema
+   */
+  readonly metadataSchema?: MetadataSchemaEntry[];
 }
 
 /**
@@ -162,6 +174,10 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
    * Historical context window size for self managed memory strategy
    */
   public readonly historicalContextWindowSize: number;
+  /**
+   * The metadata schema for memory records produced by this strategy.
+   */
+  public readonly metadataSchema?: MetadataSchemaEntry[];
 
   constructor(strategyType: MemoryStrategyType, props: SelfManagedStrategyProps) {
     this.strategyName = props.strategyName;
@@ -174,6 +190,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
       tokenBasedTrigger: props.triggerConditions?.tokenBasedTrigger ?? DEFAULT_TOKEN_BASED_TRIGGER,
     };
     this.historicalContextWindowSize = props.historicalContextWindowSize ?? DEFAULT_HISTORICAL_CONTEXT_WINDOW_SIZE;
+    this.metadataSchema = props.metadataSchema;
 
     // ------------------------------------------------------
     // Validations
@@ -181,6 +198,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
     throwIfInvalid(this._validateMemoryStrategyName, this.strategyName);
     throwIfInvalid(this._validateHistoricalContextWindowSize, this.historicalContextWindowSize);
     throwIfInvalid(this._validateTriggerConditions, this.triggerConditions);
+    throwIfInvalid(validateMetadataSchema, this.metadataSchema);
   }
 
   public render(): bedrockagentcore.CfnMemory.MemoryStrategyProperty {
@@ -189,6 +207,7 @@ export class SelfManagedMemoryStrategy implements IMemoryStrategy {
         name: this.strategyName,
         description: this.description,
         type: this.strategyType,
+        memoryRecordSchema: renderMemoryRecordSchema(this.metadataSchema),
         configuration: {
           selfManagedConfiguration: {
             historicalContextWindowSize: this.historicalContextWindowSize,

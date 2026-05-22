@@ -1,0 +1,51 @@
+{
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/MemoryWithMetadataSchema": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/MemoryWithMetadataSchema/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/MemoryWithMetadataSchema/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithMetadataSchemaMemory7123D307"
+    }
+  ],
+  "/aws-cdk-bedrock-agentcore-memory-metadata-schema/MemoryWithMetadataSchema/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithMetadataSchemaServiceRole5BA30A0D"
+    }
+  ]
+}

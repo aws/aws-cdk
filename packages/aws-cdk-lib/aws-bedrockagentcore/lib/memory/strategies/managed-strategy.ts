@@ -12,6 +12,8 @@
  */
 
 import type { IConstruct } from 'constructs';
+import type { MetadataSchemaEntry } from './metadata-schema';
+import { renderMemoryRecordSchema, validateMetadataSchema } from './metadata-schema';
 import type { IModel } from '../../../../aws-bedrock';
 import type * as bedrockagentcore from '../../../../aws-bedrockagentcore';
 import { Grant, type IGrantable } from '../../../../aws-iam';
@@ -62,6 +64,16 @@ export interface EpisodicReflectionConfiguration {
    * Minimum 1 namespace required
    */
   readonly namespaces: string[];
+  /**
+   * Schema for metadata fields attached to records produced by reflection.
+   *
+   * Configured independently from the strategy-level `metadataSchema`, allowing reflection
+   * memories to have a different metadata shape than memories extracted from raw events.
+   * Must contain between 1 and 20 entries.
+   *
+   * @default - No metadata schema for reflection records
+   */
+  readonly metadataSchema?: MetadataSchemaEntry[];
 }
 
 /**
@@ -108,6 +120,19 @@ export interface ManagedStrategyProps extends MemoryStrategyCommonProps {
    * @default - No reflection configuration
    */
   readonly reflectionConfiguration?: EpisodicReflectionConfiguration;
+  /**
+   * Schema for metadata fields attached to records produced by this strategy.
+   *
+   * Each entry declares a metadata field name (and optional type / extraction rules) that
+   * the service will populate on extracted memory records. Indexed keys can later be used
+   * to filter retrieval. Must contain between 1 and 20 entries.
+   *
+   * For `EPISODIC` strategies, this controls metadata for memories extracted from raw events;
+   * see `EpisodicReflectionConfiguration.metadataSchema` for reflection records.
+   *
+   * @default - No metadata schema
+   */
+  readonly metadataSchema?: MetadataSchemaEntry[];
 }
 
 /**
@@ -134,6 +159,10 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
    * The configuration for episodic reflection.
    */
   public readonly reflectionConfiguration?: EpisodicReflectionConfiguration;
+  /**
+   * The metadata schema for memory records produced by this strategy.
+   */
+  public readonly metadataSchema?: MetadataSchemaEntry[];
   public readonly strategyType: MemoryStrategyType;
 
   /**
@@ -152,6 +181,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
     this.consolidationOverride = props.customConsolidation;
     this.extractionOverride = props.customExtraction;
     this.reflectionConfiguration = props.reflectionConfiguration;
+    this.metadataSchema = props.metadataSchema;
 
     // ------------------------------------------------------
     // Validations
@@ -165,6 +195,8 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
     if (this.reflectionConfiguration) {
       throwIfInvalid(this._validateReflectionConfiguration, this.reflectionConfiguration);
     }
+    throwIfInvalid(validateMetadataSchema, this.metadataSchema);
+    throwIfInvalid(validateMetadataSchema, this.reflectionConfiguration?.metadataSchema);
   }
 
   /**
@@ -172,6 +204,8 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
    * @returns The CloudFormation property for the memory strategy.
    */
   public render(): bedrockagentcore.CfnMemory.MemoryStrategyProperty {
+    const memoryRecordSchema = renderMemoryRecordSchema(this.metadataSchema);
+
     // If no overrides and no reflection config, use built-in strategy format
     if (!this.consolidationOverride && !this.extractionOverride && !this.reflectionConfiguration) {
       const cfnStrategyMap: Record<MemoryStrategyType, string> = {
@@ -187,6 +221,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
           name: this.strategyName,
           description: this.description,
           namespaces: this.namespaces,
+          memoryRecordSchema,
         },
       };
     }
@@ -199,7 +234,11 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
           name: this.strategyName,
           description: this.description,
           namespaces: this.namespaces,
-          reflectionConfiguration: { namespaces: this.reflectionConfiguration.namespaces },
+          memoryRecordSchema,
+          reflectionConfiguration: {
+            namespaces: this.reflectionConfiguration.namespaces,
+            memoryRecordSchema: renderMemoryRecordSchema(this.reflectionConfiguration.metadataSchema),
+          },
         },
       };
     }
@@ -219,6 +258,7 @@ export class ManagedMemoryStrategy implements IMemoryStrategy {
         name: this.strategyName,
         description: this.description,
         namespaces: this.namespaces,
+        memoryRecordSchema,
         configuration: {
           [strategyKey]: {
             ...(this.consolidationOverride && {
