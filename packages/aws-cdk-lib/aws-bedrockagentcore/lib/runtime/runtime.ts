@@ -148,18 +148,7 @@ export interface RuntimeProps {
   readonly loggingConfigs?: LoggingConfig[];
 
   /**
-   * Filesystems to mount inside the AgentCore Runtime container.
-   *
-   * AgentCore allows up to 5 filesystems on a single Runtime, with at most one
-   * managed session storage and at most two EFS access points. Mount paths must
-   * be unique and cannot be subdirectories of each other.
-   *
-   * Use `Filesystem.sessionStorage()` for managed per-session storage and
-   * `Filesystem.fromEfsAccessPoint()` to mount an existing Amazon EFS access
-   * point. EFS-backed filesystems require the Runtime to be in VPC network
-   * mode; the construct grants the necessary IAM permissions, allows outbound
-   * NFS traffic to the file system, and adds a CloudFormation dependency on
-   * the EFS mount targets.
+   * The filesystem configurations for the runtime environment.
    *
    * @default - No filesystems configured
    * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html
@@ -545,16 +534,7 @@ export class Runtime extends RuntimeBase {
   }
 
   /**
-   * Validates and binds the filesystems prop to bind results that the Runtime
-   * uses to render L1 properties.
-   *
-   * Service-side limits (these all cause the Runtime to fail at deploy time):
-   * - up to 5 total configurations
-   * - at most 1 managed session storage
-   * - mount paths must be unique across all configurations
-   * - mount paths cannot be subdirectories of each other
-   *
-   * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-filesystem-configurations.html
+   * Binds the filesystems prop and enforces service-side limits.
    *
    * @internal
    */
