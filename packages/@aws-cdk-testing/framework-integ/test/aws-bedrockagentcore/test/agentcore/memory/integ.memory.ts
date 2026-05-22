@@ -7,6 +7,7 @@
 import * as bedrock from 'aws-cdk-lib/aws-bedrock';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
+import * as kinesis from 'aws-cdk-lib/aws-kinesis';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as sns from 'aws-cdk-lib/aws-sns';
@@ -93,6 +94,28 @@ new agentcore.Memory(stack, 'MemoryWithBuiltinEpisodicEx', {
   expirationDuration: cdk.Duration.days(90),
   memoryStrategies: [
     agentcore.MemoryStrategy.usingBuiltInEpisodic(),
+  ],
+});
+
+// Create a memory with stream delivery to Kinesis
+const memoryEventStream = new kinesis.Stream(stack, 'MemoryEventStream', {
+  encryption: kinesis.StreamEncryption.MANAGED,
+});
+
+new agentcore.Memory(stack, 'MemoryWithStreamDelivery', {
+  memoryName: 'memory_with_stream_delivery',
+  description: 'A test memory with Kinesis stream delivery',
+  expirationDuration: cdk.Duration.days(90),
+  streamDeliveryResources: [
+    {
+      stream: memoryEventStream,
+      contentConfigurations: [
+        {
+          type: agentcore.StreamDeliveryContentType.MEMORY_RECORDS,
+          level: agentcore.StreamDeliveryContentLevel.FULL_CONTENT,
+        },
+      ],
+    },
   ],
 });
 

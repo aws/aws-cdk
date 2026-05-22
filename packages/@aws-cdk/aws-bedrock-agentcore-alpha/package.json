@@ -148,7 +148,6 @@
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.ITargetConfiguration.bind.gateway",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.MemoryProps.executionRole",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.MemoryProps.kmsKey",
-      "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.StreamDeliveryResource.stream",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.AgentRuntimeAttributes.securityGroups",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.RuntimeProps.executionRole",
       "prefer-ref-interface:@aws-cdk/aws-bedrock-agentcore-alpha.OnlineEvaluationConfigProps.executionRole",
