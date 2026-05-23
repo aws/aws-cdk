@@ -780,7 +780,6 @@ export class ApiGatewayTargetConfiguration extends McpTargetConfiguration {
     }
   }
 
-
   /**
    * Validates a tool filter
    * @internal
