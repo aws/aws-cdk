@@ -42,7 +42,7 @@ describe('VectorBucket grants', () => {
   const grantTests = ({ withKMS, keyName }: { withKMS: boolean; keyName?: string }) => {
     enum GrantType { READ = 'read', WRITE = 'write', READ_WRITE = 'read & write' }
 
-    const grantPermissions = (bucket: s3vectors.VectorBucket, grantType: GrantType, principal: iam.IGrantable, indexName: string) => {
+    const grantPermissions = (bucket: s3vectors.VectorBucket, grantType: GrantType, principal: iam.IGrantable, indexName?: string) => {
       switch (grantType) {
         case GrantType.READ:
           bucket.grantRead(principal, indexName);
@@ -106,6 +106,25 @@ describe('VectorBucket grants', () => {
 
         it(`grants ${grantType} permissions via bucket policy for a service principal (wildcard index)`, () => {
           grantPermissions(vectorBucket, grantType, new iam.ServicePrincipal(PRINCIPAL), '*');
+          Template.fromStack(stack).hasResourceProperties(VECTOR_BUCKET_POLICY_CFN_RESOURCE, {
+            'Policy': {
+              'Statement': [
+                {
+                  'Action': actions,
+                  'Effect': 'Allow',
+                  'Principal': {
+                    'Service': PRINCIPAL,
+                  },
+                  'Resource': RESOURCES_WITH_WILDCARD,
+                },
+              ],
+            },
+          });
+          verifyKeyPolicies();
+        });
+
+        it(`grants ${grantType} permissions via bucket policy for a service principal (default = all indexes)`, () => {
+          grantPermissions(vectorBucket, grantType, new iam.ServicePrincipal(PRINCIPAL));
           Template.fromStack(stack).hasResourceProperties(VECTOR_BUCKET_POLICY_CFN_RESOURCE, {
             'Policy': {
               'Statement': [

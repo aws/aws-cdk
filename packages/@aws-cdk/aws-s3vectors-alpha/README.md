@@ -110,11 +110,13 @@ Use the `grant*` helpers to grant read or write access to the vector bucket and
 its indexes. Each helper also grants the relevant KMS actions when the bucket
 is encrypted with a customer-managed key.
 
+By default, grants apply to the bucket and all indexes underneath it:
+
 ```ts
 declare const role: iam.Role;
-vectorBucket.grantRead(role, '*');
-vectorBucket.grantWrite(role, '*');
-vectorBucket.grantReadWrite(role, '*');
+vectorBucket.grantRead(role);
+vectorBucket.grantWrite(role);
+vectorBucket.grantReadWrite(role);
 ```
 
 Grant access only to a specific index by passing its name:

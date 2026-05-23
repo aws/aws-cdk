@@ -71,9 +71,10 @@ export interface IVectorBucket extends IResource {
    * the bucket will also be granted to the same principal.
    *
    * @param identity The principal to allow read permissions to
-   * @param indexName Allow the permissions to all indexes using '*' or to a single index by its name.
+   * @param indexName Allow the permissions to a single index by its name. Pass `'*'` or omit to grant on all indexes.
+   * @default '*' - grants on the bucket and all indexes underneath it
    */
-  grantRead(identity: iam.IGrantable, indexName: string): iam.Grant;
+  grantRead(identity: iam.IGrantable, indexName?: string): iam.Grant;
 
   /**
    * Grant write permissions for this vector bucket and its indexes to an IAM
@@ -83,9 +84,10 @@ export interface IVectorBucket extends IResource {
    * the bucket will also be granted to the same principal.
    *
    * @param identity The principal to allow write permissions to
-   * @param indexName Allow the permissions to all indexes using '*' or to a single index by its name.
+   * @param indexName Allow the permissions to a single index by its name. Pass `'*'` or omit to grant on all indexes.
+   * @default '*' - grants on the bucket and all indexes underneath it
    */
-  grantWrite(identity: iam.IGrantable, indexName: string): iam.Grant;
+  grantWrite(identity: iam.IGrantable, indexName?: string): iam.Grant;
 
   /**
    * Grant read and write permissions for this vector bucket and its indexes to
@@ -95,9 +97,10 @@ export interface IVectorBucket extends IResource {
    * contents of the bucket will also be granted to the same principal.
    *
    * @param identity The principal to allow read and write permissions to
-   * @param indexName Allow the permissions to all indexes using '*' or to a single index by its name.
+   * @param indexName Allow the permissions to a single index by its name. Pass `'*'` or omit to grant on all indexes.
+   * @default '*' - grants on the bucket and all indexes underneath it
    */
-  grantReadWrite(identity: iam.IGrantable, indexName: string): iam.Grant;
+  grantReadWrite(identity: iam.IGrantable, indexName?: string): iam.Grant;
 }
 
 /**
@@ -156,7 +159,7 @@ abstract class VectorBucketBase extends Resource implements IVectorBucket {
   /**
    * [disable-awslint:no-grants]
    */
-  public grantRead(identity: iam.IGrantable, indexName: string) {
+  public grantRead(identity: iam.IGrantable, indexName: string = '*') {
     return this.grant(
       identity,
       perms.VECTOR_BUCKET_READ_ACCESS,
@@ -169,7 +172,7 @@ abstract class VectorBucketBase extends Resource implements IVectorBucket {
   /**
    * [disable-awslint:no-grants]
    */
-  public grantWrite(identity: iam.IGrantable, indexName: string) {
+  public grantWrite(identity: iam.IGrantable, indexName: string = '*') {
     return this.grant(
       identity,
       perms.VECTOR_BUCKET_WRITE_ACCESS,
@@ -182,7 +185,7 @@ abstract class VectorBucketBase extends Resource implements IVectorBucket {
   /**
    * [disable-awslint:no-grants]
    */
-  public grantReadWrite(identity: iam.IGrantable, indexName: string) {
+  public grantReadWrite(identity: iam.IGrantable, indexName: string = '*') {
     return this.grant(
       identity,
       perms.VECTOR_BUCKET_READ_WRITE_ACCESS,
@@ -197,14 +200,12 @@ abstract class VectorBucketBase extends Resource implements IVectorBucket {
     vectorBucketActions: string[],
     keyActions: string[],
     resourceArn: string,
-    indexArn?: string,
+    indexArn: string,
   ) {
-    const resources = [resourceArn, indexArn].filter((arn): arn is string => arn !== undefined);
-
     const grant = iam.Grant.addToPrincipalOrResource({
       grantee,
       actions: vectorBucketActions,
-      resourceArns: resources,
+      resourceArns: [resourceArn, indexArn],
       resource: this,
     });
 
@@ -215,8 +216,8 @@ abstract class VectorBucketBase extends Resource implements IVectorBucket {
     return grant;
   }
 
-  private getIndexArn(indexName: string | undefined) {
-    return indexName ? `${this.vectorBucketArn}/index/${indexName}` : undefined;
+  private getIndexArn(indexName: string) {
+    return `${this.vectorBucketArn}/index/${indexName}`;
   }
 }
 
