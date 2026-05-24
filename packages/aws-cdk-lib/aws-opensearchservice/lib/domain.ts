@@ -457,6 +457,26 @@ export enum IpAddressType {
 }
 
 /**
+ * The deployment strategy for an OpenSearch Service domain.
+ *
+ * Controls how the domain distributes capacity across Availability Zones.
+ *
+ * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html
+ */
+export enum DeploymentStrategy {
+  /**
+   * The domain is deployed according to the configured cluster capacity.
+   */
+  DEFAULT = 'Default',
+  /**
+   * Optimizes for capacity availability across Availability Zones. The domain
+   * may use more capacity than configured to maintain availability during AZ
+   * impairments.
+   */
+  CAPACITY_OPTIMIZED = 'CapacityOptimized',
+}
+
+/**
  * Configuration for a specific node type in OpenSearch domain
  */
 export interface NodeConfig {
@@ -737,6 +757,19 @@ export interface DomainProps {
    * @default - IpAddressType.IPV4
    */
   readonly ipAddressType?: IpAddressType;
+
+  /**
+   * The deployment strategy for the domain.
+   *
+   * Controls how the domain is deployed across Availability Zones. Use
+   * `CAPACITY_OPTIMIZED` to prioritize capacity availability during AZ
+   * impairments.
+   *
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html
+   *
+   * @default - no deployment strategy is set on the domain (CloudFormation applies its default)
+   */
+  readonly deploymentStrategy?: DeploymentStrategy;
 
   /**
    * Specify whether to create a CloudWatch Logs resource policy or not.
@@ -2128,6 +2161,9 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
         autoSoftwareUpdateEnabled: props.enableAutoSoftwareUpdate,
       } : undefined,
       ipAddressType: props.ipAddressType,
+      deploymentStrategyOptions: props.deploymentStrategy !== undefined ? {
+        deploymentStrategy: props.deploymentStrategy,
+      } : undefined,
       aimlOptions: props.s3VectorsEngineEnabled !== undefined ? {
         s3VectorsEngine: {
           enabled: props.s3VectorsEngineEnabled,
