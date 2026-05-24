@@ -1,0 +1,133 @@
+{
+  "/cdk-integ-lambda-nodejs-rolldown": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:31:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/rolldown-handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:189:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "<anonymous> (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:42:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:197:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
+        "/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "<anonymous> (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:42:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/rolldown-handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/rolldown-handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "rolldownhandler1975D994"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:596:29)",
+        "new Function (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:44:13)",
+        "new TestStack (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:14:31)",
+        "<anonymous> (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:31:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/Exports/Output{\"Ref\":\"rolldownhandler1975D994\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefrolldownhandler1975D994FF695713"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:989:13)",
+        "createImportValue (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:213:33)",
+        "resolveValue (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:147:12)",
+        "resolveReferences (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
+        "prepareApp (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:34)",
+        "synthesize (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:34)",
+        "App.synth (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
+        "<anonymous> (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:42:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/rolldown-handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "rolldownhandlerServiceRole90D7051E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:389:34)",
+        "new Role (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:511:39)",
+        "new Function (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/Users/zbrydon/Documents/code/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:44:13)",
+        "new TestStack (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:14:31)",
+        "<anonymous> (/Users/zbrydon/Documents/code/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-nodejs/test/integ.rolldown.js:31:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-nodejs-rolldown/rolldown-handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

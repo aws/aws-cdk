@@ -9,7 +9,7 @@ import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
 import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack } from '../../core';
 import { Bundling } from '../lib/bundling';
 import { PackageInstallation } from '../lib/package-installation';
-import { Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
+import { BundlerType, Charset, LogLevel, OutputFormat, SourceMapMode } from '../lib/types';
 import * as util from '../lib/util';
 
 const STANDARD_RUNTIME = Runtime.NODEJS_20_X;
@@ -1636,3 +1636,246 @@ function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 
 
   throw new Error(`No \`package.json\` file found within ${depth} parent directories`);
 }
+
+describe('rolldown bundling', () => {
+  let existsSyncMock: jest.SpyInstance;
+
+  beforeEach(() => {
+    Bundling.clearRolldownInstallationCache();
+    detectPackageInstallationMock.mockReturnValue({ isWorkspacePackage: true, version: '1.0.0' });
+    existsSyncMock = jest.spyOn(fs, 'existsSync').mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    existsSyncMock.mockRestore();
+  });
+
+  test('default config path renders rolldown command', () => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      forceDockerBundling: true,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: expect.objectContaining({
+        command: [
+          'bash', '-c',
+          "'rolldown' '-c' '/asset-input/rolldown.config.mts' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'",
+        ],
+      }),
+    });
+
+    expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+      expect.stringMatching(/aws-lambda-nodejs\/lib$/),
+      expect.objectContaining({
+        buildArgs: expect.objectContaining({ ROLLDOWN_VERSION: '1.0.0' }),
+      }),
+    );
+  });
+
+  test('explicit rolldownConfigFile is honored', () => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      rolldownConfigFile: '/project/config/rolldown.config.mts',
+      forceDockerBundling: true,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: expect.objectContaining({
+        command: [
+          'bash', '-c',
+          "'rolldown' '-c' '/asset-input/config/rolldown.config.mts' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'",
+        ],
+      }),
+    });
+  });
+
+  test('fails when config file is missing', () => {
+    existsSyncMock.mockReturnValue(false);
+
+    expect(() => Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      forceDockerBundling: true,
+    })).toThrow(/Rolldown config file not found.*rolldown\.config\.mts.*rolldown\.config\.cjs/s);
+  });
+
+  test.each([
+    ['.mts'],
+    ['.mjs'],
+    ['.ts'],
+    ['.cts'],
+    ['.js'],
+    ['.cjs'],
+  ])('auto-discovers rolldown.config%s in the project root', (ext) => {
+    const expected = path.join(projectRoot, `rolldown.config${ext}`);
+    existsSyncMock.mockImplementation((p: fs.PathLike) => p === expected);
+
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      forceDockerBundling: true,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: expect.objectContaining({
+        command: [
+          'bash', '-c',
+          `'rolldown' '-c' '/asset-input/rolldown.config${ext}' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'`,
+        ],
+      }),
+    });
+  });
+
+  test('prefers .mts over other extensions when multiple exist', () => {
+    // default mock returns true for all files — simulates all candidates existing
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      forceDockerBundling: true,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: expect.objectContaining({
+        command: [
+          'bash', '-c',
+          "'rolldown' '-c' '/asset-input/rolldown.config.mts' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'",
+        ],
+      }),
+    });
+  });
+
+  test.each([
+    ['rolldown.config.mjs'],
+    ['rolldown.config.ts'],
+    ['rolldown.config.cts'],
+    ['rolldown.config.js'],
+    ['rolldown.config.cjs'],
+    ['config/rolldown.custom.ts'],
+  ])('explicit rolldownConfigFile %s under projectRoot is honored', (relative) => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      rolldownConfigFile: path.join(projectRoot, relative),
+      forceDockerBundling: true,
+    });
+
+    expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(depsLockFilePath), {
+      assetHashType: AssetHashType.OUTPUT,
+      bundling: expect.objectContaining({
+        command: [
+          'bash', '-c',
+          `'rolldown' '-c' '/asset-input/${relative}' '--cwd' '/asset-input' '--input' '/asset-input/lib/handler.ts' '--dir' '/asset-output' '--entry-file-names' 'index.js'`,
+        ],
+      }),
+    });
+  });
+
+  test('explicit rolldownConfigFile that does not exist throws', () => {
+    const missing = '/project/does-not-exist.mts';
+    existsSyncMock.mockImplementation((p: fs.PathLike) => p !== missing);
+
+    expect(() => Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      rolldownConfigFile: missing,
+      forceDockerBundling: true,
+    })).toThrow(/Rolldown config file not found at \/project\/does-not-exist\.mts/);
+  });
+
+  test('fails when rolldownConfigFile is outside projectRoot', () => {
+    expect(() => Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      rolldownConfigFile: '/elsewhere/rolldown.config.mts',
+      forceDockerBundling: true,
+    })).toThrow(/should be under projectRoot/);
+  });
+
+  test('custom rolldownVersion passes through as build arg', () => {
+    Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      rolldownVersion: '1.2.3',
+      forceDockerBundling: true,
+    });
+
+    expect(DockerImage.fromBuild).toHaveBeenCalledWith(
+      expect.stringMatching(/aws-lambda-nodejs\/lib$/),
+      expect.objectContaining({
+        buildArgs: expect.objectContaining({ ROLLDOWN_VERSION: '1.2.3' }),
+      }),
+    );
+  });
+
+  test('rejects esbuild-only options with rolldown', () => {
+    expect(() => Bundling.bundle(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+      minify: true,
+      externalModules: ['aws-sdk'],
+      forceDockerBundling: true,
+    })).toThrow(/not supported with rolldown.*minify.*externalModules/);
+  });
+
+  test('local bundling rejects mismatched rolldown major version', () => {
+    detectPackageInstallationMock.mockReturnValueOnce({ isWorkspacePackage: false, version: '0.9.0' });
+
+    const bundler = new Bundling(stack, {
+      entry,
+      projectRoot,
+      depsLockFilePath,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      bundler: BundlerType.ROLLDOWN,
+    });
+
+    expect(() => bundler.local?.tryBundle('/out', bundler)).toThrow(/Expected rolldown version 1\.x but got 0\.9\.0/);
+  });
+});

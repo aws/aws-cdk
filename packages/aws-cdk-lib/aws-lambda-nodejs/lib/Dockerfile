@@ -21,6 +21,12 @@ RUN npm install --global typescript
 ARG ESBUILD_VERSION=0.21
 RUN npm install --global --unsafe-perm=true esbuild@$ESBUILD_VERSION
 
+# Install rolldown
+# Installed unconditionally (like yarn/pnpm/bun/esbuild above) so the same
+# bundling image works whether the user picks esbuild or rolldown.
+ARG ROLLDOWN_VERSION=1.0.0
+RUN npm install --global --unsafe-perm=true rolldown@$ROLLDOWN_VERSION
+
 # Ensure all users can write to npm cache
 RUN mkdir /tmp/npm-cache && \
     chmod -R 777 /tmp/npm-cache && \
