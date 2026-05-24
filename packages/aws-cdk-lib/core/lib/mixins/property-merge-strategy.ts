@@ -1,6 +1,23 @@
 import type { IReadableBox } from '../helpers-internal/box';
 import { Box } from '../helpers-internal/box';
 import { deepMerge as deepMergeCopy } from '../private/deep-merge';
+import { Tokenization } from '../token';
+
+/**
+ * Attempt to unwrap a value into a Box.
+ * Returns the Box if the value is a Box directly, or if it's a token
+ * that can be reversed to a Box. Returns undefined otherwise.
+ */
+function tryUnbox(value: any): IReadableBox<any> | undefined {
+  if (Box.isBox(value)) {
+    return value;
+  }
+  const reversed = Tokenization.reverse(value, { failConcat: false });
+  if (reversed && Box.isBox(reversed)) {
+    return reversed;
+  }
+  return undefined;
+}
 
 /**
  * Interface for applying properties to a target using a specific strategy
@@ -193,12 +210,13 @@ class BoxSafeMergeStrategy implements IMergeStrategy {
       }
 
       const targetValue = (target as any)[key];
+      const box = tryUnbox(targetValue);
 
-      if (Box.isBox(targetValue)) {
+      if (box) {
         const delegate = this.delegate;
         const sourceValue = (source as any)[key];
 
-        (target as any)[key] = Box.combine({ box: targetValue }, ({ box: resolved }) => {
+        (target as any)[key] = Box.combine({ box }, ({ box: resolved }) => {
           const tmp: any = { value: resolved };
           delegate.apply(tmp, { value: sourceValue }, ['value']);
           return tmp.value;
@@ -232,16 +250,16 @@ class BoxSafeArrayStrategy implements IArrayMergeStrategy {
   constructor(private readonly delegate: IArrayMergeStrategy) {}
 
   public merge(target: any[], source: any[]): any {
-    const hasBoxElements = target.some(Box.isBox);
-    if (!hasBoxElements) {
-      return this.delegate.merge(target, source);
-    }
-
     const boxes: Record<string, IReadableBox<any>> = {};
     for (let i = 0; i < target.length; i++) {
-      if (Box.isBox(target[i])) {
-        boxes[`t${i}`] = target[i];
+      const box = tryUnbox(target[i]);
+      if (box) {
+        boxes[`t${i}`] = box;
       }
+    }
+
+    if (Object.keys(boxes).length === 0) {
+      return this.delegate.merge(target, source);
     }
 
     const delegate = this.delegate;

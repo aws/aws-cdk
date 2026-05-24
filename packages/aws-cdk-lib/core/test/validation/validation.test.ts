@@ -97,9 +97,6 @@ describe('validations', () => {
     expect(consoleErrorMock.mock.calls[0]).toEqual([
       expect.stringMatching(/Performing Policy Validations/),
     ]);
-    expect(consoleErrorMock.mock.calls[2]).toEqual([
-      expect.stringMatching(/Policy Validation Successful!/),
-    ]);
     expect(consoleErrorMock.mock.calls[1][0]).toEqual(`Validation Report
 -----------------
 
@@ -612,7 +609,7 @@ Policy Validation Report Summary
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
   });
 
-  test('JSON format', () => {
+  test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
     const app = new core.App({
       policyValidationBeta1: [
         new FakePlugin('test-plugin', [{
@@ -629,7 +626,7 @@ Policy Validation Report Summary
         }]),
       ],
       context: {
-        '@aws-cdk/core:validationReportJson': true,
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
       },
     });
     const stack = new core.Stack(app);
@@ -640,49 +637,37 @@ Policy Validation Report Summary
       },
     });
     app.synth();
-    expect(process.exitCode).toEqual(1);
-    const file = path.join(app.outdir, 'policy-validation-report.json');
-    const report = fs.readFileSync(file).toString('utf-8');
-    expect(JSON.parse(report)).toEqual(expect.objectContaining({
+
+    // No exit code set
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is written in the new v2 format
+    const file = path.join(app.outdir, 'validation-report.json');
+    const report = JSON.parse(fs.readFileSync(file).toString('utf-8'));
+    expect(report).toEqual(expect.objectContaining({
+      version: expect.any(String),
       title: 'Validation Report',
       pluginReports: [
         {
-          summary: {
-            pluginName: 'test-plugin',
-            status: 'failure',
-          },
+          pluginName: 'test-plugin',
+          conclusion: 'failure',
           violations: [
             {
               ruleName: 'test-rule',
               description: 'test recommendation',
+              severity: 'error',
               ruleMetadata: { id: 'abcdefg' },
-              violatingResources: [{
-                'locations': [
-                  'test-location',
-                ],
-                'resourceLogicalId': 'Fake',
-                'templatePath': '/path/to/Default.template.json',
-              }],
               violatingConstructs: [
                 {
-                  constructStack: {
-                    'id': 'Default',
-                    'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
-                    'libraryVersion': expect.any(String),
-                    'location': expect.any(String),
-                    'path': 'Default',
-                    'child': {
-                      'id': 'Fake',
-                      'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
-                      'libraryVersion': expect.any(String),
-                      'location': expect.any(String),
-                      'path': 'Default/Fake',
-                    },
-                  },
                   constructPath: 'Default/Fake',
-                  locations: ['test-location'],
-                  resourceLogicalId: 'Fake',
-                  templatePath: '/path/to/Default.template.json',
+                  constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
+                  libraryVersion: expect.any(String),
+                  cloudFormationResource: {
+                    templatePath: '/path/to/Default.template.json',
+                    logicalId: 'Fake',
+                    propertyPaths: ['test-location'],
+                  },
+                  stackTraces: expect.any(Array),
                 },
               ],
             },
@@ -690,8 +675,11 @@ Policy Validation Report Summary
         },
       ],
     }));
-    const consoleOut = consoleErrorMock.mock.calls[1][0];
-    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' for details`);
+
+    // No console output about validation
+    const allOutput = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(allOutput).not.toContain('Validation failed');
+    expect(allOutput).not.toContain('Validation Report');
   });
 
   test('Pretty print as default', () => {
@@ -723,9 +711,141 @@ Policy Validation Report Summary
     app.synth();
     expect(process.exitCode).toEqual(1);
     const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain('Validation failed. See the validation report above for details');
+    expect(consoleOut).toContain('Validation failed. A copy of this report can be found in');
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('both formats enabled by default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+    expect(process.exitCode).toEqual(1);
+
+    // JSON file written
+    const file = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+
+    // Pretty print also output
+    const consoleReport = consoleErrorMock.mock.calls[1][0];
+    expect(consoleReport).toContain('Validation Report');
+  });
+
+  test('failSynthOnValidationErrors=false succeeds even with validation failures', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:failSynthOnValidationErrors': false,
+      },
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+
+    // No failure exit code
+    expect(process.exitCode).toBeUndefined();
+
+    // JSON file is still written
+    const file = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+    const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+    expect(report.pluginReports[0].conclusion).toEqual('failure');
+  });
+
+  test('validationReportJson=true writes legacy report alongside new report', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:validationReportJson': true,
+      },
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+
+    // New format is always written
+    const newFile = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(newFile)).toBe(true);
+    const newReport = JSON.parse(fs.readFileSync(newFile, 'utf-8'));
+    expect(newReport.version).toBeDefined();
+    expect(newReport.pluginReports[0].conclusion).toEqual('failure');
+
+    // Legacy format is also written when opted in
+    const legacyFile = path.join(app.outdir, 'policy-validation-report.json');
+    expect(fs.existsSync(legacyFile)).toBe(true);
+    const legacyReport = JSON.parse(fs.readFileSync(legacyFile, 'utf-8'));
+    expect(legacyReport.pluginReports[0].summary.status).toEqual('failure');
+    expect(legacyReport.pluginReports[0].summary.pluginName).toEqual('test-plugin');
+  });
+
+  test('legacy report is NOT written by default', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'failure' },
+    });
+    app.synth();
+
+    // New format written
+    expect(fs.existsSync(path.join(app.outdir, 'validation-report.json'))).toBe(true);
+
+    // Legacy format NOT written
+    expect(fs.existsSync(path.join(app.outdir, 'policy-validation-report.json'))).toBe(false);
   });
 
   test('Multi format', () => {
@@ -744,10 +864,6 @@ Policy Validation Report Summary
           }],
         }]),
       ],
-      context: {
-        '@aws-cdk/core:validationReportJson': true,
-        '@aws-cdk/core:validationReportPrettyPrint': true,
-      },
     });
     const stack = new core.Stack(app);
     new core.CfnResource(stack, 'Fake', {
@@ -758,48 +874,32 @@ Policy Validation Report Summary
     });
     app.synth();
     expect(process.exitCode).toEqual(1);
-    const file = path.join(app.outdir, 'policy-validation-report.json');
-    const report = fs.readFileSync(file).toString('utf-8');
-    expect(JSON.parse(report)).toEqual(expect.objectContaining({
+    const file = path.join(app.outdir, 'validation-report.json');
+    const report = JSON.parse(fs.readFileSync(file).toString('utf-8'));
+    expect(report).toEqual(expect.objectContaining({
+      version: expect.any(String),
       title: 'Validation Report',
       pluginReports: [
         {
-          summary: {
-            pluginName: 'test-plugin',
-            status: 'failure',
-          },
+          pluginName: 'test-plugin',
+          conclusion: 'failure',
           violations: [
             {
               ruleName: 'test-rule',
               description: 'test recommendation',
+              severity: 'error',
               ruleMetadata: { id: 'abcdefg' },
-              violatingResources: [{
-                'locations': [
-                  'test-location',
-                ],
-                'resourceLogicalId': 'Fake',
-                'templatePath': '/path/to/Default.template.json',
-              }],
               violatingConstructs: [
                 {
-                  constructStack: {
-                    'id': 'Default',
-                    'construct': expect.stringMatching(/(aws-cdk-lib.Stack|Construct)/),
-                    'libraryVersion': expect.any(String),
-                    'location': expect.any(String),
-                    'path': 'Default',
-                    'child': {
-                      'id': 'Fake',
-                      'construct': expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
-                      'libraryVersion': expect.any(String),
-                      'location': expect.any(String),
-                      'path': 'Default/Fake',
-                    },
-                  },
                   constructPath: 'Default/Fake',
-                  locations: ['test-location'],
-                  resourceLogicalId: 'Fake',
-                  templatePath: '/path/to/Default.template.json',
+                  constructFqn: expect.stringMatching(/(aws-cdk-lib.CfnResource|Construct)/),
+                  libraryVersion: expect.any(String),
+                  cloudFormationResource: {
+                    templatePath: '/path/to/Default.template.json',
+                    logicalId: 'Fake',
+                    propertyPaths: ['test-location'],
+                  },
+                  stackTraces: expect.any(Array),
                 },
               ],
             },
@@ -808,7 +908,7 @@ Policy Validation Report Summary
       ],
     }));
     const consoleOut = consoleErrorMock.mock.calls[2][0];
-    expect(consoleOut).toContain(`Validation failed. See the validation report in \'${file}\' and above for details`);
+    expect(consoleOut).toContain(`Validation failed. A copy of this report can be found in '${file}'`);
     const consoleReport = consoleErrorMock.mock.calls[1][0];
     expect(consoleReport).toContain('Validation Report');
   });
@@ -847,7 +947,6 @@ Policy Validation Report Summary
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).toContain('Construct Annotations');
       expect(output).toContain('my-lib:SomeWarning');
-      expect(output).toContain('Policy Validation Successful!');
     });
 
     test('annotation errors cause validation failure', () => {
@@ -1140,6 +1239,27 @@ Policy Validation Report Summary
 
       const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
       expect(output).not.toContain('MY RULE');
+    });
+
+    test('validation report JSON is always written to assembly directory', () => {
+      const app = new core.App({
+        context: annotationReportContext,
+      });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      core.Annotations.of(construct).addWarningV2('my-lib:AlwaysWritten', 'Report always in assembly');
+
+      const assembly = app.synth();
+
+      const reportPath = path.join(assembly.directory, 'validation-report.json');
+      expect(fs.existsSync(reportPath)).toBe(true);
+      const report = JSON.parse(fs.readFileSync(reportPath, 'utf-8'));
+      expect(report.pluginReports[0].pluginName).toEqual('Construct Annotations');
     });
   });
 
