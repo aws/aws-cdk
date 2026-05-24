@@ -523,6 +523,28 @@ const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
 });
 ```
 
+#### Artifact Bucket Lifecycle
+
+By default, the artifact bucket created by the pipeline has a `RemovalPolicy.RETAIN` policy.
+For development or ephemeral environments where you want a full cleanup upon `cdk destroy`,
+you can configure the artifact bucket's lifecycle behavior directly:
+
+```ts
+const pipeline = new pipelines.CodePipeline(this, 'Pipeline', {
+  synth: new pipelines.ShellStep('Synth', {
+    input: pipelines.CodePipelineSource.connection('my-org/my-app', 'main', {
+      connectionArn:
+        'arn:aws:codestar-connections:us-east-1:222222222222:connection/7d2469ff-514a-4e4f-9003-5ca4a43cdc41',
+    }),
+    commands: ['npm ci', 'npm run build', 'npx cdk synth'],
+  }),
+  artifactBucketRemovalPolicy: cdk.RemovalPolicy.DESTROY,
+  artifactBucketAutoDeleteObjects: true,
+});
+```
+
+This eliminates the need to manually create a bucket with the desired lifecycle settings.
+
 #### Deploying without change sets
 
 Deployment is done by default with `CodePipeline` engine using change sets,
