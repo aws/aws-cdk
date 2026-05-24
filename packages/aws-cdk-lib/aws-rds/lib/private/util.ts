@@ -78,10 +78,14 @@ export function engineDescription(engine: IEngine) {
 
 /**
  * By default, deletion protection is disabled.
- * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN
+ * Enable if explicitly provided or if the RemovalPolicy has been set to RETAIN or RETAIN_ON_UPDATE_OR_DELETE
  */
 export function defaultDeletionProtection(deletionProtection?: boolean, removalPolicy?: RemovalPolicy): boolean | undefined {
-  return deletionProtection ?? (removalPolicy === RemovalPolicy.RETAIN ? true : undefined);
+  return deletionProtection ?? (
+    removalPolicy === RemovalPolicy.RETAIN || removalPolicy === RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE
+      ? true
+      : undefined
+  );
 }
 
 /**
@@ -144,13 +148,15 @@ export function renderSnapshotCredentials(scope: Construct, credentials?: Snapsh
  *
  * If the basePolicy is:
  *
- *  DESTROY or SNAPSHOT -> DESTROY (snapshot is good enough to recreate)
- *  RETAIN              -> RETAIN  (anything else will lose data or fail to deploy)
- *  (undefined)         -> DESTROY (base policy is assumed to be SNAPSHOT)
+ *  DESTROY or SNAPSHOT           -> DESTROY                    (snapshot is good enough to recreate)
+ *  RETAIN                        -> RETAIN                     (anything else will lose data or fail to deploy)
+ *  RETAIN_ON_UPDATE_OR_DELETE    -> RETAIN_ON_UPDATE_OR_DELETE (pass through; RetainExceptOnCreate still
+ *                                                               allows cleanup if the helper's own creation fails)
+ *  (undefined)                   -> DESTROY                    (base policy is assumed to be SNAPSHOT)
  */
 export function helperRemovalPolicy(basePolicy?: RemovalPolicy): RemovalPolicy {
-  return basePolicy === RemovalPolicy.RETAIN
-    ? RemovalPolicy.RETAIN
+  return basePolicy === RemovalPolicy.RETAIN || basePolicy === RemovalPolicy.RETAIN_ON_UPDATE_OR_DELETE
+    ? basePolicy
     : RemovalPolicy.DESTROY;
 }
 
