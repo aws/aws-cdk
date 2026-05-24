@@ -1930,28 +1930,18 @@ each(testedOpenSearchVersions).describe('deployment strategy', (engineVersion) =
     });
   });
 
-  test('uses Default when explicitly specified', () => {
+  test.each([
+    [DeploymentStrategy.DEFAULT, 'Default'],
+    [DeploymentStrategy.CAPACITY_OPTIMIZED, 'CapacityOptimized'],
+  ])('uses %s when explicitly specified', (strategy, expected) => {
     new Domain(stack, 'Domain', {
       version: engineVersion,
-      deploymentStrategy: DeploymentStrategy.DEFAULT,
+      deploymentStrategy: strategy,
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
       DeploymentStrategyOptions: {
-        DeploymentStrategy: 'Default',
-      },
-    });
-  });
-
-  test('uses CapacityOptimized when explicitly specified', () => {
-    new Domain(stack, 'Domain', {
-      version: engineVersion,
-      deploymentStrategy: DeploymentStrategy.CAPACITY_OPTIMIZED,
-    });
-
-    Template.fromStack(stack).hasResourceProperties('AWS::OpenSearchService::Domain', {
-      DeploymentStrategyOptions: {
-        DeploymentStrategy: 'CapacityOptimized',
+        DeploymentStrategy: expected,
       },
     });
   });
