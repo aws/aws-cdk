@@ -2,7 +2,6 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as eks from 'aws-cdk-lib/aws-eks';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Template } from 'aws-cdk-lib/assertions';
 import type { CfnResource, StackProps } from 'aws-cdk-lib';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
@@ -36,6 +35,7 @@ class EksClusterDeletionProtectionStack extends Stack {
       mastersRole,
       defaultCapacity: 1,
       ...getClusterVersionConfig(this, eks.KubernetesVersion.V1_32),
+      clusterName: 'eks-deletion-protection-test',
       deletionProtection: true,
     });
 
@@ -53,18 +53,6 @@ const test = new integ.IntegTest(app, 'aws-cdk-eks-cluster-deletion-protection-i
   testCases: [stack],
 });
 
-// Generate a template with deletionProtection disabled for cleanup.
-// We capture the original template (with deletionProtection: true) and create a modified
-// copy with deletionProtection: false. This avoids using addPropertyOverride which
-// interferes with CDK's synth process.
-const templateJson = Template.fromStack(stack).toJSON();
-const clusterLogicalId = Object.keys(templateJson.Resources).find(
-  (key) => templateJson.Resources[key].Type === 'Custom::AWSCDK-EKS-Cluster',
-)!;
-const cleanupTemplate = JSON.parse(JSON.stringify(templateJson));
-cleanupTemplate.Resources[clusterLogicalId].Properties.Config.deletionProtection = false;
-const templateWithProtectionDisabled = JSON.stringify(cleanupTemplate, null, 2);
-
 // Test: attempt to delete the stack - should fail because deletionProtection is enabled
 test.assertions.awsApiCall('CloudFormation', 'deleteStack', {
   StackName: stackName,
@@ -81,20 +69,19 @@ test.assertions.awsApiCall('CloudFormation', 'deleteStack', {
     ]),
   })).waitForAssertions(),
 ).next(
-  // Update the stack to disable deletionProtection so it can be cleaned up
-  test.assertions.awsApiCall('CloudFormation', 'updateStack', {
-    StackName: stackName,
-    TemplateBody: templateWithProtectionDisabled,
+  // Disable deletion protection directly via EKS API so the stack can be cleaned up
+  test.assertions.awsApiCall('eks', 'updateClusterConfig', {
+    name: 'eks-deletion-protection-test',
+    deletionProtection: false,
   }),
 ).next(
-  // Wait for the update to complete before integ-runner runs cdk destroy
-  test.assertions.awsApiCall('CloudFormation', 'describeStacks', {
-    StackName: stackName,
+  // Wait for the cluster to become ACTIVE after the update
+  test.assertions.awsApiCall('eks', 'describeCluster', {
+    name: 'eks-deletion-protection-test',
   }).expect(integ.ExpectedResult.objectLike({
-    Stacks: integ.Match.arrayWith([
-      integ.Match.objectLike({
-        StackStatus: 'UPDATE_COMPLETE',
-      }),
-    ]),
+    cluster: integ.Match.objectLike({
+      status: 'ACTIVE',
+      deletionProtection: false,
+    }),
   })).waitForAssertions(),
 );

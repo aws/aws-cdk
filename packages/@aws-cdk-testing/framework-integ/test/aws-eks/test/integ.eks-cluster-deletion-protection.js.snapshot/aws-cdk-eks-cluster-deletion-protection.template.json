@@ -688,7 +688,32 @@
         "eks:UpdateClusterVersion"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:eks:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster/eks-deletion-protection-test"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:aws:eks:us-east-1:",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":cluster/eks-deletion-protection-test/*"
+          ]
+         ]
+        }
+       ]
       },
       {
        "Action": [
@@ -696,7 +721,18 @@
         "eks:DescribeFargateProfile"
        ],
        "Effect": "Allow",
-       "Resource": "*"
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:eks:us-east-1:",
+          {
+           "Ref": "AWS::AccountId"
+          },
+          ":fargateprofile/eks-deletion-protection-test/*"
+         ]
+        ]
+       }
       },
       {
        "Action": [
@@ -758,6 +794,7 @@
      ]
     },
     "Config": {
+     "name": "eks-deletion-protection-test",
      "version": "1.32",
      "roleArn": {
       "Fn::GetAtt": [
@@ -795,7 +832,7 @@
       "endpointPrivateAccess": true
      },
      "accessConfig": {},
-     "deletionProtection": false
+     "deletionProtection": true
     },
     "AssumeRoleArn": {
      "Fn::GetAtt": [

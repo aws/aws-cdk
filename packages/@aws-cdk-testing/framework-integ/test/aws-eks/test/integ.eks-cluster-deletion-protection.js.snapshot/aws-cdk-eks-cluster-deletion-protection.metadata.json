@@ -43,7 +43,8 @@
         "mastersRole": "*",
         "defaultCapacity": "*",
         "version": "*",
-        "kubectlLayer": "*"
+        "kubectlLayer": "*",
+        "clusterName": "*"
       }
     },
     {
@@ -66,7 +67,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -79,7 +80,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -116,7 +117,7 @@
         "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)"
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
       ]
     }
   ],
@@ -137,7 +138,7 @@
         "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)"
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
       ]
     }
   ],
@@ -151,7 +152,7 @@
       "data": [
         "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:17:29)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:16:29)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -167,7 +168,7 @@
       "data": [
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -303,7 +304,7 @@
       "data": [
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -319,7 +320,7 @@
       "data": [
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -337,7 +338,7 @@
         "new LayerVersion (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "...new KubectlV32Layer in @aws-cdk/lambda-layer-kubectl-v32...",
         "getClusterVersionConfig (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ-tests-kubernetes-version.js:43:23)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:32:77)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:31:77)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -454,7 +455,7 @@
       "data": [
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1003:41)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -472,7 +473,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -498,7 +499,7 @@
       "data": [
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1080:17)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -514,7 +515,7 @@
       "data": [
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1081:17)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -620,9 +621,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -641,9 +640,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -662,9 +659,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -683,7 +678,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -763,9 +758,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -784,9 +777,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -805,9 +796,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -826,9 +815,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -847,9 +834,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -868,9 +853,7 @@
         "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
         "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:44:36)",
         "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "toTemplate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:317:28)",
-        "Function.fromStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/assertions/lib/template.js:42:29)",
-        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:53:77)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -888,7 +871,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -971,7 +954,7 @@
         "Array.forEach (:)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -991,7 +974,7 @@
         "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -1011,7 +994,7 @@
         "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -1094,7 +1077,7 @@
         "Array.forEach (:)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -1178,7 +1161,7 @@
         "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -1262,7 +1245,7 @@
         "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
         "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:26:21)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -1286,7 +1269,7 @@
         "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:851:90)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -1342,7 +1325,7 @@
         "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:857:39)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -1361,7 +1344,7 @@
         "new SecurityGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:863:58)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals, ts-node..."
       ]
@@ -1580,7 +1563,7 @@
         "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1072:26)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -1603,7 +1586,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)"
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
       ]
     }
   ],
@@ -1639,7 +1622,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
       ]
     }
@@ -1684,7 +1667,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
       ]
     }
@@ -1838,7 +1821,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -1868,7 +1851,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
       ]
     }
@@ -1927,7 +1910,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)"
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
       ]
     }
   ],
@@ -1945,7 +1928,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:37:31)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -2035,7 +2018,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:38:25)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
         "...node internals..."
       ]
@@ -2063,7 +2046,7 @@
         "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1072:26)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
         "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
       ]
     }
@@ -2517,7 +2500,7 @@
         "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)"
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
       ]
     }
   ],
@@ -2544,7 +2527,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)"
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
       ]
     }
   ],
@@ -2622,7 +2605,7 @@
         "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1414:20)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1031:50)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)"
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
       ]
     }
   ],
@@ -2672,7 +2655,7 @@
         "WrappedClass.get awsAuth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1261:33)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1055:26)",
         "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:28:24)"
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
       ]
     }
   ],
