@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "ArtifactBucketRemovalPolicyTest/DefaultTest": {
+      "stacks": [
+        "PipelineStack"
+      ],
+      "assertionStack": "ArtifactBucketRemovalPolicyTest/DefaultTest/DeployAssert",
+      "assertionStackName": "ArtifactBucketRemovalPolicyTestDefaultTestDeployAssertA5DEC07F"
+    }
+  },
+  "minimumCliVersion": "2.1123.0"
+}
