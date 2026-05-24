@@ -767,7 +767,7 @@ export interface DomainProps {
    *
    * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html
    *
-   * @default - no deployment strategy is set on the domain (CloudFormation applies its default)
+   * @default DeploymentStrategy.DEFAULT
    */
   readonly deploymentStrategy?: DeploymentStrategy;
 
