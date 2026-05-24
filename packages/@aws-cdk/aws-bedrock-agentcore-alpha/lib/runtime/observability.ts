@@ -12,6 +12,18 @@ import { Construct } from 'constructs';
 const MAX_DELIVERY_NAME_LENGTH = 60;
 
 /**
+ * Optional configuration for tracing delivery setup.
+ * @internal
+ */
+export interface TracingDeliveryConfig {
+  /**
+   * Whether to create a per-stack X-Ray resource policy.
+   * @default true
+   */
+  readonly createResourcePolicy?: boolean;
+}
+
+/**
  * Log types for AgentCore Runtime observability
  */
 export class LogType {
@@ -265,6 +277,7 @@ class XRayResourcePolicy extends Construct {
 export function configureTracingDelivery(
   scope: Construct,
   sourceArn: string,
+  options?: TracingDeliveryConfig,
 ): logs.CfnDelivery {
   const stack = Stack.of(scope);
 
@@ -275,41 +288,45 @@ export function configureTracingDelivery(
     resourceArn: sourceArn,
   });
 
-  // Get or create X-Ray resource policy (singleton per stack)
-  const policyId = 'CdkXRayLogsDeliveryPolicy';
-  let xrayPolicy = stack.node.tryFindChild(policyId) as XRayResourcePolicy | undefined;
+  const createResourcePolicy = options?.createResourcePolicy ?? true;
+  let xrayPolicy: XRayResourcePolicy | undefined;
+  if (createResourcePolicy) {
+    // Get or create X-Ray resource policy (singleton per stack)
+    const policyId = 'CdkXRayLogsDeliveryPolicy';
+    xrayPolicy = stack.node.tryFindChild(policyId) as XRayResourcePolicy | undefined;
 
-  if (!xrayPolicy) {
-    xrayPolicy = new XRayResourcePolicy(stack, policyId);
+    if (!xrayPolicy) {
+      xrayPolicy = new XRayResourcePolicy(stack, policyId);
+    }
+
+    // Grant permissions for this specific source resource
+    // The xray:PutTraceSegments action requires resources: ['*'] per AWS documentation.
+    // The conditions below restrict this broad scope to only the specific source resource
+    // (via logs:LogGeneratingResourceArns) and the current account and delivery-source ARN.
+    // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
+    xrayPolicy.document.addStatements(new PolicyStatement({
+      effect: Effect.ALLOW,
+      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
+      actions: ['xray:PutTraceSegments'],
+      resources: ['*'],
+      conditions: {
+        'ForAllValues:ArnLike': {
+          'logs:LogGeneratingResourceArns': [sourceArn],
+        },
+        'StringEquals': {
+          'aws:SourceAccount': stack.account,
+        },
+        'ArnLike': {
+          'aws:SourceArn': stack.formatArn({
+            service: 'logs',
+            resource: 'delivery-source',
+            resourceName: '*',
+            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+          }),
+        },
+      },
+    }));
   }
-
-  // Grant permissions for this specific source resource
-  // The xray:PutTraceSegments action requires resources: ['*'] per AWS documentation.
-  // The conditions below restrict this broad scope to only the specific source resource
-  // (via logs:LogGeneratingResourceArns) and the current account and delivery-source ARN.
-  // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
-  xrayPolicy.document.addStatements(new PolicyStatement({
-    effect: Effect.ALLOW,
-    principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-    actions: ['xray:PutTraceSegments'],
-    resources: ['*'],
-    conditions: {
-      'ForAllValues:ArnLike': {
-        'logs:LogGeneratingResourceArns': [sourceArn],
-      },
-      'StringEquals': {
-        'aws:SourceAccount': stack.account,
-      },
-      'ArnLike': {
-        'aws:SourceArn': stack.formatArn({
-          service: 'logs',
-          resource: 'delivery-source',
-          resourceName: '*',
-          arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-        }),
-      },
-    },
-  }));
 
   // Create delivery destination for X-Ray
   const deliveryDestination = new logs.CfnDeliveryDestination(scope, 'TracesDeliveryDest', {
@@ -317,7 +334,9 @@ export function configureTracingDelivery(
     deliveryDestinationType: 'XRAY',
   });
 
-  deliveryDestination.node.addDependency(xrayPolicy);
+  if (xrayPolicy) {
+    deliveryDestination.node.addDependency(xrayPolicy);
+  }
 
   // Create delivery to connect source and destination
   const delivery = new logs.CfnDelivery(scope, 'TracesDelivery', {

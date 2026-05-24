@@ -16,7 +16,7 @@ import { RuntimeNetworkConfiguration } from '../../../lib/network/network-config
 import { RuntimeCustomClaim } from '../../../lib/runtime/inbound-auth/custom-claim';
 import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/inbound-auth/runtime-authorizer-configuration';
 import { LoggingDestination, LogType } from '../../../lib/runtime/observability';
-import { Runtime } from '../../../lib/runtime/runtime';
+import { Runtime, TracingResourcePolicyMode } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
 import {
   ProtocolType,
@@ -3107,6 +3107,8 @@ describe('Runtime observability tests', () => {
       DeliveryDestinationType: 'XRAY',
     });
 
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 1);
+
     // Verify X-Ray resource policy allows logs delivery service
     template.hasResourceProperties('AWS::XRay::ResourcePolicy', {
       PolicyDocument: {
@@ -3122,6 +3124,42 @@ describe('Runtime observability tests', () => {
         ],
       },
     });
+  });
+
+  test('Should skip X-Ray resource policy creation when tracingResourcePolicy mode is NONE', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TracingNoPolicyStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const runtime = new Runtime(stack, 'TracingRuntime', {
+      runtimeName: 'tracing_runtime_no_policy',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+      tracingResourcePolicy: {
+        mode: TracingResourcePolicyMode.NONE,
+      },
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'TRACES',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+    });
+
+    template.resourceCountIs('AWS::XRay::ResourcePolicy', 0);
   });
 
   test('Should not create observability resources when not configured', () => {
