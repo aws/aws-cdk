@@ -917,6 +917,94 @@ new glue.ExternalTable(this, 'MyTable', {
 });
 ```
 
+## Iceberg Tables
+
+`IcebergTable` provisions a Glue table in the [Apache Iceberg](https://iceberg.apache.org/spec/) open table format. It emits the `AWS::Glue::Table.OpenTableFormatInput.IcebergInput.IcebergTableInput` shape that survives CloudFormation `Update` — schema and partition evolution flow through subsequent `cdk deploy`s without dropping `table_type=ICEBERG` from the Glue table parameters.
+
+A minimal table:
+
+```ts
+declare const myDatabase: glue.Database;
+
+new glue.IcebergTable(this, 'UsersTable', {
+  database: myDatabase,
+  tableName: 'users',
+  location: 's3://my-warehouse/users/',
+  columns: [
+    { name: 'user_id', type: glue.IcebergType.LONG, required: true, id: 1 },
+    { name: 'email', type: glue.IcebergType.STRING, required: true, id: 2 },
+    { name: 'signed_up_at', type: glue.IcebergType.TIMESTAMPTZ, required: true, id: 3 },
+  ],
+});
+```
+
+A table exercising partitions, sort order, nested types, identifier-field-ids, and table properties:
+
+```ts
+declare const myDatabase: glue.Database;
+
+new glue.IcebergTable(this, 'OrdersTable', {
+  database: myDatabase,
+  tableName: 'orders',
+  location: 's3://my-warehouse/orders/',
+  comment: 'Orders, partitioned by day(placed_at) + bucket(16, customer_id).',
+  columns: [
+    { name: 'order_id', type: glue.IcebergType.LONG, required: true, id: 1 },
+    { name: 'customer_id', type: glue.IcebergType.LONG, required: true, id: 2 },
+    { name: 'order_amount', type: glue.IcebergType.decimal(12, 2), required: true, id: 3 },
+    { name: 'placed_at', type: glue.IcebergType.TIMESTAMPTZ, required: true, id: 4 },
+    { name: 'tags', type: glue.IcebergType.list(glue.IcebergType.STRING), id: 5 },
+    {
+      name: 'shipping_address',
+      type: glue.IcebergType.struct([
+        { name: 'city', type: glue.IcebergType.STRING, required: true },
+        { name: 'country', type: glue.IcebergType.STRING, required: true },
+      ]),
+      id: 6,
+    },
+  ],
+  partitionSpec: [
+    { sourceColumn: 'placed_at', transform: glue.IcebergPartitionTransform.DAY },
+    { sourceColumn: 'customer_id', transform: glue.IcebergPartitionTransform.bucket(16) },
+  ],
+  sortOrder: [
+    {
+      sourceColumn: 'placed_at',
+      direction: glue.IcebergSortDirection.ASC,
+      nullOrder: glue.IcebergNullOrder.NULLS_LAST,
+    },
+  ],
+  identifierFieldNames: ['order_id'],
+  dataFormat: glue.IcebergDataFormat.PARQUET,
+  formatVersion: glue.IcebergFormatVersion.V2,
+  tableProperties: {
+    'write.parquet.compression-codec': 'zstd',
+    'write.delete.mode': 'merge-on-read',
+    'write.update.mode': 'merge-on-read',
+    'write.merge.mode': 'merge-on-read',
+  },
+});
+```
+
+### Granting access
+
+```ts
+declare const myTable: glue.IcebergTable;
+declare const myRole: iam.IRole;
+
+myTable.grantRead(myRole);       // Glue read + S3 read on the table's prefix
+myTable.grantWrite(myRole);      // Glue write + S3 write
+myTable.grantReadWrite(myRole);
+```
+
+S3 grants are split across separate IAM statements: `s3:ListBucket` on the bucket ARN with an `s3:prefix` condition limiting the grantee to this table's prefix, `s3:GetBucketLocation` / `s3:ListBucketMultipartUploads` on the bucket ARN with no condition (those actions do not support `s3:prefix`), and per-object actions on `bucket/prefix*`.
+
+### Limitations
+
+* CloudFormation's `OpenTableFormatInput.IcebergInput.metadataOperation` only accepts `CREATE`; the construct always emits that. Subsequent deploys flow through Glue's normal `UpdateTable` path.
+* Pin column `id` explicitly on tables you intend to evolve. The Iceberg spec forbids reassigning a retired field id to a new logical column; the construct does not detect cross-deploy reuse, so dropping a column and later adding a different column with the same `id` will silently violate the spec.
+* Dropping a partition-source column requires an Iceberg `void` transform intermediate that CFN cannot express. The construct accepts the change at synth time, but Athena queries against the resulting table will fail with `Type cannot be null` — drop the partition first, then the column in a subsequent deploy.
+
 ## [Encryption](https://docs.aws.amazon.com/athena/latest/ug/encryption.html)
 
 You can enable encryption on a Table's data:
