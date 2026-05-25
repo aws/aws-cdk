@@ -494,3 +494,34 @@ gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
   resources: [policyEngine.policyEngineArn, gateway.gatewayArn],
 }));
 ```
+
+## Tagging the Runtime Application Log Group
+
+AgentCore automatically creates a CloudWatch Log Group at
+`/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT` for application logs.
+Because this log group is provisioned by the AgentCore service (not by CloudFormation),
+CDK cannot tag it via the runtime resource's `tags` prop.
+
+Use `applicationLogGroupTags` to apply tags to this log group. CDK pre-creates the
+log group with `RemovalPolicy.RETAIN` so the tags are in place before the first
+runtime invocation:
+
+```ts nofixture
+import * as agentcoreAlpha from '@aws-cdk/aws-bedrock-agentcore-alpha';
+import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+
+declare const agentRuntimeArtifact: agentcoreAlpha.AgentRuntimeArtifact;
+
+new agentcoreAlpha.Runtime(this, 'Runtime', {
+  agentRuntimeArtifact,
+  applicationLogGroupTags: {
+    DataClassification: 'PII',
+    Environment: 'prod',
+    CostCenter: 'platform-12345',
+  },
+});
+```
+
+> **Note:** The pre-created log group always uses `RemovalPolicy.RETAIN`. If the
+> runtime resource is ever replaced (causing its `agentRuntimeId` to change), the
+> old log group will be orphaned and must be cleaned up manually.

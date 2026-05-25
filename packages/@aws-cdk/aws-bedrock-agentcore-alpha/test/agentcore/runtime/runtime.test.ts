@@ -3393,15 +3393,12 @@ describe('Runtime applicationLogGroupTags tests', () => {
 
     const template = Template.fromStack(stack);
 
-    // Log group should be pre-created with the expected name pattern
+    // Log group should be pre-created with the correct name AND tags in one assertion
+    // to guarantee both properties belong to the same resource.
     template.hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: {
         'Fn::Join': ['', ['/aws/bedrock-agentcore/runtimes/', { 'Fn::GetAtt': [Match.anyValue(), 'AgentRuntimeId'] }, '-DEFAULT']],
       },
-    });
-
-    // Tags should be applied to the log group
-    template.hasResourceProperties('AWS::Logs::LogGroup', {
       Tags: Match.arrayWith([
         { Key: 'DataClassification', Value: 'PII' },
         { Key: 'Environment', Value: 'prod' },

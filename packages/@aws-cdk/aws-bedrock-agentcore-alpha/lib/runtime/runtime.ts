@@ -158,10 +158,17 @@ export interface RuntimeProps {
    * `RemovalPolicy.RETAIN` so the specified tags are present from the first
    * runtime invocation onward.
    *
+   * **Retention behaviour**: the pre-created log group always uses
+   * `RemovalPolicy.RETAIN`. This means:
+   * - The log group persists when the stack is deleted (logs are preserved).
+   * - If the runtime is replaced and its `agentRuntimeId` changes (e.g. the
+   *   runtime resource is recreated), the old log group is orphaned and must be
+   *   cleaned up manually from the AWS console or CLI.
+   *
    * Use this when tag-based controls are required for cost allocation, data
    * classification, retention automation, or access governance.
    *
-   * @default - no extra tags on the application log group
+   * @default - no extra tags on the application log group; no log group is pre-created
    */
   readonly applicationLogGroupTags?: { [key: string]: string };
 }
