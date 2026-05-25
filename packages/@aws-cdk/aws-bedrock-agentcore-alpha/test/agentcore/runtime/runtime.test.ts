@@ -3371,3 +3371,118 @@ describe('Runtime observability tests', () => {
     });
   });
 });
+
+describe('Runtime applicationLogGroupTags tests', () => {
+  test('Should pre-create log group with tags when applicationLogGroupTags is provided', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'AppLogGroupTagsStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    new Runtime(stack, 'TaggedRuntime', {
+      runtimeName: 'tagged_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: {
+        DataClassification: 'PII',
+        Environment: 'prod',
+      },
+    });
+
+    const template = Template.fromStack(stack);
+
+    // Log group should be pre-created with the expected name pattern
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      LogGroupName: {
+        'Fn::Join': ['', ['/aws/bedrock-agentcore/runtimes/', { 'Fn::GetAtt': [Match.anyValue(), 'AgentRuntimeId'] }, '-DEFAULT']],
+      },
+    });
+
+    // Tags should be applied to the log group
+    template.hasResourceProperties('AWS::Logs::LogGroup', {
+      Tags: Match.arrayWith([
+        { Key: 'DataClassification', Value: 'PII' },
+        { Key: 'Environment', Value: 'prod' },
+      ]),
+    });
+  });
+
+  test('Should not create log group when applicationLogGroupTags is not provided', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoLogGroupTagsStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    new Runtime(stack, 'UntaggedRuntime', {
+      runtimeName: 'untagged_runtime',
+      agentRuntimeArtifact,
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 0);
+  });
+
+  test('Should not create log group when applicationLogGroupTags is empty', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'EmptyTagsStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    new Runtime(stack, 'EmptyTagsRuntime', {
+      runtimeName: 'empty_tags_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: {},
+    });
+
+    const template = Template.fromStack(stack);
+    template.resourceCountIs('AWS::Logs::LogGroup', 0);
+  });
+
+  test('fails when applicationLogGroupTags contains an invalid key', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'InvalidTagKeyStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    expect(() => new Runtime(stack, 'InvalidTagRuntime', {
+      runtimeName: 'invalid_tag_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: {
+        'aws:reserved': 'value',
+      },
+    })).toThrow(/cannot start with "aws:"/);
+  });
+
+  test('Should retain log group when stack is destroyed', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'RetainLogGroupStack', {
+      env: { account: '123456789012', region: 'us-east-1' },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    new Runtime(stack, 'RetainRuntime', {
+      runtimeName: 'retain_runtime',
+      agentRuntimeArtifact,
+      applicationLogGroupTags: { Env: 'test' },
+    });
+
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::Logs::LogGroup', {
+      DeletionPolicy: 'Retain',
+      UpdateReplacePolicy: 'Retain',
+    });
+  });
+});
