@@ -591,16 +591,17 @@ const domain = new Domain(this, 'Domain', {
 
 ## Deployment strategy
 
-You can configure the deployment strategy for the domain. `CAPACITY_OPTIMIZED`
-prioritizes capacity availability across Availability Zones — the domain may
-use more capacity than configured to maintain availability during AZ
-impairments.
+You can configure the deployment strategy used during blue/green deployments
+when sufficient capacity is not available at update time. `CAPACITY_OPTIMIZED`
+first attempts a full blue/green swap, then falls back to deploying in batches
+if capacity is insufficient. This is recommended for clusters with 30 or more
+data nodes; completion time may increase since deployment is done in batches.
 
-> Visit [Configuring a multi-AZ domain with standby](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html) for more details.
+> Visit [Blue/Green Deployment options](https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html#bg-deployment-options) for more details.
 
 ```ts
 const domain = new Domain(this, 'Domain', {
-  version: EngineVersion.OPENSEARCH_1_3,
+  version: EngineVersion.OPENSEARCH_2_11,
   deploymentStrategy: DeploymentStrategy.CAPACITY_OPTIMIZED,
 });
 ```

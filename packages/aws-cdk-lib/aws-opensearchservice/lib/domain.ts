@@ -459,19 +459,23 @@ export enum IpAddressType {
 /**
  * The deployment strategy for an OpenSearch Service domain.
  *
- * Controls how the domain distributes capacity across Availability Zones.
+ * Controls how blue/green deployments are performed when sufficient capacity
+ * is not available at update time.
  *
- * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html
+ * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html#bg-deployment-options
  */
 export enum DeploymentStrategy {
   /**
-   * The domain is deployed according to the configured cluster capacity.
+   * Full swap blue/green. Requires full instance capacity upfront, ensuring
+   * the fastest deployment when capacity is available. Deployment will not
+   * proceed if sufficient capacity cannot be allocated.
    */
   DEFAULT = 'Default',
   /**
-   * Optimizes for capacity availability across Availability Zones. The domain
-   * may use more capacity than configured to maintain availability during AZ
-   * impairments.
+   * Attempts a full blue/green swap first, and if capacity is insufficient,
+   * proceeds with deploying in batches. Ensures deployments can complete even
+   * when capacity is limited. Completion time may increase, as deployment is
+   * done in batches. Recommended for clusters with 30 or more data nodes.
    */
   CAPACITY_OPTIMIZED = 'CapacityOptimized',
 }
@@ -761,11 +765,12 @@ export interface DomainProps {
   /**
    * The deployment strategy for the domain.
    *
-   * Controls how the domain is deployed across Availability Zones. Use
-   * `CAPACITY_OPTIMIZED` to prioritize capacity availability during AZ
-   * impairments.
+   * Controls how blue/green deployments are performed when sufficient capacity
+   * is not available at update time. Use `CAPACITY_OPTIMIZED` to allow batch
+   * deployment as a fallback. Recommended for clusters with 30 or more data
+   * nodes.
    *
-   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-multiaz.html
+   * @see https://docs.aws.amazon.com/opensearch-service/latest/developerguide/managedomains-configuration-changes.html#bg-deployment-options
    *
    * @default DeploymentStrategy.DEFAULT
    */
