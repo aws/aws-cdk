@@ -18,7 +18,11 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+<<<<<<< HEAD
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e69895c7fc5125cda22d10457eeb3db3d9c606227fedec2a87c16e9d61c1b820.json",
+=======
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f5027550c7564e02879b23e29ee74e8bbb1e59f3b47397491cdc8ca5399b1cbb.json",
+>>>>>>> de67c1cd1b (update integ tests)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -593,15 +597,19 @@
             "recommendedValue": true,
             "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
           },
+<<<<<<< HEAD
           "@aws-cdk/aws-eks:defaultToAL2023": {
             "recommendedValue": true,
             "explanation": "Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2"
           },
+=======
+>>>>>>> de67c1cd1b (update integ tests)
           "@aws-cdk/core:annotationsInValidationReport": {
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
           "@aws-cdk/core:defaultCrossStackReferences": {
+<<<<<<< HEAD
             "recommendedValue": "weak",
             "explanation": "Controls whether cross-stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
@@ -619,6 +627,13 @@
           "@aws-cdk/aws-cloudfront:defaultViewerProtocolPolicyRedirectToHttps": {
             "recommendedValue": true,
             "explanation": "Default Distribution cache behaviors to redirect HTTP viewer requests to HTTPS"
+=======
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
+>>>>>>> de67c1cd1b (update integ tests)
           }
         }
       }

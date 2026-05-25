@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "cluster-applyimmediately-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/93cc82026622b532d9affe9226840c926787f19c29e7c45b83b55eac419d561e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/16faf0ec90b7980d1ef68666000bdebd1714f31b06a4812af8b47d6608418df8.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,330 +33,7 @@
       "dependencies": [
         "cluster-applyimmediately-integ.assets"
       ],
-      "metadata": {
-        "/cluster-applyimmediately-integ/VPC": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "maxAzs": "*",
-              "natGateways": "*",
-              "restrictDefaultSecurityGroup": false
-            }
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCB9E5F0B4"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1SubnetB4246D30"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableFEE4B781"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2Subnet74179F39"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1SubnetEBD00FC6"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1RouteTableEB156210"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2Subnet4B1C8CAA"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2RouteTable9B4F78DC"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IsolatedSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIGWB7E252D3"
-          }
-        ],
-        "/cluster-applyimmediately-integ/VPC/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCVPCGW99B986DC"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "engine": {
-                "engineType": "*",
-                "engineVersion": {
-                  "fullVersion": "*",
-                  "majorVersion": "*"
-                },
-                "parameterGroupFamily": "*",
-                "singleUserRotationApplication": "*",
-                "engineFamily": "*",
-                "supportedLogTypes": "*",
-                "combineImportAndExportRoles": true
-              },
-              "credentials": "*",
-              "vpcSubnets": {
-                "subnetType": "Isolated"
-              },
-              "vpc": "*",
-              "writer": "*",
-              "readers": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:warning",
-            "data": "Cluster DatabaseCluster only has serverless readers and no reader is in promotion tier 0-1.Serverless readers in promotion tiers >= 2 will NOT scale with the writer, which can lead to availability issues if a failover event occurs. It is recommended that at least one reader has `scaleWithWriter` set to true [ack: @aws-cdk/aws-rds:noFailoverServerlessReaders]"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/Subnets": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "vpc": "*",
-              "vpcSubnets": {
-                "subnetType": "Isolated"
-              },
-              "removalPolicy": "*"
-            }
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/Subnets/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterSubnets7FAE1846"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "vpc": "*"
-            }
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterSecurityGroupCBE34284"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseCluster68FC2945"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/Instance1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/Instance1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterInstance168E207E2"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/Instance2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/cluster-applyimmediately-integ/DatabaseCluster/Instance2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DatabaseClusterInstance25E78AB82"
-          }
-        ],
-        "/cluster-applyimmediately-integ/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/cluster-applyimmediately-integ/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "cluster-applyimmediately-integ.metadata.json",
       "displayName": "cluster-applyimmediately-integ"
     },
     "testclusterapplyimmediatelyintegDefaultTestDeployAssertC097DD2F.assets": {
@@ -391,20 +68,7 @@
       "dependencies": [
         "testclusterapplyimmediatelyintegDefaultTestDeployAssertC097DD2F.assets"
       ],
-      "metadata": {
-        "/test-cluster-applyimmediately-integ/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/test-cluster-applyimmediately-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "testclusterapplyimmediatelyintegDefaultTestDeployAssertC097DD2F.metadata.json",
       "displayName": "test-cluster-applyimmediately-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -705,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -906,16 +571,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

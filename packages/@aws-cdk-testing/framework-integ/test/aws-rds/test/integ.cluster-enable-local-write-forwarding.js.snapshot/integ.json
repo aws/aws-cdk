@@ -9,6 +9,10 @@
       "assertionStackName": "EnableLocalWriteForwardingClusterStackIntegDefaultTestDeployAssertFA53AD26"
     }
   },
+<<<<<<< HEAD
   "enableLookups": true,
   "minimumCliVersion": "2.1131.0"
+=======
+  "minimumCliVersion": "2.1123.0"
+>>>>>>> de67c1cd1b (update integ tests)
 }

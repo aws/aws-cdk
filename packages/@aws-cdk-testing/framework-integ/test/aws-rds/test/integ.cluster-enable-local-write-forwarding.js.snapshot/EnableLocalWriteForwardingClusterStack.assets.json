@@ -15,16 +15,26 @@
         }
       }
     },
+<<<<<<< HEAD
     "e69895c7fc5125cda22d10457eeb3db3d9c606227fedec2a87c16e9d61c1b820": {
+=======
+    "f5027550c7564e02879b23e29ee74e8bbb1e59f3b47397491cdc8ca5399b1cbb": {
+>>>>>>> de67c1cd1b (update integ tests)
       "displayName": "EnableLocalWriteForwardingClusterStack Template",
       "source": {
         "path": "EnableLocalWriteForwardingClusterStack.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "current_account-current_region-c2a27009": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "e69895c7fc5125cda22d10457eeb3db3d9c606227fedec2a87c16e9d61c1b820.json",
+=======
+        "current_account-current_region-8cf20aae": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "f5027550c7564e02879b23e29ee74e8bbb1e59f3b47397491cdc8ca5399b1cbb.json",
+>>>>>>> de67c1cd1b (update integ tests)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
