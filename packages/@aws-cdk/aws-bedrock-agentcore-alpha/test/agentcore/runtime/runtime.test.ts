@@ -3373,15 +3373,20 @@ describe('Runtime observability tests', () => {
 });
 
 describe('Runtime applicationLogGroupTags tests', () => {
-  test('Should pre-create log group with tags when applicationLogGroupTags is provided', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'AppLogGroupTagsStack', {
+  let app: cdk.App;
+  let stack: cdk.Stack;
+  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  beforeEach(() => {
+    app = new cdk.App();
+    stack = new cdk.Stack(app, 'AppLogGroupTagsStack', {
       env: { account: '123456789012', region: 'us-east-1' },
     });
-
     const repository = new ecr.Repository(stack, 'TestRepository');
-    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+  });
 
+  test('Should pre-create log group with tags when applicationLogGroupTags is provided', () => {
     new Runtime(stack, 'TaggedRuntime', {
       runtimeName: 'tagged_runtime',
       agentRuntimeArtifact,
@@ -3393,8 +3398,7 @@ describe('Runtime applicationLogGroupTags tests', () => {
 
     const template = Template.fromStack(stack);
 
-    // Log group should be pre-created with the correct name AND tags in one assertion
-    // to guarantee both properties belong to the same resource.
+    // Assert LogGroupName and Tags in one call to guarantee both belong to the same resource.
     template.hasResourceProperties('AWS::Logs::LogGroup', {
       LogGroupName: {
         'Fn::Join': ['', ['/aws/bedrock-agentcore/runtimes/', { 'Fn::GetAtt': [Match.anyValue(), 'AgentRuntimeId'] }, '-DEFAULT']],
@@ -3407,77 +3411,40 @@ describe('Runtime applicationLogGroupTags tests', () => {
   });
 
   test('Should not create log group when applicationLogGroupTags is not provided', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'NoLogGroupTagsStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-
-    const repository = new ecr.Repository(stack, 'TestRepository');
-    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
-
     new Runtime(stack, 'UntaggedRuntime', {
       runtimeName: 'untagged_runtime',
       agentRuntimeArtifact,
     });
 
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
   });
 
   test('Should not create log group when applicationLogGroupTags is empty', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'EmptyTagsStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-
-    const repository = new ecr.Repository(stack, 'TestRepository');
-    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
-
     new Runtime(stack, 'EmptyTagsRuntime', {
       runtimeName: 'empty_tags_runtime',
       agentRuntimeArtifact,
       applicationLogGroupTags: {},
     });
 
-    const template = Template.fromStack(stack);
-    template.resourceCountIs('AWS::Logs::LogGroup', 0);
+    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
   });
 
   test('fails when applicationLogGroupTags contains an invalid key', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'InvalidTagKeyStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-
-    const repository = new ecr.Repository(stack, 'TestRepository');
-    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
-
     expect(() => new Runtime(stack, 'InvalidTagRuntime', {
       runtimeName: 'invalid_tag_runtime',
       agentRuntimeArtifact,
-      applicationLogGroupTags: {
-        'aws:reserved': 'value',
-      },
+      applicationLogGroupTags: { 'aws:reserved': 'value' },
     })).toThrow(/cannot start with "aws:"/);
   });
 
   test('Should retain log group when stack is destroyed', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'RetainLogGroupStack', {
-      env: { account: '123456789012', region: 'us-east-1' },
-    });
-
-    const repository = new ecr.Repository(stack, 'TestRepository');
-    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
-
     new Runtime(stack, 'RetainRuntime', {
       runtimeName: 'retain_runtime',
       agentRuntimeArtifact,
       applicationLogGroupTags: { Env: 'test' },
     });
 
-    const template = Template.fromStack(stack);
-    template.hasResource('AWS::Logs::LogGroup', {
+    Template.fromStack(stack).hasResource('AWS::Logs::LogGroup', {
       DeletionPolicy: 'Retain',
       UpdateReplacePolicy: 'Retain',
     });

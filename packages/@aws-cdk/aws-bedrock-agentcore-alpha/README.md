@@ -508,7 +508,6 @@ runtime invocation:
 
 ```ts nofixture
 import * as agentcoreAlpha from '@aws-cdk/aws-bedrock-agentcore-alpha';
-import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
 
 declare const agentRuntimeArtifact: agentcoreAlpha.AgentRuntimeArtifact;
 
