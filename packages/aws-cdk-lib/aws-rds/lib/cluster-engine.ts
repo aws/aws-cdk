@@ -729,6 +729,8 @@ export class AuroraMysqlEngineVersion {
   public static readonly VER_3_11_1 = AuroraMysqlEngineVersion.builtIn_8_0('3.11.1');
   /** Version "8.0.mysql_aurora.3.12.0". */
   public static readonly VER_3_12_0 = AuroraMysqlEngineVersion.builtIn_8_0('3.12.0');
+  /** Version "8.4.mysql_aurora.8.4.7" */
+  public static readonly VER_8_4_7 = AuroraMysqlEngineVersion.builtIn_8_4('8.4.7');
 
   /**
    * Create a new AuroraMysqlEngineVersion with an arbitrary version.
@@ -766,6 +768,14 @@ export class AuroraMysqlEngineVersion {
     });
   }
 
+  private static builtIn_8_4(minorVersion: string): AuroraMysqlEngineVersion {
+    // 8.4 of the MySQL engine needs to combine the import and export Roles
+    return new AuroraMysqlEngineVersion(`8.4.mysql_aurora.${minorVersion}`, '8.4', {
+      combineImportAndExportRoles: true,
+      serverlessV2AutoPauseSupported: true,
+    });
+  }
+
   /** The full version string, for example, "5.7.mysql_aurora.1.78.3.6". */
   public readonly auroraMysqlFullVersion: string;
   /** The major version of the engine. Currently, it's either "5.7", or "8.0". */
@@ -773,6 +783,7 @@ export class AuroraMysqlEngineVersion {
   /**
    * Whether this version requires combining the import and export IAM Roles.
    *
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Integrating.Authorizing.IAM.AddRoleToDBCluster.html
    * @internal
    */
   public readonly _combineImportAndExportRoles?: boolean;
