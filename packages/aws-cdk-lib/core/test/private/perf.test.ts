@@ -22,6 +22,17 @@ test('functions can be instrumented', () => {
   });
 });
 
+test('instrumented functions have the same name', () => {
+  // GIVEN
+  const orig = function someFunction() { };
+
+  // WHEN
+  const fn = profileFn('fn')(orig);
+
+  // THEN
+  expect(fn.name).toEqual(orig.name);
+});
+
 test('only top-level profiled function calls are recorded', () => {
   // GIVEN
   const inner = profileFn('inner')(() => {});
@@ -58,17 +69,23 @@ test('spans can be recorded, and counts can be skipped', () => {
   });
 });
 
+/**
+ * This test can only exist once, after monkey patching 'fs' it cannot be monkey patched
+ * again and we don't have an "uninstall" function.
+ */
 test('fs can be monkey-patched', () => {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   profileObj('fs')(require('fs'));
 
   // GIVEN
-  console.log(fs.readFileSync);
   fs.readFileSync(__filename, 'utf-8');
 
-  // THEN
+  // THEN -- patching works
   const ctrs = readPerfCounters();
   expect(ctrs).toMatchObject({ 'fs.readFileSync': expect.anything() });
+
+  // THEN -- fs.realpath.native is still a function (fs-extra requires this, otherwise it will complain)
+  expect(typeof fs.realpath.native).toEqual('function');
 });
 
 test('classes can be instrumented', () => {
