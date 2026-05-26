@@ -143,10 +143,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
 
   // Snapshot pre-existing files so we can detect modifications while still
   // allowing plugins to create new files in the assembly directory.
-  let preExistingFileHashes: Map<string, string> | undefined;
-  if (templatePathsByPlugin.size > 0) {
-    preExistingFileHashes = snapshotFileHashes(outdir);
-  }
+  const preExistingFileHashes = snapshotFileHashes(outdir);
 
   // Run all plugins through the same loop
   const reports: NamedValidationPluginReport[] = [];
@@ -165,7 +162,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         },
       });
     }
-    if (preExistingFileHashes && hasModifiedPreExistingFiles(preExistingFileHashes)) {
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
