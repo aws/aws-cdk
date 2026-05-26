@@ -40,6 +40,12 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
+      - name: Rebase onto main
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git pull origin main --rebase
+
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
