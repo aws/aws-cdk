@@ -150,7 +150,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   const reports: NamedValidationPluginReport[] = [];
   for (const { plugin, templatePaths } of plugins) {
     try {
-      const report = plugin.validate({ templatePaths });
+      const report = plugin.validate({ templatePaths, scope: root });
       reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
     } catch (e: any) {
       reports.push({

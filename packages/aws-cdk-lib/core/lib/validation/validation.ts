@@ -1,3 +1,4 @@
+import type { IConstruct } from 'constructs';
 import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1, PolicyViolatingResourceBeta1, PolicyViolationBeta1 } from './report';
 
 /**
@@ -70,6 +71,18 @@ export interface IPolicyValidationContext {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   *
+   * @default - not provided
+   */
+  readonly scope?: IConstruct;
 }
 
 /**
@@ -120,6 +133,18 @@ export interface IPolicyValidationContextBeta1 {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   *
+   * @default - not provided
+   */
+  readonly scope?: IConstruct;
 }
 
 /**

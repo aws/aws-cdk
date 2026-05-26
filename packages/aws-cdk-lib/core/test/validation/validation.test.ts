@@ -338,19 +338,19 @@ Policy Validation Report Summary
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(2);
-    expect(mockValidate).toHaveBeenNthCalledWith(2, {
+    expect(mockValidate).toHaveBeenNthCalledWith(2, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
-    expect(mockValidate).toHaveBeenNthCalledWith(1, {
+    }));
+    expect(mockValidate).toHaveBeenNthCalledWith(1, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple stages, single plugin', () => {
@@ -395,13 +395,13 @@ Policy Validation Report Summary
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(1);
-    expect(mockValidate).toHaveBeenCalledWith({
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple constructs', () => {
@@ -1470,6 +1470,28 @@ Policy Validation Report Summary
       expect(() => {
         core.Validations.of(construct).acknowledge({ id: '::foo', reason: 'reason' });
       }).toThrow(/Invalid validation rule ID '::foo'/);
+    });
+
+    test('validate context includes scope as the root construct', () => {
+      let capturedScope: any;
+      const plugin: core.IPolicyValidationPlugin = {
+        name: 'scope-capture-plugin',
+        validate(context) {
+          capturedScope = context.scope;
+          return { success: true, violations: [] };
+        },
+      };
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+      core.Validations.of(app).addPlugins(plugin);
+      app.synth();
+
+      expect(capturedScope).toBeDefined();
+      expect(capturedScope).toBe(app);
     });
 
     test('non-Beta1 plugin with constructPath runs through synth', () => {
