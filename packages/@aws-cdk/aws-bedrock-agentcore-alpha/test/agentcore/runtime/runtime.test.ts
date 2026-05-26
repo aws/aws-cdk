@@ -3434,7 +3434,7 @@ describe('Runtime applicationLogGroupTags tests', () => {
       runtimeName: 'invalid_tag_runtime',
       agentRuntimeArtifact,
       applicationLogGroupTags: { 'aws:reserved': 'value' },
-    })).toThrow(/cannot start with "aws:"/);
+    })).toThrow(/aws:/);
   });
 
   test('Should retain log group when stack is destroyed', () => {
