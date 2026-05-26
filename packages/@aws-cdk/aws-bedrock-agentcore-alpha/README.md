@@ -500,8 +500,8 @@ gateway.role.addToPrincipalPolicy(new iam.PolicyStatement({
 AgentCore automatically creates a CloudWatch Log Group at
 `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT` for application logs.
 Because this log group is provisioned by the AgentCore service (not by CloudFormation),
-tags applied to the Runtime construct/resource do not propagate to this service-created
-log group, so CDK cannot tag it automatically.
+tags applied via `Tags.of(runtime)` do not propagate to this service-created log group,
+so CDK cannot tag it automatically.
 
 Use `applicationLogGroupTags` to apply tags to this log group. CDK pre-creates the
 log group with `RemovalPolicy.RETAIN` so the tags are in place before the first

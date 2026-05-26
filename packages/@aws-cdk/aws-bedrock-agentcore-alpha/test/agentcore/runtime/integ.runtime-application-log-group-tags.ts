@@ -54,6 +54,7 @@ testCase.assertions
       stack.account,
       ':log-group:',
       logGroupName,
+      ':*',
     ]),
   })
   .expect(

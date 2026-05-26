@@ -158,8 +158,9 @@ export interface RuntimeProps {
    * `RemovalPolicy.RETAIN` so the specified tags are present from the first
    * runtime invocation onward.
    *
-   * **Retention behaviour**: the pre-created log group always uses
-   * `RemovalPolicy.RETAIN`. This means:
+   * **Removal behavior**: the pre-created log group always uses
+   * `RemovalPolicy.RETAIN` (CloudFormation deletion behavior — not to be confused
+   * with the CloudWatch Logs retention period). This means:
    * - The log group persists when the stack is deleted (logs are preserved).
    * - If the runtime is replaced and its `agentRuntimeId` changes (e.g. the
    *   runtime resource is recreated), the old log group is orphaned and must be
@@ -439,8 +440,9 @@ export class Runtime extends RuntimeBase {
         logGroupName: `/aws/bedrock-agentcore/runtimes/${this.agentRuntimeId}-DEFAULT`,
         removalPolicy: RemovalPolicy.RETAIN,
       });
+      const tagManager = Tags.of(applicationLogGroup);
       for (const [key, value] of Object.entries(props.applicationLogGroupTags)) {
-        Tags.of(applicationLogGroup).add(key, value);
+        tagManager.add(key, value);
       }
     }
   }

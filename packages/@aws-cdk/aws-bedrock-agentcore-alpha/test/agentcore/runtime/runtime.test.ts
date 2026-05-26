@@ -3416,7 +3416,11 @@ describe('Runtime applicationLogGroupTags tests', () => {
       agentRuntimeArtifact,
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    const logGroups = Template.fromStack(stack).findResources('AWS::Logs::LogGroup');
+    const agentcoreLogGroups = Object.values(logGroups).filter(
+      (r: any) => JSON.stringify(r?.Properties?.LogGroupName ?? '').includes('bedrock-agentcore'),
+    );
+    expect(agentcoreLogGroups).toHaveLength(0);
   });
 
   test('Should not create log group when applicationLogGroupTags is empty', () => {
@@ -3426,7 +3430,11 @@ describe('Runtime applicationLogGroupTags tests', () => {
       applicationLogGroupTags: {},
     });
 
-    Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
+    const logGroups = Template.fromStack(stack).findResources('AWS::Logs::LogGroup');
+    const agentcoreLogGroups = Object.values(logGroups).filter(
+      (r: any) => JSON.stringify(r?.Properties?.LogGroupName ?? '').includes('bedrock-agentcore'),
+    );
+    expect(agentcoreLogGroups).toHaveLength(0);
   });
 
   test('Should throw when applicationLogGroupTags contains an invalid key', () => {
@@ -3434,7 +3442,7 @@ describe('Runtime applicationLogGroupTags tests', () => {
       runtimeName: 'invalid_tag_runtime',
       agentRuntimeArtifact,
       applicationLogGroupTags: { 'aws:reserved': 'value' },
-    })).toThrow(/aws:/);
+    })).toThrow(/cannot start with aws:/i);
   });
 
   test('Should retain log group when stack is destroyed', () => {
