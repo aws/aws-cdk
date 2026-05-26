@@ -31,7 +31,6 @@
     "stripDeprecated": true,
     "compressAssembly": true,
     "pre": [
-      "ts-node ./scripts/strip-nested-bundled-deps.ts",
       "ts-node region-info/build-tools/generate-static-data.ts",
       "(rm -rf core/test/fs/fixtures && cd core/test/fs && tar -xzf fixtures.tar.gz)",
       "(rm -rf assets/test/fs/fixtures && cd assets/test/fs && tar -xzf fixtures.tar.gz)",
@@ -118,10 +117,10 @@
     "mime-types"
   ],
   "dependencies": {
-    "@aws-cdk/cloud-assembly-api": "^2.2.3",
+    "@aws-cdk/cloud-assembly-api": "^2.2.4",
     "@aws-cdk/asset-awscli-v1": "2.2.273",
     "@aws-cdk/asset-node-proxy-agent-v6": "^2.1.1",
-    "@aws-cdk/cloud-assembly-schema": "^53.21.0",
+    "@aws-cdk/cloud-assembly-schema": "^53.25.0",
     "@balena/dockerignore": "^1.0.2",
     "case": "1.6.3",
     "fs-extra": "^11.3.3",
@@ -137,7 +136,7 @@
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.0.1",
-    "@aws-cdk/aws-service-spec": "^0.1.180",
+    "@aws-cdk/aws-service-spec": "^0.1.181",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
@@ -246,6 +245,7 @@
     "./aws-autoscaling-common": "./aws-autoscaling-common/index.js",
     "./aws-autoscaling-hooktargets": "./aws-autoscaling-hooktargets/index.js",
     "./aws-autoscalingplans": "./aws-autoscalingplans/index.js",
+    "./aws-awsexternalanthropic": "./aws-awsexternalanthropic/index.js",
     "./aws-b2bi": "./aws-b2bi/index.js",
     "./aws-backup": "./aws-backup/index.js",
     "./aws-backupgateway": "./aws-backupgateway/index.js",
