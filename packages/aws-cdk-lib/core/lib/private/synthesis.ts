@@ -197,8 +197,8 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    const failOnErrors = root.node.tryGetContext(cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT) ?? true;
-    const writeLegacyReport = root.node.tryGetContext(cxapi.VALIDATION_REPORT_JSON_CONTEXT) ?? false;
+    const failOnErrors = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
+    const writeLegacyReport = getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false);
 
     const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
     const jsonOutput = formatter.formatJson(reports, assembly.version);
@@ -558,4 +558,10 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   if (order === 'post') {
     cb(root);
   }
+}
+
+function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean): boolean {
+  const raw = root.node.tryGetContext(key);
+  if (raw === undefined) return defaultValue;
+  return raw !== false && raw !== 'false';
 }

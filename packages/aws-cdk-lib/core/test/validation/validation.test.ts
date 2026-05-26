@@ -682,6 +682,45 @@ Policy Validation Report Summary
     expect(allOutput).not.toContain('Validation Report');
   });
 
+  test('failSynthOnValidationErrors="false" (string) works the same as boolean false', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new FakePlugin('test-plugin', [{
+          description: 'test recommendation',
+          ruleName: 'test-rule',
+          ruleMetadata: {
+            id: 'abcdefg',
+          },
+          violatingResources: [{
+            locations: ['test-location'],
+            resourceLogicalId: 'Fake',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      ],
+      context: {
+        '@aws-cdk/core:failSynthOnValidationErrors': 'false',
+      },
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'Fake', {
+      type: 'Test::Resource::Fake',
+      properties: {
+        result: 'failure',
+      },
+    });
+    app.synth();
+
+    expect(process.exitCode).toBeUndefined();
+
+    const file = path.join(app.outdir, 'validation-report.json');
+    expect(fs.existsSync(file)).toBe(true);
+
+    const allOutput = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(allOutput).not.toContain('Validation failed');
+    expect(allOutput).not.toContain('Validation Report');
+  });
+
   test('Pretty print as default', () => {
     const app = new core.App({
       policyValidationBeta1: [
