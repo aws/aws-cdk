@@ -24,7 +24,7 @@ import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import type { NamedValidationPluginReport } from '../validation/private/report';
+import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
@@ -175,20 +175,32 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   // Rule matching: violations are matched as <pluginName>::<ruleName> with
   // spaces replaced by dashes. Users suppress with:
   //   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
-  const acknowledgedRuleIds = collectAcknowledgedRuleIds(root);
-  if (acknowledgedRuleIds.size > 0) {
+  const acknowledgedRules = collectAcknowledgedRuleIds(root);
+  const suppressedByReport: Map<number, SuppressedViolation[]> = new Map();
+  if (acknowledgedRules.size > 0) {
     for (let i = 0; i < reports.length; i++) {
       const pluginName = reports[i].pluginName.replace(/ /g, '-');
-      const filtered = reports[i].violations.filter(v => {
-        if (v.severity === 'fatal') return true;
+      const active: typeof reports[0]['violations'] = [];
+      const suppressed: SuppressedViolation[] = [];
+      for (const v of reports[i].violations) {
+        if (v.severity === 'fatal') {
+          active.push(v);
+          continue;
+        }
         const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
-        return !acknowledgedRuleIds.has(ruleId);
-      });
-      if (filtered.length !== reports[i].violations.length) {
+        const ack = acknowledgedRules.get(ruleId);
+        if (ack) {
+          suppressed.push({ ...v, acknowledgedId: ruleId, reason: ack.reason, acknowledgedAt: ack.constructPath });
+        } else {
+          active.push(v);
+        }
+      }
+      if (suppressed.length > 0) {
+        suppressedByReport.set(i, suppressed);
         reports[i] = {
           ...reports[i],
-          violations: filtered,
-          success: filtered.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
+          violations: active,
+          success: active.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
         };
       }
     }
@@ -201,7 +213,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     const writeLegacyReport = getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false);
 
     const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
-    const jsonOutput = formatter.formatJson(reports, assembly.version);
+    const jsonOutput = formatter.formatJson(reports, assembly.version, suppressedByReport);
     fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
 
     if (writeLegacyReport) {

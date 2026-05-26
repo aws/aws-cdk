@@ -118,6 +118,7 @@ export interface PluginReportJson {
   readonly conclusion: PolicyValidationReportConclusion;
   readonly metadata?: { readonly [key: string]: string };
   readonly violations: PolicyViolationJson[];
+  readonly suppressedViolations?: SuppressedViolationJson[];
 }
 
 export type PolicyValidationReportConclusion = 'success' | 'failure';
@@ -146,6 +147,22 @@ export interface CloudFormationResourceJson {
   readonly templatePath: string;
   readonly logicalId: string;
   readonly propertyPaths?: string[];
+}
+
+export interface SuppressedViolationJson extends PolicyViolationJson {
+  readonly acknowledgedId: string;
+  readonly reason?: string;
+  readonly acknowledgedAt?: string;
+}
+
+/**
+ * A violation that was suppressed, carrying acknowledgement metadata.
+ * Used internally to pass suppressed violations from synthesis to the formatter.
+ */
+export interface SuppressedViolation extends report.PolicyViolation {
+  readonly acknowledgedId: string;
+  readonly reason?: string;
+  readonly acknowledgedAt?: string;
 }
 
 /**
@@ -280,62 +297,85 @@ export class PolicyValidationReportFormatter {
     };
   }
 
-  public formatJson(reps: NamedValidationPluginReport[], schemaVersion: string): PolicyValidationReportJson {
+  public formatJson(
+    reps: NamedValidationPluginReport[],
+    schemaVersion: string,
+    suppressedByReport?: Map<number, SuppressedViolation[]>,
+  ): PolicyValidationReportJson {
     return {
       version: schemaVersion,
       title: 'Validation Report',
       pluginReports: reps
-        .filter(rep => !rep.success || rep.violations.length > 0)
-        .map(rep => ({
-          pluginName: rep.pluginName,
-          pluginVersion: rep.pluginVersion,
-          conclusion: (rep.success ? 'success' : 'failure') as PolicyValidationReportConclusion,
-          metadata: rep.metadata,
-          violations: rep.violations.map(violation => {
-            const severity = normalizeSeverity(violation.severity);
-            return {
-              ruleName: violation.ruleName,
-              description: violation.description,
-              suggestedFix: violation.fix,
-              severity: severity.severity,
-              customSeverity: severity.customSeverity,
-              ruleMetadata: violation.ruleMetadata,
-              violatingConstructs: violation.violatingResources.map(resource => {
-                const constructPath = resource.constructPath ?? (
-                  resource.templatePath && resource.resourceLogicalId
-                    ? this.tree.getConstructByLogicalId(
-                      path.basename(resource.templatePath),
-                      resource.resourceLogicalId,
-                    )?.node.path
-                    : undefined
-                );
-                const construct = constructPath
-                  ? this.tree.getConstructByPath(constructPath)
-                  : undefined;
-                const constructInfo = construct
-                  ? this.tree.constructTraceLevelFromTreeNode(construct)
-                  : undefined;
+        .map((rep, idx) => {
+          const hasSuppressed = suppressedByReport?.has(idx);
+          if (rep.success && rep.violations.length === 0 && !hasSuppressed) return undefined;
+          return {
+            pluginName: rep.pluginName,
+            pluginVersion: rep.pluginVersion,
+            conclusion: (rep.success ? 'success' : 'failure') as PolicyValidationReportConclusion,
+            metadata: rep.metadata,
+            violations: rep.violations.map(violation => this.formatViolationJson(violation)),
+            suppressedViolations: hasSuppressed
+              ? suppressedByReport!.get(idx)!.map(sv => this.formatSuppressedViolationJson(sv))
+              : undefined,
+          };
+        })
+        .filter((r): r is PluginReportJson => r !== undefined),
+    };
+  }
 
-                const result: ViolatingConstructJson = {
-                  constructPath: constructPath ?? 'N/A',
-                  constructFqn: constructInfo?.construct,
-                  libraryVersion: constructInfo?.libraryVersion,
-                  cloudFormationResource: resource.resourceLogicalId && resource.templatePath
-                    ? {
-                      templatePath: resource.templatePath,
-                      logicalId: resource.resourceLogicalId,
-                      propertyPaths: resource.locations.length > 0 ? resource.locations : undefined,
-                    }
-                    : undefined,
-                  stackTraces: constructPath
-                    ? this.formatStackTraces(constructPath)
-                    : undefined,
-                };
-                return result;
-              }),
-            };
-          }),
-        })),
+  private formatViolationJson(violation: report.PolicyViolation): PolicyViolationJson {
+    const severity = normalizeSeverity(violation.severity);
+    return {
+      ruleName: violation.ruleName,
+      description: violation.description,
+      suggestedFix: violation.fix,
+      severity: severity.severity,
+      customSeverity: severity.customSeverity,
+      ruleMetadata: violation.ruleMetadata,
+      violatingConstructs: violation.violatingResources.map(resource => {
+        const constructPath = resource.constructPath ?? (
+          resource.templatePath && resource.resourceLogicalId
+            ? this.tree.getConstructByLogicalId(
+              path.basename(resource.templatePath),
+              resource.resourceLogicalId,
+            )?.node.path
+            : undefined
+        );
+        const construct = constructPath
+          ? this.tree.getConstructByPath(constructPath)
+          : undefined;
+        const constructInfo = construct
+          ? this.tree.constructTraceLevelFromTreeNode(construct)
+          : undefined;
+
+        const result: ViolatingConstructJson = {
+          constructPath: constructPath ?? 'N/A',
+          constructFqn: constructInfo?.construct,
+          libraryVersion: constructInfo?.libraryVersion,
+          cloudFormationResource: resource.resourceLogicalId && resource.templatePath
+            ? {
+              templatePath: resource.templatePath,
+              logicalId: resource.resourceLogicalId,
+              propertyPaths: resource.locations.length > 0 ? resource.locations : undefined,
+            }
+            : undefined,
+          stackTraces: constructPath
+            ? this.formatStackTraces(constructPath)
+            : undefined,
+        };
+        return result;
+      }),
+    };
+  }
+
+  private formatSuppressedViolationJson(sv: SuppressedViolation): SuppressedViolationJson {
+    const base = this.formatViolationJson(sv);
+    return {
+      ...base,
+      acknowledgedId: sv.acknowledgedId,
+      reason: sv.reason || undefined,
+      acknowledgedAt: sv.acknowledgedAt || undefined,
     };
   }
 

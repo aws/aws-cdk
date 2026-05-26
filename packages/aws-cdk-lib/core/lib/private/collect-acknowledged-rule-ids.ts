@@ -1,19 +1,25 @@
 import type { IConstruct } from 'constructs';
 import { iterateDfsPreorder } from './construct-iteration';
 
+export interface AcknowledgedRule {
+  readonly reason: string;
+  readonly constructPath: string;
+}
+
 /**
  * Collect all acknowledged rule IDs from construct metadata across the tree.
+ * Returns a map from rule ID to acknowledgement details (reason and construct path).
  */
-export function collectAcknowledgedRuleIds(root: IConstruct): Set<string> {
-  const ids = new Set<string>();
+export function collectAcknowledgedRuleIds(root: IConstruct): Map<string, AcknowledgedRule> {
+  const rules = new Map<string, AcknowledgedRule>();
   for (const construct of iterateDfsPreorder(root)) {
     for (const entry of construct.node.metadata) {
       if (entry.type === 'aws:cdk:acknowledged-rules' && entry.data) {
-        for (const id of Object.keys(entry.data as Record<string, string>)) {
-          ids.add(id);
+        for (const [id, reason] of Object.entries(entry.data as Record<string, string>)) {
+          rules.set(id, { reason, constructPath: construct.node.path });
         }
       }
     }
   }
-  return ids;
+  return rules;
 }

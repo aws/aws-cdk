@@ -1218,6 +1218,50 @@ Policy Validation Report Summary
       expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
     });
 
+    test('suppressed violations appear in validation-report.json', () => {
+      const app = new core.App({
+        context: {
+          ...annotationReportContext,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: 'MyBucket',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      app.synth();
+
+      const file = path.join(app.outdir, 'validation-report.json');
+      const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+      expect(report.pluginReports).toHaveLength(1);
+      expect(report.pluginReports[0].violations).toHaveLength(0);
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+      expect(report.pluginReports[0].suppressedViolations[0]).toEqual(expect.objectContaining({
+        ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+        description: 'S3 Bucket should have versioning enabled',
+        acknowledgedId: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Not needed for this bucket',
+        acknowledgedAt: 'Default',
+      }));
+    });
+
     test('fatal plugin violations cannot be suppressed', () => {
       const app = new core.App({ context: annotationReportContext });
       const stack = new core.Stack(app);
