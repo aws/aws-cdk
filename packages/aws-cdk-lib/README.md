@@ -333,21 +333,22 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 ### Cross-stack reference strength
 
 The context key `@aws-cdk/core:defaultCrossStackReferences` controls the mechanism used for
-cross-region references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
+cross-stack references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
 
-**Strong references** (default) use a pair of Custom Resources (ExportWriter/ExportReader) that
-write values to SSM Parameters in the consuming region. This prevents the producing stack from
-being deleted while consumers exist, at the cost of additional infrastructure (Lambda functions,
-IAM roles, SSM parameters).
+**Strong references** (default) create a tight coupling between stacks. For same-region references,
+the producer creates a CloudFormation Export and the consumer uses `Fn::ImportValue`. For
+cross-region references, a pair of Custom Resources (ExportWriter/ExportReader) write values to
+SSM Parameters in the consuming region. In both cases, the producing stack cannot be deleted
+while consumers exist.
 
 **Weak references** use `Fn::GetStackOutput`, a CloudFormation intrinsic that reads an output
 directly from the producing stack. This is simpler (no extra infrastructure), but the producing
 stack can be deleted independently of its consumers.
 
 **Both** is a transitional state used during migration from strong to weak. The producer keeps
-the ExportWriter (so it continues writing to SSM), and also adds an Output. The consumer switches
-to `Fn::GetStackOutput`. This ensures the consumer is no longer dependent on the ExportReader
-before the ExportWriter is removed.
+the strong-side artifacts (Export for same-region, ExportWriter for cross-region), and also adds
+a plain Output. The consumer switches to `Fn::GetStackOutput`. This ensures the consumer is no
+longer dependent on the strong mechanism before it is removed.
 
 Configure the reference strength in your `cdk.json`:
 
@@ -368,10 +369,10 @@ Configure the reference strength in your `cdk.json`:
 
 The full behavior is summarized in the following table:
 
-|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                       |
-|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| Same account and region    | Generates a `Fn::ImportValue` reference           | Not yet implemented. Will use strong                                                         | Not yet implemented. Will use strong                            |
-| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                      |
+|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                  |
+|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------|
+| Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                 |
+| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                 |
 | Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
 
 
@@ -393,8 +394,8 @@ problem:
 ```
 
 This adds `Fn::GetStackOutput` references in the consumers (weak) while keeping the
-ExportWriter in the producer (strong). After this deployment, consumers no longer depend on
-the ExportReader custom resource.
+strong-side artifacts in the producer (Export for same-region, ExportWriter for cross-region).
+After this deployment, consumers no longer depend on the strong mechanism.
 
 **DEPLOYMENT 2**: set the flag to `"weak"` and deploy.
 
@@ -406,8 +407,9 @@ the ExportReader custom resource.
 }
 ```
 
-This removes the ExportWriter/ExportReader infrastructure entirely. All references now use
-the lightweight `Fn::GetStackOutput` mechanism.
+This removes the strong-side infrastructure entirely (Exports for same-region,
+ExportWriter/ExportReader for cross-region). All references now use the lightweight
+`Fn::GetStackOutput` mechanism.
 
 ### Removing automatic cross-stack references
 
@@ -1692,36 +1694,19 @@ validation.
 > etc. It's your responsibility as the consumer of a plugin to verify that it is
 > secure to use.
 
-By default, the report will be printed in a human-readable format. If you want a
-report in JSON format, enable it using the `@aws-cdk/core:validationReportJson`
-context passing it directly to the application:
+By default, the report is output in two ways:
+
+- A JSON file called `policy-validation-report.json` is written to the cloud assembly directory.
+- A human-readable format is printed to the standard error output.
+
+To disable either format, explicitly set the corresponding context key to `false`:
 
 ```ts fixture=validation-plugin
+// Disable pretty-printed console output (JSON file still written)
 const app = new App({
-  context: { '@aws-cdk/core:validationReportJson': true },
+  context: { '@aws-cdk/core:validationReportPrettyPrint': false },
 });
 ```
-
-Alternatively, you can set this context key-value pair using the `cdk.json` or
-`cdk.context.json` files in your project directory (see
-[Runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html)).
-
-It is also possible to enable both JSON and human-readable formats by setting
-`@aws-cdk/core:validationReportPrettyPrint` context key explicitly:
-
-```ts fixture=validation-plugin
-const app = new App({
-  context: {
-    '@aws-cdk/core:validationReportJson': true,
-    '@aws-cdk/core:validationReportPrettyPrint': true,
-  },
-});
-```
-
-If you choose the JSON format, the CDK will print the policy validation report
-to a file called `policy-validation-report.json` in the cloud assembly
-directory. For the default, human-readable format, the report will be printed to
-the standard output.
 
 ### For plugin authors
 
