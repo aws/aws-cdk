@@ -524,3 +524,10 @@ new agentcoreAlpha.Runtime(this, 'Runtime', {
 > **Note:** The pre-created log group always uses `RemovalPolicy.RETAIN`. If the
 > runtime resource is ever replaced (causing its `agentRuntimeId` to change), the
 > old log group will be orphaned and must be cleaned up manually.
+
+> **Migration caveat:** If this runtime has already been invoked before you add
+> `applicationLogGroupTags`, the AgentCore service will have already created the
+> log group at the same name. CloudFormation will fail with a
+> `ResourceAlreadyExistsException` when it attempts to create the CDK-managed log
+> group. To resolve this, manually delete (or rename) the existing log group in
+> CloudWatch Logs before deploying the updated stack.

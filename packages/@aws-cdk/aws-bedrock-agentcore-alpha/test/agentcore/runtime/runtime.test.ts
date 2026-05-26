@@ -3429,7 +3429,7 @@ describe('Runtime applicationLogGroupTags tests', () => {
     Template.fromStack(stack).resourceCountIs('AWS::Logs::LogGroup', 0);
   });
 
-  test('fails when applicationLogGroupTags contains an invalid key', () => {
+  test('Should throw when applicationLogGroupTags contains an invalid key', () => {
     expect(() => new Runtime(stack, 'InvalidTagRuntime', {
       runtimeName: 'invalid_tag_runtime',
       agentRuntimeArtifact,

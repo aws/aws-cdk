@@ -165,6 +165,13 @@ export interface RuntimeProps {
    *   runtime resource is recreated), the old log group is orphaned and must be
    *   cleaned up manually from the AWS console or CLI.
    *
+   * **Migration caveat**: if this runtime has already been invoked before you add
+   * `applicationLogGroupTags`, the AgentCore service will have already created the
+   * log group at the same name. CloudFormation will then fail with a
+   * `ResourceAlreadyExistsException` when it tries to create the CDK-managed log
+   * group. To work around this, manually delete (or rename) the existing log group
+   * in CloudWatch Logs before deploying the updated stack.
+   *
    * Use this when tag-based controls are required for cost allocation, data
    * classification, retention automation, or access governance.
    *
