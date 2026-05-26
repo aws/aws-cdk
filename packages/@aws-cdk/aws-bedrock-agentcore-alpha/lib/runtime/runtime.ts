@@ -92,6 +92,7 @@ export interface TracingResourcePolicyConfig {
 
 /**
  * Properties for creating a Bedrock Agent Core Runtime resource
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface RuntimeProps {
   /**
@@ -201,6 +202,7 @@ export interface RuntimeProps {
 
 /**
  * Options for adding an endpoint to the runtime
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AddEndpointOptions {
   /**
@@ -228,6 +230,10 @@ export interface AddEndpointOptions {
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime.html
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class Runtime extends RuntimeBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.Runtime';
