@@ -478,6 +478,24 @@ const invoke = integ.assertions.invokeFunction({
 });
 ```
 
+#### Provider Log Level
+
+By default, the assertion provider lambda function has its log level set to `FATAL`.
+If you need to debug assertion failures, you can increase the log level by setting
+`providerLogLevel` on the `IntegTest` construct:
+
+```ts
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+
+declare const app: App;
+declare const stack: Stack;
+
+const integ = new IntegTest(app, 'IntegTest', {
+  testCases: [stack],
+  providerLogLevel: lambda.ApplicationLogLevel.INFO,
+});
+```
+
 #### Make an AWS API Call
 
 In this example there is a StepFunctions state machine that is executed
