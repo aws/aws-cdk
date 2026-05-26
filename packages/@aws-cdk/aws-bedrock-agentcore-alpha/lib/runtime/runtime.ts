@@ -45,47 +45,6 @@ const LIFECYCLE_MIN_TIMEOUT = Duration.seconds(60);
  */
 const LIFECYCLE_MAX_LIFETIME = Duration.seconds(28800);
 
-/**
- * The strategy used for managing the X-Ray resource policy required for trace delivery.
- */
-export class TracingResourcePolicyMode {
-  /**
-   * Automatically create a per-stack X-Ray resource policy.
-   * This preserves the current behavior.
-   */
-  public static readonly AUTO = new TracingResourcePolicyMode('AUTO');
-
-  /**
-   * Do not create an X-Ray resource policy.
-   * Use this when a shared policy is managed elsewhere in the account/region.
-   */
-  public static readonly NONE = new TracingResourcePolicyMode('NONE');
-
-  /**
-   * The string value for the tracing policy mode.
-   */
-  public readonly value: string;
-
-  public constructor(value: string) {
-    this.value = value;
-  }
-}
-
-/**
- * Configuration for how tracing resource policy management should behave.
- */
-export interface TracingResourcePolicyConfig {
-  /**
-   * Tracing policy management mode.
-   *
-   * - `AUTO`: create a per-stack X-Ray resource policy for trace delivery.
-   * - `NONE`: do not create a policy; caller is responsible for providing one.
-   *
-   * @default TracingResourcePolicyMode.AUTO
-   */
-  readonly mode?: TracingResourcePolicyMode;
-}
-
 /******************************************************************************
  *                                Props
  *****************************************************************************/
@@ -179,16 +138,6 @@ export interface RuntimeProps {
    * @default false
    */
   readonly tracingEnabled?: boolean;
-
-  /**
-   * Controls how the X-Ray resource policy required by tracing is managed.
-   *
-   * Use `TracingResourcePolicyMode.NONE` when a shared account-level policy is
-   * managed outside this stack.
-   *
-   * @default - `{ mode: TracingResourcePolicyMode.AUTO }`
-   */
-  readonly tracingResourcePolicy?: TracingResourcePolicyConfig;
 
   /**
    * Logging configuration for the runtime.
@@ -449,10 +398,7 @@ export class Runtime extends RuntimeBase {
 
     // Configure observability (tracing and logging)
     if (props.tracingEnabled) {
-      const tracingResourcePolicyMode = props.tracingResourcePolicy?.mode ?? TracingResourcePolicyMode.AUTO;
-      configureTracingDelivery(this, this.agentRuntimeArn, {
-        createResourcePolicy: tracingResourcePolicyMode.value !== TracingResourcePolicyMode.NONE.value,
-      });
+      configureTracingDelivery(this, this.agentRuntimeArn);
     }
 
     if (props.loggingConfigs && props.loggingConfigs.length > 0) {

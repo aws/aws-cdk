@@ -1,27 +1,14 @@
 import { ArnFormat, Lazy, Names, Stack, Tags } from 'aws-cdk-lib';
-import { Effect, PolicyStatement, ServicePrincipal, PolicyDocument } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { IDeliveryStream } from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import type * as s3 from 'aws-cdk-lib/aws-s3';
-import * as xray from 'aws-cdk-lib/aws-xray';
 import { Construct } from 'constructs';
 
 /**
  * Maximum length for delivery source and destination names
  */
 const MAX_DELIVERY_NAME_LENGTH = 60;
-
-/**
- * Optional configuration for tracing delivery setup.
- * @internal
- */
-export interface TracingDeliveryConfig {
-  /**
-   * Whether to create a per-stack X-Ray resource policy.
-   * @default true
-   */
-  readonly createResourcePolicy?: boolean;
-}
 
 /**
  * Log types for AgentCore Runtime observability
@@ -248,30 +235,13 @@ class FirehoseDestination extends LoggingDestination {
 }
 
 /**
- * Internal X-Ray resource policy wrapper that allows adding statements after creation.
- * This is similar to logs.ResourcePolicy but for X-Ray.
- */
-class XRayResourcePolicy extends Construct {
-  public readonly document: PolicyDocument;
-
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    this.document = new PolicyDocument();
-
-    new xray.CfnResourcePolicy(this, 'ResourcePolicy', {
-      policyName: Lazy.string({
-        produce: () => Names.uniqueResourceName(this, { maxLength: 128 }),
-      }),
-      policyDocument: Lazy.string({
-        produce: () => JSON.stringify(this.document.toJSON()),
-      }),
-    });
-  }
-}
-
-/**
- * Configure X-Ray tracing delivery for a runtime
+ * Configure X-Ray tracing delivery for a runtime.
+ *
+ * AWS automatically manages the required X-Ray resource policy when the deploying
+ * identity has `xray:PutResourcePolicy` and `xray:ListResourcePolicies` permissions,
+ * so no explicit `AWS::XRay::ResourcePolicy` resource is created here.
+ *
+ * @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
  *
  * @param scope The construct scope
  * @param sourceArn The ARN of the source resource (runtime)
@@ -281,10 +251,7 @@ class XRayResourcePolicy extends Construct {
 export function configureTracingDelivery(
   scope: Construct,
   sourceArn: string,
-  options?: TracingDeliveryConfig,
 ): logs.CfnDelivery {
-  const stack = Stack.of(scope);
-
   // Create delivery source for traces
   const deliverySource = new logs.CfnDeliverySource(scope, 'TracesDeliverySource', {
     name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliverySource, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
@@ -292,55 +259,11 @@ export function configureTracingDelivery(
     resourceArn: sourceArn,
   });
 
-  const createResourcePolicy = options?.createResourcePolicy ?? true;
-  let xrayPolicy: XRayResourcePolicy | undefined;
-  if (createResourcePolicy) {
-    // Get or create X-Ray resource policy (singleton per stack)
-    const policyId = 'CdkXRayLogsDeliveryPolicy';
-    xrayPolicy = stack.node.tryFindChild(policyId) as XRayResourcePolicy | undefined;
-
-    if (!xrayPolicy) {
-      xrayPolicy = new XRayResourcePolicy(stack, policyId);
-    }
-
-    // Grant permissions for this specific source resource
-    // The xray:PutTraceSegments action requires resources: ['*'] per AWS documentation.
-    // The conditions below restrict this broad scope to only the specific source resource
-    // (via logs:LogGeneratingResourceArns) and the current account and delivery-source ARN.
-    // @see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AWS-logs-infrastructure-V2-XRAY.html
-    xrayPolicy.document.addStatements(new PolicyStatement({
-      effect: Effect.ALLOW,
-      principals: [new ServicePrincipal('delivery.logs.amazonaws.com')],
-      actions: ['xray:PutTraceSegments'],
-      resources: ['*'],
-      conditions: {
-        'ForAllValues:ArnLike': {
-          'logs:LogGeneratingResourceArns': [sourceArn],
-        },
-        'StringEquals': {
-          'aws:SourceAccount': stack.account,
-        },
-        'ArnLike': {
-          'aws:SourceArn': stack.formatArn({
-            service: 'logs',
-            resource: 'delivery-source',
-            resourceName: '*',
-            arnFormat: ArnFormat.COLON_RESOURCE_NAME,
-          }),
-        },
-      },
-    }));
-  }
-
   // Create delivery destination for X-Ray
   const deliveryDestination = new logs.CfnDeliveryDestination(scope, 'TracesDeliveryDest', {
     name: Lazy.string({ produce: (): string => Names.uniqueResourceName(deliveryDestination, { maxLength: MAX_DELIVERY_NAME_LENGTH }) }),
     deliveryDestinationType: 'XRAY',
   });
-
-  if (xrayPolicy) {
-    deliveryDestination.node.addDependency(xrayPolicy);
-  }
 
   // Create delivery to connect source and destination
   const delivery = new logs.CfnDelivery(scope, 'TracesDelivery', {
