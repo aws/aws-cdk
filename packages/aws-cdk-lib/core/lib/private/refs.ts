@@ -17,6 +17,7 @@ import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { Lazy } from '../lazy';
 import { Names } from '../names';
 import type { Reference } from '../reference';
 import type { IResolvable } from '../resolvable';
@@ -126,7 +127,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     });
 
     return createGetStackOutput(reference, {
-      consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
+      consumerRoleArn: consumer.synthesizer.cloudFormationExecutionRole,
       producerAccount,
       producerRegion,
       producerStackArn,
@@ -383,7 +384,10 @@ interface GetStackOutputRoleProps {
   readonly producerAccount?: string;
 }
 
+const ROLE_CONSUMERS = new WeakMap<CfnResource, Set<string>>();
+
 function createGetStackOutputRole(scope: Construct, id: string, props: GetStackOutputRoleProps): { resource: CfnResource; roleRef: RoleReference } {
+  const consumers = new Set<string>([props.consumerRoleArn]);
   const resource = new CfnResource(scope, id, {
     type: 'AWS::IAM::Role',
     properties: {
@@ -393,7 +397,12 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
           {
             Effect: 'Allow',
             Principal: {
-              AWS: props.consumerRoleArn,
+              AWS: Lazy.any({
+                produce: () => {
+                  const arns = [...consumers].map(arn => ({ 'Fn::Sub': arn }));
+                  return arns.length === 1 ? arns[0] : arns;
+                },
+              }),
             },
             Action: [
               'sts:AssumeRole',
@@ -403,6 +412,8 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
       },
     },
   });
+  ROLE_CONSUMERS.set(resource, consumers);
+
   const roleName = Names.uniqueResourceName(resource, {
     maxLength: 64,
   });
@@ -418,6 +429,13 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
   });
 
   return { resource, roleRef: { roleArn, roleName } };
+}
+
+function addConsumerToRole(roleResource: CfnResource, consumerRoleArn: string): void {
+  const consumers = ROLE_CONSUMERS.get(roleResource);
+  if (consumers) {
+    consumers.add(consumerRoleArn);
+  }
 }
 
 interface GetStackOutputPolicyProps {
@@ -460,8 +478,8 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   const resolved = JSON.stringify(exportingStack.resolve(reference));
   const outputId = 'Output' + resolved;
-  const roleId = 'Role' + resolved;
-  const policyId = 'Policy' + resolved;
+  const roleId = 'GetStackOutputRole';
+  const policyId = 'GetStackOutputPolicy';
 
   function createScope(stack: Stack) {
     const scopeName = 'Publish';
@@ -492,6 +510,17 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
       });
       roleResource = resource;
       roleArn = roleRef.roleArn;
+    } else {
+      addConsumerToRole(roleResource, options.consumerRoleArn);
+      const roleName = Names.uniqueResourceName(roleResource, { maxLength: 64 });
+      roleArn = exportingStack.formatArn({
+        service: 'iam',
+        resource: 'role',
+        resourceName: roleName,
+        account: options.producerAccount,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        region: '',
+      });
     }
 
     let policy = scope.node.tryFindChild(policyId) as CfnResource;
