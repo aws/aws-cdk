@@ -37,7 +37,10 @@ import {
   Token,
   ValidationError,
 } from '../../core';
+import type { IArrayBox, IBox, IReadableBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { CLOUDFRONT_DEFAULT_SECURITY_POLICY_TLS_V1_2_2021 } from '../../cx-api';
@@ -306,6 +309,7 @@ export interface DistributionProps {
  * A CloudFront distribution with associated origin(s) and caching behavior(s).
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Distribution extends Resource implements IDistribution {
   /**
    * Uniquely identifies this class.
@@ -366,14 +370,14 @@ export class Distribution extends Resource implements IDistribution {
 
   private readonly httpVersion: HttpVersion;
   private readonly defaultBehavior: CacheBehavior;
-  private readonly additionalBehaviors: CacheBehavior[] = [];
-  private readonly boundOrigins: BoundOrigin[] = [];
-  private readonly originGroups: CfnDistribution.OriginGroupProperty[] = [];
+  private readonly additionalBehaviors: IArrayBox<CacheBehavior> = Box.fromArray();
+  private readonly boundOrigins: IArrayBox<BoundOrigin> = Box.fromArray([], { omitEmpty: false });
+  private readonly originGroups: IArrayBox<CfnDistribution.OriginGroupProperty> = Box.fromArray();
 
   private readonly errorResponses: ErrorResponse[];
   private readonly certificate?: ICertificateRef;
   private readonly publishAdditionalMetrics?: boolean;
-  private webAclId?: string;
+  private readonly _webAclId: IBox<string | undefined>;
 
   constructor(scope: Construct, id: string, props: DistributionProps) {
     super(scope, id);
@@ -402,9 +406,9 @@ export class Distribution extends Resource implements IDistribution {
       });
     }
 
+    this._webAclId = Box.fromValue(props.webAclId);
     if (props.webAclId) {
       this.validateWebAclId(props.webAclId);
-      this.webAclId = props.webAclId;
     }
 
     this.certificate = props.certificate;
@@ -420,11 +424,15 @@ export class Distribution extends Resource implements IDistribution {
     const distribution = new CfnDistribution(this, 'Resource', {
       distributionConfig: {
         enabled: props.enabled ?? true,
-        origins: Lazy.any({ produce: () => this.renderOrigins() }),
-        originGroups: Lazy.any({ produce: () => this.renderOriginGroups() }),
+        origins: this.renderOrigins(),
+        originGroups: this.originGroups.derive(og =>
+          og.length === 0 ? undefined : { items: og, quantity: og.length },
+        ),
         defaultCacheBehavior: this.defaultBehavior._renderBehavior(),
         aliases: props.domainNames,
-        cacheBehaviors: Lazy.any({ produce: () => this.renderCacheBehaviors() }),
+        cacheBehaviors: this.additionalBehaviors.derive(ab =>
+          ab.length === 0 ? undefined : ab.map(b => b._renderBehavior()),
+        ),
         comment: trimmedComment,
         customErrorResponses: this.renderErrorResponses(),
         defaultRootObject: props.defaultRootObject,
@@ -435,7 +443,8 @@ export class Distribution extends Resource implements IDistribution {
         restrictions: this.renderRestrictions(props.geoRestriction),
         viewerCertificate: this.certificate ? this.renderViewerCertificate(this.certificate,
           props.minimumProtocolVersion, props.sslSupportMethod) : undefined,
-        webAclId: Lazy.string({ produce: () => this.webAclId }),
+        // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+        webAclId: Token.asString(this._webAclId),
       },
     });
 
@@ -721,11 +730,11 @@ export class Distribution extends Resource implements IDistribution {
    */
   @MethodMetadata()
   public attachWebAclId(webAclId: string) {
-    if (this.webAclId) {
+    if (this._webAclId.get()) {
       throw new ValidationError(lit`WebAclAlreadyAttachedToDistribution`, 'A WebACL has already been attached to this distribution', this);
     }
     this.validateWebAclId(webAclId);
-    this.webAclId = webAclId;
+    this._webAclId.set(webAclId);
   }
 
   private validateWebAclId(webAclId: string) {
@@ -812,28 +821,12 @@ export class Distribution extends Resource implements IDistribution {
     });
   }
 
-  private renderOrigins(): CfnDistribution.OriginProperty[] {
-    const renderedOrigins: CfnDistribution.OriginProperty[] = [];
-    this.boundOrigins.forEach(boundOrigin => {
-      if (boundOrigin.originProperty) {
-        renderedOrigins.push(boundOrigin.originProperty);
-      }
-    });
-    return renderedOrigins;
-  }
-
-  private renderOriginGroups(): CfnDistribution.OriginGroupsProperty | undefined {
-    return this.originGroups.length === 0
-      ? undefined
-      : {
-        items: this.originGroups,
-        quantity: this.originGroups.length,
-      };
-  }
-
-  private renderCacheBehaviors(): CfnDistribution.CacheBehaviorProperty[] | undefined {
-    if (this.additionalBehaviors.length === 0) { return undefined; }
-    return this.additionalBehaviors.map(behavior => behavior._renderBehavior());
+  private renderOrigins(): IReadableBox<Array<CfnDistribution.OriginProperty>> {
+    return this.boundOrigins
+      .map(origin => origin.originProperty)
+      .derive(origins => origins.filter(Boolean))
+      // only defined values remaining
+      .derive(origins => origins as CfnDistribution.OriginProperty[]);
   }
 
   private renderErrorResponses(): CfnDistribution.CustomErrorResponseProperty[] | undefined {

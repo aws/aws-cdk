@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { Template } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { AssertionError } from '../../assertions/lib/private/error';
 import * as notifications from '../../aws-codestarnotifications';
 import * as iam from '../../aws-iam';
@@ -21,6 +21,15 @@ describe('Topic', () => {
       new sns.Topic(stack, 'MyTopic');
 
       Template.fromStack(stack).resourceCountIs('AWS::SNS::Topic', 1);
+    });
+
+    test('topic without logging configs omits DeliveryStatusLogging', () => {
+      const stack = new cdk.Stack();
+      new sns.Topic(stack, 'MyTopic');
+
+      Template.fromStack(stack).hasResourceProperties('AWS::SNS::Topic', {
+        DeliveryStatusLogging: Match.absent(),
+      });
     });
 
     test('specify topicName', () => {
