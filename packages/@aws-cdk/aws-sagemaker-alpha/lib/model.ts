@@ -430,6 +430,16 @@ export class Model extends ModelBase {
           this,
         );
       }
+
+      const hostnames = this.containerDefinitions.map(c => c.containerHostname).filter(Boolean);
+      const uniqueHostnames = new Set(hostnames);
+      if (uniqueHostnames.size !== hostnames.length) {
+        throw new ValidationError(
+          lit`ModelDirectModeDuplicateHostnames`,
+          'When using Direct inference execution mode, all container hostnames must be unique',
+          this,
+        );
+      }
     }
   }
 

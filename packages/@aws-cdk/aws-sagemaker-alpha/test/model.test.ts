@@ -603,4 +603,24 @@ describe('InferenceExecutionMode', () => {
       ]),
     });
   });
+
+  test('fails with Direct mode when containers have duplicate hostnames', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app);
+    const testRepo = ecr.Repository.fromRepositoryName(stack, 'testRepo', '123456789012.dkr.ecr.us-west-2.amazonaws.com/mymodel');
+    new sagemaker.Model(stack, 'Model', {
+      containers: [
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerA' },
+        { image: sagemaker.ContainerImage.fromEcrRepository(testRepo), containerHostname: 'containerA' },
+      ],
+      inferenceExecutionMode: sagemaker.InferenceExecutionMode.DIRECT,
+    });
+
+    // WHEN
+    const when = () => app.synth();
+
+    // THEN
+    expect(when).toThrow(/all container hostnames must be unique/);
+  });
 });
