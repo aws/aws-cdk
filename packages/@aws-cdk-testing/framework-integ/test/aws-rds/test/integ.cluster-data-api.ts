@@ -6,6 +6,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { IntegTestBaseStack } from './integ-test-base-stack';
 import * as rds from 'aws-cdk-lib/aws-rds';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -23,7 +24,7 @@ const role = new iam.Role(stack, 'Role', {
 const user = new iam.User(stack, 'User');
 
 const fn = new lambda.Function(stack, 'Function', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async (event) => { return "hello"; }'),
 });

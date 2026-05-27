@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "WebSocketApiInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/4d11f5fb605915304f82898ced69d2e4dfb4c58b9fc1f7a4da8288517f249c18.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/47169077cde3e44e1ccc9b06c718f967c24123a578116d16c4f59b9d548670f4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,362 +33,7 @@
       "dependencies": [
         "WebSocketApiInteg.assets"
       ],
-      "metadata": {
-        "/WebSocketApiInteg/ConnectHandler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/WebSocketApiInteg/ConnectHandler/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/WebSocketApiInteg/ConnectHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/ConnectHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ConnectHandlerServiceRole7E4A9B1F"
-          }
-        ],
-        "/WebSocketApiInteg/ConnectHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ConnectHandler2FFD52D8"
-          }
-        ],
-        "/WebSocketApiInteg/DisconnectHandler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/WebSocketApiInteg/DisconnectHandler/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/WebSocketApiInteg/DisconnectHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/DisconnectHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DisconnectHandlerServiceRoleE54F14F9"
-          }
-        ],
-        "/WebSocketApiInteg/DisconnectHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DisconnectHandlerCB7ED6F7"
-          }
-        ],
-        "/WebSocketApiInteg/DefaultHandler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/WebSocketApiInteg/DefaultHandler/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/WebSocketApiInteg/DefaultHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/DefaultHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultHandlerServiceRoleDF00569C"
-          }
-        ],
-        "/WebSocketApiInteg/DefaultHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultHandler604DF7AC"
-          }
-        ],
-        "/WebSocketApiInteg/MessageHandler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/WebSocketApiInteg/MessageHandler/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/WebSocketApiInteg/MessageHandler/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/MessageHandler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MessageHandlerServiceRoleDF05266A"
-          }
-        ],
-        "/WebSocketApiInteg/MessageHandler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MessageHandlerDFBBCD6B"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapi32E6CE11"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$connect-Route": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRouteConnectIntegrationPermission719B6E63"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$connect-Route/ConnectIntegration/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRouteConnectIntegrationE101DB9B"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$connect-Route/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapiconnectRoute45A0ED6A"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$disconnect-Route": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapidisconnectRouteDisconnectIntegrationPermissionA8197C41"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$disconnect-Route/DisconnectIntegration/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapidisconnectRouteDisconnectIntegrationF927D904"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$disconnect-Route/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapidisconnectRoute421A8CB9"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$default-Route": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapidefaultRouteDefaultIntegrationPermission3B7F9CA1"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$default-Route/DefaultIntegration/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapidefaultRouteDefaultIntegrationFFCB3BA9"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/$default-Route/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapidefaultRouteE9382DF8"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/sendmessage-Route": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteSendMessageIntegrationPermission92C9841E"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/sendmessage-Route/SendMessageIntegration/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteSendMessageIntegrationD29E12F9"
-          }
-        ],
-        "/WebSocketApiInteg/mywsapi/sendmessage-Route/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mywsapisendmessageRouteAE873328"
-          }
-        ],
-        "/WebSocketApiInteg/mystage": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/WebSocketApiInteg/mystage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "mystage114C35EC"
-          }
-        ],
-        "/WebSocketApiInteg/ApiEndpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ApiEndpoint"
-          }
-        ],
-        "/WebSocketApiInteg/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/WebSocketApiInteg/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "WebSocketApiInteg.metadata.json",
       "displayName": "WebSocketApiInteg"
     },
     "Tree": {
@@ -403,6 +48,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -421,6 +67,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -532,7 +179,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -686,6 +333,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -717,16 +369,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -872,6 +514,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
           "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
             "recommendedValue": true,
             "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
@@ -880,12 +527,48 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }

@@ -5,6 +5,7 @@ import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as targets from 'aws-cdk-lib/aws-elasticloadbalancingv2-targets';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -19,7 +20,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 });
 
 const fn = new lambda.Function(stack, 'Function', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

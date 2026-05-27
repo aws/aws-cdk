@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "36.0.24",
+  "version": "53.0.0",
   "testCases": {
     "ValueFromLookupWithDefaultTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "ValueFromLookupWithDefaultTest/DefaultTest/DeployAssert",
       "assertionStackName": "ValueFromLookupWithDefaultTestDeployAssert525E0911"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

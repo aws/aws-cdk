@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "44.0.0",
+  "version": "53.0.0",
   "testCases": {
     "domain-name-mapping-test/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "domainnamemappingtestDefaultTestDeployAssert4FFC8047"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1123.0"
 }

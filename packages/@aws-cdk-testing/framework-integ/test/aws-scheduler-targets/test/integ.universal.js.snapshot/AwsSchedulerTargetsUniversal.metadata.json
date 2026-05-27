@@ -1,0 +1,204 @@
+{
+  "/AwsSchedulerTargetsUniversal": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-scheduler-targets/test/integ.universal.js:8:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/Schedule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "schedule": "*",
+        "target": "*"
+      }
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/SchedulerRoleForTarget-5cddf7": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "roleName": "*",
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "Default policy with * for resources is used. Use custom policy for better security posture. [ack: @aws-cdk/aws-scheduler-targets:defaultWildcardResourcePolicy]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "Universal.addTargetActionToRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/universal.js:87:43)",
+        "Universal.bindBaseTargetConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/target.js:41:14)",
+        "Universal.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/target.js:69:21)",
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler/lib/schedule.js:366:47)",
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-scheduler-targets/test/integ.universal.js:9:1)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/Schedule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Schedule83A77FD1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler/lib/schedule.js:377:30)",
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-scheduler-targets/test/integ.universal.js:9:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/SchedulerRoleForTarget-5cddf7/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerRoleForTarget5cddf726972933"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "Universal.createOrGetScheduleTargetRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/target.js:105:22)",
+        "Universal.bindBaseTargetConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/target.js:40:50)",
+        "Universal.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/target.js:69:21)",
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler/lib/schedule.js:366:47)",
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-scheduler-targets/test/integ.universal.js:9:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/SchedulerRoleForTarget-5cddf7/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/AwsSchedulerTargetsUniversal/SchedulerRoleForTarget-5cddf7/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SchedulerRoleForTarget5cddf7DefaultPolicy3159C97B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Universal.addTargetActionToRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/universal.js:88:18)",
+        "Universal.bindBaseTargetConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/target.js:41:14)",
+        "Universal.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler-targets/lib/target.js:69:21)",
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-scheduler/lib/schedule.js:366:47)",
+        "new Schedule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ]
+}

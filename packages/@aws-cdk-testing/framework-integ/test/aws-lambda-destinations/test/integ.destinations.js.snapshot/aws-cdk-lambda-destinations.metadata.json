@@ -1,4 +1,13 @@
 {
+  "/aws-cdk-lambda-destinations": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
+    }
+  ],
   "/aws-cdk-lambda-destinations/Topic": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -98,24 +107,75 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/Topic/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "TopicBFC7AF6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:21:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/Queue/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Queue4A7E3555"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:22:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/SnsSqs/ServiceRole": [
@@ -186,6 +246,16 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "SnsSqsC4810B27"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:23:19)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/SnsSqs/EventInvokeConfig": [
@@ -231,6 +301,16 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "OnSucces8F9C946B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:35:33)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/EventBusLambda/ServiceRole": [
@@ -285,6 +365,16 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "EventBusLambda4AA26499"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:42:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/EventBusLambda/EventInvokeConfig": [
@@ -303,12 +393,33 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "OnFailureBucketC16738A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:52:31)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/OnSuccessQueue/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "OnSuccessQueueDB3FE45D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:53:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/S3/ServiceRole": [
@@ -371,6 +482,16 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "S3486F821D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:54:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/S3/EventInvokeConfig": [
@@ -389,6 +510,16 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "MySpecialAliasC0F04207"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/alias.js:189:26)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:67:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/MySpecialAlias/ScalingRole": [
@@ -414,18 +545,58 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefSnsSqsC4810B27404A5AFF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/Exports/Output{\"Ref\":\"Queue4A7E3555\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefQueue4A7E3555425E8BD3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/SnsSqs/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SnsSqsServiceRole869866F7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:23:19)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/SnsSqs/ServiceRole/DefaultPolicy": [
@@ -486,24 +657,73 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "SnsSqsEventInvokeConfigDC664368"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-invoke-config.js:104:13)",
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureAsyncInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:434:9)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:780:22)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:23:19)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/SnsSqs/VersionMySpecialVersion/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SnsSqsVersionMySpecialVersion08136BD6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Version (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/lambda-version.js:207:29)",
+        "new Version (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:981:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:66:33)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/OnSucces/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "OnSuccesServiceRole75E399CF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:35:33)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/EventBusLambda/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "EventBusLambdaServiceRole9BC8901F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:42:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/EventBusLambda/ServiceRole/DefaultPolicy": [
@@ -554,12 +774,37 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "EventBusLambdaEventInvokeConfig52CF8B9B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-invoke-config.js:104:13)",
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureAsyncInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:434:9)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:780:22)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:42:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/S3/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "S3ServiceRole9AEB7DE9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:54:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/S3/ServiceRole/DefaultPolicy": [
@@ -612,30 +857,101 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "S3EventInvokeConfig001D7832"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-invoke-config.js:104:13)",
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureAsyncInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:434:9)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:780:22)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:54:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/MySpecialAlias/EventInvokeConfig/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MySpecialAliasEventInvokeConfig05FF4E2F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-invoke-config.js:104:13)",
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureAsyncInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:669:9)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/alias.js:207:22)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:67:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-destinations/test/integ.destinations.js:82:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/SnsSqs/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "SnsSqsServiceRoleDefaultPolicy82E7B09F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "TopicGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:54:59)",
+        "TopicGrants.publish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:82:21)",
+        "WrappedClass.grantPublish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:173:28)"
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/EventBusLambda/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "EventBusLambdaServiceRoleDefaultPolicy5BB7FEB6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "WrappedClass.grantPutEventsTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.js:132:41)",
+        "EventBridgeDestination.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-destinations/lib/event-bridge.js:57:18)",
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-invoke-config.js:107:75)",
+        "new EventInvokeConfig (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
     }
   ],
   "/aws-cdk-lambda-destinations/S3/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "S3ServiceRoleDefaultPolicyF2AA3BE6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
     }
   ]
 }

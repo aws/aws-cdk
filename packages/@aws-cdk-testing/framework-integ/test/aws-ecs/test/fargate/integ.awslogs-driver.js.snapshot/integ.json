@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "FargateWithAwsLogsDriver/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "FargateWithAwsLogsDriver/DefaultTest/DeployAssert",
       "assertionStackName": "FargateWithAwsLogsDriverDefaultTestDeployAssert5F8EBC0C"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

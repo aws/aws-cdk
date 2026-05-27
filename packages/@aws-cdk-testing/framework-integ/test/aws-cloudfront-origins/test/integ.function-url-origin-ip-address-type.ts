@@ -4,6 +4,7 @@ import { FunctionUrlOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { App, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { OriginIpAddressType } from 'aws-cdk-lib/aws-cloudfront';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new App();
 const stack = new Stack(app, 'FunctionUrlOriginIpAddressTypeStack');
@@ -12,7 +13,7 @@ const stack = new Stack(app, 'FunctionUrlOriginIpAddressTypeStack');
 const fn = new lambda.Function(stack, 'TestFunction', {
   code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200, body: "Hello" });'),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 // Function URL with IAM auth

@@ -168,7 +168,7 @@ class EventApiStack extends cdk.Stack {
     });
 
     const lambdaConfig: nodejs.NodejsFunctionProps = {
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       environment: {
         EVENT_API_REALTIME_URL: this.eventApi.customRealtimeEndpoint,
         EVENT_API_HTTP_URL: this.eventApi.customHttpEndpoint,

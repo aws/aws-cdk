@@ -1,4 +1,13 @@
 {
+  "/lambda-event-source-sqs-with-poller-config": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:9:15)",
+        "...node internals..."
+      ]
+    }
+  ],
   "/lambda-event-source-sqs-with-poller-config/Queue": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -8,169 +17,419 @@
   "/lambda-event-source-sqs-with-poller-config/Function1": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "handler": "*",
+        "code": "*",
+        "runtime": "*"
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "handler": "*",
+        "code": "*",
+        "runtime": "*"
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "handler": "*",
+        "code": "*",
+        "runtime": "*"
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Queue/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Queue4A7E3555"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:10:15)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function1904AA941"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "target": "*",
+        "batchSize": "*",
+        "maxBatchingWindow": "*",
+        "maxConcurrency": "*",
+        "reportBatchItemFailures": "*",
+        "enabled": "*",
+        "eventSourceArn": "*",
+        "filters": "*",
+        "filterEncryption": "*",
+        "metricsConfig": "*",
+        "provisionedPollerConfig": {
+          "maximumPollers": "*"
+        }
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function28EA0674A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:18:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "target": "*",
+        "batchSize": "*",
+        "maxBatchingWindow": "*",
+        "maxConcurrency": "*",
+        "reportBatchItemFailures": "*",
+        "enabled": "*",
+        "eventSourceArn": "*",
+        "filters": "*",
+        "filterEncryption": "*",
+        "metricsConfig": "*",
+        "provisionedPollerConfig": {
+          "minimumPollers": "*"
+        }
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function352E0E03B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:25:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "logGroupName": "*"
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "target": "*",
+        "batchSize": "*",
+        "maxBatchingWindow": "*",
+        "maxConcurrency": "*",
+        "reportBatchItemFailures": "*",
+        "enabled": "*",
+        "eventSourceArn": "*",
+        "filters": "*",
+        "filterEncryption": "*",
+        "metricsConfig": "*",
+        "provisionedPollerConfig": {
+          "minimumPollers": "*",
+          "maximumPollers": "*"
+        }
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Exports/Output{\"Ref\":\"Function1SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BD8D4BD92\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefFunction1SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BD8D4BD92C92D3DE2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Exports/Output{\"Ref\":\"Function2SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BCBC44E26\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefFunction2SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BCBC44E2668F6AD2C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Exports/Output{\"Ref\":\"Function3SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BC8070FD5\"}": [
     {
       "type": "aws:cdk:logicalId",
       "data": "ExportsOutputRefFunction3SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BC8070FD5B9457333"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function1ServiceRole16CD7E62"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole/DefaultPolicy": [
@@ -180,33 +439,81 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function1LogGroupD7829A21"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:11:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function1SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BD8D4BD92"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.js:353:43)",
+        "new EventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "TestFunction.addEventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:257:16)",
+        "SqsEventSource.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-event-sources/lib/sqs.js:74:43)",
+        "TestFunction.addEventSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:419:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:17:5)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function2ServiceRole9DE00C3A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:18:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole/DefaultPolicy": [
@@ -216,33 +523,81 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function2LogGroup2BD3C205"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:18:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function2SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BCBC44E26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.js:353:43)",
+        "new EventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "TestFunction.addEventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:257:16)",
+        "SqsEventSource.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-event-sources/lib/sqs.js:74:43)",
+        "TestFunction.addEventSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:419:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:24:5)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function3ServiceRole3F9F4A04"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:25:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole/DefaultPolicy": [
@@ -252,45 +607,126 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function3LogGroup82547872"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/test-function.js:8:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:25:13)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/SqsEventSource:lambdaeventsourcesqswithpollerconfigQueue5EB77B4B/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function3SqsEventSourcelambdaeventsourcesqswithpollerconfigQueue5EB77B4BC8070FD5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/event-source-mapping.js:353:43)",
+        "new EventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "TestFunction.addEventSourceMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:257:16)",
+        "SqsEventSource.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-event-sources/lib/sqs.js:74:43)",
+        "TestFunction.addEventSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:419:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda-event-sources/test/integ.sqs-with-poller-config.js:32:5)",
+        "...node internals..."
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function1/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function1ServiceRoleDefaultPolicyE89885AD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "QueueGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:54:59)",
+        "QueueGrants.consumeMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:96:21)",
+        "WrappedClass.grantConsumeMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:114:28)"
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function2/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function2ServiceRoleDefaultPolicy21B9B325"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "QueueGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:54:59)",
+        "QueueGrants.consumeMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:96:21)",
+        "WrappedClass.grantConsumeMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:114:28)"
+      ]
     }
   ],
   "/lambda-event-source-sqs-with-poller-config/Function3/ServiceRole/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Function3ServiceRoleDefaultPolicyED03E2F0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "QueueGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:54:59)",
+        "QueueGrants.consumeMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:96:21)",
+        "WrappedClass.grantConsumeMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:114:28)"
+      ]
     }
   ]
 }

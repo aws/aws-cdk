@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "f6c2e8f4ae6e014d243c2796a686814ee8cdc94ae0c82a7c3e20360010a536ba": {
       "displayName": "cdk-stepfunctions-map-jsonata-maxconcurrency-stack Template",

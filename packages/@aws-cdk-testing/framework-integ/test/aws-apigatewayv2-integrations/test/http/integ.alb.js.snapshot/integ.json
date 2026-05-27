@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "integ-alb-integration-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-alb-integration-test/DefaultTest/DeployAssert",
       "assertionStackName": "integalbintegrationtestDefaultTestDeployAssert91001477"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

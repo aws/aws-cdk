@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:7:15)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:7:15)",
         "...node internals..."
       ]
     }
@@ -12,7 +12,8 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "configurationSetName": "*"
+        "configurationSetName": "*",
+        "disableAutoValidation": true
       }
     }
   ],
@@ -20,7 +21,8 @@
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "configurationSetName": "*"
+        "configurationSetName": "*",
+        "disableAutoValidation": false
       }
     }
   ],
@@ -29,7 +31,8 @@
       "type": "aws:cdk:analytics:construct",
       "data": {
         "configurationSetName": "*",
-        "suppressionReasons": "BOUNCES_AND_COMPLAINTS"
+        "suppressionReasons": "BOUNCES_AND_COMPLAINTS",
+        "autoValidationThreshold": "MANAGED"
       }
     }
   ],
@@ -41,17 +44,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
       ]
     }
   ],
@@ -63,17 +65,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
       ]
     }
   ],
@@ -85,9 +86,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new ConfigurationSet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
-        "new ConfigurationSet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:8:48)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:8:48)",
         "...node internals..."
       ]
     }
@@ -100,9 +101,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new ConfigurationSet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
-        "new ConfigurationSet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:12:63)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:12:63)",
         "...node internals..."
       ]
     }
@@ -115,9 +116,9 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new ConfigurationSet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
-        "new ConfigurationSet (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:16:48)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-auto-validation.js:16:48)",
         "...node internals..."
       ]
     }
@@ -130,14 +131,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Stack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
-        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
-        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
-        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -150,14 +151,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Stack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
-        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
-        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
-        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }
@@ -170,14 +171,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "Stack.exportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
-        "createImportValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:245:33)",
-        "resolveValue (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:179:12)",
-        "resolveReferences (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:52:30)",
-        "prepareApp (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "process.<anonymous> (/Users/kazuhoshinozuka/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
         "...node internals..."
       ]
     }

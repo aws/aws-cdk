@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "testCases": {
     "integrationtest-inspector-start-assessment-run/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integrationtest-inspector-start-assessment-run/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtestinspectorstartassessmentrunDefaultTestDeployAssertEF13D77A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

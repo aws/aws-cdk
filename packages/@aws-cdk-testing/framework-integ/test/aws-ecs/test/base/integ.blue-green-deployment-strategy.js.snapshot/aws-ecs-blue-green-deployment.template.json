@@ -658,7 +658,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "LambdaHookServiceRole9AAAD33B"

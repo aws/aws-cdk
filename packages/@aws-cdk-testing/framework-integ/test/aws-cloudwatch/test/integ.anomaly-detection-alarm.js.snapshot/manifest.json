@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "AnomalyDetectionAlarmTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -33,152 +33,7 @@
       "dependencies": [
         "AnomalyDetectionAlarmTestStack.assets"
       ],
-      "metadata": {
-        "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "datapointsToAlarm": "*",
-              "comparisonOperator": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {
-                "warnings": "*"
-              },
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "datapointsToAlarm": "*"
-            }
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultOperatorAnomalyAlarm13E81AA2"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {
-                "warnings": "*"
-              },
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
-            }
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExplicitOperatorAnomalyAlarm061F9C2B"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "alarmName": "*",
-              "alarmDescription": "*",
-              "comparisonOperator": "*",
-              "datapointsToAlarm": "*",
-              "threshold": "*",
-              "evaluationPeriods": "*",
-              "evaluateLowSampleCountPercentile": "*",
-              "treatMissingData": "*",
-              "actionsEnabled": "*"
-            }
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DescriptiveAnomalyAlarm8B14203E"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/CustomPeriodAnomalyAlarm": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {},
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "metric": {
-                "warnings": "*"
-              },
-              "stdDevs": "*",
-              "evaluationPeriods": "*",
-              "comparisonOperator": "*"
-            }
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/CustomPeriodAnomalyAlarm/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomPeriodAnomalyAlarmD85345B9"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DefaultOperatorAnomalyAlarm13E81AA2\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"ExplicitOperatorAnomalyAlarm061F9C2B\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DescriptiveAnomalyAlarm8B14203E\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"CustomPeriodAnomalyAlarmD85345B9\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefCustomPeriodAnomalyAlarmD85345B903D51401"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/AnomalyDetectionAlarmTestStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "AnomalyDetectionAlarmTestStack.metadata.json",
       "displayName": "AnomalyDetectionAlarmTestStack"
     },
     "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets": {
@@ -198,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2d9ab528254bdbf23333f9ffbd83fc509281e60c39609de6f3314f3d6329191b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/73c4c9431d4e27f0ef67bac0209c74b9635fd408cb88a017be147fb58b20fb06.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -214,136 +69,7 @@
         "AnomalyDetectionAlarmTestStack",
         "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.assets"
       ],
-      "metadata": {
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms8fa0c4db363ad65fd04f520cbab30dbe"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarmsc82210552ef6556c440ecd9c4f587dcb"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms4ab8a8c4ff46e0c0f66678f15e75e985"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/AwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudWatchdescribeAlarms6b3d7990c49f09ccae2f6df601115b56"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "AnomalyDetectionAlarmIntegTestDefaultTestDeployAssert033A4433.metadata.json",
       "displayName": "AnomalyDetectionAlarmIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -358,6 +84,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -374,6 +101,11 @@
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Disable implicit openListener when custom security groups are provided"
           },
           "@aws-cdk/aws-rds:lowercaseDbIdentifier": {
             "recommendedValue": true,
@@ -483,7 +215,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -637,6 +369,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -668,16 +405,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -822,10 +549,62 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1025.0"
+  "minimumCliVersion": "2.1108.0"
 }

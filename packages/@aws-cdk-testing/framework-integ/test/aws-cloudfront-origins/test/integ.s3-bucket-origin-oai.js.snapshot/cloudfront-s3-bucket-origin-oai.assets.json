@@ -1,13 +1,14 @@
 {
-  "version": "36.0.5",
+  "version": "53.0.0",
   "files": {
     "12f3381921a3a0cbf14baa8ec937fb7921e6874fc6f006b4300c37f0056e8d53": {
+      "displayName": "cloudfront-s3-bucket-origin-oai Template",
       "source": {
         "path": "cloudfront-s3-bucket-origin-oai.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-d9221931": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "12f3381921a3a0cbf14baa8ec937fb7921e6874fc6f006b4300c37f0056e8d53.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

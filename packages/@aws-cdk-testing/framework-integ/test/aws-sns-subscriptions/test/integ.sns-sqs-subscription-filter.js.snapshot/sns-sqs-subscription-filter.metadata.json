@@ -1,0 +1,295 @@
+{
+  "/sns-sqs-subscription-filter": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:9:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sns-sqs-subscription-filter/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopic86869434"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueue13ECD6C63"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:11:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue1/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue1/snssqssubscriptionfilterMyTopicB7B2DAA4": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topic": "*",
+        "endpoint": "*",
+        "protocol": "sqs",
+        "rawMessageDelivery": true,
+        "filterPolicy": "*",
+        "filterPolicyWithMessageBody": "*",
+        "region": "*",
+        "deadLetterQueue": "*"
+      }
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueue22D001D59"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:12:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue2/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue2/snssqssubscriptionfilterMyTopicB7B2DAA4": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topic": "*",
+        "endpoint": "*",
+        "protocol": "sqs",
+        "rawMessageDelivery": true,
+        "filterPolicy": "*",
+        "filterPolicyWithMessageBody": "*",
+        "region": "*",
+        "deadLetterQueue": "*"
+      }
+    }
+  ],
+  "/sns-sqs-subscription-filter/Exports/Output{\"Ref\":\"MyTopic86869434\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyTopic868694349D03D60F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/Exports/Output{\"Ref\":\"MyQueue13ECD6C63\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyQueue13ECD6C63493C83EE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/Exports/Output{\"Ref\":\"MyQueue22D001D59\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMyQueue22D001D59CA385180"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue1/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueue1Policy0240BB7D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "SqsSubscription.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns-subscriptions/lib/sqs.js:66:50)",
+        "WrappedClass.addSubscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:58:54)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:13:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue1/snssqssubscriptionfilterMyTopicB7B2DAA4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueue1snssqssubscriptionfilterMyTopicB7B2DAA4F1B5576D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/subscription.js:140:13)",
+        "new Subscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addSubscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:69:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:13:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue2/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueue2Policy8835A248"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "SqsSubscription.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns-subscriptions/lib/sqs.js:66:50)",
+        "WrappedClass.addSubscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:58:54)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:27:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sns-sqs-subscription-filter/MyQueue2/snssqssubscriptionfilterMyTopicB7B2DAA4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyQueue2snssqssubscriptionfilterMyTopicB7B2DAA496B040E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/subscription.js:140:13)",
+        "new Subscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addSubscription (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:69:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns-subscriptions/test/integ.sns-sqs-subscription-filter.js:27:7)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "StateMachineIntrinsicsTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "StateMachineIntrinsicsTest/DefaultTest/DeployAssert",
       "assertionStackName": "StateMachineIntrinsicsTestDefaultTestDeployAssert1C1E1D7E"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

@@ -4,6 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-ecs-blue-green-deployment');
@@ -91,7 +92,7 @@ const prodListenerRule = new elbv2.ApplicationListenerRule(stack, 'ALBProduction
 // Create Lambda hook
 const lambdaHook = new lambda.Function(stack, 'LambdaHook', {
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   code: lambda.Code.fromInline(`exports.handler = async (event, context) => {
     console.log('Event received:', JSON.stringify(event));
     return { hookStatus: 'SUCCEEDED' }; 

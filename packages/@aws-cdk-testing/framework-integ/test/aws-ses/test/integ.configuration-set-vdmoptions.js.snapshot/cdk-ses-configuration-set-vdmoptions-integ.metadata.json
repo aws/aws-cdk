@@ -1,0 +1,214 @@
+{
+  "/cdk-ses-configuration-set-vdmoptions-integ": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:7:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsEnabled": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "configurationSetName": "*",
+        "vdmOptions": {
+          "engagementMetrics": true,
+          "optimizedSharedDelivery": true
+        }
+      }
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsDisabled": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "configurationSetName": "*",
+        "vdmOptions": {
+          "engagementMetrics": false,
+          "optimizedSharedDelivery": false
+        }
+      }
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsNotConfigured": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "configurationSetName": "*"
+      }
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmAccountLevelSettings": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "engagementMetrics": true,
+        "optimizedSharedDelivery": true
+      }
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:70:5)"
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:70:5)"
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsEnabled/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VdmOptionsEnabled69EBE7CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:8:43)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsDisabled/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VdmOptionsDisabledE1F2258E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:15:44)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmOptionsNotConfigured/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VdmOptionsNotConfigured273D3326"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/configuration-set.js:212:38)",
+        "new ConfigurationSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:22:49)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/VdmAccountLevelSettings/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VdmAccountLevelSettings4BBA5196"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new VdmAttributes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ses/lib/vdm-attributes.js:116:30)",
+        "new VdmAttributes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:25:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsEnabled69EBE7CE\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVdmOptionsEnabled69EBE7CE3C47B59E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:70:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsDisabledE1F2258E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVdmOptionsDisabledE1F2258ECF65F287"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:70:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-ses-configuration-set-vdmoptions-integ/Exports/Output{\"Ref\":\"VdmOptionsNotConfigured273D3326\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefVdmOptionsNotConfigured273D33265DF527D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ses/test/integ.configuration-set-vdmoptions.js:70:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

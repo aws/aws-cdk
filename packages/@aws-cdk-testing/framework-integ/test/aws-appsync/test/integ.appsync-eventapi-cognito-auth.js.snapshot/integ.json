@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "testCases": {
     "appsync-event-api-cognito-auth/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "appsync-event-api-cognito-auth/DefaultTest/DeployAssert",
       "assertionStackName": "appsynceventapicognitoauthDefaultTestDeployAssertE181F852"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

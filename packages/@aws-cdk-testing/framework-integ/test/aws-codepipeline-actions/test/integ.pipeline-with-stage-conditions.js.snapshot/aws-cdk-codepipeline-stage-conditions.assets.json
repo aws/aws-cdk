@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "257da7f8265169714f3fccdcb57f1f70bfbda97c4adf8584599d36e0608a81b1": {
       "displayName": "aws-cdk-codepipeline-stage-conditions Template",

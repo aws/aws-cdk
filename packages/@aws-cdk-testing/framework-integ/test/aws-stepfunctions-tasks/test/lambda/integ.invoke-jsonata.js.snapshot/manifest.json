@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-stepfunctions-tasks-lambda-invoke-jsonata-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -33,236 +33,7 @@
       "dependencies": [
         "aws-stepfunctions-tasks-lambda-invoke-jsonata-integ.assets"
       ],
-      "metadata": {
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "runtime": "*",
-              "handler": "*"
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "submitJobLambdaServiceRole4D897ABD"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/submitJobLambda/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "submitJobLambdaEFB00F3C"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "runtime": "*",
-              "handler": "*"
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "checkJobStateLambdaServiceRoleB8B57B65"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/checkJobStateLambda/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "checkJobStateLambda4618B7B7"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "definition": {
-                "id": "*",
-                "startState": "*",
-                "endStates": "*"
-              },
-              "timeout": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToRolePolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleB840431D"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachineRoleDefaultPolicyDF1E6607"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/StateMachine/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StateMachine2E01A3A5"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/stateMachineArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "stateMachineArn"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/Exports/Output{\"Ref\":\"StateMachine2E01A3A5\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefStateMachine2E01A3A5BA46F753"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-stepfunctions-tasks-lambda-invoke-jsonata-integ/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-stepfunctions-tasks-lambda-invoke-jsonata-integ.metadata.json",
       "displayName": "aws-stepfunctions-tasks-lambda-invoke-jsonata-integ"
     },
     "IntegTestDefaultTestDeployAssertE3E7D2A4.assets": {
@@ -282,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/68f368f8421e6d3d532d0a04f6f8a259f27b1b72cb011c4b101ce5b9dcd3787a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f0ff788b77fffe40a90239cf32601a7edc4100bac44f2d63417872d2cb8cf364.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -298,126 +69,7 @@
         "aws-stepfunctions-tasks-lambda-invoke-jsonata-integ",
         "IntegTestDefaultTestDeployAssertE3E7D2A4.assets"
       ],
-      "metadata": {
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecutionc5cc0786542148808c24d8ebf111c7aa/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnStartExecutionc5cc0786542148808c24d8ebf111c7aa/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientsfnStartExecutionc5cc0786542148808c24d8ebf111c7aa"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientsfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientsfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5bWaitForIsCompleteProviderInvoke0A86C2B9"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientsfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5bWaitForTimeoutProviderInvoke30AA17BD"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientsfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5bWaitForRoleAD571168"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientsfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5bWaitFor95214853"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-sfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclientsfnDescribeExecutionaccd7656df55f8def2c4b01cc28f5c5b"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/IntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.metadata.json",
       "displayName": "IntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -718,6 +370,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -919,16 +572,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

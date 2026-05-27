@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "RecordFormatConversionSchema.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/366041824278dbbfc8b3687581f57d0815fbc7a8ac5560ebd38efe66733f6c85.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/95b9839271f71828d0706b843a546d591096f48e38b4bd378d985b662bd39964.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,475 +33,7 @@
       "dependencies": [
         "RecordFormatConversionSchema.assets"
       ],
-      "metadata": {
-        "/RecordFormatConversionSchema/Bucket": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/Bucket/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Bucket83908E77"
-          }
-        ],
-        "/RecordFormatConversionSchema/Bucket/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/Bucket/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketPolicyE9A3008A"
-          }
-        ],
-        "/RecordFormatConversionSchema/Bucket/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/RecordFormatConversionSchema/Bucket/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BucketAutoDeleteObjectsCustomResourceBAFD23C2"
-          }
-        ],
-        "/RecordFormatConversionSchema/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/RecordFormatConversionSchema/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/RecordFormatConversionSchema/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/RecordFormatConversionSchema/Database": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Database"
-          }
-        ],
-        "/RecordFormatConversionSchema/SchemaRegistry": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SchemaRegistry",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchemaTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineSchemaTable"
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "destination": "*"
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/S3 Destination Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/S3 Destination Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineSchemaS3DestinationRole34C8DFC1"
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/S3 Destination Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/S3 Destination Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineSchemaS3DestinationRoleDefaultPolicy4C305831"
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineSchemaLogGroup325EA9F0"
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/LogGroup/S3Destination": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroup": "*"
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/LogGroup/S3Destination/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineSchemaLogGroupS3Destination824F831E"
-          }
-        ],
-        "/RecordFormatConversionSchema/InlineSchema/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "InlineSchema9E3E6246"
-          }
-        ],
-        "/RecordFormatConversionSchema/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "awscdkawskinesisfirehoseCidrBlocks"
-          }
-        ],
-        "/RecordFormatConversionSchema/Schema": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Schema",
-            "trace": [
-              "!!DESTRUCTIVE_CHANGES: WILL_REPLACE"
-            ]
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchemaTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RegistrySchemaTable"
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "destination": "*"
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/S3 Destination Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/S3 Destination Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RegistrySchemaS3DestinationRole7E0BB103"
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/S3 Destination Role/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/S3 Destination Role/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RegistrySchemaS3DestinationRoleDefaultPolicyB9E97326"
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/LogGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/LogGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RegistrySchemaLogGroup6705C87F"
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/LogGroup/S3Destination": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "logGroup": "*"
-            }
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/LogGroup/S3Destination/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RegistrySchemaLogGroupS3Destination9ACF4A92"
-          }
-        ],
-        "/RecordFormatConversionSchema/RegistrySchema/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RegistrySchemaB32524BF"
-          }
-        ],
-        "/RecordFormatConversionSchema/Exports/Output{\"Ref\":\"InlineSchema9E3E6246\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefInlineSchema9E3E62466D30C096"
-          }
-        ],
-        "/RecordFormatConversionSchema/Exports/Output{\"Ref\":\"Bucket83908E77\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefBucket83908E7781C90AC0"
-          }
-        ],
-        "/RecordFormatConversionSchema/Exports/Output{\"Fn::GetAtt\":[\"Bucket83908E77\",\"Arn\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttBucket83908E77Arn063C8555"
-          }
-        ],
-        "/RecordFormatConversionSchema/Exports/Output{\"Ref\":\"RegistrySchemaB32524BF\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefRegistrySchemaB32524BF599E7F5A"
-          }
-        ],
-        "/RecordFormatConversionSchema/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/RecordFormatConversionSchema/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "RecordFormatConversionSchema.metadata.json",
       "displayName": "RecordFormatConversionSchema"
     },
     "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA.assets": {
@@ -521,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c2db6e8f95672593364b5a7ba50e2c09956c8b546e623b04a5a2cf19cde7f3e2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/18e2e2be0239ef48b8682d45fa21bdc28bd30a9574655794f547e93ccfc962b4.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -537,180 +69,7 @@
         "RecordFormatConversionSchema",
         "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA.assets"
       ],
-      "metadata": {
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecorda080e5befe77387da3b74baebc8bc352/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecorda080e5befe77387da3b74baebc8bc352/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallFirehoseputRecorda080e5befe77387da3b74baebc8bc352"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4WaitForIsCompleteProviderInvokeF7C601BE"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4WaitForTimeoutProviderInvoke1A06002B"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4WaitForRole475413A0"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4WaitFor398388FE"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3listObjectsV2ba3bf4b1e59f37871d8a88c97bb3c3a4"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Role918961BB"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/SingletonFunction76b3e830a873425f8453eddd85c86925/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aRoleB84BD8CE"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41a/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecordcaf94609e364167c040da7a19d726360/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallFirehoseputRecordcaf94609e364167c040da7a19d726360/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallFirehoseputRecordcaf94609e364167c040da7a19d726360"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413/WaitFor/IsCompleteProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413WaitForIsCompleteProviderInvoke7DAD8CB7"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413/WaitFor/TimeoutProvider/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413WaitForTimeoutProviderInvokeD51E2735"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413/WaitFor/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413WaitForRole36BFC755"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413/WaitFor/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413WaitFor2E887DA7"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/AwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallS3listObjectsV2f1110ab7584dfd42d83d77a4d4ed2413"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/RecordFormatConversionSchemaTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "RecordFormatConversionSchemaTestDefaultTestDeployAssert82AC0CDA.metadata.json",
       "displayName": "RecordFormatConversionSchemaTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -1011,6 +370,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -1212,16 +572,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

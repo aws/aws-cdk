@@ -1,4 +1,15 @@
 {
+  "/CdkPipelineInvestigationStack/Prod/ProdStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ProdStage (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:66:9)",
+        "new PipelineStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:91:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:109:23)",
+        "...node internals..."
+      ]
+    }
+  ],
   "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -12,18 +23,60 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "ProdStage.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "pipelineSynth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/private/construct-internals.js:24:18)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Prod/ProdStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "ProdStage.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "pipelineSynth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/private/construct-internals.js:24:18)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Prod/ProdStack/MyQueue/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyQueueE6CA6235"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ProdStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:57:9)",
+        "new ProdStage (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:66:9)",
+        "new PipelineStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:91:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:109:23)",
+        "...node internals..."
+      ]
     }
   ]
 }

@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "files": {
     "1b7aa89e67d6991fb0e7d5f88d3fdb614a729104c92491a5b8c8d824b76bd5de": {
+      "displayName": "integ-ssmps-sharing-consuming Template",
       "source": {
         "path": "integ-ssmps-sharing-consuming.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-us-east-1": {
+        "234567890123-us-east-1-8705fc46": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-us-east-1",
           "objectKey": "1b7aa89e67d6991fb0e7d5f88d3fdb614a729104c92491a5b8c8d824b76bd5de.json",
           "region": "us-east-1",

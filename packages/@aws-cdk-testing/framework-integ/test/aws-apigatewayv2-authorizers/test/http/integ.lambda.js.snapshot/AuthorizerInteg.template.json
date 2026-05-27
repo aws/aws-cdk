@@ -38,7 +38,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9b3143f6d2fe3103f2f3162c221163ad6a5a0ba2219cc1e5af2e300325588714.zip"
+     "S3Key": "60f58613f2de446952db7bdafbdc5657d75844a9e21a6bb795ae19464f5fb2ed.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -47,7 +47,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "authfunctionServiceRoleFCB72198"
@@ -352,7 +352,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "lambdaServiceRole494E4CA6"

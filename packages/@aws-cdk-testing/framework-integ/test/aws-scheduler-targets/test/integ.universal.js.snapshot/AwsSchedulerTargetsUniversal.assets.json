@@ -1,13 +1,14 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "files": {
     "e18d02e9cedc54730d7d992dc806b57b9cc51f5f608a29447a443c5d90526804": {
+      "displayName": "AwsSchedulerTargetsUniversal Template",
       "source": {
         "path": "AwsSchedulerTargetsUniversal.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-782d32ee": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "e18d02e9cedc54730d7d992dc806b57b9cc51f5f608a29447a443c5d90526804.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

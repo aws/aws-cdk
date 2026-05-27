@@ -1,0 +1,643 @@
+{
+  "/integ-lambda-permission-consolidation": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:14:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/HttpApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route4": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route5": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route6": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route7": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route8": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route9": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route10": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/HttpApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiF5A9A8A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:247:30)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:15:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/HttpApi/DefaultStage": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Handler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Handler886CB40B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:16:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route1/Integration1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route1/ApiPermission.ApiScoped.integlambdapermissionconsolidationHandler9B5ABBF0.integlambdapermissionconsolidationHttpApi82FAC62A": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route1ApiPermissionApiScopedinteglambdapermissionconsolidationHandler9B5ABBF0integlambdapermissionconsolidationHttpApi82FAC62AB798A88B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "HttpLambdaIntegration.completeBind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/lambda.js:66:30)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:316:14)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route1BBCF1222"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route2/Integration2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route2352A647E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route3/Integration3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route3FA5ECD79"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route4/Integration4": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route4B06F2D19"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route5/Integration5": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route5/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route541E84F43"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route6/Integration6": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route6/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route68A791893"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route7/Integration7": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route7/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route73C87F863"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route8/Integration8": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route8/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route8AABB4988"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route9/Integration9": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route9/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route9B42E22D6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route10/Integration10": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route10/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route10F76C1187"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Exports/Output{\"Fn::GetAtt\":[\"HttpApiF5A9A8A7\",\"ApiEndpoint\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttHttpApiF5A9A8A7ApiEndpoint082134F8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/HttpApi/DefaultStage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HttpApiDefaultStage3EEB07D6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/stage.js:162:13)",
+        "new HttpStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:263:37)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:15:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Handler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlerServiceRoleFCDC14AE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:16:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route1/Integration1/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route1Integration10CD6D38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route2/Integration2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route2Integration25D5869E1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route3/Integration3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route3Integration35771612A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route4/Integration4/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route4Integration44EC5B7EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route5/Integration5/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route5Integration52160BCD8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route6/Integration6/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route6Integration62EBD627B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route7/Integration7/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route7Integration76283DD94"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route8/Integration8/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route8Integration80EA22A6B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route9/Integration9/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route9Integration91A818602"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-permission-consolidation/Route10/Integration10/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Route10Integration109B1865CA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.lambda-permission-consolidation.js:23:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

@@ -72,7 +72,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "testfunctionServiceRoleDefaultPolicy2F277F85",

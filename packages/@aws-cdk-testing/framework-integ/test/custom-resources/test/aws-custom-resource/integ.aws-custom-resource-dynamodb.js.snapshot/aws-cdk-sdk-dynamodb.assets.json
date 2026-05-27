@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -8,23 +8,23 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-caaab5a4": {
+        "current_account-current_region-05d1bcb6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "57d7c4caf0c2aa03774ae111a868984322e14ff2f1078c2aa97dd3ee8ca78ccb": {
+    "713d4289d56856b9cc91705b0b53ec4e05bced6c03430ce8bce97b8360af672e": {
       "displayName": "aws-cdk-sdk-dynamodb Template",
       "source": {
         "path": "aws-cdk-sdk-dynamodb.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a2615405": {
+        "current_account-current_region-a8e1eef2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "57d7c4caf0c2aa03774ae111a868984322e14ff2f1078c2aa97dd3ee8ca78ccb.json",
+          "objectKey": "713d4289d56856b9cc91705b0b53ec4e05bced6c03430ce8bce97b8360af672e.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

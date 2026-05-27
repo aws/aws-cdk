@@ -33,7 +33,7 @@
      "PolicyNames.1",
      "PolicyNames.2"
     ],
-    "salt": "1777306203547"
+    "salt": "1779809686020"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -119,12 +119,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -164,7 +164,7 @@
      "PolicyName": "\"Bucket1NotificationsHandlerPolicy2894F2A2\""
     },
     "flattenResponse": "false",
-    "salt": "1777306203549"
+    "salt": "1779809686022"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -197,7 +197,7 @@
      "PolicyName": "\"Bucket2NotificationsHandlerPolicy2BDDB4E2\""
     },
     "flattenResponse": "false",
-    "salt": "1777306203549"
+    "salt": "1779809686022"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -230,7 +230,7 @@
      "PolicyName": "\"Bucket3NotificationsHandlerPolicyA409718A\""
     },
     "flattenResponse": "false",
-    "salt": "1777306203550"
+    "salt": "1779809686023"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

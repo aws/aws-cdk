@@ -1,13 +1,14 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "files": {
     "a234e9f43609d78a6649703384304d7bc6a6ba6d11e34c9e293e63b2ca40932a": {
+      "displayName": "aws-stepfunctions-tasks-call-aws-service-mediapackagevod-integ Template",
       "source": {
         "path": "aws-stepfunctions-tasks-call-aws-service-mediapackagevod-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-7e9f0512": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "a234e9f43609d78a6649703384304d7bc6a6ba6d11e34c9e293e63b2ca40932a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "911347f10b2b4ab2dcd6ed76bf3f9bb09883e61be18a12aeca8db6561a4c05ae": {
       "displayName": "aws-cdk-route53-integ Template",

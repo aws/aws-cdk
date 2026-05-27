@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "cdc12f174e7505909ed092d9a0b412b01c86d11714993bb9654bf1497c1ef169": {
       "displayName": "MyFunc/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "034744afd93a2ef96dab1b3b79f6d020a407851a633af99fa9d4d9d7400d9024": {
+    "2a9d0718e4df187d64a4e53c96082fedd5a6d6a3f5a188e365289d0c41201aad": {
       "displayName": "Stack1 Template",
       "source": {
         "path": "Stack1.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-c76cfc31": {
+        "current_account-current_region-8c63b0dd": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "034744afd93a2ef96dab1b3b79f6d020a407851a633af99fa9d4d9d7400d9024.json",
+          "objectKey": "2a9d0718e4df187d64a4e53c96082fedd5a6d6a3f5a188e365289d0c41201aad.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

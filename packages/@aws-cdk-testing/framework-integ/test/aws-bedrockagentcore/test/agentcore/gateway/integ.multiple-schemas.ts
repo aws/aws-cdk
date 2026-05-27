@@ -3,6 +3,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import { STANDARD_NODEJS_RUNTIME } from '../../../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'BedrockAgentCoreMultipleSchemasIntegTest', {
@@ -29,7 +30,7 @@ agentcore.GatewayTarget.forSmithy(stack, 'SmithyTarget2', {
 
 const lambdaFunction1 = new lambda.Function(stack, 'Lambda1', {
   functionName: 'integ-multi-schema-lambda1',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
@@ -40,7 +41,7 @@ const lambdaFunction1 = new lambda.Function(stack, 'Lambda1', {
 
 const lambdaFunction2 = new lambda.Function(stack, 'Lambda2', {
   functionName: 'integ-multi-schema-lambda2',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

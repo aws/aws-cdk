@@ -3,7 +3,8 @@ import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { LogGroup, FilterPattern } from 'aws-cdk-lib/aws-logs';
 import { LambdaDestination } from 'aws-cdk-lib/aws-logs-destinations';
-import { Function, Code, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Function, Code } from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class SubscriptionFilterIntegStack extends Stack {
   constructor(scope: App, id: string, props?: StackProps) {
@@ -12,7 +13,7 @@ class SubscriptionFilterIntegStack extends Stack {
     const logGroup = new LogGroup(this, 'LogGroup');
 
     const fn = new Function(this, 'Function', {
-      runtime: Runtime.NODEJS_20_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: Code.fromInline('foo'),
     });

@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "SSMParameterStoreSharingTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "SSMParameterStoreSharingTest/DefaultTest/DeployAssert",
       "assertionStackName": "SSMParameterStoreSharingTestDefaultTestDeployAssert51CBB447"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

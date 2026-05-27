@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "IntegAlbOidc/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -22,7 +22,7 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-caaab5a4": {
+        "current_account-current_region-05d1bcb6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
@@ -43,16 +43,16 @@
         }
       }
     },
-    "2833efc1e6e86a3d2dc2f5001a618e68b080ad70083a03d507cf546012d0a26f": {
+    "26d40418bfdad93648ed98de1ed0058356c91cea28b092da5a13275d6a27d7a5": {
       "displayName": "IntegAlbOidc Template",
       "source": {
         "path": "IntegAlbOidc.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d65bfd6d": {
+        "current_account-current_region-c578f582": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2833efc1e6e86a3d2dc2f5001a618e68b080ad70083a03d507cf546012d0a26f.json",
+          "objectKey": "26d40418bfdad93648ed98de1ed0058356c91cea28b092da5a13275d6a27d7a5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

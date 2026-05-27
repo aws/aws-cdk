@@ -1,6 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new App({
   postCliContext: {
@@ -10,7 +11,7 @@ const app = new App({
 const stack = new Stack(app, 'IntegBinaryPayload');
 
 const fn = new Function(stack, 'fn', {
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: Code.fromInline(`
     exports.handler = async (event) => {

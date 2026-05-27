@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "testCases": {
     "EmrServicePrincipalIntegTesting/DefaultTest": {
       "stacks": [
@@ -11,5 +11,6 @@
       "assertionStack": "EmrServicePrincipalAssertionStack",
       "assertionStackName": "EmrServicePrincipalAssertionStack"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

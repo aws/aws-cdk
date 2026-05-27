@@ -1,0 +1,993 @@
+{
+  "/sqs-integration": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:9:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/sqs-integration/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/sqs-integration/Queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Queue4A7E3555"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiF70053CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:247:30)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:11:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/DefaultStage": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Exports/Output{\"Fn::GetAtt\":[\"ApiF70053CD\",\"ApiEndpoint\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttApiF70053CDApiEndpoint847E7A77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/DefaultStage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiDefaultStage189A7074"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/stage.js:162:13)",
+        "new HttpStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:263:37)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:11:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--default/InvokeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--default/defaultIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--default/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdefault1EEA0D1D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:12:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message/InvokeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message/sendMessageIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTsendmessageE475BC37"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:19:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message/InvokeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message/receiveMessageIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTreceivemessageA4D1D164"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:27:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message/InvokeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message/deleteMessageIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdeletemessage6FE1C52C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:35:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue/InvokeRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue/purgeQueueIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTpurgequeueD7486C9E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:43:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--default/InvokeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdefaultInvokeRole9137E4F5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:48:28)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--default/InvokeRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--default/defaultIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdefaultdefaultIntegration0355373B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:12:9)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message/InvokeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTsendmessageInvokeRole628F6753"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:48:28)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message/InvokeRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message/sendMessageIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTsendmessagesendMessageIntegrationA3699583"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:19:9)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message/InvokeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTreceivemessageInvokeRoleF920E28E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:48:28)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message/InvokeRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message/receiveMessageIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTreceivemessagereceiveMessageIntegrationFC744BEF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:27:9)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message/InvokeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdeletemessageInvokeRoleF36F96C7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:48:28)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message/InvokeRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message/deleteMessageIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdeletemessagedeleteMessageIntegration49DB56A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:35:9)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue/InvokeRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTpurgequeueInvokeRole1F4EEB80"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:48:28)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue/InvokeRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue/purgeQueueIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTpurgequeuepurgeQueueIntegration7B3B35C2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.sqs.js:43:9)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--default/InvokeRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdefaultInvokeRoleDefaultPolicy603C0AF3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:51:20)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--send-message/InvokeRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTsendmessageInvokeRoleDefaultPolicy4B7D7B02"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:51:20)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--receive-message/InvokeRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTreceivemessageInvokeRoleDefaultPolicy22774339"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:51:20)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--delete-message/InvokeRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTdeletemessageInvokeRoleDefaultPolicyC736EDFF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:51:20)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)"
+      ]
+    }
+  ],
+  "/sqs-integration/Api/POST--purge-queue/InvokeRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ApiPOSTpurgequeueInvokeRoleDefaultPolicy275FF06E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "HttpSqsIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/sqs.js:51:20)",
+        "HttpSqsIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:300:33)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)"
+      ]
+    }
+  ]
+}

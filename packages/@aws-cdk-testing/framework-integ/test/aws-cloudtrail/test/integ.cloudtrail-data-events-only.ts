@@ -3,6 +3,7 @@ import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cloudtrail from 'aws-cdk-lib/aws-cloudtrail';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -13,7 +14,7 @@ const stack = new cdk.Stack(app, 'integ-cloudtrail-data-events');
 
 const bucket = new s3.Bucket(stack, 'Bucket', { removalPolicy: cdk.RemovalPolicy.DESTROY });
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'hello.handler',
   code: lambda.Code.fromInline('exports.handler = {}'),
 });

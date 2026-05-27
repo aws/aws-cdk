@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "files": {
     "f544cfe9f587a4eb7533be999940f88948fe5abf0316902e641d7983b4d23f2d": {
       "displayName": "integ-sfn-start-execution-jsonata Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-60ec872b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "f544cfe9f587a4eb7533be999940f88948fe5abf0316902e641d7983b4d23f2d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

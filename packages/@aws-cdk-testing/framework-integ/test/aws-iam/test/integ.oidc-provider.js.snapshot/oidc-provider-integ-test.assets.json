@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8": {
       "displayName": "oidc-provider-integ-test/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "d361af636fcec073b4e65b5c947dfc2f788be46eaa8fa33d4469d511c0c94693": {
+    "8f19c7baf73ecdb98a24319e86c1844c3caa54d784aa5c631c0165570610a61a": {
       "displayName": "oidc-provider-integ-test Template",
       "source": {
         "path": "oidc-provider-integ-test.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-28b1090d": {
+        "current_account-current_region-abd198ec": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "d361af636fcec073b4e65b5c947dfc2f788be46eaa8fa33d4469d511c0c94693.json",
+          "objectKey": "8f19c7baf73ecdb98a24319e86c1844c3caa54d784aa5c631c0165570610a61a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

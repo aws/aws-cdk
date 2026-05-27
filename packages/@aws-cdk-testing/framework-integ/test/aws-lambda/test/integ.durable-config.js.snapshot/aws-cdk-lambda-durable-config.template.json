@@ -48,7 +48,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "DurableFunctionServiceRole4F9882F4"

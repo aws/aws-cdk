@@ -1,11 +1,12 @@
 import * as apigatewayv2 from 'aws-cdk-lib/aws-apigatewayv2';
 import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import { Code, Function, Runtime } from 'aws-cdk-lib/aws-lambda';
+import { Code, Function } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { WebSocketIamAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -19,7 +20,7 @@ const userAccessKey = new iam.AccessKey(stack, 'UserAccess', {
 });
 
 const handler = new Function(stack, 'auth-function', {
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   code: Code.fromInline('exports.handler = () => {return true}'),
   handler: 'index.handler',
 });

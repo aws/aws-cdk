@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallbedrockagentcoreinvokeAgentRuntimec808f0dfb31ae2a953dc87c2f5688657": {
+  "AwsApiCallbedrockagentcoreinvokeAgentRuntime2fd4bc3c45198b423e084f483be52eea": {
    "Type": "Custom::DeployAssert@SdkCallbedrock-agentcoreinvokeAgentRunt",
    "Properties": {
     "ServiceToken": {
@@ -25,11 +25,11 @@
        ]
       ]
      },
-     "runtimeSessionId": "\"c4c255bc-ce4f-4245-b91c-cb9cc52e19b7\"",
+     "runtimeSessionId": "\"c798ccfc-d80d-444b-92c8-1e3f69616485\"",
      "payload": "\"{\\\"input\\\":{\\\"prompt\\\":\\\"Test Gateway M2M authentication\\\"}}\""
     },
     "flattenResponse": "false",
-    "salt": "1778849710765"
+    "salt": "1779811045592"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -78,12 +78,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -97,10 +97,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntimec808f0dfb31ae2a953dc87c2f5688657": {
+  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime2fd4bc3c45198b423e084f483be52eea": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallbedrockagentcoreinvokeAgentRuntimec808f0dfb31ae2a953dc87c2f5688657",
+     "AwsApiCallbedrockagentcoreinvokeAgentRuntime2fd4bc3c45198b423e084f483be52eea",
      "assertion"
     ]
    }

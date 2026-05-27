@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "testCases": {
     "integrationtest-event-bridge-put-events/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integrationtest-event-bridge-put-events/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtesteventbridgeputeventsDefaultTestDeployAssert13FA3DD8"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

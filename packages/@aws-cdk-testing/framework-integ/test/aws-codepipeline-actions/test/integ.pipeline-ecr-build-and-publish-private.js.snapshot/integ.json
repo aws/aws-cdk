@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "53.0.0",
   "testCases": {
     "codepipeline-ecr-build-and-publish-private-test/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "codepipeline-ecr-build-and-publish-private-test/DefaultTest/DeployAssert",
       "assertionStackName": "codepipelineecrbuildandpublishprivatetestDefaultTestDeployAssert80443302"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

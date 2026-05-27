@@ -1,29 +1,29 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
-    "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1": {
+    "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905": {
       "source": {
-        "path": "asset.4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.bundle",
+        "path": "asset.e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.bundle",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-7e83c341": {
+        "current_account-current_region-dba37b32": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip",
+          "objectKey": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "2d8ea5b1f67d8fabc893240aa7716cd42970428d087829a9df8e16734cddab40": {
+    "3c8621115cc98fb097ac83748ed518d843060ddae5928374fea6c4e0d79bafb6": {
       "displayName": "EventBusGrantsIntegWithAndWithoutFeatureFlagDefaultTestDeployAssertBBD6850F Template",
       "source": {
         "path": "EventBusGrantsIntegWithAndWithoutFeatureFlagDefaultTestDeployAssertBBD6850F.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2131ea25": {
+        "current_account-current_region-0add65b1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2d8ea5b1f67d8fabc893240aa7716cd42970428d087829a9df8e16734cddab40.json",
+          "objectKey": "3c8621115cc98fb097ac83748ed518d843060ddae5928374fea6c4e0d79bafb6.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

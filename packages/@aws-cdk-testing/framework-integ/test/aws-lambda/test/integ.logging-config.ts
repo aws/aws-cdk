@@ -1,7 +1,8 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as logs from 'aws-cdk-lib/aws-logs';
 import * as integ from '@aws-cdk/integ-tests-alpha';
-import { Function, InlineCode, Runtime, LoggingFormat, SystemLogLevel, ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
+import { Function, InlineCode, LoggingFormat, SystemLogLevel, ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new App({
   postCliContext: {
@@ -18,49 +19,49 @@ const logGroup = new logs.LogGroup(stack, 'MyLogGroupWithLogGroupName', {
 new Function(stack, 'LambdaWithLogGroup', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   logGroup: logGroup,
 });
 
 new Function(stack, 'LambdaWithLogGroupAndNoLogGroupName', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   logGroup: new logs.LogGroup(stack, 'MyLogGroupWithoutLogGroupName'),
 });
 
 new Function(stack, 'LambdaWithTextFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   loggingFormat: LoggingFormat.TEXT,
 });
 
 new Function(stack, 'LambdaWithJSONFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   loggingFormat: LoggingFormat.JSON,
 });
 
 new Function(stack, 'LambdaWithTextLoggingFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   loggingFormat: LoggingFormat.TEXT,
 });
 
 new Function(stack, 'LambdaWithJSONLoggingFormat', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   loggingFormat: LoggingFormat.JSON,
 });
 
 new Function(stack, 'LambdaWithLogLevel', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   loggingFormat: LoggingFormat.JSON,
   systemLogLevel: SystemLogLevel.INFO,
   applicationLogLevel: ApplicationLogLevel.INFO,
@@ -69,7 +70,7 @@ new Function(stack, 'LambdaWithLogLevel', {
 new Function(stack, 'LambdaWithLogLevelV2', {
   code: new InlineCode('foo'),
   handler: 'index.handler',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   loggingFormat: LoggingFormat.JSON,
   systemLogLevelV2: SystemLogLevel.INFO,
   applicationLogLevelV2: ApplicationLogLevel.INFO,

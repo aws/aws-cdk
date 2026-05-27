@@ -3,6 +3,7 @@ import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -21,7 +22,7 @@ const fn = new lambda.Function(stack, 'MyFunction', {
     });
   `),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 // Add a Lambda Function URL

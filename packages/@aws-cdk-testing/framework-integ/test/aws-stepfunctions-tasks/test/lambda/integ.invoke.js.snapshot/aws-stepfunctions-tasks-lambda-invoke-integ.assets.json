@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "531c596261ac67cbbb3d32ad28e6bbc25ebb8f1b6405e0ce179d465070fa3454": {
       "displayName": "aws-stepfunctions-tasks-lambda-invoke-integ Template",

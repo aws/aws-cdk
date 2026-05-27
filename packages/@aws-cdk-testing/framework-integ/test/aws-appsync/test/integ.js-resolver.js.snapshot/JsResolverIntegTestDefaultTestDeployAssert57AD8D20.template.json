@@ -49,7 +49,7 @@
      "Payload.data.addTest.id",
      "Payload.data.addTest.id"
     ],
-    "salt": "1761031970788"
+    "salt": "1779810944653"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -153,12 +153,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c11608a15785084ea1afe65826e575ee316add10c8b1bb373e93297e26aec564.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -226,7 +226,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1761031970789"
+    "salt": "1779810944655"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

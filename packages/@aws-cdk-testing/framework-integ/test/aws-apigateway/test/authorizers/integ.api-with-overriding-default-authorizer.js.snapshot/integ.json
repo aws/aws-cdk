@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "testCases": {
     "apigateway-with-overriding-default-authorizer/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "apigatewaywithoverridingdefaultauthorizerDefaultTestDeployAssert5491B2D1"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1123.0"
 }

@@ -13,6 +13,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import { STANDARD_NODEJS_RUNTIME } from '../../../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'BedrockAgentCoreApiGatewayTargetIntegTest', {
@@ -28,7 +29,7 @@ const gateway = new agentcore.Gateway(stack, 'TestGateway', {
 // This simulates a real REST API that the Gateway will call
 const backendFunction = new lambda.Function(stack, 'BackendFunction', {
   functionName: 'integ-test-apigateway-backend',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

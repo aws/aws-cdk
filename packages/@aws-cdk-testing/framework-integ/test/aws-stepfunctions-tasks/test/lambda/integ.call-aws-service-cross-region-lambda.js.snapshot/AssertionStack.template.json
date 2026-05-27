@@ -29,7 +29,11 @@
     "outputPaths": [
      "executionArn"
     ],
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/AssertionStack.template.json
     "salt": "1779353574748"
+=======
+    "salt": "1779810996980"
+>>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/IntegTestDefaultTestDeployAssertE3E7D2A4.template.json
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -96,12 +100,16 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/AssertionStack.template.json
      "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+=======
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
+>>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/IntegTestDefaultTestDeployAssertE3E7D2A4.template.json
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -146,7 +154,11 @@
      }
     },
     "flattenResponse": "false",
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/AssertionStack.template.json
     "salt": "1779353574750"
+=======
+    "salt": "1779810996982"
+>>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/IntegTestDefaultTestDeployAssertE3E7D2A4.template.json
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -312,12 +324,16 @@
   "SingletonFunction76b3e830a873425f8453eddd85c86925Handler81461ECE": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/AssertionStack.template.json
      "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+=======
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
+>>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/IntegTestDefaultTestDeployAssertE3E7D2A4.template.json
     },
     "Timeout": 120,
     "Handler": "index.isComplete",
@@ -354,12 +370,16 @@
   "SingletonFunction5c1898e096fb4e3e95d5f6c67f3ce41aHandlerADF3E6EA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2"
      },
+<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/AssertionStack.template.json
      "S3Key": "b5c2a7158e57582e84496b24c0499302cec1fd88624535b3dfb629311b3fdc2a.zip"
+=======
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
+>>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/IntegTestDefaultTestDeployAssertE3E7D2A4.template.json
     },
     "Timeout": 120,
     "Handler": "index.onTimeout",

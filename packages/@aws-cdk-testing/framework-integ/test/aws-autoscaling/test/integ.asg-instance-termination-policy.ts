@@ -5,6 +5,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as autoscaling from 'aws-cdk-lib/aws-autoscaling';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -22,7 +23,7 @@ const vpc = new ec2.Vpc(stack, 'VPC', {
 const lambdaFn = new lambda.Function(stack, 'MyFunction', {
   code: lambda.Code.fromInline(`exports.handler = ${asgHandler}`),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 lambdaFn.addPermission('AllowInvokeByAutoScaling', {

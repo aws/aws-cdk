@@ -4,6 +4,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as agw from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 /*
  * Stack verification steps:
@@ -42,7 +43,7 @@ const sendResource = root.addResource('InitiateAction');
 const myfunc = new lambda.Function(stack, 'lambda-s3', {
   code: lambda.AssetCode.fromAsset(path.join(__dirname, 'assets')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const sendLambdaIntegration = new agw.LambdaIntegration(myfunc);

@@ -1142,7 +1142,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs24.x",
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -1325,7 +1325,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs24.x",
     "VpcConfig": {
      "SecurityGroupIds": [
       {

@@ -32,7 +32,7 @@
     "outputPaths": [
      "Instances.0.Ec2InstanceId"
     ],
-    "salt": "1729161612752"
+    "salt": "1779809624676"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -81,12 +81,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-cn-north-1"
      },
-     "S3Key": "30e7020514effbaf2e0bf3983c7c37c6733aec254148a8f866da92fbbd7a4fb6.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",

@@ -614,7 +614,7 @@
       ]
      },
      "Image": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:6b18aed490b9a0c682c4729d8e5955650709955e8275dcbe68d5defa39c43bda"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d32bd3e3679647575cb811795d107a6f15fb74ff74e1f7c536b8c612e34688c7"
      },
      "ReadonlyRootFilesystem": false,
      "ResourceRequirements": [

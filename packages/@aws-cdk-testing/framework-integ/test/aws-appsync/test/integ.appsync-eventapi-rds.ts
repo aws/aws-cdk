@@ -2,7 +2,6 @@ import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as secretmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
@@ -11,6 +10,7 @@ import { INTEG_TEST_LATEST_AURORA_POSTGRES } from '../../aws-rds/test/db-version
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class EventApiRdsStack extends cdk.Stack {
   public readonly lambdaTestFn: nodejs.NodejsFunction;
@@ -115,7 +115,7 @@ class EventApiRdsStack extends cdk.Stack {
     });
 
     const lambdaConfig: nodejs.NodejsFunctionProps = {
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       environment: {
         EVENT_API_REALTIME_URL: `wss://${api.realtimeDns}/event/realtime`,
         EVENT_API_HTTP_URL: `https://${api.httpDns}/event`,

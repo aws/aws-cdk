@@ -1,5 +1,5 @@
 {
-  "version": "34.0.0",
+  "version": "53.0.0",
   "testCases": {
     "integrationtest-codebuild-start-build/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integrationtest-codebuild-start-build/DefaultTest/DeployAssert",
       "assertionStackName": "integrationtestcodebuildstartbuildDefaultTestDeployAssert416931F1"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

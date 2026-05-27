@@ -2,6 +2,7 @@ import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as agentcore from 'aws-cdk-lib/aws-bedrockagentcore';
+import { STANDARD_NODEJS_RUNTIME } from '../../../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'cdk-agentcore-gateway-auto-generated-name');
@@ -12,7 +13,7 @@ const gateway = new agentcore.Gateway(stack, 'Gateway', {
 
 // Create Lambda function for target
 const fn = new lambda.Function(stack, 'TestFunction', {
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200 });'),
 });

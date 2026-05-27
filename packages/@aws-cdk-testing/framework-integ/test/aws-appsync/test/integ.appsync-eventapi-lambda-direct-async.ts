@@ -2,9 +2,9 @@ import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import type { Construct } from 'constructs';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class EventApiLambdaDirectAsyncStack extends cdk.Stack {
   public readonly lambdaTestFn: nodejs.NodejsFunction;
@@ -17,7 +17,7 @@ class EventApiLambdaDirectAsyncStack extends cdk.Stack {
     });
 
     const lambdaDirect = new nodejs.NodejsFunction(this, 'LambdaDirectAsync', {
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       entry: path.join(__dirname, 'integ-assets', 'eventapi-integrations', 'direct-lambda-ds', 'index.js'),
       handler: 'handler',
     });
@@ -33,7 +33,7 @@ class EventApiLambdaDirectAsyncStack extends cdk.Stack {
     });
 
     const lambdaConfig: nodejs.NodejsFunctionProps = {
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       environment: {
         EVENT_API_REALTIME_URL: `wss://${api.realtimeDns}/event/realtime`,
         EVENT_API_HTTP_URL: `https://${api.httpDns}/event`,

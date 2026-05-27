@@ -1,0 +1,299 @@
+{
+  "/AnomalyDetectionAlarmTestStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.anomaly-detection-alarm.js:7:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "stdDevs": "*",
+        "evaluationPeriods": "*",
+        "datapointsToAlarm": "*",
+        "comparisonOperator": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "stdDevs": "*",
+        "evaluationPeriods": "*",
+        "datapointsToAlarm": "*"
+      }
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "stdDevs": "*",
+        "evaluationPeriods": "*",
+        "comparisonOperator": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "stdDevs": "*",
+        "evaluationPeriods": "*",
+        "comparisonOperator": "*"
+      }
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "alarmName": "*",
+        "alarmDescription": "*",
+        "comparisonOperator": "*",
+        "datapointsToAlarm": "*",
+        "threshold": "*",
+        "evaluationPeriods": "*",
+        "evaluateLowSampleCountPercentile": "*",
+        "treatMissingData": "*",
+        "actionsEnabled": "*"
+      }
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/CustomPeriodAnomalyAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "stdDevs": "*",
+        "evaluationPeriods": "*",
+        "comparisonOperator": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "stdDevs": "*",
+        "evaluationPeriods": "*",
+        "comparisonOperator": "*"
+      }
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/DefaultOperatorAnomalyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DefaultOperatorAnomalyAlarm13E81AA2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AnomalyDetectionAlarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:620:13)",
+        "new AnomalyDetectionAlarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.anomaly-detection-alarm.js:22:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/ExplicitOperatorAnomalyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExplicitOperatorAnomalyAlarm061F9C2B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AnomalyDetectionAlarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:620:13)",
+        "new AnomalyDetectionAlarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.anomaly-detection-alarm.js:29:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/DescriptiveAnomalyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DescriptiveAnomalyAlarm8B14203E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "MathExpression.createAlarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/metric.js:575:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.anomaly-detection-alarm.js:39:4)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/CustomPeriodAnomalyAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomPeriodAnomalyAlarmD85345B9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AnomalyDetectionAlarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:620:13)",
+        "new AnomalyDetectionAlarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.anomaly-detection-alarm.js:46:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DefaultOperatorAnomalyAlarm13E81AA2\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDefaultOperatorAnomalyAlarm13E81AA2E47BFAEC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"ExplicitOperatorAnomalyAlarm061F9C2B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefExplicitOperatorAnomalyAlarm061F9C2BB2D8039E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"DescriptiveAnomalyAlarm8B14203E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDescriptiveAnomalyAlarm8B14203E100E41DF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/AnomalyDetectionAlarmTestStack/Exports/Output{\"Ref\":\"CustomPeriodAnomalyAlarmD85345B9\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefCustomPeriodAnomalyAlarmD85345B903D51401"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

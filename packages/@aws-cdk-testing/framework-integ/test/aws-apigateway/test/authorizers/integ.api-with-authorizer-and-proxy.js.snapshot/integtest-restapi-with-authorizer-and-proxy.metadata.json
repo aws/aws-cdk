@@ -1,0 +1,699 @@
+{
+  "/integtest-restapi-with-authorizer-and-proxy": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:18:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "selfSignUpEnabled": true,
+        "signInAliases": {
+          "email": true
+        }
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Authorizer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultCorsPreflightOptions": {
+          "allowOrigins": "*",
+          "maxAge": "*"
+        }
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/lambda-s3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserPool6BA7E5F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:535:30)",
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:20:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Authorizer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AuthorizerBD825682"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CognitoUserPoolsAuthorizer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/authorizers/cognito.js:124:30)",
+        "new CognitoUserPoolsAuthorizer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:26:20)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayF80386B7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:806:30)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:29:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayEndpoint261B645B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:527:13)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:29:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdas342CE2BBD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:38:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayDeployment50B6E6A6b044ca25daae592efce60035930152bc"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/deployment.js:136:29)",
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:515:38)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:29:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayDeploymentStageprod812022BF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.js:370:30)",
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:523:36)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:29:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/OPTIONS": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "authorizer": {
+            "authorizerId": "*",
+            "authorizationType": "*"
+          },
+          "apiKeyRequired": false,
+          "authorizationType": "*",
+          "methodResponses": [
+            {
+              "statusCode": "*",
+              "responseParameters": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*",
+            "responseParameters": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "pathPart": "*"
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "lambdas3ServiceRoleC9EDE33A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:38:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/lambda-s3/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/OPTIONS/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayOPTIONS8EA1F997"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "RootResource.addCorsPreflight (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:184:21)",
+        "new RootResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:1020:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:826:25)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:29:13)"
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayInitiateActionA216DA07"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:339:30)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:77:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:36:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/OPTIONS": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "authorizer": {
+            "authorizerId": "*",
+            "authorizationType": "*"
+          },
+          "apiKeyRequired": false,
+          "authorizationType": "*",
+          "methodResponses": [
+            {
+              "statusCode": "*",
+              "responseParameters": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*",
+            "responseParameters": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*",
+        "defaultMethodOptions": {
+          "authorizer": "*",
+          "authorizationScopes": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethod": [
+          "*",
+          {},
+          {
+            "authorizer": {
+              "authorizerId": "*",
+              "authorizationType": "*"
+            },
+            "apiKeyRequired": false,
+            "authorizationType": "*",
+            "methodResponses": [
+              {
+                "statusCode": "*",
+                "responseParameters": "*"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "defaultIntegration": "*",
+        "anyMethod": true,
+        "defaultMethodOptions": {
+          "authorizer": "*",
+          "authorizationScopes": "*"
+        },
+        "defaultCorsPreflightOptions": {
+          "allowOrigins": "*",
+          "allowMethods": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethod": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/OPTIONS/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayInitiateActionOPTIONS675242EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "WrappedClass.addCorsPreflight (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:184:21)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:362:22)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:77:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:36:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayInitiateActionproxyDD433460"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:339:30)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:414:13)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:102:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:44:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/OPTIONS": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "authorizer": {
+            "authorizerId": "*",
+            "authorizationType": "*"
+          },
+          "apiKeyRequired": false,
+          "authorizationType": "*",
+          "methodResponses": [
+            {
+              "statusCode": "*",
+              "responseParameters": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "'AuthorizationScopes' can only be set when 'AuthorizationType' sets 'COGNITO_USER_POOLS'. Default to ignore the values set in 'AuthorizationScopes'. [ack: @aws-cdk/aws-apigateway:invalidAuthScope]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:177:47)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:455:26)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addCorsPreflight (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:184:21)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:362:22)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:414:13)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:102:16)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:44:14)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*",
+            "responseParameters": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": "*"
+      }
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/OPTIONS/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayInitiateActionproxyOPTIONS041B022A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:455:26)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addCorsPreflight (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:184:21)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:362:22)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:414:13)"
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxy1FB876EB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "LambdaIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integrations/lambda.js:65:26)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:186:44)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:455:26)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:433:39)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/ApiPermission.Test.integtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065.ANY..InitiateAction.{proxy+}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayInitiateActionproxyANYApiPermissionTestintegtestrestapiwithauthorizerandproxyActionsApiGatewayB7F13065ANYInitiateActionproxyD05DD0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "LambdaIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/integrations/lambda.js:72:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:186:44)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:455:26)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:433:39)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/integtest-restapi-with-authorizer-and-proxy/Actions-ApiGateway/Default/InitiateAction/{proxy+}/ANY/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActionsApiGatewayInitiateActionproxyANY14A167E2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:455:26)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:433:39)",
+        "new ProxyResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addProxy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:102:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/authorizers/integ.api-with-authorizer-and-proxy.js:44:14)"
+      ]
+    }
+  ]
+}

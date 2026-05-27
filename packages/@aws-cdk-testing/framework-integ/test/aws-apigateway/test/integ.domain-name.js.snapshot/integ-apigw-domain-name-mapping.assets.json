@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "files": {
     "1ff5a1c1085cda75efc3c3916b53b9fcf8dc5522127561febbdf44f71f747a8d": {
       "displayName": "integ-apigw-domain-name-mapping Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-f492b930": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "1ff5a1c1085cda75efc3c3916b53b9fcf8dc5522127561febbdf44f71f747a8d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

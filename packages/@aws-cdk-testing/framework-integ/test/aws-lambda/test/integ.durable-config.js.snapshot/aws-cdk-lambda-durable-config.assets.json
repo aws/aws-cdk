@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "2ff7d5422dc3754e2824f629c2734737dd83327a625c211060f4d26448302c56": {
+    "c546424284afd028d9ad1cdf2e7f1d5dee79a826433e9cd6f0187ceaf46882e4": {
       "displayName": "aws-cdk-lambda-durable-config Template",
       "source": {
         "path": "aws-cdk-lambda-durable-config.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-599e4196": {
+        "current_account-current_region-a290498c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2ff7d5422dc3754e2824f629c2734737dd83327a625c211060f4d26448302c56.json",
+          "objectKey": "c546424284afd028d9ad1cdf2e7f1d5dee79a826433e9cd6f0187ceaf46882e4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

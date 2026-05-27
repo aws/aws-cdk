@@ -690,7 +690,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "FunctionServiceRoleDefaultPolicy2F49994A",

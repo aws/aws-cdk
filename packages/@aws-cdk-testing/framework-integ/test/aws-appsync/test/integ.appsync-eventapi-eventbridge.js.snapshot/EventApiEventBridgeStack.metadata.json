@@ -1,0 +1,515 @@
+{
+  "/EventApiEventBridgeStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "apiName": "*"
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/test-bus": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/EventApiEventBridgeStack/test-queue": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/EventApiEventBridgeStack/eventapi-rule": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "eventBus": "*",
+        "eventPattern": {
+          "source": "*"
+        },
+        "targets": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEventPattern": [
+          {
+            "source": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addTarget": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridgeTestFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "environment": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        },
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*",
+        "code": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "environment": "*",
+        "bundling": {
+          "bundleAwsSDK": true
+        },
+        "entry": "*",
+        "handler": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridge3FBDB566"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:542:24)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/DefaultApiKey": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridgeDefaultApiKeyA2E620D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createAPIKey (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/auth-config.js:41:12)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:553:103)",
+        "new EventApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/chat": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "api": "*",
+        "channelNamespaceName": "*",
+        "code": "*",
+        "publishHandlerConfig": {
+          "dataSource": "*"
+        }
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/test-bus/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testbusF2F7C5B9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EventBus (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.js:365:30)",
+        "new EventBus (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:21:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/test-queue/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testqueueA58C838B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue.js:275:27)",
+        "new Queue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:22:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/test-queue/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "queues": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/eventapi-rule/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "eventapiruleF79C9090"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:169:30)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:23:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridgeTestFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridgeTestFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridgeTestFunction1F0B2FA8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:53:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/Exports/Output{\"Ref\":\"EventApiEventBridgeTestFunction1F0B2FA8\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefEventApiEventBridgeTestFunction1F0B2FA8B172AE48"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "EventApiEventBridgeStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/Exports/Output{\"Ref\":\"testqueueA58C838B\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputReftestqueueA58C838B800488D5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "EventApiEventBridgeStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/eventbridgeds/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/eventbridgeds/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridgeeventbridgeds3D6E05AF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AppSyncBaseDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.js:95:25)",
+        "new AppSyncBackedDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.js:129:9)",
+        "new AppSyncEventBridgeDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.js:211:9)",
+        "WrappedClass.addEventBridgeDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:256:16)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:32:32)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/chat/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridgechat0F27D5F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/channel-namespace.js:180:37)",
+        "new ChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addChannelNamespace (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:130:16)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:33:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/test-queue/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testqueuePolicyB9530952"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/policy.js:108:13)",
+        "new QueuePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:72:27)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:68:49)",
+        "QueueGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:54:59)",
+        "QueueGrants.sendMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/sqs-grants.generated.js:129:21)",
+        "WrappedClass.grantSendMessages (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sqs/lib/queue-base.js:151:28)",
+        "SqsQueue.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events-targets/lib/sqs.js:69:20)",
+        "WrappedClass.addTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:206:40)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)"
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridgeTestFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridgeTestFunctionServiceRole6CF95F77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodejsFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda-nodejs/lib/function.js:56:13)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:53:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridgeTestFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/eventbridgeds/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridgeeventbridgedsServiceRole3898CA37"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AppSyncBaseDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.js:90:49)",
+        "new AppSyncBackedDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.js:129:9)",
+        "new AppSyncEventBridgeDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.js:211:9)",
+        "WrappedClass.addEventBridgeDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:256:16)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:32:32)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:61:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/eventbridgeds/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/chat/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/EventApiEventBridgeStack/EventApiEventBridge/eventbridgeds/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "EventApiEventBridgeeventbridgedsServiceRoleDefaultPolicy72247AE3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "WrappedClass.grantPutEventsTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/event-bus.js:132:41)",
+        "new AppSyncEventBridgeDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/data-source-common.js:226:24)",
+        "WrappedClass.addEventBridgeDataSource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-appsync/lib/eventapi.js:256:16)",
+        "new EventApiEventBridgeStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-appsync/test/integ.appsync-eventapi-eventbridge.js:32:32)"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-cdk-autoscaling-instance-termination-policy.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/784478dfa5e4c7e32c0fcece3c25e320697f384dceca5d7ac6799e5b7ee05100.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/08aeb37719fd90f9c83ec699c282a85e5af4b84afce59525d56b5da5c29620cc.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,371 +33,7 @@
       "dependencies": [
         "aws-cdk-autoscaling-instance-termination-policy.assets"
       ],
-      "metadata": {
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "natGateways": "*",
-              "maxAzs": "*",
-              "restrictDefaultSecurityGroup": false
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCB9E5F0B4"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1SubnetB4246D30"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableFEE4B781"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet1DefaultRoute91CEF279"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": true,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2Subnet74179F39"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTable6F1A15F1"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1SubnetEBD00FC6"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1RouteTableEB156210"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet1RouteTableAssociationA2D18F7C"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2Subnet4B1C8CAA"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2RouteTable9B4F78DC"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IsolatedSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIsolatedSubnet2RouteTableAssociation7BF8E0EB"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCIGWB7E252D3"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/VPC/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VPCVPCGW99B986DC"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/MyFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/MyFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/MyFunction/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/MyFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunctionServiceRole3C357FF2"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/MyFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunction3BAA72D1"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/MyFunction/AllowInvokeByAutoScaling": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyFunctionAllowInvokeByAutoScalingE1D035DF"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "instanceType": "*",
-              "machineImage": "*",
-              "terminationPolicies": [
-                "CustomLambdaFunction",
-                "OldestInstance"
-              ],
-              "terminationPolicyCustomLambdaFunctionArn": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/InstanceSecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "allowAllOutbound": true
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/InstanceSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceSecurityGroup0525485D"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/InstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/InstanceRole/ImportInstanceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/InstanceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceRoleE263A41B"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/InstanceProfile": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGInstanceProfile0A2834D7"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/LaunchTemplate": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "machineImage": "*",
-              "instanceType": "*",
-              "detailedMonitoring": false,
-              "securityGroup": "*",
-              "userData": "*",
-              "associatePublicIpAddress": "*",
-              "spotOptions": "*",
-              "blockDevices": "*",
-              "instanceProfile": "*",
-              "keyPair": "*"
-            }
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/LaunchTemplate/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASGLaunchTemplate0CA92847"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/ASG/ASG": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ASG46ED3070"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-autoscaling-instance-termination-policy/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-autoscaling-instance-termination-policy.metadata.json",
       "displayName": "aws-cdk-autoscaling-instance-termination-policy"
     },
     "InstanceTerminationPolicyTestDefaultTestDeployAssertD453E37E.assets": {
@@ -432,20 +68,7 @@
       "dependencies": [
         "InstanceTerminationPolicyTestDefaultTestDeployAssertD453E37E.assets"
       ],
-      "metadata": {
-        "/InstanceTerminationPolicyTest/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/InstanceTerminationPolicyTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "InstanceTerminationPolicyTestDefaultTestDeployAssertD453E37E.metadata.json",
       "displayName": "InstanceTerminationPolicyTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -745,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -776,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -932,6 +550,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -943,12 +562,48 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1108.0"
 }

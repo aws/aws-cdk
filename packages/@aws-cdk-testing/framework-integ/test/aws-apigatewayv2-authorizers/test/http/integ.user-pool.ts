@@ -5,6 +5,7 @@ import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
 import { HttpUserPoolAuthorizer } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 /*
  * Stack verification steps:
@@ -33,7 +34,7 @@ const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAut
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '..', 'integ.user-pool.handler'), { exclude: ['*.ts'] }),
 });

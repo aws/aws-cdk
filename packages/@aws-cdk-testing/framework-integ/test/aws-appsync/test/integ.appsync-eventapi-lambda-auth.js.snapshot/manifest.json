@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "EventApiLambdaAuthStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f8b93ac49aea061f429819d5c347409c1710b10bd51839a9bbf0bd225837714a.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b4ec73aa92f5a9873b7f4e5eac542f3b1314ca5b2c36a7ff81919503e491b00e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,187 +33,7 @@
       "dependencies": [
         "EventApiLambdaAuthStack.assets"
       ],
-      "metadata": {
-        "/EventApiLambdaAuthStack/AuthorizerFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "code": "*",
-              "handler": "*"
-            }
-          }
-        ],
-        "/EventApiLambdaAuthStack/AuthorizerFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/EventApiLambdaAuthStack/AuthorizerFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionServiceRole5B2A061B"
-          }
-        ],
-        "/EventApiLambdaAuthStack/AuthorizerFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionB4DBAA43"
-          }
-        ],
-        "/EventApiLambdaAuthStack/AuthorizerFunction/EventApiLambdaAuth-appsync": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizerFunctionEventApiLambdaAuthappsync51091519"
-          }
-        ],
-        "/EventApiLambdaAuthStack/EventApiLambdaAuth": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "apiName": "*",
-              "ownerContact": "*",
-              "authorizationConfig": {
-                "authProviders": [
-                  {
-                    "authorizationType": "AWS_LAMBDA",
-                    "lambdaAuthorizerConfig": {
-                      "handler": "*"
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ],
-        "/EventApiLambdaAuthStack/EventApiLambdaAuth/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiLambdaAuth51CBDC5F"
-          }
-        ],
-        "/EventApiLambdaAuthStack/EventApiLambdaAuth/default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "api": "*",
-              "channelNamespaceName": "*"
-            }
-          }
-        ],
-        "/EventApiLambdaAuthStack/EventApiLambdaAuth/default/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EventApiLambdaAuthdefaultAC8660FF"
-          }
-        ],
-        "/EventApiLambdaAuthStack/LambdaConfigTestFunction": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "environment": "*",
-              "bundling": {
-                "bundleAwsSDK": true
-              },
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*",
-              "code": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "environment": "*",
-              "bundling": {
-                "bundleAwsSDK": true
-              },
-              "entry": "*",
-              "handler": "*",
-              "timeout": "*"
-            }
-          }
-        ],
-        "/EventApiLambdaAuthStack/LambdaConfigTestFunction/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/EventApiLambdaAuthStack/LambdaConfigTestFunction/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaConfigTestFunctionServiceRoleEE8A36D4"
-          }
-        ],
-        "/EventApiLambdaAuthStack/LambdaConfigTestFunction/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaConfigTestFunction61A497A7"
-          }
-        ],
-        "/EventApiLambdaAuthStack/AWS AppSync Events HTTP endpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSAppSyncEventsHTTPendpoint"
-          }
-        ],
-        "/EventApiLambdaAuthStack/AWS AppSync Events Realtime endpoint": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AWSAppSyncEventsRealtimeendpoint"
-          }
-        ],
-        "/EventApiLambdaAuthStack/Exports/Output{\"Ref\":\"LambdaConfigTestFunction61A497A7\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefLambdaConfigTestFunction61A497A7D5F221EA"
-          }
-        ],
-        "/EventApiLambdaAuthStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/EventApiLambdaAuthStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "EventApiLambdaAuthStack.metadata.json",
       "displayName": "EventApiLambdaAuthStack"
     },
     "appsynceventapilambdaauthDefaultTestDeployAssertC9A06E86.assets": {
@@ -233,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/650aee65dc4675ef34c5e1f3ede2091c3c21b27b79db8f8fdc641dedfcb19dd6.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7b221abedd5192f609092184d6f81e794118b1d5d206bbe7b920d4f8cec529be.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -249,96 +69,7 @@
         "EventApiLambdaAuthStack",
         "appsynceventapilambdaauthDefaultTestDeployAssertC9A06E86.assets"
       ],
-      "metadata": {
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoke762bb1dde02a1ef4892235677a920b5b/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoke762bb1dde02a1ef4892235677a920b5b/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke762bb1dde02a1ef4892235677a920b5b"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoke762bb1dde02a1ef4892235677a920b5b/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoke762bb1dde02a1ef4892235677a920b5bInvokeC542FA55"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoke762bb1dde02a1ef4892235677a920b5b/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoke762bb1dde02a1ef4892235677a920b5b"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoked27f5315242b3343fa04209a9a065030/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoked27f5315242b3343fa04209a9a065030/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoked27f5315242b3343fa04209a9a065030"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoked27f5315242b3343fa04209a9a065030/Invoke": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdaInvoked27f5315242b3343fa04209a9a065030Invoke1AFAEFD8"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/LambdaInvoked27f5315242b3343fa04209a9a065030/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsLambdaInvoked27f5315242b3343fa04209a9a065030"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/appsync-event-api-lambda-auth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "appsynceventapilambdaauthDefaultTestDeployAssertC9A06E86.metadata.json",
       "displayName": "appsync-event-api-lambda-auth/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -639,6 +370,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -840,16 +572,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

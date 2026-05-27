@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "integ-idp.assets": {
       "type": "cdk:asset-manifest",
@@ -33,358 +33,7 @@
       "dependencies": [
         "integ-idp.assets"
       ],
-      "metadata": {
-        "/integ-idp/Pool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-idp/Pool/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PoolD3F588B8"
-          }
-        ],
-        "/integ-idp/Pool/testClient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*"
-            }
-          }
-        ],
-        "/integ-idp/Pool/testClient/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PooltestClientFE8D4935"
-          }
-        ],
-        "/integ-idp/PoolProviderGoogle": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-idp/PoolProviderGoogle/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PoolProviderGoogle76A1E8D0"
-          }
-        ],
-        "/integ-idp/OtherPool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-idp/OtherPool/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OtherPool7DA7F2F7"
-          }
-        ],
-        "/integ-idp/OtherPool/UserPoolAuthenticationProviderClient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*"
-            }
-          }
-        ],
-        "/integ-idp/OtherPool/UserPoolAuthenticationProviderClient/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OtherPoolUserPoolAuthenticationProviderClient08F670F8"
-          }
-        ],
-        "/integ-idp/OtherPoolProviderAmazon": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-idp/OtherPoolProviderAmazon/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "OtherPoolProviderAmazon4EB0592F"
-          }
-        ],
-        "/integ-idp/UserPoolToImport": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-idp/UserPoolToImport/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserPoolToImport1A7C21D3"
-          }
-        ],
-        "/integ-idp/UserPoolToImport/clientToImport": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*"
-            }
-          }
-        ],
-        "/integ-idp/UserPoolToImport/clientToImport/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "UserPoolToImportclientToImport6885CDF7"
-          }
-        ],
-        "/integ-idp/identitypool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "authenticationProviders": {
-                "userPools": "*",
-                "amazon": {
-                  "appId": "*"
-                },
-                "google": {
-                  "clientId": "*"
-                }
-              },
-              "roleMappings": [
-                {
-                  "mappingKey": "*",
-                  "providerUrl": "*",
-                  "useToken": true
-                },
-                {
-                  "mappingKey": "*",
-                  "providerUrl": "*",
-                  "useToken": true
-                }
-              ],
-              "allowClassicFlow": true,
-              "identityPoolName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addUserPoolAuthentication": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-idp/identitypool/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "identitypoolE2A6D099"
-          }
-        ],
-        "/integ-idp/identitypool/AuthenticatedRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-idp/identitypool/AuthenticatedRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "identitypoolAuthenticatedRoleB074B49D"
-          }
-        ],
-        "/integ-idp/identitypool/AuthenticatedRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-idp/identitypool/AuthenticatedRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "identitypoolAuthenticatedRoleDefaultPolicyCB4D2992"
-          }
-        ],
-        "/integ-idp/identitypool/UnauthenticatedRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "description": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-idp/identitypool/UnauthenticatedRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "identitypoolUnauthenticatedRoleE61CAC70"
-          }
-        ],
-        "/integ-idp/identitypool/UnauthenticatedRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-idp/identitypool/UnauthenticatedRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "identitypoolUnauthenticatedRoleDefaultPolicyBFACCE98"
-          }
-        ],
-        "/integ-idp/identitypool/DefaultRoleAttachment": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-idp/identitypool/DefaultRoleAttachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "identitypoolDefaultRoleAttachment6BCAB114"
-          }
-        ],
-        "/integ-idp/Exports/Output{\"Ref\":\"identitypoolE2A6D099\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefidentitypoolE2A6D099E51DBB61"
-          }
-        ],
-        "/integ-idp/Exports/Output{\"Fn::GetAtt\":[\"identitypoolE2A6D099\",\"Name\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttidentitypoolE2A6D099Name3FFCBBDD"
-          }
-        ],
-        "/integ-idp/Exports/Output{\"Fn::GetAtt\":[\"identitypoolAuthenticatedRoleB074B49D\",\"Arn\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttidentitypoolAuthenticatedRoleB074B49DArnF2BA4F08"
-          }
-        ],
-        "/integ-idp/Exports/Output{\"Fn::GetAtt\":[\"identitypoolUnauthenticatedRoleE61CAC70\",\"Arn\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttidentitypoolUnauthenticatedRoleE61CAC70Arn1E3CB7FC"
-          }
-        ],
-        "/integ-idp/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-idp/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-idp.metadata.json",
       "displayName": "integ-idp"
     },
     "integidentitypoolDefaultTestDeployAssert8F0BD226.assets": {
@@ -404,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/b619e4021e3b0ec7a3cf0519ba33d894214e6d42248e0515cd1a21f143b7c7eb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ff241fbd200ee7528aed03b1a29e7764531bfd07c52bc6b3dd9126f1316daad3.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -420,84 +69,7 @@
         "integ-idp",
         "integidentitypoolDefaultTestDeployAssert8F0BD226.assets"
       ],
-      "metadata": {
-        "/integ-identitypool/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-cognito-identityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-cognito-identityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientcognitoidentityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-cognito-identityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclientcognitoidentityDescribeIdentityPoolCommand2b18364450f3f7f9a3c313c06d222b57"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-cognito-identityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-cognito-identityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallawssdkclientcognitoidentityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/AwsApiCall@aws-sdk--client-cognito-identityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallawssdkclientcognitoidentityGetIdentityPoolRolesCommand2b18364450f3f7f9a3c313c06d222b57"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-identitypool/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integidentitypoolDefaultTestDeployAssert8F0BD226.metadata.json",
       "displayName": "integ-identitypool/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -798,6 +370,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -995,12 +568,43 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1108.0"
 }

@@ -1,0 +1,673 @@
+{
+  "/integ-lambda-add-subroute-integration": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:13:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/first-lambda-function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/second-lambda-function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/third-lambda-function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "functionName": "*"
+      }
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegration74634536"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:247:30)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:14:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/DefaultStage": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/first-lambda-function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/first-lambda-function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "firstlambdafunction507195EE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:16:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/second-lambda-function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/second-lambda-function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "secondlambdafunction075D9D2B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:23:29)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/third-lambda-function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/third-lambda-function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "thirdlambdafunctionF08420CD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:35:29)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/Exports/Output{\"Fn::GetAtt\":[\"testapigwv2addsubrouteintegration74634536\",\"ApiEndpoint\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAtttestapigwv2addsubrouteintegration74634536ApiEndpoint0B440CAD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/DefaultStage/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationDefaultStage95CBB85F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/stage.js:162:13)",
+        "new HttpStage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:263:37)",
+        "new HttpApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:14:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/my-lambda-integration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/my-lambda-integration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegrationPermissionA652DC1D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "HttpLambdaIntegration.completeBind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/lambda.js:51:26)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:316:14)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:44:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETfirstrouteA8B45A0F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:44:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute/my-lambda-integration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETfirstroutesubroutemylambdaintegrationPermissionCCC6B203"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "HttpLambdaIntegration.completeBind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/lambda.js:51:26)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:316:14)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:49:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute--subroute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETfirstroutesubroute1247B83F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:49:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/my-referenced-lambda-integration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/my-referenced-lambda-integration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegrationPermissionC21831D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Import.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "HttpLambdaIntegration.completeBind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/lambda.js:51:26)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:316:14)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:55:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETsecondroute4AF1E609"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:55:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute/my-referenced-lambda-integration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETsecondroutesubroutemyreferencedlambdaintegrationPermissionBC2FB67A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Import.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "HttpLambdaIntegration.completeBind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/lambda.js:51:26)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:316:14)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:60:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute--subroute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETsecondroutesubrouteB60A5707"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:60:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/my-referenced-lambda-integration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/my-referenced-lambda-integration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationPermission020AA386"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Import.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "HttpLambdaIntegration.completeBind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/lambda.js:51:26)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:316:14)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:66:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETthirdroute55217764"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:66:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute/my-referenced-lambda-integration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETthirdroutesubroutemyreferencedlambdaintegrationPermissionDE3E4E26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Import.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "HttpLambdaIntegration.completeBind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/http/lambda.js:51:26)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:316:14)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:71:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute--subroute/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETthirdroutesubroute4E0397C0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:227:27)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:71:9)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/first-lambda-function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "firstlambdafunctionServiceRoleC4FD6C93"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:16:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/second-lambda-function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "secondlambdafunctionServiceRole23FEE383"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:23:29)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/third-lambda-function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "thirdlambdafunctionServiceRole1CA82110"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:35:29)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--firstroute/my-lambda-integration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETfirstroutemylambdaintegration9AC16429"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:44:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--secondroute/my-referenced-lambda-integration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETsecondroutemyreferencedlambdaintegration6C087A72"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:55:9)"
+      ]
+    }
+  ],
+  "/integ-lambda-add-subroute-integration/test-apigwv2-add-subroute-integration/GET--thirdroute/my-referenced-lambda-integration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "testapigwv2addsubrouteintegrationGETthirdroutemyreferencedlambdaintegrationD0FF024E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:240:27)",
+        "new HttpIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "HttpLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/integration.js:301:32)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/route.js:197:46)",
+        "new HttpRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:329:2)",
+        "Array.map (:)",
+        "WrappedClass.addRoutes (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/http/api.js:327:28)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.add-subroute-integration.js:66:9)"
+      ]
+    }
+  ]
+}

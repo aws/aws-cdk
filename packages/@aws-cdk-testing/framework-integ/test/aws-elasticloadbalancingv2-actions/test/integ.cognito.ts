@@ -13,6 +13,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53targets from 'aws-cdk-lib/aws-route53-targets';
 import * as path from 'path';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 interface CognitoUserProps {
   userPool: cognito.UserPool;
@@ -208,7 +209,7 @@ const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-cognito-signin-handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'alb-cognito-signin-handler'), { exclude: ['*.ts'] }),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   environment: {
     TEST_USERNAME: testUser.username,
     TEST_PASSWORD: testUser.password,

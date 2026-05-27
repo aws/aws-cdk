@@ -10,5 +10,9 @@
       "assertionStackName": "awscdkclusteralbcontrollerintegDefaultTestDeployAssert5A4A7C6A"
     }
   },
+<<<<<<< HEAD
   "minimumCliVersion": "2.1119.0"
+=======
+  "minimumCliVersion": "2.1123.0"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
 }

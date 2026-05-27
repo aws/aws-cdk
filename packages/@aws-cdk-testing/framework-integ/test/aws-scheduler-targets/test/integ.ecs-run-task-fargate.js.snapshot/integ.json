@@ -1,5 +1,5 @@
 {
-  "version": "40.0.0",
+  "version": "53.0.0",
   "testCases": {
     "integ-ecs-run-task-fargate/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-ecs-run-task-fargate/DefaultTest/DeployAssert",
       "assertionStackName": "integecsruntaskfargateDefaultTestDeployAssertE2555144"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

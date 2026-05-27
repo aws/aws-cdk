@@ -1,0 +1,357 @@
+{
+  "/IntegApiGatewayV2Iam": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:16:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/User": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/IntegApiGatewayV2Iam/UserAccess": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "user": "*"
+      }
+    }
+  ],
+  "/IntegApiGatewayV2Iam/auth-function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/IntegApiGatewayV2Iam/WebSocketApi": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/IntegApiGatewayV2Iam/AllowInvoke": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "statements": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToUser": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/IntegApiGatewayV2Iam/TESTACCESSKEYID": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TESTACCESSKEYID"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:48:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/TESTSECRETACCESSKEY": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TESTSECRETACCESSKEY"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:51:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/TESTREGION": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TESTREGION"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:54:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:57:5)"
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:57:5)"
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/User/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "User00B015A1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new User (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/user.js:258:30)",
+        "new User (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new User (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:17:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/UserAccess/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "UserAccessEC42ADF7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AccessKey (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/access-key.js:111:31)",
+        "new AccessKey (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:18:23)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/auth-function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/IntegApiGatewayV2Iam/auth-function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "authfunction96361832"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/WebSocketApi/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketApi34BCF99B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:168:30)",
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:26:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/IntegApiGatewayV2Iam/AllowInvoke/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AllowInvoke767865EA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:36:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/auth-function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "authfunctionServiceRoleFCB72198"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:21:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/WebSocketLambdaIntegration-Permission": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketApiconnectRouteWebSocketLambdaIntegrationPermission76CD86C6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addPermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:170:9)",
+        "WebSocketLambdaIntegration.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2-integrations/lib/websocket/lambda.js:49:22)",
+        "WebSocketLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:211:33)",
+        "new WebSocketRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:109:46)",
+        "new WebSocketRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:180:22)",
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:26:22)"
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/WebSocketLambdaIntegration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketApiconnectRoute846149DD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:118:27)",
+        "new WebSocketRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:180:22)",
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:26:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/IntegApiGatewayV2Iam/WebSocketApi/$connect-Route/WebSocketLambdaIntegration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "WebSocketApiconnectRouteWebSocketLambdaIntegration3D2B13DD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WebSocketIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:152:27)",
+        "new WebSocketIntegration (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WebSocketLambdaIntegration._bindToRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/integration.js:212:32)",
+        "new WebSocketRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/route.js:109:46)",
+        "new WebSocketRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:202:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigatewayv2/lib/websocket/api.js:180:22)",
+        "new WebSocketApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-authorizers/test/websocket/integ.iam.js:26:22)"
+      ]
+    }
+  ]
+}

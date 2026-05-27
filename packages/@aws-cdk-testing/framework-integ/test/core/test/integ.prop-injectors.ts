@@ -14,7 +14,6 @@ import {
   Code,
   Function,
   LoggingFormat,
-  Runtime,
 } from 'aws-cdk-lib/aws-lambda';
 import {
   LogGroup,
@@ -29,6 +28,7 @@ import {
 } from 'aws-cdk-lib/aws-s3';
 import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 /**
  * This test creates an IPropertyInjector for S3 Bucket, Lambda Function, VPC, and SecurityGroup.
@@ -201,7 +201,7 @@ const stack = new cdk.Stack(app, 'TestStack', {
 
 const f = new Function(stack, 'Function', {
   functionName: 'myfunc',
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: Code.fromInline('console.log();'),
 });

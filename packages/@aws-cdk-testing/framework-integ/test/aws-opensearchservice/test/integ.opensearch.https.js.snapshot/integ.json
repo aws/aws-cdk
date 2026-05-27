@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "testCases": {
     "integ-openseach-https/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "integopenseachhttpsDefaultTestDeployAssert40490EE6"
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1123.0"
 }

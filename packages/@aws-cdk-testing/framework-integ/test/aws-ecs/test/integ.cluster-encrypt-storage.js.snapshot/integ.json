@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "53.0.0",
   "testCases": {
     "aws-ecs-cluster-encrypt-storage/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "aws-ecs-cluster-encrypt-storage/DefaultTest/DeployAssert",
       "assertionStackName": "awsecsclusterencryptstorageDefaultTestDeployAssertAA409973"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

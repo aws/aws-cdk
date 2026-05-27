@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "AuthorizerInteg.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/26f80a806bbc8c1dc0169d181a016bbc0c85084eed19c7730ef9ac76b28a24a3.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/e72d8d25acb7aa9c5243136229facb0dbab9b52a9af75108f7a07b0b027ce275.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,264 +33,7 @@
       "dependencies": [
         "AuthorizerInteg.assets"
       ],
-      "metadata": {
-        "/AuthorizerInteg/userpool": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/userpool/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userpool0AC4AA96"
-          }
-        ],
-        "/AuthorizerInteg/userpool/UserPoolAuthorizerClient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*"
-            }
-          }
-        ],
-        "/AuthorizerInteg/userpool/UserPoolAuthorizerClient/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userpoolUserPoolAuthorizerClient6A7486E8"
-          }
-        ],
-        "/AuthorizerInteg/userpoolForDefaultAuthorizer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/userpoolForDefaultAuthorizer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userpoolForDefaultAuthorizerDFBE8E74"
-          }
-        ],
-        "/AuthorizerInteg/userpoolForDefaultAuthorizer/UserPoolAuthorizerClient": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "userPool": "*"
-            }
-          }
-        ],
-        "/AuthorizerInteg/userpoolForDefaultAuthorizer/UserPoolAuthorizerClient/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "userpoolForDefaultAuthorizerUserPoolAuthorizerClient3AA110E7"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApi8AEAAC21"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/DefaultStage": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/DefaultStage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiDefaultStageDCB9BC49"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegratin": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegratin/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiGETRootIntegratin93150A89"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--/RootIntegratin-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiGETRootIntegratinPermissionCEEEB498"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/GET--/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiGETE0EFC6F8"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/UserPoolAuthorizer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApi/UserPoolAuthorizer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiUserPoolAuthorizer8754262B"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerE08800A1"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/DefaultStage": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/DefaultStage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerDefaultStage7A9EE9B6"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/UserPoolDefaultAuthorizer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/MyHttpApiWithDefaultAuthorizer/UserPoolDefaultAuthorizer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "MyHttpApiWithDefaultAuthorizerUserPoolDefaultAuthorizerF10D4FFF"
-          }
-        ],
-        "/AuthorizerInteg/lambda": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/AuthorizerInteg/lambda/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/AuthorizerInteg/lambda/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/lambda/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambdaServiceRole494E4CA6"
-          }
-        ],
-        "/AuthorizerInteg/lambda/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "lambda8B5974B5"
-          }
-        ],
-        "/AuthorizerInteg/Route": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/Route/RootIntegration": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/AuthorizerInteg/Route/RootIntegration/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RouteRootIntegration1CF58575"
-          }
-        ],
-        "/AuthorizerInteg/Route/RootIntegration-Permission": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RouteRootIntegrationPermissionC2C15701"
-          }
-        ],
-        "/AuthorizerInteg/Route/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RouteA67450D2"
-          }
-        ],
-        "/AuthorizerInteg/AuthorizerId": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizerId"
-          }
-        ],
-        "/AuthorizerInteg/AuthorizationType": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AuthorizationType"
-          }
-        ],
-        "/AuthorizerInteg/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/AuthorizerInteg/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "AuthorizerInteg.metadata.json",
       "displayName": "AuthorizerInteg"
     },
     "Tree": {
@@ -305,6 +48,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -323,6 +67,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -434,7 +179,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -588,6 +333,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -619,16 +369,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -774,6 +514,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
           "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
             "recommendedValue": true,
             "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
@@ -782,12 +527,48 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }

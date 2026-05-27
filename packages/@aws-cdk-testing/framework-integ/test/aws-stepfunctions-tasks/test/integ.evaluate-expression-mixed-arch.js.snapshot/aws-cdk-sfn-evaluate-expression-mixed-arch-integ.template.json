@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0": {
+  "Eval1662dbae12a44a0486f029531a7be268ServiceRoleD635966A": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -31,7 +31,7 @@
     ]
    }
   },
-  "Eval105f0693c0824e9b83f39007507676f0117865DA": {
+  "Eval1662dbae12a44a0486f029531a7be26882B7E745": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Architectures": [
@@ -41,22 +41,22 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
+     "S3Key": "8cc26b8aeb8145a3a500f67fd5e2633d73635a841dbb7f4a9307e95b0c9959c6.zip"
     },
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0",
+      "Eval1662dbae12a44a0486f029531a7be268ServiceRoleD635966A",
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
-    "Eval105f0693c0824e9b83f39007507676f0ServiceRole491BADB0"
+    "Eval1662dbae12a44a0486f029531a7be268ServiceRoleD635966A"
    ]
   },
-  "Eval105f0693c0824e9b83f39007507676f0LogGroup0E8B881F": {
+  "Eval1662dbae12a44a0486f029531a7be268LogGroup19FB2B0A": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -65,7 +65,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "Eval105f0693c0824e9b83f39007507676f0117865DA"
+        "Ref": "Eval1662dbae12a44a0486f029531a7be26882B7E745"
        }
       ]
      ]
@@ -75,7 +75,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915": {
+  "Evala5c17f500de1497b8ec0fabdc9086cc5ServiceRole74D9EC05": {
    "Type": "AWS::IAM::Role",
    "Properties": {
     "AssumeRolePolicyDocument": {
@@ -106,7 +106,7 @@
     ]
    }
   },
-  "Eval9757c2676d7c45c2af7737a30d93d2c64B038159": {
+  "Evala5c17f500de1497b8ec0fabdc9086cc53F6D26BA": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Architectures": [
@@ -116,22 +116,22 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "b8cec122f25692e8b194663d25a2ee5e0b65e55df966120791d6a3ddc08fc136.zip"
+     "S3Key": "8cc26b8aeb8145a3a500f67fd5e2633d73635a841dbb7f4a9307e95b0c9959c6.zip"
     },
     "Handler": "index.handler",
     "Role": {
      "Fn::GetAtt": [
-      "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915",
+      "Evala5c17f500de1497b8ec0fabdc9086cc5ServiceRole74D9EC05",
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
-    "Eval9757c2676d7c45c2af7737a30d93d2c6ServiceRole39BD4915"
+    "Evala5c17f500de1497b8ec0fabdc9086cc5ServiceRole74D9EC05"
    ]
   },
-  "Eval9757c2676d7c45c2af7737a30d93d2c6LogGroup3CE9BC8F": {
+  "Evala5c17f500de1497b8ec0fabdc9086cc5LogGroupAF75B199": {
    "Type": "AWS::Logs::LogGroup",
    "Properties": {
     "LogGroupName": {
@@ -140,7 +140,7 @@
       [
        "/aws/lambda/",
        {
-        "Ref": "Eval9757c2676d7c45c2af7737a30d93d2c64B038159"
+        "Ref": "Evala5c17f500de1497b8ec0fabdc9086cc53F6D26BA"
        }
       ]
      ]
@@ -178,13 +178,13 @@
        "Resource": [
         {
          "Fn::GetAtt": [
-          "Eval105f0693c0824e9b83f39007507676f0117865DA",
+          "Eval1662dbae12a44a0486f029531a7be26882B7E745",
           "Arn"
          ]
         },
         {
          "Fn::GetAtt": [
-          "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+          "Evala5c17f500de1497b8ec0fabdc9086cc53F6D26BA",
           "Arn"
          ]
         },
@@ -194,7 +194,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Eval105f0693c0824e9b83f39007507676f0117865DA",
+             "Eval1662dbae12a44a0486f029531a7be26882B7E745",
              "Arn"
             ]
            },
@@ -208,7 +208,7 @@
           [
            {
             "Fn::GetAtt": [
-             "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+             "Evala5c17f500de1497b8ec0fabdc9086cc53F6D26BA",
              "Arn"
             ]
            },
@@ -239,14 +239,14 @@
        "{\"StartAt\":\"Start\",\"States\":{\"Start\":{\"Type\":\"Pass\",\"Result\":{\"a\":3,\"b\":4},\"Next\":\"ParallelEval\"},\"ParallelEval\":{\"Type\":\"Parallel\",\"End\":true,\"Branches\":[{\"StartAt\":\"EvalExpressionArm\",\"States\":{\"EvalExpressionArm\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval105f0693c0824e9b83f39007507676f0117865DA",
+         "Eval1662dbae12a44a0486f029531a7be26882B7E745",
          "Arn"
         ]
        },
        "\",\"Parameters\":{\"expression\":\"$.a + $.b\",\"expressionAttributeValues\":{\"$.a.$\":\"$.a\",\"$.b.$\":\"$.b\"}}}}},{\"StartAt\":\"EvalExpressionX86\",\"States\":{\"EvalExpressionX86\":{\"End\":true,\"Type\":\"Task\",\"Resource\":\"",
        {
         "Fn::GetAtt": [
-         "Eval9757c2676d7c45c2af7737a30d93d2c64B038159",
+         "Evala5c17f500de1497b8ec0fabdc9086cc53F6D26BA",
          "Arn"
         ]
        },

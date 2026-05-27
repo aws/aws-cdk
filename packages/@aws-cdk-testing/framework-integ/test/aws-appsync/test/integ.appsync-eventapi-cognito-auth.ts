@@ -1,10 +1,10 @@
 import * as cdk from 'aws-cdk-lib';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as nodejs from 'aws-cdk-lib/aws-lambda-nodejs';
 import * as path from 'path';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class EventApiCognitoAuthStack extends cdk.Stack {
   public readonly eventApi: appsync.EventApi;
@@ -46,7 +46,7 @@ class EventApiCognitoAuthStack extends cdk.Stack {
     this.eventApi.addChannelNamespace('default');
 
     const lambdaConfig: nodejs.NodejsFunctionProps = {
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       environment: {
         EVENT_API_REALTIME_URL: `wss://${this.eventApi.realtimeDns}/event/realtime`,
         EVENT_API_HTTP_URL: `https://${this.eventApi.httpDns}/event`,

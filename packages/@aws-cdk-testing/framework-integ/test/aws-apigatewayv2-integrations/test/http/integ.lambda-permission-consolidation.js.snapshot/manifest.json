@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "integ-lambda-permission-consolidation.assets": {
       "type": "cdk:asset-manifest",
@@ -33,334 +33,7 @@
       "dependencies": [
         "integ-lambda-permission-consolidation.assets"
       ],
-      "metadata": {
-        "/integ-lambda-permission-consolidation/HttpApi": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/HttpApi/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HttpApiF5A9A8A7"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/HttpApi/DefaultStage": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/HttpApi/DefaultStage/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HttpApiDefaultStage3EEB07D6"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Handler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "runtime": "*",
-              "handler": "*",
-              "code": "*"
-            }
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Handler/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Handler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HandlerServiceRoleFCDC14AE"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Handler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Handler886CB40B"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route1/Integration1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route1/Integration1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route1Integration10CD6D38E"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route1/ApiPermission.ApiScoped.integlambdapermissionconsolidationHandler9B5ABBF0.integlambdapermissionconsolidationHttpApi82FAC62A": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route1ApiPermissionApiScopedinteglambdapermissionconsolidationHandler9B5ABBF0integlambdapermissionconsolidationHttpApi82FAC62AB798A88B"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route1BBCF1222"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route2/Integration2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route2/Integration2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route2Integration25D5869E1"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route2352A647E"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route3/Integration3": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route3/Integration3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route3Integration35771612A"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route3/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route3FA5ECD79"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route4": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route4/Integration4": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route4/Integration4/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route4Integration44EC5B7EA"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route4/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route4B06F2D19"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route5": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route5/Integration5": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route5/Integration5/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route5Integration52160BCD8"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route5/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route541E84F43"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route6": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route6/Integration6": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route6/Integration6/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route6Integration62EBD627B"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route6/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route68A791893"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route7": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route7/Integration7": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route7/Integration7/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route7Integration76283DD94"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route7/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route73C87F863"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route8": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route8/Integration8": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route8/Integration8/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route8Integration80EA22A6B"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route8/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route8AABB4988"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route9": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route9/Integration9": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route9/Integration9/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route9Integration91A818602"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route9/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route9B42E22D6"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route10": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route10/Integration10": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route10/Integration10/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route10Integration109B1865CA"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Route10/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Route10F76C1187"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/Exports/Output{\"Fn::GetAtt\":[\"HttpApiF5A9A8A7\",\"ApiEndpoint\"]}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttHttpApiF5A9A8A7ApiEndpoint082134F8"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-lambda-permission-consolidation/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-lambda-permission-consolidation.metadata.json",
       "displayName": "integ-lambda-permission-consolidation"
     },
     "IntegDefaultTestDeployAssert4E6713E1.assets": {
@@ -380,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/15d19396c7ad710d071bef2d5909540c4f25a5283535d4d2bd3a6c86e2bbb4de.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/607454c968ef3fda5658d5f9c8a270409a0832279bf724faaec9f8bc4eef237d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -396,84 +69,7 @@
         "integ-lambda-permission-consolidation",
         "IntegDefaultTestDeployAssert4E6713E1.assets"
       ],
-      "metadata": {
-        "/Integ/DefaultTest/DeployAssert/HttpApiCallc057c4cc3fb4d33839d577ab6028613d/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/HttpApiCallc057c4cc3fb4d33839d577ab6028613d/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HttpApiCallc057c4cc3fb4d33839d577ab6028613d"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/HttpApiCallc057c4cc3fb4d33839d577ab6028613d/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsHttpApiCallc057c4cc3fb4d33839d577ab6028613d"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/HttpApiCall76b6e98c10885c1eb1d39dd3cc518d78/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/HttpApiCall76b6e98c10885c1eb1d39dd3cc518d78/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "HttpApiCall76b6e98c10885c1eb1d39dd3cc518d78"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/HttpApiCall76b6e98c10885c1eb1d39dd3cc518d78/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsHttpApiCall76b6e98c10885c1eb1d39dd3cc518d78"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/Integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "IntegDefaultTestDeployAssert4E6713E1.metadata.json",
       "displayName": "Integ/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -774,6 +370,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -975,16 +572,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

@@ -1,0 +1,338 @@
+{
+  "/integ-cloudfront-function-url-origin-oac": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:13:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addAlias": [
+          "*",
+          {
+            "provisionedConcurrentExecutions": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/AliasDistribution": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        }
+      }
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFunction3BAA72D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:15:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/CurrentVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "lambda": "*"
+      }
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/AliasLive": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "aliasName": "*",
+        "version": "*",
+        "provisionedConcurrentExecutions": "*"
+      }
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/AliasDistribution/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AliasDistribution1027E46E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:252:34)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:41:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/Exports/Output{\"Fn::GetAtt\":[\"MyFunctionAliasLiveFunctionUrl4C98949A\",\"FunctionUrl\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttMyFunctionAliasLiveFunctionUrl4C98949AFunctionUrl8F680E6D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/Exports/Output{\"Ref\":\"AliasDistribution1027E46E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAliasDistribution1027E46ED597E5E3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/Exports/Output{\"Fn::GetAtt\":[\"AliasDistribution1027E46E\",\"DomainName\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttAliasDistribution1027E46EDomainName9B50152C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFunctionServiceRole3C357FF2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:15:12)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/CurrentVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFunctionCurrentVersion197490AF7623282159169514758f0da97b8dad35"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Version (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/lambda-version.js:207:29)",
+        "new Version (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "get currentVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:266:36)",
+        "WrappedClass.addAlias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1021:54)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:26:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/AliasLive/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFunctionAliasLive372006BC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/alias.js:189:26)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "addAlias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/util.js:8:12)",
+        "WrappedClass.addAlias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1021:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:26:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/AliasLive/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/AliasLive/FunctionUrl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "function": "*",
+        "authType": "AWS_IAM"
+      }
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/AliasDistribution/Origin1/FunctionUrlOriginAccessControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/AliasDistribution/Origin1/InvokeFromApiForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED5": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AliasDistributionOrigin1InvokeFromApiForintegcloudfrontfunctionurloriginoacAliasDistributionOrigin11CF22ED58F6A0AB2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "FunctionUrlOriginWithOAC.addInvokePermission (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.js:106:9)",
+        "FunctionUrlOriginWithOAC.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.js:95:14)",
+        "WrappedClass.addOrigin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:694:49)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:234:35)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:41:27)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/MyFunction/AliasLive/FunctionUrl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyFunctionAliasLiveFunctionUrl4C98949A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FunctionUrl (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-url.js:196:30)",
+        "new FunctionUrl (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addFunctionUrl (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:449:16)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:29:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-function-url-origin-oac/AliasDistribution/Origin1/FunctionUrlOriginAccessControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AliasDistributionOrigin1FunctionUrlOriginAccessControl37A840CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new FunctionUrlOriginAccessControl (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/origin-access-control.js:323:30)",
+        "new FunctionUrlOriginAccessControl (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "FunctionUrlOriginWithOAC.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront-origins/lib/function-url-origin.js:92:40)",
+        "WrappedClass.addOrigin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:694:49)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:234:35)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront-origins/test/integ.function-url-origin-oac-alias.js:41:27)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

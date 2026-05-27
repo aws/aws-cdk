@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "files": {
     "d37eae9b51dadb242e45d63755eb120db18d4104a66f4243bedf7482953f92a7": {
       "displayName": "aws-events-targets-api-gateway-integ Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-351e950d": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "d37eae9b51dadb242e45d63755eb120db18d4104a66f4243bedf7482953f92a7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

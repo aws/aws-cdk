@@ -4,6 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as route53 from 'aws-cdk-lib/aws-route53';
 import * as route53recoverycontrol from 'aws-cdk-lib/aws-route53recoverycontrol';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -96,7 +97,7 @@ new route53.ARecord(stack, 'ARecordCalculated2', {
 });
 
 const lambdaFunction = new lambda.Function(stack, 'LambdaFunction', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async function(event) { return { statusCode: 200, body: "OK" }; }'),
 });

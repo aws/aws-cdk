@@ -1,13 +1,14 @@
 {
-  "version": "36.0.24",
+  "version": "53.0.0",
   "files": {
     "275ddfdfcfabbf8ebb96b36f0683ec9e1265c5d95ddaa24e686522bd3f0e804e": {
+      "displayName": "value-from-lookup-with-defaults Template",
       "source": {
         "path": "value-from-lookup-with-defaults.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region": {
+        "12345678-test-region-f51f248f": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
           "objectKey": "275ddfdfcfabbf8ebb96b36f0683ec9e1265c5d95ddaa24e686522bd3f0e804e.json",
           "region": "test-region",

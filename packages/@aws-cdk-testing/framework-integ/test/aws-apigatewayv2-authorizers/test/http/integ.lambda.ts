@@ -5,6 +5,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, Stack, CfnOutput } from 'aws-cdk-lib';
 import { HttpLambdaAuthorizer, HttpLambdaResponseType } from 'aws-cdk-lib/aws-apigatewayv2-authorizers';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 /*
  * Stack verification steps:
@@ -21,7 +22,7 @@ const app = new App({
 const stack = new Stack(app, 'AuthorizerInteg');
 
 const authHandler = new lambda.Function(stack, 'auth-function', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, '..', 'auth-handler'), { exclude: ['*.ts'] }),
 });
@@ -49,7 +50,7 @@ const httpApiWithDefaultAuthorizer = new HttpApi(stack, 'MyHttpApiWithDefaultAut
 });
 
 const handler = new lambda.Function(stack, 'lambda', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.AssetCode.fromAsset(path.join(__dirname, '..', 'integ.lambda.handler'), { exclude: ['*.ts'] }),
 });

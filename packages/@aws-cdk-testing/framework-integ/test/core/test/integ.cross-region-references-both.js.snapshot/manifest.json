@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/dd3504da6b467f6dc5d54da5d55729353da9a3f7a3d41eb7fb53aa19736a7599.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/eede5309b25b7c4805cf699c002b1bc487098c4ee4652879fbce1822656ef90f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,6 +33,7 @@
       "dependencies": [
         "CrossRegionBothRefProducerInteg.assets"
       ],
+      "additionalMetadataFile": "CrossRegionBothRefProducerInteg.metadata.json",
       "displayName": "CrossRegionBothRefProducerInteg"
     },
     "CrossRegionBothRefConsumerInteg.assets": {
@@ -68,6 +69,7 @@
         "CrossRegionBothRefProducerInteg",
         "CrossRegionBothRefConsumerInteg.assets"
       ],
+      "additionalMetadataFile": "CrossRegionBothRefConsumerInteg.metadata.json",
       "displayName": "CrossRegionBothRefConsumerInteg"
     },
     "CrossRegionBothReferenceTestDefaultTestDeployAssertDF898EC2.assets": {
@@ -102,6 +104,7 @@
       "dependencies": [
         "CrossRegionBothReferenceTestDefaultTestDeployAssertDF898EC2.assets"
       ],
+      "additionalMetadataFile": "CrossRegionBothReferenceTestDefaultTestDeployAssertDF898EC2.metadata.json",
       "displayName": "CrossRegionBothReferenceTest/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -627,10 +630,10 @@
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
-          "@aws-cdk/core:crossStackReferenceStrength": {
+          "@aws-cdk/core:defaultCrossStackReferences": {
             "userValue": "both",
-            "recommendedValue": "weak",
-            "explanation": "Controls whether cross-stack references are strong, weak, or both",
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
               "v2": "strong"
             }

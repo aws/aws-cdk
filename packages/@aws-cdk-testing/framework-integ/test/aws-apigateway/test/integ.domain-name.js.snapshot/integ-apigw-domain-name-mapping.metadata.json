@@ -1,0 +1,983 @@
+{
+  "/integ-apigw-domain-name-mapping": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:21:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "securityPolicy": "TLS_1_2",
+        "certificate": "*",
+        "mapping": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBasePathMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBasePathMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addApiMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addApiMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomainRecord": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegDomainRecord"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:94:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ2Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "securityPolicy": "TLS_1_2",
+        "certificate": "*",
+        "mapping": "*",
+        "basePath": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBasePathMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addApiMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ2DomainRecord": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ2DomainRecord"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:125:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ3Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "securityPolicy": "TLS_1_2",
+        "certificate": "*",
+        "mapping": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBasePathMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addBasePathMapping": [
+          "*",
+          {
+            "basePath": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ3DomainRecord": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ3DomainRecord"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:149:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "endpointTypes": [
+          "REGIONAL"
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "endpointTypes": [
+          "REGIONAL"
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegDomain624DF323"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:260:30)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:88:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "restApi": "*",
+        "basePath": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "restApi": "*",
+        "basePath": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegDomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE3C3CDD8F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addApiMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:373:13)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:106:8)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders--v1=>integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D5976": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegDomainMapordersv1integapigwdomainnamemappingIntegApi1IntegApi201DeploymentStageprod556D59765598DA9A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addApiMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:373:13)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:109:8)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ2Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ2Domain70CCEA68"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:260:30)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:118:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ2Domain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "restApi": "*",
+        "basePath": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ2Domain/Map:orders--v2=>integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FE": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ2DomainMapordersv2integapigwdomainnamemappingIntegApi2IntegApi202DeploymentStageprodDA7FC3FECE78C5AD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addApiMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:373:13)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:134:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ3Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ3DomainE531FBAB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:260:30)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:143:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ3Domain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "restApi": "*",
+        "basePath": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ3Domain/Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "domainName": "*",
+        "restApi": "*",
+        "basePath": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"IntegDomain624DF323\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefIntegDomain624DF323D17B7540"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Exports/Output{\"Ref\":\"Integ2Domain70CCEA68\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefInteg2Domain70CCEA688A08551F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi1IntegApi2018FAD77E9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:806:30)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:73:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi1IntegApi201Endpoint361E7C32"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:527:13)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:73:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi2IntegApi202F39817F4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:806:30)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:77:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Deployment": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "api": "*",
+        "retainDeployments": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToLogicalId": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/DeploymentStage.prod": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "deployment": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Endpoint": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi2IntegApi202Endpoint18343E9B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:527:13)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:77:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegDomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E86701596"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/base-path-mapping.js:115:13)",
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addBasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:338:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:279:22)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:88:16)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegDomain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegDomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E1F08DBEE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/base-path-mapping.js:115:13)",
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addBasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:338:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:103:8)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ2Domain/Map:orders=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ2DomainMapordersintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3E604CCBD9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/base-path-mapping.js:115:13)",
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addBasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:338:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:279:22)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:118:22)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ3Domain/Map:--=>integapigwdomainnamemappingIntegApi1IntegApi201817D4F3E/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ3DomainMapintegapigwdomainnamemappingIntegApi1IntegApi201817D4F3EC2A223F3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/base-path-mapping.js:115:13)",
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addBasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:338:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:279:22)",
+        "new DomainName (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:143:21)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/Integ3Domain/Map:v2=>integapigwdomainnamemappingIntegApi2IntegApi20289438F2B/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Integ3DomainMapv2integapigwdomainnamemappingIntegApi2IntegApi20289438F2BD839069D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/base-path-mapping.js:115:13)",
+        "new BasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addBasePathMapping (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/domain-name.js:338:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:158:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi1IntegApi201DeploymentF1012E35e3d8f8929b682e11ef294dd954cc0999"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/deployment.js:136:29)",
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:515:38)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:73:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi1IntegApi201DeploymentStageprod42C7F5CE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.js:370:30)",
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:523:36)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:73:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "pathPart": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Deployment/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi2IntegApi202Deployment16A1A56Af8137e7222475e5a9ac210201aa96737"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/deployment.js:136:29)",
+        "new Deployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:515:38)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:77:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/DeploymentStage.prod/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi2IntegApi202DeploymentStageprod9500285C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/stage.js:370:30)",
+        "new Stage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._configureDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:523:36)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/restapi.js:822:18)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new RestApi (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:27:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:77:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "parent": "*",
+        "pathPart": "*"
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi1IntegApi201itemsE127EEB1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:339:30)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:77:16)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:30:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:73:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi1IntegApi201GET725FD00E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:37:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:73:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi2IntegApi202items6625F7BA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:339:30)",
+        "new Resource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:77:16)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:30:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:77:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/GET": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "resource": "*",
+        "httpMethod": "*",
+        "integration": "*",
+        "options": {
+          "methodResponses": [
+            {
+              "statusCode": "*"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addMethodResponse": [
+          {
+            "statusCode": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi2IntegApi202GETA6A9E1FD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "RootResource.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:37:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:77:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi1/IntegApi201/Default/items/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi1IntegApi201itemsGET28ED9C03"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:38:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:73:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-apigw-domain-name-mapping/IntegApi2/IntegApi202/Default/items/GET/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IntegApi2IntegApi202itemsGET3C1B2802"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/method.js:202:30)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Method (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addMethod (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-apigateway/lib/resource.js:90:16)",
+        "new Api (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:38:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-apigateway/test/integ.domain-name.js:77:14)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

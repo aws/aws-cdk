@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "53.0.0",
   "testCases": {
     "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "StateMachineAndActivityWithCMKEncryptionConfiguration/DefaultTest/DeployAssert",
       "assertionStackName": "StateMachineAndActivityWithCMKEncryptionConfigurationDefaultTestDeployAssert11207853"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

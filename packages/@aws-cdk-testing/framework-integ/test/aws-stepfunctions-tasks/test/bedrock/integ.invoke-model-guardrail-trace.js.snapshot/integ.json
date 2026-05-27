@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
   "version": "52.0.0",
+=======
+  "version": "53.0.0",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
   "testCases": {
     "InvokeModel/DefaultTest": {
       "stacks": [
@@ -14,5 +18,9 @@
       "assertionStackName": "InvokeModelDefaultTestDeployAssert9C0D2DFC"
     }
   },
+<<<<<<< HEAD
   "minimumCliVersion": "2.1107.0"
+=======
+  "minimumCliVersion": "2.1123.0"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
 }

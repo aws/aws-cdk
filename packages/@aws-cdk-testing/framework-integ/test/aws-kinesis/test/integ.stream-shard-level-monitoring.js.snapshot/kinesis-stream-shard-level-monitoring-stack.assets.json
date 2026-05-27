@@ -1,5 +1,5 @@
 {
-  "version": "45.0.0",
+  "version": "53.0.0",
   "files": {
     "bdfe12a28209891263a6ce0f401639d4d64dfe37baa1c942388f93e75685c6df": {
       "displayName": "kinesis-stream-shard-level-monitoring-stack Template",

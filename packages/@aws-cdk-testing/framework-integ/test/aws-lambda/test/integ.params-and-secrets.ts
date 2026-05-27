@@ -6,10 +6,10 @@ import type { StackProps } from 'aws-cdk-lib';
 import { Stack } from 'aws-cdk-lib';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 import {
   Architecture,
   Function,
-  Runtime,
   Code,
   ParamsAndSecretsLayerVersion,
   ParamsAndSecretsVersions,
@@ -47,7 +47,7 @@ class StackUnderTest extends Stack {
     });
 
     const lambdaFunction = new Function(this, 'MyFunc', {
-      runtime: Runtime.NODEJS_20_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: Code.fromAsset(path.join(__dirname, 'params-and-secrets-handler')),
       architecture: props.architecture,

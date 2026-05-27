@@ -1,0 +1,976 @@
+{
+  "/aws-cdk-route53-health-check": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:14:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HostedZone": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zoneName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckHttp": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "type": "HTTP",
+        "fqdn": "*",
+        "resourcePath": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttp": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttp2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckHttps": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "type": "HTTPS",
+        "fqdn": "*",
+        "resourcePath": "*",
+        "port": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttps": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttps2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckTcp": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "type": "TCP",
+        "fqdn": "*",
+        "port": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordTcp": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordTcp2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckCalculated": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "type": "*",
+        "healthThreshold": "*",
+        "childHealthChecks": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCalculated": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCalculated2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/LambdaFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "runtime": "*",
+        "handler": "*",
+        "code": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/Alarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "metric": {
+          "warnings": "*",
+          "warningsV2": "*"
+        },
+        "threshold": "*",
+        "evaluationPeriods": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckCloudWatch": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "type": "*",
+        "alarmIdentifier": {
+          "region": "*",
+          "name": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCloudWatch": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCloudWatch2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/Cluster": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Cluster"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:121:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/RoutingControl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RoutingControl"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:119:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckRecoveryControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "type": "*",
+        "routingControl": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordRecoveryControl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "healthCheck": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordRecoveryControl2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zone": "*",
+        "recordName": "*",
+        "target": "*",
+        "weight": "*"
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HostedZone/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HostedZoneDB99F866"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/hosted-zone.js:249:30)",
+        "new HostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new HostedZone (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:15:14)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckHttp/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HealthCheckHttp45CD8FAC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.js:183:30)",
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:18:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttp/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordHttp1E242324"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:23:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttp2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordHttp2C99D5094"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:29:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckHttps/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HealthCheckHttpsE7EFCB62"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.js:183:30)",
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:34:26)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttps/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordHttps92EB971E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:40:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordHttps2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordHttps2771FA16F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:47:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckTcp/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HealthCheckTcpC39A45DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.js:183:30)",
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:53:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordTcp/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordTcp8F151AA4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:58:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordTcp2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordTcp21F5B796C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:65:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckCalculated/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HealthCheckCalculated4BA910E7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.js:183:30)",
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:71:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCalculated/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordCalculatedFD72BD16"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:76:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCalculated2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordCalculated22107FE58"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:83:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/LambdaFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-route53-health-check/LambdaFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaFunctionBF21E41F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:89:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Alarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Alarm7103F465"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/alarm.js:273:26)",
+        "new Alarm (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:94:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckCloudWatch/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HealthCheckCloudWatch996681BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.js:183:30)",
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:99:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCloudWatch/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordCloudWatchD1A5EC36"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:106:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordCloudWatch2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordCloudWatch26685731B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:113:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/HealthCheckRecoveryControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HealthCheckRecoveryControl984D4A84"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/health-check.js:183:30)",
+        "new HealthCheck (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:125:36)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordRecoveryControl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordRecoveryControl04C35A7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:129:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/ARecordRecoveryControl2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ARecordRecoveryControl24A358DFD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:350:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:519:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:136:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckHttp45CD8FAC\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHealthCheckHttp45CD8FAC4B1BEEC9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckHttpsE7EFCB62\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHealthCheckHttpsE7EFCB6287C5ACD7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckTcpC39A45DC\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHealthCheckTcpC39A45DCAEC05583"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckCalculated4BA910E7\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHealthCheckCalculated4BA910E7270DC992"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"LambdaFunctionBF21E41F\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefLambdaFunctionBF21E41F66817B40"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"Alarm7103F465\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefAlarm7103F465225BDD34"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckCloudWatch996681BB\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHealthCheckCloudWatch996681BBF4DB146D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Fn::GetAtt\":[\"RoutingControl\",\"RoutingControlArn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttRoutingControlRoutingControlArnDB738AE3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/Exports/Output{\"Ref\":\"HealthCheckRecoveryControl984D4A84\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefHealthCheckRecoveryControl984D4A84E3A8C585"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-route53-health-check/LambdaFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaFunctionServiceRoleC555A460"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53/test/integ.health-check.js:89:24)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

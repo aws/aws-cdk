@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "SqsIntegrationIntegTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "SqsIntegrationIntegTest/DefaultTest/DeployAssert",
       "assertionStackName": "SqsIntegrationIntegTestDefaultTestDeployAssert9AC3F75A"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

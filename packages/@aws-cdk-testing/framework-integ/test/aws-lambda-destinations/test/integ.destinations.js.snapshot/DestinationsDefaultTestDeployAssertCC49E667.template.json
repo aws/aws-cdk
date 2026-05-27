@@ -28,7 +28,7 @@
      "Payload": "\"{\\\"status\\\":\\\"OK\\\"}\""
     },
     "flattenResponse": "false",
-    "salt": "1773653401652"
+    "salt": "1779809622114"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -132,12 +132,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "34374f507e525559ac3b65a806158d91a7f0d2a5765a5aa9fa48b6b3bac4d3ce.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -184,7 +184,7 @@
      "Messages.0.Body.responseContext.statusCode",
      "Messages.0.Body.responsePayload"
     ],
-    "salt": "1773653401653"
+    "salt": "1779809622116"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

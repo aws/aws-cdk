@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "688cb77e4de018e0c62d640095c4e8a1f3cea0a8a355f6d047f99dc9ce796073": {
       "displayName": "integ-cloudfront-stack/Custom::CrossRegionExportReaderCustomResourceProvider Code",
@@ -16,16 +16,16 @@
         }
       }
     },
-    "69f4180b47a412e433d26813c8d6e94d7a5d4a9f34e254f6b51871b479b10aaf": {
+    "3008e2cb5b4da45be2bec958309dd762e21880a0fec417b107b58993db86a8e3": {
       "displayName": "integ-cloudfront-stack Template",
       "source": {
         "path": "integ-cloudfront-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-us-east-2-214f1194": {
+        "12345678-us-east-2-2d18f480": {
           "bucketName": "cdk-hnb659fds-assets-12345678-us-east-2",
-          "objectKey": "69f4180b47a412e433d26813c8d6e94d7a5d4a9f34e254f6b51871b479b10aaf.json",
+          "objectKey": "3008e2cb5b4da45be2bec958309dd762e21880a0fec417b107b58993db86a8e3.json",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-2"
         }

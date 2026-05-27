@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "files": {
     "c8e9620b503fe370ef7baaebbac905c39410049d99352765af8b467e441718a9": {
       "displayName": "testingStack Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "12345678-test-region": {
+        "12345678-test-region-0d5a9d3d": {
           "bucketName": "cdk-hnb659fds-assets-12345678-test-region",
           "objectKey": "c8e9620b503fe370ef7baaebbac905c39410049d99352765af8b467e441718a9.json",
           "region": "test-region",

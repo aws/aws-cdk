@@ -1,6 +1,6 @@
 {
   "enableLookups": true,
-  "version": "40.0.0",
+  "version": "53.0.0",
   "testCases": {
     "EcrRepoLookupTest/DefaultTest": {
       "stacks": [
@@ -18,5 +18,6 @@
       "assertionStack": "EcrRepoLookupTest/DefaultTest/DeployAssert",
       "assertionStackName": "EcrRepoLookupTestDefaultTestDeployAssert7F088AF3"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "integ-iam-imported-role-role-stack.assets": {
       "type": "cdk:asset-manifest",
@@ -33,43 +33,7 @@
       "dependencies": [
         "integ-iam-imported-role-role-stack.assets"
       ],
-      "metadata": {
-        "/integ-iam-imported-role-role-stack/TestRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/integ-iam-imported-role-role-stack/TestRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestRole6C9272DF"
-          }
-        ],
-        "/integ-iam-imported-role-role-stack/Exports/Output{\"Ref\":\"TestRole6C9272DF\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefTestRole6C9272DF9DD89F08"
-          }
-        ],
-        "/integ-iam-imported-role-role-stack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-iam-imported-role-role-stack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-iam-imported-role-role-stack.metadata.json",
       "displayName": "integ-iam-imported-role-role-stack"
     },
     "integ-iam-imported-role-1.assets": {
@@ -105,132 +69,7 @@
         "integ-iam-imported-role-role-stack",
         "integ-iam-imported-role-1.assets"
       ],
-      "metadata": {
-        "/integ-iam-imported-role-1/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-iam-imported-role-1/Role/Policyintegiamimportedrole1RoleC415C68D": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-iam-imported-role-1/Role/Policyintegiamimportedrole1RoleC415C68D/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RolePolicyintegiamimportedrole1RoleC415C68D134DF661"
-          }
-        ],
-        "/integ-iam-imported-role-1/Rolexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-iam-imported-role-1/Rolexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/Policyintegiamimportedrole1RolexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxF0A88E6A": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-iam-imported-role-1/Rolexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/Policyintegiamimportedrole1RolexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxF0A88E6A/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RolexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxPolicyintegiamimportedrole1Rolexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1CFA08DB"
-          }
-        ],
-        "/integ-iam-imported-role-1/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-iam-imported-role-1/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-iam-imported-role-1.metadata.json",
       "displayName": "integ-iam-imported-role-1"
     },
     "integ-iam-imported-role-2.assets": {
@@ -267,132 +106,7 @@
         "integ-iam-imported-role-role-stack",
         "integ-iam-imported-role-2.assets"
       ],
-      "metadata": {
-        "/integ-iam-imported-role-2/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-iam-imported-role-2/Role/Policyintegiamimportedrole2Role396F2F48": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-iam-imported-role-2/Role/Policyintegiamimportedrole2Role396F2F48/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RolePolicyintegiamimportedrole2Role396F2F48CB4A54DC"
-          }
-        ],
-        "/integ-iam-imported-role-2/Roleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-iam-imported-role-2/Roleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/Policyintegiamimportedrole2RoleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyBE9857E5": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "policyName": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/integ-iam-imported-role-2/Roleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy/Policyintegiamimportedrole2RoleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyBE9857E5/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "RoleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyPolicyintegiamimportedrole2Roleyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy9B3A4E53"
-          }
-        ],
-        "/integ-iam-imported-role-2/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-iam-imported-role-2/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-iam-imported-role-2.metadata.json",
       "displayName": "integ-iam-imported-role-2"
     },
     "integ-iam-imported-role-3.assets": {
@@ -427,120 +141,7 @@
       "dependencies": [
         "integ-iam-imported-role-3.assets"
       ],
-      "metadata": {
-        "/integ-iam-imported-role-3/roleToBeImported": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "roleName": "*",
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          }
-        ],
-        "/integ-iam-imported-role-3/roleToBeImported/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "roleToBeImportedCAC1213C"
-          }
-        ],
-        "/integ-iam-imported-role-3/ImportedMutableRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/integ-iam-imported-role-3/ManagedPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "managedPolicyName": "*",
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-iam-imported-role-3/ManagedPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ManagedPolicy7BAB786E"
-          }
-        ],
-        "/integ-iam-imported-role-3/ManagedPolicy1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "managedPolicyName": "*",
-              "statements": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/integ-iam-imported-role-3/ManagedPolicy1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ManagedPolicy135BDEF37"
-          }
-        ],
-        "/integ-iam-imported-role-3/Exports/Output{\"Ref\":\"roleToBeImportedCAC1213C\"}": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefroleToBeImportedCAC1213CDE38D2C6"
-          }
-        ],
-        "/integ-iam-imported-role-3/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-iam-imported-role-3/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integ-iam-imported-role-3.metadata.json",
       "displayName": "integ-iam-imported-role-3"
     },
     "ImportedRoleTestAssertions.assets": {
@@ -560,7 +161,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/28af529dc8ad0819382d4fe81aa6b2e5555e072a2ea03fa57f94d02df54ad504.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/23df0bb5f2e4457f6862e24e27139c5c78ed286e3baec29dadc7ba9f280bd11c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -579,84 +180,7 @@
         "integ-iam-imported-role-3",
         "ImportedRoleTestAssertions.assets"
       ],
-      "metadata": {
-        "/ImportedRoleTestAssertions/AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/ImportedRoleTestAssertions/AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6"
-          }
-        ],
-        "/ImportedRoleTestAssertions/AwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallIAMlistRolePoliciese15a421383f9698f4159fca8713990e6"
-          }
-        ],
-        "/ImportedRoleTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/ImportedRoleTestAssertions/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be"
-          }
-        ],
-        "/ImportedRoleTestAssertions/AwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallIAMlistAttachedRolePolicies7b6e565f3b40bc5c7faa65c17a68f5be"
-          }
-        ],
-        "/ImportedRoleTestAssertions/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ImportedRoleTestAssertions/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "ImportedRoleTestAssertions.metadata.json",
       "displayName": "ImportedRoleTestAssertions"
     },
     "Tree": {
@@ -957,6 +481,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -1158,16 +683,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1105.0"
+  "minimumCliVersion": "2.1108.0"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "53.0.0",
   "testCases": {
     "ses-configuration-set-event-bus-test/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ses-configuration-set-event-bus-test/DefaultTest/DeployAssert",
       "assertionStackName": "sesconfigurationseteventbustestDefaultTestDeployAssert4DB105E9"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

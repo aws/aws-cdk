@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "4d11f5fb605915304f82898ced69d2e4dfb4c58b9fc1f7a4da8288517f249c18": {
+    "47169077cde3e44e1ccc9b06c718f967c24123a578116d16c4f59b9d548670f4": {
       "displayName": "WebSocketApiInteg Template",
       "source": {
         "path": "WebSocketApiInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-1a302d1a": {
+        "current_account-current_region-b6a22fe3": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4d11f5fb605915304f82898ced69d2e4dfb4c58b9fc1f7a4da8288517f249c18.json",
+          "objectKey": "47169077cde3e44e1ccc9b06c718f967c24123a578116d16c4f59b9d548670f4.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

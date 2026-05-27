@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code",
@@ -8,7 +8,7 @@
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-6efcd49a": {
+        "current_account-current_region-b32873df": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
@@ -29,30 +29,30 @@
         }
       }
     },
-    "f39f3386b47b15f6de0eede9992a333c9c5e6c3e04762ed71f26360585a750b4": {
+    "39d64ab8692d4e9c30019e2cc5647e09111f2ee2286bffaf82de8552f50e20b9": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider Nested Stack Template",
       "source": {
         "path": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderEA32CB30.nested.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-fd182b69": {
+        "current_account-current_region-4def4e0b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f39f3386b47b15f6de0eede9992a333c9c5e6c3e04762ed71f26360585a750b4.json",
+          "objectKey": "39d64ab8692d4e9c30019e2cc5647e09111f2ee2286bffaf82de8552f50e20b9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "17e3447806e2c46762693b7ad5b1689b89bca98ff62c17f8d95a05c0f29a7630": {
+    "d9cace4ce05bd67b7eb712848f32425957c9ad1f38598b5e596102c8573f8e6a": {
       "displayName": "aws-cdk-dynamodb-global-replicas-provisioned Template",
       "source": {
         "path": "aws-cdk-dynamodb-global-replicas-provisioned.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-a50b908b": {
+        "current_account-current_region-783666c6": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "17e3447806e2c46762693b7ad5b1689b89bca98ff62c17f8d95a05c0f29a7630.json",
+          "objectKey": "d9cace4ce05bd67b7eb712848f32425957c9ad1f38598b5e596102c8573f8e6a.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

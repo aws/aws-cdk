@@ -16,9 +16,15 @@
         "templateFile": "aws-sfn-cross-region-lambda-target.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+<<<<<<< HEAD
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/ee4f0d40c519383dabd1419562bc948f0c3f256a1b5bafd133aa3b3e74a42e2b.json",
+=======
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/7197b1953a0717369d9ad38a21e7250fe133f7480fe2ca372ede65914d008cdb.json",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,8 +39,13 @@
       "dependencies": [
         "aws-sfn-cross-region-lambda-target.assets"
       ],
+<<<<<<< HEAD
       "additionalMetadataFile": "aws-sfn-cross-region-lambda-target.metadata.json",
       "displayName": "aws-sfn-cross-region-lambda-target"
+=======
+      "additionalMetadataFile": "aws-stepfunctions-call-aws-service-cross-region-lambda-integ.metadata.json",
+      "displayName": "aws-stepfunctions-call-aws-service-cross-region-lambda-integ"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
     },
     "aws-sfn-call-aws-service-cross-region-lambda.assets": {
       "type": "cdk:asset-manifest",
@@ -51,9 +62,15 @@
         "templateFile": "aws-sfn-call-aws-service-cross-region-lambda.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
+<<<<<<< HEAD
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
         "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/fe59ecfb1dc29b8385e5e19479c610cace70087184c9ed6ea35a6adf2c066162.json",
+=======
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c4c561289b4b56a48bd0b3dc5217a0bd4974452ab3070c38231359bf391cf9d3.json",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -69,6 +86,7 @@
         "aws-sfn-cross-region-lambda-target",
         "aws-sfn-call-aws-service-cross-region-lambda.assets"
       ],
+<<<<<<< HEAD
       "additionalMetadataFile": "aws-sfn-call-aws-service-cross-region-lambda.metadata.json",
       "displayName": "aws-sfn-call-aws-service-cross-region-lambda"
     },
@@ -107,6 +125,10 @@
       ],
       "additionalMetadataFile": "AssertionStack.metadata.json",
       "displayName": "AssertionStack"
+=======
+      "additionalMetadataFile": "IntegTestDefaultTestDeployAssertE3E7D2A4.metadata.json",
+      "displayName": "IntegTest/DefaultTest/DeployAssert"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
     },
     "Tree": {
       "type": "cdk:tree",
@@ -630,6 +652,16 @@
           "@aws-cdk/core:annotationsInValidationReport": {
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+<<<<<<< HEAD
+=======
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
+>>>>>>> c0e04edcc8 (Update stable integ tests)
           }
         }
       }

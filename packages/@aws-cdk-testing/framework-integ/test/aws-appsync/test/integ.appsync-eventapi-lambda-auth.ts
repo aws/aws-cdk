@@ -58,7 +58,7 @@ class EventApiLambdaAuthStack extends cdk.Stack {
     this.eventApi.addChannelNamespace('default');
 
     const lambdaConfig: nodejs.NodejsFunctionProps = {
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       environment: {
         EVENT_API_REALTIME_URL: `wss://${this.eventApi.realtimeDns}/event/realtime`,
         EVENT_API_HTTP_URL: `https://${this.eventApi.httpDns}/event`,

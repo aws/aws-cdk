@@ -5,6 +5,7 @@ import { ArnFormat, CustomResource, Stack } from 'aws-cdk-lib';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import type * as rds from 'aws-cdk-lib/aws-rds';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 interface ClusterSnapshoterProps {
   readonly cluster: rds.IDatabaseCluster;
@@ -34,7 +35,7 @@ export class ClusterSnapshoter extends Construct {
     const code = lambda.Code.fromAsset(path.join(__dirname, 'snapshot-handler'), { exclude: ['*.ts'] });
     const onEventHandler = new lambda.Function(this, 'OnEventHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.onEventHandler',
       initialPolicy: [
         new iam.PolicyStatement({
@@ -46,7 +47,7 @@ export class ClusterSnapshoter extends Construct {
 
     const isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.isCompleteHandler',
       initialPolicy: [
         new iam.PolicyStatement({
@@ -101,7 +102,7 @@ export class InstanceSnapshoter extends Construct {
     const code = lambda.Code.fromAsset(path.join(__dirname, 'instance-snapshot-handler'), { exclude: ['*.ts'] });
     const onEventHandler = new lambda.Function(this, 'OnEventHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.onEventHandler',
       initialPolicy: [
         new iam.PolicyStatement({
@@ -113,7 +114,7 @@ export class InstanceSnapshoter extends Construct {
 
     const isCompleteHandler = new lambda.Function(this, 'IsCompleteHandler', {
       code,
-      runtime: lambda.Runtime.NODEJS_22_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.isCompleteHandler',
       initialPolicy: [
         new iam.PolicyStatement({

@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "02154fa4fa901cb86e12faa37c99adf61e71f0180e05221439550707fc0638b9": {
       "displayName": "child-stack/Custom::CrossAccountZoneDelegationCustomResourceProvider Code",
@@ -16,16 +16,16 @@
         }
       }
     },
-    "7248646a6876e4fdecf2572f3cc4a4c69211c259ff4ea71c118a26fbff045164": {
+    "2cf34f6a8d492601326dbdba084688e05e0e3b44c5874bdaefbc0d4a33be42d9": {
       "displayName": "child-stack Template",
       "source": {
         "path": "child-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-us-east-1-6637f148": {
+        "234567890123-us-east-1-25173601": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-us-east-1",
-          "objectKey": "7248646a6876e4fdecf2572f3cc4a4c69211c259ff4ea71c118a26fbff045164.json",
+          "objectKey": "2cf34f6a8d492601326dbdba084688e05e0e3b44c5874bdaefbc0d4a33be42d9.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-us-east-1"
         }

@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "files": {
     "685e2ada78523728d7e5e89310f6843233ecf8831cbeda7e8ebeda219f32ebd3": {
       "displayName": "aws-cdk-integ-test-service-roles-for-actions Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-5403ba50": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "685e2ada78523728d7e5e89310f6843233ecf8831cbeda7e8ebeda219f32ebd3.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

@@ -1,31 +1,31 @@
 {
   "version": "53.0.0",
   "files": {
-    "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4": {
+    "38af6bef46fcecadaa51c97aa0273f8c76ba8246511e0fc8604ef868ef2fc5ae": {
       "displayName": "CrossRegionBothRefProducerInteg/Custom::CrossRegionExportWriterCustomResourceProvider Code",
       "source": {
-        "path": "asset.60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4",
+        "path": "asset.38af6bef46fcecadaa51c97aa0273f8c76ba8246511e0fc8604ef868ef2fc5ae",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-east-1-ec181915": {
+        "current_account-us-east-1-dfc1db57": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "60421a06a6846f7ec41515588156a3fe78eb4aa7ff8fac2ac01c2c1d4e9b87d4.zip",
+          "objectKey": "38af6bef46fcecadaa51c97aa0273f8c76ba8246511e0fc8604ef868ef2fc5ae.zip",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }
       }
     },
-    "dd3504da6b467f6dc5d54da5d55729353da9a3f7a3d41eb7fb53aa19736a7599": {
+    "eede5309b25b7c4805cf699c002b1bc487098c4ee4652879fbce1822656ef90f": {
       "displayName": "CrossRegionBothRefProducerInteg Template",
       "source": {
         "path": "CrossRegionBothRefProducerInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-2912ac2f": {
+        "current_account-us-east-1-4c56f8fa": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "dd3504da6b467f6dc5d54da5d55729353da9a3f7a3d41eb7fb53aa19736a7599.json",
+          "objectKey": "eede5309b25b7c4805cf699c002b1bc487098c4ee4652879fbce1822656ef90f.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }

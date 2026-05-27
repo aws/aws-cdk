@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "testCases": {
     "Windows2019FleetIntegTest/DefaultTest": {
       "stacks": [
@@ -21,5 +21,5 @@
       "assertionStackName": "Windows2019FleetIntegTestDefaultTestDeployAssertB6D51860"
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1123.0"
 }

@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "version": "52.0.0",
   "files": {
     "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1": {
@@ -10,20 +11,43 @@
         "current_account-current_region-7e83c341": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip",
+=======
+  "version": "53.0.0",
+  "files": {
+    "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905": {
+      "source": {
+        "path": "asset.e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.bundle",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region-dba37b32": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
+<<<<<<< HEAD
     "0a5c0ed397eb948d2dd8a5bf844ac4b99b9056d2f7aeea83f412a81609d1ba09": {
+=======
+    "4a4bd198045c5af2f4b336885c0f1371313fae2d312ccb20c46952ea2d57e779": {
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       "displayName": "SfnSMTrainingJobImageDefaultTestDeployAssert6629FD8C Template",
       "source": {
         "path": "SfnSMTrainingJobImageDefaultTestDeployAssert6629FD8C.template.json",
         "packaging": "file"
       },
       "destinations": {
+<<<<<<< HEAD
         "current_account-current_region-23f94b02": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "0a5c0ed397eb948d2dd8a5bf844ac4b99b9056d2f7aeea83f412a81609d1ba09.json",
+=======
+        "current_account-current_region-ba6e2027": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "4a4bd198045c5af2f4b336885c0f1371313fae2d312ccb20c46952ea2d57e779.json",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

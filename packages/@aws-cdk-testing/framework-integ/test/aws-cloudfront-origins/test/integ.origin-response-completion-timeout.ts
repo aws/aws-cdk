@@ -3,6 +3,7 @@ import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'integ-cloudfront-response-completion-timeout');
@@ -13,7 +14,7 @@ const httpOrigin = new origins.HttpOrigin('example.com', {
 });
 
 const fn = new lambda.Function(stack, 'Function', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async () => ({ statusCode: 200, body: "Hello from Lambda!" });'),
 });

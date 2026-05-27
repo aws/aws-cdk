@@ -4,6 +4,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 class TestStack extends cdk.Stack {
   public testFunctions: lambda.IFunction[];
@@ -65,7 +66,7 @@ class TestStack extends cdk.Stack {
 
     this.testFunctions = [{ endpoint: vpcEndpoint1, vpc: vpc1 }, { endpoint: vpcEndpoint2, vpc: vpc2 }].map((config, index) => {
       const testFunction = new lambda.Function(this, `TestFunction${index}`, {
-        runtime: lambda.Runtime.NODEJS_20_X,
+        runtime: STANDARD_NODEJS_RUNTIME,
         handler: 'index.handler',
         code: lambda.Code.fromInline(`
           const https = require('https');

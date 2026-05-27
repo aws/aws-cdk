@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "testCases": {
     "CrossAccountDeploy/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "CrossAccountDeployDefaultTestDeployAssertB5328BEF"
     }
   },
-  "minimumCliVersion": "2.1005.0"
+  "minimumCliVersion": "2.1123.0"
 }

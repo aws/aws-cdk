@@ -2,12 +2,13 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import * as ssm from 'aws-cdk-lib/aws-ssm';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
+import type * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import type { Construct } from 'constructs';
 import { ExpectedResult } from '@aws-cdk/integ-tests-alpha';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 interface AwsCdkSdkJsStackProps {
   readonly runtime?: lambda.Runtime;
@@ -124,7 +125,7 @@ const app = new cdk.App({
   },
 });
 const testStack = new AwsCdkSdkJsStack(app, 'aws-cdk-sdk-js-v3', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 const integTest = new integ.IntegTest(app, 'AwsCustomResourceTest', {
   testCases: [testStack],

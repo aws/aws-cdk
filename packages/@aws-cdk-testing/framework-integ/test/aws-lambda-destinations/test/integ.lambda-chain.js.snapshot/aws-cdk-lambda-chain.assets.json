@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "6082de0cb6464e21583ea812bf13f4bac18563dbb55a5aa921a0a005c21dac2d": {
       "displayName": "aws-cdk-lambda-chain Template",

@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "784478dfa5e4c7e32c0fcece3c25e320697f384dceca5d7ac6799e5b7ee05100": {
+    "08aeb37719fd90f9c83ec699c282a85e5af4b84afce59525d56b5da5c29620cc": {
       "displayName": "aws-cdk-autoscaling-instance-termination-policy Template",
       "source": {
         "path": "aws-cdk-autoscaling-instance-termination-policy.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-6c1780fa": {
+        "current_account-current_region-ae1536df": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "784478dfa5e4c7e32c0fcece3c25e320697f384dceca5d7ac6799e5b7ee05100.json",
+          "objectKey": "08aeb37719fd90f9c83ec699c282a85e5af4b84afce59525d56b5da5c29620cc.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

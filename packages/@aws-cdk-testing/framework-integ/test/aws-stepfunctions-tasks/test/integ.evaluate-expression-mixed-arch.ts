@@ -3,19 +3,20 @@ import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import * as cdk from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as tasks from 'aws-cdk-lib/aws-stepfunctions-tasks';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-sfn-evaluate-expression-mixed-arch-integ');
 
 const evalTaskArm = new tasks.EvaluateExpression(stack, 'EvalExpressionArm', {
   expression: '$.a + $.b',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   architecture: lambda.Architecture.ARM_64,
 });
 
 const evalTaskX86 = new tasks.EvaluateExpression(stack, 'EvalExpressionX86', {
   expression: '$.a * $.b',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   architecture: lambda.Architecture.X86_64,
 });
 

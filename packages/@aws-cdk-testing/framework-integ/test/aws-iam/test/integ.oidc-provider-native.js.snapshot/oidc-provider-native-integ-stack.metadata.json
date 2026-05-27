@@ -1,0 +1,195 @@
+{
+  "/oidc-provider-native-integ-stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:7:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Provider": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "oidcProviderName": "*",
+        "url": "*",
+        "clientIds": "*",
+        "thumbprints": "*"
+      }
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:17:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Issuer": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Issuer"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:20:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Minimal": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "url": "*",
+        "thumbprints": "*"
+      }
+    }
+  ],
+  "/oidc-provider-native-integ-stack/MinimalArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MinimalArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:28:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/MinimalIssuer": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MinimalIssuer"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:31:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:78:5)"
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:78:5)"
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Provider/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Provider2281708E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OidcProviderNative (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider-native.js:171:29)",
+        "new OidcProviderNative (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:8:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Minimal/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Minimal107EFE55"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new OidcProviderNative (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider-native.js:171:29)",
+        "new OidcProviderNative (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:24:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Exports/Output{\"Ref\":\"Provider2281708E\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefProvider2281708E9B27F851"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:78:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/oidc-provider-native-integ-stack/Exports/Output{\"Ref\":\"Minimal107EFE55\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefMinimal107EFE55C8EECFEF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Stack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-iam/test/integ.oidc-provider-native.js:78:5)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

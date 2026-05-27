@@ -16,7 +16,7 @@
      "resourceShareInvitations.0",
      "resourceShareInvitations.0.resourceShareInvitationArn"
     ],
-    "salt": "1720032123973"
+    "salt": "1779809680554"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -74,10 +74,10 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs20.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-234567890123-us-east-1",
-     "S3Key": "eafc02f6925151c95ac6a6ae81a3e36d4cf4e77db52eec8e467ce2a69454a41a.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -118,7 +118,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1720032123974"
+    "salt": "1779809680557"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

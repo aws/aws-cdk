@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "ProfilingGroupTestStack.assets": {
       "type": "cdk:asset-manifest",
@@ -33,163 +33,7 @@
       "dependencies": [
         "ProfilingGroupTestStack.assets"
       ],
-      "metadata": {
-        "/ProfilingGroupTestStack/ProfilingGroupWithExplicitlySetName": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "profilingGroupName": "*"
-            }
-          }
-        ],
-        "/ProfilingGroupTestStack/ProfilingGroupWithExplicitlySetName/ProfilingGroup": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProfilingGroupWithExplicitlySetNameProfilingGroup20552EAE"
-          }
-        ],
-        "/ProfilingGroupTestStack/ProfilingGroupWithImplicitlySetName": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/ProfilingGroupTestStack/ProfilingGroupWithImplicitlySetName/ProfilingGroup": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ProfilingGroupWithImplicitlySetNameProfilingGroup21CDF1FC"
-          }
-        ],
-        "/ProfilingGroupTestStack/PublishAppRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              }
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/ProfilingGroupTestStack/PublishAppRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PublishAppRole9FEBD682"
-          }
-        ],
-        "/ProfilingGroupTestStack/PublishAppRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/ProfilingGroupTestStack/PublishAppRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "PublishAppRoleDefaultPolicyCA1E15C3"
-          }
-        ],
-        "/ProfilingGroupTestStack/ExplicitlySetProfilingGroupName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ExplicitlySetProfilingGroupName"
-          }
-        ],
-        "/ProfilingGroupTestStack/ImplicitlySetProfilingGroupName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImplicitlySetProfilingGroupName"
-          }
-        ],
-        "/ProfilingGroupTestStack/ImportedFromArnProfilingGroupName": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedFromArnProfilingGroupName"
-          }
-        ],
-        "/ProfilingGroupTestStack/ImportedFromArnProfilingGroupArn": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ImportedFromArnProfilingGroupArn"
-          }
-        ],
-        "/ProfilingGroupTestStack/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/ProfilingGroupTestStack/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "ProfilingGroupTestStack.metadata.json",
       "displayName": "ProfilingGroupTestStack"
     },
     "testDefaultTestDeployAssert4D02624A.assets": {
@@ -209,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef0feff98632d1d7cd69b87f181c12d9e58800d2fae02b8ce2b91e506f280107.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f0d1e1922cb9fd8de8d95581bbaed17d73f0cb06cbc24caf8264be048e8b2856.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -224,58 +68,7 @@
       "dependencies": [
         "testDefaultTestDeployAssert4D02624A.assets"
       ],
-      "metadata": {
-        "/test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksa99332154b0ef9382e9bced0057d585d/Default": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksa99332154b0ef9382e9bced0057d585d/Default/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AwsApiCallCloudFormationdescribeStacksa99332154b0ef9382e9bced0057d585d"
-          }
-        ],
-        "/test/DefaultTest/DeployAssert/AwsApiCallCloudFormationdescribeStacksa99332154b0ef9382e9bced0057d585d/AssertionResults": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "AssertionResultsAwsApiCallCloudFormationdescribeStacksa99332154b0ef9382e9bced0057d585d"
-          }
-        ],
-        "/test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
-          }
-        ],
-        "/test/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
-          }
-        ],
-        "/test/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "testDefaultTestDeployAssert4D02624A.metadata.json",
       "displayName": "test/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -576,6 +369,7 @@
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
           "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
           },
@@ -777,16 +571,39 @@
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
           },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
           "@aws-cdk/core:automaticL1Traits": {
             "recommendedValue": true,
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
             }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1106.1"
+  "minimumCliVersion": "2.1108.0"
 }

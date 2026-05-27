@@ -1,5 +1,5 @@
 {
-  "version": "39.0.0",
+  "version": "53.0.0",
   "testCases": {
     "StateMachineVariables/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "StateMachineVariables/DefaultTest/DeployAssert",
       "assertionStackName": "StateMachineVariablesDefaultTestDeployAssert360B6DA0"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

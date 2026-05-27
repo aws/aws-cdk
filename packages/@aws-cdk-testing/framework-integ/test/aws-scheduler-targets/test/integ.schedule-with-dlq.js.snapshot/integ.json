@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "testCases": {
     "integtest-schedule-dlq/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integtest-schedule-dlq/DefaultTest/DeployAssert",
       "assertionStackName": "integtestscheduledlqDefaultTestDeployAssertC769CF31"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

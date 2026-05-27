@@ -1,16 +1,16 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "2b10b97b05c2e8568a1943b570211cbea0b7462dbf030d791bbc0fe4cbb17735": {
+    "3e32aee3491efc9e87b6ca1f85ae894592f00b210e154d78bd4ff5c982421b9c": {
       "displayName": "LambdaApiIntegrationOptionsStack Template",
       "source": {
         "path": "LambdaApiIntegrationOptionsStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-e0af98f7": {
+        "current_account-current_region-5196a854": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "2b10b97b05c2e8568a1943b570211cbea0b7462dbf030d791bbc0fe4cbb17735.json",
+          "objectKey": "3e32aee3491efc9e87b6ca1f85ae894592f00b210e154d78bd4ff5c982421b9c.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

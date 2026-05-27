@@ -1,8 +1,8 @@
 import * as path from 'path';
-import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as cdk from 'aws-cdk-lib';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as lambda from 'aws-cdk-lib/aws-lambda-nodejs';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -14,7 +14,7 @@ const stack = new cdk.Stack(app, 'TestStack');
 
 const handler = new lambda.NodejsFunction(stack, 'Function', {
   entry: path.join(__dirname, 'integ-handlers/pnpm/dependencies-pnpm.ts'),
-  runtime: Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   bundling: {
     minify: true,
     // Will be installed, not bundled

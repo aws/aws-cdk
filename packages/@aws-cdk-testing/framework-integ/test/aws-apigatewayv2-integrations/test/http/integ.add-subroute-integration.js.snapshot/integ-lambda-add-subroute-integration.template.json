@@ -601,7 +601,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "firstlambdafunctionServiceRoleC4FD6C93"
@@ -651,7 +651,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "secondlambdafunctionServiceRole23FEE383"
@@ -702,7 +702,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs20.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "thirdlambdafunctionServiceRole1CA82110"

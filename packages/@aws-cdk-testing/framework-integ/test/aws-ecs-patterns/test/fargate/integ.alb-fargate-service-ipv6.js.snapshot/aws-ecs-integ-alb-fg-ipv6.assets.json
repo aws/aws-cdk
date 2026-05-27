@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "files": {
     "2e852cb55c003eb58a67527db6db6d304c8de16b80fbe6abf47aa7bbb59717c0": {
       "displayName": "aws-ecs-integ-alb-fg-ipv6 Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-1d24a72e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "2e852cb55c003eb58a67527db6db6d304c8de16b80fbe6abf47aa7bbb59717c0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

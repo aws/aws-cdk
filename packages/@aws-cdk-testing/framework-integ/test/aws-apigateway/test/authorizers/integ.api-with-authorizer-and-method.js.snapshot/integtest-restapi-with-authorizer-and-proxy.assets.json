@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "files": {
     "762aba1cbee123ad0ed7732f4b45fc43ccdc60bd05263614cd42bc1faef2c326": {
       "displayName": "integtest-restapi-with-authorizer-and-proxy Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-6e96db3a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "762aba1cbee123ad0ed7732f4b45fc43ccdc60bd05263614cd42bc1faef2c326.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"

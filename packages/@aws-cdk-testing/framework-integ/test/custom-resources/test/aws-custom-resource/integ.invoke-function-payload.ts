@@ -3,6 +3,7 @@ import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cr from 'aws-cdk-lib/custom-resources';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -15,7 +16,7 @@ const stack = new cdk.Stack(app, 'AwsCustomResourceInvokePayloadStack');
 const fn = new lambda.Function(stack, 'Function', {
   code: lambda.Code.fromInline("exports.handler = async () => { return { statusCode: 200, body: 'Hello World' }; };"),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const testCr = new cr.AwsCustomResource(stack, 'ListLambdaFunctions', {

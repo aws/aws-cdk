@@ -13,7 +13,7 @@
     "api": "GetAccount",
     "expected": "{\"$ObjectLike\":{\"VdmAttributes\":{\"DashboardAttributes\":{\"EngagementMetrics\":\"ENABLED\"},\"GuardianAttributes\":{\"OptimizedSharedDelivery\":\"ENABLED\"},\"VdmEnabled\":\"ENABLED\"}}}",
     "flattenResponse": "false",
-    "salt": "1714899948716"
+    "salt": "1779809681365"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -89,12 +89,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs18.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "cfdb46b4f2c6702b4a1cc8e23ca426e8de43d13567e73a8453d01c1176393814.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -133,7 +133,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1714899948718"
+    "salt": "1779809681369"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -165,7 +165,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1714899948719"
+    "salt": "1779809681370"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -197,7 +197,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1714899948719"
+    "salt": "1779809681370"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

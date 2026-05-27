@@ -1,0 +1,342 @@
+{
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "activityName": "*",
+        "encryptionConfiguration": "*"
+      }
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "stateMachineName": "*",
+        "definitionBody": "*",
+        "stateMachineType": "STANDARD",
+        "encryptionConfiguration": "*",
+        "removalPolicy": "destroy"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToRolePolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:65:5)"
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:65:5)"
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachine Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineKeyE4B4725B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KMSStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:15:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Activity Key/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActivityKey371097A6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KMSStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:18:31)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/ActivityWithCMKEncryptionConfiguration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ActivityWithCMKEncryptionConfiguration3D01813A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Activity (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/activity.js:206:30)",
+        "new Activity (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KMSStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:21:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithCMKEncryptionConfiguration10773462"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:447:30)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KMSStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:25:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"StateMachineWithCMKEncryptionConfiguration10773462\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefStateMachineWithCMKEncryptionConfiguration107734624DC890C0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "KMSStateMachine.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:65:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Fn::GetAtt\":[\"ActivityKey371097A6\",\"Arn\"]}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputFnGetAttActivityKey371097A6ArnD0599452"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "KMSStateMachine.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:65:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/Exports/Output{\"Ref\":\"ActivityWithCMKEncryptionConfiguration3D01813A\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefActivityWithCMKEncryptionConfiguration3D01813A4B9ECB48"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "KMSStateMachine.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:65:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithCMKEncryptionConfigurationRoleA49EBB18"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:392:39)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KMSStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:25:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:40:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-stepfunctions-statemachine-and-activity-with-cmk-encryptionconfig/StateMachineWithCMKEncryptionConfiguration/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "StateMachineWithCMKEncryptionConfigurationRoleDefaultPolicy55B46C35"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:484:23)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-stepfunctions/lib/state-machine.js:402:26)",
+        "new StateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KMSStateMachine (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.state-machine-and-activity-cmk.js:25:29)"
+      ]
+    }
+  ]
+}

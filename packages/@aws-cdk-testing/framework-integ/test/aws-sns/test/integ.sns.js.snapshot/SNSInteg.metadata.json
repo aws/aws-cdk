@@ -1,0 +1,613 @@
+{
+  "/SNSInteg": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/CustomKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "pendingWindow": "*",
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/SNSInteg/MyTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topicName": "*",
+        "displayName": "*",
+        "masterKey": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLoggingConfig": [
+          {
+            "protocol": "http/s",
+            "failureFeedbackRole": "*",
+            "successFeedbackRole": "*",
+            "successFeedbackSampleRate": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/SNSInteg/FeedbackRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/SNSInteg/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "document": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/SNSInteg/MyTopicSignatureVersion": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topicName": "*",
+        "displayName": "*",
+        "signatureVersion": "*"
+      }
+    }
+  ],
+  "/SNSInteg/MyTopicTracingConfig": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topicName": "*",
+        "displayName": "*",
+        "tracingConfig": "Active"
+      }
+    }
+  ],
+  "/SNSInteg/MyTopic2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topicName": "*",
+        "displayName": "*"
+      }
+    }
+  ],
+  "/SNSInteg/PublishRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/SNSInteg/MyTopic3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "topicName": "*",
+        "displayName": "*",
+        "masterKey": "*"
+      }
+    }
+  ],
+  "/SNSInteg/PublishEncryptedTopic": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "code": "*",
+        "handler": "*",
+        "environment": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/SNSInteg/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:107:5)"
+      ]
+    }
+  ],
+  "/SNSInteg/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:107:5)"
+      ]
+    }
+  ],
+  "/SNSInteg/CustomKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomKey1E6D0D07"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:14:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/MyTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopic86869434"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:18:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/FeedbackRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FeedbackRoleCAF84E5C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:23:30)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Policy23B91518"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/managed-policy.js:269:34)",
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:26:39)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/MyTopicSignatureVersion/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopicSignatureVersionEDDB6A3B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:48:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/MyTopicTracingConfig/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopicTracingConfigE05AF123"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:54:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/MyTopic2/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopic288CE2107"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:60:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/PublishRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishRoleF42F66B6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:65:29)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/PublishRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/SNSInteg/MyTopic3/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyTopic3134CFDFB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic.js:271:30)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Topic (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:70:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/ImportedTopic3/Key": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SNSInteg/PublishEncryptedTopic/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/SNSInteg/PublishEncryptedTopic/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishEncryptedTopic5F9F9437"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:81:40)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/Exports/Output{\"Ref\":\"PublishEncryptedTopic5F9F9437\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefPublishEncryptedTopic5F9F9437B383DB14"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "SNSInteg.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1055:13)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:107:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/PublishRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishRoleDefaultPolicy9257B12D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "TopicGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:54:59)",
+        "TopicGrants.publish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:82:21)",
+        "Import.grantPublish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:173:28)"
+      ]
+    }
+  ],
+  "/SNSInteg/PublishEncryptedTopic/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishEncryptedTopicServiceRole267CEDDE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SNSInteg (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:81:40)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-sns/test/integ.sns.js:98:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/SNSInteg/PublishEncryptedTopic/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/SNSInteg/PublishEncryptedTopic/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/SNSInteg/PublishEncryptedTopic/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "PublishEncryptedTopicServiceRoleDefaultPolicy85E257A5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "TopicGrants.actions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:54:59)",
+        "TopicGrants.publish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/sns-grants.generated.js:82:21)",
+        "WrappedClass.grantPublish (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-sns/lib/topic-base.js:173:28)"
+      ]
+    }
+  ]
+}

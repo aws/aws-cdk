@@ -3,6 +3,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, Stack } from 'aws-cdk-lib';
 import { HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new App({
   postCliContext: {
@@ -15,7 +16,7 @@ const httpApi = new HttpApi(stack, 'test-apigwv2-add-subroute-integration');
 
 // Regular Lambda Function
 const lambdaHandler = new lambda.Function(stack, 'first-lambda-function', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-first-lambda\' }; };'),
 });
@@ -23,7 +24,7 @@ const lambdaHandlerIntegration = new HttpLambdaIntegration('my-lambda-integratio
 
 // Lambda created with Function.fromFunctionAttributes()
 const secondLambdaHandler = new lambda.Function(stack, 'second-lambda-function', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-second-lambda\' }; };'),
 });
@@ -36,7 +37,7 @@ const lambdaFromFunctionAttributesIntegration = new HttpLambdaIntegration('my-re
 // Lambda created with Function.fromFunctionName()
 const thirdLambdaName = 'third-lambda-function';
 const thirdLambdaFunction = new lambda.Function(stack, thirdLambdaName, {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: \'success-hit-third-lambda\' }; };'),
   functionName: thirdLambdaName,

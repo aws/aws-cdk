@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "4a3982053de51e0eb0da53907e90a089c77fda978894b1655890075aaecfe0da": {
       "displayName": "aws-ecs-integ-alb-fg-smart-defaults Template",

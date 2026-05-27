@@ -1,16 +1,16 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "files": {
-    "89daf989c1a5b6678c997dfb9b8a83d4aa2192bda969d774d194ee8c0b995310": {
+    "3aca942e7f973eadf05de7d2790845e06f00c09a7e5f6c97cb1725caa6fb3266": {
       "displayName": "aws-cdk-route53-health-check Template",
       "source": {
         "path": "aws-cdk-route53-health-check.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-39fe936f": {
+        "current_account-current_region-0fd7f208": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "89daf989c1a5b6678c997dfb9b8a83d4aa2192bda969d774d194ee8c0b995310.json",
+          "objectKey": "3aca942e7f973eadf05de7d2790845e06f00c09a7e5f6c97cb1725caa6fb3266.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

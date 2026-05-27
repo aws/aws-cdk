@@ -5,6 +5,7 @@ import { App, CustomResource, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import type { Construct } from 'constructs';
 import { Provider } from 'aws-cdk-lib/custom-resources';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 class TestStack extends Stack {
   public readonly entrypointLogGroup: log.ILogGroup;
@@ -13,7 +14,7 @@ class TestStack extends Stack {
     super(scope, id);
 
     const handler = new lambda.Function(this, 'my-handler', {
-      runtime: lambda.Runtime.NODEJS_20_X,
+      runtime: STANDARD_NODEJS_RUNTIME,
       handler: 'index.handler',
       code: lambda.Code.fromInline(`
       exports.handler = async (event, context) => {

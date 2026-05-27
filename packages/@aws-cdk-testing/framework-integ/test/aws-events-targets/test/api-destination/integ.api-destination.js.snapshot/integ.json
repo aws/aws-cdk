@@ -1,5 +1,5 @@
 {
-  "version": "36.0.0",
+  "version": "53.0.0",
   "testCases": {
     "ApiDestinationTarget/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "ApiDestinationTarget/DefaultTest/DeployAssert",
       "assertionStackName": "ApiDestinationTargetDefaultTestDeployAssert3FEA1C4B"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

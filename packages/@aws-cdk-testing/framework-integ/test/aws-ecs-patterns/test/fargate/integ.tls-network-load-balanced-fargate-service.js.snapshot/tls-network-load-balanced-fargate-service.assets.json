@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f": {
       "displayName": "tls-network-load-balanced-fargate-service/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "c55ce9f5c785bc911268bf3274e8e908e8a1b6268bd29b3b6aa85501034c47b3": {
+    "3508a5f2e28eb0555c2d3de608569c2b5c24c9c6cb214b8f2b47a8108adfc3a0": {
       "displayName": "tls-network-load-balanced-fargate-service Template",
       "source": {
         "path": "tls-network-load-balanced-fargate-service.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-0cce89b3": {
+        "current_account-current_region-53600ea2": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "c55ce9f5c785bc911268bf3274e8e908e8a1b6268bd29b3b6aa85501034c47b3.json",
+          "objectKey": "3508a5f2e28eb0555c2d3de608569c2b5c24c9c6cb214b8f2b47a8108adfc3a0.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

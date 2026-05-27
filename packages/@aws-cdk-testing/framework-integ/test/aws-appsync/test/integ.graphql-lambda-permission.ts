@@ -4,6 +4,7 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as cxapi from 'aws-cdk-lib/cx-api';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const myFeatureFlag = {
   [cxapi.APPSYNC_GRAPHQLAPI_SCOPE_LAMBDA_FUNCTION_PERMISSION]: true,
@@ -16,7 +17,7 @@ const app = new cdk.App({
 const stack = new cdk.Stack(app, 'aws-graphql-lambda-permissions');
 
 const authorizer = new lambda.Function(stack, 'AuthorizerFunction', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   code: lambda.Code.fromInline(`
         exports.handler = async (event) => {
           console.log("Authorization event:", JSON.stringify(event));

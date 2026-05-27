@@ -1,5 +1,5 @@
 {
-  "version": "38.0.1",
+  "version": "53.0.0",
   "testCases": {
     "integ-sqs-send-message/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-sqs-send-message/DefaultTest/DeployAssert",
       "assertionStackName": "integsqssendmessageDefaultTestDeployAssert883D0D33"
     }
-  }
+  },
+  "minimumCliVersion": "2.1123.0"
 }

@@ -1,27 +1,36 @@
 {
+  "/CdkPipelineInvestigationStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:109:23)",
+        "...node internals..."
+      ]
+    }
+  ],
   "/CdkPipelineInvestigationStack/Pipeline": [
     {
       "type": "aws:cdk:warning",
       "data": "V1 pipeline type is implicitly selected when `pipelineType` is not set. If you want to use V2 type, set `PipelineType.V2`. [ack: @aws-cdk/aws-codepipeline:unspecifiedPipelineType]",
       "trace": [
-        "Annotations.addMessage (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:200:29)",
-        "Annotations.addWarningV2 (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:70:18)",
-        "CodePipeline.doBuildPipeline (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:162:47)",
-        "CodePipeline.buildPipeline (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
-        "CodePipeline.buildJustInTime (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
-        "Object.visit (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
-        "recurse (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:262:38)",
-        "recurse (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "recurse (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:276:43)",
-        "invokeAspectsV2 (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:234:5)",
-        "synthesize (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:32:9)",
-        "App.synth (/Users/aemada/Desktop/oncall/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:159:96)",
-        "Object.<anonymous> (/Users/aemada/Desktop/oncall/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:120:5)",
-        "Module._compile (node:internal/modules/cjs/loader:1469:14)",
-        "Module._extensions..js (node:internal/modules/cjs/loader:1548:10)",
-        "Module.load (node:internal/modules/cjs/loader:1288:32)",
-        "Module._load (node:internal/modules/cjs/loader:1104:12)",
-        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:174:12)",
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:162:47)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:297:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:311:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:311:43)",
+        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:269:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:120:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
         "node:internal/main/run_main_module:28:49"
       ]
     }
@@ -30,12 +39,42 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:120:5)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/pipelines/test/integ.cross-account-pipeline-action.js:120:5)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline": [
@@ -287,6 +326,21 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "Pipeline9850B417"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:449:33)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:164:30)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:297:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:311:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:311:43)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/MutableRolearn:${AWS::Partition}:iam::${AWS::AccountId}:role--cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}": [
@@ -353,6 +407,21 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineCodeBuildActionRole226DB0CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CodeBuildFactory.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/private/codebuild-factory.js:196:24)",
+        "CodePipeline.pipelineStagesAndActionsFromGraph (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:241:48)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:185:14)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:297:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:311:43)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/CodeBuildActionRole/DefaultPolicy": [
@@ -411,18 +480,63 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineArtifactsBucketEncryptionKeyF5BF0670"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:410:37)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:164:30)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:297:38)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucketEncryptionKeyAlias/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineArtifactsBucketEncryptionKeyAlias94A07392"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/alias.js:357:29)",
+        "new Alias (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:417:21)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:164:30)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:297:38)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineArtifactsBucketAEA9A052"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:423:31)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:164:30)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy": [
@@ -437,6 +551,21 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineRoleB27FAA37"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:435:39)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:164:30)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)",
+        "Object.visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:70:59)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:297:38)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/DefaultPolicy": [
@@ -521,6 +650,21 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineCodeBuildActionRoleDefaultPolicy1D62A6FE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "CodeBuildAction.bound (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline-actions/lib/codebuild/build-action.js:94:22)",
+        "CodeBuildAction.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/action.js:95:21)",
+        "RichAction.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/rich-action.js:28:28)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role": [
@@ -619,18 +763,63 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineUpdatePipelineSelfMutationDAA41400"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:685:30)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/pipeline-project.js:79:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CodeBuildFactory.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/private/codebuild-factory.js:163:25)",
+        "Object.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/private/codebuild-factory.js:62:40)",
+        "CodePipeline.pipelineStagesAndActionsFromGraph (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:241:48)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:185:14)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/ArtifactsBucket/Policy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineArtifactsBucketPolicyF53CCC52"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
+        "WrappedClass.enforceSSLStatement (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1570:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1439:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:423:31)",
+        "new Pipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Role/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineRoleDefaultPolicy7BDC1ABB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject": [
@@ -670,6 +859,21 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineUpdatePipelineSelfMutationRole57E559E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:638:39)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/pipeline-project.js:79:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CodeBuildFactory.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/private/codebuild-factory.js:163:25)",
+        "Object.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/private/codebuild-factory.js:62:40)",
+        "CodePipeline.pipelineStagesAndActionsFromGraph (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:241:48)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy": [
@@ -830,24 +1034,84 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineBuildSynthCdkBuildProject6BEFA8E6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:685:30)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/pipeline-project.js:79:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CodeBuildFactory.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/private/codebuild-factory.js:163:25)",
+        "CodePipeline.pipelineStagesAndActionsFromGraph (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:241:48)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:185:14)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)",
+        "CodePipeline.buildJustInTime (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:144:18)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Prod/PromoteToProd/CodePipelineActionRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineProdPromoteToProdCodePipelineActionRole08AAED6C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.getRoleForAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:792:30)",
+        "WrappedClass._attachActionToPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/pipeline.js:619:37)",
+        "Stage.attachActionToPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:150:31)",
+        "Stage.addAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codepipeline/lib/private/stage.js:97:33)",
+        "Object.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:348:27)",
+        "CodePipeline.pipelineStagesAndActionsFromGraph (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:241:48)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:185:14)",
+        "CodePipeline.buildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/main/pipeline-base.js:136:14)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/UpdatePipeline/SelfMutation/Role/DefaultPolicy/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineUpdatePipelineSelfMutationRoleDefaultPolicyA225DA4E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:124:23)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:719:18)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/pipeline-project.js:79:13)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineBuildSynthCdkBuildProjectRole231EEA2A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:638:39)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/pipeline-project.js:79:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "CodeBuildFactory.produceAction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/private/codebuild-factory.js:163:25)",
+        "CodePipeline.pipelineStagesAndActionsFromGraph (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:241:48)",
+        "CodePipeline.doBuildPipeline (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/pipelines/lib/codepipeline/codepipeline.js:185:14)"
+      ]
     }
   ],
   "/CdkPipelineInvestigationStack/Pipeline/Pipeline/Build/Synth/CdkBuildProject/Role/DefaultPolicy": [
@@ -916,6 +1180,21 @@
     {
       "type": "aws:cdk:logicalId",
       "data": "PipelineBuildSynthCdkBuildProjectRoleDefaultPolicyFB6C941C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:124:23)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/project.js:719:18)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Project (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PipelineProject (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-codebuild/lib/pipeline-project.js:79:13)"
+      ]
     }
   ]
 }

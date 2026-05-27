@@ -5,6 +5,7 @@ import * as logs from 'aws-cdk-lib/aws-logs';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -66,7 +67,7 @@ const integ = new IntegTest(app, 'JsResolverIntegTest', { testCases: [stack] });
 const invoke = new lambda.Function(stack, 'InvokeApi', {
   code: lambda.Code.fromAsset(path.join(__dirname, 'integ-assets', 'js-resolver-assertion')),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
 });
 
 const addTestInvoke = integ.assertions.invokeFunction({

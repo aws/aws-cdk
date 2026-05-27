@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "testCases": {
     "cdk-stepfunctions-map-itemselector-integ/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "cdkstepfunctionsmapitemselectorintegDefaultTestDeployAssertB0D765C3"
     }
   },
-  "minimumCliVersion": "2.1017.1"
+  "minimumCliVersion": "2.1123.0"
 }

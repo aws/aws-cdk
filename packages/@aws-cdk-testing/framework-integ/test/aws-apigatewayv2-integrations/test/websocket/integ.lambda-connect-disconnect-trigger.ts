@@ -5,6 +5,7 @@ import { WebSocketLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integra
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from 'path';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 const app = new cdk.App({
   postCliContext: {
@@ -17,7 +18,7 @@ const webSocketTableName = 'WebSocketConnections';
 
 const connectFunction = new lambda.Function(stack, 'Connect Function', {
   functionName: 'process_connect_requests',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'lambdas', 'connect')),
   timeout: cdk.Duration.seconds(5),
@@ -31,7 +32,7 @@ const disconnectFunction = new lambda.Function(
   'Disconnect Function',
   {
     functionName: 'process_disconnect_requests',
-    runtime: lambda.Runtime.NODEJS_22_X,
+    runtime: STANDARD_NODEJS_RUNTIME,
     handler: 'index.handler',
     code: lambda.Code.fromAsset(
       path.join(__dirname, 'lambdas', 'disconnect'),

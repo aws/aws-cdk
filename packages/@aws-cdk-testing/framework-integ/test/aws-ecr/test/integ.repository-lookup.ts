@@ -3,6 +3,7 @@ import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 const app = new App({
   postCliContext: {
@@ -21,7 +22,7 @@ const lookupRepo = ecr.Repository.fromLookup(lookupStack, 'LookupRepo', {
   repositoryName,
 });
 const testFunction = new lambda.Function(lookupStack, 'Lambda', {
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline('exports.handler = async function(event, context) { return "Hello, World!"; }'),
 });

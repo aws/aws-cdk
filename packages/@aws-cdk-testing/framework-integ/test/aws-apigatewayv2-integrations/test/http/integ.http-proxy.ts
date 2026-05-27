@@ -2,6 +2,7 @@ import { HttpApi } from 'aws-cdk-lib/aws-apigatewayv2';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { HttpUrlIntegration, HttpLambdaIntegration } from 'aws-cdk-lib/aws-apigatewayv2-integrations';
+import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
 /*
  * Stack verification steps:
@@ -29,7 +30,7 @@ new CfnOutput(stack, 'Endpoint', {
 
 function lambdaProxyEndpoint(s: Stack): HttpApi {
   const handler = new lambda.Function(s, 'AlwaysSuccess', {
-    runtime: lambda.Runtime.NODEJS_20_X,
+    runtime: STANDARD_NODEJS_RUNTIME,
     handler: 'index.handler',
     code: new lambda.InlineCode('exports.handler = async function(event, context) { return { statusCode: 200, body: "success" }; };'),
   });

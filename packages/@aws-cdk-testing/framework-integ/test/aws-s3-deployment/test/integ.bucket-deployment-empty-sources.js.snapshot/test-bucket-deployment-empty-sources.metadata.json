@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
         "...node internals..."
       ]
     }
@@ -11,7 +11,10 @@
   "/test-bucket-deployment-empty-sources/Destination": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "removalPolicy": "destroy",
+        "autoDeleteObjects": true
+      }
     }
   ],
   "/test-bucket-deployment-empty-sources/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
@@ -23,15 +26,41 @@
   "/test-bucket-deployment-empty-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:is-custom-resource-handler-singleton",
@@ -50,17 +79,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:189:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
-        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:35:5)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:35:5)"
       ]
     }
   ],
@@ -72,17 +100,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:197:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:107:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:227:18)",
-        "/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
-        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
-        "visit (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
-        "synthesizeTree (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
-        "synthesize (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:158:92)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:35:5)",
-        "...node internals..."
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:35:5)"
       ]
     }
   ],
@@ -94,25 +121,27 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1101:30)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:15:23)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestBucketDeploymentEmptySources (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:15:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
         "...node internals..."
       ]
     },
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
       }
     }
   ],
   "/test-bucket-deployment-empty-sources/Destination/Policy": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "bucket": "*"
+      }
     }
   ],
   "/test-bucket-deployment-empty-sources/Destination/AutoDeleteObjectsCustomResource": [
@@ -129,20 +158,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:86:25)",
-        "new AutoDeleteObjectsProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
-        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
-        "BucketAutoDeleteObjects.applyTo (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:46:93)",
-        "applyMixin (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:140:52)",
-        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1820:22)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1173:22)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:15:23)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
-        "...node internals..."
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
       ]
     }
   ],
@@ -154,41 +179,66 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:108:24)",
-        "new AutoDeleteObjectsProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
-        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
-        "BucketAutoDeleteObjects.applyTo (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:46:93)",
-        "applyMixin (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:140:52)",
-        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1820:22)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1173:22)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:15:23)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
-        "...node internals..."
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new AutoDeleteObjectsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
       ]
     }
   ],
   "/test-bucket-deployment-empty-sources/DeployEmptySources/AwsCliLayer": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {}
     }
   ],
   "/test-bucket-deployment-empty-sources/DeployEmptySources/CustomResourceHandler": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "uuid": "*",
+        "layers": [
+          "*"
+        ],
+        "environment": "*",
+        "lambdaPurpose": "*",
+        "timeout": "*",
+        "role": "*",
+        "memorySize": "*",
+        "ephemeralStorageSize": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "filesystem": "*",
+        "logGroup": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addMetadata": [
+          "*",
+          true
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addMetadata": [
+          "*",
+          "*"
+        ]
+      }
     }
   ],
   "/test-bucket-deployment-empty-sources/DeployEmptySources/CustomResource": [
@@ -200,19 +250,41 @@
   "/test-bucket-deployment-empty-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
-      "data": "*"
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
     }
   ],
   "/test-bucket-deployment-empty-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Resource": [
@@ -223,17 +295,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:596:29)",
-        "new Function (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "BucketDeploymentSingletonFunction.ensureLambda (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:220:20)",
-        "new SingletonFunction (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:110:40)",
-        "new SingletonFunction (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new BucketDeploymentSingletonFunction (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:130:29)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
-        "...node internals..."
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestBucketDeploymentEmptySources (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)"
       ]
     }
   ],
@@ -245,22 +316,22 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new BucketPolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:143:29)",
-        "new BucketPolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.maybeAutoCreatePolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:218:31)",
-        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1819:18)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1173:22)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:15:23)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestBucketDeploymentEmptySources (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:15:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
         "...node internals..."
       ]
     },
     {
       "type": "aws:cdk:analytics:mixin",
       "data": {
-        "mixin": "*"
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
       }
     }
   ],
@@ -272,20 +343,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
-        "new CustomResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "BucketAutoDeleteObjects.applyTo (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:66:32)",
-        "applyMixin (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:140:52)",
-        "WrappedClass.enableAutoDeleteObjects (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1820:22)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1173:22)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:15:23)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
-        "...node internals..."
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
+        "applyMixin (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
       ]
     }
   ],
@@ -297,14 +364,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LayerVersion (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:130:30)",
-        "new LayerVersion (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCliLayer (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:62:13)",
-        "new AwsCliLayer (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:132:26)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:157:26)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestBucketDeploymentEmptySources (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
         "...node internals..."
       ]
     }
@@ -317,13 +384,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:116:29)",
-        "new CustomResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:182:23)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:207:23)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestBucketDeploymentEmptySources (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
         "...node internals..."
       ]
     }
@@ -336,19 +403,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:389:34)",
-        "new Role (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:511:39)",
-        "new Function (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "BucketDeploymentSingletonFunction.ensureLambda (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:220:20)",
-        "new SingletonFunction (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:110:40)",
-        "new SingletonFunction (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new BucketDeploymentSingletonFunction (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:130:29)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
-        "...node internals..."
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "BucketDeploymentSingletonFunction.ensureLambda (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
+        "new SingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BucketDeploymentSingletonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3-deployment/bucket-deployment-provider.generated.js:9:9)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:155:29)",
+        "new BucketDeployment (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ],
@@ -359,15 +423,27 @@
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
     },
     {
       "type": "aws:cdk:analytics:method",
-      "data": "*"
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
     }
   ],
   "/test-bucket-deployment-empty-sources/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C/Code/AssetBucket": [
@@ -390,23 +466,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:133:30)",
-        "new Policy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:441:42)",
-        "WrappedClass.<anonymous> (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:131:65)",
-        "Grant.addToPrincipalOrResource (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:34:30)",
-        "BucketGrants.grant (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:231:63)",
-        "BucketGrants.grantActions (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:227:21)",
-        "BucketGrants.actionsOnBucketAndObjectKeys (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:140:21)",
-        "BucketGrants.readWrite (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:156:21)",
-        "WrappedClass.grantReadWrite (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:387:32)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/aws-s3-deployment/lib/bucket-deployment.js:159:36)",
-        "new BucketDeployment (/Users/otaviom/projects/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestBucketDeploymentEmptySources (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:19:9)",
-        "<anonymous> (/Users/otaviom/projects/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3-deployment/test/integ.bucket-deployment-empty-sources.js:31:18)",
-        "...node internals..."
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "BucketGrants.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:325:65)",
+        "BucketGrants.grantActions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:321:21)",
+        "BucketGrants.actionsOnBucketAndObjectKeys (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-grants.js:215:21)"
       ]
     }
   ]

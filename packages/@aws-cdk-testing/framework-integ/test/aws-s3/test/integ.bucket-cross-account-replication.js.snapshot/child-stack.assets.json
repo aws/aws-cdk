@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "files": {
     "d52e1c3d375f46df22b906b239166a2ef777ed4e2082697d16c42c76587dc36f": {
       "displayName": "child-stack Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-us-east-1": {
+        "234567890123-us-east-1-150699fd": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-us-east-1",
           "objectKey": "d52e1c3d375f46df22b906b239166a2ef777ed4e2082697d16c42c76587dc36f.json",
           "region": "us-east-1",

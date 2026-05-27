@@ -19,6 +19,7 @@ import { App, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib/core';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import * as path from 'path';
+import { STANDARD_NODEJS_RUNTIME } from '../../config';
 
 interface CognitoUserProps {
   userPool: cognito.UserPool;
@@ -195,7 +196,7 @@ const signinFunction = new lambda.Function(testCase, 'Signin', {
   functionName: 'cdk-integ-alb-oidc-signin-handler',
   code: lambda.Code.fromAsset(path.join(__dirname, 'alb-oidc-signin-handler'), { exclude: ['*.ts'] }),
   handler: 'index.handler',
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   environment: {
     TEST_USERNAME: testUser.username,
     TEST_PASSWORD: testUser.password,

@@ -3,7 +3,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -66,12 +70,21 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "ClusterResourceProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
         "new ClusterResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -80,15 +93,32 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "WrappedClass.defineKubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
   ],
+<<<<<<< HEAD
+=======
+  "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+>>>>>>> c0e04edcc8 (Update stable integ tests)
   "/aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider": [
     {
       "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
@@ -103,8 +133,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:58:9)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:58:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -117,6 +152,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
         "DefaultStackSynthesizer.addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
         "DefaultStackSynthesizer.synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
@@ -128,6 +164,18 @@
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
         "...node internals..."
+=======
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -139,6 +187,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
         "DefaultStackSynthesizer.addBootstrapVersionRule (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
         "DefaultStackSynthesizer.synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
@@ -150,6 +199,18 @@
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
         "...node internals..."
+=======
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -161,10 +222,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -297,10 +365,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -313,10 +388,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -329,12 +411,21 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
         "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "...new KubectlV30Layer in @aws-cdk/lambda-layer-kubectl-v30...",
         "getClusterVersionConfig (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ-tests-kubernetes-version.js:43:23)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:21:77)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "...new KubectlV30Layer in @aws-cdk/lambda-layer-kubectl-v30...",
+        "getClusterVersionConfig (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ-tests-kubernetes-version.js:43:23)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:21:77)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -448,10 +539,17 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1002:41)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1002:41)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -464,17 +562,30 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:139:39)",
         "WrappedClass.defineKubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:139:39)",
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
   ],
+<<<<<<< HEAD
   "/aws-cdk-eks-cluster-alb-controller/Cluster/OidcProviderNative": [
+=======
+  "/aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider": [
+>>>>>>> c0e04edcc8 (Update stable integ tests)
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -594,6 +705,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackOutput (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:359:22)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:111:29)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -601,6 +713,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackOutput (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:474:22)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:29)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -613,6 +734,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackOutput (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:359:22)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:111:29)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -620,6 +742,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackOutput (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:474:22)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:29)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -632,6 +763,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackOutput (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:359:22)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:111:29)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -639,6 +771,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackOutput (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:474:22)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:29)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -651,6 +792,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new NestedStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:79:25)",
         "new ClusterResourceProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:27:9)",
         "ClusterResourceProvider.getOrCreate (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
@@ -659,6 +801,16 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new NestedStack (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:80:25)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:27:9)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -731,6 +883,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackOutput (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:359:22)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:111:29)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -738,6 +891,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackOutput (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:474:22)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:131:29)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -750,6 +912,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackParameter (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:338:17)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:96:16)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -757,6 +920,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:453:17)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -769,6 +941,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackParameter (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:338:17)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:96:16)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -776,6 +949,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:453:17)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -788,6 +970,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackParameter (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:338:17)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:96:16)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -795,6 +978,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:453:17)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -807,6 +999,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackParameter (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:338:17)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:96:16)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -814,6 +1007,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:453:17)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -826,6 +1028,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "createNestedStackParameter (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:338:17)",
         "resolveValue (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:96:16)",
         "resolveReferences (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:38:30)",
@@ -833,6 +1036,15 @@
         "synthesize (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:39:36)",
         "App.synth (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:170:96)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+=======
+        "createNestedStackParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:453:17)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:116:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:42:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:77:5)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -845,6 +1057,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new NestedStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:79:25)",
         "new KubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:85:9)",
         "WrappedClass.defineKubectlProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
@@ -852,10 +1065,64 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new NestedStack (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:80:25)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:85:9)",
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
   ],
+<<<<<<< HEAD
+=======
+  "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new OidcProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:24:9)",
+        "OidcProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:21:28)",
+        "WrappedClass.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:185:61)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:147:35)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/oidc-provider.js:107:13)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "get openIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1300:51)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:88:33)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-alb-controller/Custom::AWSCDKOpenIdConnectProviderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new OidcProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:24:9)",
+        "OidcProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-iam/oidc-provider.generated.js:21:28)",
+        "WrappedClass.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:185:61)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:147:35)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/oidc-provider.js:107:13)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "get openIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1300:51)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:88:33)"
+      ]
+    }
+  ],
+>>>>>>> c0e04edcc8 (Update stable integ tests)
   "/aws-cdk-eks-cluster-alb-controller/AWSCDKCfnUtilsProviderCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
@@ -864,6 +1131,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResourceProviderBase (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:99:25)",
         "new CfnUtilsProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:24:9)",
         "CfnUtilsProvider.getOrCreateProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:21:28)",
@@ -878,6 +1146,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new CfnUtilsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:24:9)",
+        "CfnUtilsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:21:28)",
+        "CfnUtilsProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:12:21)",
+        "CfnUtilsProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-utils-provider.js:13:66)",
+        "new CfnJson (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:51:67)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:86:32)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:258:32)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -889,6 +1169,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResourceProviderBase (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:115:24)",
         "new CfnUtilsProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:24:9)",
         "CfnUtilsProvider.getOrCreateProvider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:21:28)",
@@ -903,6 +1184,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new CfnUtilsProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:24:9)",
+        "CfnUtilsProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:21:28)",
+        "CfnUtilsProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cfn-utils-provider.generated.js:12:21)",
+        "CfnUtilsProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/cfn-utils-provider.js:13:66)",
+        "new CfnJson (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:51:67)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:86:32)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:258:32)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -938,6 +1231,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -952,6 +1246,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -963,6 +1269,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -977,6 +1284,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -988,6 +1307,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1002,6 +1322,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1013,6 +1345,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "WrappedClass.addDefaultInternetRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
         "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
@@ -1021,6 +1354,16 @@
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1033,6 +1376,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "WrappedClass.addNatGateway (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
         "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
@@ -1041,6 +1385,16 @@
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1556:50)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1053,6 +1407,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "WrappedClass.addNatGateway (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
         "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "NatGatewayProvider.configureNat (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
@@ -1061,6 +1416,16 @@
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "WrappedClass.addNatGateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1554:25)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:155:33)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1073,6 +1438,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1087,6 +1453,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1098,6 +1476,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1112,6 +1491,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1123,6 +1514,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1137,6 +1529,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1533:13)",
+        "new PublicSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1044:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1148,6 +1552,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "WrappedClass.addDefaultInternetRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
         "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
@@ -1156,6 +1561,16 @@
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "WrappedClass.addDefaultInternetRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1304:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:835:3)",
+        "Array.forEach (:)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1168,6 +1583,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1182,6 +1598,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1193,6 +1621,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1207,6 +1636,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1218,6 +1659,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1232,6 +1674,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1243,6 +1697,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "WrappedClass.addRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
         "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "NatGatewayProvider.configureSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
@@ -1252,6 +1707,17 @@
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1264,6 +1730,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1278,6 +1745,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1264:28)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1289,6 +1768,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1303,6 +1783,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1284:27)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1314,6 +1806,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Subnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1328,6 +1821,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1289:32)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Subnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1606:13)",
+        "new PrivateSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1051:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1015:30)",
+        "WrappedClass.createSubnets (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:974:18)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:820:18)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1339,6 +1844,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "WrappedClass.addRoute (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
         "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "NatGatewayProvider.configureSubnet (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
@@ -1348,6 +1854,17 @@
         "new Vpc (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "WrappedClass.addRoute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1393:27)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:176:16)",
+        "NatGatewayProvider.configureNat (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:161:18)",
+        "WrappedClass.createNatGateways (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:928:22)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:845:26)",
+        "new Vpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:18:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1366,12 +1883,21 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:851:90)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:851:90)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1422,12 +1948,21 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:857:39)",
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:857:39)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1440,6 +1975,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
         "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -1447,6 +1983,15 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:863:58)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1613,6 +2158,7 @@
       "data": "*"
     }
   ],
+<<<<<<< HEAD
   "/aws-cdk-eks-cluster-alb-controller/Cluster/OidcProviderNative/Resource": [
     {
       "type": "aws:cdk:logicalId",
@@ -1635,6 +2181,12 @@
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
       ]
+=======
+  "/aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
     }
   ],
   "/aws-cdk-eks-cluster-alb-controller/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
@@ -1686,6 +2238,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.js:352:30)",
         "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addNodegroupCapacity (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1250:20)",
@@ -1694,6 +2247,16 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Nodegroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.js:352:30)",
+        "new Nodegroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addNodegroupCapacity (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1250:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1071:26)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1722,6 +2285,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
         "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new NodeProxyAgentLayer (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/lambda-layer-node-proxy-agent/lib/node-proxy-agent-layer.js:77:13)",
@@ -1734,6 +2298,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new NodeProxyAgentLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-node-proxy-agent/lib/node-proxy-agent-layer.js:77:13)",
+        "new NodeProxyAgentLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:29:37)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1761,6 +2337,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new ClusterResourceOnEventFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:9:9)",
@@ -1772,6 +2349,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceOnEventFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:9:9)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:30:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1799,6 +2388,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new ClusterResourceIsCompleteFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:21:9)",
@@ -1810,6 +2400,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceIsCompleteFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:23:9)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:43:28)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -1947,6 +2549,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new KubectlFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/kubectl-provider.generated.js:9:9)",
@@ -1956,6 +2559,17 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/kubectl-provider.generated.js:9:9)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:103:25)",
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -1968,6 +2582,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
         "new LayerVersion (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new AwsCliLayer (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
@@ -1979,6 +2594,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.js:164:30)",
+        "new LayerVersion (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.js:77:13)",
+        "new AwsCliLayer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:119:56)",
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2218,11 +2845,19 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Pinger (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:13:22)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pinger (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:13:22)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -2265,12 +2900,21 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Pinger (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:25:26)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Pinger (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:25:26)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -2283,6 +2927,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -2294,6 +2939,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:124:26)",
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2305,6 +2962,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "ClusterResource.createAdminRole (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:100:30)",
@@ -2313,6 +2971,16 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "ClusterResource.createAdminRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:100:30)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:37:31)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -2395,6 +3063,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -2403,10 +3072,44 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:38:25)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
   ],
+<<<<<<< HEAD
+=======
+  "/aws-cdk-eks-cluster-alb-controller/Cluster/OpenIdConnectProvider/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterOpenIdConnectProviderE7EB0530"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/oidc-provider.js:148:29)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/oidc-provider.js:107:13)",
+        "new OpenIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "get openIdConnectProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1300:51)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:88:33)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:258:32)"
+      ]
+    }
+  ],
+>>>>>>> c0e04edcc8 (Update stable integ tests)
   "/aws-cdk-eks-cluster-alb-controller/Cluster/AwsAuth/manifest/Resource": [
     {
       "type": "aws:cdk:analytics:construct",
@@ -2421,6 +3124,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Nodegroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.js:328:32)",
@@ -2432,6 +3136,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Nodegroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.js:328:32)",
+        "new Nodegroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addNodegroupCapacity (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1250:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1071:26)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2443,6 +3159,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -2451,6 +3168,16 @@
         "WrappedClass.addCdk8sChart (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:430:26)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:44:36)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/k8s-manifest.js:110:36)",
+        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addCdk8sChart (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:430:26)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:44:36)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -2463,6 +3190,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -2471,6 +3199,16 @@
         "WrappedClass.<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:48:45)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new KubernetesObjectValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/k8s-object-value.js:32:26)",
+        "WrappedClass.getIngressLoadBalancerAddress (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1159:41)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:48:45)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -2489,6 +3227,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -2502,6 +3241,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceOnEventFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:9:9)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:30:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2519,6 +3270,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -2532,6 +3284,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceIsCompleteFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.js:23:9)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:43:28)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2621,6 +3385,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
@@ -2634,6 +3399,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2709,6 +3486,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
@@ -2722,6 +3500,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:150:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2797,6 +3587,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
@@ -2810,6 +3601,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:151:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2864,6 +3667,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new WaiterStateMachine (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:133:30)",
         "new WaiterStateMachine (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Provider (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:153:44)",
@@ -2876,6 +3680,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:133:30)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:153:44)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2950,6 +3766,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
@@ -2962,6 +3779,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:146:26)",
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -2983,6 +3812,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new ServiceAccount (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:108:22)",
@@ -2992,6 +3822,17 @@
         "new Cluster (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:108:22)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:258:32)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -3160,6 +4001,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -3171,6 +4013,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new HelmChart (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/helm-chart.js:64:32)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:278:23)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3182,6 +4036,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -3189,6 +4044,15 @@
         "new Pinger (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:13:22)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pinger (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:13:22)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -3207,6 +4071,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
         "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new SecurityGroup (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
@@ -3216,6 +4081,17 @@
         "new Pinger (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:13:22)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new SecurityGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.configureVpc (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:1193:62)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:713:33)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pinger (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:13:22)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -3276,6 +4152,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:693:29)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.createFunction (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
@@ -3284,6 +4161,16 @@
         "new Pinger (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:22:26)",
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+=======
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pinger (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:22:26)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
+>>>>>>> c0e04edcc8 (Update stable integ tests)
         "...node internals..."
       ]
     }
@@ -3296,6 +4183,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -3309,6 +4197,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "WrappedClass.addToPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:536:29)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "ClusterResource.createAdminRole (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:107:22)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:37:31)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3320,6 +4220,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -3334,6 +4235,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/k8s-manifest.js:110:36)",
+        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsAuth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/aws-auth.js:50:9)",
+        "get awsAuth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1260:33)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:308:52)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3345,6 +4258,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -3360,6 +4274,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3439,6 +4365,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -3454,6 +4381,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:150:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3525,6 +4464,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -3540,6 +4480,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:151:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3611,6 +4563,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new WaiterStateMachine (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:102:26)",
@@ -3625,6 +4578,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:102:26)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:153:44)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ClusterResourceProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:56:25)",
+        "ClusterResourceProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.js:20:48)",
+        "new ClusterResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.js:30:80)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:927:54)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3674,6 +4639,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -3688,6 +4654,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new KubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.js:146:26)",
+        "WrappedClass.defineKubectlProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1413:20)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1030:50)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3743,6 +4721,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -3755,6 +4734,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new CfnJson (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/cfn-json.js:50:26)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:86:32)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:258:32)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3766,6 +4757,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -3778,6 +4770,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "ServiceAccount.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:176:26)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:275:28)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3789,6 +4793,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new CustomResource (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
@@ -3802,6 +4807,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/k8s-manifest.js:110:36)",
+        "new KubernetesManifest (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ServiceAccount (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/service-account.js:136:9)",
+        "new AlbController (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:258:32)",
+        "AlbController.create (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/alb-controller.js:241:16)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.js:1062:71)",
+        "new Cluster (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3813,6 +4830,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
         "new Role (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:608:39)",
@@ -3824,6 +4842,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:193:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:148:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Pinger (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/pinger/pinger.js:22:26)",
+        "new EksClusterAlbControllerStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3879,6 +4909,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -3899,6 +4930,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "ClusterResourceOnEventFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "ClusterResourceOnEventFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3910,6 +4953,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -3930,6 +4974,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "ClusterResourceOnEventFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "ClusterResourceOnEventFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3941,6 +4997,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -3961,6 +5018,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "ClusterResourceOnEventFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "ClusterResourceOnEventFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -3972,6 +5041,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -3992,6 +5062,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:105:37)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -4003,6 +5085,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -4022,6 +5105,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:19:25)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "KubectlFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "KubectlFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ],
@@ -4033,6 +5128,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
+<<<<<<< HEAD
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:156:30)",
         "new Policy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "WrappedClass.addToPrincipalPolicy (/home/m5295/work/github-letsgomeow/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
@@ -4049,6 +5145,18 @@
         "new EksClusterAlbControllerStack (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:51:24)",
         "<anonymous> (/home/m5295/work/github-letsgomeow/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.alb-controller.js:71:15)",
         "...node internals..."
+=======
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:179:38)"
+>>>>>>> c0e04edcc8 (Update stable integ tests)
       ]
     }
   ]

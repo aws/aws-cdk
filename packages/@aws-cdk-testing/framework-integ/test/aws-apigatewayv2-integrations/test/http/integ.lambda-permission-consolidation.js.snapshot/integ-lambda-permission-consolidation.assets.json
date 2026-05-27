@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "55b9981418a833384db7811d5c98400338f21b1031c92741d4ad332f23c010e7": {
       "displayName": "integ-lambda-permission-consolidation Template",

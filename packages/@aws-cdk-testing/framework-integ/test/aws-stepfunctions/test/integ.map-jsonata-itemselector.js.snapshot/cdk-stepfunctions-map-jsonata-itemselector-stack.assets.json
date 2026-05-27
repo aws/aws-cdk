@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "53.0.0",
   "files": {
     "39074259609dc59f5ba00bfa3e3500085eaf48c92e67fd0822feaff8813df376": {
       "displayName": "cdk-stepfunctions-map-jsonata-itemselector-stack Template",
@@ -8,7 +8,7 @@
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-86ef2712": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
           "objectKey": "39074259609dc59f5ba00bfa3e3500085eaf48c92e67fd0822feaff8813df376.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
