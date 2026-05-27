@@ -1,5 +1,6 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
 import { ValidationError } from 'aws-cdk-lib/core';
+import type * as cdk from 'aws-cdk-lib/core';
 import { memoizedGetter, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
