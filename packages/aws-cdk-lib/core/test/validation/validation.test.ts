@@ -1253,13 +1253,15 @@ Policy Validation Report Summary
       expect(report.pluginReports).toHaveLength(1);
       expect(report.pluginReports[0].violations).toHaveLength(0);
       expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
-      expect(report.pluginReports[0].suppressedViolations[0]).toEqual(expect.objectContaining({
+      const sv = report.pluginReports[0].suppressedViolations[0];
+      expect(sv).toEqual(expect.objectContaining({
         ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
         description: 'S3 Bucket should have versioning enabled',
         acknowledgedId: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
         reason: 'Not needed for this bucket',
         acknowledgedAt: 'Default',
       }));
+      expect(sv.violatingConstructs[0].stackTraces).toBeDefined();
     });
 
     test('fatal plugin violations cannot be suppressed', () => {
