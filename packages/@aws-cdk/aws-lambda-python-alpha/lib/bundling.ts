@@ -2,7 +2,8 @@ import * as path from 'path';
 import type { AssetCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
 import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume, ILocalBundling } from 'aws-cdk-lib/core';
-import { AssetStaging, DockerImage } from 'aws-cdk-lib/core';
+import { AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
+import { profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { LocalBundling } from './local-bundling';
 import { Packaging, DependenciesFile } from './packaging';
 import type { BundlingOptions, ICommandHooks } from './types';
@@ -65,6 +66,7 @@ export class Bundling implements CdkBundlingOptions {
     });
   }
 
+  public readonly [PERF_BUNDLING_SRC_SYM] = 'PythonFunction';
   public readonly image: DockerImage;
   public readonly entrypoint?: string[];
   public readonly command: string[];
@@ -112,6 +114,10 @@ export class Bundling implements CdkBundlingOptions {
       // without shelling out to `docker build` at synth time.
       this.image = DockerImage.fromRegistry(runtime.bundlingImage.image);
     } else {
+      // Build our own image to do the build in in. We do some counter trickery here: we do want to count
+      // the time spent here as part of 'bundle:PythonFunction', but by default only the RUNNING of the Docker
+      // image would count as that. So we add an additional timer span just for the building of the runner image.
+      using _span = profileSpan(`bundle:${this[PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
       this.image = DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
         buildArgs: {
           ...props.buildArgs,
