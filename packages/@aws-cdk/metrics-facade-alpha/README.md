@@ -28,14 +28,14 @@ Resource-scoped metrics are created from a resource reference (e.g. a Lambda fun
 ```typescript
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
-import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
+import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda';
 
 // Works with L2 constructs
 declare const fn: lambda.Function;
 const fnMetrics = LambdaMetrics.fromFunction(fn);
 
 new cloudwatch.Alarm(scope, 'ErrorAlarm', {
-  metric: fnMetrics.metricErrors(),
+  metric: fnMetrics.errors(),
   threshold: 5,
   evaluationPeriods: 1,
   comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
@@ -50,29 +50,29 @@ const cfnMetrics = LambdaMetrics.fromFunction(cfnFunction);
 
 ```typescript
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
+import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda';
 
 declare const fn: lambda.Function;
 const fnMetrics = LambdaMetrics.fromFunction(fn);
 
 // FunctionName dimension is automatically injected from the function reference
-const metric = fnMetrics.metricInvocations();
+const metric = fnMetrics.invocations();
 ```
 
 **Statistic Override**: Override default statistics via `MetricOptions`
 
 ```typescript
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
+import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda';
 
 declare const fn: lambda.Function;
 const fnMetrics = LambdaMetrics.fromFunction(fn);
 
 // Default statistic for Duration is Average
-const defaultMetric = fnMetrics.metricDuration();
+const defaultMetric = fnMetrics.duration();
 
 // Override statistic via MetricOptions
-const p99Metric = fnMetrics.metricDuration({ statistic: 'p99' });
+const p99Metric = fnMetrics.duration({ statistic: 'p99' });
 ```
 
 ### Unscoped Metrics
@@ -82,26 +82,26 @@ Unscoped metrics are not tied to a specific resource. They can be created with e
 #### Unscoped Metrics Basic Usage
 
 ```typescript
-import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
+import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 
 // Explicit dimensions
-const fnMetrics = new LambdaMetrics.FunctionNameMetrics({
+const fnMetrics = new LambdaMetrics.FunctionMetrics({
   functionName: 'my-function',
 });
-fnMetrics.metricErrors();
+fnMetrics.errors();
 
 // Per-resource dimensions (e.g. alias or version)
-const resourceMetrics = new LambdaMetrics.FunctionNamePerResourceMetrics({
+const resourceMetrics = new LambdaMetrics.ResourceMetrics({
   functionName: 'my-function',
   resource: 'prod',
 });
-resourceMetrics.metricProvisionedConcurrencyUtilization();
+resourceMetrics.provisionedConcurrencyUtilization();
 
 // Account-wide metrics (no dimensions)
 const accountMetrics = new LambdaMetrics.AccountMetrics();
-accountMetrics.metricConcurrentExecutions();
-accountMetrics.metricUnreservedConcurrentExecutions();
+accountMetrics.concurrentExecutions();
+accountMetrics.unreservedConcurrentExecutions();
 ```
 
 ### Available Metrics
@@ -110,14 +110,14 @@ Metrics are generated from the AWS CloudWatch metrics spec database. Common exam
 
 **Lambda Metrics**:
 
-* `metricInvocations()` - Function invocation count
-* `metricErrors()` - Function error count
-* `metricDuration()` - Function execution duration
-* `metricThrottles()` - Function throttle count
-* `metricConcurrentExecutions()` - Concurrent execution count
+* `invocations()` - Function invocation count
+* `errors()` - Function error count
+* `duration()` - Function execution duration
+* `throttles()` - Function throttle count
+* `concurrentExecutions()` - Concurrent execution count
 
 Import metrics from service-specific modules:
 
 ```typescript
-import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda/metrics';
+import { LambdaMetrics } from '@aws-cdk/metrics-facade-alpha/aws-lambda';
 ```
