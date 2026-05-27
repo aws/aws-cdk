@@ -16,7 +16,7 @@
      "JobName": "\"PySparkETLJobNoMetrics\""
     },
     "flattenResponse": "false",
-    "salt": "1780305345426"
+    "salt": "1780489180377"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -79,7 +79,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -88,6 +88,10 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
@@ -107,7 +111,7 @@
      "JobName": "\"PySparkETLJobSelectiveMetrics\""
     },
     "flattenResponse": "false",
-    "salt": "1780305345428"
+    "salt": "1780489180380"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"

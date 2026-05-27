@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "aws-glue-ray-job-integ-test/DefaultTest": {
+      "stacks": [
+        "aws-glue-ray-job"
+      ],
+      "assertionStack": "aws-glue-ray-job-integ-test/DefaultTest/DeployAssert",
+      "assertionStackName": "awsgluerayjobintegtestDefaultTestDeployAssert7A3FC747"
+    }
+  },
+  "minimumCliVersion": "2.1125.0"
+}

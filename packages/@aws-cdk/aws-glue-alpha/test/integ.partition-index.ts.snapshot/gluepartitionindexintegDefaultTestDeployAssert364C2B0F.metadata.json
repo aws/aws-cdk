@@ -1,0 +1,147 @@
+{
+  "/glue-partition-index-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:60:34)",
+        "new IntegTestCase (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:47:20)",
+        "new IntegTest (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:160:29)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.ts:64:19)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/glue-partition-index-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/glue-partition-index-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/glue-partition-index-integ/DefaultTest/DeployAssert/AwsApiCallGluegetPartitionIndexes4090ab65188756c1956373192f9eb33e/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/glue-partition-index-integ/DefaultTest/DeployAssert/AwsApiCallGluegetPartitionIndexes4090ab65188756c1956373192f9eb33e/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallGluegetPartitionIndexes4090ab65188756c1956373192f9eb33e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Object.visit (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:121:13)",
+        "recurse (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:314:38)",
+        "recurse (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:43)",
+        "recurse (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:43)",
+        "recurse (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:43)",
+        "recurse (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:328:43)",
+        "invokeAspectsV2 (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:286:5)",
+        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/glue-partition-index-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:66:18)",
+        "SingletonFunction.ensureFunction (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:170:12)",
+        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:159:32)",
+        "new AssertionsProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:244:20)",
+        "new AwsApiCall (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:81:21)",
+        "DeployAssert.awsApiCall (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:71:12)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.ts:69:41)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/glue-partition-index-integ/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LambdaFunctionProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:118:20)",
+        "SingletonFunction.ensureFunction (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:170:12)",
+        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:159:32)",
+        "new AssertionsProvider (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/providers/provider.ts:244:20)",
+        "new AwsApiCall (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:81:21)",
+        "DeployAssert.awsApiCall (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:71:12)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.ts:69:41)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/glue-partition-index-integ/DefaultTest/DeployAssert/AwsApiCallGluegetPartitionIndexes4090ab65188756c1956373192f9eb33e/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallGluegetPartitionIndexes4090ab65188756c1956373192f9eb33e"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsApiCall (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/sdk.ts:92:28)",
+        "DeployAssert.awsApiCall (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:71:12)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-index.ts:69:41)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ]
+}
