@@ -79,10 +79,8 @@ export interface IPolicyValidationContext {
    * resolution via `Stack.of(node).resolve()`. The tree is finalized and
    * should be treated as read-only; mutations have no effect on synthesized
    * output.
-   *
-   * @default - not provided
    */
-  readonly scope?: IConstruct;
+  readonly appConstruct: IConstruct;
 }
 
 /**
@@ -141,10 +139,8 @@ export interface IPolicyValidationContextBeta1 {
    * resolution via `Stack.of(node).resolve()`. The tree is finalized and
    * should be treated as read-only; mutations have no effect on synthesized
    * output.
-   *
-   * @default - not provided
    */
-  readonly scope?: IConstruct;
+  readonly appConstruct: IConstruct;
 }
 
 /**

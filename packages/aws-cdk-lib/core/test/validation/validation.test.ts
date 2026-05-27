@@ -1472,12 +1472,12 @@ Policy Validation Report Summary
       }).toThrow(/Invalid validation rule ID '::foo'/);
     });
 
-    test('validate context includes scope as the root construct', () => {
-      let capturedScope: any;
+    test('validate context includes appConstruct as the root construct', () => {
+      let capturedAppConstruct: any;
       const plugin: core.IPolicyValidationPlugin = {
         name: 'scope-capture-plugin',
         validate(context) {
-          capturedScope = context.scope;
+          capturedAppConstruct = context.appConstruct;
           return { success: true, violations: [] };
         },
       };
@@ -1490,8 +1490,7 @@ Policy Validation Report Summary
       core.Validations.of(app).addPlugins(plugin);
       app.synth();
 
-      expect(capturedScope).toBeDefined();
-      expect(capturedScope).toBe(app);
+      expect(capturedAppConstruct).toBe(app);
     });
 
     test('non-Beta1 plugin with constructPath runs through synth', () => {
@@ -1536,7 +1535,7 @@ Policy Validation Report Summary
 
       // WHEN - access via Beta1 getter
       const beta1Plugins = app.policyValidationBeta1;
-      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'] });
+      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'], appConstruct: app });
 
       // THEN - optional fields are filled with defaults
       expect(report.violations[0].violatingResources[0].resourceLogicalId).toEqual('');
