@@ -27,7 +27,7 @@ import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
 
-const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
+const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
 /**
  * Options for `synthesize()`
@@ -197,10 +197,19 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    const failOnErrors = root.node.tryGetContext(cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT) ?? true;
-    const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    const jsonOutput = formatter.formatJson(reports);
+    const failOnErrors = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
+    const writeLegacyReport = getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false);
+
+    const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
+    const jsonOutput = formatter.formatJson(reports, assembly.version);
     fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
+
+    if (writeLegacyReport) {
+      const legacyReportFile = path.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH);
+      const legacyOutput = formatter.formatLegacyJson(reports);
+      fs.writeFileSync(legacyReportFile, JSON.stringify(legacyOutput, undefined, 2));
+    }
+
     if (failOnErrors) {
       const output = formatter.formatPrettyPrinted(reports);
       // eslint-disable-next-line no-console
@@ -549,4 +558,10 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   if (order === 'post') {
     cb(root);
   }
+}
+
+function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean): boolean {
+  const raw = root.node.tryGetContext(key);
+  if (raw === undefined) return defaultValue;
+  return raw !== false && raw !== 'false';
 }
