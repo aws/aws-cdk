@@ -290,6 +290,64 @@ test('throws with ESM and NODEJS_12_X', () => {
   })).toThrow(/ECMAScript module output format is not supported by the nodejs12.x runtime/);
 });
 
+test('allows entry whose filename contains ".." (regression for issue #38017)', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry: '/project/lib/app..js',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('allows entry inside a directory whose name contains ".." (regression for issue #38017)', () => {
+  // pnpm content-addressed tarball deps land at paths like
+  // node_modules/.pnpm/file+..+other+pkg+0.0.1 which contain '..' mid-segment
+  // but are clearly under projectRoot.
+  expect(() => Bundling.bundle(stack, {
+    entry: '/project/node_modules/.pnpm/file+..+other+pkg+0.0.1/lib/handler.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('allows depsLockFilePath inside a directory whose name contains ".." (regression for issue #38017)', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath: '/project/.pnpm/file+..+pkg/yarn.lock',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('throws when entry is outside projectRoot', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry: '/other/escape.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/entryPath \(\/other\/escape\.ts\) should be under projectRoot/);
+});
+
+test('throws when depsLockFilePath is outside projectRoot', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath: '/other/yarn.lock',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/depsLockFilePath \(\/other\/yarn\.lock\) should be under projectRoot/);
+});
+
 test('esbuild bundling source map default', () => {
   Bundling.bundle(stack, {
     entry,
