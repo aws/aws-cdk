@@ -609,6 +609,50 @@ Policy Validation Report Summary
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
   });
 
+  test('plugin that writes new files to assembly is allowed', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'file-writer-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            const assemblyDir = path.dirname(context.templatePaths[0]);
+            fs.writeFileSync(path.join(assemblyDir, 'plugin-output.json'), '{"result":"ok"}');
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).not.toThrow();
+    const outputFile = path.join(app.outdir, 'plugin-output.json');
+    expect(fs.existsSync(outputFile)).toBe(true);
+    expect(JSON.parse(fs.readFileSync(outputFile, 'utf-8'))).toEqual({ result: 'ok' });
+  });
+
+  test('plugin that deletes pre-existing file is caught', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'deleter-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            fs.unlinkSync(context.templatePaths[0]);
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).toThrow(/Illegal operation: validation plugin 'deleter-plugin' modified the cloud assembly/);
+  });
+
   test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
     const app = new core.App({
       policyValidationBeta1: [

@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
@@ -17,7 +18,6 @@ import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
-import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
@@ -105,7 +105,6 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
  */
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
-  let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
@@ -142,9 +141,9 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   // eslint-disable-next-line no-console
   console.error('Performing Policy Validations\n');
 
-  if (templatePathsByPlugin.size > 0) {
-    hash = FileSystem.fingerprint(outdir);
-  }
+  // Snapshot pre-existing files so we can detect modifications while still
+  // allowing plugins to create new files in the assembly directory.
+  const preExistingFileHashes = snapshotFileHashes(outdir);
 
   // Run all plugins through the same loop
   const reports: NamedValidationPluginReport[] = [];
@@ -163,7 +162,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         },
       });
     }
-    if (hash && FileSystem.fingerprint(outdir) !== hash) {
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
@@ -564,4 +563,42 @@ function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean)
   const raw = root.node.tryGetContext(key);
   if (raw === undefined) return defaultValue;
   return raw !== false && raw !== 'false';
+}
+
+function collectFilePaths(dir: string): string[] {
+  const results: string[] = [];
+  function walk(current: string) {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else {
+        results.push(full);
+      }
+    }
+  }
+  walk(dir);
+  return results;
+}
+
+function hashFile(filePath: string): string {
+  const content = fs.readFileSync(filePath);
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+function snapshotFileHashes(dir: string): Map<string, string> {
+  const hashes = new Map<string, string>();
+  for (const filePath of collectFilePaths(dir)) {
+    hashes.set(filePath, hashFile(filePath));
+  }
+  return hashes;
+}
+
+function hasModifiedPreExistingFiles(snapshot: Map<string, string>): boolean {
+  for (const [filePath, originalHash] of snapshot) {
+    if (!fs.existsSync(filePath) || hashFile(filePath) !== originalHash) {
+      return true;
+    }
+  }
+  return false;
 }
