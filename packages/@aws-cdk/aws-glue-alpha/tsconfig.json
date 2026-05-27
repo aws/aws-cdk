@@ -33,7 +33,8 @@
     "**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "lib/partition-index-handler"
   ],
   "references": [
     {

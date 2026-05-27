@@ -1,10 +1,11 @@
+import * as path from 'path';
 import type { CfnTable } from 'aws-cdk-lib/aws-glue';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import type { IResource } from 'aws-cdk-lib/core';
-import { ArnFormat, Fn, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
+import { ArnFormat, CustomResource, Duration, Fn, Lazy, Names, Resource, Stack, UnscopedValidationError, ValidationError } from 'aws-cdk-lib/core';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import * as cr from 'aws-cdk-lib/custom-resources';
-import type { AwsCustomResource } from 'aws-cdk-lib/custom-resources';
 import type { Construct } from 'constructs';
 import type { DataFormat } from './data-format';
 import type { IDatabase } from './database';
@@ -254,7 +255,7 @@ export abstract class TableBase extends Resource implements ITable {
    * race conditions, we store the resource and add dependencies
    * each time a new partition index is created.
    */
-  private partitionIndexCustomResources: AwsCustomResource[] = [];
+  private partitionIndexCustomResources: CustomResource[] = [];
 
   constructor(scope: Construct, id: string, props: TableBaseProps) {
     super(scope, id, {
@@ -298,35 +299,64 @@ export abstract class TableBase extends Resource implements ITable {
     this.validatePartitionIndex(index);
 
     const indexName = index.indexName ?? this.generateIndexName(index.keyNames);
-    const partitionIndexCustomResource = new cr.AwsCustomResource(this, `partition-index-${indexName}`, {
-      onCreate: {
-        service: 'Glue',
-        action: 'createPartitionIndex',
-        parameters: {
-          DatabaseName: this.database.databaseName,
-          TableName: this.tableName,
-          PartitionIndex: {
-            IndexName: indexName,
-            Keys: index.keyNames,
-          },
-        },
-        physicalResourceId: cr.PhysicalResourceId.of(
-          indexName,
-        ),
+    const provider = this.getOrCreatePartitionIndexProvider();
+    const partitionIndexCustomResource = new CustomResource(this, `partition-index-${indexName}`, {
+      resourceType: 'Custom::GluePartitionIndex',
+      serviceToken: provider.serviceToken,
+      properties: {
+        DatabaseName: this.database.databaseName,
+        TableName: this.tableName,
+        IndexName: indexName,
+        Keys: index.keyNames,
       },
-      policy: cr.AwsCustomResourcePolicy.fromSdkCalls({
-        resources: cr.AwsCustomResourcePolicy.ANY_RESOURCE,
-      }),
-      // APIs are available in 2.1055.0
-      installLatestAwsSdk: false,
     });
-    this.grantToUnderlyingResources(partitionIndexCustomResource, ['glue:UpdateTable']);
 
-    // Depend on previous partition index if possible, to avoid race condition
+    // Depend on previous partition index to avoid race condition
     if (numPartitions > 0) {
-      this.partitionIndexCustomResources[numPartitions-1].node.addDependency(partitionIndexCustomResource);
+      partitionIndexCustomResource.node.addDependency(this.partitionIndexCustomResources[numPartitions-1]);
     }
     this.partitionIndexCustomResources.push(partitionIndexCustomResource);
+  }
+
+  private getOrCreatePartitionIndexProvider(): cr.Provider {
+    const providerId = 'GluePartitionIndexProvider';
+    const stack = Stack.of(this);
+    const existing = stack.node.tryFindChild(providerId) as cr.Provider;
+    if (existing) return existing;
+
+    const gluePolicy = new iam.PolicyStatement({
+      actions: ['glue:CreatePartitionIndex', 'glue:DeletePartitionIndex', 'glue:GetPartitionIndexes', 'glue:GetTable', 'glue:UpdateTable'],
+      resources: ['*'],
+    });
+
+    const handler = new lambda.Function(stack, 'GluePartitionIndexHandler', {
+      runtime: lambda.determineLatestNodeRuntime(stack),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'partition-index-handler'), {
+        exclude: ['*.ts', '*.d.ts'],
+      }),
+      handler: 'index.onEvent',
+      timeout: Duration.minutes(1),
+      initialPolicy: [gluePolicy],
+    });
+
+    const isCompleteHandler = new lambda.Function(stack, 'GluePartitionIndexIsComplete', {
+      runtime: lambda.determineLatestNodeRuntime(stack),
+      code: lambda.Code.fromAsset(path.join(__dirname, 'partition-index-handler'), {
+        exclude: ['*.ts', '*.d.ts'],
+      }),
+      handler: 'index.isComplete',
+      timeout: Duration.minutes(1),
+      initialPolicy: [gluePolicy],
+    });
+
+    const provider = new cr.Provider(stack, providerId, {
+      onEventHandler: handler,
+      isCompleteHandler: isCompleteHandler,
+      queryInterval: Duration.seconds(10),
+      totalTimeout: Duration.minutes(10),
+    });
+
+    return provider;
   }
 
   private generateIndexName(keys: string[]): string {
