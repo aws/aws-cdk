@@ -693,7 +693,7 @@ test('imported router input has undefined createdAt and updatedAt', () => {
   expect(imported.updatedAt).toBeUndefined();
 });
 
-test('standard router input has ingestUrl computed', () => {
+test('standard router input has a single endpoint', () => {
   const input = new RouterInput(stack, 'UrlInput', {
     routerInputName: 'url-test',
     maximumBitrate: Bitrate.mbps(5),
@@ -703,10 +703,63 @@ test('standard router input has ingestUrl computed', () => {
       protocol: RouterInputProtocol.rtp({ port: 5000 }),
     }),
   });
-  expect(input.ingestUrl).toBeDefined();
+  expect(input.endpoints).toHaveLength(1);
+  expect(input.endpoints[0].port).toBe(5000);
 });
 
-test('flow-based router input has undefined ingestUrl', () => {
+test('failover router input has two endpoints sharing the input IP', () => {
+  const input = new RouterInput(stack, 'FailoverUrlInput', {
+    routerInputName: 'failover-url-test',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.failover({
+      networkInterface,
+      protocols: [
+        RouterInputProtocol.rtp({ port: 5000 }),
+        RouterInputProtocol.rtp({ port: 5001 }),
+      ],
+    }),
+  });
+  expect(input.endpoints).toHaveLength(2);
+  expect(input.endpoints.map(e => e.port)).toEqual([5000, 5001]);
+});
+
+test('merge router input has two endpoints sharing the input IP', () => {
+  const input = new RouterInput(stack, 'MergeUrlInput', {
+    routerInputName: 'merge-url-test',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.merge({
+      networkInterface,
+      protocols: [
+        RouterInputProtocol.rtp({ port: 6000 }),
+        RouterInputProtocol.rtp({ port: 6001 }),
+      ],
+      mergeRecoveryWindow: Duration.millis(50),
+    }),
+  });
+  expect(input.endpoints).toHaveLength(2);
+  expect(input.endpoints.map(e => e.port)).toEqual([6000, 6001]);
+});
+
+test('SRT caller router input throws when accessing endpoints', () => {
+  const input = new RouterInput(stack, 'SrtCallerInput', {
+    routerInputName: 'srt-caller-test',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface,
+      protocol: RouterInputProtocol.srtCaller({
+        sourceAddress: '203.0.113.50',
+        sourcePort: 5000,
+        minimumLatency: Duration.millis(1000),
+      }),
+    }),
+  });
+  expect(() => input.endpoints).toThrow(/endpoints.*is not available/);
+});
+
+test('flow-based router input throws when accessing endpoints', () => {
   const flow = new Flow(stack, 'TestFlow', {
     source: SourceConfiguration.rtp({
       flowSourceName: 'source',
@@ -727,12 +780,74 @@ test('flow-based router input has undefined ingestUrl', () => {
       flowOutput,
     }),
   });
-  expect(input.ingestUrl).toBeUndefined();
+  expect(() => input.endpoints).toThrow(/endpoints.*is not available/);
 });
 
-test('imported router input has undefined ingestUrl', () => {
+test('imported router input throws when accessing endpoints', () => {
   const imported = RouterInput.fromRouterInputArn(stack, 'ImportedUrlInput', 'arn:aws:mediaconnect:us-east-1:123456789012:router-input:test');
-  expect(imported.ingestUrl).toBeUndefined();
+  expect(() => imported.endpoints).toThrow(/endpoints.*is not available/);
+});
+
+test('MediaLive channel router input throws when accessing endpoints', () => {
+  const input = new RouterInput(stack, 'MlcUrlInput', {
+    routerInputName: 'mlc-url-test',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.mediaLiveChannel({
+      mediaLiveChannelArn: 'arn:aws:medialive:us-east-1:123456789012:channel:1234567',
+      mediaLiveChannelOutputName: 'output1',
+      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
+    }),
+  });
+  expect(() => input.endpoints).toThrow(/endpoints.*is not available/);
+});
+
+test('SRT caller failover throws on endpoints', () => {
+  const input = new RouterInput(stack, 'SrtCallerFailoverInput', {
+    routerInputName: 'srt-caller-failover',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.failover({
+      networkInterface,
+      protocols: [
+        RouterInputProtocol.srtCaller({
+          sourceAddress: '203.0.113.50',
+          sourcePort: 5000,
+          minimumLatency: Duration.millis(1000),
+        }),
+        RouterInputProtocol.srtCaller({
+          sourceAddress: '203.0.113.51',
+          sourcePort: 5001,
+          minimumLatency: Duration.millis(1000),
+        }),
+      ],
+    }),
+  });
+  // SRT caller failover doesn't expose listening endpoints — both halves dial out.
+  expect(() => input.endpoints).toThrow(/endpoints.*is not available/);
+});
+
+test.each([
+  ['rtp', () => RouterInputProtocol.rtp({ port: 5000 }), 'rtp'],
+  ['rist', () => RouterInputProtocol.rist({ port: 5000, recoveryLatency: Duration.millis(1000) }), 'rist'],
+  ['srt-listener', () => RouterInputProtocol.srtListener({ port: 5000, minimumLatency: Duration.millis(1000) }), 'srt'],
+])('listening %s protocol exposes endpoints with the right URL scheme', (label, protocolFactory, scheme) => {
+  const input = new RouterInput(stack, `Url-${label}`, {
+    routerInputName: `url-${label.replace(/-/g, '')}`,
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    configuration: RouterInputConfiguration.standard({
+      networkInterface,
+      protocol: protocolFactory(),
+    }),
+  });
+  expect(input.endpoints).toHaveLength(1);
+  const endpoint = input.endpoints[0];
+  expect(endpoint.port).toBe(5000);
+  // URL is a token (Fn.join), so we synthesize and assert the scheme prefix.
+  const stackForResolve = Stack.of(input);
+  const resolved = JSON.stringify(stackForResolve.resolve(endpoint.url));
+  expect(resolved).toContain(`${scheme}://`);
 });
 
 test('grants.start() adds correct IAM policy', () => {

@@ -33,7 +33,7 @@ new cdk.CfnOutput(stack, 'FlowSourceArn', { value: flow.sourceArn });
 new cdk.CfnOutput(stack, 'FlowEgressIp', { value: flow.egressIp });
 new cdk.CfnOutput(stack, 'FlowSourceIngestIp', { value: flow.sourceIngestIp });
 new cdk.CfnOutput(stack, 'FlowSourceIngestPort', { value: flow.sourceIngestPort });
-new cdk.CfnOutput(stack, 'FlowSourceIngestUrl', { value: flow.sourceIngestUrl ?? 'undefined' });
+new cdk.CfnOutput(stack, 'FlowSourceIngestUrl', { value: flow.sourceIngestUrl });
 new cdk.CfnOutput(stack, 'FlowAvailabilityZone', { value: flow.flowAvailabilityZone ?? 'undefined' });
 
 // --- Router Network Interface ---
@@ -65,7 +65,7 @@ new cdk.CfnOutput(stack, 'RouterInputId', { value: routerInput.routerInputId });
 new cdk.CfnOutput(stack, 'RouterInputIpAddress', { value: routerInput.ipAddress });
 new cdk.CfnOutput(stack, 'RouterInputCreatedAt', { value: routerInput.createdAt ?? 'undefined' });
 new cdk.CfnOutput(stack, 'RouterInputUpdatedAt', { value: routerInput.updatedAt ?? 'undefined' });
-new cdk.CfnOutput(stack, 'RouterInputIngestUrl', { value: routerInput.ingestUrl ?? 'undefined' });
+new cdk.CfnOutput(stack, 'RouterInputIngestUrl', { value: routerInput.endpoints[0].url });
 
 // --- Router Output ---
 const routerOutput = new RouterOutput(stack, 'RouterOutput', {

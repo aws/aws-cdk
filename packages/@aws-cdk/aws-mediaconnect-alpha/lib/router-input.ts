@@ -47,6 +47,25 @@ export class RouterInputProtocolOptions {
 }
 
 /**
+ * A single ingest endpoint where the router input listens for upstream content.
+ *
+ * Failover and merge configurations expose two endpoints; standard configurations
+ * expose one. Returned by {@link IRouterInput.endpoints}.
+ */
+export interface RouterInputEndpoint {
+  /**
+   * The full ingest URL combining protocol scheme, IP, and port. For example:
+   * `srt://203.0.113.10:5000` or `rtp://203.0.113.10:5001`.
+   */
+  readonly url: string;
+
+  /**
+   * The listening port at which the router input accepts upstream content.
+   */
+  readonly port: number;
+}
+
+/**
  * Interface for Router Input
  */
 export interface IRouterInput extends IResource, IRouterInputRef {
@@ -86,13 +105,24 @@ export interface IRouterInput extends IResource, IRouterInputRef {
   readonly updatedAt?: string;
 
   /**
-   * The full ingest URL for the router input, combining protocol, IP, and port.
-   * For example: `srt://203.0.113.10:5000`
+   * The ingest endpoints (URL + port) where the router input listens.
    *
-   * Only available for standard protocol-based inputs (RTP, RIST, SRT).
-   * Not available for MediaConnect Flow or imported inputs.
+   * Returns one entry for standard protocol-based variants (RTP, RIST, SRT listener),
+   * and one entry per source for failover and merge configurations built from those
+   * protocols. For example a failover RTP input will return:
+   *
+   * ```
+   * [
+   *   { url: 'rtp://203.0.113.10:5000', port: 5000 },
+   *   { url: 'rtp://203.0.113.10:5001', port: 5001 },
+   * ]
+   * ```
+   *
+   * Accessing this on SRT caller (where the router input dials out to a remote
+   * source), MediaConnect Flow, MediaLive Channel, or imported inputs throws — those
+   * variants do not expose host:port pairs the input listens on.
    */
-  readonly ingestUrl?: string;
+  readonly endpoints: RouterInputEndpoint[];
 
   /**
    * The Secrets Manager secret containing the transit encryption passphrase.
@@ -580,6 +610,17 @@ export class RouterInputProtocol {
   }
 
   /**
+   * The listening port for this protocol, if it has one. Undefined for SRT caller
+   * (which has a `sourcePort` pointing at the upstream listener, not a port the input
+   * itself listens on).
+   *
+   * @internal
+   */
+  public _listeningPort(): number | undefined {
+    return this._port;
+  }
+
+  /**
    * Whether two protocols share the same protocol identifier.
    *
    * @internal
@@ -892,17 +933,22 @@ export abstract class RouterInputConfiguration {
   public abstract _bind(scope: Construct): { config: CfnRouterInput.RouterInputConfigurationProperty; availabilityZone?: string };
 
   /**
-   * Compute the ingest URL for protocol-based inputs, if applicable. Returns `undefined`
-   * for variants without a listen port (flow/channel integrations).
+   * Compute the ingest endpoints for protocol-based inputs that listen on one or more
+   * ports.
+   *
+   * Returns `undefined` when the variant has no concept of a listen port (SRT caller,
+   * MediaConnect Flow, MediaLive Channel). Returns an array with one entry for
+   * standard variants, and one entry per source for failover and merge.
    * @internal
    */
-  public abstract _ingestUrl(ipAddress: string): string | undefined;
+  public abstract _endpoints(ipAddress: string): RouterInputEndpoint[] | undefined;
 }
 
 /**
- * Shared {@link RouterInputConfiguration._ingestUrl} implementation for variants that
- * carry a protocol + port. Extracts the base protocol for the URL scheme
- * (e.g. SRT_LISTENER → srt, RTP → rtp).
+ * Render an ingest URL string (scheme://ip:port). Used by `_ingestUrl()` on individual
+ * protocols and composed into the per-config-variant `_endpoints()` results.
+ *
+ * Extracts the base protocol for the URL scheme (e.g. SRT_LISTENER → srt, RTP → rtp).
  */
 function renderIngestUrl(protocolName: string, port: number, ipAddress: string): string {
   const scheme = protocolName.toLowerCase().split('_')[0];
@@ -929,8 +975,11 @@ class StandardRouterInputConfig extends RouterInputConfiguration {
     };
   }
 
-  public _ingestUrl(ipAddress: string): string | undefined {
-    return this.props.protocol._ingestUrl(ipAddress);
+  public _endpoints(ipAddress: string): RouterInputEndpoint[] | undefined {
+    const url = this.props.protocol._ingestUrl(ipAddress);
+    const port = this.props.protocol._listeningPort();
+    if (url === undefined || port === undefined) return undefined;
+    return [{ url, port }];
   }
 }
 
@@ -955,8 +1004,15 @@ class FailoverRouterInputConfig extends RouterInputConfiguration {
     };
   }
 
-  public _ingestUrl(_ipAddress: string): string | undefined {
-    return undefined;
+  public _endpoints(ipAddress: string): RouterInputEndpoint[] | undefined {
+    const endpoints = this.props.protocols.map<RouterInputEndpoint | undefined>(p => {
+      const url = p._ingestUrl(ipAddress);
+      const port = p._listeningPort();
+      if (url === undefined || port === undefined) return undefined;
+      return { url, port };
+    });
+    if (endpoints.some(e => e === undefined)) return undefined;
+    return endpoints as RouterInputEndpoint[];
   }
 }
 
@@ -979,8 +1035,15 @@ class MergeRouterInputConfig extends RouterInputConfiguration {
     };
   }
 
-  public _ingestUrl(_ipAddress: string): string | undefined {
-    return undefined;
+  public _endpoints(ipAddress: string): RouterInputEndpoint[] | undefined {
+    const endpoints = this.props.protocols.map<RouterInputEndpoint | undefined>(p => {
+      const url = p._ingestUrl(ipAddress);
+      const port = p._listeningPort();
+      if (url === undefined || port === undefined) return undefined;
+      return { url, port };
+    });
+    if (endpoints.some(e => e === undefined)) return undefined;
+    return endpoints as RouterInputEndpoint[];
   }
 }
 
@@ -1016,7 +1079,7 @@ class MediaConnectFlowRouterInputConfig extends RouterInputConfiguration {
     };
   }
 
-  public _ingestUrl(_ipAddress: string): string | undefined {
+  public _endpoints(_ipAddress: string): RouterInputEndpoint[] | undefined {
     return undefined;
   }
 }
@@ -1055,7 +1118,7 @@ class MediaLiveChannelRouterInputConfig extends RouterInputConfiguration {
     };
   }
 
-  public _ingestUrl(_ipAddress: string): string | undefined {
+  public _endpoints(_ipAddress: string): RouterInputEndpoint[] | undefined {
     return undefined;
   }
 }
@@ -1075,7 +1138,7 @@ abstract class RouterInputBase extends Resource implements IRouterInput {
   public abstract readonly ipAddress: string;
   public abstract readonly createdAt?: string;
   public abstract readonly updatedAt?: string;
-  public abstract readonly ingestUrl?: string;
+  public abstract readonly endpoints: RouterInputEndpoint[];
   public abstract readonly transitEncryptionSecret?: ISecret;
   public abstract readonly grants: RouterInputGrants;
 
@@ -1225,9 +1288,16 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
       public readonly routerInputArn = attrs.routerInputArn;
       public readonly createdAt = undefined;
       public readonly updatedAt = undefined;
-      public readonly ingestUrl = undefined;
       public readonly transitEncryptionSecret = undefined;
       public readonly grants = RouterInputGrants.fromRouterInput(this);
+
+      public get endpoints(): RouterInputEndpoint[] {
+        throw new ValidationError(
+          lit`RouterInputEndpointsNotAvailableImported`,
+          `'endpoints' is not available on imported RouterInput ${this.node.path}; only RouterInputs constructed in this app for listening protocol variants (RTP, RIST, SRT listener, including failover and merge) expose ingest endpoints`,
+          this,
+        );
+      }
 
       public get routerInputId(): string {
         if (attrs.routerInputId) return attrs.routerInputId;
@@ -1265,9 +1335,20 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
   public readonly ipAddress: string;
   public readonly createdAt?: string;
   public readonly updatedAt?: string;
-  public readonly ingestUrl?: string;
+  private readonly _endpoints: RouterInputEndpoint[] | undefined;
   public readonly transitEncryptionSecret?: ISecret;
   public readonly grants: RouterInputGrants;
+
+  public get endpoints(): RouterInputEndpoint[] {
+    if (this._endpoints === undefined) {
+      throw new ValidationError(
+        lit`RouterInputEndpointsNotAvailableConfig`,
+        `'endpoints' is not available on this RouterInput ${this.node.path}; only listening protocol variants (RTP, RIST, SRT listener — including failover and merge built from those) expose ingest endpoints — SRT caller, MediaConnect Flow, and MediaLive Channel inputs do not`,
+        this,
+      );
+    }
+    return this._endpoints;
+  }
 
   constructor(scope: Construct, id: string, props: RouterInputProps) {
     super(scope, id, {
@@ -1341,8 +1422,8 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
     this.createdAt = routerinput.attrCreatedAt;
     this.updatedAt = routerinput.attrUpdatedAt;
 
-    // Compute ingest URL for standard protocol-based inputs
-    this.ingestUrl = props.configuration._ingestUrl(routerinput.attrIpAddress);
+    // Compute ingest endpoints for protocol-based variants
+    this._endpoints = props.configuration._endpoints(routerinput.attrIpAddress);
 
     // Store the transit encryption secret if explicitly provided
     this.transitEncryptionSecret = props.transitEncryption?.secret;

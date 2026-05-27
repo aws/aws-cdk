@@ -45,12 +45,21 @@ export interface IFlow extends IResource, IFlowRef {
   /**
    * The IP address that the flow listens on for incoming content.
    *
+   * Available for listener-style source protocols (RTP, RTP-FEC, RIST, SRT listener,
+   * Zixi push). Accessing this on SRT caller, entitlement, gateway bridge, router,
+   * CDI, JPEG XS, or imported flows throws — those sources don't expose a listening
+   * IP address.
+   *
    * @attribute
    */
   readonly sourceIngestIp: string;
 
   /**
    * The port that the flow listens on for incoming content.
+   *
+   * Available for the same listener-style source protocols as `sourceIngestIp`.
+   * Accessing this on SRT caller, entitlement, gateway bridge, router, CDI, JPEG XS,
+   * or imported flows throws.
    *
    * @attribute
    */
@@ -60,13 +69,12 @@ export interface IFlow extends IResource, IFlowRef {
    * The full ingest URL for the flow source, combining protocol, IP, and port.
    * For example: `srt://203.0.113.10:5000`
    *
-   * Available when the flow listens for an upstream sender (RTP, RTP-FEC, RIST,
-   * SRT Listener, Zixi Push). Not available for SRT Caller, entitlement,
-   * gateway bridge, router, CDI, or JPEG XS sources.
-   *
-   * @default - computed from protocol, IP, and port when the flow exposes an ingest URL
+   * Available for listener-style source protocols (RTP, RTP-FEC, RIST, SRT listener,
+   * Zixi push) where the flow listens for an upstream sender. Accessing this on
+   * SRT caller, entitlement, gateway bridge, router, CDI, JPEG XS, or imported
+   * flows throws — those sources don't expose a single host:port ingest URL.
    */
-  readonly sourceIngestUrl?: string;
+  readonly sourceIngestUrl: string;
 
   /**
    * The Availability Zone that the flow was created in.
@@ -1021,8 +1029,12 @@ abstract class FlowBase extends Resource implements IFlow {
         );
       }
 
-      public get sourceIngestUrl(): string | undefined {
-        return undefined;
+      public get sourceIngestUrl(): string {
+        throw new ValidationError(
+          lit`SourceIngestUrlNotAvailableImported`,
+          `'sourceIngestUrl' is not available on imported Flow ${this.node.path}; only Flows constructed in this app for listener-style source protocols (RTP, RTP-FEC, RIST, SRT listener, Zixi push) expose a source ingest URL`,
+          this,
+        );
       }
     }
 
@@ -1044,7 +1056,7 @@ abstract class FlowBase extends Resource implements IFlow {
   public abstract readonly egressIp: string;
   public abstract readonly sourceIngestIp: string;
   public abstract readonly sourceIngestPort: string;
-  public abstract readonly sourceIngestUrl?: string;
+  public abstract readonly sourceIngestUrl: string;
   public abstract readonly flowAvailabilityZone?: string;
   public abstract readonly isFailoverEnabled?: boolean;
 
@@ -1318,15 +1330,66 @@ export class Flow extends FlowBase implements IFlow {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-mediaconnect-alpha.Flow';
 
+  /**
+   * The set of source protocols where the flow opens an IP:port and listens for
+   * upstream content. Determines availability of `sourceIngestIp`, `sourceIngestPort`,
+   * and `sourceIngestUrl`. Maps each protocol to the URL scheme used to construct
+   * the ingest URL.
+   */
+  private static readonly LISTENER_PROTOCOL_SCHEMES: ReadonlyMap<string, string> = new Map([
+    ['rtp', 'rtp'],
+    ['rtp-fec', 'rtp'],
+    ['rist', 'rist'],
+    ['srt-listener', 'srt'],
+    ['zixi-push', 'zixi'],
+  ]);
+
+  private static isListenerStyleProtocol(protocol: string | undefined): boolean {
+    return protocol !== undefined && Flow.LISTENER_PROTOCOL_SCHEMES.has(protocol);
+  }
+
   public readonly flowArn: string;
   public readonly sourceArn: string;
   public readonly egressIp: string;
-  public readonly sourceIngestIp: string;
-  public readonly sourceIngestPort: string;
-  public readonly sourceIngestUrl?: string;
+  private readonly _sourceIngestIp: string;
+  private readonly _sourceIngestPort: string;
+  private readonly _hasListenerSource: boolean;
   public readonly flowAvailabilityZone?: string;
   public readonly isFailoverEnabled?: boolean = false;
   private vpcInterfaces: CfnFlow.VpcInterfaceProperty[] = [];
+
+  public get sourceIngestIp(): string {
+    if (!this._hasListenerSource) {
+      throw new ValidationError(
+        lit`SourceIngestIpNotAvailableSourceProtocol`,
+        `'sourceIngestIp' is not available on this Flow ${this.node.path}; only listener-style source protocols (RTP, RTP-FEC, RIST, SRT listener, Zixi push) expose a source ingest IP — CDI, JPEG XS, entitlement, gateway bridge, router, and SRT caller sources do not`,
+        this,
+      );
+    }
+    return this._sourceIngestIp;
+  }
+
+  public get sourceIngestPort(): string {
+    if (!this._hasListenerSource) {
+      throw new ValidationError(
+        lit`SourceIngestPortNotAvailableSourceProtocol`,
+        `'sourceIngestPort' is not available on this Flow ${this.node.path}; only listener-style source protocols (RTP, RTP-FEC, RIST, SRT listener, Zixi push) expose a source ingest port — CDI, JPEG XS, entitlement, gateway bridge, router, and SRT caller sources do not`,
+        this,
+      );
+    }
+    return this._sourceIngestPort;
+  }
+
+  public get sourceIngestUrl(): string {
+    if (!this._hasListenerSource) {
+      throw new ValidationError(
+        lit`SourceIngestUrlNotAvailableSourceProtocol`,
+        `'sourceIngestUrl' is not available on this Flow ${this.node.path}; only listener-style source protocols (RTP, RTP-FEC, RIST, SRT listener, Zixi push) expose a source ingest URL — CDI, JPEG XS, entitlement, gateway bridge, router, and SRT caller sources do not`,
+        this,
+      );
+    }
+    return this.computeIngestUrl(this._sourceProtocol, this._sourceIngestIp, this._sourceIngestPort);
+  }
 
   constructor(scope: Construct, id: string, props: FlowProps) {
     super(scope, id, {
@@ -1544,37 +1607,29 @@ export class Flow extends FlowBase implements IFlow {
     this.flowArn = flow.attrFlowArn;
     this.sourceArn = flow.attrSourceSourceArn;
     this.egressIp = flow.attrEgressIp;
-    this.sourceIngestIp = flow.attrSourceIngestIp;
-    this.sourceIngestPort = flow.attrSourceSourceIngestPort;
+    this._sourceIngestIp = flow.attrSourceIngestIp;
+    this._sourceIngestPort = flow.attrSourceSourceIngestPort;
     this.flowAvailabilityZone = flow.attrFlowAvailabilityZone;
     this._ndiState = props.ndiConfig?.ndiState ?? State.DISABLED;
     this._sourceProtocol = sourceConfig.protocol;
-
-    // Compute the source ingest URL for listener-style protocols that have a URL-addressable ingest.
-    // Not meaningful for CDI, JPEG XS, entitlement, gateway bridge, router, or SRT Caller sources.
-    this.sourceIngestUrl = this.computeIngestUrl(sourceConfig.protocol, flow.attrSourceIngestIp, flow.attrSourceSourceIngestPort);
+    this._hasListenerSource = Flow.isListenerStyleProtocol(sourceConfig.protocol);
 
     flow.applyRemovalPolicy(props.removalPolicy);
   }
 
   /**
-   * Compute the ingest URL for listener-style source protocols.
-   * Returns undefined for protocols that don't expose a URL-addressable ingest.
+   * Build the URL for a listener-style source protocol. The caller must have already
+   * checked `_hasListenerSource`; this method assumes the protocol is in
+   * `LISTENER_PROTOCOL_SCHEMES` and throws an unscoped error otherwise.
    */
-  private computeIngestUrl(protocol: string | undefined, ip: string, port: string): string | undefined {
-    if (!protocol) return undefined;
-    // Map MediaConnect protocol values to URL schemes. Protocols that ingest via a
-    // URL (the flow listens on an IP:port) are included here; protocols that use
-    // VPC/media streams, entitlements, or upstream connections are not.
-    const schemes: { [protocol: string]: string } = {
-      'rtp': 'rtp',
-      'rtp-fec': 'rtp',
-      'rist': 'rist',
-      'srt-listener': 'srt',
-      'zixi-push': 'zixi',
-    };
-    const scheme = schemes[protocol];
-    if (!scheme) return undefined;
+  private computeIngestUrl(protocol: string | undefined, ip: string, port: string): string {
+    const scheme = protocol === undefined ? undefined : Flow.LISTENER_PROTOCOL_SCHEMES.get(protocol);
+    if (scheme === undefined) {
+      throw new UnscopedValidationError(
+        lit`SourceIngestUrlComputeNotListener`,
+        `internal: computeIngestUrl called for non-listener protocol '${protocol}'`,
+      );
+    }
     return Fn.join('', [`${scheme}://`, ip, ':', port]);
   }
 

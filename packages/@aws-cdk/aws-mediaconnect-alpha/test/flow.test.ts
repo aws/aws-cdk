@@ -1899,12 +1899,59 @@ test('imported flow has undefined flowAvailabilityZone', () => {
   expect(imported.flowAvailabilityZone).toBeUndefined();
 });
 
-test('imported flow has undefined sourceIngestUrl', () => {
+test('imported flow throws when accessing sourceIngestUrl', () => {
   const imported = Flow.fromFlowAttributes(stack, 'ImportedFlow5', {
     flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-aaa-bbb:my-flow',
     sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-aaa-bbb:my-source',
   });
-  expect(imported.sourceIngestUrl).toBeUndefined();
+  expect(() => imported.sourceIngestUrl).toThrow(/sourceIngestUrl.*is not available/);
+});
+
+test('SRT caller flow throws when accessing source ingest attributes', () => {
+  const flow = new Flow(stack, 'SrtCallerFlow', {
+    source: SourceConfiguration.srtCaller({
+      flowSourceName: 'srt-caller-source',
+      maxLatency: Duration.seconds(1),
+      sourceListenerAddress: '203.0.113.50',
+      sourceListenerPort: 5000,
+    }),
+  });
+
+  expect(() => flow.sourceIngestIp).toThrow(/sourceIngestIp.*is not available/);
+  expect(() => flow.sourceIngestPort).toThrow(/sourceIngestPort.*is not available/);
+  expect(() => flow.sourceIngestUrl).toThrow(/sourceIngestUrl.*is not available/);
+});
+
+test('entitlement source flow throws when accessing source ingest attributes', () => {
+  const entitlement = FlowEntitlement.fromFlowEntitlementArn(
+    stack,
+    'EntForFlow',
+    'arn:aws:mediaconnect:us-west-2:111122223333:entitlement:1-3333cccc4444dddd-1111aaaa2222:ExampleCorp',
+  );
+  const flow = new Flow(stack, 'EntFlow', {
+    source: SourceConfiguration.entitlement({
+      entitlement,
+    }),
+  });
+
+  expect(() => flow.sourceIngestIp).toThrow(/sourceIngestIp.*is not available/);
+  expect(() => flow.sourceIngestPort).toThrow(/sourceIngestPort.*is not available/);
+  expect(() => flow.sourceIngestUrl).toThrow(/sourceIngestUrl.*is not available/);
+});
+
+test('listener-style source flow exposes source ingest attributes', () => {
+  const flow = new Flow(stack, 'RtpFlow', {
+    source: SourceConfiguration.rtp({
+      flowSourceName: 'rtp-source',
+      port: 5000,
+      network: NetworkConfiguration.publicNetwork('10.0.0.0/16'),
+    }),
+  });
+
+  // No throw; values are tokens that resolve at deploy time.
+  expect(() => flow.sourceIngestIp).not.toThrow();
+  expect(() => flow.sourceIngestPort).not.toThrow();
+  expect(() => flow.sourceIngestUrl).not.toThrow();
 });
 
 test('grants.start() adds correct IAM policy', () => {
