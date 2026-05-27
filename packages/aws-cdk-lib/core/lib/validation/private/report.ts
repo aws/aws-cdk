@@ -307,22 +307,7 @@ export class PolicyValidationReportFormatter {
     return {
       version: schemaVersion,
       title: 'Validation Report',
-      pluginReports: reps
-        .map((rep, idx) => {
-          const hasSuppressed = suppressedByReport?.has(idx);
-          if (rep.success && rep.violations.length === 0 && !hasSuppressed) return undefined;
-          return {
-            pluginName: rep.pluginName,
-            pluginVersion: rep.pluginVersion,
-            conclusion: (rep.success ? 'success' : 'failure') as PolicyValidationReportConclusion,
-            metadata: rep.metadata,
-            violations: rep.violations.map(violation => this.formatViolationJson(violation)),
-            suppressedViolations: hasSuppressed
-              ? suppressedByReport!.get(idx)!.map(sv => this.formatSuppressedViolationJson(sv))
-              : undefined,
-          };
-        })
-        .filter((r): r is PluginReportJson => r !== undefined),
+      pluginReports: this.buildPluginReports(reps, suppressedByReport),
     };
   }
 
@@ -380,6 +365,29 @@ export class PolicyValidationReportFormatter {
       acknowledgedAt: sv.acknowledgedAt || undefined,
       acknowledgedStackTrace: sv.acknowledgedStackTrace || undefined,
     };
+  }
+
+  private buildPluginReports(
+    reps: NamedValidationPluginReport[],
+    suppressedByReport?: Map<number, SuppressedViolation[]>,
+  ): PluginReportJson[] {
+    const results: PluginReportJson[] = [];
+    for (let idx = 0; idx < reps.length; idx++) {
+      const rep = reps[idx];
+      const suppressed = suppressedByReport?.get(idx);
+      if (rep.success && rep.violations.length === 0 && !suppressed) continue;
+      results.push({
+        pluginName: rep.pluginName,
+        pluginVersion: rep.pluginVersion,
+        conclusion: (rep.success ? 'success' : 'failure') as PolicyValidationReportConclusion,
+        metadata: rep.metadata,
+        violations: rep.violations.map(violation => this.formatViolationJson(violation)),
+        suppressedViolations: suppressed
+          ? suppressed.map(sv => this.formatSuppressedViolationJson(sv))
+          : undefined,
+      });
+    }
+    return results;
   }
 
   private formatStackTraces(constructPath: string): string[] | undefined {
