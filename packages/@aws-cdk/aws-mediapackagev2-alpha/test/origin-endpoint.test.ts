@@ -1167,19 +1167,25 @@ test('cdnAuth on OriginEndpoint props plus addToResourcePolicy appends additiona
     },
   });
 
+  // Policy: https://docs.aws.amazon.com/mediapackage/latest/userguide/endpoint-auth.html
   endpoint.addToResourcePolicy(new PolicyStatement({
-    sid: 'AllowHarvester',
+    sid: 'AllowMediaPackageHarvestObjectAccess',
     effect: Effect.ALLOW,
     principals: [new ServicePrincipal('mediapackagev2.amazonaws.com')],
-    actions: ['mediapackagev2:GetObject'],
+    actions: ['mediapackagev2:HarvestObject', 'mediapackagev2:GetObject'],
     resources: [endpoint.originEndpointArn],
+    conditions: {
+      StringEquals: {
+        'AWS:SourceAccount': Stack.of(endpoint).account,
+      },
+    },
   }));
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
     Policy: {
       Statement: [
         Match.objectLike({ Sid: 'AllowGetObjectAccessForAuthorizedRequest' }),
-        Match.objectLike({ Sid: 'AllowHarvester' }),
+        Match.objectLike({ Sid: 'AllowMediaPackageHarvestObjectAccess' }),
       ],
     },
   });
