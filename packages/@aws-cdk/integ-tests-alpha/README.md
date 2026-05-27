@@ -485,8 +485,6 @@ If you need to debug assertion failures, you can increase the log level by setti
 `providerLogLevel` on the `IntegTest` construct:
 
 ```ts
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-
 declare const app: App;
 declare const stack: Stack;
 
