@@ -758,27 +758,23 @@ describe('Job', () => {
       });
     });
   });
-});
 
-describe('Create PySpark ETL Job with notifyDelayAfter', () => {
-  beforeEach(() => {
-    stack = new cdk.Stack();
-    role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
-    codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-    script = glue.Code.fromBucket(codeBucket, 'script');
-    job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
-      role,
-      script,
-      jobName: 'PySparkETLJob',
-      notifyDelayAfter: cdk.Duration.minutes(10),
+  describe('Create PySpark ETL Job with notifyDelayAfter', () => {
+    beforeEach(() => {
+      job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        notifyDelayAfter: cdk.Duration.minutes(10),
+      });
     });
-  });
 
-  test('NotificationProperty is set', () => {
-    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-      NotificationProperty: {
-        NotifyDelayAfter: 10,
-      },
+    test('NotificationProperty is set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NotificationProperty: {
+          NotifyDelayAfter: 10,
+        },
+      });
     });
   });
 });

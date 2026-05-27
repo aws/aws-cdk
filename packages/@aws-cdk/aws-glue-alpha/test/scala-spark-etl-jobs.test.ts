@@ -8,7 +8,6 @@ let stack: cdk.Stack;
 let role: iam.IRole;
 let script: glue.Code;
 let codeBucket: s3.IBucket;
-let job: glue.IJob;
 
 describe('Create Scala Spark ETL Job with notifyDelayAfter', () => {
   beforeEach(() => {
@@ -16,7 +15,7 @@ describe('Create Scala Spark ETL Job with notifyDelayAfter', () => {
     role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
     codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
     script = glue.Code.fromBucket(codeBucket, 'script');
-    job = new glue.ScalaSparkEtlJob(stack, 'ScalaSparkETLJob', {
+    new glue.ScalaSparkEtlJob(stack, 'ScalaSparkETLJob', {
       role,
       script,
       jobName: 'ScalaSparkETLJob',
