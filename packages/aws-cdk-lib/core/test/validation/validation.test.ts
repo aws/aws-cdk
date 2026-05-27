@@ -338,19 +338,19 @@ Policy Validation Report Summary
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(2);
-    expect(mockValidate).toHaveBeenNthCalledWith(2, {
+    expect(mockValidate).toHaveBeenNthCalledWith(2, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
-    expect(mockValidate).toHaveBeenNthCalledWith(1, {
+    }));
+    expect(mockValidate).toHaveBeenNthCalledWith(1, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple stages, single plugin', () => {
@@ -395,13 +395,13 @@ Policy Validation Report Summary
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(1);
-    expect(mockValidate).toHaveBeenCalledWith({
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple constructs', () => {
@@ -607,6 +607,50 @@ Policy Validation Report Summary
     expect(() => {
       app.synth();
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
+  });
+
+  test('plugin that writes new files to assembly is allowed', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'file-writer-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            const assemblyDir = path.dirname(context.templatePaths[0]);
+            fs.writeFileSync(path.join(assemblyDir, 'plugin-output.json'), '{"result":"ok"}');
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).not.toThrow();
+    const outputFile = path.join(app.outdir, 'plugin-output.json');
+    expect(fs.existsSync(outputFile)).toBe(true);
+    expect(JSON.parse(fs.readFileSync(outputFile, 'utf-8'))).toEqual({ result: 'ok' });
+  });
+
+  test('plugin that deletes pre-existing file is caught', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'deleter-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            fs.unlinkSync(context.templatePaths[0]);
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).toThrow(/Illegal operation: validation plugin 'deleter-plugin' modified the cloud assembly/);
   });
 
   test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
@@ -1516,6 +1560,27 @@ Policy Validation Report Summary
       }).toThrow(/Invalid validation rule ID '::foo'/);
     });
 
+    test('validate context includes appConstruct as the root construct', () => {
+      let capturedAppConstruct: any;
+      const plugin: core.IPolicyValidationPlugin = {
+        name: 'scope-capture-plugin',
+        validate(context) {
+          capturedAppConstruct = context.appConstruct;
+          return { success: true, violations: [] };
+        },
+      };
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+      core.Validations.of(app).addPlugins(plugin);
+      app.synth();
+
+      expect(capturedAppConstruct).toBe(app);
+    });
+
     test('non-Beta1 plugin with constructPath runs through synth', () => {
       // GIVEN - a plugin returning violations with optional fields (constructPath instead of resourceLogicalId)
       const app = new core.App();
@@ -1558,7 +1623,7 @@ Policy Validation Report Summary
 
       // WHEN - access via Beta1 getter
       const beta1Plugins = app.policyValidationBeta1;
-      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'] });
+      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'], appConstruct: app });
 
       // THEN - optional fields are filled with defaults
       expect(report.violations[0].violatingResources[0].resourceLogicalId).toEqual('');
