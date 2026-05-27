@@ -4,31 +4,22 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as glue from '../lib';
 
-let stack: cdk.Stack;
-let role: iam.IRole;
-let script: glue.Code;
-let codeBucket: s3.IBucket;
-
-describe('Create Scala Spark ETL Job with notifyDelayAfter', () => {
-  beforeEach(() => {
-    stack = new cdk.Stack();
-    role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
-    codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
-    script = glue.Code.fromBucket(codeBucket, 'script');
-    new glue.ScalaSparkEtlJob(stack, 'ScalaSparkETLJob', {
-      role,
-      script,
-      jobName: 'ScalaSparkETLJob',
-      className: 'com.example.MyJob',
-      notifyDelayAfter: cdk.Duration.minutes(5),
-    });
+test('Scala Spark ETL Job sets NotificationProperty', () => {
+  const stack = new cdk.Stack();
+  const role = iam.Role.fromRoleArn(stack, 'Role', 'arn:aws:iam::123456789012:role/TestRole');
+  const codeBucket = s3.Bucket.fromBucketName(stack, 'CodeBucket', 'bucketname');
+  const script = glue.Code.fromBucket(codeBucket, 'script');
+  new glue.ScalaSparkEtlJob(stack, 'ScalaSparkETLJob', {
+    role,
+    script,
+    jobName: 'ScalaSparkETLJob',
+    className: 'com.example.MyJob',
+    notifyDelayAfter: cdk.Duration.minutes(5),
   });
 
-  test('NotificationProperty is set', () => {
-    Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
-      NotificationProperty: {
-        NotifyDelayAfter: 5,
-      },
-    });
+  Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+    NotificationProperty: {
+      NotifyDelayAfter: 5,
+    },
   });
 });
