@@ -3,7 +3,8 @@ import { RemovalPolicy, ArnFormat, Duration, Fn, Lazy, Names, Resource, Stack, T
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
-import type { IRole, PolicyStatement, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
+import type { IRole, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, StarPrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnOriginEndpoint } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { IOriginEndpointRef, OriginEndpointReference } from 'aws-cdk-lib/aws-mediapackagev2';
 import { ValidationError, UnscopedValidationError, CfnResource } from 'aws-cdk-lib/core';
@@ -1054,9 +1055,8 @@ export interface IOriginEndpoint extends IResource, IOriginEndpointRef {
    * If you have already defined one, it will append to the policy already created.
    *
    * @param statement - The policy statement to add
-   * @param cdnAuth - Optional CDN authorization configuration. Only the first CDN auth configuration is used if provided multiple times.
    */
-  addToResourcePolicy(statement: PolicyStatement, cdnAuth?: CdnAuthConfiguration): AddToResourcePolicyResult;
+  addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
 
   /**
    * Create a CloudWatch metric.
@@ -2657,32 +2657,24 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
   private cdnAuthConfig?: CdnAuthConfiguration;
 
   /**
-   * Set CDN auth config. Used by subclass constructors.
+   * Set CDN auth config. Used by subclass constructors when `cdnAuth` is provided in props.
    * @internal
    */
   protected _setCdnAuth(cdnAuth: CdnAuthConfiguration): void {
-    if (!this.cdnAuthConfig) {
-      this.cdnAuthConfig = cdnAuth;
-    }
+    this.cdnAuthConfig = cdnAuth;
   }
 
   /**
    * Configure origin endpoint policy.
    *
-   * You can only add 1 OriginEndpointPolicy to an OriginEndpoint.
-   * If you have already defined one, it will append to the policy already created.
+   * You can only add 1 OriginEndpointPolicy to an OriginEndpoint. If you have already
+   * defined one, this will append to the policy already created.
+   *
+   * To configure CDN authentication, set `cdnAuth` on the construct's props instead.
    *
    * @param statement - The policy statement to add
-   * @param cdnAuth - Optional CDN authorization configuration. If provided, the policy will be
-   *                  created with CDN authentication enabled using secrets from AWS Secrets Manager.
-   *                  If cdnAuth is provided multiple times, only the first configuration is used.
    */
-  public addToResourcePolicy(statement: PolicyStatement, cdnAuth?: CdnAuthConfiguration): AddToResourcePolicyResult {
-    // Store CDN auth config if provided (only if not already set)
-    if (cdnAuth && !this.cdnAuthConfig) {
-      this.cdnAuthConfig = cdnAuth;
-    }
-
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new OriginEndpointPolicy(this, 'Policy', {
         originEndpoint: this,
@@ -3012,9 +3004,24 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
 
     origin.applyRemovalPolicy(props?.removalPolicy ?? RemovalPolicy.DESTROY);
 
-    // Pre-set CDN auth config if provided in props
+    // When cdnAuth is set, pre-create the endpoint policy with the AWS-recommended gating
+    // statement. The principal is `*` (anonymous) because CDN requests to MediaPackage are
+    // unsigned HTTPS — only the matching CDN-Identifier header proves authorisation.
+    // See https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
     if (props.cdnAuth) {
       this._setCdnAuth(props.cdnAuth);
+      this.addToResourcePolicy(new PolicyStatement({
+        sid: 'AllowGetObjectAccessForAuthorizedRequest',
+        effect: Effect.ALLOW,
+        principals: [new StarPrincipal()],
+        actions: ['mediapackagev2:GetObject', 'mediapackagev2:GetHeadObject'],
+        resources: [this.originEndpointArn],
+        conditions: {
+          Bool: {
+            'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
+          },
+        },
+      }));
     }
   }
 }

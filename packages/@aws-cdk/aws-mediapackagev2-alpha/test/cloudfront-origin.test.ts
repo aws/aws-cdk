@@ -232,7 +232,7 @@ test('distribution origin uses egress domain and OAC ID', () => {
   });
 });
 
-test('MediaPackageV2Origin with cdnAuth configures endpoint policy', () => {
+test('MediaPackageV2Origin works alongside cdnAuth set on the endpoint props', () => {
   const group = new mediapackagev2.ChannelGroup(stack, 'Group', {
     channelGroupName: 'test-group',
   });
@@ -240,32 +240,37 @@ test('MediaPackageV2Origin with cdnAuth configures endpoint policy', () => {
     channelGroup: group,
     channelName: 'test-channel',
   });
+  const secret = new Secret(stack, 'CdnSecret');
+
   const endpoint = new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
     channel,
     originEndpointName: 'test-endpoint',
     segment: mediapackagev2.Segment.cmaf(),
     manifests: [mediapackagev2.Manifest.hls({ manifestName: 'index' })],
+    cdnAuth: {
+      secrets: [secret],
+    },
   });
-
-  const secret = new Secret(stack, 'CdnSecret');
 
   new cloudfront.Distribution(stack, 'Dist', {
     defaultBehavior: {
       origin: new mediapackagev2.MediaPackageV2Origin(endpoint, {
         channelGroup: group,
-        cdnAuth: {
-          secrets: [secret],
-        },
       }),
     },
   });
 
   const template = Template.fromStack(stack);
 
-  // CDN auth configuration is present on the endpoint policy
   template.hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
     CdnAuthConfiguration: Match.objectLike({
       CdnIdentifierSecretArns: Match.anyValue(),
     }),
+    Policy: {
+      Statement: [
+        Match.objectLike({ Sid: 'AllowGetObjectAccessForAuthorizedRequest' }),
+        Match.objectLike({ Sid: 'AllowCloudFrontServicePrincipal' }),
+      ],
+    },
   });
 });

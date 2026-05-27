@@ -243,6 +243,39 @@ origin.addToResourcePolicy(new PolicyStatement({
 }));
 ```
 
+### CDN Authorization
+
+To require a CDN-Identifier header on requests to the endpoint, set `cdnAuth`
+on the `OriginEndpoint` props. The L2 auto-creates the endpoint policy with both:
+
+- `PolicyStatement` that requires `mediapackagev2:RequestHasMatchingCdnAuthHeader`
+  condition on every `GetObject`/`GetHeadObject` request
+- the `CdnAuthConfiguration` block that wires up the secret ARNs and the role
+  MediaPackage uses to read them
+
+If you don't supply a role, one is created with the needed Secrets Manager
+and KMS permissions.
+
+```ts
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const channel: Channel;
+declare const mySecret: secretsmanager.ISecret;
+
+new OriginEndpoint(this, 'OriginEndpoint', {
+  channel,
+  segment: Segment.ts(),
+  manifests: [Manifest.hls({ manifestName: 'index' })],
+  cdnAuth: {
+    secrets: [mySecret],
+  },
+});
+```
+
+You can still call `addToResourcePolicy()` to add extra statements (e.g. a
+harvester allow); they're appended to the auto-created policy alongside the
+gating statement.
+
 ## Granting Permissions
 
 ### Granting Ingest Access to MediaLive

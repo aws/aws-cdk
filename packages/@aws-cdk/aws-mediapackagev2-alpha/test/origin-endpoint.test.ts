@@ -1,4 +1,4 @@
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
 import { HttpOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
@@ -1073,7 +1073,7 @@ test('Create resources using helper functions', () => {
   });
 });
 
-test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () => {
+test('cdnAuth on OriginEndpoint props auto-creates the policy with the gating statement', () => {
   const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
   const channel = new mediapackagev2.Channel(stack, 'mychannel', {
     channelGroup,
@@ -1087,7 +1087,7 @@ test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () =>
   const secret1 = new Secret(stack, 'CdnSecret1');
   const secret2 = new Secret(stack, 'CdnSecret2');
 
-  const endpoint = new mediapackagev2.OriginEndpoint(stack, 'origin', {
+  new mediapackagev2.OriginEndpoint(stack, 'origin', {
     channel,
     segment: mediapackagev2.Segment.ts(),
     startoverWindow: Duration.seconds(100),
@@ -1096,25 +1096,16 @@ test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () =>
         manifestName: 'index',
       }),
     ],
-  });
-
-  const cdnAuthPolicy = new PolicyStatement({
-    effect: Effect.ALLOW,
-    principals: [new ServicePrincipal('*')],
-    actions: ['mediapackagev2:GetObject'],
-    resources: [endpoint.originEndpointArn],
-    conditions: {
-      Bool: {
-        'mediapackagev2:RequestHasMatchingCdnAuthHeader': true,
-      },
+    cdnAuth: {
+      secrets: [secret1, secret2],
+      role: cdnRole,
     },
   });
 
-  endpoint.addToResourcePolicy(cdnAuthPolicy, {
-    secrets: [secret1, secret2],
-    role: cdnRole,
-  });
-
+  // The endpoint policy is created with both the CdnAuthConfiguration block and
+  // the AWS-recommended gating PolicyStatement. Without that statement the
+  // CdnAuthConfiguration is non-functional — see
+  // https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
   Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
     ChannelGroupName: 'MyChannelGroup',
     ChannelName: 'mychannel',
@@ -1130,21 +1121,66 @@ test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () =>
     },
     Policy: {
       Statement: [{
-        Action: 'mediapackagev2:GetObject',
+        Sid: 'AllowGetObjectAccessForAuthorizedRequest',
+        Action: ['mediapackagev2:GetObject', 'mediapackagev2:GetHeadObject'],
         Condition: {
           Bool: {
-            'mediapackagev2:RequestHasMatchingCdnAuthHeader': true,
+            'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
           },
         },
         Effect: 'Allow',
-        Principal: {
-          Service: '*.amazonaws.com',
-        },
+        Principal: '*',
         Resource: {
           'Fn::GetAtt': ['origin7345F895', 'Arn'],
         },
       }],
       Version: '2012-10-17',
+    },
+  });
+});
+
+test('cdnAuth on OriginEndpoint props plus addToResourcePolicy appends additional statements', () => {
+  const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'mychannel', {
+    channelGroup,
+    input: mediapackagev2.InputConfiguration.hls(),
+  });
+
+  const cdnRole = new Role(stack, 'CdnAuthRole', {
+    assumedBy: new ServicePrincipal('mediapackagev2.amazonaws.com'),
+  });
+
+  const secret = new Secret(stack, 'CdnSecret');
+
+  const endpoint = new mediapackagev2.OriginEndpoint(stack, 'origin', {
+    channel,
+    segment: mediapackagev2.Segment.ts(),
+    startoverWindow: Duration.seconds(100),
+    manifests: [
+      mediapackagev2.Manifest.hls({
+        manifestName: 'index',
+      }),
+    ],
+    cdnAuth: {
+      secrets: [secret],
+      role: cdnRole,
+    },
+  });
+
+  endpoint.addToResourcePolicy(new PolicyStatement({
+    sid: 'AllowHarvester',
+    effect: Effect.ALLOW,
+    principals: [new ServicePrincipal('mediapackagev2.amazonaws.com')],
+    actions: ['mediapackagev2:GetObject'],
+    resources: [endpoint.originEndpointArn],
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    Policy: {
+      Statement: [
+        Match.objectLike({ Sid: 'AllowGetObjectAccessForAuthorizedRequest' }),
+        Match.objectLike({ Sid: 'AllowHarvester' }),
+      ],
     },
   });
 });

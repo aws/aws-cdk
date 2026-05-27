@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets": {
+    "aws-cdk-mediapackagev2-cdn-auth.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets.json",
+        "file": "aws-cdk-mediapackagev2-cdn-auth.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-mediapackagev2-endpoint-cdn-auth": {
+    "aws-cdk-mediapackagev2-cdn-auth": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.template.json",
+        "templateFile": "aws-cdk-mediapackagev2-cdn-auth.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/c6115962c4097fc2c23741fe3a3c975388ad358df25d2e9b2e82fd61cc60cbe2.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11401276a12ca970946a8f9fd1137515d88cecd1661328810c9487ed5fdcff51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
+          "aws-cdk-mediapackagev2-cdn-auth.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,24 +31,24 @@
         }
       },
       "dependencies": [
-        "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
+        "aws-cdk-mediapackagev2-cdn-auth.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.metadata.json",
-      "displayName": "aws-cdk-mediapackagev2-endpoint-cdn-auth"
+      "additionalMetadataFile": "aws-cdk-mediapackagev2-cdn-auth.metadata.json",
+      "displayName": "aws-cdk-mediapackagev2-cdn-auth"
     },
-    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets": {
+    "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets.json",
+        "file": "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585": {
+    "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.template.json",
+        "templateFile": "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -57,7 +57,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
+          "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,10 @@
         }
       },
       "dependencies": [
-        "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
+        "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets"
       ],
-      "additionalMetadataFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.metadata.json",
-      "displayName": "cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.metadata.json",
+      "displayName": "cdk-integ-mediapackagev2-cdn-auth/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -584,6 +584,21 @@
             "explanation": "Automatically use the default L1 traits for L1 constructs`",
             "unconfiguredBehavesLike": {
               "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
             }
           }
         }
