@@ -8,45 +8,26 @@
         "packaging": "zip"
       },
       "destinations": {
-<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/aws-sfn-call-aws-service-cross-region-lambda.assets.json
-        "current_account-us-west-2-7c99e613": {
+        "current_account-us-west-2-225b2bda": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "e1c20a4808d556faa2fc55b65ebe08053d2625201f06e4dcf4c10f0dc1dde80e.zip",
+          "objectKey": "176531cec16e1504f81d374ed3fd8ecbdfc6f593b70622c7a79ccc5a837213e5.zip",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
         }
       }
     },
-    "fe59ecfb1dc29b8385e5e19479c610cace70087184c9ed6ea35a6adf2c066162": {
+    "8a3305d4357d3887be5673713da7290cab552f08e2eef080a41c59377d5d70f6": {
       "displayName": "aws-sfn-call-aws-service-cross-region-lambda Template",
-=======
-        "current_account-current_region-7c6e8082": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "176531cec16e1504f81d374ed3fd8ecbdfc6f593b70622c7a79ccc5a837213e5.zip",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
-        }
-      }
-    },
-    "7197b1953a0717369d9ad38a21e7250fe133f7480fe2ca372ede65914d008cdb": {
-      "displayName": "aws-stepfunctions-call-aws-service-cross-region-lambda-integ Template",
->>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/aws-stepfunctions-call-aws-service-cross-region-lambda-integ.assets.json
       "source": {
         "path": "aws-sfn-call-aws-service-cross-region-lambda.template.json",
         "packaging": "file"
       },
       "destinations": {
-<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/aws-sfn-call-aws-service-cross-region-lambda.assets.json
-        "current_account-us-west-2-87b7e694": {
+        "current_account-us-west-2-73e4174e": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2",
-          "objectKey": "fe59ecfb1dc29b8385e5e19479c610cace70087184c9ed6ea35a6adf2c066162.json",
+          "objectKey": "8a3305d4357d3887be5673713da7290cab552f08e2eef080a41c59377d5d70f6.json",
           "region": "us-west-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-west-2"
-=======
-        "current_account-current_region-59878c5e": {
-          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "7197b1953a0717369d9ad38a21e7250fe133f7480fe2ca372ede65914d008cdb.json",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
->>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/aws-stepfunctions-call-aws-service-cross-region-lambda-integ.assets.json
         }
       }
     }

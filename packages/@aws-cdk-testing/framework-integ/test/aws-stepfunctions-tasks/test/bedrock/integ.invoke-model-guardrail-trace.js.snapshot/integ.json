@@ -1,26 +1,13 @@
 {
-<<<<<<< HEAD
-  "version": "52.0.0",
-=======
   "version": "53.0.0",
->>>>>>> c0e04edcc8 (Update stable integ tests)
   "testCases": {
     "InvokeModel/DefaultTest": {
       "stacks": [
         "aws-stepfunctions-tasks-bedrock-invoke-model-guardrail-trace-integ"
       ],
-      "regions": [
-        "us-east-1",
-        "eu-west-2",
-        "ap-southeast-2"
-      ],
       "assertionStack": "InvokeModel/DefaultTest/DeployAssert",
       "assertionStackName": "InvokeModelDefaultTestDeployAssert9C0D2DFC"
     }
   },
-<<<<<<< HEAD
-  "minimumCliVersion": "2.1107.0"
-=======
   "minimumCliVersion": "2.1123.0"
->>>>>>> c0e04edcc8 (Update stable integ tests)
 }

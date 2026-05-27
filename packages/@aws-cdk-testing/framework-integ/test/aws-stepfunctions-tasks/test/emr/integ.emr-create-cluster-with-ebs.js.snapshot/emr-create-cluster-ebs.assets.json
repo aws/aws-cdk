@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "version": "52.0.0",
-=======
   "version": "53.0.0",
->>>>>>> c0e04edcc8 (Update stable integ tests)
   "files": {
     "0c6cc786999d2468bd2d7d9dc1d3dfdc4d72ac537f7eade8edcdc16b7cc199da": {
       "displayName": "emr-create-cluster-ebs Template",

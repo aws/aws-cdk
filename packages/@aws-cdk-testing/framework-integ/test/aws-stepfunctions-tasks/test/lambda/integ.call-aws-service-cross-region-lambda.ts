@@ -5,7 +5,6 @@ import { ExpectedResult, IntegTest, Match } from '@aws-cdk/integ-tests-alpha';
 import * as sfn from 'aws-cdk-lib/aws-stepfunctions';
 import { STANDARD_NODEJS_RUNTIME } from '../../../config';
 
-<<<<<<< HEAD
 /**
  * This test verifies that CallAwsServiceCrossRegion correctly invokes a Lambda
  * function in a different region and properly serializes the response as JSON
@@ -18,33 +17,6 @@ import { STANDARD_NODEJS_RUNTIME } from '../../../config';
  * Note: The regions constraint does not yet control deployment region allocation
  * but is added in anticipation of integ-runner supporting it.
  */
-=======
-class TestStack extends cdk.Stack {
-  public readonly stateMachine: sfn.StateMachine;
-  constructor(scope: cdk.App, id: string, props: cdk.StackProps = {}) {
-    super(scope, id, props);
-    // Create a target Lambda function that returns JSON response
-    const targetLambda = new lambda.Function(this, 'TargetLambda', {
-      runtime: STANDARD_NODEJS_RUNTIME,
-      handler: 'index.handler',
-      code: lambda.Code.fromInline(`
-        exports.handler = async (event) => {
-          console.log('Target Lambda received event:', JSON.stringify(event, null, 2));
-          
-          // Return a JSON response that should be properly serialized
-          return {
-            statusCode: 200,
-            body: {
-              status: 'success',
-              message: 'Hello from target Lambda',
-              receivedData: event
-            }
-          };
-        };
-      `),
-      description: 'Target Lambda function for CallAwsServiceCrossRegion testing',
-    });
->>>>>>> c0e04edcc8 (Update stable integ tests)
 
 const TARGET_REGION = 'us-east-1';
 const LAMBDA_FUNCTION_NAME = 'integ-cross-region-target-lambda';
@@ -63,7 +35,7 @@ const targetStack = new cdk.Stack(app, 'aws-sfn-cross-region-lambda-target', {
 
 new lambda.Function(targetStack, 'TargetLambda', {
   functionName: LAMBDA_FUNCTION_NAME,
-  runtime: lambda.Runtime.NODEJS_20_X,
+  runtime: STANDARD_NODEJS_RUNTIME,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {

@@ -1057,10 +1057,16 @@
     }
    }
   },
-  "ClusterOidcProviderNativeBAC9C7E2": {
-   "Type": "AWS::IAM::OIDCProvider",
+  "ClusterOpenIdConnectProviderE7EB0530": {
+   "Type": "Custom::AWSCDKOpenIdConnectProvider",
    "Properties": {
-    "ClientIdList": [
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderHandlerF2C543E0",
+      "Arn"
+     ]
+    },
+    "ClientIDList": [
      "sts.amazonaws.com"
     ],
     "Url": {
@@ -1068,17 +1074,12 @@
       "ClusterEB0386A7",
       "OpenIdConnectIssuerUrl"
      ]
-<<<<<<< HEAD
-    }
-   }
-=======
     },
     "RejectUnauthorized": false,
     "CodeHash": "8be22d8be71ebe9e2ddfe3ec85cf2145bb8a6c967f2678a983b4fede3cfe7ab8"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
->>>>>>> c0e04edcc8 (Update stable integ tests)
   },
   "Clusterechoserver5815619F": {
    "Type": "Custom::AWSCDK-EKS-KubernetesResource",
@@ -1165,7 +1166,7 @@
           "Fn::Split": [
            ":oidc-provider/",
            {
-            "Ref": "ClusterOidcProviderNativeBAC9C7E2"
+            "Ref": "ClusterOpenIdConnectProviderE7EB0530"
            }
           ]
          }
@@ -1179,7 +1180,7 @@
           "Fn::Split": [
            ":oidc-provider/",
            {
-            "Ref": "ClusterOidcProviderNativeBAC9C7E2"
+            "Ref": "ClusterOpenIdConnectProviderE7EB0530"
            }
           ]
          }
@@ -1211,7 +1212,7 @@
        "Effect": "Allow",
        "Principal": {
         "Federated": {
-         "Ref": "ClusterOidcProviderNativeBAC9C7E2"
+         "Ref": "ClusterOpenIdConnectProviderE7EB0530"
         }
        }
       }
@@ -1248,24 +1249,19 @@
         "ec2:DescribeCoipPools",
         "ec2:DescribeInstances",
         "ec2:DescribeInternetGateways",
-        "ec2:DescribeIpamPools",
         "ec2:DescribeNetworkInterfaces",
-        "ec2:DescribeRouteTables",
         "ec2:DescribeSecurityGroups",
         "ec2:DescribeSubnets",
         "ec2:DescribeTags",
         "ec2:DescribeVpcPeeringConnections",
         "ec2:DescribeVpcs",
         "ec2:GetCoipPoolUsage",
-        "ec2:GetSecurityGroupsForVpc",
         "ec2:RevokeSecurityGroupIngress",
         "elasticloadbalancing:AddListenerCertificates",
         "elasticloadbalancing:CreateListener",
         "elasticloadbalancing:CreateRule",
         "elasticloadbalancing:DeleteListener",
         "elasticloadbalancing:DeleteRule",
-        "elasticloadbalancing:DescribeCapacityReservation",
-        "elasticloadbalancing:DescribeListenerAttributes",
         "elasticloadbalancing:DescribeListenerCertificates",
         "elasticloadbalancing:DescribeListeners",
         "elasticloadbalancing:DescribeLoadBalancerAttributes",
@@ -1280,7 +1276,6 @@
         "elasticloadbalancing:ModifyListener",
         "elasticloadbalancing:ModifyRule",
         "elasticloadbalancing:RemoveListenerCertificates",
-        "elasticloadbalancing:SetRulePriorities",
         "elasticloadbalancing:SetWebAcl",
         "iam:GetServerCertificate",
         "iam:ListServerCertificates",
@@ -1356,9 +1351,6 @@
         "ec2:RevokeSecurityGroupIngress",
         "elasticloadbalancing:DeleteLoadBalancer",
         "elasticloadbalancing:DeleteTargetGroup",
-        "elasticloadbalancing:ModifyCapacityReservation",
-        "elasticloadbalancing:ModifyIpPools",
-        "elasticloadbalancing:ModifyListenerAttributes",
         "elasticloadbalancing:ModifyLoadBalancerAttributes",
         "elasticloadbalancing:ModifyTargetGroup",
         "elasticloadbalancing:ModifyTargetGroupAttributes",
@@ -1627,7 +1619,7 @@
     },
     "Release": "aws-load-balancer-controller",
     "Chart": "aws-load-balancer-controller",
-    "Version": "3.2.2",
+    "Version": "1.8.2",
     "Wait": true,
     "Timeout": "900s",
     "Values": {
@@ -1646,7 +1638,7 @@
        {
         "Ref": "Vpc8378EB38"
        },
-       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v3.2.2\"},\"enableWafv2\":false}"
+       "\",\"image\":{\"repository\":\"602401143452.dkr.ecr.us-west-2.amazonaws.com/amazon/aws-load-balancer-controller\",\"tag\":\"v2.8.2\"},\"enableWafv2\":false}"
       ]
      ]
     },
@@ -1660,13 +1652,11 @@
     "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleDefaultPolicy0BB22F48",
     "awscdkeksclusteralbcontrollerCluster0686D58BAlbControlleralbsaRoleE08C7B02",
     "ClusterKubectlReadyBarrier200052AF",
-    "ClusterOidcProviderNativeBAC9C7E2"
+    "ClusterOpenIdConnectProviderE7EB0530"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
-<<<<<<< HEAD
-=======
   "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1734,7 +1724,6 @@
     "CustomAWSCDKOpenIdConnectProviderCustomResourceProviderRole517FED65"
    ]
   },
->>>>>>> c0e04edcc8 (Update stable integ tests)
   "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867": {
    "Type": "AWS::IAM::Role",
    "Properties": {

@@ -1,9 +1,5 @@
 {
-<<<<<<< HEAD
-  "version": "52.0.0",
-=======
   "version": "53.0.0",
->>>>>>> c0e04edcc8 (Update stable integ tests)
   "files": {
     "fb33714cb653bc7a35eb8684b06e87207a973e9cf13413a5ad20fe329a699341": {
       "displayName": "aws-cdk-emr-create-cluster-auto-deletion-policy-idle-timeout Template",

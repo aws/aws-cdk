@@ -1,59 +1,5 @@
 {
  "Resources": {
-<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/aws-sfn-call-aws-service-cross-region-lambda.template.json
-=======
-  "TargetLambdaServiceRole567EC23E": {
-   "Type": "AWS::IAM::Role",
-   "Properties": {
-    "AssumeRolePolicyDocument": {
-     "Statement": [
-      {
-       "Action": "sts:AssumeRole",
-       "Effect": "Allow",
-       "Principal": {
-        "Service": "lambda.amazonaws.com"
-       }
-      }
-     ],
-     "Version": "2012-10-17"
-    },
-    "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-       ]
-      ]
-     }
-    ]
-   }
-  },
-  "TargetLambdaE6C763FE": {
-   "Type": "AWS::Lambda::Function",
-   "Properties": {
-    "Code": {
-     "ZipFile": "\n        exports.handler = async (event) => {\n          console.log('Target Lambda received event:', JSON.stringify(event, null, 2));\n          \n          // Return a JSON response that should be properly serialized\n          return {\n            statusCode: 200,\n            body: {\n              status: 'success',\n              message: 'Hello from target Lambda',\n              receivedData: event\n            }\n          };\n        };\n      "
-    },
-    "Description": "Target Lambda function for CallAwsServiceCrossRegion testing",
-    "Handler": "index.handler",
-    "Role": {
-     "Fn::GetAtt": [
-      "TargetLambdaServiceRole567EC23E",
-      "Arn"
-     ]
-    },
-    "Runtime": "nodejs24.x"
-   },
-   "DependsOn": [
-    "TargetLambdaServiceRole567EC23E"
-   ]
-  },
->>>>>>> c0e04edcc8 (Update stable integ tests):packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions-tasks/test/lambda/integ.call-aws-service-cross-region-lambda.js.snapshot/aws-stepfunctions-call-aws-service-cross-region-lambda-integ.template.json
   "CrossRegionAwsSdk8a0c93f3dbef4b71ac137aaf2048ce7eServiceRole5D981520": {
    "Type": "AWS::IAM::Role",
    "Properties": {

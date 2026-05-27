@@ -1,29 +1,13 @@
 {
-<<<<<<< HEAD
-  "version": "52.0.0",
-=======
   "version": "53.0.0",
->>>>>>> c0e04edcc8 (Update stable integ tests)
   "testCases": {
     "emr-create-cluster-ebs-integ/DefaultTest": {
       "stacks": [
         "emr-create-cluster-ebs"
       ],
-      "cdkCommandOptions": {
-        "destroy": {
-          "args": {
-            "force": true
-          },
-          "expectError": true
-        }
-      },
       "assertionStack": "emr-create-cluster-ebs-integ/DefaultTest/DeployAssert",
       "assertionStackName": "emrcreateclusterebsintegDefaultTestDeployAssert7DC4C06C"
     }
   },
-<<<<<<< HEAD
-  "minimumCliVersion": "2.1107.0"
-=======
   "minimumCliVersion": "2.1123.0"
->>>>>>> c0e04edcc8 (Update stable integ tests)
 }
