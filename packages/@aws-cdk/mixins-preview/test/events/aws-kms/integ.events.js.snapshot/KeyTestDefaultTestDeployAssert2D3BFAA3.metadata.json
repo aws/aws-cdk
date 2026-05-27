@@ -1,17 +1,17 @@
 {
-  "/DeliveryTest/DefaultTest/DeployAssert": [
+  "/Key-Test/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
         "new IntegTestCase (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/logs-delivery/integ.delivery-mixin-cross-account.js:137:1)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:61:1)",
         "...node internals..."
       ]
     }
   ],
-  "/DeliveryTest/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/Key-Test/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "/DeliveryTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/Key-Test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
