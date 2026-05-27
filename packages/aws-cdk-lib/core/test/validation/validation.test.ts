@@ -1262,6 +1262,8 @@ Policy Validation Report Summary
         acknowledgedAt: 'Default',
       }));
       expect(sv.violatingConstructs[0].stackTraces).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toContain('validation.test.ts');
     });
 
     test('fatal plugin violations cannot be suppressed', () => {
@@ -1465,16 +1467,14 @@ Policy Validation Report Summary
         { id: 'some-plugin::RuleX', reason: 'Not applicable' },
       );
 
-      // THEN
+      // THEN - one metadata entry per acknowledgement
       const ackEntries = construct.node.metadata.filter(
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
-      // Last entry contains all acknowledged rules
-      const lastEntry = ackEntries[ackEntries.length - 1];
-      expect(lastEntry.data).toEqual({
-        'annotation::SomeWarning': 'Accepted risk per team review',
-        'some-plugin::RuleX': 'Not applicable',
-      });
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::SomeWarning': 'Accepted risk per team review' });
+      expect(ackEntries[1].data).toEqual({ 'some-plugin::RuleX': 'Not applicable' });
+      expect(ackEntries[0].trace).toBeDefined();
     });
 
     test('multiple acknowledge calls accumulate in metadata', () => {
@@ -1487,15 +1487,13 @@ Policy Validation Report Summary
       core.Validations.of(construct).acknowledge({ id: 'RuleA', reason: 'reason A' });
       core.Validations.of(construct).acknowledge({ id: 'RuleB', reason: 'reason B' });
 
-      // THEN - last metadata entry has both rules
+      // THEN - separate metadata entries, each with stack trace
       const ackEntries = construct.node.metadata.filter(
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
-      const lastEntry = ackEntries[ackEntries.length - 1];
-      expect(lastEntry.data).toEqual({
-        'annotation::RuleA': 'reason A',
-        'annotation::RuleB': 'reason B',
-      });
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::RuleA': 'reason A' });
+      expect(ackEntries[1].data).toEqual({ 'annotation::RuleB': 'reason B' });
     });
 
     test('throws on invalid ID with multiple delimiters', () => {

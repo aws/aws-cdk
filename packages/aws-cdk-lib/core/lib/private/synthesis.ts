@@ -190,7 +190,13 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
         const ack = acknowledgedRules.get(ruleId);
         if (ack) {
-          suppressed.push({ ...v, acknowledgedId: ruleId, reason: ack.reason, acknowledgedAt: ack.constructPath });
+          suppressed.push({
+            ...v,
+            acknowledgedId: ruleId,
+            reason: ack.reason,
+            acknowledgedAt: ack.constructPath,
+            acknowledgedStackTrace: ack.stackTrace,
+          });
         } else {
           active.push(v);
         }

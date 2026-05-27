@@ -153,6 +153,7 @@ export interface SuppressedViolationJson extends PolicyViolationJson {
   readonly acknowledgedId: string;
   readonly reason?: string;
   readonly acknowledgedAt?: string;
+  readonly acknowledgedStackTrace?: string;
 }
 
 /**
@@ -163,6 +164,7 @@ export interface SuppressedViolation extends report.PolicyViolation {
   readonly acknowledgedId: string;
   readonly reason?: string;
   readonly acknowledgedAt?: string;
+  readonly acknowledgedStackTrace?: string;
 }
 
 /**
@@ -376,6 +378,7 @@ export class PolicyValidationReportFormatter {
       acknowledgedId: sv.acknowledgedId,
       reason: sv.reason || undefined,
       acknowledgedAt: sv.acknowledgedAt || undefined,
+      acknowledgedStackTrace: sv.acknowledgedStackTrace || undefined,
     };
   }
 
