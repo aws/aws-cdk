@@ -1262,6 +1262,54 @@ Policy Validation Report Summary
       expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
     });
 
+    test('suppressed violations appear in validation-report.json', () => {
+      const app = new core.App({
+        context: {
+          ...annotationReportContext,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: 'MyBucket',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      app.synth();
+
+      const file = path.join(app.outdir, 'validation-report.json');
+      const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+      expect(report.pluginReports).toHaveLength(1);
+      expect(report.pluginReports[0].violations).toHaveLength(0);
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+      const sv = report.pluginReports[0].suppressedViolations[0];
+      expect(sv).toEqual(expect.objectContaining({
+        ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+        description: 'S3 Bucket should have versioning enabled',
+        acknowledgedId: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Not needed for this bucket',
+        acknowledgedAt: 'Default',
+      }));
+      expect(sv.violatingConstructs[0].stackTraces).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toContain('validation.test.ts');
+    });
+
     test('fatal plugin violations cannot be suppressed', () => {
       const app = new core.App({ context: annotationReportContext });
       const stack = new core.Stack(app);
@@ -1463,16 +1511,14 @@ Policy Validation Report Summary
         { id: 'some-plugin::RuleX', reason: 'Not applicable' },
       );
 
-      // THEN
+      // THEN - one metadata entry per acknowledgement
       const ackEntries = construct.node.metadata.filter(
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
-      // Last entry contains all acknowledged rules
-      const lastEntry = ackEntries[ackEntries.length - 1];
-      expect(lastEntry.data).toEqual({
-        'annotation::SomeWarning': 'Accepted risk per team review',
-        'some-plugin::RuleX': 'Not applicable',
-      });
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::SomeWarning': 'Accepted risk per team review' });
+      expect(ackEntries[1].data).toEqual({ 'some-plugin::RuleX': 'Not applicable' });
+      expect(ackEntries[0].trace).toBeDefined();
     });
 
     test('multiple acknowledge calls accumulate in metadata', () => {
@@ -1485,15 +1531,13 @@ Policy Validation Report Summary
       core.Validations.of(construct).acknowledge({ id: 'RuleA', reason: 'reason A' });
       core.Validations.of(construct).acknowledge({ id: 'RuleB', reason: 'reason B' });
 
-      // THEN - last metadata entry has both rules
+      // THEN - separate metadata entries, each with stack trace
       const ackEntries = construct.node.metadata.filter(
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
-      const lastEntry = ackEntries[ackEntries.length - 1];
-      expect(lastEntry.data).toEqual({
-        'annotation::RuleA': 'reason A',
-        'annotation::RuleB': 'reason B',
-      });
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::RuleA': 'reason A' });
+      expect(ackEntries[1].data).toEqual({ 'annotation::RuleB': 'reason B' });
     });
 
     test('throws on invalid ID with multiple delimiters', () => {
