@@ -1,34 +1,20 @@
 {
-  "/L1L2BucketWithL2Rule": [
+  "/L2KeyOtherEventsWithL2Rule": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:60:20)",
         "...node internals..."
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/bucket": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "bucket"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:16:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/L1L2BucketWithL2Rule/bucketL2": [
+  "/L2KeyOtherEventsWithL2Rule/Key": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
     }
   ],
-  "/L1L2BucketWithL2Rule/MyFuncA": [
+  "/L2KeyOtherEventsWithL2Rule/MyFuncA": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -38,71 +24,7 @@
       }
     }
   ],
-  "/L1L2BucketWithL2Rule/Trail": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addS3EventSelector": [
-          [
-            {
-              "bucket": "*"
-            }
-          ],
-          {
-            "readWriteType": "All"
-          }
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEventSelector": [
-          "AWS::S3::Object",
-          [
-            "*"
-          ],
-          {
-            "readWriteType": "All"
-          }
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addS3EventSelector": [
-          [
-            {
-              "bucket": "*"
-            }
-          ],
-          {
-            "readWriteType": "All"
-          }
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addEventSelector": [
-          "AWS::S3::Object",
-          [
-            "*"
-          ],
-          {
-            "readWriteType": "All"
-          }
-        ]
-      }
-    }
-  ],
-  "/L1L2BucketWithL2Rule/L2RuleForL1": [
+  "/L2KeyOtherEventsWithL2Rule/L2RuleForL1": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -156,7 +78,7 @@
       }
     }
   ],
-  "/L1L2BucketWithL2Rule/BootstrapVersion": [
+  "/L2KeyOtherEventsWithL2Rule/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -177,7 +99,7 @@
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/CheckBootstrapVersion": [
+  "/L2KeyOtherEventsWithL2Rule/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
@@ -198,24 +120,23 @@
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/bucketL2/Resource": [
+  "/L2KeyOtherEventsWithL2Rule/Key/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "bucketL2297FC72A"
+      "data": "Key961B73FD"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:18:26)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-kms/lib/key.js:651:30)",
+        "new Key (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new L2KeyOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:39:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:60:20)",
         "...node internals..."
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/MyFuncA/ServiceRole": [
+  "/L2KeyOtherEventsWithL2Rule/MyFuncA/ServiceRole": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -231,7 +152,7 @@
       }
     }
   ],
-  "/L1L2BucketWithL2Rule/MyFuncA/Resource": [
+  "/L2KeyOtherEventsWithL2Rule/MyFuncA/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyFuncAAF5F3089"
@@ -241,13 +162,13 @@
       "data": [
         "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
         "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:20:20)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "new L2KeyOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:41:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:60:20)",
         "...node internals..."
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/MyFuncA/LogGroup": [
+  "/L2KeyOtherEventsWithL2Rule/MyFuncA/LogGroup": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -255,31 +176,7 @@
       }
     }
   ],
-  "/L1L2BucketWithL2Rule/Trail/S3": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "enforceSSL": true
-      }
-    }
-  ],
-  "/L1L2BucketWithL2Rule/Trail/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "Trail022F0CF2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:307:27)",
-        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:30:23)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/L1L2BucketWithL2Rule/L2RuleForL1/Resource": [
+  "/L2KeyOtherEventsWithL2Rule/L2RuleForL1/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "L2RuleForL13AA6354B"
@@ -290,16 +187,16 @@
         "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:169:30)",
         "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:33:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "new L2KeyOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:51:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:60:20)",
         "...node internals..."
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/L2RuleForL1/AllowEventRuleL1L2BucketWithL2RuleMyFuncAE7084B38": [
+  "/L2KeyOtherEventsWithL2Rule/L2RuleForL1/AllowEventRuleL2KeyOtherEventsWithL2RuleMyFuncADDE2D2B6": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "L2RuleForL1AllowEventRuleL1L2BucketWithL2RuleMyFuncAE7084B384341AAF4"
+      "data": "L2RuleForL1AllowEventRuleL2KeyOtherEventsWithL2RuleMyFuncADDE2D2B62248E9C5"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -312,12 +209,12 @@
         "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-events/lib/rule.js:181:22)",
         "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
         "new Rule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:33:24)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)"
+        "new L2KeyOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:51:22)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:60:20)"
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/MyFuncA/ServiceRole/Resource": [
+  "/L2KeyOtherEventsWithL2Rule/MyFuncA/ServiceRole/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyFuncAServiceRole9A674AAA"
@@ -329,13 +226,13 @@
         "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
         "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:20:20)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "new L2KeyOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:41:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:60:20)",
         "...node internals..."
       ]
     }
   ],
-  "/L1L2BucketWithL2Rule/MyFuncA/LogGroup/Resource": [
+  "/L2KeyOtherEventsWithL2Rule/MyFuncA/LogGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "MyFuncALogGroupD7C330A5"
@@ -347,57 +244,9 @@
         "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
         "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
         "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:20:20)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
+        "new L2KeyOtherEventsWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:41:20)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-kms/integ.events.js:60:20)",
         "...node internals..."
-      ]
-    }
-  ],
-  "/L1L2BucketWithL2Rule/Trail/S3/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "TrailS30071F172"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
-        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new L1L2BucketWithL2Rule (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:30:23)",
-        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/mixins-preview/test/events/aws-s3/integ.events.js:126:20)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/L1L2BucketWithL2Rule/Trail/S3/Policy": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "bucket": "*"
-      }
-    }
-  ],
-  "/L1L2BucketWithL2Rule/Trail/S3/Policy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "TrailS3PolicyE42170FE"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
-        "new BucketPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.maybeAutoCreatePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
-        "WrappedClass.addToResourcePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:276:18)",
-        "WrappedClass.enforceSSLStatement (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1570:18)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1439:22)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudtrail/lib/cloudtrail.js:234:45)",
-        "new Trail (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ]
