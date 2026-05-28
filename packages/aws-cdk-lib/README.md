@@ -422,7 +422,7 @@ declare const producer: Stack;
 declare const consumer: Stack;
 
 const bucket = new s3.Bucket(producer, 'SharedBucket');
-CrossStackReferences.of(bucket).strength(CrossStackReferenceStrength.WEAK);
+bucket.applyCrossStackReferenceStrength(ReferenceStrength.WEAK);
 
 // This reference will use Fn::GetStackOutput regardless of the global setting
 new CfnOutput(consumer, 'BucketName', { value: bucket.bucketName });
@@ -454,7 +454,7 @@ DEPLOYMENT 1: switch the resource to weak references
 
 ```ts
 declare const bucket: s3.Bucket;
-CrossStackReferences.of(bucket).strength(CrossStackReferenceStrength.BOTH);
+bucket.applyCrossStackReferenceStrength(ReferenceStrength.BOTH);
 ```
 
 Deploy. This keeps the Export but switches the consumer to `Fn::GetStackOutput`.
@@ -463,7 +463,7 @@ DEPLOYMENT 2: remove the strong-side artifacts
 
 ```ts
 declare const bucket: s3.Bucket;
-CrossStackReferences.of(bucket).strength(CrossStackReferenceStrength.WEAK);
+bucket.applyCrossStackReferenceStrength(ReferenceStrength.WEAK);
 ```
 
 Deploy. The Export is now removed and the consumer uses only `Fn::GetStackOutput`.
