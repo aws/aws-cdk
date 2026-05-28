@@ -421,7 +421,9 @@ same resource:
 ```ts
 declare const topic: sns.Topic;
 
-const consumer = new Stack(app, 'Consumer', { env });
+const consumer = new Stack(app, 'Consumer', {
+  env: { account: '123456789012', region: 'us-east-1' },
+});
 new sns.Subscription(consumer, 'Subscription', {
   topic: sns.Topic.fromTopicArn(consumer, 'Topic',
     consumer.consumeReference(topic.topicArn, ReferenceStrength.WEAK)),

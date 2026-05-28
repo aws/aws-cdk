@@ -1364,7 +1364,9 @@ export class Stack extends Construct implements ITaggable {
    *
    * // consumerStack subscribes to it with a weak reference,
    * // so the producer can be torn down without blocking on this consumer
-   * const consumerStack = new Stack(app, 'Consumer', { env });
+   * const consumerStack = new Stack(app, 'Consumer', {
+   *   env: { account: '123456789012', region: 'us-east-1' },
+   * });
    * new sns.Subscription(consumerStack, 'Subscription', {
    *   topic: sns.Topic.fromTopicArn(consumerStack, 'Topic',
    *     Stack.of(consumerStack).consumeReference(topic.topicArn)),
