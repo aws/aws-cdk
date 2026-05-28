@@ -338,19 +338,19 @@ Policy Validation Report Summary
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(2);
-    expect(mockValidate).toHaveBeenNthCalledWith(2, {
+    expect(mockValidate).toHaveBeenNthCalledWith(2, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
-    expect(mockValidate).toHaveBeenNthCalledWith(1, {
+    }));
+    expect(mockValidate).toHaveBeenNthCalledWith(1, expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple stages, single plugin', () => {
@@ -395,13 +395,13 @@ Policy Validation Report Summary
     app.synth();
 
     expect(mockValidate).toHaveBeenCalledTimes(1);
-    expect(mockValidate).toHaveBeenCalledWith({
+    expect(mockValidate).toHaveBeenCalledWith(expect.objectContaining({
       templatePaths: [
         expect.stringMatching(/assembly-Stage1\/Stage1stack1DDED8B6C.template.json/),
         expect.stringMatching(/assembly-Stage2\/Stage2stack259BA718E.template.json/),
         expect.stringMatching(/assembly-Stage2\/assembly-Stage2-Stage3\/Stage2Stage3stack10CD36915.template.json/),
       ],
-    });
+    }));
   });
 
   test('multiple constructs', () => {
@@ -607,6 +607,50 @@ Policy Validation Report Summary
     expect(() => {
       app.synth();
     }).toThrow(/Illegal operation: validation plugin 'rogue-plugin' modified the cloud assembly/);
+  });
+
+  test('plugin that writes new files to assembly is allowed', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'file-writer-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            const assemblyDir = path.dirname(context.templatePaths[0]);
+            fs.writeFileSync(path.join(assemblyDir, 'plugin-output.json'), '{"result":"ok"}');
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).not.toThrow();
+    const outputFile = path.join(app.outdir, 'plugin-output.json');
+    expect(fs.existsSync(outputFile)).toBe(true);
+    expect(JSON.parse(fs.readFileSync(outputFile, 'utf-8'))).toEqual({ result: 'ok' });
+  });
+
+  test('plugin that deletes pre-existing file is caught', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        {
+          name: 'deleter-plugin',
+          validate(context: core.IPolicyValidationContextBeta1) {
+            fs.unlinkSync(context.templatePaths[0]);
+            return { success: true, violations: [] };
+          },
+        },
+      ],
+    });
+    const stack = new core.Stack(app);
+    new core.CfnResource(stack, 'DefaultResource', {
+      type: 'Test::Resource::Fake',
+      properties: { result: 'success' },
+    });
+    expect(() => app.synth()).toThrow(/Illegal operation: validation plugin 'deleter-plugin' modified the cloud assembly/);
   });
 
   test('failSynthOnValidationErrors=false writes JSON but does not print or fail', () => {
@@ -1218,6 +1262,54 @@ Policy Validation Report Summary
       expect(output).not.toContain('S3_BUCKET_VERSIONING_ENABLED');
     });
 
+    test('suppressed violations appear in validation-report.json', () => {
+      const app = new core.App({
+        context: {
+          ...annotationReportContext,
+          '@aws-cdk/core:failSynthOnValidationErrors': false,
+        },
+      });
+      const stack = new core.Stack(app);
+      new core.CfnResource(stack, 'MyBucket', {
+        type: 'AWS::S3::Bucket',
+        properties: {},
+      });
+
+      core.Validations.of(app).addPlugins(
+        new FakePlugin('test-plugin', [{
+          description: 'S3 Bucket should have versioning enabled',
+          ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+          severity: 'error',
+          violatingResources: [{
+            locations: ['Properties/VersioningConfiguration'],
+            resourceLogicalId: 'MyBucket',
+            templatePath: '/path/to/Default.template.json',
+          }],
+        }]),
+      );
+
+      core.Validations.of(stack).acknowledge({ id: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED', reason: 'Not needed for this bucket' });
+
+      app.synth();
+
+      const file = path.join(app.outdir, 'validation-report.json');
+      const report = JSON.parse(fs.readFileSync(file, 'utf-8'));
+      expect(report.pluginReports).toHaveLength(1);
+      expect(report.pluginReports[0].violations).toHaveLength(0);
+      expect(report.pluginReports[0].suppressedViolations).toHaveLength(1);
+      const sv = report.pluginReports[0].suppressedViolations[0];
+      expect(sv).toEqual(expect.objectContaining({
+        ruleName: 'S3_BUCKET_VERSIONING_ENABLED',
+        description: 'S3 Bucket should have versioning enabled',
+        acknowledgedId: 'test-plugin::S3_BUCKET_VERSIONING_ENABLED',
+        reason: 'Not needed for this bucket',
+        acknowledgedAt: 'Default',
+      }));
+      expect(sv.violatingConstructs[0].stackTraces).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toBeDefined();
+      expect(sv.acknowledgedStackTrace).toContain('validation.test.ts');
+    });
+
     test('fatal plugin violations cannot be suppressed', () => {
       const app = new core.App({ context: annotationReportContext });
       const stack = new core.Stack(app);
@@ -1419,16 +1511,14 @@ Policy Validation Report Summary
         { id: 'some-plugin::RuleX', reason: 'Not applicable' },
       );
 
-      // THEN
+      // THEN - one metadata entry per acknowledgement
       const ackEntries = construct.node.metadata.filter(
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
-      // Last entry contains all acknowledged rules
-      const lastEntry = ackEntries[ackEntries.length - 1];
-      expect(lastEntry.data).toEqual({
-        'annotation::SomeWarning': 'Accepted risk per team review',
-        'some-plugin::RuleX': 'Not applicable',
-      });
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::SomeWarning': 'Accepted risk per team review' });
+      expect(ackEntries[1].data).toEqual({ 'some-plugin::RuleX': 'Not applicable' });
+      expect(ackEntries[0].trace).toBeDefined();
     });
 
     test('multiple acknowledge calls accumulate in metadata', () => {
@@ -1441,15 +1531,13 @@ Policy Validation Report Summary
       core.Validations.of(construct).acknowledge({ id: 'RuleA', reason: 'reason A' });
       core.Validations.of(construct).acknowledge({ id: 'RuleB', reason: 'reason B' });
 
-      // THEN - last metadata entry has both rules
+      // THEN - separate metadata entries, each with stack trace
       const ackEntries = construct.node.metadata.filter(
         m => m.type === core.Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
       );
-      const lastEntry = ackEntries[ackEntries.length - 1];
-      expect(lastEntry.data).toEqual({
-        'annotation::RuleA': 'reason A',
-        'annotation::RuleB': 'reason B',
-      });
+      expect(ackEntries).toHaveLength(2);
+      expect(ackEntries[0].data).toEqual({ 'annotation::RuleA': 'reason A' });
+      expect(ackEntries[1].data).toEqual({ 'annotation::RuleB': 'reason B' });
     });
 
     test('throws on invalid ID with multiple delimiters', () => {
@@ -1470,6 +1558,27 @@ Policy Validation Report Summary
       expect(() => {
         core.Validations.of(construct).acknowledge({ id: '::foo', reason: 'reason' });
       }).toThrow(/Invalid validation rule ID '::foo'/);
+    });
+
+    test('validate context includes appConstruct as the root construct', () => {
+      let capturedAppConstruct: any;
+      const plugin: core.IPolicyValidationPlugin = {
+        name: 'scope-capture-plugin',
+        validate(context) {
+          capturedAppConstruct = context.appConstruct;
+          return { success: true, violations: [] };
+        },
+      };
+      const app = new core.App();
+      const stack = new core.Stack(app, 'MyStack');
+      new core.CfnResource(stack, 'Fake', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+      core.Validations.of(app).addPlugins(plugin);
+      app.synth();
+
+      expect(capturedAppConstruct).toBe(app);
     });
 
     test('non-Beta1 plugin with constructPath runs through synth', () => {
@@ -1514,7 +1623,7 @@ Policy Validation Report Summary
 
       // WHEN - access via Beta1 getter
       const beta1Plugins = app.policyValidationBeta1;
-      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'] });
+      const report = beta1Plugins[0].validate({ templatePaths: ['/tmp/test.template.json'], appConstruct: app });
 
       // THEN - optional fields are filled with defaults
       expect(report.violations[0].violatingResources[0].resourceLogicalId).toEqual('');
