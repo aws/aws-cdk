@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "aws-cdk-mediapackagev2-cdn-auth.assets": {
+    "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-mediapackagev2-cdn-auth.assets.json",
+        "file": "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-mediapackagev2-cdn-auth": {
+    "aws-cdk-mediapackagev2-endpoint-cdn-auth": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-mediapackagev2-cdn-auth.template.json",
+        "templateFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/11401276a12ca970946a8f9fd1137515d88cecd1661328810c9487ed5fdcff51.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63b273eef2d62c96b8375b685e77148e4f54edc094fd568793234fe803b7a17f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-mediapackagev2-cdn-auth.assets"
+          "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,24 +31,24 @@
         }
       },
       "dependencies": [
-        "aws-cdk-mediapackagev2-cdn-auth.assets"
+        "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-mediapackagev2-cdn-auth.metadata.json",
-      "displayName": "aws-cdk-mediapackagev2-cdn-auth"
+      "additionalMetadataFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.metadata.json",
+      "displayName": "aws-cdk-mediapackagev2-endpoint-cdn-auth"
     },
-    "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets": {
+    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets.json",
+        "file": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99": {
+    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.template.json",
+        "templateFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -57,7 +57,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets"
+          "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,10 @@
         }
       },
       "dependencies": [
-        "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.assets"
+        "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
       ],
-      "additionalMetadataFile": "cdkintegmediapackagev2cdnauthDefaultTestDeployAssertB13FFB99.metadata.json",
-      "displayName": "cdk-integ-mediapackagev2-cdn-auth/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.metadata.json",
+      "displayName": "cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

@@ -1,4 +1,4 @@
-import { Match, Template } from 'aws-cdk-lib/assertions';
+import { Template } from 'aws-cdk-lib/assertions';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { Distribution } from 'aws-cdk-lib/aws-cloudfront';
 import { HttpOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
@@ -1183,9 +1183,34 @@ test('cdnAuth on OriginEndpoint props plus addToResourcePolicy appends additiona
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
     Policy: {
+      Version: '2012-10-17',
       Statement: [
-        Match.objectLike({ Sid: 'AllowGetObjectAccessForAuthorizedRequest' }),
-        Match.objectLike({ Sid: 'AllowMediaPackageHarvestObjectAccess' }),
+        // Auto-emitted gating statement
+        {
+          Sid: 'AllowGetObjectAccessForAuthorizedRequest',
+          Effect: 'Allow',
+          Principal: '*',
+          Action: 'mediapackagev2:GetObject',
+          Resource: { 'Fn::GetAtt': ['origin7345F895', 'Arn'] },
+          Condition: {
+            Bool: {
+              'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
+            },
+          },
+        },
+        // Harvester statement appended via addToResourcePolicy()
+        {
+          Sid: 'AllowMediaPackageHarvestObjectAccess',
+          Effect: 'Allow',
+          Principal: { Service: 'mediapackagev2.amazonaws.com' },
+          Action: ['mediapackagev2:HarvestObject', 'mediapackagev2:GetObject'],
+          Resource: { 'Fn::GetAtt': ['origin7345F895', 'Arn'] },
+          Condition: {
+            StringEquals: {
+              'AWS:SourceAccount': '123456789012',
+            },
+          },
+        },
       ],
     },
   });

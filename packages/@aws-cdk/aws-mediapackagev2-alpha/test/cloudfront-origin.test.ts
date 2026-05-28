@@ -267,9 +267,34 @@ test('MediaPackageV2Origin works alongside cdnAuth set on the endpoint props', (
       CdnIdentifierSecretArns: Match.anyValue(),
     }),
     Policy: {
+      Version: '2012-10-17',
       Statement: [
-        Match.objectLike({ Sid: 'AllowGetObjectAccessForAuthorizedRequest' }),
-        Match.objectLike({ Sid: 'AllowCloudFrontServicePrincipal' }),
+        // cdnAuth gating statement — third-party CDN with header check
+        {
+          Sid: 'AllowGetObjectAccessForAuthorizedRequest',
+          Effect: 'Allow',
+          Principal: '*',
+          Action: 'mediapackagev2:GetObject',
+          Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('Endpoint'), 'Arn'] },
+          Condition: {
+            Bool: {
+              'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
+            },
+          },
+        },
+        // OAC SigV4 statement — CloudFront via service principal
+        {
+          Sid: 'AllowCloudFrontServicePrincipal',
+          Effect: 'Allow',
+          Principal: { Service: 'cloudfront.amazonaws.com' },
+          Action: ['mediapackagev2:GetObject', 'mediapackagev2:GetHeadObject'],
+          Resource: { 'Fn::GetAtt': [Match.stringLikeRegexp('Endpoint'), 'Arn'] },
+          Condition: {
+            StringEquals: {
+              'aws:SourceArn': Match.anyValue(),
+            },
+          },
+        },
       ],
     },
   });

@@ -17,7 +17,7 @@ import * as mediapackagev2 from '../lib';
  * see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
  */
 const app = new cdk.App();
-const stack = new cdk.Stack(app, 'aws-cdk-mediapackagev2-cdn-auth');
+const stack = new cdk.Stack(app, 'aws-cdk-mediapackagev2-endpoint-cdn-auth');
 
 const group = new mediapackagev2.ChannelGroup(stack, 'Group', {
   channelGroupName: 'integ-cdn-auth-group',
@@ -59,7 +59,7 @@ const endpoint = new mediapackagev2.OriginEndpoint(stack, 'Endpoint', {
 
 new cdk.CfnOutput(stack, 'EndpointArn', { value: endpoint.originEndpointArn });
 
-new IntegTest(app, 'cdk-integ-mediapackagev2-cdn-auth', {
+new IntegTest(app, 'cdk-integ-mediapackagev2-endpoint-cdn-auth', {
   testCases: [stack],
 });
 

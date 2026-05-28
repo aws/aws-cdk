@@ -1,5 +1,5 @@
 {
-  "/cdk-integ-mediapackagev2-cdn-auth/DefaultTest/DeployAssert": [
+  "/cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
@@ -11,7 +11,7 @@
       ]
     }
   ],
-  "/cdk-integ-mediapackagev2-cdn-auth/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "/cdk-integ-mediapackagev2-cdn-auth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
