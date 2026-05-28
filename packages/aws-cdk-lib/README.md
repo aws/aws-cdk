@@ -273,11 +273,8 @@ Nested stacks also support the use of Docker image and file assets.
 
 ## Accessing resources in a different stack
 
-You can access resources in a different stack, as long as they are in the
-same account and AWS Region (see [next section](#accessing-resources-in-a-different-stack-and-region) for an exception).
-The following example defines the stack `stack1`,
-which defines an Amazon S3 bucket. Then it defines a second stack, `stack2`,
-which takes the bucket from stack1 as a constructor property.
+You can pass resource references between stacks freely, including across regions and
+accounts. The CDK automatically wires the underlying CloudFormation mechanism for you.
 
 ```ts
 const prod = { account: '123456789012', region: 'us-east-1' };
@@ -291,19 +288,8 @@ const stack2 = new StackThatExpectsABucket(app, 'Stack2', {
 });
 ```
 
-If the AWS CDK determines that the resource is in the same account and
-Region, but in a different stack, it automatically synthesizes AWS
-CloudFormation
-[Exports](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-exports.html)
-in the producing stack and an
-[Fn::ImportValue](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-importvalue.html)
-in the consuming stack to transfer that information from one stack to the
-other.
-
-## Accessing resources in a different stack and region
-
-You can access resources in a different stack and region. For example, you can create
-a CloudFront distribution in `us-east-2` that references an ACM certificate in `us-east-1`.
+This also works across regions. For example, you can create a CloudFront distribution
+in `us-east-2` that references an ACM certificate in `us-east-1`:
 
 ```ts
 const stack1 = new Stack(app, 'Stack1', {
@@ -330,73 +316,68 @@ new cloudfront.Distribution(stack2, 'Distribution', {
 });
 ```
 
-### Cross-stack reference strength
+### Reference strength
 
-The context key `@aws-cdk/core:defaultCrossStackReferences` controls the mechanism used for
-cross-stack references. It accepts three values: `"strong"` (default), `"weak"`, and `"both"`.
+Every cross-stack reference has a *strength* that determines the CloudFormation mechanism
+used to pass the value and the coupling it creates between stacks. There are three
+strengths:
 
-**Strong references** (default) create a tight coupling between stacks. For same-region references,
-the producer creates a CloudFormation Export and the consumer uses `Fn::ImportValue`. For
-cross-region references, a pair of Custom Resources (ExportWriter/ExportReader) write values to
-SSM Parameters in the consuming region. In both cases, the producing stack cannot be deleted
-while consumers exist.
+**Strong** (default) — the producing stack cannot be deleted while any consumer exists.
+This is enforced by CloudFormation itself.
 
-**Weak references** use `Fn::GetStackOutput`, a CloudFormation intrinsic that reads an output
-directly from the producing stack. This is simpler (no extra infrastructure), but the producing
-stack can be deleted independently of its consumers.
+**Weak** — uses `Fn::GetStackOutput` to read an output directly from the producing stack.
+No coupling is created: the producing stack or resource can be deleted independently.
+This means consuming stacks may temporarily reference a nonexistent resource until they
+are updated as well.
 
-**Both** is a transitional state used during migration from strong to weak. The producer keeps
-the strong-side artifacts (Export for same-region, ExportWriter for cross-region), and also adds
-a plain Output. The consumer switches to `Fn::GetStackOutput`. This ensures the consumer is no
-longer dependent on the strong mechanism before it is removed.
+**Both** — a transitional state used when migrating from strong to weak. The producer
+keeps the strong-side artifacts while the consumer switches to `Fn::GetStackOutput`.
+Once all consumers have been deployed with the weak mechanism, the strong-side artifacts
+can be safely removed.
 
-Configure the reference strength in your `cdk.json`:
+The exact CloudFormation realization depends on the strength and whether the reference
+crosses region or account boundaries:
 
-```json
-{
-  "context": {
-    "@aws-cdk/core:defaultCrossStackReferences": "strong"
-  }
-}
-```
-
-> [!NOTE]
-> When using `"strong"` references, the feature is built on Custom Resources, which are restricted
-> to a CloudFormation response body size limitation of
-> [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
-> To prevent deployment errors, we recommend limiting the use of nested stacks and minimizing
-> the length of stack names.
-
-The full behavior is summarized in the following table:
-
-|                            | Flag=strong/unset                                 | Flag=both                                                                                    | Flag=weak                                                  |
-|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------|
-| Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                 |
-| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                 |
+|                            | Strong (default)                                  | Both                                                                                         | Weak                                                            |
+|----------------------------|---------------------------------------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| Same account and region    | Generates a `Fn::ImportValue` reference           | Generates a `Fn::GetStackOutput` reference AND an Export, but not the `Fn::ImportValue`      | Generates a `Fn::GetStackOutput` reference                      |
+| Same account, cross-region | Generates a pair of `ExportWriter`/`ExportReader` | Generates a `Fn::GetStackOutput` reference AND an `ExportWriter`, but not the `ExportReader` | Generates a `Fn::GetStackOutput` reference                      |
 | Cross-account              | Not possible. Falls back to weak.                 | Generates a `Fn::GetStackOutput` reference + cross-account role                              | Generates a `Fn::GetStackOutput` reference + cross-account role |
 
+> [!NOTE]
+> Strong cross-region references rely on Custom Resources, which are restricted to a
+> CloudFormation response body size of
+> [4096 bytes](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html).
+> To prevent deployment errors, limit the use of nested stacks and minimize stack name length.
 
-### Migrating from strong to weak references
+### The deadly embrace
 
-If you have existing stacks deployed with strong references and want to switch to weak
-references, you must do so in two deployments to avoid the
-[deadly embrace](https://github.com/aws/aws-cdk/pull/12778) problem:
+Strong references create a *deadly embrace*: a circular dependency between stacks that
+prevents any of them from being updated or deleted. This happens because CloudFormation
+Exports cannot be removed while any other stack imports them, and the producing stack
+cannot be updated to remove the Export as long as the consuming stack still has a
+`Fn::ImportValue` referencing it.
 
-**DEPLOYMENT 1**: set the flag to `"both"` and deploy.
+In practice, you hit the deadly embrace when you try to remove a resource that is
+referenced by another stack. CloudFormation will reject the update with an error like:
 
-```json
-{
-  "context": {
-    "@aws-cdk/core:defaultCrossStackReferences": "both"
-  }
-}
+```text
+Export Stack1:ExportsOutputFnGetAtt-****** cannot be deleted as it is in use by Stack2
 ```
 
-This adds `Fn::GetStackOutput` references in the consumers (weak) while keeping the
-strong-side artifacts in the producer (Export for same-region, ExportWriter for cross-region).
-After this deployment, consumers no longer depend on the strong mechanism.
+The solution is to first weaken the reference (switching the consumer away from
+`Fn::ImportValue`), deploy, and then remove the resource. The sections below explain
+how to do this.
 
-**DEPLOYMENT 2**: set the flag to `"weak"` and deploy.
+### Controlling reference strength
+
+There are three ways to control the strength of cross-stack references, each operating
+at a different scope:
+
+#### App-wide: context key
+
+Set `@aws-cdk/core:defaultCrossStackReferences` in `cdk.json` to change the default for
+all references in the app:
 
 ```json
 {
@@ -406,77 +387,110 @@ After this deployment, consumers no longer depend on the strong mechanism.
 }
 ```
 
-This removes the strong-side infrastructure entirely (Exports for same-region,
-ExportWriter/ExportReader for cross-region). All references now use the lightweight
-`Fn::GetStackOutput` mechanism.
+You can also set this on a specific scope (stack, construct) using
+`CrossStackReferences.of(scope).consume(strength)`:
 
-### Per-resource reference strength override
+```ts
+declare const consumer: Stack;
+// All references consumed by this stack will be weak
+CrossStackReferences.of(consumer).consume(ReferenceStrength.WEAK);
+```
 
-You can override the reference strength for individual resources, independent of the
-global setting. This is particularly useful when the global default is `"strong"` but
-a specific resource is causing the [deadly embrace](https://github.com/aws/aws-cdk/pull/12778)
-problem and needs to use weak references:
+#### Per-resource: `CrossStackReferences.of(resource).produce(strength)`
+
+Override the strength for all references pointing at a specific resource:
 
 ```ts
 declare const producer: Stack;
 declare const consumer: Stack;
 
 const bucket = new s3.Bucket(producer, 'SharedBucket');
-bucket.applyCrossStackReferenceStrength(ReferenceStrength.WEAK);
+CrossStackReferences.of(bucket).produce(ReferenceStrength.WEAK);
 
 // This reference will use Fn::GetStackOutput regardless of the global setting
 new CfnOutput(consumer, 'BucketName', { value: bucket.bucketName });
 ```
 
-The override applies to all cross-stack references pointing to that resource. Other
-resources in the same stack continue to use the global default.
+Other resources in the same stack continue to use the global default.
 
-### Removing automatic cross-stack references
+#### Per-usage: `Stack.consumeReference()`
 
-The automatic references created by CDK when you use resources across stacks
-are convenient, but may block your deployments if you want to remove the
-resources that are referenced in this way. You will see an error like:
+Override the strength of a single reference usage without affecting other usages of the
+same resource:
 
-```text
-Export Stack1:ExportsOutputFnGetAtt-****** cannot be deleted as it is in use by Stack1
+```ts
+declare const topic: sns.Topic;
+
+const consumer = new Stack(app, 'Consumer', { env });
+new sns.Subscription(consumer, 'Subscription', {
+  topic: sns.Topic.fromTopicArn(consumer, 'Topic',
+    consumer.consumeReference(topic.topicArn, ReferenceStrength.WEAK)),
+  endpoint: 'https://example.com/webhook',
+  protocol: sns.SubscriptionProtocol.HTTPS,
+});
 ```
 
-This happens because strong references create CloudFormation Exports that cannot be
-deleted while a consumer exists. The recommended solution is to weaken the reference
-first, then remove the resource.
+The `consumeListReference` method is the equivalent for string list references.
 
-Let's say there is a Bucket in `stack1`, and `stack2` references its
-`bucket.bucketName`. You now want to remove the bucket and run into the error above.
+### Resolving the deadly embrace
 
-**Option A: Weaken the specific resource (recommended)**
+To remove a resource that has strong cross-stack references, you must weaken the
+references before removing the resource. There are two approaches depending on whether
+you want to weaken all references to the resource or just a specific one.
 
-DEPLOYMENT 1: switch the resource to weak references
+#### Weakening all references to a resource
+
+Use `CrossStackReferences.of(resource).produce(...)` to weaken every reference pointing
+at the resource. This requires two deployments before you can remove it:
+
+DEPLOYMENT 1: switch to `BOTH` (keeps the strong-side artifacts while consumers switch
+to the weak mechanism)
 
 ```ts
 declare const bucket: s3.Bucket;
-bucket.applyCrossStackReferenceStrength(ReferenceStrength.BOTH);
+CrossStackReferences.of(bucket).produce(ReferenceStrength.BOTH);
 ```
 
-Deploy. This keeps the Export but switches the consumer to `Fn::GetStackOutput`.
-
-DEPLOYMENT 2: remove the strong-side artifacts
+DEPLOYMENT 2: switch to `WEAK` (removes the strong-side artifacts now that no consumer
+depends on them)
 
 ```ts
 declare const bucket: s3.Bucket;
-bucket.applyCrossStackReferenceStrength(ReferenceStrength.WEAK);
+CrossStackReferences.of(bucket).produce(ReferenceStrength.WEAK);
 ```
 
-Deploy. The Export is now removed and the consumer uses only `Fn::GetStackOutput`.
+DEPLOYMENT 3: remove the bucket from `stack1` and any references from `stack2`.
 
-DEPLOYMENT 3: remove the resource
+#### Weakening a single reference
 
-- Remove the bucket from `stack1` and any references from `stack2`.
-- Deploy.
+Use `Stack.consumeReference()` to weaken just one specific usage. This is useful when
+a resource is referenced from multiple stacks, and you only want to decouple one of them.
+The same two-deployment migration applies:
 
-**Option B: Weaken all references globally**
+DEPLOYMENT 1: wrap the reference with `consumeReference` (defaults to `BOTH`)
 
-Follow the [migration steps above](#migrating-from-strong-to-weak-references) to
-switch the entire app from `"strong"` to `"both"` to `"weak"`, then remove the resource.
+```ts
+declare const bucket: s3.Bucket;
+declare const consumer: Stack;
+
+// Previously: bucket.bucketArn was used directly
+new CfnOutput(consumer, 'BucketArn', {
+  value: consumer.consumeReference(bucket.bucketArn),
+});
+```
+
+DEPLOYMENT 2: switch to `WEAK`
+
+```ts
+declare const bucket: s3.Bucket;
+declare const consumer: Stack;
+
+new CfnOutput(consumer, 'BucketArn', {
+  value: consumer.consumeReference(bucket.bucketArn, ReferenceStrength.WEAK),
+});
+```
+
+DEPLOYMENT 3: remove the resource or the reference as needed.
 
 ## Durations
 

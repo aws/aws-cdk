@@ -7,7 +7,7 @@ import { Fact, RegionInfo } from '../../region-info';
 import type { ITaggableV2 } from '../lib';
 import {
   App, CfnCondition, CfnInclude, CfnOutput, CfnParameter,
-  CfnResource, ReferenceStrength, Lazy, ScopedAws, Stack, validateString,
+  CfnResource, CrossStackReferences, ReferenceStrength, Lazy, ScopedAws, Stack, validateString,
   Tags, LegacyStackSynthesizer, DefaultStackSynthesizer,
   NestedStack,
   Aws, Fn, ResolutionTypeHint,
@@ -1360,7 +1360,7 @@ describe('stack', () => {
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    exportResource.applyCrossStackReferenceStrength(ReferenceStrength.WEAK);
+    CrossStackReferences.of(exportResource).produce(ReferenceStrength.WEAK);
 
     const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
 
@@ -1392,7 +1392,7 @@ describe('stack', () => {
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    exportResource.applyCrossStackReferenceStrength(ReferenceStrength.STRONG);
+    CrossStackReferences.of(exportResource).produce(ReferenceStrength.STRONG);
 
     const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
 
@@ -1416,7 +1416,7 @@ describe('stack', () => {
     const weakResource = new CfnResource(stack1, 'WeakResource', {
       type: 'AWS::S3::Bucket',
     });
-    weakResource.applyCrossStackReferenceStrength(ReferenceStrength.WEAK);
+    CrossStackReferences.of(weakResource).produce(ReferenceStrength.WEAK);
 
     const strongResource = new CfnResource(stack1, 'StrongResource', {
       type: 'AWS::SNS::Topic',
@@ -1449,7 +1449,7 @@ describe('stack', () => {
     const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
       type: 'AWS::S3::Bucket',
     });
-    exportResource.applyCrossStackReferenceStrength(ReferenceStrength.WEAK);
+    CrossStackReferences.of(exportResource).produce(ReferenceStrength.WEAK);
 
     const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' } });
 
@@ -1490,35 +1490,64 @@ describe('stack', () => {
     expect(resource._crossStackReferenceStrengthOverride).toBe(ReferenceStrength.WEAK);
   });
 
+  test('CrossStackReferences.of().produce() delegates to applyCrossStackReferenceStrength', () => {
+    const stack = new Stack();
+    const resource = new CfnResource(stack, 'MyResource', { type: 'AWS::S3::Bucket' });
+
+    // WHEN
+    CrossStackReferences.of(resource).produce(ReferenceStrength.WEAK);
+
+    // THEN
+    expect(resource._crossStackReferenceStrengthOverride).toBe(ReferenceStrength.WEAK);
+  });
+
+  test('CrossStackReferences.of().consume() sets context on the scope', () => {
+    const app = new App();
+    const stack = new Stack(app, 'Stack1');
+
+    // WHEN
+    CrossStackReferences.of(stack).consume(ReferenceStrength.WEAK);
+
+    // THEN
+    expect(stack.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES)).toBe('weak');
+  });
+
   test('consumeReference weakens a single reference usage (same region)', () => {
     // GIVEN - global default is strong
     const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
-    const resource = new CfnResource(stack1, 'MyResource', { type: 'AWS::S3::Bucket' });
+    const producerStack = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const resource = new CfnResource(producerStack, 'MyResource', { type: 'AWS::S3::Bucket' });
 
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+    const consumerStack = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
 
     // WHEN - one reference uses consumeReference, another uses the raw token
-    new CfnResource(stack2, 'WeakConsumer', {
+    new CfnResource(consumerStack, 'WeakConsumer', {
       type: 'AWS::Lambda::Function',
-      properties: { Description: stack2.consumeReference(resource.getAtt('Arn').toString()) },
+      properties: { Description: consumerStack.consumeReference(resource.getAtt('Arn').toString()) },
     });
-    new CfnResource(stack2, 'StrongConsumer', {
+    new CfnResource(consumerStack, 'StrongConsumer', {
       type: 'AWS::Lambda::Function',
       properties: { Description: resource.getAtt('Arn') },
     });
 
     const assembly = app.synth();
-    const template1 = assembly.getStackByName(stack1.stackName).template;
-    const template2 = assembly.getStackByName(stack2.stackName).template;
+    const producerTemplate = assembly.getStackByName(producerStack.stackName).template;
+    const consumerTemplate = assembly.getStackByName(consumerStack.stackName).template;
 
-    // THEN - producer has an Output (for weak) AND an Export (for strong)
-    expect(template1.Outputs).toBeDefined();
+    // THEN - producer has an Output with Export (for the strong reference)
+    expect(producerTemplate.Outputs.ExportsOutputFnGetAttMyResourceArnE157F485).toEqual({
+      Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+      Export: { Name: 'Stack1:ExportsOutputFnGetAttMyResourceArnE157F485' },
+    });
+    // and an Output without Export (for the BOTH/weak side)
+    expect(producerTemplate.Outputs.PublishOutputFnGetAttMyResourceArn8F315E6B).toEqual({
+      Value: { 'Fn::GetAtt': ['MyResource', 'Arn'] },
+    });
 
     // THEN - weak consumer uses Fn::GetStackOutput
-    expect(template2.Resources.WeakConsumer.Properties.Description).toHaveProperty('Fn::GetStackOutput');
+    expect(consumerTemplate.Resources.WeakConsumer.Properties.Description).toHaveProperty('Fn::GetStackOutput');
     // THEN - strong consumer uses Fn::ImportValue
-    expect(template2.Resources.StrongConsumer.Properties.Description).toHaveProperty('Fn::ImportValue');
+    expect(consumerTemplate.Resources.StrongConsumer.Properties.Description).toHaveProperty('Fn::ImportValue');
   });
 
   test('consumeReference defaults to BOTH strength (same region)', () => {

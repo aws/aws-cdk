@@ -88,7 +88,7 @@ export class CustomCoupledReference extends Intrinsic {
 
 /**
  * This is called from the App level to resolve all references defined. Each
- * reference is resolved based on it's consumption context.
+ * reference is resolved based on its consumption context.
  */
 export function resolveReferences(scope: IConstruct): void {
   const { refs, overrides } = findAllReferences(scope);
