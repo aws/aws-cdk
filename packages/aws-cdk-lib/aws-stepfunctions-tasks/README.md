@@ -303,6 +303,25 @@ Other properties such as `additionalIamStatements` can be used in the same way a
 
 Note that when you use `integrationPattern.WAIT_FOR_TASK_TOKEN`, the output path changes under `Payload` property.
 
+The internal Lambda function used to perform the cross-region call has a default timeout of 30 seconds.
+For long running API calls (e.g. copying large S3 objects across regions), you can configure the timeout using the `lambdaTimeout` property. The value must be between 1 and 900 seconds.
+
+```ts
+declare const myBucket: s3.Bucket;
+const copyObject = new tasks.CallAwsServiceCrossRegion(this, 'CopyObject', {
+  region: 'ap-northeast-1',
+  service: 's3',
+  action: 'copyObject',
+  parameters: {
+    Bucket: myBucket.bucketName,
+    Key: sfn.JsonPath.stringAt('$.key'),
+    CopySource: sfn.JsonPath.stringAt('$.source'),
+  },
+  iamResources: [myBucket.arnForObjects('*')],
+  lambdaTimeout: Duration.minutes(15),
+});
+```
+
 ## Athena
 
 Step Functions supports [Athena](https://docs.aws.amazon.com/step-functions/latest/dg/connect-athena.html) through the service integration pattern.
