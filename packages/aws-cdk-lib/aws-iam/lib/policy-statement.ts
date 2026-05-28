@@ -565,6 +565,9 @@ export class PolicyStatement {
     if (this._resource.length === 0 && this._notResource.length === 0) {
       errors.push('A PolicyStatement used in an identity-based policy must specify at least one resource.');
     }
+    if (this._sid !== undefined && !cdk.Token.isUnresolved(this._sid) && !/^[0-9A-Za-z]*$/.test(this._sid)) {
+      errors.push(`Statement ID (sid) '${this._sid}' must be alphanumeric (A-Z, a-z, 0-9) when used in an identity-based policy. See https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_sid.html`);
+    }
     return errors;
   }
 
@@ -738,7 +741,8 @@ export interface PolicyStatementProps {
    * policy statement. You can assign a Sid value to each statement in a
    * statement array. In services that let you specify an ID element, such as
    * SQS and SNS, the Sid value is just a sub-ID of the policy document's ID. In
-   * IAM, the Sid value must be unique within a JSON policy.
+   * IAM, the Sid value must be unique within a JSON policy. In IAM identity
+   * policies, the Sid value must contain only alphanumeric characters.
    *
    * @default - no sid
    */

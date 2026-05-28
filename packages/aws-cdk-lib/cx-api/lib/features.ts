@@ -1887,7 +1887,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       \`"weak"\` and deploy again.
 
       **Migration from weak to strong**: set directly to \`"strong"\` (single deployment).`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.254.0' },
     recommendedValue: 'strong',
     unconfiguredBehavesLike: { v2: 'strong' },
   },
