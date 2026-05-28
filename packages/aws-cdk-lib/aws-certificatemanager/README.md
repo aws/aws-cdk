@@ -90,38 +90,20 @@ new acm.Certificate(this, 'Certificate', {
 ## Cross-region Certificates
 
 ACM certificates that are used with CloudFront -- or higher-level constructs which rely on CloudFront -- must be in the `us-east-1` region.
-CloudFormation allows you to create a Stack with a CloudFront distribution in any region. In order
-to create an ACM certificate in us-east-1 and reference it in a CloudFront distribution is a
-different region, it is recommended to perform a multi stack deployment.
-
-Enable the Stack property `crossRegionReferences`
-in order to access the cross stack/region certificate.
-
-> **This feature is currently experimental**
+`DnsValidatedCertificateV2` creates a DNS validated certificate in `us-east-1` by default and returns a weak
+cross-region reference to the certificate ARN using `Fn::GetStackOutput`. You do not need to define a separate
+certificate stack in your application.
 
 ```ts
 import { aws_cloudfront as cloudfront, aws_cloudfront_origins as origins } from 'aws-cdk-lib';
-declare const app: App;
+declare const hostedZone: route53.IHostedZone;
 
-const stack1 = new Stack(app, 'Stack1', {
-  env: {
-    region: 'us-east-1',
-  },
-  crossRegionReferences: true,
-});
-const cert = new acm.Certificate(stack1, 'Cert', {
+const cert = new acm.DnsValidatedCertificateV2(this, 'Certificate', {
   domainName: '*.example.com',
-  validation: acm.CertificateValidation.fromDns(PublicHostedZone.fromHostedZoneId(stack1, 'Zone', 'ZONE_ID')),
+  hostedZone,
 });
 
-const stack2 = new Stack(app, 'Stack2', {
-  env: {
-    region: 'us-east-2',
-  },
-  crossRegionReferences: true,
-});
-
-new cloudfront.Distribution(stack2, 'Distribution', {
+new cloudfront.Distribution(this, 'Distribution', {
   defaultBehavior: {
     origin: new origins.HttpOrigin('example.com'),
   },
@@ -129,6 +111,9 @@ new cloudfront.Distribution(stack2, 'Distribution', {
   certificate: cert,
 });
 ```
+
+For cross-region certificates, pass a hosted zone with a concrete hosted zone ID, for example from
+`HostedZone.fromLookup()` or `HostedZone.fromHostedZoneId()`.
 
 ## Requesting private certificates
 
