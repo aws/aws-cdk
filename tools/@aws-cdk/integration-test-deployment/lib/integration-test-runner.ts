@@ -4,6 +4,30 @@ import { STSClient, AssumeRoleCommand } from '@aws-sdk/client-sts';
 import { AtmosphereAllocation } from './atmosphere';
 import { getChangedSnapshots } from './utils';
 
+/**
+ * Regions supported by the Atmosphere test accounts.
+ * @see https://code.amazon.com/packages/CDKCoreAtmosphereServicePipeline/blobs/mainline/--/lib/conf/conf.ts
+ */
+export const REGIONS = [
+  'us-east-1',
+  'us-east-2',
+  'us-west-1',
+  'us-west-2',
+  'ap-south-1',
+  'ap-northeast-1',
+  'ap-northeast-2',
+  'ap-northeast-3',
+  'ap-southeast-1',
+  'ap-southeast-2',
+  'ca-central-1',
+  'eu-central-1',
+  'eu-west-1',
+  'eu-west-2',
+  'eu-west-3',
+  'eu-north-1',
+  'sa-east-1',
+];
+
 export const deployIntegTests = async (props: {
   atmosphereRoleArn: string;
   endpoint: string;
@@ -90,7 +114,7 @@ export const assumeAtmosphereRole = async (roleArn: string) => {
 
 export const bootstrap = async (env: NodeJS.ProcessEnv) => {
   console.log('Bootstrapping AWS account.');
-  const spawnProcess = spawn('npx', ['cdk', 'bootstrap', ...['us-east-1', 'us-east-2', 'us-west-2'].map((region) => `aws://${env.AWS_ACCOUNT_ID}/${region}`)], {
+  const spawnProcess = spawn('npx', ['cdk', 'bootstrap', ...REGIONS.map((region) => `aws://${env.AWS_ACCOUNT_ID}/${region}`)], {
     stdio: ['ignore', 'inherit', 'inherit'],
     env,
   });
@@ -104,7 +128,7 @@ export const bootstrap = async (env: NodeJS.ProcessEnv) => {
 export const deployIntegrationTest = async (env: NodeJS.ProcessEnv, snapshotPaths: string[]) => {
   console.log(`Deploying snapshots:\n${snapshotPaths.join('\n')}`);
 
-  const spawnProcess = spawn('yarn', ['integ-runner', '--disable-update-workflow', '--strict', '--directory', 'packages', '--force', ...snapshotPaths], {
+  const spawnProcess = spawn('yarn', ['integ-runner', '--disable-update-workflow', '--strict', '--directory', 'packages', '--force', ...REGIONS.flatMap((region) => ['--parallel-regions', region]), ...snapshotPaths], {
     stdio: ['ignore', 'inherit', 'inherit'],
     env,
   });
