@@ -13,43 +13,96 @@ import type { IUserGroup } from './user-group';
 
 /**
  * Supported cache engines together with available versions.
+ *
+ * Named instances cover the versions currently available on ElastiCache Serverless.
+ * To target a version that is not yet represented by a named instance, use
+ * `CacheEngine.of(engineType, majorEngineVersion)`.
+ *
+ * @see https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
  */
-export enum CacheEngine {
+export class CacheEngine {
   /**
-   * Valkey engine, latest major version available, minor version is selected automatically
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   * Valkey engine, latest major version available, minor version is selected automatically.
    */
-  VALKEY_LATEST = 'valkey',
+  public static readonly VALKEY_LATEST = CacheEngine.of('valkey');
+
   /**
-   * Valkey engine, major version 7, minor version is selected automatically
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   * Valkey engine, major version 7, minor version is selected automatically.
    */
-  VALKEY_7 = 'valkey_7',
+  public static readonly VALKEY_7 = CacheEngine.of('valkey', '7');
+
   /**
-   * Valkey engine, major version 8, minor version is selected automatically
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   * Valkey engine, major version 8, minor version is selected automatically.
    */
-  VALKEY_8 = 'valkey_8',
+  public static readonly VALKEY_8 = CacheEngine.of('valkey', '8');
+
   /**
-   * Redis engine, latest major version available, minor version is selected automatically
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   * Valkey engine, major version 9, minor version is selected automatically.
    */
-  REDIS_LATEST = 'redis',
+  public static readonly VALKEY_9 = CacheEngine.of('valkey', '9');
+
   /**
-   * Redis engine, major version 7, minor version is selected automatically
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   * Redis engine, latest major version available, minor version is selected automatically.
    */
-  REDIS_7 = 'redis_7',
+  public static readonly REDIS_LATEST = CacheEngine.of('redis');
+
   /**
-   * Memcached engine, latest major version available, minor version is selected automatically
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   * Redis engine, major version 7, minor version is selected automatically.
    */
-  MEMCACHED_LATEST = 'memcached',
+  public static readonly REDIS_7 = CacheEngine.of('redis', '7');
+
   /**
-   * Memcached engine, minor version 1.6, patch version is selected automatically
-   * For more information about the features related to this version check: https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/engine-versions.html
+   * Memcached engine, latest major version available, minor version is selected automatically.
    */
-  MEMCACHED_1_6 = 'memcached_1.6',
+  public static readonly MEMCACHED_LATEST = CacheEngine.of('memcached');
+
+  /**
+   * Memcached engine, minor version 1.6, patch version is selected automatically.
+   */
+  public static readonly MEMCACHED_1_6 = CacheEngine.of('memcached', '1.6');
+
+  /**
+   * Create a new `CacheEngine` with an arbitrary engine type and major version.
+   *
+   * Use this for engine/version combinations that are not yet represented by a
+   * named static member.
+   *
+   * @param engineType the engine type (for example, `'valkey'`, `'redis'`, or `'memcached'`)
+   * @param majorEngineVersion the major engine version (for example, `'9'`). When omitted,
+   *   the latest major version available is selected by the service.
+   */
+  public static of(engineType: string, majorEngineVersion?: string): CacheEngine {
+    return new CacheEngine(engineType, majorEngineVersion);
+  }
+
+  /**
+   * The engine type, for example `'valkey'`, `'redis'`, or `'memcached'`.
+   * Maps directly to the `Engine` property of `AWS::ElastiCache::ServerlessCache`.
+   */
+  public readonly engineType: string;
+
+  /**
+   * The major engine version, for example `'9'` or `'1.6'`.
+   * Maps directly to the `MajorEngineVersion` property of
+   * `AWS::ElastiCache::ServerlessCache`. When `undefined`, the service selects
+   * the latest major version automatically.
+   */
+  public readonly majorEngineVersion?: string;
+
+  private constructor(engineType: string, majorEngineVersion?: string) {
+    this.engineType = engineType;
+    this.majorEngineVersion = majorEngineVersion;
+  }
+
+  /**
+   * Returns a string representation of this cache engine, for logging and
+   * error messages. The format is `engineType_majorEngineVersion` when a
+   * major version is set, or just `engineType` otherwise (for example,
+   * `'valkey_8'`, `'memcached_1.6'`, `'redis'`).
+   */
+  public toString(): string {
+    return this.majorEngineVersion ? `${this.engineType}_${this.majorEngineVersion}` : this.engineType;
+  }
 }
 
 /**
