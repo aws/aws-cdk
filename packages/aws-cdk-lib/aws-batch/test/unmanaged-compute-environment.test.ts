@@ -1,7 +1,8 @@
 import { capitalizePropertyNames } from './utils';
 import { Template } from '../../assertions';
 import { Role, ServicePrincipal } from '../../aws-iam';
-import { Stack } from '../../core';
+import { App, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
 import type { CfnComputeEnvironmentProps } from '../lib/';
 import { UnmanagedComputeEnvironment } from '../lib/';
 
@@ -101,5 +102,19 @@ test('respects unmanagedvCpus', () => {
   Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
     ...pascalCaseExpectedProps,
     UnmanagedvCpus: 256,
+  });
+});
+
+test('uses uppercase UNMANAGED type when feature flag is enabled', () => {
+  // GIVEN
+  const app = new App({ context: { [cxapi.BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE]: true } });
+  const flagStack = new Stack(app, 'FlagStack');
+
+  // WHEN
+  new UnmanagedComputeEnvironment(flagStack, 'MyCE');
+
+  // THEN
+  Template.fromStack(flagStack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+    Type: 'UNMANAGED',
   });
 });

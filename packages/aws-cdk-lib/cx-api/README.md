@@ -794,3 +794,21 @@ _cdk.json_
   }
 }
 ```
+
+* `@aws-cdk/aws-batch:computeEnvironmentTypeUppercase`
+
+When enabled, the `Type` property of `AWS::Batch::ComputeEnvironment` is set to uppercase
+`MANAGED` or `UNMANAGED` instead of lowercase `managed` or `unmanaged`.
+
+CloudFormation returns the uppercase value in drift detection, so using lowercase causes
+false positive drift results. Enabling this flag fixes the drift issue.
+
+_cdk.json_
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-batch:computeEnvironmentTypeUppercase": true
+  }
+}
+```

@@ -156,6 +156,7 @@ export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
+export const BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE = '@aws-cdk/aws-batch:computeEnvironmentTypeUppercase';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1890,6 +1891,25 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.254.0' },
     recommendedValue: 'strong',
     unconfiguredBehavesLike: { v2: 'strong' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [BATCH_COMPUTE_ENVIRONMENT_TYPE_UPPERCASE]: {
+    type: FlagType.BugFix,
+    summary: 'Use uppercase MANAGED/UNMANAGED for Batch ComputeEnvironment type to avoid CloudFormation drift',
+    detailsMd: `
+      When enabled, the \`Type\` property of \`AWS::Batch::ComputeEnvironment\` is set to uppercase
+      \`MANAGED\` or \`UNMANAGED\` instead of lowercase \`managed\` or \`unmanaged\`.
+
+      CloudFormation returns the uppercase value in drift detection, so using lowercase causes
+      false positive drift results. Enabling this flag fixes the drift issue.
+
+      **Warning**: Enabling this flag on existing stacks will cause the \`Type\` property value to
+      change from lowercase to uppercase in the synthesized template, which may trigger a
+      compute environment replacement during deployment.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
