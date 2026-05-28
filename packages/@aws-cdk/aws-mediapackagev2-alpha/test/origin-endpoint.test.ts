@@ -1122,7 +1122,7 @@ test('cdnAuth on OriginEndpoint props auto-creates the policy with the gating st
     Policy: {
       Statement: [{
         Sid: 'AllowGetObjectAccessForAuthorizedRequest',
-        Action: ['mediapackagev2:GetObject', 'mediapackagev2:GetHeadObject'],
+        Action: 'mediapackagev2:GetObject',
         Condition: {
           Bool: {
             'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',

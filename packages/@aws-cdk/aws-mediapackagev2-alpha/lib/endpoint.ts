@@ -1829,6 +1829,33 @@ export interface OriginEndpointOptions {
   /**
    * Provide access to MediaPackage V2 Origin Endpoint via secret header.
    *
+   * Use this when your CDN doesn't support AWS Signature Version 4 (SigV4)
+   * authentication. For SigV4-based access with Amazon CloudFront, see
+   * `MediaPackageV2Origin`.
+   *
+   * Setting `cdnAuth` auto-creates the following policy on the OriginEndpoint:
+   * @example
+   * {
+   *  "Version":"2012-10-17",
+   *  "Statement": [
+   *    {
+   *      "Sid": "AllowGetObjectAccessForAuthorizedRequest",
+   *      "Effect": "Allow",
+   *      "Principal": "*",
+   *      "Action": "mediapackagev2:GetObject",
+   *      "Resource": "arn:aws:mediapackagev2:us-east-1:111122223333:channelGroup/channelGroupName/channel/channelName/originEndpoint/originEndpointName",
+   *      "Condition": {
+   *        "Bool": {
+   *          "mediapackagev2:RequestHasMatchingCdnAuthHeader": "true"
+   *        }
+   *      }
+   *    }
+   *  ]
+   * }
+   *
+   * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth.html
+   * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
+   *
    * @default undefined - Not configured on endpoint
    */
   readonly cdnAuth?: CdnAuthConfiguration;
@@ -3014,7 +3041,7 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
         sid: 'AllowGetObjectAccessForAuthorizedRequest',
         effect: Effect.ALLOW,
         principals: [new StarPrincipal()],
-        actions: ['mediapackagev2:GetObject', 'mediapackagev2:GetHeadObject'],
+        actions: ['mediapackagev2:GetObject'],
         resources: [this.originEndpointArn],
         conditions: {
           Bool: {
