@@ -68,6 +68,7 @@ export type ValidationFn<T> = (param: T, scope?: IConstruct) => string[];
  * @param name - The configuration name to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateConfigName(name: string, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -108,6 +109,7 @@ export function validateConfigName(name: string, _scope?: IConstruct): string[] 
  * @param description - The description to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateDescription(description: string | undefined, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -134,6 +136,7 @@ export function validateDescription(description: string | undefined, _scope?: IC
  * @param evaluators - The evaluators array to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateEvaluators(evaluators: IEvaluatorReference[], _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -163,6 +166,7 @@ export function validateEvaluators(evaluators: IEvaluatorReference[], _scope?: I
  * @param percentage - The sampling percentage to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateSamplingPercentage(percentage: number | undefined, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -195,6 +199,7 @@ export function validateSamplingPercentage(percentage: number | undefined, _scop
  * @param filters - The filters array to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateFilters(filters: FilterConfig[] | undefined, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -217,6 +222,7 @@ export function validateFilters(filters: FilterConfig[] | undefined, _scope?: IC
  * @param minutes - The session timeout in minutes to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateSessionTimeout(minutes: number | undefined, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -249,6 +255,7 @@ export function validateSessionTimeout(minutes: number | undefined, _scope?: ICo
  * @param names - The log group names array to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateLogGroupNames(names: string[], _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -270,6 +277,7 @@ export function validateLogGroupNames(names: string[], _scope?: IConstruct): str
  * @param names - The service names array to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateServiceNames(names: string[], _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -292,6 +300,7 @@ export function validateServiceNames(names: string[], _scope?: IConstruct): stri
  * @param name - The evaluator name to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateEvaluatorName(name: string, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -332,6 +341,7 @@ export function validateEvaluatorName(name: string, _scope?: IConstruct): string
  * @param instructions - The instructions to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateInstructions(instructions: string, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -357,6 +367,7 @@ export function validateInstructions(instructions: string, _scope?: IConstruct):
  * @param options - The categorical rating options to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateCategoricalRatingScale(options: CategoricalRatingOption[], _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -383,6 +394,7 @@ export function validateCategoricalRatingScale(options: CategoricalRatingOption[
  * @param options - The numerical rating options to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateNumericalRatingScale(options: NumericalRatingOption[], _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -409,6 +421,7 @@ export function validateNumericalRatingScale(options: NumericalRatingOption[], _
  * @param seconds - The timeout in seconds to validate
  * @param _scope - The construct scope for error reporting (optional)
  * @returns Array of validation error messages, empty if valid
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function validateLambdaTimeout(seconds: number | undefined, _scope?: IConstruct): string[] {
   const errors: string[] = [];
@@ -438,6 +451,7 @@ export function validateLambdaTimeout(seconds: number | undefined, _scope?: ICon
  * @param param - The parameter to validate
  * @param scope - The construct scope for error reporting (optional)
  * @returns The validated parameter
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function throwIfInvalid<T>(validationFn: ValidationFn<T>, param: T, scope?: IConstruct): T {
   const errors = validationFn(param, scope);
@@ -499,11 +513,19 @@ function validateTags(tags: { [key: string]: string } | undefined, keyPattern: R
 }
 
 /** Validates tags for Evaluator resources (Unicode keys allowed per CFN docs) */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export function validateEvaluatorTags(tags?: { [key: string]: string }, scope?: IConstruct): string[] {
   return validateTags(tags, EVALUATOR_TAG_KEY_PATTERN, scope);
 }
 
 /** Validates tags for OnlineEvaluationConfig resources (ASCII keys per CFN pattern) */
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export function validateEvaluationTags(tags?: { [key: string]: string }, scope?: IConstruct): string[] {
   return validateTags(tags, ONLINE_EVALUATION_CONFIG_TAG_KEY_PATTERN, scope);
 }
