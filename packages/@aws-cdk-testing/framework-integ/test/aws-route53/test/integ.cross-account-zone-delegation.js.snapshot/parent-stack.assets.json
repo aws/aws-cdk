@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92": {
       "displayName": "parent-stack/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -16,16 +16,16 @@
         }
       }
     },
-    "2e051e9d7bd90930b1748efbaabfe2d068c5e68a01f49a2f0f836398c920da37": {
+    "96459bcff62d59a74045e2782bcffef85720b9ad59916d6122915a901f6a4cb4": {
       "displayName": "parent-stack Template",
       "source": {
         "path": "parent-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "12345678-us-east-1-d8a21ad3": {
+        "12345678-us-east-1-caddbd24": {
           "bucketName": "cdk-hnb659fds-assets-12345678-us-east-1",
-          "objectKey": "2e051e9d7bd90930b1748efbaabfe2d068c5e68a01f49a2f0f836398c920da37.json",
+          "objectKey": "96459bcff62d59a74045e2782bcffef85720b9ad59916d6122915a901f6a4cb4.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-1"
         }
