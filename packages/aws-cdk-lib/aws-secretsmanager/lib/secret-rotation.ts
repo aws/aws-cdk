@@ -19,9 +19,10 @@ export interface SecretRotationApplicationOptions {
   readonly isMultiUser?: boolean;
 
   /**
-   * The semantic version of the rotation application for each partition that the application is defined
+   * Semantic versions for partitions other than 'aws'.
+   * If not specified, it is assumed that non aws partitions (eg aws-cn, aws-us-gov) are not supported.
    */
-  readonly semanticVersions?: { [partition: string]: string };
+  readonly additionalSemanticVersions?: { [partition: string]: string };
 }
 
 /**
@@ -32,8 +33,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS MariaDB using the single user rotation scheme
    */
   public static readonly MARIADB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationSingleUser', '1.1.670', {
-    semanticVersions: {
-      'aws': '1.1.670',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.442',
       'aws-us-gov': '1.1.399',
     },
@@ -43,8 +43,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS MariaDB using the multi user rotation scheme
    */
   public static readonly MARIADB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMariaDBRotationMultiUser', '1.1.670', {
-    semanticVersions: {
-      'aws': '1.1.670',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.441',
       'aws-us-gov': '1.1.398',
     },
@@ -54,8 +53,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS MySQL using the single user rotation scheme
    */
   public static readonly MYSQL_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationSingleUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.440',
       'aws-us-gov': '1.1.397',
     },
@@ -65,8 +63,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS MySQL using the multi user rotation scheme
    */
   public static readonly MYSQL_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSMySQLRotationMultiUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.440',
       'aws-us-gov': '1.1.397',
     },
@@ -76,8 +73,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS Oracle using the single user rotation scheme
    */
   public static readonly ORACLE_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationSingleUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.441',
       'aws-us-gov': '1.1.398',
     },
@@ -87,8 +83,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS Oracle using the multi user rotation scheme
    */
   public static readonly ORACLE_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSOracleRotationMultiUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.441',
       'aws-us-gov': '1.1.398',
     },
@@ -98,8 +93,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the single user rotation scheme
    */
   public static readonly POSTGRES_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationSingleUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.440',
       'aws-us-gov': '1.1.397',
     },
@@ -109,8 +103,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS PostgreSQL using the multi user rotation scheme
    */
   public static readonly POSTGRES_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSPostgreSQLRotationMultiUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.440',
       'aws-us-gov': '1.1.397',
     },
@@ -120,8 +113,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS SQL Server using the single user rotation scheme
    */
   public static readonly SQLSERVER_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationSingleUser', '1.1.670', {
-    semanticVersions: {
-      'aws': '1.1.670',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.441',
       'aws-us-gov': '1.1.398',
     },
@@ -131,8 +123,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS SQL Server using the multi user rotation scheme
    */
   public static readonly SQLSERVER_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSSQLServerRotationMultiUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.441',
       'aws-us-gov': '1.1.398',
     },
@@ -142,8 +133,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for Amazon Redshift using the single user rotation scheme
    */
   public static readonly REDSHIFT_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationSingleUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.441',
       'aws-us-gov': '1.1.398',
     },
@@ -153,8 +143,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for Amazon Redshift using the multi user rotation scheme
    */
   public static readonly REDSHIFT_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRedshiftRotationMultiUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.440',
       'aws-us-gov': '1.1.397',
     },
@@ -164,8 +153,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for MongoDB using the single user rotation scheme
    */
   public static readonly MONGODB_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationSingleUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.440',
       'aws-us-gov': '1.1.397',
     },
@@ -175,8 +163,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for MongoDB using the multi user rotation scheme
    */
   public static readonly MONGODB_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerMongoDBRotationMultiUser', '1.1.671', {
-    semanticVersions: {
-      'aws': '1.1.671',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.441',
       'aws-us-gov': '1.1.398',
     },
@@ -186,8 +173,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS Db2 using the single user rotation scheme
    */
   public static readonly DB2_ROTATION_SINGLE_USER = new SecretRotationApplication('SecretsManagerRDSDb2RotationSingleUser', '1.1.271', {
-    semanticVersions: {
-      'aws': '1.1.271',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.242',
       'aws-us-gov': '1.1.199',
     },
@@ -197,8 +183,7 @@ export class SecretRotationApplication {
    * Conducts an AWS SecretsManager secret rotation for RDS Db2 using the multi user rotation scheme
    */
   public static readonly DB2_ROTATION_MULTI_USER = new SecretRotationApplication('SecretsManagerRDSDb2RotationMultiUser', '1.1.272', {
-    semanticVersions: {
-      'aws': '1.1.272',
+    additionalSemanticVersions: {
       'aws-cn': '1.1.240',
       'aws-us-gov': '1.1.197',
     },
@@ -235,14 +220,17 @@ export class SecretRotationApplication {
 
   /**
    * @param applicationName - The name of the rotation application
-   * @param semanticVersion - AWS partition semantic version. Maintained for backwards compatibility
-   * @param options - The options for the rotation application. Most importantly this contains the partitional semantic version map.
+   * @param awsSemanticVersion - AWS partition semantic version for the application.
+   * @param options - Additional options for the rotation application.
    */
-  constructor(applicationName: string, semanticVersion: string, options?: SecretRotationApplicationOptions) {
+  constructor(applicationName: string, awsSemanticVersion: string, options?: SecretRotationApplicationOptions) {
     this.applicationName = applicationName;
     this.isMultiUser = options?.isMultiUser ?? applicationName.endsWith('MultiUser');
 
-    this.partitionalSemanticVersions = options?.semanticVersions ?? { aws: semanticVersion };
+    this.partitionalSemanticVersions = {
+      aws: awsSemanticVersion,
+      ...(options?.additionalSemanticVersions ?? {}),
+    };
 
     // Constants that are stored for backwards compatibility
     this.semanticVersion = this.semanticVersionForPartition('aws');
