@@ -1139,6 +1139,29 @@ test('cdnAuth on OriginEndpoint props auto-creates the policy with the gating st
   });
 });
 
+test('cdnAuth with empty secrets list fails at synth', () => {
+  const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'mychannel', {
+    channelGroup,
+    input: mediapackagev2.InputConfiguration.hls(),
+  });
+
+  expect(() => {
+    new mediapackagev2.OriginEndpoint(stack, 'origin', {
+      channel,
+      segment: mediapackagev2.Segment.ts(),
+      manifests: [
+        mediapackagev2.Manifest.hls({
+          manifestName: 'index',
+        }),
+      ],
+      cdnAuth: {
+        secrets: [],
+      },
+    });
+  }).toThrow(/cdnAuth\.secrets must contain at least one secret/);
+});
+
 test('cdnAuth on OriginEndpoint props plus addToResourcePolicy appends additional statements', () => {
   const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
   const channel = new mediapackagev2.Channel(stack, 'mychannel', {

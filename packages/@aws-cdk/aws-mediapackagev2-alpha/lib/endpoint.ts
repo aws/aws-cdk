@@ -2682,16 +2682,9 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
 
   /**
    * CDN authorization configuration to be applied when the policy is created.
+   * Set by subclass constructors when `cdnAuth` is provided in props.
    */
-  private cdnAuthConfig?: CdnAuthConfiguration;
-
-  /**
-   * Set CDN auth config. Used by subclass constructors when `cdnAuth` is provided in props.
-   * @internal
-   */
-  protected _setCdnAuth(cdnAuth: CdnAuthConfiguration): void {
-    this.cdnAuthConfig = cdnAuth;
-  }
+  protected cdnAuthConfig?: CdnAuthConfiguration;
 
   /**
    * Configure origin endpoint policy.
@@ -3038,7 +3031,15 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
     // unsigned HTTPS — only the matching CDN-Identifier header proves authorisation.
     // See https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
     if (props.cdnAuth) {
-      this._setCdnAuth(props.cdnAuth);
+      if (props.cdnAuth.secrets.length === 0) {
+        throw new ValidationError(
+          lit`CdnAuthSecretsRequired`,
+          'cdnAuth.secrets must contain at least one secret. CDN authorization needs a secret to validate incoming CDN-Identifier headers.',
+          this,
+        );
+      }
+
+      this.cdnAuthConfig = props.cdnAuth;
       this.addToResourcePolicy(new PolicyStatement({
         sid: 'AllowGetObjectAccessForAuthorizedRequest',
         effect: Effect.ALLOW,
