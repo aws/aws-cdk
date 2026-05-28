@@ -1834,24 +1834,26 @@ export interface OriginEndpointOptions {
    * `MediaPackageV2Origin`.
    *
    * Setting `cdnAuth` auto-creates the following policy on the OriginEndpoint:
-   * @example
+   *
+   * ```json
    * {
-   *  "Version":"2012-10-17",
-   *  "Statement": [
-   *    {
-   *      "Sid": "AllowGetObjectAccessForAuthorizedRequest",
-   *      "Effect": "Allow",
-   *      "Principal": "*",
-   *      "Action": "mediapackagev2:GetObject",
-   *      "Resource": "arn:aws:mediapackagev2:us-east-1:111122223333:channelGroup/channelGroupName/channel/channelName/originEndpoint/originEndpointName",
-   *      "Condition": {
-   *        "Bool": {
-   *          "mediapackagev2:RequestHasMatchingCdnAuthHeader": "true"
-   *        }
-   *      }
-   *    }
-   *  ]
+   *   "Version":"2012-10-17",
+   *   "Statement": [
+   *     {
+   *       "Sid": "AllowGetObjectAccessForAuthorizedRequest",
+   *       "Effect": "Allow",
+   *       "Principal": "*",
+   *       "Action": "mediapackagev2:GetObject",
+   *       "Resource": "arn:aws:mediapackagev2:us-east-1:111122223333:channelGroup/channelGroupName/channel/channelName/originEndpoint/originEndpointName",
+   *       "Condition": {
+   *         "Bool": {
+   *           "mediapackagev2:RequestHasMatchingCdnAuthHeader": "true"
+   *         }
+   *       }
+   *     }
+   *   ]
    * }
+   * ```
    *
    * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth.html
    * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
