@@ -267,7 +267,10 @@ describeDockerSuite((forceDockerBundling) => {
     test('performance counters are emitted', () => {
       project = createProject(pkgManager, '.ts');
 
-      const countersFile = path.join(project.outdir, 'counters.json');
+      // The CLI writes perf counters to 'performance-counters.json' in the output
+      // directory. We set the env var to the same path for older CLI versions that
+      // pass through the env var instead of setting their own.
+      const countersFile = path.join(project.outdir, 'performance-counters.json');
       process.env[cx_api.PERF_COUNTERS_FILE_ENV] = countersFile;
       try {
         cdkSynth(project, {
