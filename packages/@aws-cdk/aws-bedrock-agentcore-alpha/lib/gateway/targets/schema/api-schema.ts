@@ -4,7 +4,7 @@ import { Grant } from 'aws-cdk-lib/aws-iam';
 import type { IBucket, Location } from 'aws-cdk-lib/aws-s3';
 import * as s3_assets from 'aws-cdk-lib/aws-s3-assets';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
-import { md5hash } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { md5hash, lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { TargetSchema } from './base-schema';
 
@@ -13,6 +13,7 @@ import { TargetSchema } from './base-schema';
  *****************************************************************************/
 /**
  * Represents the concept of an API Schema for a Gateway Target.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class ApiSchema extends TargetSchema {
   /**
@@ -83,6 +84,7 @@ export abstract class ApiSchema extends TargetSchema {
  *
  * The asset is uploaded to an S3 staging bucket, then moved to its final location
  * by CloudFormation during deployment.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class AssetApiSchema extends ApiSchema {
   private asset?: s3_assets.Asset;
@@ -126,6 +128,7 @@ export class AssetApiSchema extends ApiSchema {
   public _render(): any {
     if (!this.asset) {
       throw new UnscopedValidationError(
+        lit`ApiSchemaNotBound`,
         'ApiSchema must be bound to a scope before rendering. Call bind() first.',
       );
     }
@@ -149,6 +152,7 @@ export class AssetApiSchema extends ApiSchema {
  * Class to define an API Schema from an inline string.
  * The schema can be provided directly as a string.
  * Validation is performed at the target configuration level where the schema type is known.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class InlineApiSchema extends ApiSchema {
   constructor(private readonly schema: string) {
@@ -181,6 +185,7 @@ export class InlineApiSchema extends ApiSchema {
 // ------------------------------------------------------
 /**
  * Class to define an API Schema from an S3 object.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class S3ApiSchema extends ApiSchema {
   constructor(private readonly location: Location, public readonly bucketOwnerAccountId?: string) {

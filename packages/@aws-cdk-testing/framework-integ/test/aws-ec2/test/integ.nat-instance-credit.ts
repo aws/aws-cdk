@@ -6,7 +6,7 @@ class NatInstanceStack extends cdk.Stack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const natInstanceProvider = ec2.NatProvider.instance({
+    const natInstanceProvider = ec2.NatProvider.instanceV2({
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.LARGE),
       machineImage: new ec2.AmazonLinuxImage(),
       creditSpecification: ec2.CpuCredits.STANDARD,

@@ -10,7 +10,7 @@ class NatInstanceStack extends cdk.Stack {
 
     /// !show
     // Configure the `natGatewayProvider` when defining a Vpc
-    const natGatewayProvider = ec2.NatProvider.instance({
+    const natGatewayProvider = ec2.NatProvider.instanceV2({
       instanceType: new ec2.InstanceType('t3.small'),
     });
 

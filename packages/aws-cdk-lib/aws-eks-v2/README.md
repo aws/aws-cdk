@@ -431,7 +431,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
   },
 });
 ```
@@ -444,7 +444,7 @@ import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     additionalHelmChartValues: {
       enableWafv2: false
     }
@@ -458,7 +458,7 @@ To overwrite an existing ALB controller service account, use the `overwriteServi
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     overwriteServiceAccount: true,
   },
 });
@@ -478,7 +478,7 @@ aws-load-balancer-controller-76bd6c7586-fqxph   1/1     Running   0          109
 ...
 ```
 
-Every Kubernetes manifest that utilizes the ALB Controller is effectively dependant on the controller.
+Every Kubernetes manifest that utilizes the ALB Controller is effectively dependent on the controller.
 If the controller is deleted before the manifest, it might result in dangling ELB/ALB resources.
 Currently, the EKS construct library does not detect such dependencies, and they should be done explicitly.
 
@@ -557,7 +557,7 @@ If you want to use an existing kubectl provider function, for example with tight
 
 ```ts
 const handlerRole = iam.Role.fromRoleArn(this, 'HandlerRole', 'arn:aws:iam::123456789012:role/lambda-role');
-// get the serivceToken from the custom resource provider
+// get the serviceToken from the custom resource provider
 const functionArn = lambda.Function.fromFunctionName(this, 'ProviderOnEventFunc', 'ProviderframeworkonEvent-XXX').functionArn;
 const kubectlProvider = eks.KubectlProvider.fromKubectlProviderAttributes(this, 'KubectlProvider', {
   serviceToken: functionArn,

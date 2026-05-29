@@ -1,6 +1,8 @@
+import { ArtifactMetadataEntryType } from '@aws-cdk/cloud-assembly-schema';
 import type { Construct, IConstruct } from 'constructs';
 import { App } from '../../app';
 import { CfnResource } from '../../cfn-resource';
+import { iterateDfsPreorder } from '../../private/construct-iteration';
 import { constructInfoFromConstruct } from '../../private/runtime-info';
 import { Stack } from '../../stack';
 
@@ -77,7 +79,7 @@ export class ConstructTree {
     this._constructByPath.set(this.root.node.path, root);
     // do this once at the start so we don't have to traverse
     // the entire tree everytime we want to find a nested node
-    this.root.node.findAll().forEach(child => {
+    for (const child of iterateDfsPreorder(this.root)) {
       this._constructByPath.set(child.node.path, child);
       const defaultChild = child.node.defaultChild;
       if (defaultChild && CfnResource.isCfnResource(defaultChild)) {
@@ -85,16 +87,16 @@ export class ConstructTree {
         const logicalId = stack.resolve(defaultChild.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
-    });
+    }
 
     // Another pass to include all the L1s that haven't been added yet
-    this.root.node.findAll().forEach(child => {
+    for (const child of iterateDfsPreorder(this.root)) {
       if (CfnResource.isCfnResource(child)) {
         const stack = Stack.of(child);
         const logicalId = Stack.of(child).resolve(child.logicalId);
         this.setLogicalId(stack, logicalId, child);
       }
-    });
+    }
   }
 
   private setLogicalId(stack: Stack, logicalId: string, child: Construct) {
@@ -190,7 +192,7 @@ export class ConstructTree {
    * Returns a stack trace if stack trace information is found, or `undefined` if not.
    */
   private stackTrace(construct: IConstruct): string[] | undefined {
-    return construct?.node.metadata.find(meta => !!meta.trace)?.trace;
+    return construct?.node.metadata.find(meta => meta.type === ArtifactMetadataEntryType.CREATION_STACK)?.data;
   }
 
   /**

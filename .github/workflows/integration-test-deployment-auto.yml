@@ -59,7 +59,7 @@ jobs:
         id: check_team
         if: steps.check_snapshots.outputs.has_snapshots == 'true'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           APPROVER: ${{ github.event.review.user.login }}
         run: |
           # Use gh CLI to check team membership (pre-installed in GitHub Actions runners)
@@ -107,7 +107,7 @@ jobs:
             yarn.lock
 
       - name: Set up Docker
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Load Docker images
         id: docker-cache
@@ -152,6 +152,6 @@ jobs:
           TARGET_BRANCH_COMMIT: ${{ github.event.pull_request.base.sha }}
           SOURCE_BRANCH_COMMIT: ${{ github.event.pull_request.head.sha }}
           # GitHub context for preflight check (validates CDK team membership)
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ github.event.pull_request.number }}

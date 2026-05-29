@@ -708,7 +708,7 @@ import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_35,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
   },
   kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
 });
@@ -722,7 +722,7 @@ import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_35,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     additionalHelmChartValues: {
       enableWafv2: false
     }
@@ -739,7 +739,7 @@ import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_35,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     overwriteServiceAccount: true
   },
   kubectlLayer: new KubectlV35Layer(this, 'kubectl'),
@@ -760,7 +760,7 @@ aws-load-balancer-controller-76bd6c7586-fqxph   1/1     Running   0          109
 ...
 ```
 
-Every Kubernetes manifest that utilizes the ALB Controller is effectively dependant on the controller.
+Every Kubernetes manifest that utilizes the ALB Controller is effectively dependent on the controller.
 If the controller is deleted before the manifest, it might result in dangling ELB/ALB resources.
 Currently, the EKS construct library does not detect such dependencies, and they should be done explicitly.
 

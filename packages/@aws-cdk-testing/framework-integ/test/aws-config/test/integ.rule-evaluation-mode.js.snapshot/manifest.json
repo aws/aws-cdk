@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/80b3c28ad17c580c5e58a49c6f3379a6862fcb4cf9733e5d145cf55397e9ae46.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/808d4734269eb351da36e9ae14ccc4609fb8ec34a576b163a18ba7056f73faa0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -34,6 +34,99 @@
         "ConfigRuleEvaluationMode.assets"
       ],
       "metadata": {
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/Role": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesRoleAB65121E"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/Recorder": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesRecorderF50F1E3E"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/DeliveryBucket": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "removalPolicy": "destroy",
+              "autoDeleteObjects": true
+            }
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/DeliveryBucket/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryBucketC25E0643"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/DeliveryBucket/Policy": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "bucket": "*"
+            }
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/DeliveryBucket/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryBucketPolicy19A7503F"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/DeliveryBucket/AutoDeleteObjectsCustomResource": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": "*"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/DeliveryBucket/AutoDeleteObjectsCustomResource/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryBucketAutoDeleteObjectsCustomResource0F5D7204"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/ConfigPrerequisites/DeliveryChannel": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigPrerequisitesDeliveryChannelF524911C"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+          {
+            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+            "data": true
+          }
+        ],
+        "/ConfigRuleEvaluationMode/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+          }
+        ],
+        "/ConfigRuleEvaluationMode/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+          }
+        ],
         "/ConfigRuleEvaluationMode/CustomFunction": [
           {
             "type": "aws:cdk:analytics:construct",
@@ -147,6 +240,60 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "CheckBootstrapVersion"
+          }
+        ],
+        "ConfigRecorderRoleC4E33AA3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigRecorderRoleC4E33AA3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigRecorder": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigRecorder",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryBucket004ED7F3": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryBucket004ED7F3",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryBucketPolicy210B6CAB": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryBucketPolicy210B6CAB",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryBucketAutoDeleteObjectsCustomResourceCB369B77": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryBucketAutoDeleteObjectsCustomResourceCB369B77",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
+          }
+        ],
+        "ConfigDeliveryChannel": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ConfigDeliveryChannel",
+            "trace": [
+              "!!DESTRUCTIVE_CHANGES: WILL_DESTROY"
+            ]
           }
         ]
       },

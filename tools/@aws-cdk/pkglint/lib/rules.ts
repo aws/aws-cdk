@@ -331,6 +331,14 @@ export class MaturitySetting extends ValidationRule {
       maturity = 'deprecated';
     }
 
+    if (maturity === 'developer-preview') {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Maturity "developer-preview" is no longer supported. Use "experimental" instead',
+      });
+      return;
+    }
+
     const packageLevels = this.determinePackageLevels(pkg);
 
     const hasL1s = packageLevels.some(level => level === 'l1');
@@ -435,7 +443,6 @@ export class MaturitySetting extends ValidationRule {
 const MATURITY_TO_STABILITY: Record<string, string> = {
   'cfn-only': 'experimental',
   'experimental': 'experimental',
-  'developer-preview': 'experimental',
   'stable': 'stable',
   'deprecated': 'deprecated',
 };
@@ -480,12 +487,20 @@ export class FeatureStabilityRule extends ValidationRule {
   private readonly badges: { [key: string]: string } = {
     'Not Implemented': 'https://img.shields.io/badge/not--implemented-black.svg?style=for-the-badge',
     'Experimental': 'https://img.shields.io/badge/experimental-important.svg?style=for-the-badge',
-    'Developer Preview': 'https://img.shields.io/badge/developer--preview-informational.svg?style=for-the-badge',
     'Stable': 'https://img.shields.io/badge/stable-success.svg?style=for-the-badge',
   };
 
   public validate(pkg: PackageJson): void {
     if (pkg.json.private || !pkg.json.features) {
+      return;
+    }
+
+    const hasDevPreview = pkg.json.features.some((f: { stability: string }) => f.stability === 'Developer Preview');
+    if (hasDevPreview) {
+      pkg.report({
+        ruleName: this.name,
+        message: 'Feature stability "Developer Preview" is no longer supported. Use "Experimental" instead',
+      });
       return;
     }
 
@@ -549,7 +564,7 @@ export class FeatureStabilityRule extends ValidationRule {
       notices.push('');
     }
 
-    const noticeOrder = ['Experimental', 'Developer Preview', 'Stable'];
+    const noticeOrder = ['Experimental', 'Stable'];
     const stabilities = pkg.json.features.map((f: { [k: string]: string }) => f.stability);
     const filteredNotices = noticeOrder.filter(v => stabilities.includes(v));
     for (const notice of filteredNotices) {
@@ -1631,6 +1646,7 @@ export class UbergenPackageVisibility extends ValidationRule {
     '@aws-cdk/cli-plugin-contract',
     '@aws-cdk/cloudformation-diff',
     '@aws-cdk/cx-api',
+    '@aws-cdk/cfn-property-mixins',
     '@aws-cdk/mixins-preview',
     '@aws-cdk/region-info',
     'aws-cdk-lib',
@@ -1751,6 +1767,7 @@ export class CdkCliV2MissesMainAndTypes extends ValidationRule {
 /**
  * If an aws-cdk-lib submodule has a lib/mixins/ directory,
  * its lib/index.ts must contain `export * as mixins from './mixins';`
+ * and package.json#exports must have an entry for the mixins submodule.
  */
 export class MixinsSubmoduleExport extends ValidationRule {
   public readonly name = 'aws-cdk-lib/mixins-export';
@@ -1776,6 +1793,26 @@ export class MixinsSubmoduleExport extends ValidationRule {
       const exportLine = "export * as mixins from './mixins';";
 
       fileShouldContain(this.name, pkg, libIndex, exportLine);
+
+      // Ensure package.json exports includes the mixins submodule
+      const exportKey = `./${entry.name}/mixins`;
+      const exportValue = `./${entry.name}/lib/mixins/index.js`;
+      if (pkg.json.exports?.[exportKey] !== exportValue) {
+        pkg.report({
+          ruleName: this.name,
+          message: `package.json "exports" must include "${exportKey}": "${exportValue}"`,
+          fix: () => {
+            if (!pkg.json.exports) {
+              pkg.json.exports = {};
+            }
+            pkg.json.exports[exportKey] = exportValue;
+            // Keep exports sorted
+            pkg.json.exports = Object.fromEntries(
+              Object.entries(pkg.json.exports).sort(([a], [b]) => a.localeCompare(b)),
+            );
+          },
+        });
+      }
     }
   }
 }
