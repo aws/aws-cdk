@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets": {
+    "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets.json",
+        "file": "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-mediapackagev2-endpoint-cdn-auth": {
+    "aws-cdk-bedrock-agentcore-runtime-header-allowlist": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.template.json",
+        "templateFile": "aws-cdk-bedrock-agentcore-runtime-header-allowlist.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63b273eef2d62c96b8375b685e77148e4f54edc094fd568793234fe803b7a17f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dfe2226416fd66f38b481fc1fb3088f5346cf946f5fd2ba02fb54075a05ee1d5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
+          "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,24 +31,24 @@
         }
       },
       "dependencies": [
-        "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
+        "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.metadata.json",
-      "displayName": "aws-cdk-mediapackagev2-endpoint-cdn-auth"
+      "additionalMetadataFile": "aws-cdk-bedrock-agentcore-runtime-header-allowlist.metadata.json",
+      "displayName": "aws-cdk-bedrock-agentcore-runtime-header-allowlist"
     },
-    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets": {
+    "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets.json",
+        "file": "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585": {
+    "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.template.json",
+        "templateFile": "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
@@ -57,7 +57,7 @@
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
+          "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,10 @@
         }
       },
       "dependencies": [
-        "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
+        "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets"
       ],
-      "additionalMetadataFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.metadata.json",
-      "displayName": "cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.metadata.json",
+      "displayName": "BedrockAgentCoreRuntimeHeaderAllowlistTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
