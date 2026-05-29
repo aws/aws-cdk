@@ -1073,7 +1073,7 @@ test('Create resources using helper functions', () => {
   });
 });
 
-test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () => {
+test('cdnAuth on OriginEndpoint props auto-creates the policy with the gating statement', () => {
   const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
   const channel = new mediapackagev2.Channel(stack, 'mychannel', {
     channelGroup,
@@ -1087,7 +1087,7 @@ test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () =>
   const secret1 = new Secret(stack, 'CdnSecret1');
   const secret2 = new Secret(stack, 'CdnSecret2');
 
-  const endpoint = new mediapackagev2.OriginEndpoint(stack, 'origin', {
+  new mediapackagev2.OriginEndpoint(stack, 'origin', {
     channel,
     segment: mediapackagev2.Segment.ts(),
     startoverWindow: Duration.seconds(100),
@@ -1096,25 +1096,16 @@ test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () =>
         manifestName: 'index',
       }),
     ],
-  });
-
-  const cdnAuthPolicy = new PolicyStatement({
-    effect: Effect.ALLOW,
-    principals: [new ServicePrincipal('*')],
-    actions: ['mediapackagev2:GetObject'],
-    resources: [endpoint.originEndpointArn],
-    conditions: {
-      Bool: {
-        'mediapackagev2:RequestHasMatchingCdnAuthHeader': true,
-      },
+    cdnAuth: {
+      secrets: [secret1, secret2],
+      role: cdnRole,
     },
   });
 
-  endpoint.addToResourcePolicy(cdnAuthPolicy, {
-    secrets: [secret1, secret2],
-    role: cdnRole,
-  });
-
+  // The endpoint policy is created with both the CdnAuthConfiguration block and
+  // the AWS-recommended gating PolicyStatement. Without that statement the
+  // CdnAuthConfiguration is non-functional — see
+  // https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
   Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
     ChannelGroupName: 'MyChannelGroup',
     ChannelName: 'mychannel',
@@ -1130,21 +1121,120 @@ test('addToResourcePolicy with CDN auth configuration for OriginEndpoint', () =>
     },
     Policy: {
       Statement: [{
+        Sid: 'AllowGetObjectAccessForAuthorizedRequest',
         Action: 'mediapackagev2:GetObject',
         Condition: {
           Bool: {
-            'mediapackagev2:RequestHasMatchingCdnAuthHeader': true,
+            'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
           },
         },
         Effect: 'Allow',
-        Principal: {
-          Service: '*.amazonaws.com',
-        },
+        Principal: '*',
         Resource: {
           'Fn::GetAtt': ['origin7345F895', 'Arn'],
         },
       }],
       Version: '2012-10-17',
+    },
+  });
+});
+
+test('cdnAuth with empty secrets list fails at synth', () => {
+  const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'mychannel', {
+    channelGroup,
+    input: mediapackagev2.InputConfiguration.hls(),
+  });
+
+  expect(() => {
+    new mediapackagev2.OriginEndpoint(stack, 'origin', {
+      channel,
+      segment: mediapackagev2.Segment.ts(),
+      manifests: [
+        mediapackagev2.Manifest.hls({
+          manifestName: 'index',
+        }),
+      ],
+      cdnAuth: {
+        secrets: [],
+      },
+    });
+  }).toThrow(/cdnAuth\.secrets must contain at least one secret/);
+});
+
+test('cdnAuth on OriginEndpoint props plus addToResourcePolicy appends additional statements', () => {
+  const channelGroup = new mediapackagev2.ChannelGroup(stack, 'MyChannelGroup');
+  const channel = new mediapackagev2.Channel(stack, 'mychannel', {
+    channelGroup,
+    input: mediapackagev2.InputConfiguration.hls(),
+  });
+
+  const cdnRole = new Role(stack, 'CdnAuthRole', {
+    assumedBy: new ServicePrincipal('mediapackagev2.amazonaws.com'),
+  });
+
+  const secret = new Secret(stack, 'CdnSecret');
+
+  const endpoint = new mediapackagev2.OriginEndpoint(stack, 'origin', {
+    channel,
+    segment: mediapackagev2.Segment.ts(),
+    startoverWindow: Duration.seconds(100),
+    manifests: [
+      mediapackagev2.Manifest.hls({
+        manifestName: 'index',
+      }),
+    ],
+    cdnAuth: {
+      secrets: [secret],
+      role: cdnRole,
+    },
+  });
+
+  // Policy: https://docs.aws.amazon.com/mediapackage/latest/userguide/endpoint-auth.html
+  endpoint.addToResourcePolicy(new PolicyStatement({
+    sid: 'AllowMediaPackageHarvestObjectAccess',
+    effect: Effect.ALLOW,
+    principals: [new ServicePrincipal('mediapackagev2.amazonaws.com')],
+    actions: ['mediapackagev2:HarvestObject', 'mediapackagev2:GetObject'],
+    resources: [endpoint.originEndpointArn],
+    conditions: {
+      StringEquals: {
+        'AWS:SourceAccount': Stack.of(endpoint).account,
+      },
+    },
+  }));
+
+  Template.fromStack(stack).hasResourceProperties('AWS::MediaPackageV2::OriginEndpointPolicy', {
+    Policy: {
+      Version: '2012-10-17',
+      Statement: [
+        // Auto-emitted gating statement
+        {
+          Sid: 'AllowGetObjectAccessForAuthorizedRequest',
+          Effect: 'Allow',
+          Principal: '*',
+          Action: 'mediapackagev2:GetObject',
+          Resource: { 'Fn::GetAtt': ['origin7345F895', 'Arn'] },
+          Condition: {
+            Bool: {
+              'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
+            },
+          },
+        },
+        // Harvester statement appended via addToResourcePolicy()
+        {
+          Sid: 'AllowMediaPackageHarvestObjectAccess',
+          Effect: 'Allow',
+          Principal: { Service: 'mediapackagev2.amazonaws.com' },
+          Action: ['mediapackagev2:HarvestObject', 'mediapackagev2:GetObject'],
+          Resource: { 'Fn::GetAtt': ['origin7345F895', 'Arn'] },
+          Condition: {
+            StringEquals: {
+              'AWS:SourceAccount': '123456789012',
+            },
+          },
+        },
+      ],
     },
   });
 });
