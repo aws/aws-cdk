@@ -545,8 +545,8 @@ export class Runtime extends RuntimeBase {
         const patternErrors = validateFieldPattern(
           header,
           'Request header',
-          /(Authorization|X-Amzn-Bedrock-AgentCore-Runtime-Custom-[a-zA-Z0-9-]+)/,
-          'Request header must contain only letters, numbers, and hyphens',
+          /^[A-Za-z][A-Za-z0-9_-]{0,255}$/,
+          'Request header must start with a letter and contain only letters, numbers, underscores, and hyphens (max 256 characters)',
         );
         allErrors.push(...patternErrors);
       }
