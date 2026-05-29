@@ -25,9 +25,14 @@ const ESBUILD_DEFAULT_VERSION = '0.21';
  * the base; a literal `..` substring anywhere else (for example in a filename
  * like `app..js`, or in a pnpm content-addressed directory such as
  * `node_modules/.pnpm/file+..+pkg+0.0.1`) does not indicate path escape.
+ *
+ * On Windows, `path.relative()` cannot produce a relative path when the two
+ * paths are on different drives and returns the absolute target path instead
+ * (for example `D:\\other` relative to `C:\\project`). An absolute result is
+ * therefore also treated as an escape.
  */
 function pathEscapesRoot(relativePath: string): boolean {
-  return relativePath === '..' || relativePath.startsWith(`..${path.sep}`);
+  return path.isAbsolute(relativePath) || relativePath === '..' || relativePath.startsWith(`..${path.sep}`);
 }
 
 /**

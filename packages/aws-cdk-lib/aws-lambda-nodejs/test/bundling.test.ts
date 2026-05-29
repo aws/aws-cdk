@@ -348,6 +348,26 @@ test('throws when depsLockFilePath is outside projectRoot', () => {
   })).toThrow(/depsLockFilePath \(\/other\/yarn\.lock\) should be under projectRoot/);
 });
 
+test('throws when entry is on a different Windows drive than projectRoot', () => {
+  // On Windows, path.relative() cannot produce a relative path across drives and
+  // returns the absolute target path instead. Simulate that here: mock the
+  // platform, the relative() result, and isAbsolute() to apply win32 rules.
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  jest.spyOn(path, 'relative').mockReturnValueOnce('D:\\other\\entry.ts');
+  jest.spyOn(path, 'isAbsolute').mockImplementation((p) => path.win32.isAbsolute(p));
+
+  expect(() => Bundling.bundle(stack, {
+    entry: 'D:\\other\\entry.ts',
+    projectRoot: 'C:\\my-project',
+    depsLockFilePath: 'C:\\my-project\\package-lock.json',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/entryPath \(D:\\other\\entry\.ts\) should be under projectRoot/);
+
+  osPlatformMock.mockRestore();
+});
+
 test('esbuild bundling source map default', () => {
   Bundling.bundle(stack, {
     entry,
