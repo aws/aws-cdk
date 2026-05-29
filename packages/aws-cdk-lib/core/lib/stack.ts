@@ -273,6 +273,49 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Override the reference strength for a specific cross-stack reference value.
+   *
+   * Use this to weaken (or strengthen) an individual reference without
+   * affecting other references to the same resource. For example:
+   *
+   * ```ts
+   * // producerStack defines an SNS topic
+   * declare const topic: sns.Topic;
+   *
+   * // consumerStack subscribes to it with a weak reference,
+   * // so the producer can be torn down without blocking on this consumer
+   * const consumerStack = new Stack(app, 'Consumer', {
+   *   env: { account: '123456789012', region: 'us-east-1' },
+   * });
+   * new sns.Subscription(consumerStack, 'Subscription', {
+   *   topic: sns.Topic.fromTopicArn(consumerStack, 'Topic', Stack.consumeReference(topic.topicArn)),
+   *   endpoint: 'https://example.com/webhook',
+   *   protocol: sns.SubscriptionProtocol.HTTPS,
+   * });
+   * ```
+   *
+   * @param value A tokenized string reference (e.g. `bucket.bucketArn`).
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public static consumeReference(value: string, strength: ReferenceStrength = ReferenceStrength.BOTH): string {
+    return Token.asString(makeCustomCoupledReference(value, strength));
+  }
+
+  /**
+   * Override the reference strength for a specific cross-stack string list reference.
+   *
+   * This is the string list equivalent of `consumeReference`.
+   *
+   * @param value A tokenized string list reference.
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public static consumeListReference(value: string[], strength: ReferenceStrength = ReferenceStrength.BOTH): string[] {
+    return Token.asList(makeCustomCoupledReference(value, strength));
+  }
+
+  /**
    * Tags to be applied to the stack.
    */
   public readonly tags: TagManager;
@@ -1353,62 +1396,6 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
-   * Override the reference strength for a specific cross-stack reference value.
-   *
-   * Use this to weaken (or strengthen) an individual reference without
-   * affecting other references to the same resource. For example:
-   *
-   * ```ts
-   * // producerStack defines an SNS topic
-   * declare const topic: sns.Topic;
-   *
-   * // consumerStack subscribes to it with a weak reference,
-   * // so the producer can be torn down without blocking on this consumer
-   * const consumerStack = new Stack(app, 'Consumer', {
-   *   env: { account: '123456789012', region: 'us-east-1' },
-   * });
-   * new sns.Subscription(consumerStack, 'Subscription', {
-   *   topic: sns.Topic.fromTopicArn(consumerStack, 'Topic',
-   *     Stack.of(consumerStack).consumeReference(topic.topicArn)),
-   *   endpoint: 'https://example.com/webhook',
-   *   protocol: sns.SubscriptionProtocol.HTTPS,
-   * });
-   * ```
-   *
-   * @param value A tokenized string reference (e.g. `bucket.bucketArn`).
-   * @param strength The reference strength to use. Defaults to `BOTH`.
-   * @returns A token that resolves to the same value but uses the overridden strength.
-   */
-  public consumeReference(value: string, strength: ReferenceStrength = ReferenceStrength.BOTH): string {
-    return Token.asString(this.makeCustomCoupledReference(value, strength));
-  }
-
-  /**
-   * Override the reference strength for a specific cross-stack string list reference.
-   *
-   * This is the string list equivalent of `consumeReference`.
-   *
-   * @param value A tokenized string list reference.
-   * @param strength The reference strength to use. Defaults to `BOTH`.
-   * @returns A token that resolves to the same value but uses the overridden strength.
-   */
-  public consumeListReference(value: string[], strength: ReferenceStrength = ReferenceStrength.BOTH): string[] {
-    return Token.asList(this.makeCustomCoupledReference(value, strength));
-  }
-
-  private makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
-    const resolvable = Tokenization.reverse(value);
-    if (!resolvable || !CfnReference.isCfnReference(resolvable)) {
-      throw new ValidationError(
-        lit`ConsumeReferenceRequiresResourceAttribute`,
-        'consumeReference: the value must be a resource attribute reference (like \'bucket.bucketArn\')',
-        this,
-      );
-    }
-    return new CustomCoupledReference(resolvable, strength);
-  }
-
-  /**
    * Returns the naming scheme used to allocate logical IDs. By default, uses
    * the `HashedAddressingScheme` but this method can be overridden to customize
    * this behavior.
@@ -1965,8 +1952,19 @@ import { makeUniqueResourceName } from './private/unique-resource-name';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
-import { AssumptionError, ValidationError } from './errors';
+import { AssumptionError, UnscopedValidationError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './stack-trace';
 /* eslint-enable import/order */
+
+function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
+  const resolvable = Tokenization.reverse(value);
+  if (!resolvable || !CfnReference.isCfnReference(resolvable)) {
+    throw new UnscopedValidationError(
+      lit`ConsumeReferenceRequiresResourceAttribute`,
+      'consumeReference: the value must be a resource attribute reference (like \'bucket.bucketArn\')',
+    );
+  }
+  return new CustomCoupledReference(resolvable, strength);
+}

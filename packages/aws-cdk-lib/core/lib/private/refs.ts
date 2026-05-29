@@ -119,6 +119,7 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
   const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
   const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
   const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
+
   // Priority: per-usage override > per-resource override > global consumer context > default
   const resourceStrength = CfnResource.isCfnResource(reference.target)
     ? reference.target._crossStackReferenceStrengthOverride

@@ -426,7 +426,7 @@ const consumer = new Stack(app, 'Consumer', {
 });
 new sns.Subscription(consumer, 'Subscription', {
   topic: sns.Topic.fromTopicArn(consumer, 'Topic',
-    consumer.consumeReference(topic.topicArn, ReferenceStrength.WEAK)),
+    Stack.consumeReference(topic.topicArn, ReferenceStrength.WEAK)),
   endpoint: 'https://example.com/webhook',
   protocol: sns.SubscriptionProtocol.HTTPS,
 });
@@ -477,7 +477,7 @@ declare const consumer: Stack;
 
 // Previously: bucket.bucketArn was used directly
 new CfnOutput(consumer, 'BucketArn', {
-  value: consumer.consumeReference(bucket.bucketArn),
+  value: Stack.consumeReference(bucket.bucketArn),
 });
 ```
 
@@ -488,7 +488,7 @@ declare const bucket: s3.Bucket;
 declare const consumer: Stack;
 
 new CfnOutput(consumer, 'BucketArn', {
-  value: consumer.consumeReference(bucket.bucketArn, ReferenceStrength.WEAK),
+  value: Stack.consumeReference(bucket.bucketArn, ReferenceStrength.WEAK),
 });
 ```
 

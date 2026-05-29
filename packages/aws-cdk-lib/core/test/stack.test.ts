@@ -1523,7 +1523,7 @@ describe('stack', () => {
     // WHEN - one reference uses consumeReference, another uses the raw token
     new CfnResource(consumerStack, 'WeakConsumer', {
       type: 'AWS::Lambda::Function',
-      properties: { Description: consumerStack.consumeReference(resource.getAtt('Arn').toString()) },
+      properties: { Description: Stack.consumeReference(resource.getAtt('Arn').toString()) },
     });
     new CfnResource(consumerStack, 'StrongConsumer', {
       type: 'AWS::Lambda::Function',
@@ -1550,33 +1550,6 @@ describe('stack', () => {
     expect(consumerTemplate.Resources.StrongConsumer.Properties.Description).toHaveProperty('Fn::ImportValue');
   });
 
-  test('consumeReference defaults to BOTH strength (same region)', () => {
-    // GIVEN - global default is strong
-    const app = new App();
-    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
-    const resource = new CfnResource(stack1, 'MyResource', { type: 'AWS::S3::Bucket' });
-
-    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
-
-    // WHEN
-    new CfnResource(stack2, 'BothConsumer', {
-      type: 'AWS::Lambda::Function',
-      properties: { Description: stack2.consumeReference(resource.getAtt('Arn').toString()) },
-    });
-
-    const assembly = app.synth();
-    const template1 = assembly.getStackByName(stack1.stackName).template;
-    const template2 = assembly.getStackByName(stack2.stackName).template;
-
-    // THEN - producer has Output with Export (the 'both' keeps the strong-side export)
-    const outputs = template1.Outputs ?? {};
-    const outputWithExport = Object.values(outputs).find((o: any) => o.Export);
-    expect(outputWithExport).toBeDefined();
-
-    // THEN - consumer uses Fn::GetStackOutput (the 'both' switches consumer to weak)
-    expect(template2.Resources.BothConsumer.Properties.Description).toHaveProperty('Fn::GetStackOutput');
-  });
-
   test('consumeReference with explicit WEAK strength (same region)', () => {
     // GIVEN
     const app = new App();
@@ -1588,7 +1561,7 @@ describe('stack', () => {
     // WHEN
     new CfnResource(stack2, 'WeakConsumer', {
       type: 'AWS::Lambda::Function',
-      properties: { Description: stack2.consumeReference(resource.getAtt('Arn').toString(), ReferenceStrength.WEAK) },
+      properties: { Description: Stack.consumeReference(resource.getAtt('Arn').toString(), ReferenceStrength.WEAK) },
     });
 
     const assembly = app.synth();
@@ -1605,10 +1578,7 @@ describe('stack', () => {
   });
 
   test('consumeReference throws for non-reference values', () => {
-    const app = new App();
-    const stack = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
-
-    expect(() => stack.consumeReference('just-a-string')).toThrow(/consumeReference: the value must be a resource attribute reference/);
+    expect(() => Stack.consumeReference('just-a-string')).toThrow(/consumeReference: the value must be a resource attribute reference/);
   });
 
   test('cross stack references and dependencies work within child stacks (non-nested)', () => {
