@@ -353,21 +353,26 @@ export class DockerImage extends BundlingDockerImage {
     const tagHash = crypto.createHash('sha256').update(input).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    const dockerArgs: string[] = [
-      'build', '-t', tag,
-      ...(options.file ? ['-f', join(path, options.file)] : []),
-      ...(options.platform ? ['--platform', options.platform] : []),
-      ...(options.network ? ['--network', options.network] : []),
-      ...(options.targetStage ? ['--target', options.targetStage] : []),
-      ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
-      ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
-      ...(options.cacheDisabled ? ['--no-cache'] : []),
-      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
-      ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ['--build-context', `${k}=${v}`])),
-      path,
-    ];
+    // Skip the build if the image already exists in the local Docker daemon.
+    // The tag is deterministic (content-addressed from path + all options),
+    // so an existing image with this tag is guaranteed to be up-to-date.
+    if (!this.isImageCached(tag)) {
+      const dockerArgs: string[] = [
+        'build', '-t', tag,
+        ...(options.file ? ['-f', join(path, options.file)] : []),
+        ...(options.platform ? ['--platform', options.platform] : []),
+        ...(options.network ? ['--network', options.network] : []),
+        ...(options.targetStage ? ['--target', options.targetStage] : []),
+        ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
+        ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
+        ...(options.cacheDisabled ? ['--no-cache'] : []),
+        ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+        ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ['--build-context', `${k}=${v}`])),
+        path,
+      ];
 
-    dockerExec(dockerArgs);
+      dockerExec(dockerArgs);
+    }
 
     // Fingerprints the directory containing the Dockerfile we're building and
     // differentiates the fingerprint based on build arguments. We do this so
@@ -385,6 +390,14 @@ export class DockerImage extends BundlingDockerImage {
    */
   public static override fromRegistry(image: string) {
     return new DockerImage(image);
+  }
+
+  private static isImageCached(tag: string): boolean {
+    const prog = process.env.CDK_DOCKER ?? 'docker';
+    const proc = spawnSync(prog, ['image', 'inspect', tag], {
+      stdio: 'ignore',
+    });
+    return proc.status === 0;
   }
 
   private static cacheOptionToFlag(option: DockerCacheOption): string {
