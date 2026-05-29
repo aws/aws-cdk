@@ -21,7 +21,7 @@ export interface SecretRotationApplicationOptions {
   /**
    * Semantic versions for partitions other than 'aws'.
    * If not specified, it is assumed that non aws partitions (eg aws-cn, aws-us-gov) are not supported.
-   * 
+   *
    * @default - no additional partition versions (only 'aws' partition is supported)
    */
   readonly additionalSemanticVersions?: { [partition: string]: string };
