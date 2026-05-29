@@ -1,97 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "CrossRegionWeakRefProducerInteg.assets": {
+    "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "CrossRegionWeakRefProducerInteg.assets.json",
+        "file": "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "CrossRegionWeakRefProducerInteg": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/us-east-1",
-      "properties": {
-        "templateFile": "CrossRegionWeakRefProducerInteg.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/671e72e3915a1c2ab0cc69bc6e564f3195a56094b5855b8dfe821f56bd499cc8.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "CrossRegionWeakRefProducerInteg.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "CrossRegionWeakRefProducerInteg.assets"
-      ],
-      "displayName": "CrossRegionWeakRefProducerInteg"
-    },
-    "CrossRegionWeakRefConsumerInteg.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "CrossRegionWeakRefConsumerInteg.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "CrossRegionWeakRefConsumerInteg": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/us-east-2",
-      "properties": {
-        "templateFile": "CrossRegionWeakRefConsumerInteg.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-2",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2/5f99f7c4f10d643c25793e19d72280c2d902456ae2dd17670b2857a3699a57b7.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "CrossRegionWeakRefConsumerInteg.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-2",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "CrossRegionWeakRefProducerInteg",
-        "CrossRegionWeakRefConsumerInteg.assets"
-      ],
-      "displayName": "CrossRegionWeakRefConsumerInteg"
-    },
-    "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0": {
+    "aws-cdk-bedrock-agentcore-runtime-header-allowlist": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.template.json",
+        "templateFile": "aws-cdk-bedrock-agentcore-runtime-header-allowlist.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/dfe2226416fd66f38b481fc1fb3088f5346cf946f5fd2ba02fb54075a05ee1d5.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.assets"
+          "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -100,9 +31,45 @@
         }
       },
       "dependencies": [
-        "CrossRegionWeakReferenceTestDefaultTestDeployAssert239C05E0.assets"
+        "aws-cdk-bedrock-agentcore-runtime-header-allowlist.assets"
       ],
-      "displayName": "CrossRegionWeakReferenceTest/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "aws-cdk-bedrock-agentcore-runtime-header-allowlist.metadata.json",
+      "displayName": "aws-cdk-bedrock-agentcore-runtime-header-allowlist"
+    },
+    "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.assets"
+      ],
+      "additionalMetadataFile": "BedrockAgentCoreRuntimeHeaderAllowlistTestDefaultTestDeployAssert19FA33AB.metadata.json",
+      "displayName": "BedrockAgentCoreRuntimeHeaderAllowlistTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
@@ -628,7 +595,6 @@
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
           },
           "@aws-cdk/core:defaultCrossStackReferences": {
-            "userValue": "weak",
             "recommendedValue": "strong",
             "explanation": "Controls whether cross-region stack references are strong, weak, or both",
             "unconfiguredBehavesLike": {
