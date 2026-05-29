@@ -1,62 +1,28 @@
 {
-  "/cdk-rds-read-replica": [
+  "/integRdsInstanceIo2": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:11:15)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:10:15)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc": [
+  "/integRdsInstanceIo2/Vpc": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
-        "restrictDefaultSecurityGroup": false,
-        "maxAzs": "*",
         "natGateways": "*"
       }
     }
   ],
-  "/cdk-rds-read-replica/PostgresSource": [
+  "/integRdsInstanceIo2/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
     {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "engine": {
-          "engineType": "*",
-          "engineVersion": {
-            "fullVersion": "*",
-            "majorVersion": "*"
-          },
-          "parameterGroupFamily": "*",
-          "singleUserRotationApplication": "*",
-          "engineFamily": "*",
-          "supportsReadReplicaBackups": "*",
-          "defaultUsername": "*"
-        },
-        "backupRetention": "*",
-        "instanceType": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnetType": "Isolated"
-        }
-      }
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
     }
   ],
-  "/cdk-rds-read-replica/PostgresReplica": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "sourceDatabaseInstance": "*",
-        "instanceType": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnetType": "Isolated"
-        }
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource": [
+  "/integRdsInstanceIo2/Instance": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -71,99 +37,17 @@
           "engineFamily": "*",
           "supportsReadReplicaBackups": true
         },
-        "backupRetention": "*",
-        "instanceType": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnetType": "Isolated"
-        }
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/ReplicaParameterGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "engine": {
-          "engineType": "*",
-          "engineVersion": {
-            "fullVersion": "*",
-            "majorVersion": "*"
-          },
-          "parameterGroupFamily": "*",
-          "engineFamily": "*"
-        },
-        "parameters": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "bindToInstance": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlReplica": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "sourceDatabaseInstance": "*",
-        "backupRetention": "*",
         "instanceType": "*",
         "vpc": "*",
         "vpcSubnets": {
           "subnetType": "Isolated"
         },
-        "parameterGroup": "*"
+        "allocatedStorage": "*",
+        "storageType": "io2"
       }
     }
   ],
-  "/cdk-rds-read-replica/DBRole": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "assumedBy": {
-          "principalAccount": "*",
-          "assumeRoleAction": "*"
-        }
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addToPrincipalPolicy": [
-          {}
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachInlinePolicy": [
-          "*"
-        ]
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/DBUser": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "userName": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/BootstrapVersion": [
+  "/integRdsInstanceIo2/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -184,7 +68,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/CheckBootstrapVersion": [
+  "/integRdsInstanceIo2/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
@@ -205,7 +89,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/Resource": [
+  "/integRdsInstanceIo2/Vpc/Resource": [
     {
       "type": "aws:cdk:logicalId",
       "data": "Vpc8378EB38"
@@ -215,12 +99,12 @@
       "data": [
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:770:29)",
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:12:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet1": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -248,7 +132,7 @@
       "data": {}
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet2": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -276,7 +160,7 @@
       "data": {}
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet1": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet1": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -300,7 +184,7 @@
       }
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet2": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet2": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -324,7 +208,7 @@
       }
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IGW": [
+  "/integRdsInstanceIo2/Vpc/IGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIGWD7BA715C"
@@ -334,12 +218,12 @@
       "data": [
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:825:29)",
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:12:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/VPCGW": [
+  "/integRdsInstanceIo2/Vpc/VPCGW": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcVPCGWBF912B6E"
@@ -349,282 +233,114 @@
       "data": [
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:828:29)",
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:12:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/PostgresSource/SubnetGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnetType": "Isolated"
-        },
-        "removalPolicy": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresSource/SecurityGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresSource/Secret": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryptionKey": "*",
-        "secretName": "*",
-        "replicaRegions": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "username": "*",
-        "secretName": "*",
-        "encryptionKey": "*",
-        "excludeCharacters": "*",
-        "replaceOnPasswordCriteriaChanges": "*",
-        "replicaRegions": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresSource/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PostgresSourceEB66BFC9"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:735:30)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:19:24)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresReplica/SubnetGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnetType": "Isolated"
-        },
-        "removalPolicy": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresReplica/SecurityGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresReplica/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PostgresReplica23A3C738"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:931:30)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:26:1)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/SubnetGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnetType": "Isolated"
-        },
-        "removalPolicy": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/SecurityGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/Secret": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "encryptionKey": "*",
-        "secretName": "*",
-        "replicaRegions": "*"
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "username": "*",
-        "secretName": "*",
-        "encryptionKey": "*",
-        "excludeCharacters": "*",
-        "replaceOnPasswordCriteriaChanges": "*",
-        "replicaRegions": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlSource9A10350C"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:735:30)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:32:21)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/ReplicaParameterGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "ReplicaParameterGroup4BE5EE70"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "WrappedClass.createInstanceParameterGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/parameter-group.js:244:41)",
-        "WrappedClass.bindToInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/parameter-group.js:224:42)",
-        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new DatabaseInstanceNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:492:68)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:906:13)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:45:34)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlReplica/SubnetGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*",
-        "vpcSubnets": {
-          "subnetType": "Isolated"
-        },
-        "removalPolicy": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlReplica/SecurityGroup": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "description": "*",
-        "vpc": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlReplica/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlReplica87D29F78"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:931:30)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:45:34)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/DBRole/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DBRole890CB76D"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Role (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:53:14)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/DBRole/DefaultPolicy": [
+  "/integRdsInstanceIo2/Vpc/RestrictDefaultSecurityGroupCustomResource": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": "*"
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "attachToRole": [
-          "*"
-        ]
-      }
-    },
-    {
-      "type": "aws:cdk:analytics:method",
-      "data": {
-        "addStatements": [
-          {}
-        ]
-      }
     }
   ],
-  "/cdk-rds-read-replica/DBUser/Resource": [
+  "/integRdsInstanceIo2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "DBUser03089649"
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
     },
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new User (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/user.js:258:30)",
-        "new User (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new User (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:56:14)",
+        "new CustomResourceProviderBase (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
+        "new RestrictDefaultSgProvider (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet1/Subnet": [
+  "/integRdsInstanceIo2/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
+        "new RestrictDefaultSgProvider (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:24:9)",
+        "RestrictDefaultSgProvider.getOrCreateProvider (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-ec2/restrict-default-sg-provider.generated.js:21:28)",
+        "WrappedClass.restrictDefaultSecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1072:99)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integRdsInstanceIo2/Instance/SubnetGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnetType": "Isolated"
+        },
+        "removalPolicy": "*"
+      }
+    }
+  ],
+  "/integRdsInstanceIo2/Instance/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "vpc": "*"
+      }
+    }
+  ],
+  "/integRdsInstanceIo2/Instance/Secret": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryptionKey": "*",
+        "secretName": "*",
+        "replicaRegions": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "username": "*",
+        "secretName": "*",
+        "encryptionKey": "*",
+        "excludeCharacters": "*",
+        "replaceOnPasswordCriteriaChanges": "*",
+        "replicaRegions": "*"
+      }
+    }
+  ],
+  "/integRdsInstanceIo2/Instance/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceC1063A87"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:735:30)",
+        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integRdsInstanceIo2/Vpc/PublicSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1Subnet5C2D37C4"
@@ -645,7 +361,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet1/RouteTable": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTable6C95E38E"
@@ -666,7 +382,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet1/RouteTableAssociation": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1RouteTableAssociation97140677"
@@ -687,7 +403,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet1/DefaultRoute": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet1/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
@@ -701,12 +417,12 @@
         "Array.forEach (:)",
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:12:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet2/Subnet": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2Subnet691E08A3"
@@ -727,7 +443,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet2/RouteTable": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTable94F7E489"
@@ -748,7 +464,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet2/RouteTableAssociation": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
@@ -769,7 +485,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/PublicSubnet2/DefaultRoute": [
+  "/integRdsInstanceIo2/Vpc/PublicSubnet2/DefaultRoute": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcPublicSubnet2DefaultRoute97F91067"
@@ -783,12 +499,12 @@
         "Array.forEach (:)",
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:832:36)",
         "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:12:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet1/Subnet": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet1/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIsolatedSubnet1SubnetE48C5737"
@@ -809,7 +525,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet1/RouteTable": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet1/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIsolatedSubnet1RouteTable4771E3E5"
@@ -830,7 +546,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet1/RouteTableAssociation": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet1/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIsolatedSubnet1RouteTableAssociationD300FCBB"
@@ -851,7 +567,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet2/Subnet": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet2/Subnet": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIsolatedSubnet2Subnet16364B91"
@@ -872,7 +588,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet2/RouteTable": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet2/RouteTable": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIsolatedSubnet2RouteTable1D30AF7D"
@@ -893,7 +609,7 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/Vpc/IsolatedSubnet2/RouteTableAssociation": [
+  "/integRdsInstanceIo2/Vpc/IsolatedSubnet2/RouteTableAssociation": [
     {
       "type": "aws:cdk:logicalId",
       "data": "VpcIsolatedSubnet2RouteTableAssociationF7B18CCA"
@@ -914,10 +630,29 @@
       ]
     }
   ],
-  "/cdk-rds-read-replica/PostgresSource/SubnetGroup/Default": [
+  "/integRdsInstanceIo2/Vpc/RestrictDefaultSecurityGroupCustomResource/Default": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PostgresSourceSubnetGroupBEEB1740"
+      "data": "VpcRestrictDefaultSecurityGroupCustomResourceC73DA2BE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.restrictDefaultSecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1091:13)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:894:22)",
+        "new Vpc (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integRdsInstanceIo2/Instance/SubnetGroup/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "InstanceSubnetGroupF2CBA54F"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -928,15 +663,15 @@
         "new DatabaseInstanceSource (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:19:24)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:12:1)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/PostgresSource/SecurityGroup/Resource": [
+  "/integRdsInstanceIo2/Instance/SecurityGroup/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PostgresSourceSecurityGroup69289E68"
+      "data": "InstanceSecurityGroupB4E5FA83"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -948,15 +683,15 @@
         "new DatabaseInstanceSource (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:19:24)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:12:1)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/PostgresSource/Secret/Resource": [
+  "/integRdsInstanceIo2/Instance/Secret/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PostgresSourceSecret0A09A7AD"
+      "data": "InstanceSecret478E0A47"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -969,12 +704,12 @@
         "renderCredentials (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:733:64)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:19:24)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:12:1)",
         "...node internals..."
       ]
     }
   ],
-  "/cdk-rds-read-replica/PostgresSource/Secret/Attachment": [
+  "/integRdsInstanceIo2/Instance/Secret/Attachment": [
     {
       "type": "aws:cdk:analytics:construct",
       "data": {
@@ -983,173 +718,10 @@
       }
     }
   ],
-  "/cdk-rds-read-replica/PostgresReplica/SubnetGroup/Default": [
+  "/integRdsInstanceIo2/Instance/Secret/Attachment/Resource": [
     {
       "type": "aws:cdk:logicalId",
-      "data": "PostgresReplicaSubnetGroup301B59DA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
-        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:906:13)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:26:1)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresReplica/SecurityGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PostgresReplicaSecurityGroup5385C4C2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:906:13)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:26:1)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/SubnetGroup/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlSourceSubnetGroup213E979B"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
-        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
-        "new DatabaseInstanceSource (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:32:21)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/SecurityGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlSourceSecurityGroupC691E169"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
-        "new DatabaseInstanceSource (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:565:9)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:719:13)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:32:21)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/Secret/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlSourceSecretB727C3F2"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:501:30)",
-        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Secret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseSecret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/database-secret.js:94:13)",
-        "new DatabaseSecret (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "renderCredentials (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/private/util.js:78:64)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:733:64)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:32:21)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/Secret/Attachment": [
-    {
-      "type": "aws:cdk:analytics:construct",
-      "data": {
-        "secret": "*",
-        "target": "*"
-      }
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlReplica/SubnetGroup/Default": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlReplicaSubnetGroup79E1F72A"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:117:33)",
-        "new SubnetGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:438:50)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:906:13)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:45:34)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlReplica/SecurityGroup/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlReplicaSecurityGroup169FAFAA"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:420:34)",
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new SecurityGroup (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new DatabaseInstanceNew (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:444:57)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:906:13)",
-        "new DatabaseInstanceReadReplica (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:45:34)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/DBRole/DefaultPolicy/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "DBRoleDefaultPolicyDBB64848"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new Policy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
-        "WrappedClass.<anonymous> (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
-        "WrappedClass.grantConnect (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:207:28)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:59:26)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/PostgresSource/Secret/Attachment/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "PostgresSourceSecretAttachmentE3C3B705"
+      "data": "InstanceSecretAttachment83BEE581"
     },
     {
       "type": "aws:cdk:creationStack",
@@ -1159,25 +731,7 @@
         "WrappedClass.attach (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:309:16)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:752:38)",
         "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:19:24)",
-        "...node internals..."
-      ]
-    }
-  ],
-  "/cdk-rds-read-replica/MysqlSource/Secret/Attachment/Resource": [
-    {
-      "type": "aws:cdk:logicalId",
-      "data": "MysqlSourceSecretAttachment5E4EDF73"
-    },
-    {
-      "type": "aws:cdk:creationStack",
-      "data": [
-        "new SecretTargetAttachment (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:691:32)",
-        "new SecretTargetAttachment (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.attach (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-secretsmanager/lib/secret.js:309:16)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/instance.js:752:38)",
-        "new DatabaseInstance (/home/tietew/github/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:32:21)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-io2.js:12:1)",
         "...node internals..."
       ]
     }
