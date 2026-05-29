@@ -205,13 +205,7 @@ export class Schema {
   public static struct(columns: Column[]): Type {
     return {
       isPrimitive: false,
-      inputString: `struct<${columns.map(column => {
-        if (column.comment === undefined) {
-          return `${column.name}:${column.type.inputString}`;
-        } else {
-          return `${column.name}:${column.type.inputString} COMMENT '${column.comment}'`;
-        }
-      }).join(',')}>`,
+      inputString: `struct<${columns.map(column => `${column.name}:${column.type.inputString}`).join(',')}>`,
     };
   }
 }
