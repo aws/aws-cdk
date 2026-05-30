@@ -47,7 +47,10 @@
     "@types/babel__traverse": "7.18.2",
     "@smithy/types": "3.5.0",
     "@types/minimatch": "^5.1.2",
-    "tar": "^7.5.7"
+    "tar": "^7.5.7",
+    "jsii": "npm:@omarqureshi/jsii@5.9.37-ruby",
+    "jsii-rosetta": "npm:@omarqureshi/jsii-rosetta@5.9.32-ruby",
+    "jsii-pacmak": "npm:@omarqureshi/jsii-pacmak@1.130.0-ruby"
   },
   "repository": {
     "type": "git",
