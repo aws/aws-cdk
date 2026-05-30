@@ -637,8 +637,16 @@ export class Memory extends MemoryBase {
   public readonly description?: string;
   /**
    * The execution role of the memory.
+   *
+   * A role is only created when the memory needs one: when an execution role is
+   * provided, when a customer managed KMS key is configured, or when one or more
+   * memory strategies are added. A memory with only short-term (raw event)
+   * storage and no strategies does not require an execution role, in which case
+   * this is `undefined`.
    */
-  public readonly executionRole?: iam.IRole;
+  public get executionRole(): iam.IRole | undefined {
+    return this._executionRole;
+  }
   /**
    * The status of the memory.
    */
@@ -658,9 +666,14 @@ export class Memory extends MemoryBase {
    */
   public readonly tags?: { [key: string]: string };
   /**
-   * The principal to grant permissions to
+   * The principal to grant permissions to.
+   *
+   * When the memory has no execution role, this resolves to an `UnknownPrincipal`
+   * so that grants are no-ops rather than failing.
    */
-  public readonly grantPrincipal: iam.IPrincipal;
+  public get grantPrincipal(): iam.IPrincipal {
+    return this._executionRole ?? (this._unknownPrincipal ??= new iam.UnknownPrincipal({ resource: this }));
+  }
   /**
    * The KMS key used to encrypt the memory.
    */
@@ -674,6 +687,8 @@ export class Memory extends MemoryBase {
   // Internal Only
   // ------------------------------------------------------
   private readonly __resource: CfnMemory;
+  private _executionRole?: iam.IRole;
+  private _unknownPrincipal?: iam.IPrincipal;
 
   // ------------------------------------------------------
   // CONSTRUCTOR
@@ -695,16 +710,26 @@ export class Memory extends MemoryBase {
     this.expirationDuration = props.expirationDuration ?? Duration.days(90);
     this.description = props.description;
     this.kmsKey = props.kmsKey;
-    this.executionRole = props.executionRole ?? this._createMemoryRole();
-    this.grantPrincipal = this.executionRole;
+    // Only create an execution role when the memory actually needs one. A role is
+    // required when the caller provides one, when a customer managed KMS key is
+    // configured (the service assumes the role to use the key), or when memory
+    // strategies are added (handled lazily in `addMemoryStrategy`). A memory with
+    // only short-term storage and no strategies does not need a role, so we avoid
+    // creating an empty role with no policies. See
+    // https://github.com/aws/aws-cdk/issues/38021
+    if (props.executionRole) {
+      this._executionRole = props.executionRole;
+    } else if (props.kmsKey) {
+      this._executionRole = this._createMemoryRole();
+    }
     this.tags = props.tags;
 
     // ------------------------------------------------------
     // Permissions
     // ------------------------------------------------------
     // For KMS permissions see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/storage-encryption.html
-    if (this.kmsKey) {
-      this.kmsKey.grant(this.executionRole,
+    if (this.kmsKey && this._executionRole) {
+      this.kmsKey.grant(this._executionRole,
         'kms:CreateGrant',
         'kms:Decrypt',
         'kms:DescribeKey',
@@ -737,7 +762,7 @@ export class Memory extends MemoryBase {
       description: this.description,
       eventExpiryDuration: this.expirationDuration.toDays(),
       encryptionKeyArn: this.kmsKey?.keyArn,
-      memoryExecutionRoleArn: this.executionRole?.roleArn,
+      memoryExecutionRoleArn: Lazy.string({ produce: () => this._executionRole?.roleArn }),
       memoryStrategies: Lazy.any({ produce: () => this._renderMemoryStrategies() }, { omitEmptyArray: true }),
       tags: this.tags,
     };
@@ -770,8 +795,14 @@ export class Memory extends MemoryBase {
     // Add the memory strategy to the memory
     this.memoryStrategies.push(memoryStrategy);
 
+    // Memory strategies require an execution role for the service to perform
+    // extraction. Create one on demand if the memory was created without one.
+    if (!this._executionRole) {
+      this._executionRole = this._createMemoryRole();
+    }
+
     // Grant necessary permissions to the execution role
-    const grant = memoryStrategy.grant(this.executionRole as iam.IRole);
+    const grant = memoryStrategy.grant(this._executionRole);
     grant?.applyBefore(this.__resource);
   }
 
