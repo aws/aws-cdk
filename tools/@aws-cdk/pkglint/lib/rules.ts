@@ -1723,8 +1723,9 @@ export class NoExperimentalDependents extends ValidationRule {
         return;
       }
 
+      const depPkgPath = require.resolve(`${dep}/package.json`, { paths: [pkg.packageRoot] });
       // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const maturity = require(`${dep}/package.json`).maturity;
+      const maturity = require(depPkgPath).maturity;
       if (maturity === 'experimental') {
         if (this.excludedDependencies.get(pkg.packageName)?.includes(dep)) {
           return;
