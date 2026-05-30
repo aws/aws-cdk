@@ -4,7 +4,9 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { performance } from 'perf_hooks';
 import type { SerializableNodejsFunctionProps } from './types';
+import { cx_api } from '../../..';
 import { OutputFormat } from '../../lib';
 
 // Paths resolved once
@@ -73,6 +75,10 @@ const LOCK_FILES: Record<PackageManager, { name: string; content: string }> = {
 jest.setTimeout(3_000_000);
 
 let project: TestProject;
+
+beforeEach(() => {
+  performance.clearMeasures();
+});
 afterEach(() => project?.cleanup());
 
 describeDockerSuite((forceDockerBundling) => {
@@ -250,7 +256,6 @@ describeDockerSuite((forceDockerBundling) => {
             afterBundling: [],
             beforeBundling: [],
             beforeInstall: ['echo INSTALL > {outputDir}/install-marker.txt'],
-
           },
         },
       });
@@ -308,6 +313,60 @@ describeDockerSuite((forceDockerBundling) => {
         fs.readFileSync(path.join(findAssetDir(project.outdir), 'package.json'), 'utf-8'),
       );
       expect(outputPkgJson.devEngines).toBeUndefined();
+    });
+      
+    test('performance counters are emitted', () => {
+      project = createProject(pkgManager, '.ts');
+
+      // The CLI writes perf counters to 'performance-counters.json' in the output
+      // directory. We set the env var to the same path for older CLI versions that
+      // pass through the env var instead of setting their own.
+      const countersFile = path.join(project.outdir, 'performance-counters.json');
+      process.env[cx_api.PERF_COUNTERS_FILE_ENV] = countersFile;
+      try {
+        cdkSynth(project, {
+          entry: project.entryFile,
+          bundling: {
+            forceDockerBundling,
+            commandHooks: {
+              beforeBundling: ['echo "export function init() { }" > {inputDir}/module.ts'],
+              beforeInstall: [],
+              afterBundling: [],
+            },
+          },
+          context: {
+            // If we don't set this, direct esbuild invocations are too fast to get emitted
+            '@aws-cdk/core.slowSynthThreshold': '0',
+          },
+        });
+
+        // If beforeBundling failed, cdk synth would have failed (commands are chained with &&)
+        const counters = JSON.parse(fs.readFileSync(countersFile, 'utf-8')).counters;
+
+        if (forceDockerBundling) {
+          // Docker bundling has 2 counters: build the docker image, then run the docker image.
+          // A single counter should encompass both of them.
+          expect(counters).toMatchObject({
+            'bundle:NodejsFunction': expect.anything(),
+            'bundle:NodejsFunction(cnt)': 1,
+            'DockerImage.fromBuild': expect.anything(),
+            'AssetBundlingBindMount.run': expect.anything(),
+          });
+
+          expect(counters['bundle:NodejsFunction']).toBeGreaterThanOrEqual(counters['DockerImage.fromBuild'] + counters['AssetBundlingBindMount.run']);
+        } else {
+          // Local bundling has 1 counter: do the bundling
+          expect(counters).toMatchObject({
+            'bundle:NodejsFunction': expect.anything(),
+            'bundle:NodejsFunction(cnt)': 1,
+            'NodejsFunction#tryBundle': expect.anything(),
+          });
+
+          expect(counters['bundle:NodejsFunction']).toBeGreaterThanOrEqual(counters['NodejsFunction#tryBundle']);
+        }
+      } finally {
+        delete process.env[cx_api.PERF_COUNTERS_FILE_ENV];
+      }
     });
   });
 });
@@ -564,6 +623,7 @@ function cdkSynth(proj: TestProject, config: SerializableNodejsFunctionProps): {
       '--no-path-metadata',
       '--no-asset-metadata',
       '--quiet',
+      ...Object.entries(config.context ?? {}).flatMap(([key, value]) => ['--context', `${key}=${value}`]),
     ],
     {
       cwd: proj.dir,
