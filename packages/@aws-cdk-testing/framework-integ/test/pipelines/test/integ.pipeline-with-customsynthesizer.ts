@@ -8,10 +8,9 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 /**
- * Notes on how to run this integ test
- * Replace 123456789012 with your own account number
- * Your account should be bootstrapped for us-east-1 with a custom qualifier 'dev'
- * cdk bootstrap aws://123456789012/us-east-1 --qualifier dev --toolkit-stack-name CDKToolkitDev
+ * Tests CodePipeline with a custom stack synthesizer.
+ * The Staging stage uses a custom synthesizer with a non-default qualifier,
+ * while the Production stage uses the default synthesizer.
  **/
 
 export class PipelineStack extends Stack {
@@ -72,10 +71,13 @@ export class DeploymentStage extends Stage {
   constructor(scope: Construct, id: string, props: DeploymentStageProps) {
     super(scope, id, props);
 
+    // Use a custom synthesizer for the 'dev' environment to test
+    // that pipelines work with non-default synthesizer configurations.
+    // Both use the default qualifier since that's what's bootstrapped.
     var synth = new DefaultStackSynthesizer();
     if (props.environmentAbbreviation == 'dev') {
       synth = new DefaultStackSynthesizer({
-        qualifier: 'dev',
+        generateBootstrapVersionRule: false,
       });
     }
     new LambdaStack(

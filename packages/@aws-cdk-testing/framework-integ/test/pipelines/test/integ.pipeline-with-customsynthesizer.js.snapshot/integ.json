@@ -1,5 +1,5 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "testCases": {
     "PipelineAssetsTest/DefaultTest": {
       "stacks": [
@@ -10,5 +10,5 @@
       "assertionStackName": "PipelineAssetsTestDefaultTestDeployAssert9AFEBA62"
     }
   },
-  "minimumCliVersion": "2.1018.0"
+  "minimumCliVersion": "2.1033.0"
 }

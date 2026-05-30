@@ -173,48 +173,26 @@
        ],
        "Effect": "Allow",
        "Principal": {
-        "AWS": [
-         {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":iam::",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":role/cdk-dev-deploy-role-",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            "-us-east-1"
-           ]
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/cdk-hnb659fds-deploy-role-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "-us-east-1"
           ]
-         },
-         {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":iam::",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":role/cdk-hnb659fds-deploy-role-",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            "-us-east-1"
-           ]
-          ]
-         }
-        ]
+         ]
+        }
        },
        "Resource": "*"
       }
@@ -317,48 +295,26 @@
        ],
        "Effect": "Allow",
        "Principal": {
-        "AWS": [
-         {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":iam::",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":role/cdk-dev-deploy-role-",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            "-us-east-1"
-           ]
+        "AWS": {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":iam::",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":role/cdk-hnb659fds-deploy-role-",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           "-us-east-1"
           ]
-         },
-         {
-          "Fn::Join": [
-           "",
-           [
-            "arn:",
-            {
-             "Ref": "AWS::Partition"
-            },
-            ":iam::",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            ":role/cdk-hnb659fds-deploy-role-",
-            {
-             "Ref": "AWS::AccountId"
-            },
-            "-us-east-1"
-           ]
-          ]
-         }
-        ]
+         ]
+        }
        },
        "Resource": [
         {
@@ -477,26 +433,6 @@
          "Fn::GetAtt": [
           "PipelineSourceS3CodePipelineActionRole83895A58",
           "Arn"
-         ]
-        },
-        {
-         "Fn::Join": [
-          "",
-          [
-           "arn:",
-           {
-            "Ref": "AWS::Partition"
-           },
-           ":iam::",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           ":role/cdk-dev-deploy-role-",
-           {
-            "Ref": "AWS::AccountId"
-           },
-           "-us-east-1"
-          ]
          ]
         },
         {
@@ -717,7 +653,7 @@
             {
              "Ref": "AWS::AccountId"
             },
-            ":role/cdk-dev-cfn-exec-role-",
+            ":role/cdk-hnb659fds-cfn-exec-role-",
             {
              "Ref": "AWS::AccountId"
             },
@@ -747,7 +683,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":role/cdk-dev-deploy-role-",
+           ":role/cdk-hnb659fds-deploy-role-",
            {
             "Ref": "AWS::AccountId"
            },
@@ -782,7 +718,7 @@
            {
             "Ref": "AWS::AccountId"
            },
-           ":role/cdk-dev-deploy-role-",
+           ":role/cdk-hnb659fds-deploy-role-",
            {
             "Ref": "AWS::AccountId"
            },
@@ -1565,14 +1501,9 @@
       {
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
-       "Resource": [
-        {
-         "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-dev-file-publishing-role-${AWS::AccountId}-us-east-1"
-        },
-        {
-         "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
-        }
-       ]
+       "Resource": {
+        "Fn::Sub": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
+       }
       },
       {
        "Action": [
@@ -1658,7 +1589,7 @@
      ]
     },
     "Source": {
-     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@latest\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-pipeline-asset-stack-Staging/pipelineassetstackStagingdevlambdastackEC748226.assets.json\\\" --verbose publish \\\"a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e:current_account-us-east-1-dd2b480a\\\"\",\n        \"cdk-assets --path \\\"assembly-pipeline-asset-stack-Production/pipelineassetstackProductionprdlambdastack4E5ABBC0.assets.json\\\" --verbose publish \\\"a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e:current_account-us-east-1-65520044\\\"\"\n      ]\n    }\n  }\n}",
+     "BuildSpec": "{\n  \"version\": \"0.2\",\n  \"phases\": {\n    \"install\": {\n      \"commands\": [\n        \"npm install -g cdk-assets@latest\"\n      ]\n    },\n    \"build\": {\n      \"commands\": [\n        \"cdk-assets --path \\\"assembly-pipeline-asset-stack-Staging/pipelineassetstackStagingdevlambdastackEC748226.assets.json\\\" --verbose publish \\\"a26bd817a0dac44954b5caf83f5880a96f831e43b56157224e073b49f236eb4e:current_account-us-east-1-65520044\\\"\"\n      ]\n    }\n  }\n}",
      "Type": "CODEPIPELINE"
     }
    }
