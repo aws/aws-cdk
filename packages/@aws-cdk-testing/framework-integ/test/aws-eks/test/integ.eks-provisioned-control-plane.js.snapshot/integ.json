@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "eks-provisioned-control-plane-integ/DefaultTest": {
+      "stacks": [
+        "EksProvisionedControlPlaneStack"
+      ],
+      "diffAssets": false,
+      "assertionStack": "eks-provisioned-control-plane-integ/DefaultTest/DeployAssert",
+      "assertionStackName": "eksprovisionedcontrolplaneintegDefaultTestDeployAssert9B255F78"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}
