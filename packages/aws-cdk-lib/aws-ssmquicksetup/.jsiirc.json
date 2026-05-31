@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_ssmquicksetup"
     },
     "ruby": {
-      "module": "AWSCDK::AWSSsmquicksetup"
+      "module": "AWSCDK::AWSSSMquicksetup"
     }
   }
 }

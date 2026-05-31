@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_ecr_assets"
     },
     "ruby": {
-      "module": "AWSCDK::AWSEcrAssets"
+      "module": "AWSCDK::AWSECRAssets"
     }
   }
 }

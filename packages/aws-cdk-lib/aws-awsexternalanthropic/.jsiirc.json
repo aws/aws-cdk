@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_awsexternalanthropic"
     },
     "ruby": {
-      "module": "AWSCDK::AWSAwsexternalanthropic"
+      "module": "AWSCDK::AWSAWSexternalanthropic"
     }
   }
 }

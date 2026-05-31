@@ -11,6 +11,9 @@
     },
     "go": {
       "packageName": "awss3mixins"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSS3::Mixins"
     }
   }
 }

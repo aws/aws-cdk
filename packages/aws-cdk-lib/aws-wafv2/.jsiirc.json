@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_wafv2"
     },
     "ruby": {
-      "module": "AWSCDK::AWSWafv2"
+      "module": "AWSCDK::AWSWAFv2"
     }
   }
 }

@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_ecr"
     },
     "ruby": {
-      "module": "AWSCDK::AWSEcr"
+      "module": "AWSCDK::AWSECR"
     }
   }
 }

@@ -136,7 +136,8 @@
           "ALB",
           "NLB",
           "TCP",
-          "UDP"
+          "UDP",
+          "ECR"
         ]
       },
       "go": {

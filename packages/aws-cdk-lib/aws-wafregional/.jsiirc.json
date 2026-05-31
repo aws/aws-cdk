@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_wafregional"
     },
     "ruby": {
-      "module": "AWSCDK::AWSWafregional"
+      "module": "AWSCDK::AWSWAFregional"
     }
   }
 }

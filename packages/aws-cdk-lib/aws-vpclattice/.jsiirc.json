@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_vpclattice"
     },
     "ruby": {
-      "module": "AWSCDK::AWSVpclattice"
+      "module": "AWSCDK::AWSVPClattice"
     }
   }
 }

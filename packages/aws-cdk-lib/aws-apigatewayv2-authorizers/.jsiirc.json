@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_apigatewayv2_authorizers"
     },
     "ruby": {
-      "module": "AWSCDK::AWSApigatewayv2Authorizers"
+      "module": "AWSCDK::AWSAPIgatewayv2Authorizers"
     }
   }
 }

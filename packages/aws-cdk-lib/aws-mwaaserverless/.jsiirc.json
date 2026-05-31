@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_mwaaserverless"
     },
     "ruby": {
-      "module": "AWSCDK::AWSMwaaserverless"
+      "module": "AWSCDK::AWSMWAAserverless"
     }
   }
 }

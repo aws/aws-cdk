@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_dynamodb"
     },
     "ruby": {
-      "module": "AWSCDK::AWSDynamoDB"
+      "module": "AWSCDK::AWSDynamodb"
     }
   }
 }

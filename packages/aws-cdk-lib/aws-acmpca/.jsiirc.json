@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_acmpca"
     },
     "ruby": {
-      "module": "AWSCDK::AWSAcmpca"
+      "module": "AWSCDK::AWSACMpca"
     }
   }
 }

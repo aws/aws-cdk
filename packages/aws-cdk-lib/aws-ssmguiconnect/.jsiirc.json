@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_ssmguiconnect"
     },
     "ruby": {
-      "module": "AWSCDK::AWSSsmguiconnect"
+      "module": "AWSCDK::AWSSSMguiconnect"
     }
   }
 }

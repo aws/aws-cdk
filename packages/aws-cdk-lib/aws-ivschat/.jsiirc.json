@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_ivschat"
     },
     "ruby": {
-      "module": "AWSCDK::AWSIvschat"
+      "module": "AWSCDK::AWSIVSchat"
     }
   }
 }

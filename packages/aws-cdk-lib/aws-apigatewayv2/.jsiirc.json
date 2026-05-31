@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_apigatewayv2"
     },
     "ruby": {
-      "module": "AWSCDK::AWSApigatewayv2"
+      "module": "AWSCDK::AWSAPIgatewayv2"
     }
   }
 }

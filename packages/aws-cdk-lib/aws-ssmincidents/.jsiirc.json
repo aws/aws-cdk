@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_ssmincidents"
     },
     "ruby": {
-      "module": "AWSCDK::AWSSsmincidents"
+      "module": "AWSCDK::AWSSSMincidents"
     }
   }
 }

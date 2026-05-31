@@ -10,7 +10,7 @@
       "module": "aws_cdk.aws_certificatemanager"
     },
     "ruby": {
-      "module": "AWSCDK::AWSCertificatemanager"
+      "module": "AWSCDK::AWSCErtificatemanager"
     }
   }
 }
