@@ -15,18 +15,20 @@ import type {
 } from '../../../core';
 import {
   Annotations,
+  Arn,
+  ArnFormat,
   Duration,
+  FeatureFlags,
+  Fn,
   Lazy,
   Resource,
   Stack,
-  ArnFormat,
-  FeatureFlags,
   Token,
-  Arn,
-  Fn,
   ValidationError,
 } from '../../../core';
-import { memoizedGetter } from '../../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../../core/lib/helpers-internal';
+import { noBoxStackTraces } from '../../../core/lib/no-box-stack-traces';
 import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
@@ -40,8 +42,8 @@ import {
   NetworkMode,
   TaskDefinitionRevision,
 } from '../base/task-definition';
-import type { ICluster, CapacityProviderStrategy } from '../cluster';
-import { ExecuteCommandLogging, Cluster } from '../cluster';
+import type { CapacityProviderStrategy, ICluster } from '../cluster';
+import { Cluster, ExecuteCommandLogging } from '../cluster';
 import type { ContainerDefinition, Protocol } from '../container-definition';
 import type { IDeploymentLifecycleHookTarget } from '../deployment-lifecycle-hook-target';
 import { CfnService } from '../ecs.generated';
@@ -195,6 +197,52 @@ export interface IEcsLoadBalancerTarget extends elbv2.IApplicationLoadBalancerTa
 }
 
 /**
+ * The format of Service Connect access logs.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html
+ */
+export enum ServiceConnectAccessLogFormat {
+  /**
+   * Human-readable text format for access logs.
+   */
+  TEXT = 'TEXT',
+
+  /**
+   * Structured JSON format for access logs.
+   * This format is well-suited for integration with log analysis tools.
+   */
+  JSON = 'JSON',
+}
+
+/**
+ * Configuration for Service Connect access logs.
+ *
+ * Service Connect access logs provide detailed telemetry about individual requests processed by the Service Connect proxy,
+ * including HTTP methods, paths, response codes, and timing information.
+ *
+ * @see https://docs.aws.amazon.com/AmazonECS/latest/developerguide/service-connect-envoy-access-logs.html
+ */
+export interface ServiceConnectAccessLogConfiguration {
+  /**
+   * The format for Service Connect access log output.
+   *
+   * - TEXT: Human-readable text format
+   * - JSON: Structured JSON format for log analysis tools
+   */
+  readonly format: ServiceConnectAccessLogFormat;
+
+  /**
+   * Whether to include query parameters in Service Connect access logs.
+   *
+   * When enabled, query parameters from HTTP requests are included in the access logs.
+   * Consider security and privacy implications as query parameters may contain sensitive information such as request IDs and tokens.
+   *
+   * @default undefined - AWS ECS default is false, which means that query parameters are not included in access logs
+   */
+  readonly includeQueryParameters?: boolean;
+}
+
+/**
  * Interface for Service Connect configuration.
  */
 export interface ServiceConnectProps {
@@ -220,6 +268,15 @@ export interface ServiceConnectProps {
    * @default - none
    */
   readonly logDriver?: LogDriver;
+
+  /**
+   * The configuration for Service Connect access logs.
+   *
+   * Access logs provide detailed telemetry about individual requests processed by the　Service Connect proxy.
+   *
+   * @default undefined - AWS ECS default is disabled, which means that access logs are not recorded
+   */
+  readonly accessLogConfiguration?: ServiceConnectAccessLogConfiguration;
 }
 
 /**
@@ -610,6 +667,7 @@ export interface IBaseService extends IService {
 /**
  * The base class for Ec2Service and FargateService services.
  */
+@noBoxStackTraces
 export abstract class BaseService extends Resource
   implements IBaseService, elbv2.IApplicationLoadBalancerTarget, elbv2.INetworkLoadBalancerTarget, elb.ILoadBalancerTarget {
   /**
@@ -699,31 +757,44 @@ export abstract class BaseService extends Resource
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected loadBalancers = new Array<CfnService.LoadBalancerProperty>();
+  private _loadBalancers: IArrayBox<CfnService.LoadBalancerProperty> = Box.fromArray([], { omitEmpty: false });
 
   /**
    * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
    * name (as it appears in a container definition), and the container port to access from the load balancer.
    */
-  protected networkConfiguration?: CfnService.NetworkConfigurationProperty;
+  private readonly _networkConfigurationBox: IBox<CfnService.NetworkConfigurationProperty | undefined> = Box.fromValue(undefined);
+
+  protected get networkConfiguration(): CfnService.NetworkConfigurationProperty | undefined {
+    return this._networkConfigurationBox.getMutable();
+  }
+  protected set networkConfiguration(value: CfnService.NetworkConfigurationProperty | undefined) {
+    this._networkConfigurationBox.set(value);
+  }
 
   /**
    * The deployment alarms property - this will be rendered directly and lazily as the CfnService.alarms
    * property.
    */
-  protected deploymentAlarms?: CfnService.DeploymentAlarmsProperty;
+  private readonly _deploymentAlarms: IBox<CfnService.DeploymentAlarmsProperty | undefined> = Box.fromValue(undefined);
+
+  protected get deploymentAlarms(): CfnService.DeploymentAlarmsProperty | undefined {
+    return this._deploymentAlarms.getMutable();
+  }
+  protected set deploymentAlarms(value: CfnService.DeploymentAlarmsProperty | undefined) {
+    this._deploymentAlarms.set(value);
+  }
 
   /**
    * The details of the service discovery registries to assign to this service.
    * For more information, see Service Discovery.
    */
-  protected serviceRegistries = new Array<CfnService.ServiceRegistryProperty>();
+  private _serviceRegistries: IArrayBox<CfnService.ServiceRegistryProperty> = Box.fromArray();
 
   /**
    * The service connect configuration for this service.
-   * @internal
    */
-  protected _serviceConnectConfig?: CfnService.ServiceConnectConfigurationProperty;
+  private readonly _serviceConnectConfig: IBox<CfnService.ServiceConnectConfigurationProperty | undefined> = Box.fromValue(undefined);
 
   /**
    * Whether this service is using the ECS deployment controller.
@@ -737,13 +808,13 @@ export abstract class BaseService extends Resource
   /**
    * All volumes
    */
-  private readonly volumes: ServiceManagedVolume[] = [];
+  private readonly _volumes: IArrayBox<ServiceManagedVolume>;
 
   /**
    * A deployment lifecycle hook runs custom logic at specific stages of the deployment process.
    * @default - none
    */
-  private readonly lifecycleHooks: IDeploymentLifecycleHookTarget[] = [];
+  private readonly _lifecycleHooks: IArrayBox<IDeploymentLifecycleHookTarget>;
 
   @memoizedGetter
   public get serviceArn(): string {
@@ -752,6 +823,38 @@ export abstract class BaseService extends Resource
       resource: 'service',
       resourceName: `${this.cluster.clusterName}/${this.physicalName}`,
     });
+  }
+
+  /**
+   * The details of the service discovery registries to assign to this service.
+   * For more information, see Service Discovery.
+   */
+  protected set serviceRegistries(sr: CfnService.ServiceRegistryProperty[]) {
+    this._serviceRegistries.set(sr);
+  }
+
+  /**
+   * The details of the service discovery registries to assign to this service.
+   * For more information, see Service Discovery.
+   */
+  protected get serviceRegistries(): CfnService.ServiceRegistryProperty[] {
+    return this._serviceRegistries.getMutable();
+  }
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
+  public get loadBalancers(): Array<CfnService.LoadBalancerProperty> {
+    return this._loadBalancers.getMutable();
+  }
+
+  /**
+   * A list of Elastic Load Balancing load balancer objects, containing the load balancer name, the container
+   * name (as it appears in a container definition), and the container port to access from the load balancer.
+   */
+  public set loadBalancers(value: Array<CfnService.LoadBalancerProperty>) {
+    this._loadBalancers.set(value);
   }
 
   @memoizedGetter
@@ -776,12 +879,13 @@ export abstract class BaseService extends Resource
     super(scope, id, {
       physicalName: props.serviceName,
     });
-
     if (props.propagateTags && props.propagateTaskTagsFrom) {
       throw new ValidationError(lit`OnlySpecifyEitherPropagateTags`, 'You can only specify either propagateTags or propagateTaskTagsFrom. Alternatively, you can leave both blank', this);
     }
 
     this.taskDefinition = taskDefinition;
+    this._volumes = Box.fromArray();
+    this._lifecycleHooks = Box.fromArray();
 
     // launchType will set to undefined if using external DeploymentController or capacityProviderStrategies
     const launchType = props.deploymentController?.type === DeploymentControllerType.EXTERNAL ||
@@ -805,7 +909,7 @@ export abstract class BaseService extends Resource
     this.resource = new CfnService(this, 'Service', {
       desiredCount: props.desiredCount,
       serviceName: this.physicalName,
-      loadBalancers: Lazy.any({ produce: () => this.loadBalancers }, { omitEmptyArray: true }),
+      loadBalancers: this._loadBalancers.derive(lbs => lbs.length > 0 ? lbs : undefined),
       deploymentConfiguration: {
         maximumPercent: props.maxHealthyPercent || 200,
         minimumHealthyPercent: props.minHealthyPercent === undefined ? 50 : props.minHealthyPercent,
@@ -813,7 +917,7 @@ export abstract class BaseService extends Resource
           enable: props.circuitBreaker.enable ?? true,
           rollback: props.circuitBreaker.rollback ?? false,
         } : undefined,
-        alarms: Lazy.any({ produce: () => this.deploymentAlarms }, { omitEmptyArray: true }),
+        alarms: this._deploymentAlarms,
         strategy: props.deploymentStrategy,
         bakeTimeInMinutes: props.bakeTime?.toMinutes(),
         linearConfiguration: props.linearConfiguration ? {
@@ -834,10 +938,10 @@ export abstract class BaseService extends Resource
       capacityProviderStrategy: props.capacityProviderStrategies,
       healthCheckGracePeriodSeconds: this.evaluateHealthGracePeriod(props.healthCheckGracePeriod),
       /* role: never specified, supplanted by Service Linked Role */
-      networkConfiguration: Lazy.any({ produce: () => this.networkConfiguration }, { omitEmptyArray: true }),
-      serviceRegistries: Lazy.any({ produce: () => this.serviceRegistries }, { omitEmptyArray: true }),
-      serviceConnectConfiguration: Lazy.any({ produce: () => this._serviceConnectConfig }, { omitEmptyArray: true }),
-      volumeConfigurations: Lazy.any({ produce: () => this.renderVolumes() }, { omitEmptyArray: true }),
+      networkConfiguration: this._networkConfigurationBox,
+      serviceRegistries: this._serviceRegistries,
+      serviceConnectConfiguration: this._serviceConnectConfig,
+      volumeConfigurations: this._volumes.derive(_ => this.renderVolumes()),
       ...additionalProps,
     });
 
@@ -849,6 +953,11 @@ export abstract class BaseService extends Resource
 
     if (props.circuitBreaker && !this.isEcsDeploymentController) {
       Annotations.of(this)._addTrackableError(lit`CircuitBreakerRequiresEcsController`, 'Deployment circuit breaker requires the ECS deployment controller.');
+    }
+
+    if (!props.circuitBreaker && this.isEcsDeploymentController) {
+      // If we *could* use a circuit breaker, then let's recommend users to do so. It makes detecting errors sooo much faster.
+      Annotations.of(this).addWarningV2('@aws-cdk/aws-ecs:shouldUseCircuitBreaker', 'Enable the \'circuitBreaker\' property to trigger a quicker deployment failure if tasks are failing to come start (without this setting deployments may take up to 3 hours to fail).');
     }
 
     if (props.deploymentAlarms && !this.isEcsDeploymentController) {
@@ -983,11 +1092,11 @@ export abstract class BaseService extends Resource
     if (!this.isEcsDeploymentController) {
       throw new ValidationError(lit`RequiresDeploymentLifecycleHooks`, 'Deployment lifecycle hooks requires the ECS deployment controller.', this);
     }
-    this.lifecycleHooks.push(target);
+    this._lifecycleHooks.push(target);
   }
 
   private renderLifecycleHooks(): CfnService.DeploymentLifecycleHookProperty[] {
-    return this.lifecycleHooks.map((target) => {
+    return this._lifecycleHooks.get().map((target) => {
       const config = target.bind(this);
       return {
         hookTargetArn: config.targetArn,
@@ -1001,14 +1110,14 @@ export abstract class BaseService extends Resource
    * Adds a volume to the Service.
    */
   public addVolume(volume: ServiceManagedVolume) {
-    this.volumes.push(volume);
+    this._volumes.push(volume);
   }
 
   private renderVolumes(): CfnService.ServiceVolumeConfigurationProperty[] {
-    if (this.volumes.length > 1) {
-      throw new ValidationError(lit`OnlyVolumeSpecifiedVolumeConfigurations`, `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this.volumes.length}`, this);
+    if (this._volumes.length > 1) {
+      throw new ValidationError(lit`OnlyVolumeSpecifiedVolumeConfigurations`, `Only one EBS volume can be specified for 'volumeConfigurations', got: ${this._volumes.length}`, this);
     }
-    return this.volumes.map(renderVolume);
+    return this._volumes.get().map(renderVolume);
     function renderVolume(spec: ServiceManagedVolume): CfnService.ServiceVolumeConfigurationProperty {
       const tagSpecifications = spec.config?.tagSpecifications?.map(ebsTagSpec => {
         return {
@@ -1095,7 +1204,7 @@ export abstract class BaseService extends Resource
    * Enable Service Connect on this service.
    */
   public enableServiceConnect(config?: ServiceConnectProps) {
-    if (this._serviceConnectConfig) {
+    if (this._serviceConnectConfig.get() !== undefined) {
       throw new ValidationError(lit`ServiceConnectConfigurationCannot`, 'Service connect configuration cannot be specified more than once.', this);
     }
 
@@ -1158,12 +1267,16 @@ export abstract class BaseService extends Resource
       logConfig = cfg.logDriver.bind(this, this.taskDefinition.defaultContainer);
     }
 
-    this._serviceConnectConfig = {
+    this._serviceConnectConfig.set({
       enabled: true,
       logConfiguration: logConfig,
       namespace: namespace,
       services: services,
-    };
+      accessLogConfiguration: cfg.accessLogConfiguration ? {
+        format: cfg.accessLogConfiguration.format,
+        includeQueryParameters: cfg.accessLogConfiguration.includeQueryParameters ? 'ENABLED' : 'DISABLED',
+      } : undefined,
+    });
   }
 
   /**
@@ -1182,6 +1295,16 @@ export abstract class BaseService extends Resource
     // When config isn't specified, return.
     if (!config) {
       return;
+    }
+
+    // accessLogConfiguration controls the format of Envoy proxy access logs, but the actual
+    // log delivery is handled by logDriver (logConfiguration). Without logDriver, the Envoy
+    // sidecar has no log driver and its stdout is dropped, access logs never reach any destination.
+    if (config.accessLogConfiguration && !config.logDriver) {
+      throw new ValidationError(lit`AccessLogConfigurationRequiresLogDriver`,
+        'accessLogConfiguration requires logDriver to be set. Without logDriver, access logs are not delivered to any destination.',
+        this,
+      );
     }
 
     if (!config.services) {
@@ -1667,7 +1790,7 @@ export abstract class BaseService extends Resource
       awsvpcConfiguration: {
         assignPublicIp: assignPublicIp ? 'ENABLED' : 'DISABLED',
         subnets: vpc.selectSubnets(vpcSubnets).subnetIds,
-        securityGroups: Lazy.list({ produce: () => [securityGroup!.securityGroupId] }),
+        securityGroups: [securityGroup!.securityGroupId],
       },
     };
   }
@@ -1714,7 +1837,7 @@ export abstract class BaseService extends Resource
       throw new ValidationError(lit`CannotClassicLoad`, 'Cannot use a Classic Load Balancer if NetworkMode is None. Use Host or Bridge instead.', this);
     }
 
-    this.loadBalancers.push({
+    this._loadBalancers.push({
       loadBalancerName: loadBalancer.loadBalancerName,
       containerName,
       containerPort,
@@ -1734,7 +1857,7 @@ export abstract class BaseService extends Resource
     }
 
     const advancedConfiguration = alternateTarget?.bind(this);
-    this.loadBalancers.push({
+    this._loadBalancers.push({
       targetGroupArn: targetGroup.targetGroupArn,
       containerName,
       containerPort,
@@ -1772,12 +1895,12 @@ export abstract class BaseService extends Resource
    * Associate Service Discovery (Cloud Map) service
    */
   private addServiceRegistry(registry: ServiceRegistry) {
-    if (this.serviceRegistries.length >= 1) {
+    if (this._serviceRegistries.length >= 1) {
       throw new ValidationError(lit`CannotAssociateGiven`, 'Cannot associate with the given service discovery registry. ECS supports at most one service registry per service.', this);
     }
 
     const sr = this.renderServiceRegistry(registry);
-    this.serviceRegistries.push(sr);
+    this._serviceRegistries.push(sr);
   }
 
   /**
@@ -1785,9 +1908,9 @@ export abstract class BaseService extends Resource
    *  healthCheckGracePeriod is not already set
    */
   private evaluateHealthGracePeriod(providedHealthCheckGracePeriod?: Duration): IResolvable {
-    return Lazy.any({
-      produce: () => providedHealthCheckGracePeriod?.toSeconds() ?? (this.loadBalancers.length > 0 ? 60 : undefined),
-    });
+    return this._loadBalancers.derive(
+      lbs => providedHealthCheckGracePeriod?.toSeconds() ?? (lbs.length > 0 ? 60 : undefined),
+    );
   }
 
   private enableExecuteCommand() {

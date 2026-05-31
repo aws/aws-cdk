@@ -1,5 +1,5 @@
 {
-  "version": "30.0.0",
+  "version": "53.0.0",
   "testCases": {
     "integ.start-execution": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1108.0"
 }

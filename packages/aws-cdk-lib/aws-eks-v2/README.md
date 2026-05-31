@@ -431,7 +431,7 @@ To deploy the controller on your EKS cluster, configure the `albController` prop
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
   },
 });
 ```
@@ -444,7 +444,7 @@ import { KubectlV35Layer } from '@aws-cdk/lambda-layer-kubectl-v35';
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     additionalHelmChartValues: {
       enableWafv2: false
     }
@@ -458,7 +458,7 @@ To overwrite an existing ALB controller service account, use the `overwriteServi
 new eks.Cluster(this, 'HelloEKS', {
   version: eks.KubernetesVersion.V1_34,
   albController: {
-    version: eks.AlbControllerVersion.V2_8_2,
+    version: eks.AlbControllerVersion.V3_2_2,
     overwriteServiceAccount: true,
   },
 });
