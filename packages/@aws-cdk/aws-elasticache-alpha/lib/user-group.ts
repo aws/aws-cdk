@@ -264,7 +264,7 @@ export class UserGroup extends UserGroupBase {
     this._users = Box.fromArray(props.users ?? [], { omitEmpty: false });
 
     this.resource = new CfnUserGroup(this, 'Resource', {
-      engine: this.engine,
+      engine: this.engine.engineType,
       userGroupId: this.userGroupName,
       userIds: Token.asList(this._users.derive(users => {
         this.validateUsers();
@@ -310,9 +310,9 @@ export class UserGroup extends UserGroupBase {
       throw new ValidationError(lit`DuplicateUserName`, 'User group cannot have users with the same user name.', this);
     }
 
-    if (this.engine === UserEngine.REDIS) {
+    if (this.engine?.engineType === 'redis') {
       users.forEach(user => {
-        if (user.engine !== UserEngine.REDIS) {
+        if (user.engine?.engineType !== 'redis') {
           throw new ValidationError(lit`RedisUserGroupEngineMismatch`, 'Redis user group can only contain Redis users.', this);
         }
       });
