@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_lambda_event_sources"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSLambdaEventSources"
     }
   }
 }

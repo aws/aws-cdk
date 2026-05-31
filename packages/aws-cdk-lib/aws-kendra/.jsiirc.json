@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_kendra"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSKendra"
     }
   }
 }

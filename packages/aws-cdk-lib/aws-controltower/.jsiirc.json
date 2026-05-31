@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_controltower"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSControltower"
     }
   }
 }

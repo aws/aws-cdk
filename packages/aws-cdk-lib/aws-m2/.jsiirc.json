@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_m2"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSM2"
     }
   }
 }

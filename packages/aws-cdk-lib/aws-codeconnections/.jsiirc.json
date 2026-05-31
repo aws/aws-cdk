@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_codeconnections"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSCodeconnections"
     }
   }
 }

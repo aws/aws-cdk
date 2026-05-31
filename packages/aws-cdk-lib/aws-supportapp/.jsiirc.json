@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_supportapp"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSSupportapp"
     }
   }
 }

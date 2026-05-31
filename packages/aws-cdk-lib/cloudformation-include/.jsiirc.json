@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.cloudformation_include"
+    },
+    "ruby": {
+      "module": "AWSCDK::CloudformationInclude"
     }
   }
 }

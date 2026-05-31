@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_ec2"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSEC2"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_route53resolver"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSRoute53resolver"
     }
   }
 }

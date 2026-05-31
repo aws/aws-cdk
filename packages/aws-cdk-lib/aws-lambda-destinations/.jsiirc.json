@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_lambda_destinations"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSLambdaDestinations"
     }
   }
 }

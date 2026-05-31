@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_s3tables"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSS3tables"
     }
   }
 }

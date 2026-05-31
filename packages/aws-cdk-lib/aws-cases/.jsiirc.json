@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_cases"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSCases"
     }
   }
 }

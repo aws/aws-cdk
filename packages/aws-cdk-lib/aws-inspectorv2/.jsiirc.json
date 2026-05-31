@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_inspectorv2"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSInspectorv2"
     }
   }
 }

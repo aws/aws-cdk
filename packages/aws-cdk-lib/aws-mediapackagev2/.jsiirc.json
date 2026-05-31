@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_mediapackagev2"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSMediapackagev2"
     }
   }
 }

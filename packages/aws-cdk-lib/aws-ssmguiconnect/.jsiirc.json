@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_ssmguiconnect"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSSsmguiconnect"
     }
   }
 }

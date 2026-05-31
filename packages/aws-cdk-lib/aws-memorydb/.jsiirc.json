@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_memorydb"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSMemorydb"
     }
   }
 }

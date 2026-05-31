@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_config"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSConfig"
     }
   }
 }

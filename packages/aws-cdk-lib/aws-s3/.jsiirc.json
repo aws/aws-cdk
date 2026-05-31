@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_s3"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSS3"
     }
   }
 }

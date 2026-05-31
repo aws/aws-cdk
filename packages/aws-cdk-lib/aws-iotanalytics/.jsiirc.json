@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_iotanalytics"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSIotanalytics"
     }
   }
 }

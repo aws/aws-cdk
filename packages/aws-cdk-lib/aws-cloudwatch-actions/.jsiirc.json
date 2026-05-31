@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_cloudwatch_actions"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSCloudwatchActions"
     }
   }
 }

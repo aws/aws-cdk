@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_pcaconnectorad"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSPcaconnectorad"
     }
   }
 }

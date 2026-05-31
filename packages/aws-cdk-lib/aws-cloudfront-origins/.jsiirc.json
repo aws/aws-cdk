@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_cloudfront_origins"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSCloudfrontOrigins"
     }
   }
 }

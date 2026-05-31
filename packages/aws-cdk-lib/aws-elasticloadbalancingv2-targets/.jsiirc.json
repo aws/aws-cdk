@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_elasticloadbalancingv2_targets"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSElasticloadbalancingv2Targets"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_applicationsignals"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSApplicationsignals"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_notificationscontacts"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSNotificationscontacts"
     }
   }
 }

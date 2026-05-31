@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_dms"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSDMS"
     }
   }
 }

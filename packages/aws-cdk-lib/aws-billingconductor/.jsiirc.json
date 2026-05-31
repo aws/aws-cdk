@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_billingconductor"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSBillingconductor"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_sam"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSSAM"
     }
   }
 }

@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_osis"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSOsis"
     }
   }
 }

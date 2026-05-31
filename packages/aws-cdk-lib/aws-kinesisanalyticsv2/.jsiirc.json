@@ -8,6 +8,9 @@
     },
     "python": {
       "module": "aws_cdk.aws_kinesisanalyticsv2"
+    },
+    "ruby": {
+      "module": "AWSCDK::AWSKinesisanalyticsv2"
     }
   }
 }
