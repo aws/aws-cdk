@@ -791,6 +791,11 @@ export class Runtime extends RuntimeBase {
         throw new ValidationError(lit`InvalidTagKey`, keyErrors.join('\n'), this);
       }
 
+      // Validate that tag key does not use the AWS-reserved prefix
+      if (key.toLowerCase().startsWith('aws:')) {
+        throw new ValidationError(lit`ReservedTagKeyPrefix`, `Tag key "${key}" cannot start with "aws:" as this prefix is reserved by AWS`, this);
+      }
+
       if (value === undefined || value === null) {
         throw new ValidationError(lit`NullTagValue`, `Tag value for key "${key}" cannot be null or undefined`, this);
       }

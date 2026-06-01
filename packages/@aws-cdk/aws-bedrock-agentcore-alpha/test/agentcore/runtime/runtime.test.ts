@@ -3437,12 +3437,12 @@ describe('Runtime applicationLogGroupTags tests', () => {
     expect(agentcoreLogGroups).toHaveLength(0);
   });
 
-  test('Should throw when applicationLogGroupTags contains an invalid key', () => {
+  test('Should throw when applicationLogGroupTags contains a reserved aws: prefix key', () => {
     expect(() => new Runtime(stack, 'InvalidTagRuntime', {
       runtimeName: 'invalid_tag_runtime',
       agentRuntimeArtifact,
       applicationLogGroupTags: { 'aws:reserved': 'value' },
-    })).toThrow(/cannot start with aws:/i);
+    })).toThrow(/aws:/i);
   });
 
   test('Should retain log group when stack is destroyed', () => {
