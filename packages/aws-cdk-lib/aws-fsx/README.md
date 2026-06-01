@@ -4,7 +4,8 @@
 native compatibility and feature sets for workloads such as Microsoft Windows–based storage, high-performance computing,
 machine learning, and electronic design automation.
 
-Amazon FSx supports two file system types: [Lustre](https://docs.aws.amazon.com/fsx/latest/LustreGuide/index.html) and
+Amazon FSx supports several file system types: [Lustre](https://docs.aws.amazon.com/fsx/latest/LustreGuide/index.html),
+[NetApp ONTAP](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/index.html), and
 [Windows](https://docs.aws.amazon.com/fsx/latest/WindowsGuide/index.html) File Server.
 
 ## FSx for Lustre
@@ -273,6 +274,170 @@ const fileSystem = new fsx.LustreFileSystem(this, 'FsxLustreFileSystem', {
   vpcSubnet: vpc.privateSubnets[0],
   storageType: fsx.StorageType.HDD,
 });
+```
+
+## FSx for NetApp ONTAP
+
+[Amazon FSx for NetApp ONTAP](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/what-is-fsx-ontap.html) provides fully
+managed shared storage built on NetApp's popular ONTAP file system. FSx for ONTAP offers multi-protocol access (NFS,
+SMB, iSCSI), built-in data protection with snapshots and replication, and automatic storage tiering between SSD and
+capacity pool storage.
+
+### Basic Usage
+
+Create an FSx for ONTAP file system with a Storage Virtual Machine (SVM) and Volume:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Create the ONTAP file system
+const fileSystem = new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0], vpc.privateSubnets[1]],
+  storageCapacityGiB: 1024,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
+    throughputCapacityPerHaPair: fsx.MultiAz2ThroughputCapacity.MB_PER_SEC_384,
+    preferredSubnet: vpc.privateSubnets[0],
+  },
+});
+
+// Create a Storage Virtual Machine
+const svm = new fsx.OntapStorageVirtualMachine(this, 'Svm', {
+  fileSystem,
+  name: 'my-svm',
+});
+
+// Create a Volume
+new fsx.OntapVolume(this, 'Volume', {
+  storageVirtualMachine: svm,
+  name: 'my-volume',
+  sizeInBytes: 107374182400, // 100 GiB
+  junctionPath: '/data',
+});
+```
+
+### Deployment Types
+
+FSx for ONTAP supports four deployment types:
+
+- **MULTI_AZ_1** — First-generation multi-AZ, high availability across two AZs
+- **MULTI_AZ_2** — Second-generation multi-AZ with improved performance
+- **SINGLE_AZ_1** — First-generation single-AZ
+- **SINGLE_AZ_2** — Second-generation single-AZ with support for multiple HA pairs
+
+```ts
+declare const vpc: ec2.Vpc;
+
+// Single-AZ deployment requires exactly one subnet
+const singleAz = new fsx.OntapFileSystem(this, 'SingleAzFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 1024,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+    throughputCapacityPerHaPair: fsx.SingleAz2ThroughputCapacity.MB_PER_SEC_1536,
+  },
+});
+```
+
+### Throughput Capacity
+
+Each deployment type has its own set of valid throughput capacity values. Use the type-safe classes to specify throughput:
+
+- `SingleAz1ThroughputCapacity` — 128, 256, 512, 1024, 2048, 4096 MBps
+- `MultiAz1ThroughputCapacity` — 128, 256, 512, 1024, 2048, 4096 MBps
+- `SingleAz2ThroughputCapacity` — 1536, 3072, 6144 MBps
+- `MultiAz2ThroughputCapacity` — 384, 768, 1536, 3072, 6144 MBps
+
+### Backups
+
+By default, automatic backups are retained for 30 days. You can configure the retention period and backup window:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const vpc: ec2.Vpc;
+
+const fileSystem = new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 1024,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
+    throughputCapacityPerHaPair: fsx.SingleAz1ThroughputCapacity.MB_PER_SEC_128,
+    automaticBackupRetention: cdk.Duration.days(7),
+    dailyAutomaticBackupStartTime: new fsx.DailyAutomaticBackupStartTime({ hour: 1, minute: 0 }),
+  },
+});
+```
+
+To disable automatic backups, set `automaticBackupRetention` to `Duration.days(0)`.
+
+### Storage Virtual Machines
+
+A Storage Virtual Machine (SVM) is an isolated file server within a file system. Each SVM has its own set of credentials
+and can be joined to an Active Directory domain:
+
+```ts
+declare const fileSystem: fsx.OntapFileSystem;
+
+const svm = new fsx.OntapStorageVirtualMachine(this, 'Svm', {
+  fileSystem,
+  name: 'my-svm',
+  rootVolumeSecurityStyle: fsx.SecurityStyle.UNIX,
+});
+```
+
+### Volumes
+
+Volumes are the data containers within an SVM. You can configure tiering policies to automatically move infrequently
+accessed data to lower-cost capacity pool storage:
+
+```ts
+import * as cdk from 'aws-cdk-lib';
+
+declare const svm: fsx.OntapStorageVirtualMachine;
+
+const volume = new fsx.OntapVolume(this, 'Volume', {
+  storageVirtualMachine: svm,
+  name: 'my-volume',
+  sizeInBytes: 214748364800, // 200 GiB
+  junctionPath: '/data',
+  storageEfficiencyEnabled: true,
+  tieringPolicy: {
+    name: fsx.TieringPolicyName.AUTO,
+    coolingPeriod: cdk.Duration.days(31),
+  },
+});
+```
+
+### Connecting
+
+To control who can access the file system, use the `.connections` attribute. FSx for ONTAP uses port 2049 (NFS) as the
+default port. This example allows an EC2 instance to connect to the file system:
+
+```ts
+declare const fileSystem: fsx.OntapFileSystem;
+declare const instance: ec2.Instance;
+
+fileSystem.connections.allowDefaultPortFrom(instance);
+```
+
+### Importing Existing Resources
+
+An existing FSx for ONTAP file system can be imported using `fromOntapFileSystemAttributes`:
+
+```ts
+const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'FsxSecurityGroup', '{SECURITY-GROUP-ID}');
+const fs = fsx.OntapFileSystem.fromOntapFileSystemAttributes(this, 'ImportedFileSystem', {
+  dnsName: '{FILE-SYSTEM-DNS-NAME}',
+  fileSystemId: '{FILE-SYSTEM-ID}',
+  securityGroup: sg,
+});
+
+declare const instance: ec2.Instance;
+fs.connections.allowDefaultPortFrom(instance);
 ```
 
 ## FSx for Windows File Server
