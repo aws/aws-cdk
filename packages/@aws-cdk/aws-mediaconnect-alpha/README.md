@@ -1166,22 +1166,14 @@ The encryption role must allow MediaConnect to assume it and access the secret:
 ```ts
 declare const stack: Stack;
 
-// Create a role for MediaConnect to access secrets
 const encryptionRole = new iam.Role(stack, 'EncryptionRole', {
   assumedBy: new iam.ServicePrincipal('mediaconnect.amazonaws.com'),
 });
 
-// Create a secret for the encryption key
-const encryptionSecret = new secretsmanager.Secret(stack, 'EncryptionSecret', {
-  description: 'Encryption key for MediaConnect',
-  generateSecretString: {
-    secretStringTemplate: JSON.stringify({ username: 'mediaconnect' }),
-    generateStringKey: 'password',
-    excludePunctuation: true,
-  },
-});
+const encryptionSecret = secretsmanager.Secret.fromSecretNameV2(
+  stack, 'EncryptionSecret', 'mediaconnect/static-key',
+);
 
-// Grant the role permission to read the secret
 encryptionSecret.grantRead(encryptionRole);
 ```
 
