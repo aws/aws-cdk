@@ -6,6 +6,7 @@ import { SSM_EXPORT_PATH_PREFIX } from '../../lib/core/types';
 let mockPutParameter: jest.Mock = jest.fn() ;
 let mocklistTagsForResource: jest.Mock = jest.fn();
 let mockDeleteParameters: jest.Mock = jest.fn();
+let mockDescribeStacks: jest.Mock = jest.fn();
 jest.mock('@aws-sdk/client-ssm', () => {
   const actual = jest.requireActual('@aws-sdk/client-ssm');
   return {
@@ -15,6 +16,15 @@ jest.mock('@aws-sdk/client-ssm', () => {
         putParameter: mockPutParameter,
         listTagsForResource: mocklistTagsForResource,
         deleteParameters: mockDeleteParameters,
+      };
+    }),
+  };
+});
+jest.mock('@aws-sdk/client-cloudformation', () => {
+  return {
+    CloudFormation: jest.fn(() => {
+      return {
+        describeStacks: mockDescribeStacks,
       };
     }),
   };
@@ -30,6 +40,9 @@ beforeEach(() => {
   });
   mockPutParameter.mockImplementation(() => {
     return {};
+  });
+  mockDescribeStacks.mockImplementation(() => {
+    return { Stacks: [{ StackStatus: 'DELETE_IN_PROGRESS' }] };
   });
 });
 afterEach(() => {
@@ -421,7 +434,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
     });
 
-    test('throws if parameters are in use', async () => {
+    test('throws if parameters are in use during stack deletion', async () => {
       // GIVEN
       const event = makeEvent({
         RequestType: 'Delete',
@@ -445,12 +458,89 @@ describe('cross-region-ssm-writer entrypoint', () => {
           }],
         };
       });
+      mockDescribeStacks.mockImplementation(() => {
+        return { Stacks: [{ StackStatus: 'DELETE_IN_PROGRESS' }] };
+      });
 
       // THEN
       await expect(handler(event)).rejects.toThrow(/Exports cannot be updated/);
       expect(mockPutParameter).toHaveBeenCalledTimes(0);
       expect(mocklistTagsForResource).toHaveBeenCalledTimes(1);
       expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
+    });
+
+    test('deletes parameters and throws if in use during stack update', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Delete',
+        ResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/RemovedExport': 'RemovedValue',
+            },
+          },
+        },
+      });
+
+      // WHEN
+      mocklistTagsForResource.mockImplementation(() => {
+        return {
+          TagList: [{
+            Key: 'aws-cdk:strong-ref:MyStack',
+            Value: 'true',
+          }],
+        };
+      });
+      mockDescribeStacks.mockImplementation(() => {
+        return { Stacks: [{ StackStatus: 'UPDATE_IN_PROGRESS' }] };
+      });
+
+      // THEN
+      await expect(handler(event)).rejects.toThrow(/Exports cannot be updated/);
+      expect(mockPutParameter).toHaveBeenCalledTimes(0);
+      expect(mocklistTagsForResource).toHaveBeenCalledTimes(1);
+      expect(mockDeleteParameters).toHaveBeenCalledTimes(1);
+      expect(mockDeleteParameters).toHaveBeenCalledWith({
+        Names: ['/cdk/exports/MyStack/RemovedExport'],
+      });
+    });
+
+    test('deletes parameters and throws if in use during stack update rollback', async () => {
+      // GIVEN
+      const event = makeEvent({
+        RequestType: 'Delete',
+        ResourceProperties: {
+          ServiceToken: '<ServiceToken>',
+          WriterProps: {
+            region: 'us-east-1',
+            exports: {
+              '/cdk/exports/MyStack/RemovedExport': 'RemovedValue',
+            },
+          },
+        },
+      });
+
+      // WHEN
+      mocklistTagsForResource.mockImplementation(() => {
+        return {
+          TagList: [{
+            Key: 'aws-cdk:strong-ref:MyStack',
+            Value: 'true',
+          }],
+        };
+      });
+      mockDescribeStacks.mockImplementation(() => {
+        return { Stacks: [{ StackStatus: 'UPDATE_ROLLBACK_IN_PROGRESS' }] };
+      });
+
+      // THEN
+      await expect(handler(event)).rejects.toThrow(/Exports cannot be updated/);
+      expect(mockDeleteParameters).toHaveBeenCalledTimes(1);
+      expect(mockDeleteParameters).toHaveBeenCalledWith({
+        Names: ['/cdk/exports/MyStack/RemovedExport'],
+      });
     });
   });
 });

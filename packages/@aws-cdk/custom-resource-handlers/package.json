@@ -28,6 +28,7 @@
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/pkglint": "0.0.0",
     "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
+    "@aws-sdk/client-cloudformation": "3.632.0",
     "@aws-sdk/client-ecs": "3.632.0",
     "@aws-sdk/client-ssm": "3.632.0",
     "@aws-sdk/client-kinesis": "3.632.0",

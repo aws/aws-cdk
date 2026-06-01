@@ -52,6 +52,11 @@ class CRProvider extends CrossRegionSsmWriterProvider {
         'ssm:PutParameter',
       ],
     });
+    this.addToRolePolicy({
+      Effect: 'Allow',
+      Resource: Stack.of(this).stackId,
+      Action: 'cloudformation:DescribeStacks',
+    });
   }
 
   /**

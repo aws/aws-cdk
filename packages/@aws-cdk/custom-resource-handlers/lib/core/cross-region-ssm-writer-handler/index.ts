@@ -1,5 +1,6 @@
 
 /* eslint-disable import/no-extraneous-dependencies */
+import { CloudFormation } from '@aws-sdk/client-cloudformation';
 import { SSM } from '@aws-sdk/client-ssm';
 import type { CrossRegionExports, ExportWriterCRProps } from '../types';
 
@@ -40,10 +41,23 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
         await putParameters(ssm, newExports);
         return;
       case 'Delete':
-        // if any of the exports are currently in use then throw an error to fail
-        // the stack deletion.
-        await throwIfAnyInUse(ssm, exports);
-        // if none are in use then delete all of them
+        const inUseParams = await findInUse(ssm, exports);
+        if (inUseParams.size > 0) {
+          const message: string = Array.from(inUseParams.entries())
+            .map((result) => `${result[0]} is in use by stack(s) ${Array.from(result[1]).join(' ')}`)
+            .join('\n');
+
+          if (await isStackBeingUpdated(event.StackId)) {
+            // During a stack update (resource replacement), delete anyway to avoid
+            // orphaning parameters, but still throw to signal the violation.
+            await deleteParameters(ssm, Object.keys(exports));
+            throw new Error(`Exports cannot be updated: \n${message}`);
+          }
+
+          // During a stack deletion, throw without deleting to give the operator
+          // a chance to remove the consuming stack first.
+          throw new Error(`Exports cannot be updated: \n${message}`);
+        }
         await deleteParameters(ssm, Object.keys(exports));
         return;
       default:
@@ -96,6 +110,19 @@ async function deleteParameters(ssm: SSM, names: string[]) {
  * Query for existing parameters that are in use
  */
 async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promise<void> {
+  const inUseParams = await findInUse(ssm, parameters);
+  if (inUseParams.size > 0) {
+    const message: string = Array.from(inUseParams.entries())
+      .map((result) => `${result[0]} is in use by stack(s) ${Array.from(result[1]).join(' ')}`)
+      .join('\n');
+    throw new Error(`Exports cannot be updated: \n${message}`);
+  }
+}
+
+/**
+ * Find which parameters are currently in use
+ */
+async function findInUse(ssm: SSM, parameters: CrossRegionExports): Promise<Map<string, Set<string>>> {
   const tagResults: Map<string, Set<string>> = new Map();
   // This linter exemption could be wrong. It is added into enable linting after it was turned off for some time
   // eslint-disable-next-line @cdklabs/promiseall-no-unbounded-parallelism
@@ -105,13 +132,20 @@ async function throwIfAnyInUse(ssm: SSM, parameters: CrossRegionExports): Promis
       tagResults.set(name, result);
     }
   }));
+  return tagResults;
+}
 
-  if (tagResults.size > 0) {
-    const message: string = Array.from(tagResults.entries())
-      .map((result) => `${result[0]} is in use by stack(s) ${Array.from(result[1]).join(' ')}`)
-      .join('\n');
-    throw new Error(`Exports cannot be updated: \n${message}`);
-  }
+/**
+ * Check whether the stack is being updated (as opposed to deleted).
+ * During a stack update with resource replacement, CloudFormation sends a Delete
+ * event for the old resource. We need to distinguish this from a stack deletion
+ * to decide whether to force-delete the parameters.
+ */
+async function isStackBeingUpdated(stackId: string): Promise<boolean> {
+  const cfn = new CloudFormation();
+  const response = await cfn.describeStacks({ StackName: stackId });
+  const stackStatus = response.Stacks?.[0]?.StackStatus;
+  return stackStatus != null && stackStatus.startsWith('UPDATE_');
 }
 
 /**
