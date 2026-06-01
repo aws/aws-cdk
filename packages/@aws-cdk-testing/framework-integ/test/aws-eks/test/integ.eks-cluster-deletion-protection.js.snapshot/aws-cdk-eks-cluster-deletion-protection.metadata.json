@@ -1,0 +1,3226 @@
+{
+  "/aws-cdk-eks-cluster-deletion-protection": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/AdminRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "maxAzs": "*",
+        "natGateways": "*",
+        "restrictDefaultSecurityGroup": false
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/KubectlLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "mastersRole": "*",
+        "defaultCapacity": "*",
+        "version": "*",
+        "kubectlLayer": "*",
+        "clusterName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNodegroupCapacity": [
+          "*",
+          {
+            "minSize": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtectionName": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionName"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:35:9)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:339:17)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:500: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:500:2)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:565:5)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:561:5)",
+        "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:492:3)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:75:3)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:349:3)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:500: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:500:2)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:565:5)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:561:5)",
+        "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:492:3)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:75:3)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/AdminRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AdminRole38563C57"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:16:29)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Vpc8378EB38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1627:21)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addNatGateway": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": true,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "availabilityZone": "*",
+        "vpcId": "*",
+        "cidrBlock": "*",
+        "mapPublicIpOnLaunch": false,
+        "ipv6CidrBlock": "*",
+        "assignIpv6AddressOnCreation": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcIGWD7BA715C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1694:19)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcVPCGWBF912B6E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1700:19)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/KubectlLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "KubectlLayer600207B5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.ts:225:39)",
+        "new LayerVersion (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "...new KubectlV32Layer in @aws-cdk/lambda-layer-kubectl-v32...",
+        "getClusterVersionConfig (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ-tests-kubernetes-version.js:43:23)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:31:77)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/KubectlHandlerRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/ControlPlaneSecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "vpc": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/KubectlReadyBarrier": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionKubectlReadyBarrier5724BB98"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1914:33)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/HasEcrPublic": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionHasEcrPublicE78EB123"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:196:35)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/NodegroupDefaultCapacity": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "cluster": "*",
+        "instanceTypes": "*",
+        "minSize": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/ConfigCommand": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionConfigCommand3BA16E47"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2010:7)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/GetTokenCommand": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionGetTokenCommand57EFDF66"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2011:7)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "layers": [
+          "*"
+        ],
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "environment": "*",
+        "timeout": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "layers": [
+          "*"
+        ],
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterdeletionprotectionawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleDB1AA794Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkeksclusterdeletionprotectionawscdkawseksClusterResourceProviderOnEventHandlerServiceRoleDB1AA794Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:589:16)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:164:25)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterdeletionprotectionawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8BC94AD0Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkeksclusterdeletionprotectionawscdkawseksClusterResourceProviderIsCompleteHandlerServiceRole8BC94AD0Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:589:16)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:164:25)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/awscdkeksclusterdeletionprotectionawscdkawseksClusterResourceProviderframeworkonEventD4503722Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkeksclusterdeletionprotectionawscdkawseksClusterResourceProviderframeworkonEventD4503722Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:589:16)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:164:25)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStack/@aws-cdk--aws-eks.ClusterResourceProvider.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawseksClusterResourceProviderNestedStackawscdkawseksClusterResourceProviderNestedStackResource9827C454"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NestedStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.ts:150:21)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:67:5)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Handler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "description": "*",
+        "memorySize": "*",
+        "environment": "*",
+        "role": "*",
+        "vpc": "*",
+        "securityGroups": [
+          "*"
+        ],
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        },
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 2
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addLayers": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {}
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/awscdkeksclusterdeletionprotectionawscdkawseksKubectlProviderframeworkonEvent9D418D86Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkeksclusterdeletionprotectionawscdkawseksKubectlProviderframeworkonEvent9D418D86Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:589:16)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:164:25)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterdeletionprotectionKubectlLayer1F7E846FRef": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterdeletionprotectionKubectlLayer1F7E846FRef"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:565:13)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:146:12)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterdeletionprotectionClusterWithProtectionKubectlHandlerRoleE87D117AArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterdeletionprotectionClusterWithProtectionKubectlHandlerRoleE87D117AArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:565:13)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:146:12)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterdeletionprotectionVpcPrivateSubnet1Subnet8A19DEE1Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterdeletionprotectionVpcPrivateSubnet1Subnet8A19DEE1Ref"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:565:13)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:146:12)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterdeletionprotectionVpcPrivateSubnet2Subnet512BFC08Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterdeletionprotectionVpcPrivateSubnet2Subnet512BFC08Ref"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:565:13)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:146:12)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/reference-to-awscdkeksclusterdeletionprotectionClusterWithProtection2A4D7287ClusterSecurityGroupId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkeksclusterdeletionprotectionClusterWithProtection2A4D7287ClusterSecurityGroupId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:565:13)",
+        "resolveValue (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:146:12)",
+        "resolveReferences (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.ts:66:24)",
+        "prepareApp (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.ts:50:20)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:60:13)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:222:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider.NestedStack/@aws-cdk--aws-eks.KubectlProvider.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawseksKubectlProviderNestedStackawscdkawseksKubectlProviderNestedStackResourceA7AEBA6B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NestedStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.ts:150:21)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:137:5)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1Subnet5C2D37C4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTable6C95E38E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1RouteTableAssociation97140677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2233:19)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708:2)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1705:46)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1EIPD7E02669"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2506:40)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet1NATGateway4D7517AA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2504:17)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureNat (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:316:27)",
+        "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2Subnet691E08A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTable94F7E489"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2491:5)",
+        "new PublicSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1953:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPublicSubnet2DefaultRoute97F91067"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2233:19)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1708:2)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1705:46)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1Subnet536B997A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableB2C5B500"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2326:19)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:330:12)",
+        "NatGatewayProvider.configureNat (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:323:12)",
+        "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2Subnet3788AAA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2187:20)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableA678073B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2209:19)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2215:24)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Subnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2538:5)",
+        "new PrivateSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1960:3)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1920:22)",
+        "WrappedClass.createSubnets (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1877:10)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1686:10)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/Vpc/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VpcPrivateSubnet2DefaultRoute060D2087"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:2326:19)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "NatGatewayProvider.configureSubnet (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:330:12)",
+        "NatGatewayProvider.configureNat (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.ts:323:12)",
+        "WrappedClass.createNatGateways (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1821:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.ts:1719:14)",
+        "new Vpc (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:25:21)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/KubectlLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/KubectlHandlerRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionKubectlHandlerRole9E941414"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1730:82)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/KubectlHandlerRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionRole1747DF32"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1738:31)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/ControlPlaneSecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionControlPlaneSecurityGroup5A1A96F2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.ts:552:26)",
+        "new SecurityGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new SecurityGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1745:50)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Resource/CreationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "grant": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Resource/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/NodegroupDefaultCapacity/NodeGroupRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addManagedPolicy": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/NodegroupDefaultCapacity/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionNodegroupDefaultCapacityD1812608"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Nodegroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts:550:22)",
+        "new Nodegroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addNodegroupCapacity (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2154:12)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2000:14)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NodeProxyAgentLayer924C1971"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.ts:225:39)",
+        "new LayerVersion (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new NodeProxyAgentLayer (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/lambda-layer-node-proxy-agent/lib/node-proxy-agent-layer.ts:16:5)",
+        "new NodeProxyAgentLayer (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:70:33)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandler42BEBAE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1119:21)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceOnEventFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.ts:8:5)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:72:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandler7073F4DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1119:21)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceIsCompleteFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.ts:20:5)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:86:24)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Handler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Handler886CB40B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1119:21)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new KubectlFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/kubectl-provider.generated.ts:8:5)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:151:21)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Handler/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsCliLayerF44AAF94"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LayerVersion (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/layers.ts:225:39)",
+        "new LayerVersion (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new AwsCliLayer (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/lambda-layer-awscli/lib/awscli-layer.ts:16:5)",
+        "new AwsCliLayer (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:169:52)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": {
+          "subnets": [
+            "*",
+            "*"
+          ]
+        },
+        "securityGroups": [
+          "*"
+        ],
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/KubectlHandlerRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionKubectlHandlerRoleDefaultPolicyED352265"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.ts:180:22)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:656:30)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:176:22)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Resource/CreationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionCreationRole713F84D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "ClusterResource.createAdminRole (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:146:26)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:69:27)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Resource/CreationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Resource/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtection5385C81B"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.ts:197:21)",
+        "new CustomResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new CustomResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:71:21)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/AwsAuth/manifest/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/NodegroupDefaultCapacity/NodeGroupRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionNodegroupDefaultCapacityNodeGroupRole60AA91D9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Nodegroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/managed-nodegroup.ts:523:22)",
+        "new Nodegroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addNodegroupCapacity (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2154:12)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2000:14)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:39:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/NodeProxyAgentLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandlerServiceRole15A26729"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1025:31)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceOnEventFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.ts:8:5)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:72:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/OnEventHandler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandlerLogGroup54D03A56"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts:715:21)",
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1209:24)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceOnEventFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.ts:8:5)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:72:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandlerServiceRole5810CC58"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1025:31)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceIsCompleteFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.ts:20:5)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:86:24)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/IsCompleteHandler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandlerLogGroupC85FFE26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts:715:21)",
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1209:24)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceIsCompleteFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/cluster-resource-provider.generated.ts:20:5)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:86:24)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEvent83C1D0A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1119:21)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:267:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisComplete26D7B0CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1119:21)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:270:39)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeout0B47CA38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1119:21)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:271:36)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Providerwaiterstatemachine5D4A9DF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.ts:139:22)",
+        "new WaiterStateMachine (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:274:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Handler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Handler/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HandlerLogGroup50A7B41D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts:715:21)",
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1209:24)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new KubectlFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-eks/kubectl-provider.generated.ts:8:5)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:151:21)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/AwsCliLayer/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          },
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEvent83C1D0A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1119:21)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:267:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:211:22)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/Resource/CreationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionCreationRoleDefaultPolicy2875E58E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.ts:180:22)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:656:30)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "WrappedClass.addToPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:675:19)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "ClusterResource.createAdminRole (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:154:18)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:69:27)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/ClusterWithProtection/AwsAuth/manifest/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ClusterWithProtectionAwsAuthmanifestFC70BA69"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.ts:197:21)",
+        "new CustomResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new CustomResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new KubernetesManifest (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/k8s-manifest.ts:160:28)",
+        "new KubernetesManifest (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new AwsAuth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/aws-auth.ts:58:5)",
+        "WrappedClass.get awsAuth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2165:23)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1978:14)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new EksClusterDeletionProtectionStack (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-eks/test/integ.eks-cluster-deletion-protection.js:27:24)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRole9FF04296"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1025:31)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:267:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventLogGroup683073A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts:715:21)",
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1209:24)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:267:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisCompleteServiceRoleB1087139"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1025:31)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:270:39)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisCompleteLogGroupEB065F2D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts:715:21)",
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1209:24)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:270:39)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeoutServiceRole28643D26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1025:31)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:271:36)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeoutLogGroupE53BF187"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts:715:21)",
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1209:24)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:271:36)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderwaiterstatemachineRole0C7159F9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new WaiterStateMachine (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.ts:106:18)",
+        "new WaiterStateMachine (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:274:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new ClusterResourceProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:101:21)",
+        "Function.getOrCreate (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource-provider.ts:58:71)",
+        "new ClusterResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster-resource.ts:61:46)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1828:46)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRole9FF04296"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:598:24)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1025:31)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:267:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:211:22)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventLogGroup683073A3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.ts:715:21)",
+        "new LogGroup (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.ts:1209:24)",
+        "new Function (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.createFunction (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:320:16)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:267:34)",
+        "new Provider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "new KubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/kubectl-provider.ts:211:22)",
+        "WrappedClass.defineKubectlProvider (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:2324:12)",
+        "new Cluster (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts:1950:42)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.ts:180:22)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:656:30)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "Function.addToPrincipal (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:254:61)",
+        "Function.addToPrincipalOrResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:150:26)",
+        "ClusterResourceOnEventFunction.grant (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:693:29)",
+        "ClusterResourceOnEventFunction.grantInvoke (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:523:20)",
+        "WrappedClass.addPermissions (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:303:30)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.ts:180:22)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:656:30)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "Function.addToPrincipal (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:254:61)",
+        "Function.addToPrincipalOrResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:150:26)",
+        "ClusterResourceOnEventFunction.grant (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:693:29)",
+        "ClusterResourceOnEventFunction.grantInvoke (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:523:20)",
+        "WrappedClass.addPermissions (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:303:30)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.ts:180:22)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:656:30)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "Function.addToPrincipal (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:254:61)",
+        "Function.addToPrincipalOrResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:150:26)",
+        "ClusterResourceOnEventFunction.grant (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:693:29)",
+        "ClusterResourceOnEventFunction.grantInvoke (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:523:20)",
+        "WrappedClass.addPermissions (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:303:30)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.ClusterResourceProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.ts:180:22)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:656:30)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "Function.addToPrincipal (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:254:61)",
+        "Function.addToPrincipalOrResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:150:26)",
+        "WrappedClass.grant (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:693:29)",
+        "WrappedClass.grantInvoke (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:523:20)",
+        "new WaiterStateMachine (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.ts:109:29)"
+      ]
+    }
+  ],
+  "/aws-cdk-eks-cluster-deletion-protection/@aws-cdk--aws-eks.KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.ts:180:22)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.ts:656:30)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.ts:61:29)",
+        "Function.addToPrincipal (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:254:61)",
+        "Function.addToPrincipalOrResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.ts:150:26)",
+        "KubectlFunction.grant (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:693:29)",
+        "KubectlFunction.grantInvoke (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.ts:523:20)",
+        "WrappedClass.addPermissions (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.ts:303:30)"
+      ]
+    }
+  ]
+}
