@@ -1,28 +1,63 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets": {
+    "aws-cdk-eks-cluster-deletion-protection.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets.json",
+        "file": "aws-cdk-eks-cluster-deletion-protection.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "aws-cdk-mediapackagev2-endpoint-cdn-auth": {
+    "aws-cdk-eks-cluster-deletion-protection": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/us-east-1",
+      "properties": {
+        "templateFile": "aws-cdk-eks-cluster-deletion-protection.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-east-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-east-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1/0338a40ca35189fbc29f37feb3493fdae4cb8cf22eb3f213a872b758372ca9bd.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "aws-cdk-eks-cluster-deletion-protection.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-us-east-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "aws-cdk-eks-cluster-deletion-protection.assets"
+      ],
+      "additionalMetadataFile": "aws-cdk-eks-cluster-deletion-protection.metadata.json",
+      "displayName": "aws-cdk-eks-cluster-deletion-protection"
+    },
+    "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.template.json",
+        "templateFile": "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/63b273eef2d62c96b8375b685e77148e4f54edc094fd568793234fe803b7a17f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/844b9d6ef7275a3e897d2baf87c8a3a720d6fc7191e22a9068b7da3b272a2b53.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
+          "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,45 +66,10 @@
         }
       },
       "dependencies": [
-        "aws-cdk-mediapackagev2-endpoint-cdn-auth.assets"
+        "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2.assets"
       ],
-      "additionalMetadataFile": "aws-cdk-mediapackagev2-endpoint-cdn-auth.metadata.json",
-      "displayName": "aws-cdk-mediapackagev2-endpoint-cdn-auth"
-    },
-    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets": {
-      "type": "cdk:asset-manifest",
-      "properties": {
-        "file": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-      }
-    },
-    "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585": {
-      "type": "aws:cloudformation:stack",
-      "environment": "aws://unknown-account/unknown-region",
-      "properties": {
-        "templateFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.template.json",
-        "terminationProtection": false,
-        "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
-        "requiresBootstrapStackVersion": 6,
-        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
-        "additionalDependencies": [
-          "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
-        ],
-        "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
-          "requiresBootstrapStackVersion": 8,
-          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
-        }
-      },
-      "dependencies": [
-        "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.assets"
-      ],
-      "additionalMetadataFile": "cdkintegmediapackagev2endpointcdnauthDefaultTestDeployAssertE4AC4585.metadata.json",
-      "displayName": "cdk-integ-mediapackagev2-endpoint-cdn-auth/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "awscdkeksclusterdeletionprotectionintegDefaultTestDeployAssert294922E2.metadata.json",
+      "displayName": "aws-cdk-eks-cluster-deletion-protection-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",
