@@ -1,3 +1,4 @@
+import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as private_cxapi from '@aws-cdk/cloud-assembly-api';
@@ -17,17 +18,16 @@ import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
 import { FeatureFlags } from '../feature-flags';
-import { FileSystem } from '../fs';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import type { NamedValidationPluginReport } from '../validation/private/report';
+import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
 
-const POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
+const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
 /**
  * Options for `synthesize()`
@@ -105,7 +105,6 @@ function getAssemblies(root: App, rootAssembly: private_cxapi.CloudAssembly): Ma
  */
 function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: private_cxapi.CloudAssembly) {
   if (!App.isApp(root)) return;
-  let hash: string | undefined;
   const assemblies = getAssemblies(root, assembly);
   const templatePathsByPlugin: Map<IPolicyValidationPlugin, string[]> = new Map();
   visitAssemblies(root, 'post', construct => {
@@ -142,15 +141,15 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   // eslint-disable-next-line no-console
   console.error('Performing Policy Validations\n');
 
-  if (templatePathsByPlugin.size > 0) {
-    hash = FileSystem.fingerprint(outdir);
-  }
+  // Snapshot pre-existing files so we can detect modifications while still
+  // allowing plugins to create new files in the assembly directory.
+  const preExistingFileHashes = snapshotFileHashes(outdir);
 
   // Run all plugins through the same loop
   const reports: NamedValidationPluginReport[] = [];
   for (const { plugin, templatePaths } of plugins) {
     try {
-      const report = plugin.validate({ templatePaths });
+      const report = plugin.validate({ templatePaths, appConstruct: root });
       reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
     } catch (e: any) {
       reports.push({
@@ -163,7 +162,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
         },
       });
     }
-    if (hash && FileSystem.fingerprint(outdir) !== hash) {
+    if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);
     }
   }
@@ -175,20 +174,38 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   // Rule matching: violations are matched as <pluginName>::<ruleName> with
   // spaces replaced by dashes. Users suppress with:
   //   Validations.of(x).acknowledge({ id: '<plugin-name>::<rule-id>' })
-  const acknowledgedRuleIds = collectAcknowledgedRuleIds(root);
-  if (acknowledgedRuleIds.size > 0) {
+  const acknowledgedRules = collectAcknowledgedRuleIds(root);
+  const suppressedByReport: Map<number, SuppressedViolation[]> = new Map();
+  if (acknowledgedRules.size > 0) {
     for (let i = 0; i < reports.length; i++) {
       const pluginName = reports[i].pluginName.replace(/ /g, '-');
-      const filtered = reports[i].violations.filter(v => {
-        if (v.severity === 'fatal') return true;
+      const active: typeof reports[0]['violations'] = [];
+      const suppressed: SuppressedViolation[] = [];
+      for (const v of reports[i].violations) {
+        if (v.severity === 'fatal') {
+          active.push(v);
+          continue;
+        }
         const ruleId = `${pluginName}::${v.ruleName.replace(/ /g, '-')}`;
-        return !acknowledgedRuleIds.has(ruleId);
-      });
-      if (filtered.length !== reports[i].violations.length) {
+        const ack = acknowledgedRules.get(ruleId);
+        if (ack) {
+          suppressed.push({
+            ...v,
+            acknowledgedId: ruleId,
+            reason: ack.reason,
+            acknowledgedAt: ack.constructPath,
+            acknowledgedStackTrace: ack.stackTrace,
+          });
+        } else {
+          active.push(v);
+        }
+      }
+      if (suppressed.length > 0) {
+        suppressedByReport.set(i, suppressed);
         reports[i] = {
           ...reports[i],
-          violations: filtered,
-          success: filtered.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
+          violations: active,
+          success: active.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
         };
       }
     }
@@ -197,10 +214,19 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    const failOnErrors = root.node.tryGetContext(cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT) ?? true;
-    const reportFile = path.join(assembly.directory, POLICY_VALIDATION_FILE_PATH);
-    const jsonOutput = formatter.formatJson(reports);
+    const failOnErrors = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
+    const writeLegacyReport = getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false);
+
+    const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
+    const jsonOutput = formatter.formatJson(reports, assembly.version, suppressedByReport);
     fs.writeFileSync(reportFile, JSON.stringify(jsonOutput, undefined, 2));
+
+    if (writeLegacyReport) {
+      const legacyReportFile = path.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH);
+      const legacyOutput = formatter.formatLegacyJson(reports);
+      fs.writeFileSync(legacyReportFile, JSON.stringify(legacyOutput, undefined, 2));
+    }
+
     if (failOnErrors) {
       const output = formatter.formatPrettyPrinted(reports);
       // eslint-disable-next-line no-console
@@ -549,4 +575,48 @@ function visit(root: IConstruct, order: 'pre' | 'post', cb: (x: IConstruct) => v
   if (order === 'post') {
     cb(root);
   }
+}
+
+function getBooleanContext(root: IConstruct, key: string, defaultValue: boolean): boolean {
+  const raw = root.node.tryGetContext(key);
+  if (raw === undefined) return defaultValue;
+  return raw !== false && raw !== 'false';
+}
+
+function collectFilePaths(dir: string): string[] {
+  const results: string[] = [];
+  function walk(current: string) {
+    for (const entry of fs.readdirSync(current, { withFileTypes: true })) {
+      const full = path.join(current, entry.name);
+      if (entry.isDirectory()) {
+        walk(full);
+      } else {
+        results.push(full);
+      }
+    }
+  }
+  walk(dir);
+  return results;
+}
+
+function hashFile(filePath: string): string {
+  const content = fs.readFileSync(filePath);
+  return crypto.createHash('sha256').update(content).digest('hex');
+}
+
+function snapshotFileHashes(dir: string): Map<string, string> {
+  const hashes = new Map<string, string>();
+  for (const filePath of collectFilePaths(dir)) {
+    hashes.set(filePath, hashFile(filePath));
+  }
+  return hashes;
+}
+
+function hasModifiedPreExistingFiles(snapshot: Map<string, string>): boolean {
+  for (const [filePath, originalHash] of snapshot) {
+    if (!fs.existsSync(filePath) || hashFile(filePath) !== originalHash) {
+      return true;
+    }
+  }
+  return false;
 }

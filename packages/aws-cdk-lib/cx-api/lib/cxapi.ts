@@ -10,6 +10,11 @@ export const CONTEXT_ENV = 'CDK_CONTEXT_JSON';
 export const ERRORFILE_ENV = 'CDK_ERROR_FILE';
 
 /**
+ * If this environment variable is set, performance counters will be written to this file.
+ */
+export const PERF_COUNTERS_FILE_ENV = 'CDK_PERF_COUNTERS_FILE';
+
+/**
  * The name of the temporary file where the context is stored.
  */
 export const CONTEXT_OVERFLOW_LOCATION_ENV = 'CONTEXT_OVERFLOW_LOCATION_ENV';
@@ -56,4 +61,25 @@ export const TOOLKIT_VERSION_ENV = 'CDK_TOOLKIT_VERSION';
  * report without failing synthesis.
  */
 export const FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT = '@aws-cdk/core:failSynthOnValidationErrors';
+
+/**
+ * File name for the new validation report format (v2).
+ *
+ * Written to the cloud assembly directory during synthesis.
+ */
+export const VALIDATION_REPORT_FILE = 'validation-report.json';
+
+/**
+ * File name for the legacy validation report format.
+ *
+ * Only written when `VALIDATION_REPORT_JSON_CONTEXT` is set to `true`.
+ */
+export const LEGACY_VALIDATION_REPORT_FILE = 'policy-validation-report.json';
+
+/**
+ * Context key to opt-in to writing the legacy `policy-validation-report.json`.
+ * Set to `true` for backwards compatibility with older CDK CLI versions that
+ * expect the old report shape.
+ */
+export const VALIDATION_REPORT_JSON_CONTEXT = '@aws-cdk/core:validationReportJson';
 
