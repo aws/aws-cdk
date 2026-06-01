@@ -126,7 +126,7 @@ Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 ```ts
 declare const vpc: ec2.Vpc;
 new rds.DatabaseClusterFromSnapshot(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_8_4_7 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
   snapshotIdentifier: 'mySnapshot',
@@ -1262,8 +1262,8 @@ declare const vpc: ec2.Vpc;
 
 // Exporting logs from a cluster
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.aurora({
-    version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7, // different version class for each engine type
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
