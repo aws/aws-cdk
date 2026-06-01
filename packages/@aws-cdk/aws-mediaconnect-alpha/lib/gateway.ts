@@ -8,7 +8,9 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
+import type { GatewayNetwork } from './shared';
 import { isOpenCidr } from './shared';
+export { GatewayNetwork } from './shared';
 
 /**
  * Interface for Gateway
@@ -82,20 +84,6 @@ export interface IGateway extends IResource, IGatewayRef {
    * @default - sum over 60 seconds
    */
   metricIngressBridgeDroppedPackets(props?: MetricOptions): Metric;
-}
-
-/**
- * The network options for a gateway.
- */
-export interface GatewayNetwork {
-  /**
-   * A unique IP address range to use for this network. These IP addresses should be in the form of a Classless Inter-Domain Routing (CIDR) block; for example, 10.0.0.0/16.
-   */
-  readonly cidrBlock: string;
-  /**
-   * The name of the network. This name is used to reference the network and must be unique among networks in this gateway.
-   */
-  readonly name: string;
 }
 
 /**
@@ -278,6 +266,18 @@ export class Gateway extends GatewayBase implements IGateway {
     this.gatewayState = resource.attrGatewayState;
 
     resource.applyRemovalPolicy(props.removalPolicy);
+
+    // Validate gateway network name uniqueness at synth time. Names must be unique
+    // within a gateway; the service rejects duplicates at deploy time.
+    this.node.addValidation({
+      validate: () => {
+        const names = this.networks.map(n => n.name).filter(n => !Token.isUnresolved(n));
+        const duplicates = [...new Set(names.filter((n, i) => names.indexOf(n) !== i))];
+        return duplicates.length > 0
+          ? [`Gateway network names must be unique within a gateway. Duplicate name(s): ${duplicates.join(', ')}`]
+          : [];
+      },
+    });
   }
 
   /**

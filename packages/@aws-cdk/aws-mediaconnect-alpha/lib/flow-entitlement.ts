@@ -141,6 +141,18 @@ export class FlowEntitlement extends FlowEntitlementBase {
       throw new ValidationError(lit`FlowEntitlementDescriptionLength`, `Flow entitlement description must not exceed 1024 characters, got ${props.description.length}`, this);
     }
 
+    // Validate dataTransferSubscriberFeePercent range — service rejects values outside 0-100 at deploy time
+    if (props.dataTransferSubscriberFeePercent !== undefined && !Token.isUnresolved(props.dataTransferSubscriberFeePercent)) {
+      const pct = props.dataTransferSubscriberFeePercent;
+      if (!Number.isInteger(pct) || pct < 0 || pct > 100) {
+        throw new ValidationError(
+          lit`FlowEntitlementSubscriberFeePercentRange`,
+          `dataTransferSubscriberFeePercent must be an integer between 0 and 100, got ${pct}`,
+          this,
+        );
+      }
+    }
+
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 

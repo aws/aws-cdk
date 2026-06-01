@@ -8,16 +8,16 @@ import { Bridge, BridgeConfiguration, BridgeOutputConfiguration } from '../lib/b
 import { Flow } from '../lib/flow';
 import { SourceConfiguration } from '../lib/flow-source-configuration';
 import { Gateway } from '../lib/gateway';
-import { BridgeProtocol, VpcInterface } from '../lib/shared';
+import { BridgeProtocol, GatewayNetwork, VpcInterface } from '../lib/shared';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-mediaconnect-bridge-vpc');
 
-const network = {
+const network = GatewayNetwork.define({
   cidrBlock: '10.0.0.0/23',
   name: 'network-1',
-};
+});
 
 const gateway = new Gateway(stack, 'gateway', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -107,20 +107,22 @@ new Bridge(stack, 'egressBridgeWithVpc', {
   config: BridgeConfiguration.egress({
     maxBitrate: cdk.Bitrate.mbps(10),
     flowSources: [{
-      flow: sourceFlow,
-      vpcInterface: vpcInterface,
       name: 'egress-flow-source-vpc',
+      source: {
+        flow: sourceFlow,
+        vpcInterface: vpcInterface,
+      },
     }],
-    networkOutputs: [
-      BridgeOutputConfiguration.network({
-        name: 'bridge-vpc-output',
+    networkOutputs: [{
+      name: 'bridge-vpc-output',
+      output: BridgeOutputConfiguration.network({
         ipAddress: '192.168.1.200',
         port: 5001,
-        networkName: network.name,
+        network,
         protocol: BridgeProtocol.UDP,
         ttl: 200,
       }),
-    ],
+    }],
   }),
   gateway,
 });

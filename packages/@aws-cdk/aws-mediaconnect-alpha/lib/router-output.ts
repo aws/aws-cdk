@@ -1,5 +1,5 @@
 import type { Bitrate, IResource } from 'aws-cdk-lib';
-import { Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
+import { Arn, ArnFormat, Duration, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnRouterOutput } from 'aws-cdk-lib/aws-mediaconnect';
@@ -852,8 +852,8 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
   public static fromRouterOutputAttributes(scope: Construct, id: string, attrs: RouterOutputAttributes): IRouterOutput {
     // Derive the ID from the ARN using CFN intrinsics so this works with token ARNs too.
     // The ARN format is arn:aws:mediaconnect:<region>:<account>:routerOutput:<id>, so the
-    // last colon-separated segment is the ID.
-    const routerOutputId = attrs.routerOutputId ?? Fn.select(6, Fn.split(':', attrs.routerOutputArn));
+    // resource name is the ID.
+    const routerOutputId = attrs.routerOutputId ?? extractRouterOutputId(attrs.routerOutputArn);
 
     class Import extends RouterOutputBase implements IRouterOutput {
       public readonly routerOutputArn = attrs.routerOutputArn;
@@ -966,4 +966,15 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
     this.createdAt = routerOutput.attrCreatedAt;
     this.updatedAt = routerOutput.attrUpdatedAt;
   }
+}
+
+function extractRouterOutputId(routerOutputArn: string): string {
+  const parsed = Arn.split(routerOutputArn, ArnFormat.COLON_RESOURCE_NAME).resourceName;
+  if (parsed === undefined) {
+    throw new UnscopedValidationError(
+      lit`InvalidRouterOutputArn`,
+      `Could not parse Router Output ARN: ${routerOutputArn}. Expected format: arn:<partition>:mediaconnect:<region>:<account>:routerOutput:<id>`,
+    );
+  }
+  return parsed;
 }

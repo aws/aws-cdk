@@ -1615,6 +1615,16 @@ export class Flow extends FlowBase implements IFlow {
     this._hasListenerSource = Flow.isListenerStyleProtocol(sourceConfig.protocol);
 
     flow.applyRemovalPolicy(props.removalPolicy);
+
+    this.node.addValidation({
+      validate: () => {
+        const names = this.vpcInterfaces.map(v => v.name).filter(n => !Token.isUnresolved(n));
+        const duplicates = [...new Set(names.filter((n, i) => names.indexOf(n) !== i))];
+        return duplicates.length > 0
+          ? [`VPC interface names must be unique within a flow. Duplicate name(s): ${duplicates.join(', ')}`]
+          : [];
+      },
+    });
   }
 
   /**

@@ -1,4 +1,4 @@
-import { App, ArnFormat, Bitrate, Duration, Stack, Token } from 'aws-cdk-lib';
+import { App, ArnFormat, Bitrate, Duration, Lazy, Stack, Token } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
@@ -484,7 +484,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_50,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.rist({
-          destinationAddress: '192.168.1.300',
+          destinationAddress: '192.168.1.30',
           port: 5300,
         }),
         networkInterface,
@@ -593,7 +593,7 @@ describe('RouterOutput', () => {
       tier: RouterOutputTier.OUTPUT_100,
       configuration: RouterOutputConfiguration.standard({
         protocol: RouterOutputProtocol.rtp({
-          destinationAddress: '192.168.1.400',
+          destinationAddress: '192.168.1.40',
           port: 5400,
         }),
         networkInterface,
@@ -680,12 +680,29 @@ test('imported router output from attributes with explicit routerOutputId', () =
   expect(imported.routerOutputId).toBe('explicit-id');
 });
 
-test('imported router output from attributes works with token ARN', () => {
-  const tokenArn = Stack.of(stack).formatArn({
+test('imported router output from attributes resolves literal id from ARN', () => {
+  // formatArn with concrete env produces an ARN whose resource name is statically
+  // known. Arn.split() can extract the literal id at synth time, so routerOutputId
+  // is the bare string rather than a CFN intrinsic.
+  const arn = Stack.of(stack).formatArn({
     service: 'mediaconnect',
     resource: 'router-output',
     resourceName: 'abc123',
     arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+  });
+  const imported = RouterOutput.fromRouterOutputAttributes(stack, 'ImportedFormatArn', {
+    routerOutputArn: arn,
+    routerOutputName: 'my-output',
+  });
+  expect(imported.routerOutputId).toBe('abc123');
+});
+
+test('imported router output from attributes works with token ARN', () => {
+  // Simulate an attrArn-style fully-tokenised ARN (the kind that comes from
+  // referencing a CFN resource attribute). With this, Arn.split() can't extract
+  // the resourceName at synth time, so routerOutputId remains a token.
+  const tokenArn = Lazy.string({
+    produce: () => 'arn:aws:mediaconnect:us-east-1:123456789012:router-output:abc123',
   });
   const imported = RouterOutput.fromRouterOutputAttributes(stack, 'ImportedTokenArn', {
     routerOutputArn: tokenArn,

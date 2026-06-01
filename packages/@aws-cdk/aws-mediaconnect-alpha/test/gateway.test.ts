@@ -1,6 +1,7 @@
 import { App, Duration, Stack } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { Gateway } from '../lib/gateway';
+import { GatewayNetwork } from '../lib/shared';
 
 let app: App;
 let stack: Stack;
@@ -14,10 +15,10 @@ beforeEach(() => {
 test('MediaConnect Gateway Creation', () => {
   new Gateway(stack, 'flow', {
     egressCidrBlocks: ['10.1.0.0/16'],
-    networks: [{
+    networks: [GatewayNetwork.define({
       cidrBlock: '10.1.0.0/16',
       name: 'first',
-    }],
+    })],
     gatewayName: 'my-gateway',
   });
 
@@ -37,7 +38,7 @@ test('Gateway name validation - too long', () => {
     new Gateway(stack, 'gateway', {
       gatewayName: 'a'.repeat(33),
       egressCidrBlocks: ['10.0.0.0/16'],
-      networks: [{ name: 'network1', cidrBlock: '10.0.0.0/24' }],
+      networks: [GatewayNetwork.define({ name: 'network1', cidrBlock: '10.0.0.0/24' })],
     });
   }).toThrow('Gateway name must be between 1 and 32 characters');
 });
@@ -47,7 +48,7 @@ test('Gateway name validation - invalid characters', () => {
     new Gateway(stack, 'gateway', {
       gatewayName: 'invalid@name!',
       egressCidrBlocks: ['10.0.0.0/16'],
-      networks: [{ name: 'network1', cidrBlock: '10.0.0.0/24' }],
+      networks: [GatewayNetwork.define({ name: 'network1', cidrBlock: '10.0.0.0/24' })],
     });
   }).toThrow('Gateway name must contain only alphanumeric characters and hyphens');
 });
@@ -56,10 +57,10 @@ test('Gateway name validation - valid name', () => {
   new Gateway(stack, 'gateway', {
     gatewayName: 'Valid-Gateway-Name',
     egressCidrBlocks: ['10.0.0.0/16'],
-    networks: [{
+    networks: [GatewayNetwork.define({
       name: 'network1',
       cidrBlock: '10.0.0.0/24',
-    }],
+    })],
   });
 
   Template.fromStack(stack).hasResourceProperties('AWS::MediaConnect::Gateway', {
@@ -71,7 +72,7 @@ describe('Gateway metrics', () => {
   const makeGateway = () => new Gateway(stack, 'gw', {
     gatewayName: 'g',
     egressCidrBlocks: ['10.0.0.0/16'],
-    networks: [{ name: 'net', cidrBlock: '10.0.0.0/24' }],
+    networks: [GatewayNetwork.define({ name: 'net', cidrBlock: '10.0.0.0/24' })],
   });
 
   test('generic metric sets GatewayARN dimension and allows extra dimensions', () => {

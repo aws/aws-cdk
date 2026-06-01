@@ -98,11 +98,10 @@ export class BridgeOutput extends Resource implements IBridgeOutput {
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 
-    const { name: _name, ...networkOutput } = props.output._bind();
     new CfnBridgeOutput(this, 'Resource', {
       name: this.physicalName,
       bridgeArn: props.bridge.bridgeArn,
-      networkOutput,
+      networkOutput: props.output._bind(),
     });
 
     this.bridgeArn = props.bridge.bridgeArn;

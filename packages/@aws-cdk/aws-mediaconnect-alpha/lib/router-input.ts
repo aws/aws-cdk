@@ -1005,14 +1005,14 @@ class FailoverRouterInputConfig extends RouterInputConfiguration {
   }
 
   public _endpoints(ipAddress: string): RouterInputEndpoint[] | undefined {
-    const endpoints = this.props.protocols.map<RouterInputEndpoint | undefined>(p => {
+    const endpoints: RouterInputEndpoint[] = [];
+    for (const p of this.props.protocols) {
       const url = p._ingestUrl(ipAddress);
       const port = p._listeningPort();
       if (url === undefined || port === undefined) return undefined;
-      return { url, port };
-    });
-    if (endpoints.some(e => e === undefined)) return undefined;
-    return endpoints as RouterInputEndpoint[];
+      endpoints.push({ url, port });
+    }
+    return endpoints;
   }
 }
 
@@ -1036,14 +1036,14 @@ class MergeRouterInputConfig extends RouterInputConfiguration {
   }
 
   public _endpoints(ipAddress: string): RouterInputEndpoint[] | undefined {
-    const endpoints = this.props.protocols.map<RouterInputEndpoint | undefined>(p => {
+    const endpoints: RouterInputEndpoint[] = [];
+    for (const p of this.props.protocols) {
       const url = p._ingestUrl(ipAddress);
       const port = p._listeningPort();
       if (url === undefined || port === undefined) return undefined;
-      return { url, port };
-    });
-    if (endpoints.some(e => e === undefined)) return undefined;
-    return endpoints as RouterInputEndpoint[];
+      endpoints.push({ url, port });
+    }
+    return endpoints;
   }
 }
 

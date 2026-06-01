@@ -5,16 +5,16 @@ import { Bridge, BridgeConfiguration, BridgeOutputConfiguration } from '../lib/b
 import { Flow } from '../lib/flow';
 import { SourceConfiguration, NetworkConfiguration } from '../lib/flow-source-configuration';
 import { Gateway } from '../lib/gateway';
-import { BridgeProtocol } from '../lib/shared';
+import { BridgeProtocol, GatewayNetwork } from '../lib/shared';
 
 const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'aws-cdk-mediaconnect-bridge');
 
-const network = {
+const network = GatewayNetwork.define({
   cidrBlock: '10.0.0.0/23',
   name: 'network-1',
-};
+});
 
 const gateway = new Gateway(stack, 'gateway', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -29,11 +29,13 @@ new Bridge(stack, 'bridge', {
     maxBitrate: cdk.Bitrate.mbps(5),
     maxOutputs: 1,
     networkSources: [{
-      multicastIp: '239.0.0.0',
       name: 'ingress-network-source',
-      networkName: network.name,
-      port: 5000,
-      protocol: BridgeProtocol.RTP_FEC,
+      source: {
+        multicastIp: '239.0.0.0',
+        network,
+        port: 5000,
+        protocol: BridgeProtocol.RTP_FEC,
+      },
     }],
   }),
   gateway,
@@ -54,19 +56,19 @@ new Bridge(stack, 'bridgeWithOutput', {
   config: BridgeConfiguration.egress({
     maxBitrate: cdk.Bitrate.mbps(10),
     flowSources: [{
-      flow: flow,
       name: 'imported',
+      source: { flow },
     }],
-    networkOutputs: [
-      BridgeOutputConfiguration.network({
-        name: 'bridge-network-output',
+    networkOutputs: [{
+      name: 'bridge-network-output',
+      output: BridgeOutputConfiguration.network({
         ipAddress: '192.168.1.100',
         port: 5000,
-        networkName: network.name,
+        network,
         protocol: BridgeProtocol.RTP,
         ttl: 100,
       }),
-    ],
+    }],
   }),
   gateway,
 });

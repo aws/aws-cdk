@@ -1,5 +1,5 @@
 import type { Bitrate } from 'aws-cdk-lib';
-import { Aws, UnscopedValidationError } from 'aws-cdk-lib';
+import { Aws, Token, UnscopedValidationError } from 'aws-cdk-lib';
 import type { ISecurityGroup, ISubnet } from 'aws-cdk-lib/aws-ec2';
 import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { IRole } from 'aws-cdk-lib/aws-iam';
@@ -148,6 +148,78 @@ export class BridgeProtocol {
 }
 
 /**
+ * Properties for defining a Gateway network.
+ */
+export interface GatewayNetworkDefineProps {
+  /**
+   * The name of the network. Used to reference this network from bridge sources
+   * and outputs, and must be unique among the networks on the gateway.
+   *
+   * Maximum 64 characters; alphanumeric, hyphens, and underscores only.
+   */
+  readonly name: string;
+  /**
+   * A unique IP address range to use for this network. Must be in CIDR notation
+   * (for example, `10.0.0.0/16`).
+   */
+  readonly cidrBlock: string;
+}
+
+/**
+ * A network on a MediaConnect Gateway.
+ *
+ * Use {@link GatewayNetwork.define} to create a network and reference it from
+ * gateway, bridge source, and bridge output configurations.
+ *
+ * @example
+ *
+ *    const productionNetwork = GatewayNetwork.define({
+ *      name: 'production',
+ *      cidrBlock: '10.0.0.0/16',
+ *    });
+ */
+export class GatewayNetwork {
+  /**
+   * Define a new gateway network.
+   *
+   * @param props network properties
+   */
+  public static define(props: GatewayNetworkDefineProps): GatewayNetwork {
+    if (!Token.isUnresolved(props.name)) {
+      if (props.name.length < 1 || props.name.length > 64) {
+        throw new UnscopedValidationError(
+          lit`GatewayNetworkNameLength`,
+          `Gateway network name must be between 1 and 64 characters, got ${props.name.length}`,
+        );
+      }
+      if (!/^[a-zA-Z0-9_-]+$/.test(props.name)) {
+        throw new UnscopedValidationError(
+          lit`GatewayNetworkNameFormat`,
+          `Gateway network name must contain only alphanumeric characters, hyphens, and underscores, got '${props.name}'`,
+        );
+      }
+    }
+
+    return new GatewayNetwork(props.name, props.cidrBlock);
+  }
+
+  /**
+   * The name of the network.
+   */
+  public readonly name: string;
+
+  /**
+   * A unique IP address range to use for this network in CIDR notation.
+   */
+  public readonly cidrBlock: string;
+
+  private constructor(name: string, cidrBlock: string) {
+    this.name = name;
+    this.cidrBlock = cidrBlock;
+  }
+}
+
+/**
  * Bridge network source options
  */
 export interface BridgeNetworkSource {
@@ -166,13 +238,12 @@ export interface BridgeNetworkSource {
    */
   readonly multicastSourceIp?: string;
   /**
-   * The name of the network source.
+   * The gateway network this source listens on.
+   *
+   * Use {@link GatewayNetwork.define} to create the network and pass the same
+   * instance to the gateway and to each source that uses it.
    */
-  readonly name: string;
-  /**
-   * The network source's gateway network name.
-   */
-  readonly networkName: string;
+  readonly network: GatewayNetwork;
   /**
    * The network source port.
    */
@@ -230,6 +301,8 @@ export function renderTags(tags: { [key: string]: string }): Array<{ key: string
 /**
  * Convert an uppercase enum value to title case (e.g. 'MONDAY' → 'Monday').
  * Used at CFN boundaries where the API expects title-cased day names.
+ *
+ * @internal
  */
 export function toTitleCase(day: MaintenanceDay): string {
   return day.charAt(0) + day.slice(1).toLowerCase();
@@ -239,6 +312,8 @@ export function toTitleCase(day: MaintenanceDay): string {
  * Validate a maintenance start hour string is in HH:00 format (24-hour, minutes must be 00).
  * @param time The time string to validate
  * @throws UnscopedValidationError if the format is invalid
+ *
+ * @internal
  */
 export function validateMaintenanceTime(time: string): void {
   if (!/^([01]\d|2[0-3]):00$/.test(time)) {
@@ -662,7 +737,7 @@ export class Framerate {
   /** @internal */
   private readonly _denominatorValue: number;
 
-  constructor(numerator: number, denominator: number) {
+  private constructor(numerator: number, denominator: number) {
     this._numeratorValue = numerator;
     this._denominatorValue = denominator;
   }

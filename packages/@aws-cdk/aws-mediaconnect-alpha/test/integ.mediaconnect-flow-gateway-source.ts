@@ -65,14 +65,16 @@ const outputVpcInterface = mediaconnect.VpcInterface.define({
 });
 
 // Gateway + Ingress Bridge (network source → cloud flow)
+const gwNetwork = mediaconnect.GatewayNetwork.define({
+  cidrBlock: '192.168.1.0/24',
+  name: 'gw-network',
+});
+
 const gateway = new mediaconnect.Gateway(stack, 'Gateway', {
   removalPolicy: RemovalPolicy.DESTROY,
   gatewayName: 'gateway-source-gw',
   egressCidrBlocks: ['10.0.0.0/16'],
-  networks: [{
-    cidrBlock: '192.168.1.0/24',
-    name: 'gw-network',
-  }],
+  networks: [gwNetwork],
 });
 
 const bridge = new mediaconnect.Bridge(stack, 'IngressBridge', {
@@ -83,11 +85,13 @@ const bridge = new mediaconnect.Bridge(stack, 'IngressBridge', {
     maxBitrate: Bitrate.mbps(10),
     maxOutputs: 2,
     networkSources: [{
-      multicastIp: '239.0.0.1',
       name: 'ingress-network-source',
-      networkName: 'gw-network',
-      port: 5000,
-      protocol: mediaconnect.BridgeProtocol.RTP,
+      source: {
+        multicastIp: '239.0.0.1',
+        network: gwNetwork,
+        port: 5000,
+        protocol: mediaconnect.BridgeProtocol.RTP,
+      },
     }],
   }),
 });

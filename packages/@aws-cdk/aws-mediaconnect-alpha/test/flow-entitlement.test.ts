@@ -101,6 +101,40 @@ test('Entitlement description validation - too long', () => {
   }).toThrow(/Flow entitlement description must not exceed 1024 characters/);
 });
 
+test.each([-1, 101, 50.5])('Entitlement dataTransferSubscriberFeePercent out of range — fails for %p', (pct) => {
+  const flow = Flow.fromFlowAttributes(stack, 'flow', {
+    flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-abc:my-flow',
+    sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-abc:my-source',
+  });
+
+  expect(() => {
+    new FlowEntitlement(stack, 'entitlement', {
+      description: 'desc',
+      flow,
+      subscribers: ['111122223333'],
+      dataTransferSubscriberFeePercent: pct,
+    });
+  }).toThrow(/dataTransferSubscriberFeePercent must be an integer between 0 and 100/);
+});
+
+test('Entitlement dataTransferSubscriberFeePercent in range — accepts boundaries', () => {
+  const flow = Flow.fromFlowAttributes(stack, 'flow', {
+    flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-abc:my-flow',
+    sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-abc:my-source',
+  });
+
+  for (const pct of [0, 50, 100]) {
+    expect(() => {
+      new FlowEntitlement(stack, `entitlement-${pct}`, {
+        description: `desc-${pct}`,
+        flow,
+        subscribers: ['111122223333'],
+        dataTransferSubscriberFeePercent: pct,
+      });
+    }).not.toThrow();
+  }
+});
+
 test('Import entitlement from attributes', () => {
   const entitlement = FlowEntitlement.fromFlowEntitlementArn(stack, 'imported',
     'arn:aws:mediaconnect:us-east-1:123456789012:entitlement:1-abc:my-entitlement',

@@ -15,15 +15,15 @@ import { BridgeSource, BridgeSourceConfiguration } from '../lib/bridge-source';
 import { Flow } from '../lib/flow';
 import { NetworkConfiguration, SourceConfiguration } from '../lib/flow-source-configuration';
 import { Gateway } from '../lib/gateway';
-import { BridgeProtocol } from '../lib/shared';
+import { BridgeProtocol, GatewayNetwork } from '../lib/shared';
 
 const app = new cdk.App();
 const stack = new cdk.Stack(app, 'aws-cdk-mediaconnect-bridge-source');
 
-const network = {
+const network = GatewayNetwork.define({
   cidrBlock: '10.0.0.0/23',
   name: 'network-1',
-};
+});
 
 const gateway = new Gateway(stack, 'Gateway', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -41,10 +41,12 @@ const ingressBridge = new Bridge(stack, 'IngressBridge', {
     maxOutputs: 1,
     networkSources: [{
       name: 'primary-network-source',
-      multicastIp: '239.0.0.1',
-      networkName: network.name,
-      port: 5000,
-      protocol: BridgeProtocol.RTP_FEC,
+      source: {
+        multicastIp: '239.0.0.1',
+        network,
+        port: 5000,
+        protocol: BridgeProtocol.RTP_FEC,
+      },
     }],
   }),
   sourceFailoverConfig: BridgeFailoverConfig.failover(),
@@ -55,9 +57,8 @@ new BridgeSource(stack, 'IngressAdditionalSource', {
   bridgeSourceName: 'backup-network-source',
   bridge: ingressBridge,
   source: BridgeSourceConfiguration.network({
-    name: 'backup-network-source',
     multicastIp: '239.0.0.2',
-    networkName: network.name,
+    network,
     port: 5002,
     protocol: BridgeProtocol.RTP_FEC,
   }),
@@ -83,18 +84,18 @@ const egressBridge = new Bridge(stack, 'EgressBridge', {
     maxBitrate: cdk.Bitrate.mbps(5),
     flowSources: [{
       name: 'primary-flow-source',
-      flow: feederFlow,
+      source: { flow: feederFlow },
     }],
-    networkOutputs: [
-      BridgeOutputConfiguration.network({
-        name: 'egress-output',
+    networkOutputs: [{
+      name: 'egress-output',
+      output: BridgeOutputConfiguration.network({
         ipAddress: '192.168.1.100',
         port: 5010,
-        networkName: network.name,
+        network,
         protocol: BridgeProtocol.RTP,
         ttl: 64,
       }),
-    ],
+    }],
   }),
   sourceFailoverConfig: BridgeFailoverConfig.failover(),
   gateway,
@@ -104,7 +105,6 @@ new BridgeSource(stack, 'EgressAdditionalSource', {
   bridgeSourceName: 'backup-flow-source',
   bridge: egressBridge,
   source: BridgeSourceConfiguration.flow({
-    name: 'backup-flow-source',
     flow: feederFlow,
   }),
 });

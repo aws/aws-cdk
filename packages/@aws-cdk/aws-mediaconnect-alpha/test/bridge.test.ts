@@ -5,7 +5,7 @@ import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Bridge, BridgeConfiguration, BridgeFailoverConfig, BridgeOutputConfiguration, BridgeType } from '../lib/bridge';
 import { Flow } from '../lib/flow';
 import { Gateway } from '../lib/gateway';
-import { BridgeProtocol, State, VpcInterface } from '../lib/shared';
+import { BridgeProtocol, State, VpcInterface, GatewayNetwork } from '../lib/shared';
 
 let app: App;
 let stack: Stack;
@@ -48,22 +48,24 @@ test('MediaConnect Bridge Creation', () => {
       maxBitrate: Bitrate.mbps(5),
       flowSources: [{
         name: 'aaaa',
-        vpcInterface,
-        flow: Flow.fromFlowAttributes(stack, 'flow', {
-          flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-CQwNVVFcCVgNBg8D-3104ecf5a408:my-flow',
-          sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-CQwNVVFcCVgNBg8D-3104ecf5a408:test',
-        }),
+        source: {
+          vpcInterface,
+          flow: Flow.fromFlowAttributes(stack, 'flow', {
+            flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-CQwNVVFcCVgNBg8D-3104ecf5a408:my-flow',
+            sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-CQwNVVFcCVgNBg8D-3104ecf5a408:test',
+          }),
+        },
       }],
-      networkOutputs: [
-        BridgeOutputConfiguration.network({
+      networkOutputs: [{
+        name: 'network',
+        output: BridgeOutputConfiguration.network({
           ipAddress: '192.168.1.60',
-          name: 'network',
-          networkName: 'my-test-network',
+          network: GatewayNetwork.define({ name: 'my-test-network', cidrBlock: '198.51.100.0/24' }),
           port: 5000,
           protocol: BridgeProtocol.RTP,
           ttl: 64,
         }),
-      ],
+      }],
     }),
     gateway,
   });
@@ -100,11 +102,13 @@ test('MediaConnect Bridge Creation - ingress bridge with network sources', () =>
       maxOutputs: 2,
       networkSources: [{
         name: 'network-source',
-        multicastIp: '239.1.1.1',
-        networkName: 'my-network',
-        port: 5000,
-        protocol: BridgeProtocol.RTP,
-        multicastSourceIp: '192.168.1.1',
+        source: {
+          multicastIp: '239.1.1.1',
+          network: GatewayNetwork.define({ name: 'my-network', cidrBlock: '198.51.100.0/24' }),
+          port: 5000,
+          protocol: BridgeProtocol.RTP,
+          multicastSourceIp: '192.168.1.1',
+        },
       }],
     }),
     gateway,
@@ -145,7 +149,7 @@ test('Bridge name validation - too long', () => {
       gateway,
       config: BridgeConfiguration.egress({
         maxBitrate: Bitrate.mbps(100),
-        flowSources: [{ name: 'source', flow }],
+        flowSources: [{ name: 'source', source: { flow } }],
         networkOutputs: [],
       }),
     });
@@ -166,7 +170,7 @@ test('Bridge name validation - invalid characters', () => {
       gateway,
       config: BridgeConfiguration.egress({
         maxBitrate: Bitrate.mbps(100),
-        flowSources: [{ name: 'source', flow }],
+        flowSources: [{ name: 'source', source: { flow } }],
         networkOutputs: [],
       }),
     });
@@ -186,7 +190,7 @@ test('Bridge name validation - valid name', () => {
     gateway,
     config: BridgeConfiguration.egress({
       maxBitrate: Bitrate.mbps(100),
-      flowSources: [{ name: 'source', flow }],
+      flowSources: [{ name: 'source', source: { flow } }],
       networkOutputs: [],
     }),
   });
@@ -200,8 +204,7 @@ test('Bridge TTL validation - out of range', () => {
   expect(() => {
     BridgeOutputConfiguration.network({
       ipAddress: '192.168.1.50',
-      name: 'test',
-      networkName: 'net',
+      network: GatewayNetwork.define({ name: 'net', cidrBlock: '198.51.100.0/24' }),
       port: 5000,
       protocol: BridgeProtocol.RTP,
       ttl: 0,
@@ -213,8 +216,7 @@ test('Bridge TTL validation - too high', () => {
   expect(() => {
     BridgeOutputConfiguration.network({
       ipAddress: '192.168.1.50',
-      name: 'test',
-      networkName: 'net',
+      network: GatewayNetwork.define({ name: 'net', cidrBlock: '198.51.100.0/24' }),
       port: 5000,
       protocol: BridgeProtocol.RTP,
       ttl: 256,
@@ -229,10 +231,12 @@ test('Bridge ingress bitrate validation - too low', () => {
       maxOutputs: 1,
       networkSources: [{
         name: 'source',
-        multicastIp: '239.0.0.1',
-        networkName: 'net',
-        port: 5000,
-        protocol: BridgeProtocol.RTP,
+        source: {
+          multicastIp: '239.0.0.1',
+          network: GatewayNetwork.define({ name: 'net', cidrBlock: '198.51.100.0/24' }),
+          port: 5000,
+          protocol: BridgeProtocol.RTP,
+        },
       }],
     });
   }).toThrow(/Bridge ingress max bitrate/);
@@ -250,19 +254,21 @@ test('Bridge addOutput on egress bridge', () => {
     gateway,
     config: BridgeConfiguration.egress({
       maxBitrate: Bitrate.mbps(10),
-      flowSources: [{ name: 'source', flow }],
+      flowSources: [{ name: 'source', source: { flow } }],
       networkOutputs: [],
     }),
   });
 
-  bridge.addOutput('extra-output', BridgeOutputConfiguration.network({
-    ipAddress: '10.0.0.1',
+  bridge.addOutput('extra-output', {
     name: 'extra',
-    networkName: 'net',
-    port: 6000,
-    protocol: BridgeProtocol.RTP_FEC,
-    ttl: 128,
-  }));
+    output: BridgeOutputConfiguration.network({
+      ipAddress: '10.0.0.1',
+      network: GatewayNetwork.define({ name: 'net', cidrBlock: '198.51.100.0/24' }),
+      port: 6000,
+      protocol: BridgeProtocol.RTP_FEC,
+      ttl: 128,
+    }),
+  });
 
   Template.fromStack(stack).resourceCountIs('AWS::MediaConnect::BridgeOutput', 1);
 });
@@ -277,23 +283,27 @@ test('Bridge addOutput on ingress bridge throws', () => {
       maxOutputs: 1,
       networkSources: [{
         name: 'source',
-        multicastIp: '239.0.0.1',
-        networkName: 'net',
-        port: 5000,
-        protocol: BridgeProtocol.RTP,
+        source: {
+          multicastIp: '239.0.0.1',
+          network: GatewayNetwork.define({ name: 'net', cidrBlock: '198.51.100.0/24' }),
+          port: 5000,
+          protocol: BridgeProtocol.RTP,
+        },
       }],
     }),
   });
 
   expect(() => {
-    bridge.addOutput('output', BridgeOutputConfiguration.network({
-      ipAddress: '10.0.0.1',
+    bridge.addOutput('output', {
       name: 'out',
-      networkName: 'net',
-      port: 6000,
-      protocol: BridgeProtocol.RTP,
-      ttl: 64,
-    }));
+      output: BridgeOutputConfiguration.network({
+        ipAddress: '10.0.0.1',
+        network: GatewayNetwork.define({ name: 'net', cidrBlock: '198.51.100.0/24' }),
+        port: 6000,
+        protocol: BridgeProtocol.RTP,
+        ttl: 64,
+      }),
+    });
   }).toThrow(/addOutput can only be called on egress bridges/);
 });
 

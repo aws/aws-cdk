@@ -828,13 +828,15 @@ MediaConnect Gateways enable the deployment of on-premises resources for transpo
 ```ts
 declare const stack: Stack;
 
+const productionNetwork = GatewayNetwork.define({
+  cidrBlock: '192.168.1.0/24',
+  name: 'production-network',
+});
+
 const gateway = new Gateway(stack, 'MyGateway', {
   gatewayName: 'my-gateway',
   egressCidrBlocks: ['10.0.0.0/16'],
-  networks: [{
-    cidrBlock: '192.168.1.0/24',
-    name: 'production-network',
-  }],
+  networks: [productionNetwork],
 });
 ```
 
@@ -861,13 +863,15 @@ An ingress bridge receives content from on-premises equipment and makes it avail
 ```ts
 declare const stack: Stack;
 
+const productionNetwork = GatewayNetwork.define({
+  cidrBlock: '192.168.1.0/24',
+  name: 'production-network',
+});
+
 const gateway = new Gateway(stack, 'MyGateway', {
   gatewayName: 'my-gateway',
   egressCidrBlocks: ['10.0.0.0/16'],
-  networks: [{
-    cidrBlock: '192.168.1.0/24',
-    name: 'production-network',
-  }],
+  networks: [productionNetwork],
 });
 
 const ingressBridge = new Bridge(stack, 'MyIngressBridge', {
@@ -877,10 +881,12 @@ const ingressBridge = new Bridge(stack, 'MyIngressBridge', {
     maxOutputs: 2,
     networkSources: [{
       name: 'on-prem-source',
-      protocol: BridgeProtocol.RTP,
-      networkName: 'production-network',
-      multicastIp: '224.1.1.1',
-      port: 5000,
+      source: {
+        protocol: BridgeProtocol.RTP,
+        network: productionNetwork,
+        multicastIp: '239.1.1.1',
+        port: 5000,
+      },
     }],
   }),
   gateway: gateway,
@@ -896,6 +902,7 @@ declare const stack: Stack;
 declare const gateway: Gateway;
 declare const flow: Flow;
 declare const vpcInterface: VpcInterfaceConfig;
+declare const productionNetwork: GatewayNetwork;
 
 const egressBridge = new Bridge(stack, 'MyEgressBridge', {
   bridgeName: 'my-egress-bridge',
@@ -903,19 +910,21 @@ const egressBridge = new Bridge(stack, 'MyEgressBridge', {
     maxBitrate: Bitrate.mbps(10),
     flowSources: [{
       name: 'cloud-source',
-      flow: flow,
-      vpcInterface: vpcInterface,
+      source: {
+        flow: flow,
+        vpcInterface: vpcInterface,
+      },
     }],
-    networkOutputs: [
-      BridgeOutputConfiguration.network({
-        name: 'on-prem-output',
+    networkOutputs: [{
+      name: 'on-prem-output',
+      output: BridgeOutputConfiguration.network({
         ipAddress: '192.168.1.200',
         port: 5001,
-        networkName: 'production-network',
+        network: productionNetwork,
         protocol: BridgeProtocol.RTP,
         ttl: 50,
       }),
-    ],
+    }],
   }),
   gateway: gateway,
 });
@@ -935,7 +944,6 @@ const additionalSource = new BridgeSource(stack, 'AdditionalSource', {
   bridgeSourceName: 'backup-source',
   bridge: bridge,
   source: BridgeSourceConfiguration.flow({
-    name: 'backup-flow',
     flow: flow,
   }),
 });
@@ -943,18 +951,20 @@ const additionalSource = new BridgeSource(stack, 'AdditionalSource', {
 
 ### Bridge Outputs
 
-Bridge outputs are configured as part of the bridge configuration for egress bridges. They define where content exits the bridge to on-premises equipment:
+Bridge outputs are configured as part of the bridge configuration for egress bridges. They define where content exits the bridge to on-premises equipment.
 
 ```ts
-// Network output configuration
-const networkOutput = BridgeOutputConfiguration.network({
-  name: 'on-prem-output',
+declare const productionNetwork: GatewayNetwork;
+
+const networkConfig = BridgeOutputConfiguration.network({
   ipAddress: '192.168.1.200',
   port: 5001,
-  networkName: 'production-network',
+  network: productionNetwork,
   protocol: BridgeProtocol.RTP,
   ttl: 50,
 });
+
+const namedOutput = { name: 'on-prem-output', output: networkConfig };
 ```
 
 ## Encryption

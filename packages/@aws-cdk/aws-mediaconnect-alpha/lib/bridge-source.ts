@@ -160,7 +160,7 @@ export class BridgeSource extends Resource implements IBridgeSource {
     } : undefined;
     const networkInput = sourceConfig.networkConfig ? {
       multicastIp: sourceConfig.networkConfig.multicastIp,
-      networkName: sourceConfig.networkConfig.networkName,
+      networkName: sourceConfig.networkConfig.network.name,
       port: sourceConfig.networkConfig.port,
       protocol: sourceConfig.networkConfig.protocol.value,
       multicastSourceSettings: {

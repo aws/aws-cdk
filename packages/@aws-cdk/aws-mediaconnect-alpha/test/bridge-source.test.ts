@@ -5,7 +5,7 @@ import { Bridge, BridgeConfiguration, BridgeFailoverConfig } from '../lib/bridge
 import { BridgeSource, BridgeSourceConfiguration } from '../lib/bridge-source';
 import { Flow } from '../lib/flow';
 import { Gateway } from '../lib/gateway';
-import { BridgeProtocol } from '../lib/shared';
+import { BridgeProtocol, GatewayNetwork } from '../lib/shared';
 
 let app: App;
 let stack: Stack;
@@ -23,11 +23,13 @@ test('MediaConnect Bridge flow source', () => {
     config: BridgeConfiguration.egress({
       maxBitrate: Bitrate.mbps(5),
       flowSources: [{
-        flow: Flow.fromFlowAttributes(stack, 'flow1', {
-          flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-CQwNVVFcCVgNBg8D-3104ecf5a408:my-flow',
-          sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-CQwNVVFcCVgNBg8D-3104ecf5a408:test',
-        }),
         name: 'flow1',
+        source: {
+          flow: Flow.fromFlowAttributes(stack, 'flow1', {
+            flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-CQwNVVFcCVgNBg8D-3104ecf5a408:my-flow',
+            sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-CQwNVVFcCVgNBg8D-3104ecf5a408:test',
+          }),
+        },
       }],
       networkOutputs: [],
     }),
@@ -40,7 +42,6 @@ test('MediaConnect Bridge flow source', () => {
     bridgeSourceName: 'bridge-source',
     bridge,
     source: BridgeSourceConfiguration.flow({
-      name: 'flow2',
       flow: Flow.fromFlowAttributes(stack, 'flow2', {
         flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-CQwNVVFcCVgNBg8D-3104ecf5a408:my-flow',
         sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-CQwNVVFcCVgNBg8D-3104ecf5a408:test',
@@ -77,9 +78,8 @@ test('MediaConnect Bridge network source', () => {
     bridgeSourceName: 'bridge-source',
     bridge,
     source: BridgeSourceConfiguration.network({
-      name: 'my-network',
       multicastIp: '239.0.0.1',
-      networkName: 'my-network',
+      network: GatewayNetwork.define({ name: 'my-network', cidrBlock: '198.51.100.0/24' }),
       port: 5000,
       protocol: BridgeProtocol.RTP,
     }),
@@ -118,7 +118,6 @@ test('fails - ingress bridge rejects flow sources', () => {
       bridgeSourceName: 'test',
       bridge,
       source: BridgeSourceConfiguration.flow({
-        name: 'flow2',
         flow: Flow.fromFlowAttributes(stack, 'flow2', {
           flowArn: 'arn:aws:mediaconnect:us-east-1:123456789012:flow:1-CQwNVVFcCVgNBg8D-3104ecf5a408:my-flow',
           sourceArn: 'arn:aws:mediaconnect:us-east-1:123456789012:source:1-CQwNVVFcCVgNBg8D-3104ecf5a408:test',
@@ -146,9 +145,8 @@ test('MediaConnect Bridge VPC flow network source', () => {
     bridgeSourceName: 'bridge-source',
     bridge,
     source: BridgeSourceConfiguration.network({
-      name: 'myflowinput',
       multicastIp: '239.0.0.1',
-      networkName: 'my-network',
+      network: GatewayNetwork.define({ name: 'my-network', cidrBlock: '198.51.100.0/24' }),
       port: 5000,
       protocol: BridgeProtocol.RTP,
     }),

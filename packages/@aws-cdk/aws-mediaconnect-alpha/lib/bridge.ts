@@ -11,7 +11,7 @@ import type { Construct } from 'constructs';
 import type { IBridgeOutput } from './bridge-output';
 import { BridgeOutput } from './bridge-output';
 import type { IFlow } from './flow';
-import type { IGateway } from './gateway';
+import type { IGateway, GatewayNetwork } from './gateway';
 import type { BridgeProtocol, BridgeNetworkSource, VpcInterfaceConfig } from './shared';
 import { FailoverMode, State } from './shared';
 
@@ -29,10 +29,36 @@ export interface BridgeFlowSource {
    * @default - no VPC interface
    */
   readonly vpcInterface?: VpcInterfaceConfig;
+}
+
+/**
+ * A named flow source for an egress bridge.
+ */
+export interface BridgeFlowInput {
   /**
-   * The name of the flow source.
+   * The name of the flow source. Must be unique among sources on the bridge.
    */
   readonly name: string;
+
+  /**
+   * The flow source configuration describing where the bridge consumes content from.
+   */
+  readonly source: BridgeFlowSource;
+}
+
+/**
+ * A named network source for an ingress bridge.
+ */
+export interface BridgeNetworkInput {
+  /**
+   * The name of the network source. Must be unique among sources on the bridge.
+   */
+  readonly name: string;
+
+  /**
+   * The network source configuration describing the multicast endpoint the bridge listens to.
+   */
+  readonly source: BridgeNetworkSource;
 }
 
 /**
@@ -86,7 +112,7 @@ export interface IngressBridgeConfiguration extends BridgeConfigurationBase {
   /**
    * The network sources for the ingress bridge.
    */
-  readonly networkSources: BridgeNetworkSource[];
+  readonly networkSources: BridgeNetworkInput[];
 }
 
 /**
@@ -96,11 +122,11 @@ export interface EgressBridgeConfiguration extends BridgeConfigurationBase {
   /**
    * The flow sources for the egress bridge.
    */
-  readonly flowSources: BridgeFlowSource[];
+  readonly flowSources: BridgeFlowInput[];
   /**
    * The network outputs for the egress bridge.
    */
-  readonly networkOutputs: BridgeOutputConfiguration[];
+  readonly networkOutputs: BridgeNetworkOutput[];
 }
 
 /**
@@ -142,9 +168,12 @@ export interface IBridge extends IResource, IBridgeRef {
   readonly isFailoverEnabled?: boolean;
 
   /**
-   * Add a network output to this bridge (for egress bridges only)
+   * Add a network output to this bridge (for egress bridges only).
+   *
+   * @param id Construct id for the new BridgeOutput
+   * @param networkOutput The named output to add. The `name` is the output's identity on the bridge and must be unique among outputs.
    */
-  addOutput(id: string, output: BridgeOutputConfiguration): IBridgeOutput;
+  addOutput(id: string, networkOutput: BridgeNetworkOutput): IBridgeOutput;
 
   /**
    * Create a CloudWatch metric for this bridge.
@@ -194,10 +223,6 @@ export interface IBridge extends IResource, IBridgeRef {
  */
 export interface BridgeNetworkOutputProps {
   /**
-   * The name of the network output.
-   */
-  readonly name: string;
-  /**
    * The IP address where the output will send content.
    */
   readonly ipAddress: string;
@@ -206,9 +231,12 @@ export interface BridgeNetworkOutputProps {
    */
   readonly port: number;
   /**
-   * The network name for this output.
+   * The gateway network this output sends content out of.
+   *
+   * Use {@link GatewayNetwork.define} to create the network and pass the same
+   * instance to the gateway and to each output that uses it.
    */
-  readonly networkName: string;
+  readonly network: GatewayNetwork;
   /**
    * The protocol to use for the output.
    */
@@ -220,6 +248,23 @@ export interface BridgeNetworkOutputProps {
    * before being discarded.
    */
   readonly ttl: number;
+}
+
+/**
+ * A named network output for an egress bridge.
+ */
+export interface BridgeNetworkOutput {
+  /**
+   * The name of the network output. Must be unique among outputs on the bridge.
+   *
+   * Used as the physical name of the underlying CFN resource.
+   */
+  readonly name: string;
+
+  /**
+   * The network configuration describing where this output sends content.
+   */
+  readonly output: BridgeOutputConfiguration;
 }
 
 /**
@@ -241,11 +286,10 @@ export class BridgeOutputConfiguration {
   /**
    * @internal
    */
-  public _bind(): CfnBridge.BridgeNetworkOutputProperty {
+  public _bind(): { ipAddress: string; networkName: string; port: number; protocol: string; ttl: number } {
     return {
-      name: this._network.name,
       ipAddress: this._network.ipAddress,
-      networkName: this._network.networkName,
+      networkName: this._network.network.name,
       port: this._network.port,
       protocol: this._network.protocol.value,
       ttl: this._network.ttl,
@@ -584,9 +628,12 @@ abstract class BridgeBase extends Resource implements IBridge {
   }
 
   /**
-   * Add a network output to this bridge (for egress bridges only)
+   * Add a network output to this bridge (for egress bridges only).
+   *
+   * @param id Construct id for the new BridgeOutput
+   * @param networkOutput The named output to add. The `name` is the output's identity on the bridge and must be unique among outputs.
    */
-  public addOutput(id: string, output: BridgeOutputConfiguration): IBridgeOutput {
+  public addOutput(id: string, networkOutput: BridgeNetworkOutput): IBridgeOutput {
     if (this.bridgeType.value !== BridgeType.EGRESS_BRIDGE.value) {
       throw new ValidationError(
         lit`BridgeEgressOnly`,
@@ -596,9 +643,9 @@ abstract class BridgeBase extends Resource implements IBridge {
     }
 
     return new BridgeOutput(this, id, {
-      bridgeOutputName: output._bind().name,
+      bridgeOutputName: networkOutput.name,
       bridge: this,
-      output: output,
+      output: networkOutput.output,
     });
   }
 }
@@ -644,16 +691,16 @@ export class Bridge extends BridgeBase implements IBridge {
         maxBitrate: configBind.ingressConfig.maxBitrate.toBps(),
         maxOutputs: configBind.ingressConfig.maxOutputs,
       },
-      sources: configBind.ingressConfig.networkSources.map(source => {
+      sources: configBind.ingressConfig.networkSources.map(input => {
         return {
           networkSource: {
-            name: source.name,
-            multicastIp: source.multicastIp,
-            networkName: source.networkName,
-            port: source.port,
-            protocol: source.protocol.value,
+            name: input.name,
+            multicastIp: input.source.multicastIp,
+            networkName: input.source.network.name,
+            port: input.source.port,
+            protocol: input.source.protocol.value,
             multicastSourceSettings: {
-              multicastSourceIp: source.multicastSourceIp,
+              multicastSourceIp: input.source.multicastSourceIp,
             },
           },
         };
@@ -663,9 +710,9 @@ export class Bridge extends BridgeBase implements IBridge {
       egressGatewayBridge: {
         maxBitrate: configBind.egressConfig.maxBitrate.toBps(),
       },
-      sources: configBind.egressConfig.flowSources.map(source => this.formatBridgeFlowSource(source)),
-      outputs: configBind.egressConfig.networkOutputs.map(output => ({
-        networkOutput: output._bind(),
+      sources: configBind.egressConfig.flowSources.map(input => this.formatBridgeFlowSource(input)),
+      outputs: configBind.egressConfig.networkOutputs.map(no => ({
+        networkOutput: { name: no.name, ...no.output._bind() },
       })),
     } : undefined;
 
@@ -690,13 +737,13 @@ export class Bridge extends BridgeBase implements IBridge {
   /**
    * Format bridge flow source into BridgeSourceProperty format
    */
-  private formatBridgeFlowSource(source: BridgeFlowSource): CfnBridge.BridgeSourceProperty {
+  private formatBridgeFlowSource(input: BridgeFlowInput): CfnBridge.BridgeSourceProperty {
     return {
       flowSource: {
-        flowArn: source.flow.flowArn,
-        name: source.name,
-        flowVpcInterfaceAttachment: source.vpcInterface ? {
-          vpcInterfaceName: source.vpcInterface.name,
+        flowArn: input.source.flow.flowArn,
+        name: input.name,
+        flowVpcInterfaceAttachment: input.source.vpcInterface ? {
+          vpcInterfaceName: input.source.vpcInterface.name,
         } : undefined,
       },
     };

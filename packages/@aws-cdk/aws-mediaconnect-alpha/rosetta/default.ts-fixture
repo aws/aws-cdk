@@ -21,6 +21,7 @@ import {
   FlowSize,
   Framerate,
   Gateway,
+  GatewayNetwork,
   MediaLivePipeline,
   MediaStream,
   MediaVideoFormat,
