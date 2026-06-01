@@ -15,7 +15,7 @@
      "StackName": "\"aws-cdk-eks-cluster-deletion-protection\""
     },
     "flattenResponse": "false",
-    "salt": "1779591631112"
+    "salt": "1780291095230"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -145,7 +145,7 @@
      "StackName": "\"aws-cdk-eks-cluster-deletion-protection\""
     },
     "flattenResponse": "false",
-    "salt": "1779591631112"
+    "salt": "1780291095231"
    },
    "DependsOn": [
     "AwsApiCallCloudFormationdeleteStack472fb1617496e75232e22dd80272c735"
@@ -408,7 +408,7 @@
      "deletionProtection": "false"
     },
     "flattenResponse": "false",
-    "salt": "1779591631114"
+    "salt": "1780291095233"
    },
    "DependsOn": [
     "AwsApiCallCloudFormationdescribeStacks472fb1617496e75232e22dd80272c735",
@@ -439,7 +439,7 @@
      "name": "\"eks-deletion-protection-test\""
     },
     "flattenResponse": "false",
-    "salt": "1779591631114"
+    "salt": "1780291095233"
    },
    "DependsOn": [
     "AwsApiCalleksupdateClusterConfigcecf8e8b292e8b686346a0061ffe5ed1"

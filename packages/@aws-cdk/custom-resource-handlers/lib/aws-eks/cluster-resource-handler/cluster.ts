@@ -44,7 +44,10 @@ export class ClusterResourceHandler extends ResourceHandler {
     const resp = await this.eks.createCluster({
       ...this.newProps,
       name: clusterName,
-    });
+      // deletionProtection is not yet in the SDK types, so we need to explicitly
+      // pass it to prevent SDK v3 from stripping the unknown property during serialization.
+      deletionProtection: (this.newProps as any).deletionProtection,
+    } as any);
 
     if (!resp.cluster) {
       throw new Error(`Error when trying to create cluster ${clusterName}: CreateCluster returned without cluster information`);
