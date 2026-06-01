@@ -264,6 +264,9 @@ export enum PythonVersion {
 export enum Runtime {
   /**
    * Runtime for a Glue for Ray 2.4.
+   *
+   * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+   * Migrate to Amazon EKS with KubeRay Operator.
    */
   RAY_TWO_FOUR = 'Ray2.4',
 }
@@ -289,6 +292,9 @@ export enum JobType {
 
   /**
    * Command for running a Glue Ray job.
+   *
+   * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+   * Migrate to Amazon EKS with KubeRay Operator.
    */
   RAY = 'glueray',
 
