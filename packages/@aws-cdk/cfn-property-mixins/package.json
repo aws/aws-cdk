@@ -35,6 +35,7 @@
     "./aws-auditmanager": "./lib/services/aws-auditmanager/index.js",
     "./aws-autoscaling": "./lib/services/aws-autoscaling/index.js",
     "./aws-autoscalingplans": "./lib/services/aws-autoscalingplans/index.js",
+    "./aws-awsexternalanthropic": "./lib/services/aws-awsexternalanthropic/index.js",
     "./aws-b2bi": "./lib/services/aws-b2bi/index.js",
     "./aws-backup": "./lib/services/aws-backup/index.js",
     "./aws-backupgateway": "./lib/services/aws-backupgateway/index.js",

@@ -5,7 +5,7 @@
 import type { IConstruct } from 'constructs';
 import { Construct } from 'constructs';
 import { CfnReference } from './cfn-reference';
-import type { Intrinsic } from './intrinsic';
+import { Intrinsic } from './intrinsic';
 import { findTokens } from './resolve';
 import { makeUniqueId } from './uniqueid';
 import * as cxapi from '../../../cx-api';
@@ -17,9 +17,10 @@ import { CfnOutput } from '../cfn-output';
 import { CfnParameter } from '../cfn-parameter';
 import { ExportWriter } from '../custom-resource-provider/cross-region-export-providers/export-writer-provider';
 import { AssumptionError, UnscopedValidationError } from '../errors';
+import { Lazy } from '../lazy';
 import { Names } from '../names';
 import type { Reference } from '../reference';
-import type { IResolvable } from '../resolvable';
+import type { IResolvable, IResolveContext } from '../resolvable';
 import { Stack } from '../stack';
 import { Token, Tokenization } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
@@ -30,34 +31,69 @@ import type {
   PolicyReference,
   RoleReference,
 } from '../../../interfaces/generated/aws-iam-interfaces.generated';
+import { ReferenceStrength } from '../cross-stack-reference-strength';
 
 export const STRING_LIST_REFERENCE_DELIMITER = '||';
 
-const CROSS_STACK_REFERENCE_VALUES = ['strong', 'weak', 'both'] as const;
-type CrossStackReferenceStrength = (typeof CROSS_STACK_REFERENCE_VALUES)[number];
-
-function crossStackReferenceStrength(scope: IConstruct): CrossStackReferenceStrength {
+function crossStackReferenceStrength(scope: IConstruct): ReferenceStrength | undefined {
   const value = scope.node.tryGetContext(cxapi.DEFAULT_CROSS_STACK_REFERENCES);
   if (value === undefined || value === null) {
-    return 'strong';
+    return undefined;
   }
-  if (CROSS_STACK_REFERENCE_VALUES.includes(value)) {
+  if (Object.values(ReferenceStrength).includes(value)) {
     return value;
   }
   throw new UnscopedValidationError(
-    lit`InvalidCrossStackReferenceStrength`,
+    lit`InvalidReferenceStrength`,
     `Invalid value for ${cxapi.DEFAULT_CROSS_STACK_REFERENCES}: "${value}". Must be "strong", "weak", or "both".`,
   );
 }
 
+const OVERRIDDEN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CustomCoupledReference');
+
+/**
+ * A token wrapper that carries a per-usage reference strength override.
+ *
+ * When the resolution loop encounters this token, it resolves the underlying
+ * CfnReference using the overridden strength instead of the default lookup chain,
+ * and stores the result on this wrapper (not on the singleton CfnReference).
+ */
+export class CustomCoupledReference extends Intrinsic {
+  public static isCustomCoupledReference(x: IResolvable): x is CustomCoupledReference {
+    return OVERRIDDEN_REFERENCE_SYMBOL in x;
+  }
+
+  public readonly reference: CfnReference;
+  public readonly strength: ReferenceStrength;
+  private resolvedValue?: IResolvable;
+
+  constructor(reference: CfnReference, strength: ReferenceStrength) {
+    super(reference, { typeHint: reference.typeHint });
+    this.reference = reference;
+    this.strength = strength;
+    Object.defineProperty(this, OVERRIDDEN_REFERENCE_SYMBOL, { value: true });
+  }
+
+  public assignValue(value: IResolvable): void {
+    this.resolvedValue = value;
+  }
+
+  public resolve(context: IResolveContext): any {
+    if (this.resolvedValue) {
+      return this.resolvedValue.resolve(context);
+    }
+    return this.reference.resolve(context);
+  }
+}
+
 /**
  * This is called from the App level to resolve all references defined. Each
- * reference is resolved based on it's consumption context.
+ * reference is resolved based on its consumption context.
  */
 export function resolveReferences(scope: IConstruct): void {
-  const edges = findAllReferences(scope);
+  const { refs, overrides } = findAllReferences(scope);
 
-  for (const { source, value } of edges) {
+  for (const { source, value } of refs) {
     const consumer = Stack.of(source);
 
     // resolve the value in the context of the consumer
@@ -66,17 +102,32 @@ export function resolveReferences(scope: IConstruct): void {
       value.assignValueForStack(consumer, resolved);
     }
   }
+
+  for (const { source, override } of overrides) {
+    const consumer = Stack.of(source);
+    const resolved = resolveValue(consumer, override.reference, override.strength);
+    override.assignValue(resolved);
+  }
 }
 
 /**
  * Resolves the value for `reference` in the context of `consumer`.
  */
-function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
+function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride?: ReferenceStrength): IResolvable {
   const producer = Stack.of(reference.target);
   const producerAccount = !Token.isUnresolved(producer.account) ? producer.account : cxapi.UNKNOWN_ACCOUNT;
   const producerRegion = !Token.isUnresolved(producer.region) ? producer.region : cxapi.UNKNOWN_REGION;
   const consumerAccount = !Token.isUnresolved(consumer.account) ? consumer.account : cxapi.UNKNOWN_ACCOUNT;
   const consumerRegion = !Token.isUnresolved(consumer.region) ? consumer.region : cxapi.UNKNOWN_REGION;
+
+  // Priority: per-usage override > per-resource override > global consumer context > default
+  const resourceStrength = CfnResource.isCfnResource(reference.target)
+    ? reference.target._crossStackReferenceStrengthOverride
+    : undefined;
+  const strength = strengthOverride
+    ?? resourceStrength
+    ?? crossStackReferenceStrength(consumer)
+    ?? 'strong';
 
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
@@ -90,8 +141,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
 
   // stacks are not in the same account
   if (producerAccount !== consumerAccount) {
-    const strength = crossStackReferenceStrength(consumer);
-
     if (strength === 'strong') {
       Annotations.of(consumer).addWarningV2(
         '@aws-cdk/core:crossAccountRefsAreAlwaysWeak',
@@ -126,7 +175,7 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     });
 
     return createGetStackOutput(reference, {
-      consumerRoleArn: Fn.sub(consumer.synthesizer.cloudFormationExecutionRole),
+      consumerRoleArn: consumer.synthesizer.cloudFormationExecutionRole,
       producerAccount,
       producerRegion,
       producerStackArn,
@@ -184,8 +233,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
     consumer.addDependency(producer,
       `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-    const strength = crossStackReferenceStrength(consumer);
-
     if (strength === 'strong') {
       return createCrossRegionImportValue(reference, consumer);
     }
@@ -217,8 +264,6 @@ function resolveValue(consumer: Stack, reference: CfnReference): IResolvable {
   consumer.addDependency(producer,
     `${consumer.node.path} -> ${reference.target.node.path}.${reference.displayName}`);
 
-  const strength = crossStackReferenceStrength(consumer);
-
   if (strength === 'strong') {
     return createImportValue(reference);
   }
@@ -243,7 +288,9 @@ function renderReference(ref: CfnReference) {
  * Finds all the CloudFormation references in a construct tree.
  */
 function findAllReferences(root: IConstruct) {
-  const result = new Array<{ source: CfnElement; value: CfnReference }>();
+  const refs = new Array<{ source: CfnElement; value: CfnReference }>();
+  const overrides = new Array<{ source: CfnElement; override: CustomCoupledReference }>();
+
   for (const consumer of iterateDfsPreorder(root)) {
     // include only CfnElements (i.e. resources)
     if (!CfnElement.isCfnElement(consumer)) {
@@ -256,15 +303,11 @@ function findAllReferences(root: IConstruct) {
       // iterate over all the tokens (e.g. intrinsic functions, lazies, etc) that
       // were found in the cloudformation representation of this resource.
       for (const token of tokens) {
-        // include only CfnReferences (i.e. "Ref" and "Fn::GetAtt")
-        if (!CfnReference.isCfnReference(token)) {
-          continue;
+        if (CustomCoupledReference.isCustomCoupledReference(token)) {
+          overrides.push({ source: consumer, override: token });
+        } else if (CfnReference.isCfnReference(token)) {
+          refs.push({ source: consumer, value: token });
         }
-
-        result.push({
-          source: consumer,
-          value: token,
-        });
       }
     } catch (e: any) {
       // Note: it might be that the properties of the CFN object aren't valid.
@@ -284,7 +327,7 @@ function findAllReferences(root: IConstruct) {
     }
   }
 
-  return result;
+  return { refs, overrides };
 }
 
 // ------------------------------------------------------------------------------------------------
@@ -383,7 +426,10 @@ interface GetStackOutputRoleProps {
   readonly producerAccount?: string;
 }
 
+const ROLE_CONSUMERS = new WeakMap<CfnResource, Set<string>>();
+
 function createGetStackOutputRole(scope: Construct, id: string, props: GetStackOutputRoleProps): { resource: CfnResource; roleRef: RoleReference } {
+  const consumers = new Set<string>([props.consumerRoleArn]);
   const resource = new CfnResource(scope, id, {
     type: 'AWS::IAM::Role',
     properties: {
@@ -393,7 +439,12 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
           {
             Effect: 'Allow',
             Principal: {
-              AWS: props.consumerRoleArn,
+              AWS: Lazy.any({
+                produce: () => {
+                  const arns = [...consumers].map(arn => ({ 'Fn::Sub': arn }));
+                  return arns.length === 1 ? arns[0] : arns;
+                },
+              }),
             },
             Action: [
               'sts:AssumeRole',
@@ -403,6 +454,8 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
       },
     },
   });
+  ROLE_CONSUMERS.set(resource, consumers);
+
   const roleName = Names.uniqueResourceName(resource, {
     maxLength: 64,
   });
@@ -418,6 +471,13 @@ function createGetStackOutputRole(scope: Construct, id: string, props: GetStackO
   });
 
   return { resource, roleRef: { roleArn, roleName } };
+}
+
+function addConsumerToRole(roleResource: CfnResource, consumerRoleArn: string): void {
+  const consumers = ROLE_CONSUMERS.get(roleResource);
+  if (consumers) {
+    consumers.add(consumerRoleArn);
+  }
 }
 
 interface GetStackOutputPolicyProps {
@@ -460,8 +520,8 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   const resolved = JSON.stringify(exportingStack.resolve(reference));
   const outputId = 'Output' + resolved;
-  const roleId = 'Role' + resolved;
-  const policyId = 'Policy' + resolved;
+  const roleId = 'GetStackOutputRole';
+  const policyId = 'GetStackOutputPolicy';
 
   function createScope(stack: Stack) {
     const scopeName = 'Publish';
@@ -492,6 +552,17 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
       });
       roleResource = resource;
       roleArn = roleRef.roleArn;
+    } else {
+      addConsumerToRole(roleResource, options.consumerRoleArn);
+      const roleName = Names.uniqueResourceName(roleResource, { maxLength: 64 });
+      roleArn = exportingStack.formatArn({
+        service: 'iam',
+        resource: 'role',
+        resourceName: roleName,
+        account: options.producerAccount,
+        arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+        region: '',
+      });
     }
 
     let policy = scope.node.tryFindChild(policyId) as CfnResource;
