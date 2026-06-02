@@ -103,6 +103,19 @@ export interface IManagedComputeEnvironment extends IComputeEnvironment, ec2.ICo
    * @default false
    */
   readonly updateToLatestImageVersion?: boolean;
+
+  /**
+   * The minimum time that AWS Batch keeps instances running after a job completes
+   * for each instance, the delay period begins when the last job finishes.
+   * If no new jobs are placed on the instance during this delay, AWS Batch terminates
+   * the instance once the delay expires.
+   * Use `Duration.minutes(0)` to explicitly unset and disable the scale down delay.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-batch-computeenvironment-computescalingpolicy.html
+   *
+   * @default - no delay
+   */
+  readonly minScaleDownDelay?: Duration;
 }
 
 /**
@@ -208,6 +221,19 @@ export interface ManagedComputeEnvironmentProps extends ComputeEnvironmentProps 
    * @default false
    */
   readonly updateToLatestImageVersion?: boolean;
+
+  /**
+   * The minimum time that AWS Batch keeps instances running after a job completes
+   * for each instance, the delay period begins when the last job finishes.
+   * If no new jobs are placed on the instance during this delay, AWS Batch terminates
+   * the instance once the delay expires.
+   * Use `Duration.minutes(0)` to explicitly unset and disable the scale down delay.
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-batch-computeenvironment-computescalingpolicy.html
+   *
+   * @default - no delay
+   */
+  readonly minScaleDownDelay?: Duration;
 }
 
 /**
@@ -222,6 +248,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
   public readonly terminateOnUpdate?: boolean;
   public readonly securityGroups: ec2.ISecurityGroup[];
   public readonly updateToLatestImageVersion?: boolean;
+  public readonly minScaleDownDelay?: Duration;
   public readonly tags: TagManager = new TagManager(TagType.MAP, 'AWS::Batch::ComputeEnvironment');
 
   public readonly connections: ec2.Connections;
@@ -235,6 +262,7 @@ export abstract class ManagedComputeEnvironmentBase extends ComputeEnvironmentBa
     this.updateTimeout = props.updateTimeout;
     this.terminateOnUpdate = props.terminateOnUpdate;
     this.updateToLatestImageVersion = props.updateToLatestImageVersion;
+    this.minScaleDownDelay = props.minScaleDownDelay;
     this.securityGroups = props.securityGroups ?? [
       new ec2.SecurityGroup(this, 'SecurityGroup', {
         vpc: props.vpc,
@@ -836,6 +864,7 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage, this.spotFleetRole);
+    validateMinScaleDownDelay(this, this.minScaleDownDelay);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     this.resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -844,6 +873,9 @@ export class ManagedEc2EcsComputeEnvironment extends ManagedEc2ComputeEnvironmen
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
+        scalingPolicy: this.minScaleDownDelay !== undefined ? {
+          minScaleDownDelayMinutes: this.minScaleDownDelay.toMinutes(),
+        } : undefined,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
           produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
@@ -1166,6 +1198,7 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
 
     validateVCpus(this, this.minvCpus, this.maxvCpus);
     validateSpotConfig(this, this.spot, this.spotBidPercentage);
+    validateMinScaleDownDelay(this, this.minScaleDownDelay);
 
     const { subnetIds } = props.vpc.selectSubnets(props.vpcSubnets);
     this.resource = new CfnComputeEnvironment(this, 'Resource', {
@@ -1178,6 +1211,9 @@ export class ManagedEc2EksComputeEnvironment extends ManagedEc2ComputeEnvironmen
       computeResources: {
         ...baseManagedResourceProperties(this, subnetIds).computeResources as CfnComputeEnvironment.ComputeResourcesProperty,
         minvCpus: this.minvCpus,
+        scalingPolicy: this.minScaleDownDelay !== undefined ? {
+          minScaleDownDelayMinutes: this.minScaleDownDelay.toMinutes(),
+        } : undefined,
         instanceRole: this.instanceProfile.attrArn, // this is not a typo; this property actually takes a profile, not a standard role
         instanceTypes: Lazy.list({
           produce: () => renderInstances(this.instanceTypes, this.instanceClasses, props.useOptimalInstanceClasses, props.defaultInstanceClasses),
@@ -1385,6 +1421,19 @@ function validateSpotConfig(scope: Construct, spot?: boolean, spotBidPercentage?
     if (!spot) {
       throw new ValidationError(lit`ManagedComputeEnvironment`, `Managed ComputeEnvironment '${scope.node.id}' specifies 'spotFleetRole' without specifying 'spot'`, scope);
     }
+  }
+}
+
+function validateMinScaleDownDelay(scope: Construct, minScaleDownDelay?: Duration): void {
+  if (minScaleDownDelay === undefined || minScaleDownDelay.isUnresolved()) return;
+  const minutes = minScaleDownDelay.toMinutes({ integral: false });
+  if (minutes === 0) return;
+  if (minutes < 20 || minutes > 10080) {
+    throw new ValidationError(
+      'ManagedComputeEnvironment',
+      `Managed ComputeEnvironment '${scope.node.id}' specifies 'minScaleDownDelay' of ${minutes} minutes, but must be 0 (to disable) or between 20 and 10080`,
+      scope,
+    );
   }
 }
 

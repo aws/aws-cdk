@@ -207,6 +207,85 @@ describe.each([ManagedEc2EcsComputeEnvironment, ManagedEc2EksComputeEnvironment]
     });
   });
 
+  test('can specify minScaleDownDelay', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      minScaleDownDelay: Duration.minutes(30),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        ScalingPolicy: {
+          MinScaleDownDelayMinutes: 30,
+        },
+      },
+    });
+  });
+
+  test('minScaleDownDelay of 0 disables scale down delay', () => {
+    // WHEN
+    new ComputeEnvironment(stack, 'MyCE', {
+      ...defaultProps,
+      vpc,
+      minScaleDownDelay: Duration.minutes(0),
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Batch::ComputeEnvironment', {
+      ...expectedProps,
+      ComputeResources: {
+        ...defaultComputeResources,
+        ScalingPolicy: {
+          MinScaleDownDelayMinutes: 0,
+        },
+      },
+    });
+  });
+
+  test.each([
+    [19, /must be 0 \(to disable\) or between 20 and 10080/],
+    [10081, /must be 0 \(to disable\) or between 20 and 10080/],
+  ])('throws error when minScaleDownDelay is %i minutes', (value, expectedError) => {
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        minScaleDownDelay: Duration.minutes(value),
+      });
+    }).toThrow(expectedError);
+  });
+
+  test('throws error when minScaleDownDelay is less than 1 minute', () => {
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        minScaleDownDelay: Duration.seconds(30),
+      });
+    }).toThrow(/must be 0 \(to disable\) or between 20 and 10080/);
+  });
+
+  test('does not throw when minScaleDownDelay is a token', () => {
+    // WHEN
+    const param = new CfnParameter(stack, 'MinScaleDownDelayParam', {
+      type: 'Number',
+    });
+
+    // THEN
+    expect(() => {
+      new ComputeEnvironment(stack, 'MyCE', {
+        ...defaultProps,
+        vpc,
+        minScaleDownDelay: Duration.minutes(param.valueAsNumber),
+      });
+    }).not.toThrow();
+  });
+
   test('can specify spotBidPercentage as a parameter', () => {
     // WHEN
     const spotBidPercentageParameter = new CfnParameter(stack, 'SpotBidPercentageParameter', {
