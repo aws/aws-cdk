@@ -6,7 +6,6 @@ import { getChangedSnapshots } from './utils';
 
 /**
  * Regions supported by the Atmosphere test accounts.
- * @see https://code.amazon.com/packages/CDKCoreAtmosphereServicePipeline/blobs/mainline/--/lib/conf/conf.ts
  */
 export const REGIONS = [
   'us-east-1',

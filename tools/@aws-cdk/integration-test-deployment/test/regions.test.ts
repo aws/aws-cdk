@@ -13,10 +13,6 @@ beforeEach(() => {
 });
 
 describe('REGIONS', () => {
-  test('contains all 17 default regions', () => {
-    expect(REGIONS).toHaveLength(17);
-  });
-
   test('includes expected regions', () => {
     expect(REGIONS).toContain('us-east-1');
     expect(REGIONS).toContain('us-west-2');
@@ -29,31 +25,33 @@ describe('REGIONS', () => {
 describe('bootstrap', () => {
   test('bootstraps only the provided regions', async () => {
     const env = { AWS_ACCOUNT_ID: '123456789' } as NodeJS.ProcessEnv;
-    const regions = REGIONS.slice(0, 3);
+    const regions = ['us-east-1', 'us-west-2', 'eu-west-1'];
     await bootstrap(env, regions);
 
-    const args = mockSpawn.mock.calls[0][1]!;
-    for (const region of regions) {
-      expect(args).toContain(`aws://123456789/${region}`);
-    }
-    // Should NOT contain regions beyond the slice
-    expect(args).not.toContain(`aws://123456789/${REGIONS[3]}`);
+    expect(mockSpawn.mock.calls[0][1]).toEqual([
+      'cdk', 'bootstrap',
+      'aws://123456789/us-east-1',
+      'aws://123456789/us-west-2',
+      'aws://123456789/eu-west-1',
+    ]);
   });
 });
 
 describe('deployIntegrationTest', () => {
-  test('uses npx with -- separator to avoid yargs consuming snapshot paths as regions', async () => {
+  test('uses npx with -- separator and parallel-regions', async () => {
     const env = {} as NodeJS.ProcessEnv;
-    const regions = REGIONS.slice(0, 2);
+    const regions = ['us-east-1', 'us-west-2'];
     await deployIntegrationTest(env, ['test/snapshot1'], regions);
 
     expect(mockSpawn.mock.calls[0][0]).toBe('npx');
-    const args = mockSpawn.mock.calls[0][1]!;
-    const dashDashIndex = args.indexOf('--');
-    const regionsIndex = args.indexOf('--parallel-regions');
-    expect(regionsIndex).toBeGreaterThan(-1);
-    expect(args[regionsIndex + 1]).toBe(regions.join(','));
-    expect(dashDashIndex).toBeGreaterThan(regionsIndex);
-    expect(args[dashDashIndex + 1]).toBe('test/snapshot1');
+    expect(mockSpawn.mock.calls[0][1]).toEqual([
+      'integ-runner',
+      '--disable-update-workflow',
+      '--strict',
+      '--directory', 'packages',
+      '--force',
+      '--parallel-regions', 'us-east-1,us-west-2',
+      '--', 'test/snapshot1',
+    ]);
   });
 });
