@@ -583,7 +583,8 @@
      "Ref": "myServiceWithTlsLB43A9E2DA"
     },
     "Port": 443,
-    "Protocol": "TLS"
+    "Protocol": "TLS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    }
   },
   "myServiceWithTlsLBPublicListenerECSGroup39AE2653": {
