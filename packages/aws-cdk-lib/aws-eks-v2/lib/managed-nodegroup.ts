@@ -9,7 +9,7 @@ import { CfnNodegroup } from '../../aws-eks';
 import type { IRole } from '../../aws-iam';
 import { ManagedPolicy, PolicyStatement, Role, ServicePrincipal } from '../../aws-iam';
 import type { IResource, RemovalPolicy } from '../../core';
-import { Resource, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from '../../core';
+import { Resource, Annotations, withResolved, FeatureFlags, ValidationError, RemovalPolicies, UnscopedValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -493,6 +493,27 @@ export class Nodegroup extends Resource implements INodegroup {
         + 'Amazon EC2 instance types C3, C4, D2, I2, M4 (excluding m4.16xlarge), M6a.x, and '
         + 'R3 instances aren\'t supported for Windows workloads.', this);
       }
+
+      // Warn users when the EKS_DEFAULT_AL2023 flag drives a behavior change they
+      // may not have intended. Only fires when the flag is enabled, no explicit
+      // amiType is set, and no launch template is supplied.
+      if (!props.amiType && !props.launchTemplateSpec &&
+        FeatureFlags.of(this).isEnabled(cxapi.EKS_DEFAULT_AL2023)) {
+        const isGpuNodegroup = props.instanceTypes.some(isGpuInstanceType);
+        if (isGpuNodegroup) {
+          // GPU instance types are intentionally NOT migrated by the flag.
+          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:gpuInstancesUseAL2',
+            'GPU instance types will continue to use AL2_X86_64_GPU even with the @aws-cdk/aws-eks:defaultToAL2023 feature flag enabled because '
+            + 'AL2023 splits GPU support into AL2023_X86_64_NVIDIA and AL2023_X86_64_NEURON variants. To use AL2023, explicitly set amiType to the corresponding variant.');
+        } else {
+          // Non-GPU: Warn that this will replace existing managed node groups on the next deploy.
+          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:defaultToAL2023AmiTypeChange',
+            'The @aws-cdk/aws-eks:defaultToAL2023 feature flag is enabled and this node group does not specify amiType. '
+            + 'This will cause existing managed node groups that previously defaulted to AL2 to be replaced with AL2023 on the next deploy, which terminates running pods. '
+            + 'To migrate safely, explicitly set amiType to the current AMI on every existing node group before enabling the flag, '
+            + 'then migrate node groups to AL2023 deliberately one at a time.');
+        }
+      }
     }
 
     if (!props.nodeRole) {
@@ -646,30 +667,26 @@ export class Nodegroup extends Resource implements INodegroup {
  * AMI types of different architectures. The first element is the default.
  * AmiType if amiType and launchTemplateSpec are both undefined.
  */
-const arm64AmiTypes = (useAL2023: boolean): NodegroupAmiType[] => useAL2023 ?
+const arm64AmiTypes = (useAL2023: boolean): NodegroupAmiType[] =>
   [
-    NodegroupAmiType.AL2023_ARM_64_STANDARD,
-    NodegroupAmiType.AL2_ARM_64,
-    NodegroupAmiType.BOTTLEROCKET_ARM_64,
-  ] :
-  [
-    NodegroupAmiType.AL2_ARM_64,
-    NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    ...(useAL2023 ? [
+      NodegroupAmiType.AL2023_ARM_64_STANDARD,
+      NodegroupAmiType.AL2_ARM_64,
+    ] : [
+      NodegroupAmiType.AL2_ARM_64,
+      NodegroupAmiType.AL2023_ARM_64_STANDARD,
+    ]),
     NodegroupAmiType.BOTTLEROCKET_ARM_64,
   ];
-const x8664AmiTypes = (useAL2023: boolean): NodegroupAmiType[] => useAL2023 ?
+const x8664AmiTypes = (useAL2023: boolean): NodegroupAmiType[] =>
   [
-    NodegroupAmiType.AL2023_X86_64_STANDARD,
-    NodegroupAmiType.AL2_X86_64,
-    NodegroupAmiType.BOTTLEROCKET_X86_64,
-    NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
-    NodegroupAmiType.WINDOWS_CORE_2022_X86_64,
-    NodegroupAmiType.WINDOWS_FULL_2019_X86_64,
-    NodegroupAmiType.WINDOWS_FULL_2022_X86_64,
-  ] :
-  [
-    NodegroupAmiType.AL2_X86_64,
-    NodegroupAmiType.AL2023_X86_64_STANDARD,
+    ...(useAL2023 ? [
+      NodegroupAmiType.AL2023_X86_64_STANDARD,
+      NodegroupAmiType.AL2_X86_64,
+    ] : [
+      NodegroupAmiType.AL2_X86_64,
+      NodegroupAmiType.AL2023_X86_64_STANDARD,
+    ]),
     NodegroupAmiType.BOTTLEROCKET_X86_64,
     NodegroupAmiType.WINDOWS_CORE_2019_X86_64,
     NodegroupAmiType.WINDOWS_CORE_2022_X86_64,

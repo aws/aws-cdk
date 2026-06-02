@@ -1,7 +1,7 @@
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { KubectlV31Layer } from '@aws-cdk/lambda-layer-kubectl-v31';
 import { testFixture } from './util';
-import { Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as cdk from '../../core';
@@ -644,6 +644,32 @@ describe('node group', () => {
   });
 
   /**
+   * When EKS_DEFAULT_AL2023 feature flag is disabled, the amiType should remain AL2.
+   */
+  test('amiType defaults to AL2_x86_64 when EKS_DEFAULT_AL2023 flag is disabled', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    stack.node.setContext(cxapi.EKS_DEFAULT_AL2023, false);
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [new ec2.InstanceType('m5.large')],
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
+      AmiType: 'AL2_x86_64',
+    });
+  });
+
+  /**
    * When EKS_DEFAULT_AL2023 feature flag is enabled and instanceTypes are x86_64,
    * the amiType should be implicitly set as AL2023_x86_64_STANDARD.
    */
@@ -671,6 +697,9 @@ describe('node group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2023_x86_64_STANDARD',
     });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/Nodegroup',
+      Match.stringLikeRegexp('This will cause existing managed node groups that previously defaulted to AL2 to be replaced'));
   });
 
   /**
@@ -701,6 +730,9 @@ describe('node group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2023_ARM_64_STANDARD',
     });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/Nodegroup',
+      Match.stringLikeRegexp('This will cause existing managed node groups that previously defaulted to AL2 to be replaced'));
   });
 
   /**
@@ -731,6 +763,38 @@ describe('node group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2_x86_64_GPU',
     });
+
+    Annotations.fromStack(stack).hasWarning('/Stack/Nodegroup',
+      Match.stringLikeRegexp('GPU instance types will continue to use AL2_X86_64_GPU'));
+  });
+
+  /**
+   * When EKS_DEFAULT_AL2023 flag is enabled and the user explicitly sets amiType, no
+   * warning should fire (explicit user choice opts out of both warnings).
+   */
+  test('no warning when EKS_DEFAULT_AL2023 flag is enabled and amiType is set explicitly', () => {
+    // GIVEN
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'Stack');
+    stack.node.setContext(cxapi.EKS_DEFAULT_AL2023, true);
+
+    // WHEN
+    const cluster = new eks.Cluster(stack, 'Cluster', {
+      defaultCapacity: 0,
+      version: CLUSTER_VERSION,
+      kubectlLayer: new KubectlV31Layer(stack, 'KubectlLayer'),
+    });
+    new eks.Nodegroup(stack, 'Nodegroup', {
+      cluster,
+      instanceTypes: [new ec2.InstanceType('m5.large')],
+      amiType: NodegroupAmiType.AL2_X86_64,
+    });
+
+    // THEN
+    Annotations.fromStack(stack).hasNoWarning('/Stack/Nodegroup',
+      Match.stringLikeRegexp('This will cause existing managed node groups that previously defaulted to AL2 to be replaced'));
+    Annotations.fromStack(stack).hasNoWarning('/Stack/Nodegroup',
+      Match.stringLikeRegexp('GPU instance types will continue to use AL2_X86_64_GPU'));
   });
 
   /**

@@ -2466,34 +2466,6 @@ consolidate both displays.
 | 2.253.0 | `false` | `true` |
 
 
-### @aws-cdk/aws-eks:defaultToAL2023
-
-*Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2*
-
-Flag type: New default behavior
-
-When enabled, EKS managed node groups that do not specify an `amiType` will default to
-AL2023 AMI types (AL2023_x86_64_STANDARD, AL2023_ARM_64_STANDARD) instead of the deprecated
-AL2 types (AL2_x86_64, AL2_ARM_64).
-
-This only affects non-GPU instance types. GPU instances continue to default to AL2_x86_64_GPU
-because AL2023 splits GPU support into separate NVIDIA and Neuron AMI variants.
-
-Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
-
-When disabled, the default AMI types remain AL2 for backward compatibility.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| V2NEXT | `false` | `true` |
-
-**Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
-
-**Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
-
-
 ### @aws-cdk/core:defaultCrossStackReferences
 
 *Controls whether cross-region stack references are strong, weak, or both*
@@ -2528,6 +2500,34 @@ The flag is read from the **consumer** stack's context, not the producer's.
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.254.0 | `"strong"` | `"strong"` |
+
+
+### @aws-cdk/aws-eks:defaultToAL2023
+
+*Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2*
+
+Flag type: New default behavior
+
+When enabled, EKS managed node groups that do not specify an `amiType` will default to
+AL2023 AMI types (AL2023_x86_64_STANDARD, AL2023_ARM_64_STANDARD) instead of the deprecated
+AL2 types (AL2_x86_64, AL2_ARM_64).
+
+This only affects non-GPU instance types. GPU instances continue to default to AL2_x86_64_GPU
+because AL2023 splits GPU support into separate NVIDIA and Neuron AMI variants.
+
+Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
+
+When disabled, the default AMI types remain AL2 for backward compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
+
+**Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
 
 
 <!-- END details -->
