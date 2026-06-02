@@ -43,19 +43,18 @@ export async function handler(event: AWSLambda.CloudFormationCustomResourceEvent
       case 'Delete':
         const inUseParams = await findInUse(ssm, exports);
         if (inUseParams.size > 0) {
-          const message: string = Array.from(inUseParams.entries())
-            .map((result) => `${result[0]} is in use by stack(s) ${Array.from(result[1]).join(' ')}`)
-            .join('\n');
-
           if (await isStackBeingUpdated(event.StackId)) {
             // During a stack update (resource replacement), delete anyway to avoid
-            // orphaning parameters, but still throw to signal the violation.
+            // orphaning parameters.
             await deleteParameters(ssm, Object.keys(exports));
-            throw new Error(`Exports cannot be updated: \n${message}`);
+            return;
           }
 
           // During a stack deletion, throw without deleting to give the operator
           // a chance to remove the consuming stack first.
+          const message: string = Array.from(inUseParams.entries())
+            .map((result) => `${result[0]} is in use by stack(s) ${Array.from(result[1]).join(' ')}`)
+            .join('\n');
           throw new Error(`Exports cannot be updated: \n${message}`);
         }
         await deleteParameters(ssm, Object.keys(exports));

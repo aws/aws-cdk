@@ -469,7 +469,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       expect(mockDeleteParameters).toHaveBeenCalledTimes(0);
     });
 
-    test('deletes parameters and throws if in use during stack update', async () => {
+    test('deletes parameters if in use during stack update', async () => {
       // GIVEN
       const event = makeEvent({
         RequestType: 'Delete',
@@ -498,7 +498,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
 
       // THEN
-      await expect(handler(event)).rejects.toThrow(/Exports cannot be updated/);
+      await handler(event);
       expect(mockPutParameter).toHaveBeenCalledTimes(0);
       expect(mocklistTagsForResource).toHaveBeenCalledTimes(1);
       expect(mockDeleteParameters).toHaveBeenCalledTimes(1);
@@ -507,7 +507,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
     });
 
-    test('deletes parameters and throws if in use during stack update rollback', async () => {
+    test('deletes parameters if in use during stack update rollback', async () => {
       // GIVEN
       const event = makeEvent({
         RequestType: 'Delete',
@@ -536,7 +536,7 @@ describe('cross-region-ssm-writer entrypoint', () => {
       });
 
       // THEN
-      await expect(handler(event)).rejects.toThrow(/Exports cannot be updated/);
+      await handler(event);
       expect(mockDeleteParameters).toHaveBeenCalledTimes(1);
       expect(mockDeleteParameters).toHaveBeenCalledWith({
         Names: ['/cdk/exports/MyStack/RemovedExport'],
