@@ -76,17 +76,9 @@
          ],
          "Action": [
           "ssm:DeleteParameters",
-          "ssm:ListTagsForResource",
           "ssm:GetParameters",
           "ssm:PutParameter"
          ]
-        },
-        {
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "AWS::StackId"
-         },
-         "Action": "cloudformation:DescribeStacks"
         }
        ]
       }

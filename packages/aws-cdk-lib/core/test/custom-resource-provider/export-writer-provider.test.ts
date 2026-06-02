@@ -58,7 +58,6 @@ describe('export writer provider', () => {
                     {
                       Action: [
                         'ssm:DeleteParameters',
-                        'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
                       ],
@@ -79,11 +78,6 @@ describe('export writer provider', () => {
                           ],
                         ],
                       }],
-                    },
-                    {
-                      Action: 'cloudformation:DescribeStacks',
-                      Effect: 'Allow',
-                      Resource: { Ref: 'AWS::StackId' },
                     },
                   ],
                   Version: '2012-10-17',
@@ -314,7 +308,6 @@ describe('export writer provider', () => {
                     {
                       Action: [
                         'ssm:DeleteParameters',
-                        'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
                       ],
@@ -353,11 +346,6 @@ describe('export writer provider', () => {
                           ],
                         },
                       ],
-                    },
-                    {
-                      Action: 'cloudformation:DescribeStacks',
-                      Effect: 'Allow',
-                      Resource: { Ref: 'AWS::StackId' },
                     },
                   ],
                   Version: '2012-10-17',
@@ -428,7 +416,6 @@ describe('export writer provider', () => {
                     {
                       Action: [
                         'ssm:DeleteParameters',
-                        'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
                       ],
@@ -449,11 +436,6 @@ describe('export writer provider', () => {
                           ],
                         ],
                       }],
-                    },
-                    {
-                      Action: 'cloudformation:DescribeStacks',
-                      Effect: 'Allow',
-                      Resource: { Ref: 'AWS::StackId' },
                     },
                   ],
                   Version: '2012-10-17',

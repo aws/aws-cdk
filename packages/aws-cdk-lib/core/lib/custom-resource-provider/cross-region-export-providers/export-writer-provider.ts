@@ -47,15 +47,9 @@ class CRProvider extends CrossRegionSsmWriterProvider {
       Resource: this.resourceArns.derive(Array.from),
       Action: [
         'ssm:DeleteParameters',
-        'ssm:ListTagsForResource',
         'ssm:GetParameters',
         'ssm:PutParameter',
       ],
-    });
-    this.addToRolePolicy({
-      Effect: 'Allow',
-      Resource: Stack.of(this).stackId,
-      Action: 'cloudformation:DescribeStacks',
     });
   }
 
