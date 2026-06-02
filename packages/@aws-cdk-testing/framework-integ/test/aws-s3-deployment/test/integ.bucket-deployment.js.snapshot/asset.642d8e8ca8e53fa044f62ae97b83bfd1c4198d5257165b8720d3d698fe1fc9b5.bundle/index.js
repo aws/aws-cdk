@@ -33872,11 +33872,12 @@ async function handler(event, context) {
   return;
 }
 async function onTimeout(timeoutEvent) {
-  const isCompleteRequest = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
-  const provider = createResourceHandler(isCompleteRequest, standardContext);
+  const eventPayload = JSON.parse(JSON.parse(timeoutEvent.Cause).errorMessage);
+  const provider = createResourceHandler(eventPayload, standardContext);
   await provider.respond({
     status: "FAILED",
-    reason: "Operation timed out: " + JSON.stringify(isCompleteRequest)
+    // Only the properties to the IsComplete Resource need to be included.
+    reason: "Operation timed out: " + JSON.stringify(eventPayload.ResourceProperties)
   });
 }
 async function isComplete(event, context) {
