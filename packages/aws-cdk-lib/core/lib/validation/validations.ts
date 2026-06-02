@@ -134,13 +134,11 @@ export class Validations {
   }
 
   private recordAcknowledgment(id: string, reason: string): void {
-    const matches = this.scope.node.metadata.filter(
-      (m: { type: string }) => m.type === Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+    this.scope.node.addMetadata(
+      Validations.ACKNOWLEDGED_RULES_METADATA_KEY,
+      { [id]: reason },
+      { stackTrace: true },
     );
-    const existing = matches.length > 0 ? matches[matches.length - 1] : undefined;
-    const acknowledged: Record<string, string> = existing?.data ?? {};
-    acknowledged[id] = reason;
-    this.scope.node.addMetadata(Validations.ACKNOWLEDGED_RULES_METADATA_KEY, acknowledged);
   }
 
   private qualifyId(id: string): string {
