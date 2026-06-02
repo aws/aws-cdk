@@ -664,7 +664,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "379a97e43c3d01fdb08125fcff9c80a976a33da6287e25571deb51e72b5eeda9.zip"
+     "S3Key": "d1f0dc4bbd7f19a0c9d47ff23ed15d3972cdb7bd292c1c20c0f442d0021d9eb8.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Environment": {
@@ -725,7 +725,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "0cfdecad2260a3a84ad0c2d08a77e03c9d25e26c7b52f26b1e1faf97aef92f18.zip"
+     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
     },
     "Description": "/opt/awscli/aws"
    }
@@ -834,7 +834,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider)",
     "Environment": {
@@ -1020,6 +1020,40 @@
     }
    }
   },
+  "ClusterEC2Access08AE8204": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "ClusterEB0386A7"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "EC2RoleF978FC1C",
+      "Arn"
+     ]
+    },
+    "Type": "EC2"
+   }
+  },
   "EC2LinuxRole26CDA54E": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -1080,6 +1114,23 @@
        "Effect": "Allow",
        "Principal": {
         "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "EC2RoleF978FC1C": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "ec2.amazonaws.com"
        }
       }
      ],

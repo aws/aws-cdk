@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "aws-cdk-eks-grant-access-with-type.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1ed8092b6b2c76e33d431779e60981821c94601bd82295a181c8607d4b3439bc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0770b271203d58ebb222cee14bd02b75769f9f9a046bf1124dd5368423160e8c.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,560 +33,7 @@
       "dependencies": [
         "aws-cdk-eks-grant-access-with-type.assets"
       ],
-      "metadata": {
-        "/aws-cdk-eks-grant-access-with-type/Vpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Vpc8378EB38"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1Subnet5C2D37C4"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTable6C95E38E"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1RouteTableAssociation97140677"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1DefaultRoute3DA9E72A"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1EIPD7E02669"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet1NATGateway4D7517AA"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2Subnet691E08A3"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTable94F7E489"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2RouteTableAssociationDD5762D8"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PublicSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPublicSubnet2DefaultRoute97F91067"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1Subnet536B997A"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableB2C5B500"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1RouteTableAssociation70C59FA6"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet1DefaultRouteBE02A9ED"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2Subnet3788AAA1"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableA678073B"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2RouteTableAssociationA89CAD56"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/PrivateSubnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcPrivateSubnet2DefaultRoute060D2087"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcIGWD7BA715C"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Vpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "VpcVPCGWBF912B6E"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/kubectlLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/kubectlLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "kubectlLayer44321E08"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/Role": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/Role/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterRoleFA261979"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/ControlPlaneSecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/ControlPlaneSecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterControlPlaneSecurityGroupD274242C"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterEB0386A7"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlReadyBarrier": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlReadyBarrier200052AF"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderHandlerServiceRoleB460AA6D"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderHandlerServiceRoleDefaultPolicy77317198"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderHandler2E05C68A"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Handler/HasEcrPublic": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderHandlerHasEcrPublic69E09706"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/AwsCliLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/AwsCliLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderAwsCliLayer24064B0B"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderframeworkonEventServiceRoleFD0BA8C5"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderframeworkonEventServiceRoleDefaultPolicyA4F24629"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderframeworkonEvent68E0CF80"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/KubectlProvider/Provider/framework-onEvent/inlinePolicyAddedToExecutionRole-0/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterKubectlProviderframeworkonEventinlinePolicyAddedToExecutionRole081AD342A"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/ClusterAdminRoleAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/ClusterAdminRoleAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterClusterAdminRoleAccessF2BFF759"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/StandardAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/StandardAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterStandardAccess2F7C6CF5"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/DefaultAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/Cluster/DefaultAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "ClusterDefaultAccess6B9909F9"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/EC2LinuxRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/EC2LinuxRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EC2LinuxRole26CDA54E"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/EC2LinuxAccess": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/EC2LinuxAccess/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "EC2LinuxAccessF6DE78BF"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/StandardRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/StandardRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "StandardRoleB40A8A59"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/DefaultRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/DefaultRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DefaultRoleEFEF8FA6"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "aws-cdk-eks-grant-access-with-type.metadata.json",
       "displayName": "aws-cdk-eks-grant-access-with-type"
     },
     "awscdkeksgrantaccesswithtypeintegDefaultTestDeployAssert42F6BF4A.assets": {
@@ -621,20 +68,7 @@
       "dependencies": [
         "awscdkeksgrantaccesswithtypeintegDefaultTestDeployAssert42F6BF4A.assets"
       ],
-      "metadata": {
-        "/aws-cdk-eks-grant-access-with-type-integ/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/aws-cdk-eks-grant-access-with-type-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "awscdkeksgrantaccesswithtypeintegDefaultTestDeployAssert42F6BF4A.metadata.json",
       "displayName": "aws-cdk-eks-grant-access-with-type-integ/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -934,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1128,12 +567,32 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1108.0"
 }

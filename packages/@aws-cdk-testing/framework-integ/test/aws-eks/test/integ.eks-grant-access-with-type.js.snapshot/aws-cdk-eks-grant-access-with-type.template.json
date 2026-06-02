@@ -811,6 +811,40 @@
     "Cluster9EE0221C"
    ]
   },
+  "ClusterEC2Access08AE8204": {
+   "Type": "AWS::EKS::AccessEntry",
+   "Properties": {
+    "AccessPolicies": [
+     {
+      "AccessScope": {
+       "Type": "cluster"
+      },
+      "PolicyArn": {
+       "Fn::Join": [
+        "",
+        [
+         "arn:",
+         {
+          "Ref": "AWS::Partition"
+         },
+         ":eks::aws:cluster-access-policy/AmazonEKSViewPolicy"
+        ]
+       ]
+      }
+     }
+    ],
+    "ClusterName": {
+     "Ref": "Cluster9EE0221C"
+    },
+    "PrincipalArn": {
+     "Fn::GetAtt": [
+      "EC2RoleF978FC1C",
+      "Arn"
+     ]
+    },
+    "Type": "EC2"
+   }
+  },
   "ClusterStandardAccess2F7C6CF5": {
    "Type": "AWS::EKS::AccessEntry",
    "Properties": {
@@ -897,7 +931,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/9a3b486df373bc08f4c185bb208c17205fe5615abdccbc6729d4c69a087b2765.json"
+       "/36bc5663036858d5b62c133136a14cb41028d410efa7ebb2047862f7d3858b19.json"
       ]
      ]
     }
@@ -947,7 +981,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/e96aec359da62e8dab192aaa908220db9cb99b74a1ddc092e2adfedd481b57ab.json"
+       "/94719c4bce246acad2699497e9845890b751234dff0c76bd71c888e1c8627d51.json"
       ]
      ]
     }
@@ -978,22 +1012,6 @@
      ],
      "Version": "2012-10-17"
     }
-   }
-  },
-  "EC2Access19C43F79": {
-   "Type": "AWS::EKS::AccessEntry",
-   "Properties": {
-    "AccessPolicies": [],
-    "ClusterName": {
-     "Ref": "Cluster9EE0221C"
-    },
-    "PrincipalArn": {
-     "Fn::GetAtt": [
-      "EC2RoleF978FC1C",
-      "Arn"
-     ]
-    },
-    "Type": "EC2"
    }
   },
   "HybridRoleCAD55037": {

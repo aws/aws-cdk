@@ -11,16 +11,16 @@ import * as eks from 'aws-cdk-lib/aws-eks-v2';
  *
  * Tests the AccessEntryType enum values that work on standard EKS clusters:
  * - STANDARD: Standard access entry type that supports access policies
+ * - EC2: For EKS Auto Mode nodes that support access policies
  * - EC2_LINUX: For self-managed EC2 Linux nodes
  *
  * Note: The following types require special cluster configurations and cannot be tested here:
- * - EC2: Requires EKS Auto Mode cluster
  * - HYBRID_LINUX: Requires hybrid nodes-enabled cluster with RemoteNetworkConfig
  * - HYPERPOD_LINUX: Requires SageMaker HyperPod cluster
  *
  * Important AWS EKS API Constraint:
- * - Access entries with type EC2, HYBRID_LINUX, or HYPERPOD_LINUX cannot have access policies attached
- * - Only STANDARD type access entries support access policies
+ * - Access entries with type HYBRID_LINUX, or HYPERPOD_LINUX cannot have access policies attached
+ * - STANDARD and EC2 type access entries support access policies
  */
 class EksGrantAccessWithType extends Stack {
   constructor(scope: App, id: string) {
@@ -84,6 +84,22 @@ class EksGrantAccessWithType extends Stack {
           accessScopeType: eks.AccessScopeType.CLUSTER,
         }),
       ],
+    );
+
+    // Test 4: grantAccess with EC2 type (for EKS Auto Mode)
+    const ec2Role = new iam.Role(this, 'EC2Role', {
+      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
+    });
+
+    cluster.grantAccess(
+      'EC2Access',
+      ec2Role.roleArn,
+      [
+        eks.AccessPolicy.fromAccessPolicyName('AmazonEKSViewPolicy', {
+          accessScopeType: eks.AccessScopeType.CLUSTER,
+        }),
+      ],
+      { accessEntryType: eks.AccessEntryType.EC2 },
     );
   }
 }
