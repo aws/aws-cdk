@@ -47,6 +47,7 @@ class CRProvider extends CrossRegionSsmWriterProvider {
       Resource: this.resourceArns.derive(Array.from),
       Action: [
         'ssm:DeleteParameters',
+        'ssm:ListTagsForResource',
         'ssm:GetParameters',
         'ssm:PutParameter',
       ],

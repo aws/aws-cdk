@@ -58,6 +58,7 @@ describe('export writer provider', () => {
                     {
                       Action: [
                         'ssm:DeleteParameters',
+                        'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
                       ],
@@ -308,6 +309,7 @@ describe('export writer provider', () => {
                     {
                       Action: [
                         'ssm:DeleteParameters',
+                        'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
                       ],
@@ -416,6 +418,7 @@ describe('export writer provider', () => {
                     {
                       Action: [
                         'ssm:DeleteParameters',
+                        'ssm:ListTagsForResource',
                         'ssm:GetParameters',
                         'ssm:PutParameter',
                       ],

@@ -114,6 +114,7 @@
          ],
          "Action": [
           "ssm:DeleteParameters",
+          "ssm:ListTagsForResource",
           "ssm:GetParameters",
           "ssm:PutParameter"
          ]
