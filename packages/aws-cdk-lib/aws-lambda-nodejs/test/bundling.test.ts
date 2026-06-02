@@ -212,6 +212,71 @@ test('esbuild bundling with externals and dependencies', () => {
   });
 });
 
+test('Docker bundling includes devEngines from parent package.json in the generated package.json', () => {
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const devEngines = {
+    packageManager: { name: 'npm', version: '10.0.0', onFail: 'error' as const },
+  };
+
+  const realReadFileSync = fs.readFileSync;
+  jest.spyOn(fs, 'readFileSync').mockImplementation((p, ...args) => {
+    if (typeof p === 'string' && path.basename(p) === 'package.json') {
+      return JSON.stringify({ devEngines, dependencies: { delay: delayVersion } });
+    }
+    return (realReadFileSync as any)(p, ...args);
+  });
+
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: expect.arrayContaining([
+        expect.stringContaining('"devEngines"'),
+      ]),
+    }),
+  }));
+});
+
+test('Docker bundling omits devEngines in generated package.json when absent from parent', () => {
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+
+  const realReadFileSync = fs.readFileSync;
+  jest.spyOn(fs, 'readFileSync').mockImplementation((p, ...args) => {
+    if (typeof p === 'string' && path.basename(p) === 'package.json') {
+      return JSON.stringify({ dependencies: { delay: delayVersion } });
+    }
+    return (realReadFileSync as any)(p, ...args);
+  });
+
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  expect(Code.fromAsset).toHaveBeenCalledWith(path.dirname(packageLock), expect.objectContaining({
+    bundling: expect.objectContaining({
+      command: expect.not.arrayContaining([
+        expect.stringContaining('"devEngines"'),
+      ]),
+    }),
+  }));
+});
+
 test('esbuild bundling with esbuild options', () => {
   Bundling.bundle(stack, {
     entry,
@@ -1457,6 +1522,83 @@ test('Local bundling with nodeModules uses fs and spawn', () => {
     ['ci'],
     expect.objectContaining({ cwd: '/outdir' }),
   );
+
+  spawnSyncMock.mockRestore();
+  writeFileSyncMock.mockRestore();
+  copyFileSyncMock.mockRestore();
+});
+
+test('Local bundling with nodeModules forwards devEngines from parent package.json', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+  const copyFileSyncMock = jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  const devEngines = {
+    packageManager: { name: 'yarn', version: '3.2.3', onFail: 'download' as const },
+  };
+
+  const realReadFileSync = fs.readFileSync;
+  jest.spyOn(fs, 'readFileSync').mockImplementation((p, ...args) => {
+    if (typeof p === 'string' && path.basename(p) === 'package.json') {
+      return JSON.stringify({ devEngines, dependencies: { delay: delayVersion } });
+    }
+    return (realReadFileSync as any)(p, ...args);
+  });
+
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // The generated package.json should include the devEngines field
+  const pkgJsonCall = writeFileSyncMock.mock.calls.find(([p]) => String(p).endsWith('package.json'));
+  expect(pkgJsonCall).toBeDefined();
+  expect(JSON.parse(pkgJsonCall![1] as string).devEngines).toEqual(devEngines);
+
+  spawnSyncMock.mockRestore();
+  writeFileSyncMock.mockRestore();
+  copyFileSyncMock.mockRestore();
+});
+
+test('Local bundling with nodeModules omits devEngines when absent from parent package.json', () => {
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+  const copyFileSyncMock = jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+
+  const realReadFileSync = fs.readFileSync;
+  jest.spyOn(fs, 'readFileSync').mockImplementation((p, ...args) => {
+    if (typeof p === 'string' && path.basename(p) === 'package.json') {
+      return JSON.stringify({ dependencies: { delay: delayVersion } });
+    }
+    return (realReadFileSync as any)(p, ...args);
+  });
+
+  const bundler = new Bundling(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    externalModules: ['abc'],
+    nodeModules: ['delay'],
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  // The generated package.json should not include a devEngines field
+  const pkgJsonCall = writeFileSyncMock.mock.calls.find(([p]) => String(p).endsWith('package.json'));
+  expect(pkgJsonCall).toBeDefined();
+  expect(JSON.parse(pkgJsonCall![1] as string).devEngines).toBeUndefined();
 
   spawnSyncMock.mockRestore();
   writeFileSyncMock.mockRestore();
