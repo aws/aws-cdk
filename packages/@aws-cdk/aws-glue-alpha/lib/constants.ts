@@ -62,6 +62,10 @@ export enum WorkerType {
 
   /**
    * Z.2X Worker Type
+   *
+   * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+   * This worker type was only used for Ray jobs. See
+   * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
    */
   Z_2X = 'Z.2X',
 
@@ -260,13 +264,13 @@ export enum PythonVersion {
 /**
  * AWS Glue runtime determines the runtime engine of the job.
  *
+ * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
+ * Migrate to Amazon EKS with KubeRay Operator. See
+ * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
  */
 export enum Runtime {
   /**
    * Runtime for a Glue for Ray 2.4.
-   *
-   * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
-   * Migrate to Amazon EKS with KubeRay Operator.
    */
   RAY_TWO_FOUR = 'Ray2.4',
 }
@@ -294,7 +298,8 @@ export enum JobType {
    * Command for running a Glue Ray job.
    *
    * @deprecated AWS Glue for Ray is closed to new customers as of April 30, 2026.
-   * Migrate to Amazon EKS with KubeRay Operator.
+   * Migrate to Amazon EKS with KubeRay Operator. See
+   * https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html
    */
   RAY = 'glueray',
 
