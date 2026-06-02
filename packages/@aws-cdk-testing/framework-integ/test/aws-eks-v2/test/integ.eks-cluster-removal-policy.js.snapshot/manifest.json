@@ -1,5 +1,5 @@
 {
-  "version": "50.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "EksClusterV2RemovalPolicyStack.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2b868e7ceda78c636ac4a941e2178741c7afad8889d41979c37237db884a1388.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/8f77b37378fcf339367623da5773b79cb15a793d8c24484416de549d5a6bc6c0.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -305,15 +305,35 @@
         "/EksClusterV2RemovalPolicyStack/Cluster": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "removalPolicy": "destroy",
+              "prune": false,
+              "vpc": "*",
+              "version": "*",
+              "defaultCapacityType": 0,
+              "kubectlProviderOptions": {}
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "grantClusterAdmin": [
+                "*",
+                "*"
+              ]
+            }
           },
           {
             "type": "aws:cdk:analytics:method",
-            "data": "*"
+            "data": {
+              "addNodegroupCapacity": [
+                "*",
+                {
+                  "instanceTypes": "*",
+                  "minSize": "*"
+                }
+              ]
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/Cluster/Role": [
@@ -733,7 +753,19 @@
         "/EksClusterV2RemovalPolicyStack/Cluster/ClusterAdminRoleAccess": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "principal": "*",
+              "cluster": "*",
+              "accessPolicies": [
+                {
+                  "policy": "*",
+                  "accessScope": {
+                    "type": "cluster",
+                    "namespaces": "*"
+                  }
+                }
+              ]
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/Cluster/ClusterAdminRoleAccess/Resource": [
@@ -745,7 +777,11 @@
         "/EksClusterV2RemovalPolicyStack/Cluster/NodegroupDefaultCapacity": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*",
+              "minSize": "*"
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/Cluster/NodegroupDefaultCapacity/NodeGroupRole": [
@@ -804,11 +840,17 @@
         "/EksClusterV2RemovalPolicyStack/Cluster/OpenIdConnectProvider": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "url": "*",
+              "removalPolicy": "destroy"
+            }
           },
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "url": "*",
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/Cluster/OpenIdConnectProvider/Resource": [
@@ -826,7 +868,11 @@
         "/EksClusterV2RemovalPolicyStack/Cluster/EksPodIdentityAgentAddon": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "cluster": "*",
+              "addonName": "*",
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/Cluster/EksPodIdentityAgentAddon/Resource": [
@@ -835,10 +881,39 @@
             "data": "ClusterEksPodIdentityAgentAddonEF717E32"
           }
         ],
+        "/EksClusterV2RemovalPolicyStack/AccessEntryRole": [
+          {
+            "type": "aws:cdk:analytics:construct",
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              }
+            }
+          }
+        ],
+        "/EksClusterV2RemovalPolicyStack/AccessEntryRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AccessEntryRole0AE13E39"
+          }
+        ],
         "/EksClusterV2RemovalPolicyStack/AccessEntry": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "cluster": "*",
+              "principal": "*",
+              "accessPolicies": [
+                {
+                  "accessScope": {
+                    "type": "cluster"
+                  },
+                  "policy": "*"
+                }
+              ],
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/AccessEntry/Resource": [
@@ -850,7 +925,11 @@
         "/EksClusterV2RemovalPolicyStack/Addon": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "cluster": "*",
+              "addonName": "*",
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/Addon/Resource": [
@@ -1255,7 +1334,11 @@
         "/EksClusterV2RemovalPolicyStack/Nodegroup": [
           {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "cluster": "*",
+              "instanceTypes": "*",
+              "removalPolicy": "destroy"
+            }
           }
         ],
         "/EksClusterV2RemovalPolicyStack/Nodegroup/NodeGroupRole": [
@@ -2025,12 +2108,20 @@
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
           },
           "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1101.0"
+  "minimumCliVersion": "2.1106.1"
 }
