@@ -1,17 +1,17 @@
 {
-  "/read-replica-integ-test/DefaultTest/DeployAssert": [
+  "/integ-instance-kerberos-without-domainRole/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/home/tietew/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
         "new IntegTestCase (/home/tietew/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/home/tietew/github/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.read-replica.js:60:1)",
+        "<anonymous> (/home/tietew/github/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.instance-kerberos-without-domainRole.js:29:1)",
         "...node internals..."
       ]
     }
   ],
-  "/read-replica-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/integ-instance-kerberos-without-domainRole/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "/read-replica-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/integ-instance-kerberos-without-domainRole/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
