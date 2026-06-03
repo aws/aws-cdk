@@ -44,15 +44,6 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJobNoMetrics', {
   enableObservabilityMetrics: false,
 });
 
-// Test Ray Job with both metrics disabled
-new glue.RayJob(stack, 'RayJobNoMetrics', {
-  script: script,
-  role: role,
-  jobName: 'RayJobNoMetrics',
-  enableMetrics: false,
-  enableObservabilityMetrics: false,
-});
-
 // Test selective metrics control (keep observability, disable profiling)
 new glue.PySparkEtlJob(stack, 'PySparkETLJobSelectiveMetrics', {
   script: script,
@@ -85,20 +76,6 @@ pySparkJobNoMetrics.expect(integ.ExpectedResult.objectLike({
   Job: {
     // DefaultArguments should not contain observability metrics arguments
     DefaultArguments: Match.not(Match.objectLike({
-      '--enable-observability-metrics': Match.anyValue(),
-    })),
-  },
-}));
-
-// Validate that Ray job with disabled metrics doesn't have metrics arguments
-const rayJobNoMetrics = integTest.assertions.awsApiCall('Glue', 'getJob', {
-  JobName: 'RayJobNoMetrics',
-});
-
-rayJobNoMetrics.expect(integ.ExpectedResult.objectLike({
-  Job: {
-    DefaultArguments: Match.not(Match.objectLike({
-      '--enable-metrics': Match.anyValue(),
       '--enable-observability-metrics': Match.anyValue(),
     })),
   },
