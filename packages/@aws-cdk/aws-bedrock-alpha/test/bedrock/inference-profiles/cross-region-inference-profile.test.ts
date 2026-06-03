@@ -276,9 +276,9 @@ describe('CrossRegionInferenceProfile', () => {
         s.Action.includes('bedrock:GetInferenceProfile'),
       );
 
-      // Should have exactly 2 resources (ap-northeast-1 and ap-northeast-3)
+      // ap-northeast-1, ap-northeast-3, plus the always-included source region
       expect(Array.isArray(grantStatement.Resource)).toBe(true);
-      expect(grantStatement.Resource.length).toBe(2);
+      expect(grantStatement.Resource.length).toBe(3);
     });
 
     test('generates specific ARNs for AU geoRegion', () => {
@@ -301,9 +301,34 @@ describe('CrossRegionInferenceProfile', () => {
         s.Action.includes('bedrock:GetInferenceProfile'),
       );
 
-      // Should have exactly 2 resources (ap-southeast-2 and ap-southeast-4)
+      // ap-southeast-2, ap-southeast-4, plus the always-included source region
       expect(Array.isArray(grantStatement.Resource)).toBe(true);
-      expect(grantStatement.Resource.length).toBe(2);
+      expect(grantStatement.Resource.length).toBe(3);
+    });
+
+    test('always includes the source region in granted resources', () => {
+      const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
+        geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.US,
+        model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
+      });
+
+      const role = new iam.Role(stack, 'TestRoleSource', {
+        assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+      });
+
+      profile.grantProfileUsage(role);
+
+      const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
+      const grantStatement = statements.find((s: any) =>
+        s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+
+      // The source region (Ref AWS::Region) is always granted, covering source regions
+      // outside the geoArea prefixes (e.g. ca-central-1 in the US area).
+      expect(JSON.stringify(grantStatement.Resource)).toContain('AWS::Region');
     });
   });
 
