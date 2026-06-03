@@ -1,5 +1,247 @@
 {
  "Resources": {
+  "ConfigPrerequisitesRoleAB65121E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "config.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWS_ConfigRole"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "ConfigPrerequisitesRecorderF50F1E3E": {
+   "Type": "AWS::Config::ConfigurationRecorder",
+   "Properties": {
+    "RecordingGroup": {
+     "AllSupported": false,
+     "ResourceTypes": [
+      "AWS::EC2::Instance",
+      "AWS::DynamoDB::Table",
+      "AWS::EC2::EIP"
+     ]
+    },
+    "RoleARN": {
+     "Fn::GetAtt": [
+      "ConfigPrerequisitesRoleAB65121E",
+      "Arn"
+     ]
+    }
+   }
+  },
+  "ConfigPrerequisitesDeliveryBucketC25E0643": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "aws-cdk:auto-delete-objects",
+      "Value": "true"
+     }
+    ]
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ConfigPrerequisitesDeliveryBucketPolicy19A7503F": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "s3:DeleteObject*",
+        "s3:GetBucket*",
+        "s3:List*",
+        "s3:PutBucketPolicy"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "AWS": {
+         "Fn::GetAtt": [
+          "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+          "Arn"
+         ]
+        }
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "ConfigPrerequisitesDeliveryBucketC25E0643",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "ConfigPrerequisitesDeliveryBucketC25E0643",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "s3:GetBucketAcl",
+        "s3:ListBucket"
+       ],
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "config.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "ConfigPrerequisitesDeliveryBucketC25E0643",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "StringEquals": {
+         "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "config.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "ConfigPrerequisitesDeliveryBucketC25E0643",
+            "Arn"
+           ]
+          },
+          "/AWSLogs/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   }
+  },
+  "ConfigPrerequisitesDeliveryBucketAutoDeleteObjectsCustomResource0F5D7204": {
+   "Type": "Custom::S3AutoDeleteObjects",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
+    }
+   },
+   "DependsOn": [
+    "ConfigPrerequisitesDeliveryBucketPolicy19A7503F"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "ConfigPrerequisitesDeliveryChannelF524911C": {
+   "Type": "AWS::Config::DeliveryChannel",
+   "Properties": {
+    "S3BucketName": {
+     "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
+    }
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Version": "2012-10-17",
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ]
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+     }
+    ]
+   }
+  },
+  "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": {
+      "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
+     },
+     "S3Key": "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61.zip"
+    },
+    "Timeout": 900,
+    "MemorySize": 128,
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs22.x",
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "Lambda function for auto-deleting objects in ",
+       {
+        "Ref": "ConfigPrerequisitesDeliveryBucketC25E0643"
+       },
+       " S3 bucket."
+      ]
+     ]
+    }
+   },
+   "DependsOn": [
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+   ]
+  },
   "CustomFunctionServiceRoleD3F73B79": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -56,7 +298,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "CustomFunctionServiceRoleD3F73B79"
@@ -83,7 +325,7 @@
    "Properties": {
     "EvaluationModes": [
      {
-      "Mode": "PROACTIVE"
+      "Mode": "DETECTIVE"
      }
     ],
     "Scope": {
@@ -108,6 +350,8 @@
     }
    },
    "DependsOn": [
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E",
     "CustomFunctionCustomRulePermissionbM1jVaicvRO9SDCiAbsQcYrOlESEtMwrrF9ZQQRvd5QED54A3F8",
     "CustomFunctionBADD59E7",
     "CustomFunctionServiceRoleD3F73B79"
@@ -119,16 +363,17 @@
     "EvaluationModes": [
      {
       "Mode": "DETECTIVE"
-     },
-     {
-      "Mode": "PROACTIVE"
      }
     ],
     "Source": {
      "Owner": "AWS",
-     "SourceIdentifier": "API_GW_XRAY_ENABLED"
+     "SourceIdentifier": "EIP_ATTACHED"
     }
-   }
+   },
+   "DependsOn": [
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E"
+   ]
   },
   "CustomPolicy6CB3FDA5": {
    "Type": "AWS::Config::ConfigRule",
@@ -161,7 +406,11 @@
       }
      ]
     }
-   }
+   },
+   "DependsOn": [
+    "ConfigPrerequisitesDeliveryChannelF524911C",
+    "ConfigPrerequisitesRecorderF50F1E3E"
+   ]
   }
  },
  "Parameters": {

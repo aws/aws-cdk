@@ -1,7 +1,8 @@
 import * as path from 'path';
 import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
-import { CustomResourceProviderOptions, INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
+import type { CustomResourceProviderOptions } from './shared';
+import { INLINE_CUSTOM_RESOURCE_CONTEXT } from './shared';
 import * as cxapi from '../../../cx-api';
 import { AssetStaging } from '../asset-staging';
 import { FileAssetPackaging } from '../assets';
@@ -9,8 +10,9 @@ import { CfnResource } from '../cfn-resource';
 import { Duration } from '../duration';
 import { ValidationError } from '../errors';
 import { FileSystem } from '../fs';
-import { PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
-import { Lazy } from '../lazy';
+import type { IArrayBox } from '../helpers-internal';
+import { Box, PolicySynthesizer, getPrecreatedRoleConfig } from '../helpers-internal';
+import { lit } from '../private/literal-string';
 import { Size } from '../size';
 import { Stack } from '../stack';
 import { Token } from '../token';
@@ -44,13 +46,13 @@ export abstract class CustomResourceProviderBase extends Construct {
    */
   public get codeHash(): string {
     if (!this._codeHash) {
-      throw new ValidationError('This custom resource uses inlineCode: true and does not have a codeHash', this);
+      throw new ValidationError(lit`CustomResourceUsesInlineCode`, 'This custom resource uses inlineCode: true and does not have a codeHash', this);
     }
     return this._codeHash;
   }
 
   private _codeHash?: string;
-  private policyStatements?: any[];
+  private readonly policyStatements: IArrayBox<any> = Box.fromArray();
   private role?: CfnResource;
   private handler?: CfnResource;
 
@@ -71,7 +73,7 @@ export abstract class CustomResourceProviderBase extends Construct {
 
     // verify we have an index file there
     if (!fs.existsSync(path.join(props.codeDirectory, 'index.js'))) {
-      throw new ValidationError(`cannot find ${props.codeDirectory}/index.js`, this);
+      throw new ValidationError(lit`CannotFind`, `cannot find ${props.codeDirectory}/index.js`, this);
     }
 
     if (props.policyStatements) {
@@ -94,7 +96,7 @@ export abstract class CustomResourceProviderBase extends Construct {
             missing: !config.precreatedRoleName,
             roleName: config.precreatedRoleName ?? id+'Role',
             managedPolicies: [{ managedPolicyArn: managedPolicyArn }],
-            policyStatements: this.policyStatements ?? [],
+            policyStatements: [...this.policyStatements.get()],
             assumeRolePolicy: assumeRolePolicyDoc as any,
           });
           return [];
@@ -118,7 +120,13 @@ export abstract class CustomResourceProviderBase extends Construct {
           ManagedPolicyArns: [
             { 'Fn::Sub': managedPolicyArn },
           ],
-          Policies: Lazy.any({ produce: () => this.renderPolicies() }),
+          Policies: this.policyStatements.derive(stmts => stmts.length === 0 ? undefined : [{
+            PolicyName: 'Inline',
+            PolicyDocument: {
+              Version: '2012-10-17',
+              Statement: stmts,
+            },
+          }]),
         },
       });
     }
@@ -177,26 +185,7 @@ export abstract class CustomResourceProviderBase extends Construct {
    * });
    */
   public addToRolePolicy(statement: any): void {
-    if (!this.policyStatements) {
-      this.policyStatements = [];
-    }
     this.policyStatements.push(statement);
-  }
-
-  private renderPolicies() {
-    if (!this.policyStatements) {
-      return undefined;
-    }
-
-    const policies = [{
-      PolicyName: 'Inline',
-      PolicyDocument: {
-        Version: '2012-10-17',
-        Statement: this.policyStatements,
-      },
-    }];
-
-    return policies;
   }
 
   private renderEnvironmentVariables(env?: { [key: string]: string }) {

@@ -8,14 +8,18 @@ on:
       - synchronize
       - ready_for_review
 
+permissions:
+  contents: read
+
 jobs:
   prioritize:
     if: github.repository == 'aws/aws-cdk'
     runs-on: ubuntu-latest
+    environment: automation
     steps:
       - uses: actions/checkout@v6
       - name: Add PR to Project & Set Priority
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
           script: |

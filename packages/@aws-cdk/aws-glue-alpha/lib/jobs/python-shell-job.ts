@@ -1,10 +1,12 @@
 import { CfnJob } from 'aws-cdk-lib/aws-glue';
-import * as iam from 'aws-cdk-lib/aws-iam';
+import type * as iam from 'aws-cdk-lib/aws-iam';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { Job, JobProps } from './job';
+import type { Construct } from 'constructs';
+import type { JobProps } from './job';
+import { Job } from './job';
+import type { Code } from '../code';
 import { JobType, GlueVersion, PythonVersion, MaxCapacity, JobLanguage } from '../constants';
 
 /**
@@ -24,6 +26,17 @@ export interface PythonShellJobProps extends JobProps {
    * @default 0.0625
    */
   readonly maxCapacity?: MaxCapacity;
+
+  /**
+   * Additional Python files that AWS Glue adds to the Python path before executing your script.
+   * Only individual files are supported, directories are not supported.
+   * Equivalent to the `--extra-py-files` job argument.
+   *
+   * @default - no extra Python files
+   *
+   * @see https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-glue-arguments.html
+   */
+  readonly extraPythonFiles?: Code[];
 
   /**
    * Specifies whether job run queuing is enabled for the job runs for this job.
@@ -73,9 +86,16 @@ export class PythonShellJob extends Job {
     // Gather executable arguments
     const executableArgs = this.executableArguments(props);
 
+    // Set up extra Python files argument
+    const extraPythonFilesArgs: {[key: string]: string} = {};
+    if (props.extraPythonFiles && props.extraPythonFiles.length > 0) {
+      extraPythonFilesArgs['--extra-py-files'] = props.extraPythonFiles.map(code => this.codeS3ObjectUrl(code)).join(',');
+    }
+
     // Combine command line arguments into a single line item
     const defaultArguments = {
       ...executableArgs,
+      ...extraPythonFilesArgs,
       ...continuousLoggingArgs,
       ...profilingMetricsArgs,
       ...observabilityMetricsArgs,

@@ -1,5 +1,7 @@
 import * as path from 'path';
-import { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import type { ApplicationLogLevel } from 'aws-cdk-lib/aws-lambda';
+import type { RetentionDays } from 'aws-cdk-lib/aws-logs';
+import type { Reference } from 'aws-cdk-lib/core';
 import {
   Duration,
   CfnResource,
@@ -8,7 +10,6 @@ import {
   FileAssetPackaging,
   Token,
   Lazy,
-  Reference,
   determineLatestNodeRuntimeName,
 } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -16,9 +17,21 @@ import { awsSdkToIamAction } from 'aws-cdk-lib/custom-resources/lib/helpers-inte
 import { Construct } from 'constructs';
 
 /**
+ * Shared options for configuring the assertion provider lambda function.
+ */
+export interface ProviderOptions {
+  /**
+   * The log level of the provider lambda function.
+   *
+   * @default ApplicationLogLevel.FATAL
+   */
+  readonly providerLogLevel?: ApplicationLogLevel;
+}
+
+/**
  * Properties for a lambda function provider
  */
-export interface LambdaFunctionProviderProps {
+export interface LambdaFunctionProviderProps extends ProviderOptions {
   /**
    * The handler to use for the lambda function
    *
@@ -99,6 +112,10 @@ class LambdaFunctionProvider extends Construct {
       Timeout: Duration.minutes(2).toSeconds(),
       Handler: props?.handler ?? 'index.handler',
       Role: role.getAtt('Arn'),
+      LoggingConfig: {
+        LogFormat: 'JSON',
+        ApplicationLogLevel: props?.providerLogLevel ?? 'FATAL',
+      },
     };
 
     if (props?.logRetention) {
@@ -110,9 +127,7 @@ class LambdaFunctionProvider extends Construct {
         },
       });
 
-      functionProperties.LoggingConfig = {
-        LogGroup: logGroup.ref,
-      };
+      functionProperties.LoggingConfig.LogGroup = logGroup.ref;
     }
 
     this.handler = new CfnResource(this, 'Handler', {
@@ -170,6 +185,7 @@ class SingletonFunction extends Construct {
     return new LambdaFunctionProvider(Stack.of(this), constructName, {
       handler: props.handler,
       logRetention: props.logRetention,
+      providerLogLevel: props.providerLogLevel,
     });
   }
 
@@ -245,6 +261,7 @@ export class AssertionsProvider extends Construct {
       handler: props?.handler,
       uuid: props?.uuid ?? '1488541a-7b23-4664-81b6-9b4408076b81',
       logRetention: props?.logRetention,
+      providerLogLevel: props?.providerLogLevel,
     });
 
     this.handlerRoleArn = this.handler.lambdaFunction.roleArn;

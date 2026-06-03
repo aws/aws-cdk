@@ -2,12 +2,15 @@ import { CfnUtils } from './cfn-utils-provider';
 import { INTRINSIC_KEY_PREFIX, resolvedTypeHint } from './resolve';
 import * as yaml_cfn from './yaml-cfn';
 import { Lazy } from '../lazy';
-import { DefaultTokenResolver, IFragmentConcatenator, IResolveContext } from '../resolvable';
+import type { IFragmentConcatenator, IResolveContext } from '../resolvable';
+import { DefaultTokenResolver } from '../resolvable';
 import { Stack } from '../stack';
 import { Token } from '../token';
 import { ResolutionTypeHint } from '../type-hints';
 import { makeUniqueId } from './uniqueid';
 import { UnscopedValidationError } from '../errors';
+import { lit } from './literal-string';
+import { Box } from '../helpers-internal';
 
 /**
  * Routines that know how to do operations at the CloudFormation document language level
@@ -27,6 +30,7 @@ export class CloudFormationLang {
    * @param space Indentation to use (default: no pretty-printing)
    */
   public static toJSON(obj: any, space?: number): string {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString({
       // We used to do this by hooking into `JSON.stringify()` by adding in objects
       // with custom `toJSON()` functions, but it's ultimately simpler just to
@@ -48,9 +52,7 @@ export class CloudFormationLang {
    * @param obj The object to stringify
    */
   public static toYAML(obj: any): string {
-    return Lazy.uncachedString({
-      produce: () => yaml_cfn.serialize(obj),
-    });
+    return Token.asString(Box.fromValue(obj).derive((data) => yaml_cfn.serialize(data)));
   }
 
   /**
@@ -184,7 +186,7 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
     if (obj === undefined) { return; }
 
     if (Token.isUnresolved(obj)) {
-      throw new UnscopedValidationError("This shouldn't happen anymore");
+      throw new UnscopedValidationError(lit`ShouldNotHappenAnymore`, "This shouldn't happen anymore");
     }
     if (Array.isArray(obj)) {
       return renderCollection('[', ']', obj, recurse);
@@ -272,19 +274,19 @@ function tokenAwareStringify(root: any, space: number, ctx: IResolveContext) {
         return;
     }
 
-    throw new UnscopedValidationError(`Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
+    throw new UnscopedValidationError(lit`UnexpectedTypeHint`, `Unexpected type hint: ${resolvedTypeHint(intrinsic)}`);
   }
 
   /**
    * Push a literal onto the current segment if it's also a literal, otherwise open a new Segment
    */
-  function pushLiteral(lit: string) {
+  function pushLiteral(literal: string) {
     let last = ret[ret.length - 1];
     if (last?.type !== 'literal') {
       last = { type: 'literal', parts: [] };
       ret.push(last);
     }
-    last.parts.push(lit);
+    last.parts.push(literal);
   }
 
   /**

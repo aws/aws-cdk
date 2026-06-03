@@ -1,9 +1,11 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { ScheduleGroupGrants } from './schedule-group-grants';
-import { CfnScheduleGroup, IScheduleGroupRef, ScheduleGroupReference } from './scheduler.generated';
+import type { IScheduleGroupRef, ScheduleGroupReference } from './scheduler.generated';
+import { CfnScheduleGroup } from './scheduler.generated';
 import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
-import { ArnFormat, IResource, Names, RemovalPolicy, Resource, Stack } from '../../core';
+import type { IResource, RemovalPolicy } from '../../core';
+import { ArnFormat, Names, Resource, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -264,6 +266,9 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
 
   /**
    * Grant list and get schedule permissions for schedules in this group to the given principal
+   *
+   * The use of this method is discouraged. Please use `grants.readSchedules()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantReadSchedules(identity: iam.IGrantable) {
@@ -272,6 +277,9 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
 
   /**
    * Grant create and update schedule permissions for schedules in this group to the given principal
+   *
+   * The use of this method is discouraged. Please use `grants.writeSchedules()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantWriteSchedules(identity: iam.IGrantable): iam.Grant {
@@ -280,6 +288,9 @@ abstract class ScheduleGroupBase extends Resource implements IScheduleGroup {
 
   /**
    * Grant delete schedule permission for schedules in this group to the given principal
+   *
+   * The use of this method is discouraged. Please use `grants.deleteSchedules()` instead.
+   *
    * [disable-awslint:no-grants]
    */
   public grantDeleteSchedules(identity: iam.IGrantable): iam.Grant {

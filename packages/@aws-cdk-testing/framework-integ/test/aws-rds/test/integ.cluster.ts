@@ -1,21 +1,23 @@
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import { INTEG_TEST_LATEST_AURORA_MYSQL } from './db-versions';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
-import { AuroraMysqlEngineVersion, ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from 'aws-cdk-lib/aws-rds';
+import { IntegTestBaseStack } from './integ-test-base-stack';
+import { ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine, ParameterGroup } from 'aws-cdk-lib/aws-rds';
 import { AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS } from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 let featureFlag = false;
 
-class TestStack extends cdk.Stack {
+class TestStack extends IntegTestBaseStack {
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
     const vpc = new ec2.Vpc(this, 'VPC', { maxAzs: 2, restrictDefaultSecurityGroup: false });
 
     const params = new ParameterGroup(this, 'Params', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_07_1,
+        version: INTEG_TEST_LATEST_AURORA_MYSQL,
       }),
       description: 'A nice parameter group',
       parameters: {
@@ -51,7 +53,7 @@ class TestStack extends cdk.Stack {
 
     const cluster = new DatabaseCluster(this, 'Database', {
       engine: DatabaseClusterEngine.auroraMysql({
-        version: AuroraMysqlEngineVersion.VER_3_07_1,
+        version: INTEG_TEST_LATEST_AURORA_MYSQL,
       }),
       credentials: Credentials.fromUsername('admin', { password: cdk.SecretValue.unsafePlainText('7959866cacc02c2d243ecfe177464fe6') }),
       vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
@@ -91,7 +93,6 @@ const stack = new TestStack(app, 'aws-cdk-rds-integ');
 new IntegTest(app, 'test-rds-cluster', {
   testCases: [stack],
 });
-app.synth();
 
 featureFlag = true;
 const appWithFeatureFlag = new cdk.App({

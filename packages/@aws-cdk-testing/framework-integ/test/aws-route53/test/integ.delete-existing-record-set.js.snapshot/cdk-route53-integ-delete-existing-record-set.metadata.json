@@ -1,0 +1,84 @@
+{
+  "/cdk-route53-integ-delete-existing-record-set/HostedZone": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zoneName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "zoneName": "*"
+      }
+    }
+  ],
+  "/cdk-route53-integ-delete-existing-record-set/ExistingRecord": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "target": "*",
+        "zone": "*",
+        "recordName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "target": "*",
+        "zone": "*",
+        "recordName": "*"
+      }
+    }
+  ],
+  "/cdk-route53-integ-delete-existing-record-set/NewRecord": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "target": "*",
+        "ttl": "*",
+        "zone": "*",
+        "recordName": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "target": "*",
+        "ttl": "*",
+        "zone": "*",
+        "recordName": "*"
+      }
+    }
+  ],
+  "/cdk-route53-integ-delete-existing-record-set/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/cdk-route53-integ-delete-existing-record-set/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/cdk-route53-integ-delete-existing-record-set/HostedZone/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "HostedZoneDB99F866"
+    }
+  ],
+  "/cdk-route53-integ-delete-existing-record-set/ExistingRecord/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExistingRecord8E2B2167"
+    }
+  ],
+  "/cdk-route53-integ-delete-existing-record-set/NewRecord/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NewRecordB9E8EE35"
+    }
+  ]
+}

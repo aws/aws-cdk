@@ -2,7 +2,8 @@ import { Template } from '../../assertions';
 import * as lambda from '../../aws-lambda';
 import * as s3 from '../../aws-s3';
 import * as cdk from '../../core';
-import { AddToPrincipalPolicyResult, Grant, Group, IResourceWithPolicy, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
+import type { AddToPrincipalPolicyResult, IResourceWithPolicy } from '../lib';
+import { Grant, Group, ManagedPolicy, PolicyDocument, PolicyStatement, Role, ServicePrincipal, User, Effect } from '../lib';
 
 describe('managed policy', () => {
   let app: cdk.App;

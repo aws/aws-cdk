@@ -1,17 +1,22 @@
-import { Construct } from 'constructs';
-import { InstanceArchitecture, InstanceClass, InstanceReference, InstanceSize, InstanceType } from '.';
-import { CloudFormationInit } from './cfn-init';
-import { Connections } from './connections';
-import { ApplyCloudFormationInitOptions, IInstance, Instance } from './instance';
-import { AmazonLinuxCpuType, IMachineImage, MachineImage } from './machine-image';
-import { IPeer } from './peer';
+import type { Construct } from 'constructs';
+import type { InstanceReference } from '.';
+import { InstanceArchitecture, InstanceClass, InstanceSize, InstanceType } from '.';
+import type { CloudFormationInit } from './cfn-init';
+import type { Connections } from './connections';
+import type { ApplyCloudFormationInitOptions, IInstance } from './instance';
+import { Instance } from './instance';
+import type { IMachineImage } from './machine-image';
+import { AmazonLinuxCpuType, MachineImage } from './machine-image';
+import type { IPeer } from './peer';
 import { Port } from './port';
-import { ISecurityGroup } from './security-group';
-import { BlockDevice } from './volume';
-import { IVpc, SubnetSelection } from './vpc';
-import { IPrincipal, IRole, PolicyStatement } from '../../aws-iam';
+import type { ISecurityGroup } from './security-group';
+import type { BlockDevice } from './volume';
+import type { IVpc, SubnetSelection } from './vpc';
+import type { IPrincipal, IRole } from '../../aws-iam';
+import { PolicyStatement } from '../../aws-iam';
 import { CfnOutput, FeatureFlags, Resource, UnscopedValidationError } from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { BASTION_HOST_USE_AMAZON_LINUX_2023_BY_DEFAULT } from '../../cx-api';
 
@@ -256,7 +261,7 @@ export class BastionHostLinux extends Resource implements IInstance {
       return AmazonLinuxCpuType.X86_64;
     }
 
-    throw new UnscopedValidationError(`Unsupported instance architecture '${architecture}'`);
+    throw new UnscopedValidationError(lit`UnsupportedInstanceArchitecture`, `Unsupported instance architecture '${architecture}'`);
   }
 
   /**

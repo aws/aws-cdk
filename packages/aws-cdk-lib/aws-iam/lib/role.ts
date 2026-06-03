@@ -1,16 +1,21 @@
-import { Construct, DependencyGroup, IConstruct, Node } from 'constructs';
+import type { Construct, IConstruct } from 'constructs';
+import { DependencyGroup, Node } from 'constructs';
 import { Grant } from './grant';
-import { CfnRole, IRoleRef, RoleReference } from './iam.generated';
-import { IIdentity } from './identity-base';
-import { IManagedPolicy, ManagedPolicy } from './managed-policy';
+import type { IRoleRef, RoleReference } from './iam.generated';
+import { CfnRole } from './iam.generated';
+import type { IIdentity } from './identity-base';
+import type { IManagedPolicy } from './managed-policy';
+import { ManagedPolicy } from './managed-policy';
 import { Policy } from './policy';
 import { PolicyDocument } from './policy-document';
-import { PolicyStatement } from './policy-statement';
-import {
+import type { PolicyStatement } from './policy-statement';
+import type {
   AddToPrincipalPolicyResult,
-  ArnPrincipal,
   IPrincipal,
   PrincipalPolicyFragment,
+} from './principals';
+import {
+  ArnPrincipal,
 } from './principals';
 import { defaultAddPrincipalToAssumeRole } from './private/assume-role-policy';
 import { ImmutableRole } from './private/immutable-role';
@@ -20,28 +25,31 @@ import { PrecreatedRole } from './private/precreated-role';
 import { AttachedPolicies, UniqueStringSet } from './private/util';
 import { RoleGrants } from './role-grants';
 import * as cxschema from '../../cloud-assembly-schema';
+import type {
+  Duration,
+  RemovalPolicy,
+} from '../../core';
 import {
   Annotations,
   ArnFormat,
   Aspects,
   ContextProvider,
-  Duration,
-  RemovalPolicy,
   Resource,
   Stack,
   Token,
   TokenComparison,
   ValidationError,
 } from '../../core';
+import type { CustomizeRoleConfig } from '../../core/lib/helpers-internal';
 import {
   CUSTOMIZE_ROLES_CONTEXT_KEY,
-  CustomizeRoleConfig,
   getCustomizeRolesConfig,
   getPrecreatedRoleConfig,
   memoizedGetter,
 } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { mutatingAspectPrio32333 } from '../../core/lib/private/aspect-prio';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 const MAX_INLINE_SIZE = 10000;
@@ -289,7 +297,7 @@ export class Role extends Resource implements IRole {
    */
   public static fromLookup(scope: Construct, id: string, options: RoleLookupOptions): IRole {
     if (Token.isUnresolved(options.roleName)) {
-      throw new ValidationError('All arguments to look up a role must be concrete (no Tokens)', scope);
+      throw new ValidationError(lit`ArgumentsLookUpRoleConcrete`, 'All arguments to look up a role must be concrete (no Tokens)', scope);
     }
 
     const response: {[key: string]: any}[] = ContextProvider.getValue(scope, {
@@ -359,7 +367,7 @@ export class Role extends Resource implements IRole {
     }
 
     if (options.addGrantsToResources !== undefined && options.mutable !== false) {
-      throw new ValidationError('\'addGrantsToResources\' can only be passed if \'mutable: false\'', scope);
+      throw new ValidationError(lit`AddGrantsResourcesPassedMutable`, '\'addGrantsToResources\' can only be passed if \'mutable: false\'', scope);
     }
 
     const roleArnAndScopeStackAccountComparison = Token.compareStrings(roleAccount ?? '', scopeStack.account);
@@ -475,7 +483,7 @@ export class Role extends Resource implements IRole {
       return this._precreatedRole.roleArn;
     }
     if (!this._resource) {
-      throw new ValidationError('Cannot access roleArn when synthesis is prevented', this);
+      throw new ValidationError(lit`CannotAccessRoleArnSynthesis`, 'Cannot access roleArn when synthesis is prevented', this);
     }
     return this.getResourceArnAttribute(this._resource.attrArn, {
       region: '', // IAM is global in each partition
@@ -495,7 +503,7 @@ export class Role extends Resource implements IRole {
       return this._precreatedRole.roleName;
     }
     if (!this._resource) {
-      throw new ValidationError('Cannot access roleName when synthesis is prevented', this);
+      throw new ValidationError(lit`CannotAccessRoleNameSynthesis`, 'Cannot access roleName when synthesis is prevented', this);
     }
     return this.getResourceNameAttribute(this._resource.ref);
   }
@@ -535,7 +543,7 @@ export class Role extends Resource implements IRole {
     addConstructMetadata(this, props);
 
     if (props.roleName && !Token.isUnresolved(props.roleName) && !/^[\w+=,.@-]{1,64}$/.test(props.roleName)) {
-      throw new ValidationError('Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.', this);
+      throw new ValidationError(lit`InvalidRoleName`, 'Invalid roleName. The name must be a string of characters consisting of upper and lowercase alphanumeric characters with no spaces. You can also include any of the following characters: _+=,.@-. Length must be between 1 and 64 characters.', this);
     }
 
     const externalIds = props.externalIds || [];
@@ -553,7 +561,7 @@ export class Role extends Resource implements IRole {
     const description = (props.description && props.description?.length > 0) ? props.description : undefined;
 
     if (description && description.length > 1000) {
-      throw new ValidationError('Role description must be no longer than 1000 characters.', this);
+      throw new ValidationError(lit`RoleDescriptionLongerCharacters`, 'Role description must be no longer than 1000 characters.', this);
     }
 
     validateRolePath(this, props.path);
@@ -732,7 +740,7 @@ export class Role extends Resource implements IRole {
    */
   public get roleId(): string {
     if (!this._roleId) {
-      throw new ValidationError('"roleId" is not available on precreated roles', this);
+      throw new ValidationError(lit`RoleidAvailablePrecreatedRoles`, '"roleId" is not available on precreated roles', this);
     }
     return this._roleId;
   }
@@ -896,10 +904,10 @@ function validateRolePath(scope: Construct, path?: string) {
   const validRolePath = /^(\/|\/[\u0021-\u007F]+\/)$/;
 
   if (path.length == 0 || path.length > 512) {
-    throw new ValidationError(`Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`, scope);
+    throw new ValidationError(lit`RolePathCharactersProvidedRole`, `Role path must be between 1 and 512 characters. The provided role path is ${path.length} characters.`, scope);
   } else if (!validRolePath.test(path)) {
     throw new ValidationError(
-      'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
+      lit`InvalidRolePathCharacters`, 'Role path must be either a slash or valid characters (alphanumerics and symbols) surrounded by slashes. '
       + `Valid characters are unicode characters in [\\u0021-\\u007F]. However, ${path} is provided.`, scope);
   }
 }
@@ -910,7 +918,7 @@ function validateMaxSessionDuration(scope: Construct, duration?: number) {
   }
 
   if (duration < 3600 || duration > 43200) {
-    throw new ValidationError(`maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`, scope);
+    throw new ValidationError(lit`MaxSessionDurationSet`, `maxSessionDuration is set to ${duration}, but must be >= 3600sec (1hr) and <= 43200sec (12hrs)`, scope);
   }
 }
 

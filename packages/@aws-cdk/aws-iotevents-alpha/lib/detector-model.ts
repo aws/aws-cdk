@@ -1,11 +1,12 @@
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
-import { Resource, IResource } from 'aws-cdk-lib/core';
+import type { IResource } from 'aws-cdk-lib/core';
+import { Resource } from 'aws-cdk-lib/core';
 import { memoizedGetter } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
-import { Construct } from 'constructs';
-import { State } from './state';
+import type { Construct } from 'constructs';
+import type { State } from './state';
 
 /**
  * Represents an AWS IoT Events detector model.

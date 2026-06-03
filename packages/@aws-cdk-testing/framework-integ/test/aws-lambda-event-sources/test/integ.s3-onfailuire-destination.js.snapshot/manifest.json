@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "52.0.0",
   "artifacts": {
     "lambda-event-source-s3ofd.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/39afc1e02d331f3744533131b22b798b1da7a043bcc1b525ba9dd91852b5a48f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6a387dea46f8b441f380ad3507028bf1197588aa7dcf7221b4b532ba2c389b2d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -46,62 +46,66 @@
         ],
         "/lambda-event-source-s3ofd/F/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/lambda-event-source-s3ofd/F/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/lambda-event-source-s3ofd/F/ServiceRole/Resource": [
@@ -202,6 +206,8 @@
               "supportS3OnFailureDestination": true,
               "provisionedPollerConfig": "*",
               "schemaRegistryConfig": "*",
+              "logLevel": "*",
+              "metricsConfig": "*",
               "bisectBatchOnError": "*",
               "retryAttempts": "*",
               "reportBatchItemFailures": "*",
@@ -339,7 +345,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/36568a26e8d331a456a622a1bd4dffa1571838f96595b5fd0c852eb339af78cd.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/0b0985b337539130942bbb3b1bef9513483d4c0a63e3fff0d1ee88ba8b88332e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -367,46 +373,50 @@
         ],
         "/kinesis-with-s3ofd/F/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/kinesis-with-s3ofd/F/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/kinesis-with-s3ofd/F/ServiceRole/Resource": [
@@ -617,7 +627,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1d2a90a66dd667f2a508a65f21f55ed3427abf2db3bd34492339990ad357cfd8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/57c04a15e2b713c19797cf909dd1b01966cdc5e989743a739b36f809e5201016.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -645,54 +655,58 @@
         ],
         "/dynamo-with-s3ofd/F/ServiceRole": [
           {
-            "type": "aws:cdk:warning",
-            "data": "Failed to add construct metadata for node [ServiceRole]. Reason: ValidationError: The result of fromAwsManagedPolicyName can not be used in this API [ack: @aws-cdk/core:addConstructMetadataFailed]"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/dynamo-with-s3ofd/F/ServiceRole/ImportServiceRole": [
-          {
             "type": "aws:cdk:analytics:construct",
-            "data": "*"
+            "data": {
+              "assumedBy": {
+                "principalAccount": "*",
+                "assumeRoleAction": "*"
+              },
+              "managedPolicies": [
+                {
+                  "managedPolicyArn": "*"
+                }
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "attachInlinePolicy": [
+                "*"
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
+          },
+          {
+            "type": "aws:cdk:analytics:method",
+            "data": {
+              "addToPrincipalPolicy": [
+                {}
+              ]
+            }
           }
         ],
         "/dynamo-with-s3ofd/F/ServiceRole/Resource": [
@@ -1192,6 +1206,10 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1223,16 +1241,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1379,6 +1387,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1390,12 +1399,25 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1033.0"
+  "minimumCliVersion": "2.1106.1"
 }

@@ -1,18 +1,12 @@
 import { Arn, ArnFormat, Aws } from 'aws-cdk-lib';
-import { Grant, IGrantable } from 'aws-cdk-lib/aws-iam';
+import type { IGrantable } from 'aws-cdk-lib/aws-iam';
+import { Grant } from 'aws-cdk-lib/aws-iam';
+import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { RegionInfo } from 'aws-cdk-lib/region-info';
-import { BedrockFoundationModel, IBedrockInvokable } from '../models';
-import { IInferenceProfile, InferenceProfileType } from './inference-profile';
-
-/**
- * Error thrown when cross-region inference profile validation fails.
- */
-class CrossRegionInferenceProfileError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'CrossRegionInferenceProfileError';
-  }
-}
+import type { BedrockFoundationModel, IBedrockInvokable } from '../models';
+import type { IInferenceProfile } from './inference-profile';
+import { InferenceProfileType } from './inference-profile';
 
 /**
  * Geographic regions supported for cross-region inference profiles.
@@ -116,6 +110,22 @@ export const REGION_TO_GEO_AREA: { [key: string]: CrossRegionInferenceProfileReg
   'ap-southeast-2': CrossRegionInferenceProfileRegion.APAC, // Sydney
 };
 
+/**
+ * Mapping of each geographic area to the AWS region name prefixes that belong to it.
+ * Used by `grantProfileUsage` to resolve, via `RegionInfo`, the set of regions a
+ * cross-region inference profile may route to when granting IAM permissions.
+ * The source region is always granted in addition to these (see `getRegionsForGeoArea`).
+ */
+export const GEO_AREA_REGION_PREFIXES: Record<CrossRegionInferenceProfileRegion, string[]> = {
+  [CrossRegionInferenceProfileRegion.US]: ['us-'],
+  [CrossRegionInferenceProfileRegion.EU]: ['eu-'],
+  [CrossRegionInferenceProfileRegion.APAC]: ['ap-', 'me-'],
+  [CrossRegionInferenceProfileRegion.US_GOV]: ['us-gov-'],
+  [CrossRegionInferenceProfileRegion.JP]: ['ap-northeast-1', 'ap-northeast-3'],
+  [CrossRegionInferenceProfileRegion.AU]: ['ap-southeast-2', 'ap-southeast-4'],
+  [CrossRegionInferenceProfileRegion.GLOBAL]: ['*'],
+};
+
 /******************************************************************************
  *                        PROPS FOR NEW CONSTRUCT
  *****************************************************************************/
@@ -198,16 +208,16 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
   private constructor(props: CrossRegionInferenceProfileProps) {
     // Validate required properties
     if (!props.geoRegion) {
-      throw new CrossRegionInferenceProfileError('geoRegion is required');
+      throw new UnscopedValidationError(lit`GeoRegionRequired`, 'geoRegion is required');
     }
 
     if (!props.model) {
-      throw new CrossRegionInferenceProfileError('model is required');
+      throw new UnscopedValidationError(lit`ModelRequired`, 'model is required');
     }
 
     // Validate that the model supports cross-region inference
     if (!props.model.supportsCrossRegion) {
-      throw new CrossRegionInferenceProfileError(`Model ${props.model.modelId} does not support cross-region inference`);
+      throw new UnscopedValidationError(lit`ModelNotSupportedForCrossRegion`, `Model ${props.model.modelId} does not support cross-region inference`);
     }
 
     this.type = InferenceProfileType.SYSTEM_DEFINED;
@@ -297,53 +307,38 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
 
   /**
    * Returns the list of AWS regions for the configured geographic area.
-   * Uses RegionInfo to dynamically determine regions based on the geoRegion prefix.
+   * Regions are resolved dynamically from `RegionInfo` by matching the geoArea
+   * prefixes, and the source region (`Aws.REGION`) is always included because a
+   * cross-region inference profile can route back to its source region even when
+   * that region is outside the geoArea prefixes (e.g. `ca-central-1` in the US area).
    *
    * @returns Array of region names for the geoRegion
-   * @throws CrossRegionInferenceProfileError if geoRegion is not recognized
+   * @throws UnscopedValidationError if geoRegion is not recognized
    */
   private getRegionsForGeoArea(): string[] {
-    const prefixMappings: Record<CrossRegionInferenceProfileRegion, string[]> = {
-      [CrossRegionInferenceProfileRegion.EU]: ['eu-'],
-      [CrossRegionInferenceProfileRegion.US]: ['us-'],
-      [CrossRegionInferenceProfileRegion.APAC]: ['ap-', 'me-'],
-      [CrossRegionInferenceProfileRegion.GLOBAL]: ['*'],
-      [CrossRegionInferenceProfileRegion.US_GOV]: ['us-gov-'],
-      [CrossRegionInferenceProfileRegion.JP]: ['ap-northeast-1', 'ap-northeast-3'],
-      [CrossRegionInferenceProfileRegion.AU]: ['ap-southeast-2', 'ap-southeast-4'],
-    };
+    // GLOBAL routes to any supported commercial region.
+    if (this.geoRegion === CrossRegionInferenceProfileRegion.GLOBAL) {
+      return ['*'];
+    }
 
-    const prefixes = prefixMappings[this.geoRegion];
+    const prefixes = GEO_AREA_REGION_PREFIXES[this.geoRegion];
     if (!prefixes) {
-      // Throw error instead of falling back to wildcard to enforce least-privilege
-      throw new CrossRegionInferenceProfileError(
+      // Throw instead of falling back to a wildcard to enforce least-privilege.
+      throw new UnscopedValidationError(
+        lit`UnknownGeoRegion`,
         `Unknown geoRegion '${this.geoRegion}'. Cannot determine regions for IAM permissions. ` +
         `Please use a supported geoRegion: ${Object.values(CrossRegionInferenceProfileRegion).join(', ')}`,
       );
     }
 
-    // For GLOBAL geoRegion, return wildcard
-    if (this.geoRegion === CrossRegionInferenceProfileRegion.GLOBAL) {
-      return ['*'];
-    }
-
-    // For JP and AU, the prefixes are exact region names
-    if (this.geoRegion === CrossRegionInferenceProfileRegion.JP ||
-        this.geoRegion === CrossRegionInferenceProfileRegion.AU) {
-      return prefixes;
-    }
-
-    // For US_GOV, filter by aws-us-gov partition
-    if (this.geoRegion === CrossRegionInferenceProfileRegion.US_GOV) {
-      return RegionInfo.regions
-        .filter(r => r.partition === 'aws-us-gov')
-        .map(r => r.name);
-    }
-
-    // For other geoRegions, filter by prefix and standard partition
-    return RegionInfo.regions
-      .filter(r => r.partition === 'aws') // Standard partition only
+    // US GovCloud regions live in the aws-us-gov partition; everything else is the standard aws partition.
+    const partition = this.geoRegion === CrossRegionInferenceProfileRegion.US_GOV ? 'aws-us-gov' : 'aws';
+    const regions = RegionInfo.regions
+      .filter(r => r.partition === partition)
       .map(r => r.name)
       .filter(name => prefixes.some(prefix => name.startsWith(prefix)));
+
+    // Always grant the source region in addition to the geoArea regions.
+    return Array.from(new Set([Aws.REGION, ...regions]));
   }
 }

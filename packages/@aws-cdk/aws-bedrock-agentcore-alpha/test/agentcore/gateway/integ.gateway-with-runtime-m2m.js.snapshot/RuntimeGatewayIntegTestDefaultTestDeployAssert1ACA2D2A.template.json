@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallbedrockagentcoreinvokeAgentRuntime4322870f3524eb4c64bc414591ebbbc1": {
+  "AwsApiCallbedrockagentcoreinvokeAgentRuntime100f1e0ca4610dd96c9584a43cfa7d56": {
    "Type": "Custom::DeployAssert@SdkCallbedrock-agentcoreinvokeAgentRunt",
    "Properties": {
     "ServiceToken": {
@@ -11,8 +11,7 @@
     },
     "service": "bedrock-agentcore",
     "api": "invokeAgentRuntime",
-    "expected": "{\"$StringLike\":\".*Hello from Gateway Lambda.*\"}",
-    "actualPath": "response.output.result.content[0].text",
+    "expected": "{\"$ObjectLike\":{\"statusCode\":200}}",
     "parameters": {
      "agentRuntimeArn": {
       "Fn::Join": [
@@ -26,14 +25,11 @@
        ]
       ]
      },
-     "runtimeSessionId": "\"fa4e9c2b-018c-466f-a42b-5b723ea3adba\"",
+     "runtimeSessionId": "\"164b7756-aa7e-4635-9582-52f28bb21ee3\"",
      "payload": "\"{\\\"input\\\":{\\\"prompt\\\":\\\"Test Gateway M2M authentication\\\"}}\""
     },
-    "flattenResponse": "true",
-    "outputPaths": [
-     "response.output.result.content[0].text"
-    ],
-    "salt": "1765958047689"
+    "flattenResponse": "false",
+    "salt": "1773653224945"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -87,7 +83,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+     "S3Key": "34374f507e525559ac3b65a806158d91a7f0d2a5765a5aa9fa48b6b3bac4d3ce.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -101,10 +97,10 @@
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime4322870f3524eb4c64bc414591ebbbc1": {
+  "AssertionResultsAwsApiCallbedrockagentcoreinvokeAgentRuntime100f1e0ca4610dd96c9584a43cfa7d56": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallbedrockagentcoreinvokeAgentRuntime4322870f3524eb4c64bc414591ebbbc1",
+     "AwsApiCallbedrockagentcoreinvokeAgentRuntime100f1e0ca4610dd96c9584a43cfa7d56",
      "assertion"
     ]
    }

@@ -1,9 +1,12 @@
 import { Construct } from 'constructs';
-import { Grant, IGrantable, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
-import { IFunction } from '../../../aws-lambda';
-import { ILogGroupRef, LogGroup } from '../../../aws-logs';
+import type { IGrantable } from '../../../aws-iam';
+import { Grant, PolicyStatement, Role, ServicePrincipal } from '../../../aws-iam';
+import type { IFunction } from '../../../aws-lambda';
+import type { ILogGroupRef } from '../../../aws-logs';
+import { LogGroup } from '../../../aws-logs';
 import { CfnStateMachine, LogLevel } from '../../../aws-stepfunctions';
-import { Duration, Stack } from '../../../core';
+import type { Duration } from '../../../core';
+import { Stack } from '../../../core';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 
 /**

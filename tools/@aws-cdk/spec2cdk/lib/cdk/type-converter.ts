@@ -1,15 +1,18 @@
 
-import {
+import type {
   SpecDatabase,
   PropertyType,
   Resource,
   TypeDefinition,
   Property,
+} from '@aws-cdk/service-spec-types';
+import {
   RichProperty,
 } from '@aws-cdk/service-spec-types';
-import { ClassType, Module, PrimitiveType, RichScope, StructType, Type, TypeDeclaration } from '@cdklabs/typewriter';
+import type { ClassType, StructType, TypeDeclaration } from '@cdklabs/typewriter';
+import { Module, PrimitiveType, RichScope, Type } from '@cdklabs/typewriter';
 import { CDK_CORE } from './cdk';
-import { RelationshipDecider } from './relationship-decider';
+import type { RelationshipDecider } from './relationship-decider';
 import { PartialTypeDefinitionStruct, TypeDefinitionStruct } from './typedefinition-struct';
 import { structNameFromTypeDefinition } from '../naming/conventions';
 

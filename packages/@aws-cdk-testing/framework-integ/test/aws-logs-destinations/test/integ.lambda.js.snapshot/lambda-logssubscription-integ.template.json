@@ -2,6 +2,9 @@
  "Resources": {
   "Queue4A7E3555": {
    "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "SqsManagedSseEnabled": true
+   },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   },
@@ -79,7 +82,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs18.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "MyFunctionServiceRoleDefaultPolicyB705ABD4",
@@ -308,7 +311,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a294edede40d64fab23d0da72e1c24f4a24acf7996570699106df868f6e4420b.zip"
+     "S3Key": "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1.zip"
     },
     "Handler": "index.handler",
     "Role": {

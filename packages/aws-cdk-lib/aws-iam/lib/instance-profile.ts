@@ -1,8 +1,11 @@
-import { Construct } from 'constructs';
-import { CfnInstanceProfile, IInstanceProfileRef, InstanceProfileReference } from './iam.generated';
+import type { Construct } from 'constructs';
+import type { IInstanceProfileRef, InstanceProfileReference } from './iam.generated';
+import { CfnInstanceProfile } from './iam.generated';
 import { ServicePrincipal } from './principals';
-import { IRole, Role } from './role';
-import { Arn, IResource, PhysicalName, Resource, Stack } from '../../core';
+import type { IRole } from './role';
+import { Role } from './role';
+import type { IResource } from '../../core';
+import { Arn, PhysicalName, Resource, Stack } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../core/lib/prop-injectable';

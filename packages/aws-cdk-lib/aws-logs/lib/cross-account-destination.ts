@@ -1,6 +1,7 @@
-import { Construct } from 'constructs';
-import { CfnDestination, ILogGroupRef } from './logs.generated';
-import { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
+import type { Construct } from 'constructs';
+import type { ILogGroupRef } from './logs.generated';
+import { CfnDestination } from './logs.generated';
+import type { ILogSubscriptionDestination, LogSubscriptionDestinationConfig } from './subscription-filter';
 import * as iam from '../../aws-iam';
 import { ArnFormat } from '../../core';
 import * as cdk from '../../core';

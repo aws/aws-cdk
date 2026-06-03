@@ -1,6 +1,8 @@
-import { ConventionalCommit } from '../lib/conventional-commits';
-import { changelog, ChangelogOptions, writeChangelogs } from '../lib/lifecycles/changelog';
-import { ExperimentalChangesTreatment, PackageInfo, Versions } from '../lib/types';
+import type { ConventionalCommit } from '../lib/conventional-commits';
+import type { ChangelogOptions } from '../lib/lifecycles/changelog';
+import { changelog, writeChangelogs } from '../lib/lifecycles/changelog';
+import type { PackageInfo, Versions } from '../lib/types';
+import { ExperimentalChangesTreatment } from '../lib/types';
 
 const args: ChangelogOptions = {
   changelogFile: 'CHANGELOG.md',
