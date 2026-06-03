@@ -1,8 +1,8 @@
 
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import child_process from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { version as delayVersion } from 'delay/package.json';
 import * as yaml from 'yaml';
 import { Annotations } from '../../assertions';

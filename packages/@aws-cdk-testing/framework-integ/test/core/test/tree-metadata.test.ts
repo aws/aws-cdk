@@ -8,7 +8,7 @@ import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
 import type { TreeInspector } from 'aws-cdk-lib';
 import { App, AssumptionError, CfnParameter, CfnResource, Lazy, Stack, aws_s3 } from 'aws-cdk-lib';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
-import type { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/private/tree-metadata';
+import type { ForestFile, TreeFile } from 'aws-cdk-lib/core/lib/helpers-internal';
 
 abstract class AbstractCfnResource extends CfnResource {
   constructor(scope: Construct, id: string) {
