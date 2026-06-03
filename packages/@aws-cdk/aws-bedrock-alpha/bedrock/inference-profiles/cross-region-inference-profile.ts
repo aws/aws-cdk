@@ -228,15 +228,22 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
 
   /**
    * Grants appropriate permissions to use the cross-region inference profile.
-   * This method adds the necessary IAM permissions to allow the grantee to:
-   * - Get inference profile details (bedrock:GetInferenceProfile)
-   * - Invoke the model through the inference profile (bedrock:InvokeModel*)
-   * - Invoke the underlying foundation model in all destination regions
-   *   (scoped by bedrock:InferenceProfileArn condition for least-privilege)
    *
-   * Per AWS documentation, cross-region inference profiles require IAM
-   * permissions on both the inference-profile resource (source region) AND
-   * the foundation-model resource in all destination regions.
+   * This method generates **two** IAM policy statements:
+   *
+   * 1. Grants `bedrock:GetInferenceProfile` and `bedrock:InvokeModel*` on the
+   *    inference-profile ARN in the **source region** (where you deploy).
+   *
+   * 2. Grants `bedrock:InvokeModel*` on the underlying **foundation-model** ARN
+   *    across **all regions** (wildcard), scoped by a `bedrock:InferenceProfileArn`
+   *    condition that restricts usage to only this specific inference profile.
+   *    This is required because cross-region inference profiles dynamically route
+   *    requests to destination regions, and IAM evaluates the foundation-model
+   *    resource in the destination region.
+   *
+   * **Important**: This means the grantee will have `bedrock:InvokeModel*`
+   * permissions on the foundation model in any region, but ONLY when invoked
+   * through this specific cross-region inference profile (enforced by condition).
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html#geographic-cris-iam-setup
    * [disable-awslint:no-grants]

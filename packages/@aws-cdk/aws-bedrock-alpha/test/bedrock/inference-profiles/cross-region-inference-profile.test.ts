@@ -151,7 +151,7 @@ describe('CrossRegionInferenceProfile', () => {
   });
 
   describe('grantProfileUsage', () => {
-    test('grants inference-profile in source region and foundation-model with wildcard region and condition', () => {
+    test('generates two statements: inference-profile (source) and foundation-model (wildcard region with condition)', () => {
       const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
         geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.US,
         model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
@@ -164,46 +164,38 @@ describe('CrossRegionInferenceProfile', () => {
       profile.grantProfileUsage(role);
 
       const template = Template.fromStack(stack);
+      const policyResources = template.findResources('AWS::IAM::Policy');
+      const policyKey = Object.keys(policyResources)[0];
+      const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
 
-      // Should have two statements: one for inference-profile, one for foundation-model
-      template.hasResourceProperties('AWS::IAM::Policy', {
-        PolicyDocument: {
-          Statement: Match.arrayWith([
-            // Statement 1: inference-profile access in source region
-            Match.objectLike({
-              Action: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel*'],
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': Match.arrayWith([
-                  Match.arrayWith([
-                    Match.stringLikeRegexp('.*:inference-profile/.*'),
-                  ]),
-                ]),
-              },
-            }),
-            // Statement 2: foundation-model access with wildcard region + condition
-            Match.objectLike({
-              Action: 'bedrock:InvokeModel*',
-              Effect: 'Allow',
-              Resource: {
-                'Fn::Join': Match.arrayWith([
-                  Match.arrayWith([
-                    Match.stringLikeRegexp('.*:bedrock:\\*::foundation-model/.*'),
-                  ]),
-                ]),
-              },
-              Condition: {
-                StringEquals: {
-                  'bedrock:InferenceProfileArn': Match.anyValue(),
-                },
-              },
-            }),
-          ]),
-        },
-      });
+      expect(statements).toHaveLength(2);
+
+      // Statement 1: inference-profile in source region
+      const profileStatement = statements[0];
+      expect(profileStatement.Action).toEqual(['bedrock:GetInferenceProfile', 'bedrock:InvokeModel*']);
+      expect(profileStatement.Effect).toBe('Allow');
+      // Resource should reference inference-profile with AWS::Region (source)
+      const profileResource = JSON.stringify(profileStatement.Resource);
+      expect(profileResource).toContain('inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0');
+      expect(profileResource).toContain('AWS::Region');
+
+      // Statement 2: foundation-model with wildcard region + condition
+      const fmStatement = statements[1];
+      expect(fmStatement.Action).toBe('bedrock:InvokeModel*');
+      expect(fmStatement.Effect).toBe('Allow');
+      // Resource should be foundation-model with literal '*' as region
+      const fmResource = JSON.stringify(fmStatement.Resource);
+      expect(fmResource).toContain(':bedrock:*::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0');
+      // Must have bedrock:InferenceProfileArn condition
+      expect(fmStatement.Condition).toBeDefined();
+      expect(fmStatement.Condition.StringEquals).toBeDefined();
+      expect(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']).toBeDefined();
+      // Condition value should reference the same inference-profile ARN
+      const conditionValue = JSON.stringify(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']);
+      expect(conditionValue).toContain('inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0');
     });
 
-    test('foundation-model condition references the inference profile ARN', () => {
+    test('condition ties foundation-model grant to the specific inference profile', () => {
       const profile = bedrockAlpha.CrossRegionInferenceProfile.fromConfig({
         geoRegion: bedrockAlpha.CrossRegionInferenceProfileRegion.EU,
         model: bedrockAlpha.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V1_0,
@@ -220,14 +212,16 @@ describe('CrossRegionInferenceProfile', () => {
       const policyKey = Object.keys(policyResources)[0];
       const statements = policyResources[policyKey].Properties.PolicyDocument.Statement;
 
-      // Find the foundation-model statement (the one with Condition)
       const fmStatement = statements.find((s: any) => s.Condition);
       expect(fmStatement).toBeDefined();
-      expect(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']).toBeDefined();
 
-      // The condition value should reference the inference profile ARN
-      const conditionValue = fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn'];
-      expect(JSON.stringify(conditionValue)).toContain('inference-profile/eu.anthropic.claude-3-5-sonnet-20240620-v1:0');
+      // The condition must reference the EU inference profile specifically
+      const conditionValue = JSON.stringify(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']);
+      expect(conditionValue).toContain('inference-profile/eu.anthropic.claude-3-5-sonnet-20240620-v1:0');
+      // The foundation-model resource must NOT be region-specific (wildcard)
+      const fmResource = JSON.stringify(fmStatement.Resource);
+      expect(fmResource).toContain(':bedrock:*::foundation-model/');
+      expect(fmResource).not.toContain('us-east-1');
     });
   });
 
