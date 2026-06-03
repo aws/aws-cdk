@@ -116,7 +116,7 @@ export const REGION_TO_GEO_AREA: { [key: string]: CrossRegionInferenceProfileReg
  * cross-region inference profile may route to when granting IAM permissions.
  * The source region is always granted in addition to these (see `getRegionsForGeoArea`).
  */
-export const GEO_AREA_REGION_PREFIXES: Record<CrossRegionInferenceProfileRegion, string[]> = {
+const GEO_AREA_REGION_PREFIXES: Record<CrossRegionInferenceProfileRegion, string[]> = {
   [CrossRegionInferenceProfileRegion.US]: ['us-'],
   [CrossRegionInferenceProfileRegion.EU]: ['eu-'],
   [CrossRegionInferenceProfileRegion.APAC]: ['ap-', 'me-'],
