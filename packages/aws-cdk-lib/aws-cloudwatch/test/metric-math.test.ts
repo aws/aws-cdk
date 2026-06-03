@@ -196,6 +196,22 @@ describe('Metric Math', () => {
     expect(m.warningsV2).toBeUndefined();
   });
 
+  test('quoted strings in math expressions do not produce unknown identifier warnings', () => {
+    const m1 = new MathExpression({
+      expression: 'LAMBDA(\'myFunction\', "gc", \'count\')',
+      usingMetrics: {},
+    });
+
+    expect(m1.warningsV2).toBeUndefined();
+
+    const m2 = new MathExpression({
+      expression: 'DB_PERF_INSIGHTS("RDS", \'db-ABC123\', "os.cpuUtilization.user.avg")',
+      usingMetrics: {},
+    });
+
+    expect(m2.warningsV2).toBeUndefined();
+  });
+
   test('math expression referring to unknown expressions produces a warning, even when nested', () => {
     const m = new MathExpression({
       expression: 'e1 + 5',

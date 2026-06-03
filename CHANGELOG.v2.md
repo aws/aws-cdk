@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.257.0](https://github.com/aws/aws-cdk/compare/v2.256.1...v2.257.0) (2026-05-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+  - **aws-neptunegraph**: AWS::NeptuneGraph::GraphSnapshot: GraphIdentifier property is now required.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37955](https://github.com/aws/aws-cdk/issues/37955)) ([211b06c](https://github.com/aws/aws-cdk/commit/211b06c28f20dbd2ff7c3fe37efa12636aee46c0))
+* **core:** failSynthOnValidationErrors context key to suppress console output and exit code ([#37909](https://github.com/aws/aws-cdk/issues/37909)) ([deb968f](https://github.com/aws/aws-cdk/commit/deb968fe326a850cdbcf434881839ae9a8b231e7)), closes [aws/aws-cdk-cli#1515](https://github.com/aws/aws-cdk-cli/issues/1515)
+
 ## [2.256.1](https://github.com/aws/aws-cdk/compare/v2.256.0...v2.256.1) (2026-05-20)
 
 
