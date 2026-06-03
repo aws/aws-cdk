@@ -518,25 +518,14 @@ export class Nodegroup extends Resource implements INodegroup {
         + 'R3 instances aren\'t supported for Windows workloads.', this);
       }
 
-      // Warn users when the EKS_DEFAULT_AL2023 flag drives a behavior change they
-      // may not have intended. Only fires when the flag is enabled, no explicit
-      // amiType is set, and no launch template is supplied.
-      if (!props.amiType && !props.launchTemplateSpec &&
-        FeatureFlags.of(this).isEnabled(cxapi.EKS_DEFAULT_AL2023)) {
-        const isGpuNodegroup = instanceTypes.some(isGpuInstanceType);
-        if (isGpuNodegroup) {
-          // GPU instance types are intentionally NOT migrated by the flag.
+      // Warn users when the EKS_DEFAULT_AL2023 flag is enabled and amiType is not set,
+      // then GPU instance types are intentionally NOT migrated to AL2023.
+      const useAL2023 = FeatureFlags.of(this).isEnabled(cxapi.EKS_DEFAULT_AL2023) ?? false;
+      const isGpuNodegroup = instanceTypes.some(isGpuInstanceType);
+      if (!props.amiType && useAL2023 && isGpuNodegroup) {
           Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:gpuInstancesUseAL2',
-            'GPU instance types will continue to use AL2_X86_64_GPU even with the @aws-cdk/aws-eks:defaultToAL2023 feature flag enabled because '
+            'GPU instance types will continue to use AL2 even with the @aws-cdk/aws-eks:defaultToAL2023 feature flag enabled because '
             + 'AL2023 splits GPU support into AL2023_X86_64_NVIDIA and AL2023_X86_64_NEURON variants. To use AL2023, explicitly set amiType to the corresponding variant.');
-        } else {
-          // Non-GPU: Warn that this will replace existing managed node groups on the next deploy.
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:defaultToAL2023AmiTypeChange',
-            'The @aws-cdk/aws-eks:defaultToAL2023 feature flag is enabled and this node group does not specify amiType. '
-            + 'This will cause existing managed node groups that previously defaulted to AL2 to be replaced with AL2023 on the next deploy, which terminates running pods. '
-            + 'To migrate safely, explicitly set amiType to the current AMI on every existing node group before enabling the flag, '
-            + 'then migrate node groups to AL2023 deliberately one at a time.');
-        }
       }
     }
 

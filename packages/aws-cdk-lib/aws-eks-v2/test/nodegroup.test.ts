@@ -667,9 +667,6 @@ describe('node group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2023_x86_64_STANDARD',
     });
-
-    Annotations.fromStack(stack).hasWarning('/Stack/Nodegroup',
-      Match.stringLikeRegexp('This will cause existing managed node groups that previously defaulted to AL2 to be replaced'));
   });
 
   /**
@@ -698,9 +695,6 @@ describe('node group', () => {
     Template.fromStack(stack).hasResourceProperties('AWS::EKS::Nodegroup', {
       AmiType: 'AL2023_ARM_64_STANDARD',
     });
-
-    Annotations.fromStack(stack).hasWarning('/Stack/Nodegroup',
-      Match.stringLikeRegexp('This will cause existing managed node groups that previously defaulted to AL2 to be replaced'));
   });
 
   /**
@@ -731,7 +725,7 @@ describe('node group', () => {
     });
 
     Annotations.fromStack(stack).hasWarning('/Stack/Nodegroup',
-      Match.stringLikeRegexp('GPU instance types will continue to use AL2_X86_64_GPU'));
+      Match.stringLikeRegexp('GPU instance types will continue to use AL2'));
   });
 
   /**
@@ -756,9 +750,7 @@ describe('node group', () => {
 
     // THEN
     Annotations.fromStack(stack).hasNoWarning('/Stack/Nodegroup',
-      Match.stringLikeRegexp('This will cause existing managed node groups that previously defaulted to AL2 to be replaced'));
-    Annotations.fromStack(stack).hasNoWarning('/Stack/Nodegroup',
-      Match.stringLikeRegexp('GPU instance types will continue to use AL2_X86_64_GPU'));
+      Match.stringLikeRegexp('GPU instance types will continue to use AL2'));
   });
 
   /**
