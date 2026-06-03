@@ -1,30 +1,30 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684": {
+    "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
       "source": {
-        "path": "asset.f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684",
+        "path": "asset.2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-current_region-caaab5a4": {
+        "current_account-current_region-2f1621bb": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684.zip",
+          "objectKey": "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1.zip",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
     },
-    "77a1b93dd1beb518eb190c5d87546141d60aa86495cae267f1d07f83f372914c": {
+    "41c3596e2b57f24965056515f802cb65880c1f9269a4de19857c804d9b6de2a9": {
       "displayName": "aws-cdk-cloudwatch-eventbridge-logs Template",
       "source": {
         "path": "aws-cdk-cloudwatch-eventbridge-logs.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-aec32b0a": {
+        "current_account-current_region-4746828c": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "77a1b93dd1beb518eb190c5d87546141d60aa86495cae267f1d07f83f372914c.json",
+          "objectKey": "41c3596e2b57f24965056515f802cb65880c1f9269a4de19857c804d9b6de2a9.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
