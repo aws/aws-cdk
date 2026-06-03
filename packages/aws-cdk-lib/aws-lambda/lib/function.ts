@@ -951,7 +951,7 @@ export class Function extends FunctionBase {
    */
   @memoizedGetter
   public get functionName(): string {
-    return this.getResourceNameAttribute(this.resource.ref);
+    return this._functionName ?? this.getResourceNameAttribute(this.resource.ref);
   }
 
   /**
@@ -977,6 +977,7 @@ export class Function extends FunctionBase {
 
   private _architecture?: Architecture;
   private hashMixins = Box.fromArray<string>([], { omitEmpty: false });
+  private _functionName?: string;
 
   /**
    * The tenancy configuration for this function.
@@ -987,6 +988,7 @@ export class Function extends FunctionBase {
     super(scope, id, {
       physicalName: props.functionName,
     });
+    this._functionName = props.functionName;
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
 

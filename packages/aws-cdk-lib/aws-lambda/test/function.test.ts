@@ -3736,6 +3736,18 @@ describe('function', () => {
     })).toThrow(/Function name can not be longer than 64 characters/);
   });
 
+  test('Returns the function name when provided with one', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'MyFunction', {
+      code: lambda.Code.fromInline('foo'),
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      handler: 'index.handler',
+      functionName: 'Banana',
+    });
+
+    expect(fn.functionName).toEqual('Banana');
+  });
+
   test('Error when function name contains invalid characters', () => {
     const stack = new cdk.Stack();
     [' ', '\n', '\r', '[', ']', '<', '>', '$'].forEach(invalidChar => {
