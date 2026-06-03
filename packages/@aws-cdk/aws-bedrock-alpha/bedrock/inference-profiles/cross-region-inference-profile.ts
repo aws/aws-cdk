@@ -227,30 +227,33 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
   }
 
   /**
-   * Grants appropriate permissions to use the cross-region inference profile.
+   * Grants permissions to use this cross-region inference profile, including
+   * invoking the underlying foundation model across destination regions.
+   *
+   * This is an intentional contract clarification: using a cross-region inference
+   * profile at runtime requires IAM permissions on both the profile resource and
+   * the foundation model resource in destination regions. Without the foundation-model
+   * grant, requests routed to other regions will fail with AccessDeniedException.
    *
    * This method generates **two** IAM policy statements:
    *
-   * 1. Grants `bedrock:GetInferenceProfile` and `bedrock:InvokeModel*` on the
-   *    inference-profile ARN in the **source region** (where you deploy).
+   * 1. `bedrock:GetInferenceProfile` + `bedrock:InvokeModel*` on the inference-profile
+   *    ARN in the source region (where you deploy).
    *
-   * 2. Grants `bedrock:InvokeModel*` on the underlying **foundation-model** ARN
-   *    with a wildcard region (`*`), scoped by a `bedrock:InferenceProfileArn`
-   *    condition that restricts usage to only this specific inference profile.
-   *    A wildcard region is used because the exact destination regions depend on
-   *    the model and source region combination and cannot be determined at
-   *    synth-time. The condition key ensures the permission is only effective
-   *    when invoking through this cross-region inference profile.
-   *
-   * **Important**: The foundation-model permission uses a wildcard region but is
-   * restricted by the `bedrock:InferenceProfileArn` condition — the grantee can
-   * only invoke the model through this specific inference profile, not directly.
+   * 2. `bedrock:InvokeModel*` on the foundation-model ARN with a wildcard region (`*`),
+   *    scoped by a `bedrock:InferenceProfileArn` condition. The wildcard is necessary
+   *    because destination regions depend on the model and source region combination
+   *    and cannot be determined at CDK synthesis time. The condition key ensures the
+   *    grantee can only invoke the model through this specific inference profile,
+   *    not directly.
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html#geographic-cris-iam-setup
    * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
-   * @returns An IAM Grant object representing the granted permissions
+   * @returns The Grant for the foundation-model statement. Both statements are
+   *   added to the principal's policy regardless — the return value is primarily
+   *   for dependency tracking (consistent with grantInvoke pattern).
    */
   public grantProfileUsage(grantee: IGrantable): Grant {
     // Statement 1: Grant access to the inference profile in the source region.
