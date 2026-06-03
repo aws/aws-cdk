@@ -418,14 +418,17 @@ test('Zixi Push output with static-key encryption auto-creates a role when none 
   });
 
   const template = Template.fromStack(stack);
-  // Auto-role created with aws:SourceAccount confused-deputy guard
+  // Auto-role with confused-deputy guard scoped to the flow
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [{
         Effect: 'Allow',
         Principal: { Service: 'mediaconnect.amazonaws.com' },
         Action: 'sts:AssumeRole',
-        Condition: { StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } } },
+        Condition: {
+          StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+          ArnLike: { 'aws:SourceArn': Match.anyValue() },
+        },
       }],
       Version: '2012-10-17',
     },
@@ -467,7 +470,10 @@ test('SRT Caller output with SRT password encryption auto-creates a role when no
         Effect: 'Allow',
         Principal: { Service: 'mediaconnect.amazonaws.com' },
         Action: 'sts:AssumeRole',
-        Condition: { StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } } },
+        Condition: {
+          StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+          ArnLike: { 'aws:SourceArn': Match.anyValue() },
+        },
       }],
       Version: '2012-10-17',
     },

@@ -1,5 +1,5 @@
 import type { Bitrate, IResource, RemovalPolicy } from 'aws-cdk-lib';
-import { Resource, Lazy, Names, Duration, Token, Fn, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
+import { ArnFormat, Resource, Lazy, Names, Duration, Stack, Token, Fn, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnFlow } from 'aws-cdk-lib/aws-mediaconnect';
@@ -1461,7 +1461,12 @@ export class Flow extends FlowBase implements IFlow {
     }
     this.isFailoverEnabled = props.sourceFailoverConfig?._isEnabled ?? false;
 
-    const sourceConfig = props.source._bind(this);
+    const sourceConfig = props.source._bind(this, Stack.of(this).formatArn({
+      service: 'mediaconnect',
+      resource: 'flow',
+      resourceName: `*:${this.physicalName}`,
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    }));
 
     if ((sourceConfig.protocol === SourceProtocol.JPEGXS.value || sourceConfig.protocol === SourceProtocol.CDI.value)
       && props.flowSize?.value !== FlowSize.LARGE_4X.value) {

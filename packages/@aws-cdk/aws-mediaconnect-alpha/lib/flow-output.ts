@@ -565,13 +565,13 @@ export class FlowOutput extends FlowOutputBase {
 
     const resource = new CfnFlowOutput(this, 'Resource', {
       ...cfnOutputConfig,
-      encryption: renderOutputEncryption(this, staticKeyEncryption, srtPasswordEncryption),
+      encryption: renderOutputEncryption(this, staticKeyEncryption, srtPasswordEncryption, props.flow.flowArn),
       name: this.physicalName,
       flowArn: props.flow.flowArn,
       description: props.description ?? undefined,
       outputStatus: props.outputStatus,
       routerIntegrationTransitEncryption: outputConfig.routerIntegrationState === State.ENABLED
-        ? renderTransitEncryption(this, 'RouterTransitEncryptionRole', routerIntegrationTransitEncryption)
+        ? renderTransitEncryption(this, 'RouterTransitEncryptionRole', routerIntegrationTransitEncryption, props.flow.flowArn)
         : undefined,
     });
 
@@ -587,9 +587,10 @@ function renderOutputEncryption(
   scope: Construct,
   staticKey: StaticKeyEncryption | undefined,
   srtPassword: SrtPasswordEncryption | undefined,
+  sourceArn?: string,
 ): CfnFlowOutput.EncryptionProperty | undefined {
-  if (staticKey) return renderStaticKeyEncryption(scope, staticKey);
-  if (srtPassword) return renderSrtPasswordEncryption(scope, srtPassword);
+  if (staticKey) return renderStaticKeyEncryption(scope, staticKey, sourceArn);
+  if (srtPassword) return renderSrtPasswordEncryption(scope, srtPassword, sourceArn);
   return undefined;
 }
 

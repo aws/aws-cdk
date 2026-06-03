@@ -423,9 +423,13 @@ export class RouterOutputProtocol {
    * Resolve this protocol to its CFN-ready form. Returns the protocol identifier
    * and the CFN configuration shape with SRT encryption auto-role materialized if needed.
    *
+   * @param scope             Construct that scopes the auto-created encryption role
+   * @param routerOutputArn   Optional ARN of the consuming router output — when provided,
+   *                          scopes the auto-created encryption role's trust policy.
+   *
    * @internal
    */
-  public _bind(scope: Construct): {
+  public _bind(scope: Construct, routerOutputArn?: string): {
     name: RouterOutputProtocolOptions;
     config: CfnRouterOutput.RouterOutputProtocolConfigurationProperty;
   } {
@@ -433,7 +437,7 @@ export class RouterOutputProtocol {
       return { name: this._protocolName, config: this._config };
     }
 
-    const encryptionConfiguration = renderRouterSrtEncryption(scope, 'EncryptionRole', this._encryption);
+    const encryptionConfiguration = renderRouterSrtEncryption(scope, 'EncryptionRole', this._encryption, routerOutputArn);
 
     if (this._config.srtListener) {
       return {
@@ -639,7 +643,9 @@ export abstract class RouterOutputConfiguration {
    * constructor — each concrete subclass supplies its own variant-specific rendering.
    * @internal
    */
-  public abstract _bind(scope: Construct): { config: CfnRouterOutput.RouterOutputConfigurationProperty; availabilityZone?: string };
+  public abstract _bind(scope: Construct, routerOutputArn?: string): {
+    config: CfnRouterOutput.RouterOutputConfigurationProperty; availabilityZone?: string;
+  };
 }
 
 /**
@@ -649,8 +655,8 @@ export abstract class RouterOutputConfiguration {
 class StandardRouterOutputConfig extends RouterOutputConfiguration {
   constructor(private readonly props: StandardOutputConfigurationProps) { super(); }
 
-  public _bind(scope: Construct) {
-    const protocol = this.props.protocol._bind(scope);
+  public _bind(scope: Construct, routerOutputArn?: string) {
+    const protocol = this.props.protocol._bind(scope, routerOutputArn);
     return {
       config: {
         standard: {
@@ -673,13 +679,13 @@ class MediaLiveInputRouterOutputConfig extends RouterOutputConfiguration {
     private readonly availabilityZone?: string,
   ) { super(); }
 
-  public _bind(scope: Construct) {
+  public _bind(scope: Construct, routerOutputArn?: string) {
     return {
       config: {
         mediaLiveInput: {
           mediaLiveInputArn: this.options.mediaLiveInputArn,
           mediaLivePipelineId: this.options.mediaLivePipelineId,
-          destinationTransitEncryption: renderTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption),
+          destinationTransitEncryption: renderTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption, routerOutputArn),
         },
       },
       availabilityZone: this.availabilityZone,
@@ -706,13 +712,13 @@ class MediaConnectFlowRouterOutputConfig extends RouterOutputConfiguration {
     private readonly availabilityZone?: string,
   ) { super(); }
 
-  public _bind(scope: Construct) {
+  public _bind(scope: Construct, routerOutputArn?: string) {
     return {
       config: {
         mediaConnectFlow: {
           flowArn: this.options.flow?.flowArn,
           flowSourceArn: this.options.flow?.sourceArn,
-          destinationTransitEncryption: renderTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption),
+          destinationTransitEncryption: renderTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption, routerOutputArn),
         },
       },
       availabilityZone: this.availabilityZone,
@@ -936,7 +942,16 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
     const stack = Stack.of(this);
     const targetRegion = props.regionName ?? stack.region;
 
-    const configBind = props.configuration._bind(this);
+    // Wildcard the id — pinning the live ARN (attrArn) would create a role → router-output → role cycle.
+    const routerOutputArn = stack.formatArn({
+      service: 'mediaconnect',
+      region: targetRegion,
+      resource: 'routerOutput',
+      resourceName: '*',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+
+    const configBind = props.configuration._bind(this, routerOutputArn);
 
     // Check to see if region specified is also compatible with AZ configured for some of the Router Outputs configurations
     if (configBind.availabilityZone && !configBind.availabilityZone.startsWith(targetRegion)) {

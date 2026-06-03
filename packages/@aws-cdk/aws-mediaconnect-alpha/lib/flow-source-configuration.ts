@@ -777,9 +777,12 @@ export class SourceConfiguration {
 
   /**
    * Called when the source configuration is bound to a Flow or FlowSource.
+   * @param scope    Construct used as scope for any auto-created sub-constructs (encryption role, etc.)
+   * @param flowArn  Optional ARN of the consuming flow — when provided, scopes any
+   *                 auto-created encryption role's trust policy to that flow.
    * @internal
    */
-  public _bind(scope: Construct): CfnFlow.SourceProperty {
+  public _bind(scope: Construct, flowArn?: string): CfnFlow.SourceProperty {
     const cidr = this.input.whitelistCidr;
     if (cidr !== undefined && !Token.isUnresolved(cidr) && isOpenCidr(cidr)) {
       Annotations.of(scope).addWarningV2(
@@ -789,16 +792,16 @@ export class SourceConfiguration {
     }
     return {
       ...this.input,
-      decryption: this.renderDecryption(scope),
+      decryption: this.renderDecryption(scope, flowArn),
       routerIntegrationTransitDecryption: this.input.routerIntegrationState === State.ENABLED
-        ? renderTransitEncryption(scope, 'RouterTransitDecryptionRole', this.routerDecryption)
+        ? renderTransitEncryption(scope, 'RouterTransitDecryptionRole', this.routerDecryption, flowArn)
         : undefined,
     };
   }
 
-  private renderDecryption(scope: Construct): CfnFlow.EncryptionProperty | undefined {
-    if (this.staticKeyDecryption) return renderStaticKeyEncryption(scope, this.staticKeyDecryption);
-    if (this.srtPasswordDecryption) return renderSrtPasswordEncryption(scope, this.srtPasswordDecryption);
+  private renderDecryption(scope: Construct, flowArn?: string): CfnFlow.EncryptionProperty | undefined {
+    if (this.staticKeyDecryption) return renderStaticKeyEncryption(scope, this.staticKeyDecryption, flowArn);
+    if (this.srtPasswordDecryption) return renderSrtPasswordEncryption(scope, this.srtPasswordDecryption, flowArn);
     return undefined;
   }
 }

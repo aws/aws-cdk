@@ -493,18 +493,23 @@ export class VpcInterface {
   }
 }
 /**
- * Static key encryption/decryption configuration for Zixi Push sources, Zixi Pull outputs,
+ * Static key encryption/decryption configuration for Zixi protocol sources and outputs,
  * and flow entitlements.
  *
- * If `role` is omitted, the consuming construct auto-creates a scoped IAM role with read
- * access to the provided {@link secret} (including `kms:Decrypt` if the secret uses a
- * customer-managed KMS key).
+ * The secret must live in the same AWS account and Region as the resource (source,
+ * output, or entitlement) that uses it. MediaConnect does not support cross-account or
+ * cross-Region secrets.
+ *
+ * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/encryption-static-key-set-up.html
+ * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  */
 export interface StaticKeyEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
    *
-   * @default - a scoped role is created automatically with read access to the provided secret
+   * @default - a scoped role is auto-created with read access to the secret (including
+   * `kms:Decrypt` for a customer-managed key) and a confused-deputy trust condition. See
+   * the **Encryption** section of the module README for the generated trust policy.
    */
   readonly role?: IRole;
   /**
@@ -521,14 +526,20 @@ export interface StaticKeyEncryption {
  * SRT password encryption/decryption configuration for SRT Listener and SRT Caller
  * sources and outputs on flows.
  *
- * If `role` is omitted, the consuming construct auto-creates a scoped IAM role with read
- * access to the provided {@link secret}.
+ * The secret must live in the same AWS account and Region as the resource (source or
+ * output) that uses it. MediaConnect does not support cross-account or cross-Region
+ * secrets.
+ *
+ * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/encryption-srt-password-set-up.html
+ * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  */
 export interface SrtPasswordEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
    *
-   * @default - a scoped role is created automatically with read access to the provided secret
+   * @default - a scoped role is auto-created with read access to the secret and a
+   * confused-deputy trust condition. See the **Encryption** section of the module README
+   * for the generated trust policy.
    */
   readonly role?: IRole;
   /**
@@ -538,17 +549,28 @@ export interface SrtPasswordEncryption {
 }
 
 /**
- * Transit encryption configuration for router integration (flow-to-router or
- * router-to-flow). Uses AWS Secrets Manager for key management.
+ * Transit encryption configuration for router integrations — securing the link between a
+ * router and a flow or a MediaLive channel/input. Uses AWS Secrets Manager for key
+ * management.
  *
- * If `role` is omitted, the consuming construct auto-creates a scoped IAM role with read
- * access to the provided {@link secret}.
+ * The secret must live in the same AWS account and Region as the consuming resource.
+ * MediaConnect does not support cross-account or cross-Region secrets.
+ *
+ * **Trust-policy scope on routers.** Router I/O ARNs use a service-generated id that is
+ * unknown at synth time, and pinning the live ARN would create a CloudFormation
+ * dependency cycle — so the auto-created role pins `aws:SourceArn` to a wildcarded ARN
+ * (`arn:...:routerInput:*` / `arn:...:routerOutput:*`). To pin the exact ARN, supply your
+ * own `role`.
+ *
+ * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  */
 export interface TransitEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
    *
-   * @default - a scoped role is created automatically with read access to the provided secret
+   * @default - a scoped role is auto-created with read access to the secret and a
+   * confused-deputy trust condition. See the **Encryption** section of the module README
+   * for the generated trust policy.
    */
   readonly role?: IRole;
   /**
@@ -558,18 +580,28 @@ export interface TransitEncryption {
 }
 
 /**
- * SRT encryption configuration for router outputs (SRT Listener and SRT Caller). Uses
- * AWS Secrets Manager for key management. Distinct from {@link SrtPasswordEncryption},
- * which is used for flow sources and outputs.
+ * SRT encryption configuration for router inputs and outputs (SRT Listener and SRT
+ * Caller). Uses AWS Secrets Manager for key management. Distinct from
+ * {@link SrtPasswordEncryption}, which is used for flow sources and outputs.
  *
- * If `role` is omitted, the consuming construct auto-creates a scoped IAM role with read
- * access to the provided {@link secret}.
+ * The secret must live in the same AWS account and Region as the router I/O that uses
+ * it. MediaConnect does not support cross-account or cross-Region secrets.
+ *
+ * **Trust-policy scope on routers.** Router I/O ARNs use a service-generated id that is
+ * unknown at synth time, and pinning the live ARN would create a CloudFormation
+ * dependency cycle — so the auto-created role pins `aws:SourceArn` to a wildcarded ARN
+ * (`arn:...:routerInput:*` / `arn:...:routerOutput:*`). To pin the exact ARN, supply your
+ * own `role`.
+ *
+ * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  */
 export interface RouterSrtEncryption {
   /**
    * IAM role that MediaConnect assumes to access the Secrets Manager secret.
    *
-   * @default - a scoped role is created automatically with read access to the provided secret
+   * @default - a scoped role is auto-created with read access to the secret and a
+   * confused-deputy trust condition. See the **Encryption** section of the module README
+   * for the generated trust policy.
    */
   readonly role?: IRole;
   /**
@@ -589,21 +621,31 @@ export enum EncryptionKeyType {
 
 /**
  * Resolve an IAM role for MediaConnect to access a Secrets Manager secret. Returns the
- * user-provided role if supplied, otherwise auto-creates a scoped role with inline
- * `secretsmanager:GetSecretValue`/`DescribeSecret` and an `aws:SourceAccount` trust
- * condition, plus `kms:Decrypt` on the secret's encryption key if one is configured.
+ * user-provided `role` if present, otherwise auto-creates a scoped role: inline
+ * secret read, `kms:Decrypt` when the secret has a CMK, and a trust policy with
+ * `aws:SourceAccount` (plus `aws:SourceArn` when `sourceArn` is given).
  *
+ * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  * @internal
  */
-export function resolveEncryptionRole(scope: Construct, id: string, role: IRole | undefined, secret: ISecret): IRole {
+export function resolveEncryptionRole(
+  scope: Construct,
+  id: string,
+  role: IRole | undefined,
+  secret: ISecret,
+  sourceArn?: string,
+): IRole {
   if (role) return role;
 
+  const conditions: Record<string, Record<string, string>> = {
+    StringEquals: { 'aws:SourceAccount': Aws.ACCOUNT_ID },
+  };
+  if (sourceArn !== undefined) {
+    conditions.ArnLike = { 'aws:SourceArn': sourceArn };
+  }
+
   const created = new Role(scope, id, {
-    assumedBy: new ServicePrincipal('mediaconnect.amazonaws.com', {
-      conditions: {
-        StringEquals: { 'aws:SourceAccount': Aws.ACCOUNT_ID },
-      },
-    }),
+    assumedBy: new ServicePrincipal('mediaconnect.amazonaws.com', { conditions }),
     description: 'Auto-generated MediaConnect role for accessing the encryption secret',
     inlinePolicies: {
       SecretAccess: new PolicyDocument({
@@ -623,12 +665,11 @@ export function resolveEncryptionRole(scope: Construct, id: string, role: IRole 
 }
 
 /**
- * Render the CFN-shape static-key encryption configuration. Auto-creates a scoped IAM
- * role if `encryption.role` is `undefined`.
+ * Render the CFN static-key encryption block, auto-creating a role when none is supplied.
  * @internal
  */
-export function renderStaticKeyEncryption(scope: Construct, encryption: StaticKeyEncryption) {
-  const role = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret);
+export function renderStaticKeyEncryption(scope: Construct, encryption: StaticKeyEncryption, sourceArn?: string) {
+  const role = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret, sourceArn);
   return {
     keyType: KeyType.STATIC_KEY.value,
     roleArn: role.roleArn,
@@ -638,12 +679,11 @@ export function renderStaticKeyEncryption(scope: Construct, encryption: StaticKe
 }
 
 /**
- * Render the CFN-shape SRT-password encryption configuration. Auto-creates a scoped IAM
- * role if `encryption.role` is `undefined`.
+ * Render the CFN SRT-password encryption block, auto-creating a role when none is supplied.
  * @internal
  */
-export function renderSrtPasswordEncryption(scope: Construct, encryption: SrtPasswordEncryption) {
-  const role = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret);
+export function renderSrtPasswordEncryption(scope: Construct, encryption: SrtPasswordEncryption, sourceArn?: string) {
+  const role = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret, sourceArn);
   return {
     keyType: KeyType.SRT_PASSWORD.value,
     roleArn: role.roleArn,
@@ -652,13 +692,12 @@ export function renderSrtPasswordEncryption(scope: Construct, encryption: SrtPas
 }
 
 /**
- * Render the CFN-shape router SRT encryption configuration block (the inner
- * `encryptionKey` / `decryptionKey` object). Auto-creates a scoped IAM role if
- * `encryption.role` is `undefined`.
+ * Render the CFN router SRT encryption block (inner `encryptionKey` object),
+ * auto-creating a role when none is supplied.
  * @internal
  */
-export function renderRouterSrtEncryption(scope: Construct, id: string, encryption: RouterSrtEncryption) {
-  const role = resolveEncryptionRole(scope, id, encryption.role, encryption.secret);
+export function renderRouterSrtEncryption(scope: Construct, id: string, encryption: RouterSrtEncryption, sourceArn?: string) {
+  const role = resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn);
   return {
     encryptionKey: {
       roleArn: role.roleArn,
@@ -668,15 +707,13 @@ export function renderRouterSrtEncryption(scope: Construct, id: string, encrypti
 }
 
 /**
- * Render the CFN-shape transit encryption configuration (SECRETS_MANAGER) from an
- * optional {@link TransitEncryption}. Returns the AUTOMATIC service-managed default
- * when no encryption is supplied. Auto-creates a scoped IAM role if `encryption.role`
- * is `undefined`.
+ * Render the CFN transit encryption block: SECRETS_MANAGER (auto-creating a role when
+ * none is supplied) when `encryption` is given, otherwise the AUTOMATIC default.
  * @internal
  */
-export function renderTransitEncryption(scope: Construct, id: string, encryption?: TransitEncryption) {
+export function renderTransitEncryption(scope: Construct, id: string, encryption?: TransitEncryption, sourceArn?: string) {
   if (encryption) {
-    const role = resolveEncryptionRole(scope, id, encryption.role, encryption.secret);
+    const role = resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn);
     return {
       encryptionKeyConfiguration: {
         secretsManager: {

@@ -39,6 +39,28 @@
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
          }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":mediaconnect:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":flow:*:srt-listener-decryption-flow"
+           ]
+          ]
+         }
         }
        },
        "Effect": "Allow",
@@ -110,6 +132,28 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":mediaconnect:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":flow:*:zixi-push-decryption-flow"
+           ]
+          ]
          }
         }
        },
@@ -183,6 +227,28 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":mediaconnect:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":flow:*:srt-caller-decryption-flow"
+           ]
+          ]
          }
         }
        },

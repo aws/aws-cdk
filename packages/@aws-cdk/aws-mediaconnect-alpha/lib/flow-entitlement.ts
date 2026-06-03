@@ -163,7 +163,7 @@ export class FlowEntitlement extends FlowEntitlementBase {
       subscribers: props.subscribers,
       dataTransferSubscriberFeePercent: props.dataTransferSubscriberFeePercent,
       entitlementStatus: props.entitlementStatus,
-      encryption: props.encryption ? renderStaticKeyEncryption(this, props.encryption) : undefined,
+      encryption: props.encryption ? renderStaticKeyEncryption(this, props.encryption, props.flow.flowArn) : undefined,
     });
 
     this.entitlementArn = resource.attrEntitlementArn;

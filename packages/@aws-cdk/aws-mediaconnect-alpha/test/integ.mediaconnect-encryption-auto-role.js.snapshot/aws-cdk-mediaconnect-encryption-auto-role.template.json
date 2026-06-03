@@ -48,6 +48,28 @@
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
          }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":mediaconnect:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":flow:*:auto-role-flow"
+           ]
+          ]
+         }
         }
        },
        "Effect": "Allow",
@@ -119,6 +141,14 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "FlowA74D6E88",
+           "FlowArn"
+          ]
          }
         }
        },
@@ -196,6 +226,14 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "FlowA74D6E88",
+           "FlowArn"
+          ]
          }
         }
        },
@@ -284,6 +322,28 @@
         "StringEquals": {
          "aws:SourceAccount": {
           "Ref": "AWS::AccountId"
+         }
+        },
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":mediaconnect:",
+            {
+             "Ref": "AWS::Region"
+            },
+            ":",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":routerInput:*"
+           ]
+          ]
          }
         }
        },

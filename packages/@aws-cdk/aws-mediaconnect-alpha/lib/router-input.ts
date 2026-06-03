@@ -1,5 +1,5 @@
 import type { Bitrate, IResource } from 'aws-cdk-lib';
-import { Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
+import { ArnFormat, Duration, Fn, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
 import { CfnRouterInput } from 'aws-cdk-lib/aws-mediaconnect';
@@ -568,9 +568,13 @@ export class RouterInputProtocol {
    * the CFN configuration shape (with SRT decryption auto-role materialized if needed),
    * and the ingest port if the protocol has one.
    *
+   * @param scope         Construct that scopes the auto-created decryption role
+   * @param routerInputArn  Optional ARN of the consuming router input — when provided,
+   *                        scopes the auto-created decryption role's trust policy.
+   *
    * @internal
    */
-  public _bind(scope: Construct): {
+  public _bind(scope: Construct, routerInputArn?: string): {
     name: RouterInputProtocolOptions;
     config: CfnRouterInput.RouterInputProtocolConfigurationProperty;
     port?: number;
@@ -579,7 +583,7 @@ export class RouterInputProtocol {
       return { name: this._protocolName, config: this._config, port: this._port };
     }
 
-    const decryptionConfiguration = renderRouterSrtEncryption(scope, 'DecryptionRole', this._decryption);
+    const decryptionConfiguration = renderRouterSrtEncryption(scope, 'DecryptionRole', this._decryption, routerInputArn);
 
     if (this._config.srtListener) {
       return {
@@ -930,7 +934,9 @@ export abstract class RouterInputConfiguration {
    * constructor — each concrete subclass supplies its own variant-specific rendering.
    * @internal
    */
-  public abstract _bind(scope: Construct): { config: CfnRouterInput.RouterInputConfigurationProperty; availabilityZone?: string };
+  public abstract _bind(scope: Construct, routerInputArn?: string): {
+    config: CfnRouterInput.RouterInputConfigurationProperty; availabilityZone?: string;
+  };
 
   /**
    * Compute the ingest endpoints for protocol-based inputs that listen on one or more
@@ -962,8 +968,8 @@ function renderIngestUrl(protocolName: string, port: number, ipAddress: string):
 class StandardRouterInputConfig extends RouterInputConfiguration {
   constructor(private readonly props: StandardConfigurationProps) { super(); }
 
-  public _bind(scope: Construct) {
-    const protocol = this.props.protocol._bind(scope);
+  public _bind(scope: Construct, routerInputArn?: string) {
+    const protocol = this.props.protocol._bind(scope, routerInputArn);
     return {
       config: {
         standard: {
@@ -990,13 +996,13 @@ class StandardRouterInputConfig extends RouterInputConfiguration {
 class FailoverRouterInputConfig extends RouterInputConfiguration {
   constructor(private readonly props: FailoverConfigurationProps) { super(); }
 
-  public _bind(scope: Construct) {
+  public _bind(scope: Construct, routerInputArn?: string) {
     const priority = (this.props.sourcePriority ?? SourcePriorityConfig.none())._bind();
     return {
       config: {
         failover: {
           networkInterfaceArn: this.props.networkInterface.routerNetworkInterfaceArn,
-          protocolConfigurations: this.props.protocols.map(p => p._bind(scope).config),
+          protocolConfigurations: this.props.protocols.map(p => p._bind(scope, routerInputArn).config),
           sourcePriorityMode: priority.sourcePriorityMode,
           primarySourceIndex: priority.primarySourceIndex,
         },
@@ -1023,12 +1029,12 @@ class FailoverRouterInputConfig extends RouterInputConfiguration {
 class MergeRouterInputConfig extends RouterInputConfiguration {
   constructor(private readonly props: MergeConfigurationProps) { super(); }
 
-  public _bind(scope: Construct) {
+  public _bind(scope: Construct, routerInputArn?: string) {
     return {
       config: {
         merge: {
           networkInterfaceArn: this.props.networkInterface.routerNetworkInterfaceArn,
-          protocolConfigurations: this.props.protocols.map(p => p._bind(scope).config),
+          protocolConfigurations: this.props.protocols.map(p => p._bind(scope, routerInputArn).config),
           mergeRecoveryWindowMilliseconds: this.props.mergeRecoveryWindow.toMilliseconds(),
         },
       },
@@ -1066,13 +1072,13 @@ class MediaConnectFlowRouterInputConfig extends RouterInputConfiguration {
     private readonly availabilityZone?: string,
   ) { super(); }
 
-  public _bind(scope: Construct) {
+  public _bind(scope: Construct, routerInputArn?: string) {
     return {
       config: {
         mediaConnectFlow: {
           flowArn: this.options.flow?.flowArn,
           flowOutputArn: this.options.flowOutput?.flowOutputArn,
-          sourceTransitDecryption: renderTransitEncryption(scope, 'SourceTransitDecryptionRole', this.options.sourceTransitDecryption),
+          sourceTransitDecryption: renderTransitEncryption(scope, 'SourceTransitDecryptionRole', this.options.sourceTransitDecryption, routerInputArn),
         },
       },
       availabilityZone: this.availabilityZone,
@@ -1104,14 +1110,14 @@ class MediaLiveChannelRouterInputConfig extends RouterInputConfiguration {
     private readonly availabilityZone?: string,
   ) { super(); }
 
-  public _bind(scope: Construct) {
+  public _bind(scope: Construct, routerInputArn?: string) {
     return {
       config: {
         mediaLiveChannel: {
           mediaLiveChannelArn: this.options.mediaLiveChannelArn,
           mediaLiveChannelOutputName: this.options.mediaLiveChannelOutputName,
           mediaLivePipelineId: this.options.mediaLivePipelineId,
-          sourceTransitDecryption: renderTransitEncryption(scope, 'SourceTransitDecryptionRole', this.options.sourceTransitDecryption),
+          sourceTransitDecryption: renderTransitEncryption(scope, 'SourceTransitDecryptionRole', this.options.sourceTransitDecryption, routerInputArn),
         },
       },
       availabilityZone: this.availabilityZone,
@@ -1388,7 +1394,16 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
     const stack = Stack.of(this);
     const targetRegion = props.regionName ?? stack.region;
 
-    const configBind = props.configuration._bind(this);
+    // Wildcard the id — pinning the live ARN (attrArn) would create a role → router-input → role cycle.
+    const routerInputArn = stack.formatArn({
+      service: 'mediaconnect',
+      region: targetRegion,
+      resource: 'routerInput',
+      resourceName: '*',
+      arnFormat: ArnFormat.COLON_RESOURCE_NAME,
+    });
+
+    const configBind = props.configuration._bind(this, routerInputArn);
 
     // Validate AZ matches region if provided
     if (configBind.availabilityZone && !configBind.availabilityZone.startsWith(targetRegion)) {
@@ -1397,7 +1412,7 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
 
     // Set up transit encryption — the render helper creates a role (with inlined
     // secret-read permissions) when one isn't provided.
-    const transitEncryption = renderTransitEncryption(this, 'TransitEncryptionRole', props.transitEncryption);
+    const transitEncryption = renderTransitEncryption(this, 'TransitEncryptionRole', props.transitEncryption, routerInputArn);
 
     const routerinput = new CfnRouterInput(this, 'Resource', {
       name: this.physicalName,

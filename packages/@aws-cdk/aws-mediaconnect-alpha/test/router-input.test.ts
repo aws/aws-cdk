@@ -475,13 +475,27 @@ test('SRT Listener with decryption auto-creates a role when none is provided', (
   });
 
   const template = Template.fromStack(stack);
-  // A scoped role with aws:SourceAccount condition was auto-created on the RouterInput
+  // A scoped role was auto-created on the RouterInput. The trust policy carries
+  // both `aws:SourceAccount` and a wildcarded `aws:SourceArn` ArnLike condition
+  // — the wildcard covers the unconfigurable router-input id segment in the ARN.
+  // See README "Encryption — sharp edge for routers" for the full rationale.
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: Match.arrayWith([
         Match.objectLike({
           Principal: { Service: 'mediaconnect.amazonaws.com' },
-          Condition: { StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } } },
+          Condition: {
+            StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+            ArnLike: {
+              'aws:SourceArn': {
+                'Fn::Join': ['', [
+                  'arn:',
+                  { Ref: 'AWS::Partition' },
+                  ':mediaconnect:us-east-1:123456789012:routerInput:*',
+                ]],
+              },
+            },
+          },
         }),
       ]),
     },

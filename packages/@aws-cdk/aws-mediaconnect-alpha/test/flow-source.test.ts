@@ -231,14 +231,25 @@ test('Zixi Push source with static-key decryption auto-creates a role when none 
   expect(flow).toBeDefined();
 
   const template = Template.fromStack(stack);
-  // Auto-role with confused-deputy guard
+  // Auto-role with confused-deputy guard scoped to the flow
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: [{
         Effect: 'Allow',
         Principal: { Service: 'mediaconnect.amazonaws.com' },
         Action: 'sts:AssumeRole',
-        Condition: { StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } } },
+        Condition: {
+          StringEquals: { 'aws:SourceAccount': { Ref: 'AWS::AccountId' } },
+          ArnLike: {
+            'aws:SourceArn': {
+              'Fn::Join': ['', [
+                'arn:',
+                { Ref: 'AWS::Partition' },
+                ':mediaconnect:us-east-1:123456789012:flow:*:my-flow',
+              ]],
+            },
+          },
+        },
       }],
       Version: '2012-10-17',
     },

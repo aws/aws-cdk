@@ -770,9 +770,11 @@ MediaConnect offers three flow sizes that determine feature support:
 
 | Flow Size | Transport Streams | NDI | CDI / JPEG XS |
 |-----------|------------------|-----|---------------|
-| `MEDIUM` (default) | Up to 50 outputs | ❌ | ❌ |
-| `LARGE` | Up to 50 outputs (may include 1 NDI output) | ✅ | ❌ |
-| `LARGE_4X` | ❌ | ❌ | Up to 10 outputs |
+| `MEDIUM` (default) | ✅ | ❌ | ❌ |
+| `LARGE` | ✅ | ✅ | ❌ |
+| `LARGE_4X` | ❌ | ❌ | ✅ |
+
+This table maps each `FlowSize` to the capabilities the construct validates. For output counts, throughput limits, and other per-size details, see [Flow sizes and capabilities](https://docs.aws.amazon.com/mediaconnect/latest/ug/flow-sizes-capabilities.html).
 
 The construct validates flow size constraints at synthesis time based on the source protocol and NDI configuration:
 
@@ -784,15 +786,22 @@ These are mutually exclusive — CDI/JPEG XS and NDI cannot coexist on the same 
 
 ```ts
 declare const stack: Stack;
+declare const ndiVpcInterface: VpcInterfaceConfig;
 declare const efaInterface: VpcInterfaceConfig;
 declare const videoStream: MediaStream;
 
-// NDI requires LARGE
+// NDI requires LARGE, an encoding profile, and at least one discovery server
 new Flow(stack, 'NdiFlow', {
   flowSize: FlowSize.LARGE,
-  ndiConfig: { ndiState: State.ENABLED },
+  ndiConfig: {
+    ndiState: State.ENABLED,
+    ndiDiscoveryServers: [{
+      discoveryServerAddress: '10.0.0.10',
+      vpcInterface: ndiVpcInterface,
+    }],
+  },
   encodingConfig: {
-    // NDI sources require encodingConfig
+    encodingProfile: EncodingProfile.CONTRIBUTION_H264_DEFAULT,
   },
   source: SourceConfiguration.ndi({
     flowSourceName: 'ndi-source',
@@ -980,7 +989,12 @@ MediaConnect supports two types of encryption:
 
 Note: CFN exposes only `static-key` and `srt-password` for flow output encryption today; SPEKE is not currently part of the surface.
 
-**Auto-created IAM role.** Every encryption struct accepts an optional `role`. Omit it and the consuming construct creates a scoped role for you: trust policy for `mediaconnect.amazonaws.com` with an `aws:SourceAccount` condition (confused-deputy protection), and just enough permission to read the provided secret (including `kms:Decrypt` when the secret uses a customer-managed KMS key). Provide your own `role` when you need stricter control or a shared identity.
+**Auto-created IAM role.** Every encryption struct accepts an optional `role`. Omit it and the consuming construct creates a scoped role for you: trust policy for `mediaconnect.amazonaws.com` with `aws:SourceAccount` + `aws:SourceArn` conditions (confused-deputy protection), and just enough permission to read the provided secret (including `kms:Decrypt` when the secret uses a customer-managed KMS key). Provide your own `role` when you need stricter control or a shared identity.
+
+**Trust-policy scope: flows vs. routers.** When the L2 auto-creates a role, it also pins `aws:SourceArn` to the consuming resource:
+
+- **Flows** — the trust policy pins the flow ARN (`arn:...:flow:*:<flow-name>`). The `*` wildcards the service-assigned id segment; the flow name is fixed at create time.
+- **Routers** — the trust policy can only pin a wildcarded ARN (`arn:...:routerInput:*` / `arn:...:routerOutput:*`). Router I/O ARNs use a service-generated id segment that is unknown at synth time, and using the live ARN attribute would create a CloudFormation dependency cycle (role → router → role). If you need per-resource pinning, supply your own `role` with a trust condition that pins the exact ARN — you can compute it from the resource's `routerInputId` / `routerOutputId` after first deploy and apply it on a follow-up deploy.
 
 ### Static Key Encryption
 
@@ -1158,24 +1172,6 @@ const output = new RouterOutput(stack, 'EncryptedSrtOutput', {
 ```
 
 Note: `RouterSrtEncryption` is distinct from `SrtPasswordEncryption` (used on flow sources/outputs) — router outputs use a simpler CFN shape without a `keyType` discriminator.
-
-### IAM Role and Secrets Manager
-
-The encryption role must allow MediaConnect to assume it and access the secret:
-
-```ts
-declare const stack: Stack;
-
-const encryptionRole = new iam.Role(stack, 'EncryptionRole', {
-  assumedBy: new iam.ServicePrincipal('mediaconnect.amazonaws.com'),
-});
-
-const encryptionSecret = secretsmanager.Secret.fromSecretNameV2(
-  stack, 'EncryptionSecret', 'mediaconnect/static-key',
-);
-
-encryptionSecret.grantRead(encryptionRole);
-```
 
 ## CloudWatch Metrics
 

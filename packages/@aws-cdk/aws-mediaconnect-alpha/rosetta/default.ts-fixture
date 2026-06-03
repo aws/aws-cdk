@@ -15,6 +15,7 @@ import {
   Colorimetry,
   Encoding,
   EncryptionAlgorithm,
+  EncodingProfile,
   Flow,
   FlowEntitlement,
   FlowOutput,
