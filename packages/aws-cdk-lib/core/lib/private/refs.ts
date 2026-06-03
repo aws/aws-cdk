@@ -136,14 +136,24 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
     return reference;
   }
 
-  // Emit a once-per-stack warning when the context flag is not explicitly set
-  if (crossStackReferenceStrength(consumer) === undefined && !(consumer as any)[WEAK_REFS_WARNING_EMITTED]) {
-    (consumer as any)[WEAK_REFS_WARNING_EMITTED] = true;
-    Annotations.of(consumer).addWarningV2(
-      '@aws-cdk/core:crossStackReferencesDefaultStrong',
-      `Cross-stack references default to "strong". We recommend setting "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" context to "weak" to avoid the deadly embrace problem. ` +
-      'Set this context key to any value to silence this warning.',
-    );
+  // Emit a once-per-stack warning nudging users toward weak references
+  if (!(consumer as any)[WEAK_REFS_WARNING_EMITTED]) {
+    const contextStrength = crossStackReferenceStrength(consumer);
+    if (contextStrength === undefined) {
+      (consumer as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossStackReferencesDefaultStrong',
+        `We recommend you set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "both" and deploy everywhere. ` +
+        '(More information: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+      );
+    } else if (contextStrength === 'both') {
+      (consumer as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossStackReferencesBothTransitional',
+        `After you have deployed everywhere, set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "weak". ` +
+        '(More information: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+      );
+    }
   }
 
   // unsupported: stacks from different apps

@@ -1126,6 +1126,30 @@ describe('stack', () => {
     expect(relevantWarnings).toHaveLength(0);
   });
 
+  test('emits transitional warning when cross-stack reference flag is set to both', () => {
+    // GIVEN - context flag set to 'both'
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1');
+    const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN
+    new CfnResource(stack2, 'Consumer1', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop1: resource1.getAtt('Arn') },
+    });
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - transitional warning telling user to move to 'weak'
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesBothTransitional'),
+    );
+    expect(relevantWarnings).toHaveLength(1);
+    expect(relevantWarnings[0].path).toContain('Stack2');
+  });
+
   test('cross-region strong references use ExportWriter/ExportReader', () => {
     // GIVEN - strength is explicitly 'strong'
     const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
