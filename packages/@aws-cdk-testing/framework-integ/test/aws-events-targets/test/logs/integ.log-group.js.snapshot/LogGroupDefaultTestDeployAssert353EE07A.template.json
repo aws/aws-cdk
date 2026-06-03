@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "AwsApiCallEventBridgeputEventse56fc1339f6015b6ae5e61633badf9f8": {
+  "AwsApiCallEventBridgeputEvents83230410cf2e7f1fa2ea5b54edd7d5e0": {
    "Type": "Custom::DeployAssert@SdkCallEventBridgeputEvents",
    "Properties": {
     "ServiceToken": {
@@ -12,10 +12,10 @@
     "service": "EventBridge",
     "api": "putEvents",
     "parameters": {
-     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1771146556463\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
+     "Entries": "[{\"Detail\":\"{\\\"date\\\":\\\"abc1780407812209\\\"}\",\"DetailType\":\"cdk-integ-custom-rule\",\"Source\":\"cdk-integ\"}]"
     },
     "flattenResponse": "false",
-    "salt": "1771146556477"
+    "salt": "1780407812216"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -87,7 +87,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "4dc53751ed80274daf175efeff9265dbc5cca7f749c3bdceaf70bc630eaec6d1.zip"
+     "S3Key": "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -96,10 +96,14 @@
       "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73",
       "Arn"
      ]
+    },
+    "LoggingConfig": {
+     "LogFormat": "JSON",
+     "ApplicationLogLevel": "FATAL"
     }
    }
   },
-  "AwsApiCallCloudWatchLogsfilterLogEvents1ddae0449d078b7c6893b6ea9304a2a2": {
+  "AwsApiCallCloudWatchLogsfilterLogEvents9cccb6169523fc161d7995d6f1bc984b": {
    "Type": "Custom::DeployAssert@SdkCallCloudWatchLogsfilterLogEvents",
    "Properties": {
     "ServiceToken": {
@@ -110,7 +114,7 @@
     },
     "service": "CloudWatchLogs",
     "api": "filterLogEvents",
-    "expected": "{\"$StringLike\":\"abc1771146556463\"}",
+    "expected": "{\"$StringLike\":\"abc1780407812209\"}",
     "actualPath": "events.0.message",
     "parameters": {
      "logGroupName": {
@@ -125,27 +129,27 @@
        ]
       ]
      },
-     "startTime": "1771146556463",
+     "startTime": "1780407812209",
      "limit": "1"
     },
     "flattenResponse": "true",
     "outputPaths": [
      "events.0.message"
     ],
-    "salt": "1771146556478"
+    "salt": "1780407812217"
    },
    "DependsOn": [
-    "AwsApiCallEventBridgeputEventse56fc1339f6015b6ae5e61633badf9f8"
+    "AwsApiCallEventBridgeputEvents83230410cf2e7f1fa2ea5b54edd7d5e0"
    ],
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
   }
  },
  "Outputs": {
-  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents1ddae0449d078b7c6893b6ea9304a2a2": {
+  "AssertionResultsAwsApiCallCloudWatchLogsfilterLogEvents9cccb6169523fc161d7995d6f1bc984b": {
    "Value": {
     "Fn::GetAtt": [
-     "AwsApiCallCloudWatchLogsfilterLogEvents1ddae0449d078b7c6893b6ea9304a2a2",
+     "AwsApiCallCloudWatchLogsfilterLogEvents9cccb6169523fc161d7995d6f1bc984b",
      "assertion"
     ]
    }

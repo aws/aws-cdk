@@ -17,6 +17,7 @@ import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import type { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
+import type { ReferenceStrength } from './cross-stack-reference-strength';
 import { ValidationError } from './errors';
 import { deepMerge } from './private/deep-merge';
 import type { ResourceEnvironment } from './environment';
@@ -84,6 +85,10 @@ export class CfnResource extends CfnRefElement {
    * Is filled during prepare().
    */
   private dependsOn: Set<CfnResource> | undefined;
+
+  private _crossStackReferenceStrength?: ReferenceStrength;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Creates a resource construct.
@@ -187,6 +192,25 @@ export class CfnResource extends CfnRefElement {
     if (options.applyToUpdateReplacePolicy !== false) {
       this.cfnOptions.updateReplacePolicy = updateReplacePolicy;
     }
+  }
+
+  /**
+   * Sets the cross-stack reference strength for this resource.
+   *
+   * When set, any cross-stack reference to this resource will use the specified
+   * strength instead of the global default from the consuming stack's context.
+   *
+   * @param strength - The reference strength to use for this resource.
+   */
+  public applyCrossStackReferenceStrength(strength: ReferenceStrength): void {
+    this._crossStackReferenceStrength = strength;
+  }
+
+  /**
+   * @internal
+   */
+  public get _crossStackReferenceStrengthOverride(): ReferenceStrength | undefined {
+    return this._crossStackReferenceStrength;
   }
 
   /**
@@ -294,6 +318,10 @@ export class CfnResource extends CfnRefElement {
    */
   public addPropertyDeletionOverride(propertyPath: string) {
     this.addPropertyOverride(propertyPath, undefined);
+  }
+
+  public cfnPropertyName(cdkPropertyName: string): string | undefined {
+    return this.cfnPropertyNames[cdkPropertyName];
   }
 
   /**

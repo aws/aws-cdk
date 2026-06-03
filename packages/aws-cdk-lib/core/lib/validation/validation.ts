@@ -1,14 +1,15 @@
-import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1 } from './report';
+import type { IConstruct } from 'constructs';
+import type { PolicyValidationPluginReport, PolicyValidationPluginReportBeta1, PolicyViolatingResourceBeta1, PolicyViolationBeta1 } from './report';
 
 /**
  * Represents a validation plugin that will be executed during synthesis
  *
  * @example
  * /// fixture=validation-plugin
- * class MyPlugin implements IPolicyValidationPluginBeta1 {
+ * class MyPlugin implements IPolicyValidationPlugin {
  *   public readonly name = 'MyPlugin';
  *
- *   public validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+ *   public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
  *     // First read the templates using context.templatePaths...
  *
  *     // ...then perform the validation, and then compose and return the report.
@@ -70,6 +71,16 @@ export interface IPolicyValidationContext {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   */
+  readonly appConstruct: IConstruct;
 }
 
 /**
@@ -120,4 +131,53 @@ export interface IPolicyValidationContextBeta1 {
    * The absolute path of all templates to be processed
    */
   readonly templatePaths: string[];
+
+  /**
+   * The root construct of the app being validated.
+   *
+   * Plugins may walk this tree for typed L1 property access and token
+   * resolution via `Stack.of(node).resolve()`. The tree is finalized and
+   * should be treated as read-only; mutations have no effect on synthesized
+   * output.
+   */
+  readonly appConstruct: IConstruct;
 }
+
+/**
+ * Convert an `IPolicyValidationPlugin` to an `IPolicyValidationPluginBeta1`.
+ *
+ * The stable `PolicyViolatingResource` interface has optional `resourceLogicalId`
+ * and `templatePath` fields to support annotation-sourced violations. The Beta1
+ * interface keeps those fields required. This adapter bridges the gap by
+ * providing fallback values for the optional fields.
+ *
+ * @internal
+ */
+export function _toBeta1Plugin(plugin: IPolicyValidationPlugin): IPolicyValidationPluginBeta1 {
+  return {
+    name: plugin.name,
+    version: plugin.version,
+    ruleIds: plugin.ruleIds,
+    validate(context: IPolicyValidationContextBeta1): PolicyValidationPluginReportBeta1 {
+      const report = plugin.validate(context);
+      return {
+        success: report.success,
+        pluginVersion: report.pluginVersion,
+        metadata: report.metadata,
+        violations: report.violations.map((v): PolicyViolationBeta1 => ({
+          ruleName: v.ruleName,
+          description: v.description,
+          fix: v.fix,
+          severity: v.severity,
+          ruleMetadata: v.ruleMetadata,
+          violatingResources: v.violatingResources.map((r): PolicyViolatingResourceBeta1 => ({
+            resourceLogicalId: r.resourceLogicalId ?? '',
+            templatePath: r.templatePath ?? '',
+            locations: r.locations,
+          })),
+        })),
+      };
+    },
+  };
+}
+
