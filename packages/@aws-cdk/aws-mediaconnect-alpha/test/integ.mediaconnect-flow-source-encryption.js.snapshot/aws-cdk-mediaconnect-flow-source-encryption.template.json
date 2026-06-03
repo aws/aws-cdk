@@ -71,25 +71,41 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "SrtListenerSecret6805946C"
-         }
-        }
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret"
+   }
+  },
+  "SrtListenerFlowEncryptionRoleDefaultPolicy94EF3746": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
-       "Version": "2012-10-17"
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "SrtListenerSecret6805946C"
+       }
       },
-      "PolicyName": "SecretAccess"
+      {
+       "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:ListSecretVersionIds"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "SrtListenerSecret6805946C"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SrtListenerFlowEncryptionRoleDefaultPolicy94EF3746",
+    "Roles": [
+     {
+      "Ref": "SrtListenerFlowEncryptionRole503EDE85"
      }
     ]
    }
@@ -165,25 +181,41 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "ZixiPushSecretEA3221FE"
-         }
-        }
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret"
+   }
+  },
+  "ZixiPushFlowEncryptionRoleDefaultPolicy004A27F1": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
-       "Version": "2012-10-17"
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ZixiPushSecretEA3221FE"
+       }
       },
-      "PolicyName": "SecretAccess"
+      {
+       "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:ListSecretVersionIds"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "ZixiPushSecretEA3221FE"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ZixiPushFlowEncryptionRoleDefaultPolicy004A27F1",
+    "Roles": [
+     {
+      "Ref": "ZixiPushFlowEncryptionRoleEEFFB7D7"
      }
     ]
    }
@@ -260,25 +292,41 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "SrtCallerSecretE45E72CC"
-         }
-        }
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret"
+   }
+  },
+  "SrtCallerFlowEncryptionRoleDefaultPolicyF5761A06": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
-       "Version": "2012-10-17"
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "SrtCallerSecretE45E72CC"
+       }
       },
-      "PolicyName": "SecretAccess"
+      {
+       "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:ListSecretVersionIds"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "SrtCallerSecretE45E72CC"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SrtCallerFlowEncryptionRoleDefaultPolicyF5761A06",
+    "Roles": [
+     {
+      "Ref": "SrtCallerFlowEncryptionRole4D061A8C"
      }
     ]
    }

@@ -80,25 +80,41 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "TransitSecretCF30D961"
-         }
-        }
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret"
+   }
+  },
+  "FlowRouterTransitDecryptionRoleDefaultPolicyBB88BEDA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
-       "Version": "2012-10-17"
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "TransitSecretCF30D961"
+       }
       },
-      "PolicyName": "SecretAccess"
+      {
+       "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:ListSecretVersionIds"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "TransitSecretCF30D961"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "FlowRouterTransitDecryptionRoleDefaultPolicyBB88BEDA",
+    "Roles": [
+     {
+      "Ref": "FlowRouterTransitDecryptionRole0305A46E"
      }
     ]
    }
@@ -160,25 +176,41 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "StaticKeySecret0015B52A"
-         }
-        }
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret"
+   }
+  },
+  "ZixiPullOutputEncryptionRoleDefaultPolicy47CEB40C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
-       "Version": "2012-10-17"
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "StaticKeySecret0015B52A"
+       }
       },
-      "PolicyName": "SecretAccess"
+      {
+       "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:ListSecretVersionIds"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "StaticKeySecret0015B52A"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ZixiPullOutputEncryptionRoleDefaultPolicy47CEB40C",
+    "Roles": [
+     {
+      "Ref": "ZixiPullOutputEncryptionRole49B6B2B6"
      }
     ]
    }
@@ -245,25 +277,41 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "SrtPasswordSecret3F306C2E"
-         }
-        }
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret"
+   }
+  },
+  "SrtCallerOutputEncryptionRoleDefaultPolicy1DE39D42": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
-       "Version": "2012-10-17"
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "SrtPasswordSecret3F306C2E"
+       }
       },
-      "PolicyName": "SecretAccess"
+      {
+       "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:ListSecretVersionIds"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "SrtPasswordSecret3F306C2E"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SrtCallerOutputEncryptionRoleDefaultPolicy1DE39D42",
+    "Roles": [
+     {
+      "Ref": "SrtCallerOutputEncryptionRole34317E9C"
      }
     ]
    }
@@ -355,25 +403,41 @@
      ],
      "Version": "2012-10-17"
     },
-    "Description": "Auto-generated MediaConnect role for accessing the encryption secret",
-    "Policies": [
-     {
-      "PolicyDocument": {
-       "Statement": [
-        {
-         "Action": [
-          "secretsmanager:DescribeSecret",
-          "secretsmanager:GetSecretValue"
-         ],
-         "Effect": "Allow",
-         "Resource": {
-          "Ref": "RouterSrtSecret91A5209A"
-         }
-        }
+    "Description": "Auto-generated MediaConnect role for accessing the encryption secret"
+   }
+  },
+  "RouterInputDecryptionRoleDefaultPolicyDDDCB041": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
        ],
-       "Version": "2012-10-17"
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "RouterSrtSecret91A5209A"
+       }
       },
-      "PolicyName": "SecretAccess"
+      {
+       "Action": [
+        "secretsmanager:GetResourcePolicy",
+        "secretsmanager:ListSecretVersionIds"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "RouterSrtSecret91A5209A"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "RouterInputDecryptionRoleDefaultPolicyDDDCB041",
+    "Roles": [
+     {
+      "Ref": "RouterInputDecryptionRoleDB242EE5"
      }
     ]
    }

@@ -1,5 +1,5 @@
 import { App, Bitrate, Duration, Stack } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Match, Template } from 'aws-cdk-lib/assertions';
 import { Vpc, IpAddresses, SubnetType, PrivateSubnet, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Role, ServicePrincipal, PolicyDocument, PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
@@ -261,6 +261,26 @@ test('Zixi Push source with static-key decryption auto-creates a role when none 
         Algorithm: 'aes256',
         KeyType: 'static-key',
       },
+    },
+  });
+  // The auto-role can read exactly the one secret (a Ref, never a wildcard). grantRead
+  // emits GetSecretValue/DescribeSecret; the second grant adds the GetResourcePolicy/
+  // ListSecretVersionIds that MediaConnect's documented policy also requires. Both
+  // statements are scoped to the same secret ARN.
+  template.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Effect: 'Allow',
+          Action: Match.arrayWith(['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret']),
+          Resource: { Ref: Match.stringLikeRegexp('DecSecret') },
+        }),
+        Match.objectLike({
+          Effect: 'Allow',
+          Action: Match.arrayWith(['secretsmanager:GetResourcePolicy', 'secretsmanager:ListSecretVersionIds']),
+          Resource: { Ref: Match.stringLikeRegexp('DecSecret') },
+        }),
+      ]),
     },
   });
 });

@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "6147f523838c1df3d9eebf1457cbbb80b2e811b735da3b4b31b5e112c2ef2a6d": {
+    "158a25b53ca0e33199f43ed16f286fae818c0d310f98347470b79663e71ce09f": {
       "displayName": "aws-cdk-mediaconnect-flow-source-encryption Template",
       "source": {
         "path": "aws-cdk-mediaconnect-flow-source-encryption.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-f122d3b5": {
+        "current_account-current_region-313a1897": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6147f523838c1df3d9eebf1457cbbb80b2e811b735da3b4b31b5e112c2ef2a6d.json",
+          "objectKey": "158a25b53ca0e33199f43ed16f286fae818c0d310f98347470b79663e71ce09f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,7 +1,7 @@
 import type { Bitrate } from 'aws-cdk-lib';
 import { Aws, Token, UnscopedValidationError } from 'aws-cdk-lib';
 import type { ISecurityGroup, ISubnet } from 'aws-cdk-lib/aws-ec2';
-import { PolicyDocument, PolicyStatement, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { Grant, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import type { IRole } from 'aws-cdk-lib/aws-iam';
 import type { ISecret } from 'aws-cdk-lib/aws-secretsmanager';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -647,19 +647,21 @@ export function resolveEncryptionRole(
   const created = new Role(scope, id, {
     assumedBy: new ServicePrincipal('mediaconnect.amazonaws.com', { conditions }),
     description: 'Auto-generated MediaConnect role for accessing the encryption secret',
-    inlinePolicies: {
-      SecretAccess: new PolicyDocument({
-        statements: [
-          new PolicyStatement({
-            actions: ['secretsmanager:GetSecretValue', 'secretsmanager:DescribeSecret'],
-            resources: [secret.secretArn],
-          }),
-        ],
-      }),
-    },
   });
 
-  secret.encryptionKey?.grantDecrypt(created);
+  // Grant helper: adds secret read (GetSecretValue/DescribeSecret) plus kms:Decrypt
+  // (with a kms:ViaService condition) when the secret uses a customer-managed key.
+  secret.grantRead(created);
+
+  // grantRead covers 2 of the 4 secret-read actions MediaConnect's policy needs; add the
+  // other 2, scoped to the same secret. (Skipping the doc's `ListSecrets` — it needs
+  // `Resource: *` and isn't required to read a known secret.)
+  // https://docs.aws.amazon.com/mediaconnect/latest/ug/iam-policy-examples-asm-secrets.html
+  Grant.addToPrincipal({
+    grantee: created,
+    actions: ['secretsmanager:GetResourcePolicy', 'secretsmanager:ListSecretVersionIds'],
+    resourceArns: [secret.secretArn],
+  });
 
   return created;
 }
