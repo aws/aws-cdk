@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
-import { flattenMeta, toCloudFormation } from './util';
+import { flattenMeta, getWarnings, toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import { Fact, RegionInfo } from '../../region-info';
 import type { ITaggableV2 } from '../lib';
@@ -1072,6 +1072,58 @@ describe('stack', () => {
       (r: any) => r.Type === 'Custom::CrossRegionExportReader',
     );
     expect(customResources2.length).toBeGreaterThan(0);
+  });
+
+  test('emits a single warning per stack when cross-stack reference flag is unset', () => {
+    // GIVEN - no context flag set
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+    const resource2 = new CfnResource(stack1, 'Resource2', { type: 'AWS::SNS::Topic' });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN - multiple cross-stack references from the same consumer
+    new CfnResource(stack2, 'Consumer1', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop1: resource1.getAtt('Arn') },
+    });
+    new CfnResource(stack2, 'Consumer2', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop2: resource2.getAtt('Arn') },
+    });
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - only one warning on the consumer stack
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
+    );
+    expect(relevantWarnings).toHaveLength(1);
+    expect(relevantWarnings[0].path).toContain('Stack2');
+  });
+
+  test('no warning when cross-stack reference flag is explicitly set', () => {
+    // GIVEN - context flag explicitly set to 'strong'
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const stack1 = new Stack(app, 'Stack1');
+    const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN
+    new CfnResource(stack2, 'Consumer1', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop1: resource1.getAtt('Arn') },
+    });
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - no warning because the flag is explicitly set
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
+    );
+    expect(relevantWarnings).toHaveLength(0);
   });
 
   test('cross-region strong references use ExportWriter/ExportReader', () => {

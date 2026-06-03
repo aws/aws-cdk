@@ -49,6 +49,8 @@ function crossStackReferenceStrength(scope: IConstruct): ReferenceStrength | und
   );
 }
 
+const WEAK_REFS_WARNING_EMITTED = Symbol.for('@aws-cdk/core.WeakRefsWarningEmitted');
+
 const OVERRIDDEN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CustomCoupledReference');
 
 /**
@@ -132,6 +134,16 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
     return reference;
+  }
+
+  // Emit a once-per-stack warning when the context flag is not explicitly set
+  if (crossStackReferenceStrength(consumer) === undefined && !(consumer as any)[WEAK_REFS_WARNING_EMITTED]) {
+    (consumer as any)[WEAK_REFS_WARNING_EMITTED] = true;
+    Annotations.of(consumer).addWarningV2(
+      '@aws-cdk/core:crossStackReferencesDefaultStrong',
+      `Cross-stack references default to "strong". We recommend setting "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" context to "weak" to avoid the deadly embrace problem. ` +
+      'Set this context key to any value to silence this warning.',
+    );
   }
 
   // unsupported: stacks from different apps
