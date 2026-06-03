@@ -19,6 +19,23 @@ const ESBUILD_MAJOR_VERSION = '0';
 const ESBUILD_DEFAULT_VERSION = '0.21';
 
 /**
+ * Returns true when `relativePath` (the output of `path.relative(projectRoot, ...)`)
+ * navigates out of the project root. A canonical relative path produced by
+ * `path.relative()` only starts with `..` segments when the target is outside
+ * the base; a literal `..` substring anywhere else (for example in a filename
+ * like `app..js`, or in a pnpm content-addressed directory such as
+ * `node_modules/.pnpm/file+..+pkg+0.0.1`) does not indicate path escape.
+ *
+ * On Windows, `path.relative()` cannot produce a relative path when the two
+ * paths are on different drives and returns the absolute target path instead
+ * (for example `D:\\other` relative to `C:\\project`). An absolute result is
+ * therefore also treated as an escape.
+ */
+function pathEscapesRoot(relativePath: string): boolean {
+  return path.isAbsolute(relativePath) || relativePath === '..' || relativePath.startsWith(`..${path.sep}`);
+}
+
+/**
  * Bundling properties
  */
 export interface BundlingProps extends BundlingOptions {
@@ -118,11 +135,11 @@ export class Bundling implements cdk.BundlingOptions {
     this.relativeEntryPath = path.relative(this.projectRoot, path.resolve(props.entry));
     this.relativeDepsLockFilePath = path.relative(this.projectRoot, path.resolve(props.depsLockFilePath));
 
-    if (this.relativeEntryPath.includes('..')) {
+    if (pathEscapesRoot(this.relativeEntryPath)) {
       throw new ValidationError(lit`PathNotUnderRoot`, `entryPath (${props.entry}) should be under projectRoot (${this.projectRoot})`, scope);
     }
 
-    if (this.relativeDepsLockFilePath.includes('..')) {
+    if (pathEscapesRoot(this.relativeDepsLockFilePath)) {
       throw new ValidationError(lit`PathNotUnderRoot`, `depsLockFilePath (${props.depsLockFilePath}) should be under projectRoot (${this.projectRoot})`, scope);
     }
 
