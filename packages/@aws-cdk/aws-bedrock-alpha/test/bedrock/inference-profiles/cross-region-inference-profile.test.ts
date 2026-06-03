@@ -170,27 +170,28 @@ describe('CrossRegionInferenceProfile', () => {
 
       expect(statements).toHaveLength(2);
 
+      // Find statements by their distinguishing characteristics (order-independent)
+      const profileStatement = statements.find((s: any) =>
+        Array.isArray(s.Action) && s.Action.includes('bedrock:GetInferenceProfile'),
+      );
+      const fmStatement = statements.find((s: any) => s.Condition);
+
       // Statement 1: inference-profile in source region
-      const profileStatement = statements[0];
+      expect(profileStatement).toBeDefined();
       expect(profileStatement.Action).toEqual(['bedrock:GetInferenceProfile', 'bedrock:InvokeModel*']);
       expect(profileStatement.Effect).toBe('Allow');
-      // Resource should reference inference-profile with AWS::Region (source)
       const profileResource = JSON.stringify(profileStatement.Resource);
       expect(profileResource).toContain('inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0');
       expect(profileResource).toContain('AWS::Region');
 
       // Statement 2: foundation-model with wildcard region + condition
-      const fmStatement = statements[1];
+      expect(fmStatement).toBeDefined();
       expect(fmStatement.Action).toBe('bedrock:InvokeModel*');
       expect(fmStatement.Effect).toBe('Allow');
-      // Resource should be foundation-model with literal '*' as region
       const fmResource = JSON.stringify(fmStatement.Resource);
       expect(fmResource).toContain(':bedrock:*::foundation-model/anthropic.claude-3-5-sonnet-20240620-v1:0');
-      // Must have bedrock:InferenceProfileArn condition
-      expect(fmStatement.Condition).toBeDefined();
       expect(fmStatement.Condition.StringEquals).toBeDefined();
       expect(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']).toBeDefined();
-      // Condition value should reference the same inference-profile ARN
       const conditionValue = JSON.stringify(fmStatement.Condition.StringEquals['bedrock:InferenceProfileArn']);
       expect(conditionValue).toContain('inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0');
     });

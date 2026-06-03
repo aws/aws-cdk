@@ -252,7 +252,9 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantProfileUsage(grantee: IGrantable): Grant {
-    // Statement 1: Grant access to the inference profile in the source region
+    // Statement 1: Grant access to the inference profile in the source region.
+    // Note: we discard this Grant return value (same pattern as grantInvoke above).
+    // Both statements are added to the principal's policy regardless of which Grant is returned.
     Grant.addToPrincipal({
       grantee: grantee,
       actions: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel*'],
