@@ -1,7 +1,7 @@
-import * as child_process from 'child_process';
+import child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { DockerBuildSecret, DockerImage, FileSystem } from '../lib';
 
 const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
