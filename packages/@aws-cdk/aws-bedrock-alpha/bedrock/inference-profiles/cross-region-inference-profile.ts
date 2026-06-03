@@ -231,19 +231,51 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    * This method adds the necessary IAM permissions to allow the grantee to:
    * - Get inference profile details (bedrock:GetInferenceProfile)
    * - Invoke the model through the inference profile (bedrock:InvokeModel*)
+   * - Invoke the underlying foundation model in all destination regions
+   *   (scoped by bedrock:InferenceProfileArn condition for least-privilege)
    *
-   * Note: This does not grant permissions to use the underlying model directly.
-   * For comprehensive permissions, use grantInvoke() instead.
+   * Per AWS documentation, cross-region inference profiles require IAM
+   * permissions on both the inference-profile resource (source region) AND
+   * the foundation-model resource in all destination regions.
+   *
+   * @see https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html#geographic-cris-iam-setup
    * [disable-awslint:no-grants]
    *
    * @param grantee - The IAM principal to grant permissions to
    * @returns An IAM Grant object representing the granted permissions
    */
   public grantProfileUsage(grantee: IGrantable): Grant {
-    return Grant.addToPrincipal({
+    // Statement 1: Grant access to the inference profile in the source region
+    Grant.addToPrincipal({
       grantee: grantee,
       actions: ['bedrock:GetInferenceProfile', 'bedrock:InvokeModel*'],
       resourceArns: [this.inferenceProfileArn],
+    });
+
+    // Statement 2: Grant access to the foundation model in all destination regions.
+    // Cross-region inference profiles route requests to destination regions dynamically.
+    // IAM checks bedrock:InvokeModel on the foundation-model ARN in the destination region.
+    // We use a wildcard region to cover all possible destinations, scoped by
+    // the bedrock:InferenceProfileArn condition to enforce least-privilege.
+    const foundationModelArn = Arn.format({
+      partition: Aws.PARTITION,
+      service: 'bedrock',
+      region: '*',
+      account: '',
+      resource: 'foundation-model',
+      resourceName: this.inferenceProfileModel.modelId,
+      arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
+    });
+
+    return Grant.addToPrincipal({
+      grantee: grantee,
+      actions: ['bedrock:InvokeModel*'],
+      resourceArns: [foundationModelArn],
+      conditions: {
+        StringEquals: {
+          'bedrock:InferenceProfileArn': this.inferenceProfileArn,
+        },
+      },
     });
   }
 }
