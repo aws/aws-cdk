@@ -1,5 +1,7 @@
-import { Template } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import { Duration, Stack } from '../../core';
+import * as cxapi from '../../cx-api';
+import type { IAlarmRule } from '../lib';
 import { Alarm, AlarmRule, AlarmState, CompositeAlarm, Metric } from '../lib';
 
 describe('CompositeAlarm', () => {
@@ -215,5 +217,64 @@ describe('CompositeAlarm', () => {
     expect(() => new CompositeAlarm(new Stack(), 'alarm', {
       alarmRule: AlarmRule.allOf(),
     })).toThrow('Did not detect any operands for AlarmRule.allOf');
+  });
+
+  describe('compositeAlarmGeneratedName feature flag', () => {
+    function alarmRuleFor(stack: Stack): IAlarmRule {
+      const alarm = new Alarm(stack, 'Alarm', {
+        metric: new Metric({ namespace: 'CDK/Test', metricName: 'Metric' }),
+        threshold: 100,
+        evaluationPeriods: 3,
+      });
+      return AlarmRule.fromAlarm(alarm, AlarmState.ALARM);
+    }
+
+    test('omits AlarmName so CloudFormation generates it when flag is enabled', () => {
+      // GIVEN
+      const stack = new Stack();
+      stack.node.setContext(cxapi.CLOUDWATCH_COMPOSITE_ALARM_GENERATED_NAME, true);
+
+      // WHEN
+      new CompositeAlarm(stack, 'CompositeAlarm', {
+        alarmRule: alarmRuleFor(stack),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+        AlarmName: Match.absent(),
+      });
+    });
+
+    test('still honors an explicit compositeAlarmName when flag is enabled', () => {
+      // GIVEN
+      const stack = new Stack();
+      stack.node.setContext(cxapi.CLOUDWATCH_COMPOSITE_ALARM_GENERATED_NAME, true);
+
+      // WHEN
+      new CompositeAlarm(stack, 'CompositeAlarm', {
+        compositeAlarmName: 'MyExplicitName',
+        alarmRule: alarmRuleFor(stack),
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+        AlarmName: 'MyExplicitName',
+      });
+    });
+
+    test('keeps the generated stack-static name when flag is disabled', () => {
+      // GIVEN
+      const stack = new Stack();
+
+      // WHEN
+      new CompositeAlarm(stack, 'CompositeAlarm', {
+        alarmRule: alarmRuleFor(stack),
+      });
+
+      // THEN - unchanged behavior
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::CompositeAlarm', {
+        AlarmName: 'CompositeAlarm',
+      });
+    });
   });
 });
