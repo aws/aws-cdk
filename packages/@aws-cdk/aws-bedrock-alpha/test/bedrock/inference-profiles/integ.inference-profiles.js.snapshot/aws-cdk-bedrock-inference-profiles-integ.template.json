@@ -38,6 +38,26 @@
            {
             "Ref": "AWS::Partition"
            },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0"
+          ]
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
            ":bedrock:us-east-1:",
            {
             "Ref": "AWS::AccountId"
@@ -373,6 +393,26 @@
        ],
        "Effect": "Allow",
        "Resource": [
+        {
+         "Fn::Join": [
+          "",
+          [
+           "arn:",
+           {
+            "Ref": "AWS::Partition"
+           },
+           ":bedrock:",
+           {
+            "Ref": "AWS::Region"
+           },
+           ":",
+           {
+            "Ref": "AWS::AccountId"
+           },
+           ":inference-profile/us.anthropic.claude-3-5-sonnet-20240620-v1:0"
+          ]
+         ]
+        },
         {
          "Fn::Join": [
           "",
