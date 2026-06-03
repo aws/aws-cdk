@@ -341,7 +341,8 @@ separate NVIDIA and Neuron AMI variants — GPU users must pick a variant explic
 **Migration for existing applications.** Enabling this flag on an existing app will cause
 managed node groups that previously defaulted to AL2 to be replaced with AL2023 on the next
 deploy, which terminates running pods. To roll out safely, pin every existing node group to its
-current AMI type first, and only then enable the flag:
+current AMI type first, and only then enable the flag as shown below. Then gradually unpin the
+AMI for the nodes you want to upgrade.
 
 ```ts
 declare const cluster: eks.Cluster;

@@ -523,8 +523,8 @@ export class Nodegroup extends Resource implements INodegroup {
       const useAL2023 = FeatureFlags.of(this).isEnabled(cxapi.EKS_DEFAULT_AL2023) ?? false;
       const isGpuNodegroup = instanceTypes.some(isGpuInstanceType);
       if (!props.amiType && useAL2023 && isGpuNodegroup) {
-          Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:gpuInstancesUseAL2',
-            'GPU instance types will continue to use AL2 even with the @aws-cdk/aws-eks:defaultToAL2023 feature flag enabled because '
+        Annotations.of(this).addWarningV2('@aws-cdk/aws-eks:gpuInstancesUseAL2',
+          'GPU instance types will continue to use AL2 even with the @aws-cdk/aws-eks:defaultToAL2023 feature flag enabled because '
             + 'AL2023 splits GPU support into AL2023_X86_64_NVIDIA and AL2023_X86_64_NEURON variants. To use AL2023, explicitly set amiType to the corresponding variant.');
       }
     }
