@@ -12,6 +12,7 @@ import { CfnReference } from './private/cfn-reference';
 import type { Reference } from './reference';
 import type { RemovalPolicyOptions } from './removal-policy';
 import { RemovalPolicy } from './removal-policy';
+import { traceProperty } from './stack-trace';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
@@ -309,6 +310,8 @@ export class CfnResource extends CfnRefElement {
    * @param value The value
    */
   public addPropertyOverride(propertyPath: string, value: any) {
+    const parts = splitOnPeriods(propertyPath);
+    traceProperty(this.node, parts[0]);
     this.addOverride(`Properties.${propertyPath}`, value);
   }
 
