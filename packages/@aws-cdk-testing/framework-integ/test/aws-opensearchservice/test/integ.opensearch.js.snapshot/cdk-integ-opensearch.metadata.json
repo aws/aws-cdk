@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)",
         "...node internals..."
       ]
     }
@@ -145,16 +145,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -166,16 +166,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -203,10 +203,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:999:27)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:51:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1040:27)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:84:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)",
         "...node internals..."
       ]
     }
@@ -267,16 +267,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResourceSingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:9:9)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:263:30)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new LogGroupResourcePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:14:9)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:946:42)"
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:55:9)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:987:42)"
       ]
     }
   ],
@@ -304,10 +304,10 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:999:27)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:52:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1040:27)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:85:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)",
         "...node internals..."
       ]
     }
@@ -320,12 +320,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:874:21)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:51:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:915:21)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:84:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)",
         "...node internals..."
       ]
     }
@@ -338,12 +338,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:906:21)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:51:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:947:21)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:84:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)",
         "...node internals..."
       ]
     }
@@ -514,16 +514,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResourceSingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:9:9)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:263:30)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ],
@@ -541,12 +541,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:874:21)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:52:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:915:21)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:85:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)",
         "...node internals..."
       ]
     }
@@ -559,12 +559,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
-        "new LogGroup (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:906:21)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:52:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-logs/lib/log-group.js:578:29)",
+        "new LogGroup (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:947:21)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:85:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)",
         "...node internals..."
       ]
     }
@@ -735,16 +735,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:290:35)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new LogGroupResourcePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:14:9)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:946:42)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:51:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)"
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:55:9)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:987:42)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:84:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)"
       ]
     }
   ],
@@ -756,16 +756,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:32)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new LogGroupResourcePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:14:9)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:946:42)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:51:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)"
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:55:9)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:987:42)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:84:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)"
       ]
     }
   ],
@@ -777,16 +777,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:290:35)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:77:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.addAccessPolicies (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1217:41)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1144:22)"
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:118:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.addAccessPolicies (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1258:41)",
+        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1185:22)"
       ]
     }
   ],
@@ -798,16 +798,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:32)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:77:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.addAccessPolicies (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1217:41)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1144:22)"
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:118:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.addAccessPolicies (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1258:41)",
+        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1185:22)"
       ]
     }
   ],
@@ -819,16 +819,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:290:35)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new LogGroupResourcePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:14:9)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:946:42)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:52:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)"
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:55:9)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:987:42)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:85:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)"
       ]
     }
   ],
@@ -840,16 +840,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:32)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new LogGroupResourcePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:14:9)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:946:42)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:52:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:60:15)"
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new LogGroupResourcePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/log-group-resource-policy.js:55:9)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:987:42)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:85:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-opensearchservice/test/integ.opensearch.js:93:15)"
       ]
     }
   ],
@@ -861,16 +861,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:290:35)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:77:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.addAccessPolicies (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1217:41)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1144:22)"
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:118:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.addAccessPolicies (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1258:41)",
+        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1185:22)"
       ]
     }
   ],
@@ -882,16 +882,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:32)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:77:13)",
-        "new OpenSearchAccessPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "WrappedClass.addAccessPolicies (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1217:41)",
-        "WrappedClass.<anonymous> (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Domain (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1144:22)"
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/opensearch-access-policy.js:118:13)",
+        "new OpenSearchAccessPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.addAccessPolicies (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1258:41)",
+        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Domain (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-opensearchservice/lib/domain.js:1185:22)"
       ]
     }
   ]

@@ -63,7 +63,7 @@ describe('ValidationError', () => {
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
-    ...jest-circus, node internals, jest-circus, jest-runner...
+    ...jest-circus, jest-runner...
 Relates to construct:
     <.> (...)
      └─ SomeStack (...)
@@ -83,7 +83,7 @@ Relates to construct:
     at <anonymous> (...)
     ...Promise.then.completed in jest-circus...
     at new Promise (...)
-    ...jest-circus, node internals, jest-circus, jest-runner..."
+    ...jest-circus, jest-runner..."
 `);
     }
   });
@@ -121,5 +121,23 @@ Relates to construct:
 function anonymizeBetweenParens(x: string): string {
   return x.split('\n')
     .map(s => s.replace(/\([^)]*\)/, '(...)'))
+    .map(normalizeSkippedFrames)
     .join('\n');
+}
+
+/**
+ * Normalize the collapsed "...category, category..." lines.
+ *
+ * Which internal frames appear is Node-version dependent: some versions emit
+ * `node:internal/...` frames inside jest's async machinery and some don't. That adds
+ * a "node internals" entry and splits an otherwise-contiguous "jest-circus" group in
+ * two. Drop "node internals" and collapse consecutive duplicates so the snapshot is
+ * stable across Node versions.
+ */
+function normalizeSkippedFrames(line: string): string {
+  const m = line.match(/^(\s*)\.\.\.(.+)\.\.\.$/);
+  if (!m) return line;
+  const cats = m[2].split(', ').filter(c => c !== 'node internals');
+  const deduped = cats.filter((c, i) => c !== cats[i - 1]);
+  return `${m[1]}...${deduped.join(', ')}...`;
 }

@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     }
@@ -71,16 +71,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -92,16 +92,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
-        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
-        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
-        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -113,11 +113,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:13:24)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:46:24)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     },
@@ -150,16 +150,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
-        "new AutoDeleteObjectsProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
-        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
-        "BucketAutoDeleteObjects.applyTo (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
-        "applyMixin (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new AutoDeleteObjectsProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:57:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:54:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:90:95)",
+        "applyMixin (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2204:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
       ]
     }
   ],
@@ -171,16 +171,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
-        "new AutoDeleteObjectsProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:24:9)",
-        "AutoDeleteObjectsProvider.getOrCreateProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:21:28)",
-        "BucketAutoDeleteObjects.applyTo (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:49:95)",
-        "applyMixin (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new AutoDeleteObjectsProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:57:9)",
+        "AutoDeleteObjectsProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-s3/auto-delete-objects-provider.generated.js:54:28)",
+        "BucketAutoDeleteObjects.applyTo (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:90:95)",
+        "applyMixin (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2204:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
       ]
     }
   ],
@@ -192,12 +192,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:98:25)",
-        "new CustomResourceProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:127:9)",
-        "CustomResourceProvider.getOrCreateProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:123:16)",
-        "CustomResourceProvider.getOrCreate (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:97:21)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:18:67)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new CustomResourceProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:127:9)",
+        "CustomResourceProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:123:16)",
+        "CustomResourceProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:97:21)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:51:67)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     }
@@ -210,12 +210,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:120:24)",
-        "new CustomResourceProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:127:9)",
-        "CustomResourceProvider.getOrCreateProvider (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:123:16)",
-        "CustomResourceProvider.getOrCreate (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:97:21)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:18:67)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new CustomResourceProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:127:9)",
+        "CustomResourceProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:123:16)",
+        "CustomResourceProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.js:97:21)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:51:67)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     }
@@ -228,11 +228,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:27:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:60:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     }
@@ -245,11 +245,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:34:41)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:67:41)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     },
@@ -381,16 +381,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResourceSingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:9:9)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:263:30)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:40:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)"
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:73:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)"
       ]
     }
   ],
@@ -402,15 +402,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new BucketPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
-        "new BucketPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.maybeAutoCreatePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:13:24)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new BucketPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:329:31)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2203:18)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:46:24)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     },
@@ -429,16 +429,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "BucketAutoDeleteObjects.applyTo (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
-        "applyMixin (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:110:32)",
+        "applyMixin (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2204:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
       ]
     }
   ],
@@ -450,15 +450,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new BucketPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
-        "new BucketPolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.maybeAutoCreatePolicy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:288:31)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2162:18)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:34:41)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new BucketPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket-policy.js:177:29)",
+        "new BucketPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.maybeAutoCreatePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:329:31)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2203:18)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:67:41)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     },
@@ -477,16 +477,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "BucketAutoDeleteObjects.applyTo (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:69:32)",
-        "applyMixin (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
-        "withMixins (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
-        "WrappedClass.with (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
-        "WrappedClass.enableAutoDeleteObjects (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2163:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1480:22)",
-        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "BucketAutoDeleteObjects.applyTo (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/mixins/bucket.js:110:32)",
+        "applyMixin (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:21:11)",
+        "withMixins (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/mixins/private/mixin-metadata.js:32:17)",
+        "WrappedClass.with (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/resource.js:165:54)",
+        "WrappedClass.enableAutoDeleteObjects (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:2204:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1521:22)",
+        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
       ]
     }
   ],
@@ -498,13 +498,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:290:35)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:40:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:35)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:73:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     }
@@ -517,13 +517,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:331:32)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:40:9)",
-        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:61:17)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:372:32)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:73:9)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-s3/test/integ.bucket-auto-delete-objects.js:94:17)",
         "...node internals..."
       ]
     }
@@ -536,16 +536,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
-        "new Function (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "AwsCustomResourceSingletonFunction.ensureLambda (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:272:20)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:135:40)",
-        "new SingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AwsCustomResourceSingletonFunction (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:9:9)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:263:30)",
-        "new AwsCustomResource (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "AwsCustomResourceSingletonFunction.ensureLambda (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:313:20)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/singleton-lambda.js:176:40)",
+        "new SingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AwsCustomResourceSingletonFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resource-handlers/dist/custom-resources/aws-custom-resource-provider.generated.js:42:9)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/aws-custom-resource/aws-custom-resource.js:304:30)",
+        "new AwsCustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
       ]
     }
   ],

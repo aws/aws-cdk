@@ -11,10 +11,11 @@ import {
   SubnetNetworkAclAssociation,
   SubnetType,
 } from 'aws-cdk-lib/aws-ec2';
-import type { SubnetReference } from 'aws-cdk-lib/aws-ec2/lib/ec2.generated';
+type SubnetReference = aws_ec2.SubnetReference;
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { aws_ec2 } from 'aws-cdk-lib/interfaces';
 import type { IDependable } from 'constructs';
 import { Construct, DependencyGroup } from 'constructs';
 import { RouteTable } from './route';

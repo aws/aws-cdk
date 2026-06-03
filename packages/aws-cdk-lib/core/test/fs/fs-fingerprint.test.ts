@@ -1,6 +1,6 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import * as os from 'os';
-import * as path from 'path';
+import path from 'path';
 import { FileSystem, IgnoreMode, SymlinkFollowMode } from '../../lib/fs';
 import { contentFingerprint } from '../../lib/fs/fingerprint';
 import '../../lib/private/dispose-polyfill';
