@@ -1508,6 +1508,15 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
 
   private readonly domain: CfnDomain;
 
+  private _inlineAccessPolicies: boolean = false;
+
+  /**
+   * Live list of statements that materialize on the L1 `AccessPolicies` property when
+   * `@aws-cdk/aws-opensearchservice:inlineAccessPolicies` is enabled. Mutated in-place by
+   * `addAccessPolicies`; read by the `cdk.Lazy` set on `this.domain.accessPolicies`.
+   */
+  private _inlineStatements?: iam.PolicyStatement[];
+
   private accessPolicy?: OpenSearchAccessPolicy;
 
   private encryptionAtRestOptions?: EncryptionAtRestOptions;
@@ -2174,12 +2183,110 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
     }
 
     this.encryptionAtRestOptions = props.encryptionAtRest;
-    if (props.accessPolicies) {
-      this.addAccessPolicies(...props.accessPolicies);
+
+    // Feature flag: when enabled, prefer applying `accessPolicies` directly on the L1 CfnDomain
+    // (`AWS::OpenSearchService::Domain.AccessPolicies`) instead of through a Lambda-backed
+    // Custom::OpenSearchAccessPolicy resource. Inlining avoids the deploy-time IAM
+    // eventual-consistency window between attaching the custom-resource role policy and the
+    // Lambda invocation, which has been observed to fail intermittently with
+    // `AccessDenied: es:UpdateDomainConfig`.
+    //
+    // Self-references (e.g. `${domain.domainArn}/*`, used by `useUnsignedBasicAuth`) would
+    // form a CloudFormation self-cycle if written verbatim onto the L1 `AccessPolicies`
+    // property, so the construct rewrites any `Fn::GetAtt`/`Ref` against its own logical id
+    // into a literal ARN computed from `Stack.formatArn` and the resolved physical name.
+    // The rewrite is only possible when the domain has a synth-time-resolvable name (either
+    // user-supplied via `domainName` or auto-generated for cross-environment use); when
+    // CloudFormation owns the name, the construct falls back to the custom-resource path.
+    const inlineFlagEnabled = cdk.FeatureFlags.of(this).isEnabled(cxapi.ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES) ?? false;
+    const candidateStatements: iam.PolicyStatement[] = [];
+    if (props.accessPolicies) candidateStatements.push(...props.accessPolicies);
+    if (unsignedBasicAuthEnabled) candidateStatements.push(unsignedAccessPolicy);
+
+    const physicalNameResolvable = !cdk.Token.isUnresolved(this.physicalName);
+    const useInline = inlineFlagEnabled
+      && (physicalNameResolvable
+          || (candidateStatements.length > 0 && !this.policyReferencesSelf(candidateStatements)));
+
+    if (useInline) {
+      // Inline path: write the policy onto the L1 CfnDomain.AccessPolicies property and skip
+      // the Custom::OpenSearchAccessPolicy resource entirely. The value is wrapped in a
+      // `cdk.Lazy` so that:
+      //   1. statements added later via `addAccessPolicies` flow through the same producer,
+      //   2. `cdk.Lazy` producers in the user's policy (e.g. `useUnsignedBasicAuth`) are
+      //      evaluated through the normal token-resolution machinery, then
+      //   3. any `Fn::GetAtt` / `Ref` references to this domain's own logical id are
+      //      rewritten to a literal ARN string built from the resolved physical name,
+      //      removing the would-be self-cycle.
+      this._inlineStatements = [...candidateStatements];
+      const stack = cdk.Stack.of(this);
+      this.domain.accessPolicies = cdk.Lazy.any({
+        produce: () => {
+          if (!this._inlineStatements || this._inlineStatements.length === 0) {
+            // No statements were ever added — omit the property entirely so the template
+            // doesn't include an empty `AccessPolicies` block.
+            return undefined;
+          }
+          const document = new iam.PolicyDocument({ statements: this._inlineStatements });
+          const resolved = stack.resolve(document.toJSON());
+          const ownLogicalId = stack.resolve(this.domain.logicalId) as string;
+          const literalArn = stack.formatArn({
+            service: 'es',
+            resource: 'domain',
+            resourceName: this.physicalName,
+          });
+          return rewriteSelfReferencesToArn(resolved, ownLogicalId, literalArn);
+        },
+      });
+    } else {
+      if (props.accessPolicies) {
+        this.addAccessPolicies(...props.accessPolicies);
+      }
+      if (unsignedBasicAuthEnabled) {
+        this.addAccessPolicies(unsignedAccessPolicy);
+      }
     }
-    if (unsignedBasicAuthEnabled) {
-      this.addAccessPolicies(unsignedAccessPolicy);
-    }
+    this._inlineAccessPolicies = useInline;
+  }
+
+  /**
+   * Detects whether any of the given access-policy statements refers to the domain that's
+   * being constructed (e.g. `${domain.domainArn}/*`). Such references resolve to
+   * `Fn::GetAtt: [<this.domain.logicalId>, ...]` against the domain's own L1 resource,
+   * which CloudFormation rejects as a self-cycle when the policy is written inline on
+   * `AWS::OpenSearchService::Domain.AccessPolicies`.
+   *
+   * Resolution goes through `toJsonString` so that Lazy producers (e.g. the one used by
+   * `useUnsignedBasicAuth`, which lazily emits `${domain.domainArn}/*`) are evaluated and
+   * any embedded intrinsics surface as `Fn::GetAtt` / `Ref` markers in the resolved tree.
+   */
+  private policyReferencesSelf(statements: iam.PolicyStatement[]): boolean {
+    const stack = cdk.Stack.of(this);
+    // `this.domain.logicalId` returns a Token at construction time; resolve it through the
+    // stack so we have the rendered string ("DomainXXXXXXXX") to match against the
+    // `Fn::GetAtt` / `Ref` strings produced by the resolved policy document.
+    const ownLogicalId = stack.resolve(this.domain.logicalId);
+    const json = stack.toJsonString(new iam.PolicyDocument({ statements }).toJSON());
+    const resolved = stack.resolve(json);
+    let found = false;
+    const visit = (node: any): void => {
+      if (found || node == null) return;
+      if (Array.isArray(node)) {
+        node.forEach(visit);
+        return;
+      }
+      if (typeof node === 'object') {
+        if ('Fn::GetAtt' in node) {
+          const v = node['Fn::GetAtt'];
+          if (Array.isArray(v) && v[0] === ownLogicalId) { found = true; return; }
+          if (typeof v === 'string' && v.split('.', 1)[0] === ownLogicalId) { found = true; return; }
+        }
+        if ('Ref' in node && node.Ref === ownLogicalId) { found = true; return; }
+        for (const k of Object.keys(node)) visit(node[k]);
+      }
+    };
+    visit(resolved);
+    return found;
   }
 
   /**
@@ -2242,35 +2349,48 @@ export class Domain extends DomainBase implements IDomain, ec2.IConnectable {
   }
 
   /**
-   * Add policy statements to the domain access policy
+   * Add policy statements to the domain access policy.
+   *
+   * When the `@aws-cdk/aws-opensearchservice:inlineAccessPolicies` feature flag is enabled and
+   * the construct has chosen the inline path, new statements are merged into the L1
+   * `AWS::OpenSearchService::Domain.AccessPolicies` property. Otherwise they are routed through
+   * a Lambda-backed `Custom::OpenSearchAccessPolicy` resource that calls `UpdateDomainConfig`
+   * on the existing domain.
    */
   @MethodMetadata()
   public addAccessPolicies(...accessPolicyStatements: iam.PolicyStatement[]) {
-    if (accessPolicyStatements.length > 0) {
-      if (!this.accessPolicy) {
-        // Only create the custom resource after there are statements to set.
-        this.accessPolicy = new OpenSearchAccessPolicy(this, 'AccessPolicy', {
-          domainName: this.domainName,
-          domainArn: this.domainArn,
-          accessPolicies: accessPolicyStatements,
-        });
+    if (accessPolicyStatements.length === 0) {
+      return;
+    }
+    if (this._inlineAccessPolicies) {
+      // Merge into the inline document on the L1 resource by appending to the live
+      // statements list that the `cdk.Lazy` producer reads from.
+      this._inlineStatements!.push(...accessPolicyStatements);
+      return;
+    }
+    if (!this.accessPolicy) {
+      // Only create the custom resource after there are statements to set.
+      this.accessPolicy = new OpenSearchAccessPolicy(this, 'AccessPolicy', {
+        domainName: this.domainName,
+        domainArn: this.domainArn,
+        accessPolicies: accessPolicyStatements,
+      });
 
-        if (this.encryptionAtRestOptions?.kmsKey) {
-          // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/encryption-at-rest.html
+      if (this.encryptionAtRestOptions?.kmsKey) {
+        // https://docs.aws.amazon.com/opensearch-service/latest/developerguide/encryption-at-rest.html
 
-          // these permissions are documented as required during domain creation.
-          // while not strictly documented for updates as well, it stands to reason that an update
-          // operation might require these in case the cluster uses a kms key.
-          // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
-          this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
-            actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
-            resources: [this.encryptionAtRestOptions.kmsKey.keyRef.keyArn],
-            effect: iam.Effect.ALLOW,
-          }));
-        }
-      } else {
-        this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
+        // these permissions are documented as required during domain creation.
+        // while not strictly documented for updates as well, it stands to reason that an update
+        // operation might require these in case the cluster uses a kms key.
+        // empircal evidence shows this is indeed required: https://github.com/aws/aws-cdk/issues/11412
+        this.accessPolicy.grantPrincipal.addToPrincipalPolicy(new iam.PolicyStatement({
+          actions: ['kms:List*', 'kms:Describe*', 'kms:CreateGrant'],
+          resources: [this.encryptionAtRestOptions.kmsKey.keyRef.keyArn],
+          effect: iam.Effect.ALLOW,
+        }));
       }
+    } else {
+      this.accessPolicy.addAccessPolicies(...accessPolicyStatements);
     }
   }
 
@@ -2407,4 +2527,43 @@ function initializeInstanceType(defaultInstanceType: string, instanceType?: stri
  */
 function formatInstanceTypesList(instanceTypes: string[], conjunction: string): string {
   return instanceTypes.map((type) => type.toUpperCase()).join(', ').replace(/, ([^,]*)$/, ` ${conjunction} $1`);
+}
+
+/**
+ * Replaces every `Fn::GetAtt: [<ownLogicalId>, ...]` and `Ref: <ownLogicalId>` node in a
+ * resolved CloudFormation tree with `literalArn`. Used to rewrite self-references to a
+ * domain into a synth-time literal ARN before writing the document onto the L1
+ * `AWS::OpenSearchService::Domain.AccessPolicies` property, where CloudFormation rejects
+ * self-references as a stack cycle.
+ *
+ * Operates on the output of `Stack.resolve(policyDocument.toJSON())`, so any embedded
+ * `cdk.Lazy` producers have already been evaluated and the only surviving intrinsics are
+ * `Fn::GetAtt`, `Ref`, `Fn::Join`, etc. The function recurses through arrays and objects
+ * and rewrites in place; the caller can pass the result straight to a CFN property setter.
+ */
+function rewriteSelfReferencesToArn(node: any, ownLogicalId: string, literalArn: string): any {
+  if (node == null) return node;
+  if (Array.isArray(node)) {
+    return node.map(item => rewriteSelfReferencesToArn(item, ownLogicalId, literalArn));
+  }
+  if (typeof node === 'object') {
+    if ('Fn::GetAtt' in node) {
+      const v = node['Fn::GetAtt'];
+      if (Array.isArray(v) && v[0] === ownLogicalId) {
+        return literalArn;
+      }
+      if (typeof v === 'string' && v.split('.', 1)[0] === ownLogicalId) {
+        return literalArn;
+      }
+    }
+    if ('Ref' in node && node.Ref === ownLogicalId) {
+      return literalArn;
+    }
+    const out: Record<string, any> = {};
+    for (const k of Object.keys(node)) {
+      out[k] = rewriteSelfReferencesToArn(node[k], ownLogicalId, literalArn);
+    }
+    return out;
+  }
+  return node;
 }

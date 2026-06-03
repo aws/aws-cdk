@@ -100,6 +100,7 @@ export const EFS_DENY_ANONYMOUS_ACCESS = '@aws-cdk/aws-efs:denyAnonymousAccess';
 export const EFS_MOUNTTARGET_ORDERINSENSITIVE_LOGICAL_ID = '@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId';
 export const AUTOSCALING_GENERATE_LAUNCH_TEMPLATE = '@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig';
 export const ENABLE_OPENSEARCH_MULTIAZ_WITH_STANDBY = '@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby';
+export const ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES = '@aws-cdk/aws-opensearchservice:inlineAccessPolicies';
 export const LAMBDA_NODEJS_USE_LATEST_RUNTIME = '@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion';
 export const RDS_PREVENT_RENDERING_DEPRECATED_CREDENTIALS = '@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials';
 export const AURORA_CLUSTER_CHANGE_SCOPE_OF_INSTANCE_PARAMETER_GROUP_WITH_EACH_PARAMETERS = '@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters';
@@ -976,6 +977,42 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.88.0' },
     recommendedValue: true,
     compatibilityWithOldBehaviorMd: 'Pass `capacity.multiAzWithStandbyEnabled: false` to `Domain` construct to restore the old behavior.',
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [ENABLE_OPENSEARCH_INLINE_ACCESS_POLICIES]: {
+    type: FlagType.ApiDefault,
+    summary: 'Apply OpenSearch domain access policies inline on the L1 resource instead of via a Lambda-backed custom resource',
+    detailsMd: `
+      The L2 \`aws-opensearchservice.Domain\` construct historically applies
+      \`accessPolicies\` indirectly: it synthesizes a Lambda-backed
+      \`Custom::OpenSearchAccessPolicy\` resource that calls \`UpdateDomainConfig\`
+      after the domain reaches \`CREATE_COMPLETE\`. That indirection exists so that
+      policies can reference the domain's own ARN (\`domain.domainArn\`) without
+      forming a CloudFormation self-cycle.
+
+      In production this path has two operational drawbacks:
+
+      1. CloudFormation has to wait for an additional Lambda invocation per domain
+         after the domain is otherwise ready, lengthening deploys.
+      2. The Lambda's execution role is permissioned at deploy time, and the
+         \`es:UpdateDomainConfig\` grant has been observed to take longer to
+         propagate than the \`CREATE_COMPLETE\` callback — yielding intermittent
+         \`AccessDenied\` failures, most visibly on stacks that create several
+         managed domains in parallel.
+
+      When this flag is enabled, \`accessPolicies\` are written directly onto
+      \`AWS::OpenSearchService::Domain.AccessPolicies\` and no
+      \`Custom::OpenSearchAccessPolicy\` resource is synthesized — eliminating
+      both drawbacks. The construct automatically falls back to the legacy
+      custom-resource path when it detects that the policy document references
+      the domain's own ARN (which would otherwise create a CloudFormation
+      self-cycle), so existing self-referential policies and
+      \`useUnsignedBasicAuth\` continue to work unchanged.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    compatibilityWithOldBehaviorMd: 'Disable the feature flag (set to `false` in `cdk.json`) to restore the Lambda-backed `Custom::OpenSearchAccessPolicy` path unconditionally.',
   },
 
   //////////////////////////////////////////////////////////////////////

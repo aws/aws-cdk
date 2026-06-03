@@ -356,6 +356,60 @@ domain.addAccessPolicies(
 );
 ```
 
+### Inline access policies
+
+The `@aws-cdk/aws-opensearchservice:inlineAccessPolicies` feature flag writes the
+`accessPolicies` document directly onto the L1
+`AWS::OpenSearchService::Domain.AccessPolicies` property instead of applying it via
+the Lambda-backed `Custom::OpenSearchAccessPolicy` resource that the construct uses
+by default. The inline path skips the post-`CREATE_COMPLETE` `UpdateDomainConfig`
+step, so deploys finish sooner and don't depend on the custom resource's IAM grant
+having propagated by the time CloudFormation invokes it.
+
+New projects bootstrapped with a current CDK CLI have it enabled by default in
+`cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/aws-opensearchservice:inlineAccessPolicies": true
+  }
+}
+```
+
+Writing the policy inline introduces a constraint: the document cannot contain a
+`Fn::GetAtt` / `Ref` to the domain's own logical id, because CloudFormation rejects
+self-references on `AWS::OpenSearchService::Domain.AccessPolicies`. When the domain
+has a synth-time-resolvable name — either user-supplied via `domainName` or
+auto-generated for cross-environment use — the construct rewrites every
+`Fn::GetAtt` / `Ref` against its own logical id into a literal ARN built from
+`Stack.formatArn` and the resolved name. This handles `useUnsignedBasicAuth` and any
+user-supplied policy that references `domain.domainArn` or `${domain.domainArn}/*`
+without falling back to the custom resource:
+
+```ts
+const domain = new Domain(this, 'Domain', {
+  version: EngineVersion.OPENSEARCH_1_0,
+  domainName: 'my-domain',
+});
+
+domain.addAccessPolicies(new iam.PolicyStatement({
+  actions: ['es:ESHttp*'],
+  effect: iam.Effect.ALLOW,
+  principals: [new iam.AccountPrincipal('123456789012')],
+  // Self-references are rewritten to a literal ARN at synth time and stay on
+  // the inline path; no custom resource is created.
+  resources: [`${domain.domainArn}/*`],
+}));
+```
+
+When `domainName` is omitted, the resource's physical name is allocated by
+CloudFormation at deploy time and the rewrite is not possible. In that case the
+construct falls back to the custom-resource path automatically whenever the policy
+contains a self-reference, preserving today's behavior. To always stay on the inline
+path, set `domainName` (or scope your `accessPolicies` resources to ARNs that don't
+reference the domain itself).
+
 ## Audit logs
 
 Audit logs can be enabled for a domain, but only when fine grained access control is enabled.
