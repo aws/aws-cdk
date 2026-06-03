@@ -235,15 +235,16 @@ export class CrossRegionInferenceProfile implements IBedrockInvokable, IInferenc
    *    inference-profile ARN in the **source region** (where you deploy).
    *
    * 2. Grants `bedrock:InvokeModel*` on the underlying **foundation-model** ARN
-   *    across **all regions** (wildcard), scoped by a `bedrock:InferenceProfileArn`
+   *    with a wildcard region (`*`), scoped by a `bedrock:InferenceProfileArn`
    *    condition that restricts usage to only this specific inference profile.
-   *    This is required because cross-region inference profiles dynamically route
-   *    requests to destination regions, and IAM evaluates the foundation-model
-   *    resource in the destination region.
+   *    A wildcard region is used because the exact destination regions depend on
+   *    the model and source region combination and cannot be determined at
+   *    synth-time. The condition key ensures the permission is only effective
+   *    when invoking through this cross-region inference profile.
    *
-   * **Important**: This means the grantee will have `bedrock:InvokeModel*`
-   * permissions on the foundation model in any region, but ONLY when invoked
-   * through this specific cross-region inference profile (enforced by condition).
+   * **Important**: The foundation-model permission uses a wildcard region but is
+   * restricted by the `bedrock:InferenceProfileArn` condition — the grantee can
+   * only invoke the model through this specific inference profile, not directly.
    *
    * @see https://docs.aws.amazon.com/bedrock/latest/userguide/geographic-cross-region-inference.html#geographic-cris-iam-setup
    * [disable-awslint:no-grants]
