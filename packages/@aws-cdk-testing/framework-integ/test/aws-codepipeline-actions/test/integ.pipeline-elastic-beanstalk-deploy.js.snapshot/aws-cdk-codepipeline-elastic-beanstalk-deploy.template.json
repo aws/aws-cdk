@@ -375,18 +375,6 @@
         ":iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth"
        ]
       ]
-     },
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/service-role/AWSElasticBeanstalkManagedUpdatesCustomerRolePolicy"
-       ]
-      ]
      }
     ]
    }

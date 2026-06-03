@@ -16,7 +16,7 @@
       }
     },
     "5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48": {
-      "displayName": "Lambda$python3.9/Code",
+      "displayName": "Lambda$python3.10/Code",
       "source": {
         "path": "asset.5dff6208ccd5fb196bb0354fd6e47faa8431a789e6125d20386586fef761ed48",
         "packaging": "zip"
@@ -30,7 +30,7 @@
       }
     },
     "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
-      "displayName": "Providerpython3.9/framework-onEvent/Code",
+      "displayName": "Providerpython3.10/framework-onEvent/Code",
       "source": {
         "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
         "packaging": "zip"
@@ -43,16 +43,16 @@
         }
       }
     },
-    "168e3ecf0743f83f216787da4e2e15354c940c0a58516b3720a8694d6cf45c03": {
+    "de24436683c1f04ba1748c2c2064cee13b795d3f3ea112999361e50173ad7937": {
       "displayName": "lambda-layer-awscli-integ-stack Template",
       "source": {
         "path": "lambda-layer-awscli-integ-stack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-2b570930": {
+        "current_account-current_region-9594b3a4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "168e3ecf0743f83f216787da4e2e15354c940c0a58516b3720a8694d6cf45c03.json",
+          "objectKey": "de24436683c1f04ba1748c2c2064cee13b795d3f3ea112999361e50173ad7937.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
