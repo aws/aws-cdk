@@ -220,7 +220,7 @@ test('special characters in property names are sanitized', () => {
   });
 
   const event = db.allocate('event', {
-    name: 'aws.service@Created',
+    name: 'aws.service@Created-event',
     description: '',
     source: 'aws.service',
     detailType: 'Created',
@@ -234,6 +234,8 @@ test('special characters in property names are sanitized', () => {
 
   const rendered = renderAllModules(builder);
   expect(rendered).toMatchSnapshot();
+  expect(rendered).toContain('CreatedEvent');
+
   // camelCase sanitized names
   expect(rendered).toContain('sourceClass');
   expect(rendered).toContain('destClass');

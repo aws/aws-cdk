@@ -175,6 +175,10 @@ export function submoduleSymbolFromResource(res: Resource) {
   return modulePartsFromResource(res).moduleName.replace(/-/g, '_');
 }
 
+function kebabToCamelCase(str: string): string {
+  return str.replace(/-([a-zA-Z])/g, (_, letter) => letter.toUpperCase());
+}
+
 /**
  * Get the namespace name from the event name
  */
@@ -183,8 +187,9 @@ export function eventNamespaceName(eventName: string) {
     throw new Error('Input must contain exactly one "@" symbol');
   }
 
-  // Extract the text after the '@'
-  const extracted = eventName.split('@')[1];
+  // Extract the portion after '@' and convert it as a valid class/interface name. Some schema names (e.g. "aws.account@RegionOpt-InStatusChange")
+  // contain characters such as hyphens
+  const extracted = kebabToCamelCase(eventName.split('@')[1]);
 
   if (!extracted) {
     throw new Error('No event name found after "@" symbol');
@@ -192,7 +197,7 @@ export function eventNamespaceName(eventName: string) {
 
   // Check if the extracted string contains only alphanumeric characters
   if (!/^[a-zA-Z0-9]+$/.test(extracted)) {
-    throw new Error('Event name contains invalid characters');
+    throw new Error(`Event name '${extracted}' contains invalid characters`);
   }
 
   return extracted;
