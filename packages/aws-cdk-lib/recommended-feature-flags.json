@@ -85,5 +85,6 @@
   "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
   "@aws-cdk/aws-batch:defaultToAL2023": true,
   "@aws-cdk/core:annotationsInValidationReport": true,
+  "@aws-cdk/core:defaultCrossStackReferences": "weak",
   "@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty": true
 }
