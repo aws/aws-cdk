@@ -1,9 +1,9 @@
-import { Template, Match } from '../../assertions';
+import { Template, Match, Annotations } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as route53 from '../../aws-route53';
-import { App, CfnResource, Duration, RemovalPolicy, Stack, Token } from '../../core';
-import { DnsValidatedCertificateV2 } from '../lib';
+import { App, CfnOutput, CfnResource, Duration, RemovalPolicy, Stack, Token } from '../../core';
+import { CertificateValidation, DnsValidatedCertificateV2, ValidationMethod } from '../lib';
 
 test('creates certificate in us-east-1 support stack by default', () => {
   const app = new App();
@@ -35,13 +35,27 @@ test('creates certificate in us-east-1 support stack by default', () => {
     ValidationMethod: 'DNS',
   });
   Template.fromStack(stack).hasResourceProperties('AWS::Test::Consumer', {
-    CertificateArn: {
-      'Fn::GetStackOutput': {
-        StackName: Match.stringLikeRegexp(`dns-validated-certificate-stack-${stack.node.addr}-us-east-1`),
-        Region: 'us-east-1',
-        OutputName: Match.stringLikeRegexp('Certificate.*Arn'),
-      },
-    },
+    CertificateArn: weakCertificateArnReference(stack),
+  });
+});
+
+test('certificate arn can be used as an output in the containing stack', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  const certificate = new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+  });
+  new CfnOutput(stack, 'CertificateArn', {
+    value: certificate.certificateArn,
+  });
+
+  Template.fromStack(stack).hasOutput('CertificateArn', {
+    Value: weakCertificateArnReference(stack),
   });
 });
 
@@ -131,6 +145,40 @@ test('can customize support stack id', () => {
   expect(app.node.tryFindChild('CertificateStack')).toBeInstanceOf(Stack);
 });
 
+test('throws when custom support stack id resolves to a stack in another region', () => {
+  const app = new App();
+  new Stack(app, 'CertificateStack', {
+    env: { account: '111111111111', region: 'us-west-2' },
+  });
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  expect(() => new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    stackId: 'CertificateStack',
+  })).toThrow(/must be in region "us-east-1", got "us-west-2"/);
+});
+
+test('throws when custom support stack id resolves to a stack in another account', () => {
+  const app = new App();
+  new Stack(app, 'CertificateStack', {
+    env: { account: '222222222222', region: 'us-east-1' },
+  });
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  expect(() => new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    stackId: 'CertificateStack',
+  })).toThrow(/must be in account "111111111111", got "222222222222"/);
+});
+
 test('throws for cross-region certificates when hosted zone id is unresolved', () => {
   const app = new App();
   const stack = new Stack(app, 'Stack', {
@@ -144,6 +192,19 @@ test('throws for cross-region certificates when hosted zone id is unresolved', (
     domainName: 'test.example.com',
     hostedZone,
   })).toThrow(/requires a concrete hostedZoneId/);
+});
+
+test('throws for cross-partition certificate references', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'cn-north-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  expect(() => new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+  })).toThrow(/does not support cross-partition references/);
 });
 
 test('adds validation error on domain mismatch when hosted zone name is available', () => {
@@ -164,6 +225,44 @@ test('adds validation error on domain mismatch when hosted zone name is availabl
   expect(() => Template.fromStack(stack)).toThrow(/DNS zone hello.com is not authoritative for certificate domain name example.com/);
 });
 
+test('adds validation error on subject alternative name mismatch when hosted zone name is available', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+    hostedZoneId: 'Z123456',
+    zoneName: 'example.com',
+  });
+
+  new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    subjectAlternativeNames: ['test.hello.com'],
+  });
+
+  expect(() => Template.fromStack(stack)).toThrow(/DNS zone example.com is not authoritative for certificate domain name test.hello.com/);
+});
+
+test('does not add validation error when domain names differ only by case', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+    hostedZoneId: 'Z123456',
+    zoneName: 'example.com',
+  });
+
+  new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'Test.Example.Com',
+    hostedZone,
+    subjectAlternativeNames: ['Api.Example.Com'],
+  });
+
+  Template.fromStack(stack);
+});
+
 test('does not try to validate unresolved tokens', () => {
   const app = new App();
   const stack = new Stack(app, 'Stack', {
@@ -180,6 +279,36 @@ test('does not try to validate unresolved tokens', () => {
   });
 
   Template.fromStack(stack);
+});
+
+test('warns and ignores all certificate validation properties', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'us-east-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    validation: CertificateValidation.fromEmail(),
+    validationMethod: ValidationMethod.EMAIL,
+    validationDomains: {
+      'test.example.com': 'example.com',
+    },
+  });
+
+  Annotations.fromStack(stack).hasWarning(
+    '/Stack/Certificate',
+    Match.stringLikeRegexp('validation, validationMethod, and validationDomains properties are ignored'),
+  );
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+    DomainValidationOptions: [{
+      DomainName: 'test.example.com',
+      HostedZoneId: 'Z123456',
+    }],
+    ValidationMethod: 'DNS',
+  });
 });
 
 test('can set removal policy on the certificate in the support stack', () => {
@@ -248,13 +377,7 @@ test('cloudfront distribution can consume cross-region certificate weak referenc
   Template.fromStack(stack).hasResourceProperties('AWS::CloudFront::Distribution', {
     DistributionConfig: {
       ViewerCertificate: {
-        AcmCertificateArn: {
-          'Fn::GetStackOutput': {
-            StackName: Match.stringLikeRegexp(`dns-validated-certificate-stack-${stack.node.addr}-us-east-1`),
-            Region: 'us-east-1',
-            OutputName: Match.stringLikeRegexp('Certificate.*Arn'),
-          },
-        },
+        AcmCertificateArn: weakCertificateArnReference(stack),
         SslSupportMethod: 'sni-only',
       },
     },
@@ -263,4 +386,21 @@ test('cloudfront distribution can consume cross-region certificate weak referenc
 
 function getCertificateStack(app: App, stack: Stack, region = 'us-east-1'): Stack {
   return app.node.findChild(`dns-validated-certificate-stack-${stack.node.addr}-${region}`) as Stack;
+}
+
+function weakCertificateArnReference(stack: Stack, region = 'us-east-1') {
+  return {
+    'Fn::Join': [
+      '',
+      Match.arrayWith([
+        {
+          'Fn::GetStackOutput': {
+            StackName: Match.stringLikeRegexp(`dns-validated-certificate-stack-${stack.node.addr}-${region}`),
+            Region: region,
+            OutputName: Match.anyValue(),
+          },
+        },
+      ]),
+    ],
+  };
 }

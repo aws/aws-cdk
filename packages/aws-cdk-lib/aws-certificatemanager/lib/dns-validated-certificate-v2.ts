@@ -7,6 +7,7 @@ import * as cdk from '../../core';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import { RegionInfo } from '../../region-info';
 
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager.
@@ -44,7 +45,7 @@ export interface DnsValidatedCertificateV2Props extends CertificateProps {
  * The certificate is created with the native `AWS::CertificateManager::Certificate`
  * resource. When the requested certificate region differs from the containing
  * stack region, this construct creates the certificate in a support stack and
- * exposes the certificate ARN through `Fn::GetStackOutput`.
+ * exposes the certificate ARN through a weak cross-stack reference.
  *
  * @resource AWS::CertificateManager::Certificate
  */
@@ -70,20 +71,22 @@ export class DnsValidatedCertificateV2 extends CertificateBase implements ICerti
   protected readonly region?: string;
   private readonly certificate: Certificate;
   private readonly certificateDomainName: string;
+  private readonly subjectAlternativeNames?: string[];
   private readonly normalizedZoneName?: string;
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateV2Props) {
     super(scope, id);
     addConstructMetadata(this, props);
 
-    if (props.validation) {
+    if (props.validation || props.validationMethod !== undefined || props.validationDomains !== undefined) {
       cdk.Annotations.of(this).addWarningV2(
         '@aws-cdk/aws-certificatemanager:dnsValidatedCertificateV2ValidationIgnored',
-        'The validation property is ignored by DnsValidatedCertificateV2. Use the hostedZone property for DNS validation.',
+        'The validation, validationMethod, and validationDomains properties are ignored by DnsValidatedCertificateV2. Use the hostedZone property for DNS validation.',
       );
     }
 
     this.certificateDomainName = props.domainName;
+    this.subjectAlternativeNames = props.subjectAlternativeNames;
     this.normalizedZoneName = normalizeZoneName(props.hostedZone);
     this.certificateRegion = props.region ?? DnsValidatedCertificateV2.DEFAULT_REGION;
     this.region = this.certificateRegion;
@@ -98,6 +101,10 @@ export class DnsValidatedCertificateV2 extends CertificateBase implements ICerti
 
     const containingStack = cdk.Stack.of(this);
     const createInContainingStack = !cdk.Token.isUnresolved(containingStack.region) && containingStack.region === this.certificateRegion;
+    if (!createInContainingStack) {
+      this.validateCrossPartitionReference(containingStack);
+    }
+
     const certificateScope = createInContainingStack
       ? this
       : this.certificateStack(props.stackId);
@@ -109,12 +116,8 @@ export class DnsValidatedCertificateV2 extends CertificateBase implements ICerti
     if (createInContainingStack) {
       this.certificateArn = this.certificate.certificateArn;
     } else {
-      const certificateStack = cdk.Stack.of(this.certificate);
-      const output = new cdk.CfnOutput(certificateStack, `${this.certificate.node.id}Arn`, {
-        value: this.certificate.certificateArn,
-      });
-      containingStack.addDependency(certificateStack, `${containingStack.node.path} -> ${this.node.path}.certificateArn`);
-      this.certificateArn = cdk.Fn.getStackOutput(certificateStack.stackName, output.logicalId, this.certificateRegion);
+      const weakCertificateArn = cdk.Stack.consumeReference(this.certificate.certificateArn, cdk.ReferenceStrength.WEAK);
+      this.certificateArn = cdk.Fn.join('', [weakCertificateArn, '']);
     }
 
     this.node.addValidation({ validate: () => this.validateDnsValidatedCertificate() });
@@ -142,10 +145,11 @@ export class DnsValidatedCertificateV2 extends CertificateBase implements ICerti
       if (!cdk.Stack.isStack(existing)) {
         throw new cdk.ValidationError(
           lit`DnsValidatedCertificateV2StackIdConflict`,
-          `A construct named '${certificateStackId}' already exists and is not a Stack`,
+          `a construct named ${JSON.stringify(certificateStackId)} already exists and is not a Stack`,
           this,
         );
       }
+      this.validateCertificateStack(existing, certificateStackId);
       return existing;
     }
 
@@ -182,14 +186,59 @@ export class DnsValidatedCertificateV2 extends CertificateBase implements ICerti
 
   private validateDnsValidatedCertificate(): string[] {
     const errors: string[] = [];
-    if (this.normalizedZoneName &&
-      !cdk.Token.isUnresolved(this.normalizedZoneName) &&
-      !cdk.Token.isUnresolved(this.certificateDomainName) &&
-      this.certificateDomainName !== this.normalizedZoneName &&
-      !this.certificateDomainName.endsWith('.' + this.normalizedZoneName)) {
-      errors.push(`DNS zone ${this.normalizedZoneName} is not authoritative for certificate domain name ${this.certificateDomainName}`);
+    const domainNames = [this.certificateDomainName];
+    if (this.subjectAlternativeNames !== undefined && !cdk.Token.isUnresolved(this.subjectAlternativeNames)) {
+      domainNames.push(...this.subjectAlternativeNames);
+    }
+
+    for (const domainName of domainNames) {
+      if (this.normalizedZoneName &&
+        !cdk.Token.isUnresolved(this.normalizedZoneName) &&
+        !cdk.Token.isUnresolved(domainName) &&
+        !isDomainNameInZone(domainName, this.normalizedZoneName)) {
+        errors.push(`DNS zone ${this.normalizedZoneName} is not authoritative for certificate domain name ${domainName}`);
+      }
     }
     return errors;
+  }
+
+  private validateCertificateStack(stack: cdk.Stack, stackId: string) {
+    if (cdk.Token.isUnresolved(stack.region) || stack.region !== this.certificateRegion) {
+      throw new cdk.ValidationError(
+        lit`DnsValidatedCertificateV2StackRegionMismatch`,
+        `stack ${JSON.stringify(stackId)} must be in region ${JSON.stringify(this.certificateRegion)}, got ${JSON.stringify(stack.region)}`,
+        this,
+      );
+    }
+
+    const containingStack = cdk.Stack.of(this);
+    if (!cdk.Token.isUnresolved(containingStack.account) &&
+      !cdk.Token.isUnresolved(stack.account) &&
+      containingStack.account !== stack.account) {
+      throw new cdk.ValidationError(
+        lit`DnsValidatedCertificateV2StackAccountMismatch`,
+        `stack ${JSON.stringify(stackId)} must be in account ${JSON.stringify(containingStack.account)}, got ${JSON.stringify(stack.account)}`,
+        this,
+      );
+    }
+  }
+
+  private validateCrossPartitionReference(containingStack: cdk.Stack) {
+    if (cdk.Token.isUnresolved(containingStack.region)) {
+      return;
+    }
+
+    const containingPartition = RegionInfo.get(containingStack.region).partition;
+    const certificatePartition = RegionInfo.get(this.certificateRegion).partition;
+    if (containingPartition !== undefined &&
+      certificatePartition !== undefined &&
+      containingPartition !== certificatePartition) {
+      throw new cdk.ValidationError(
+        lit`DnsValidatedCertificateV2CrossPartitionUnsupported`,
+        `DnsValidatedCertificateV2 does not support cross-partition references. The containing stack is in partition ${JSON.stringify(containingPartition)} and the certificate region ${JSON.stringify(this.certificateRegion)} is in partition ${JSON.stringify(certificatePartition)}`,
+        this,
+      );
+    }
   }
 }
 
@@ -203,6 +252,8 @@ function certificatePropsForDnsValidation(
     region: _region,
     stackId: _stackId,
     validation: _validation,
+    validationMethod: _validationMethod,
+    validationDomains: _validationDomains,
     certificateName,
     ...certificateProps
   } = props;
@@ -224,4 +275,15 @@ function normalizeZoneName(hostedZone: route53.IHostedZone): string | undefined 
   } catch {
     return undefined;
   }
+}
+
+function isDomainNameInZone(domainName: string, zoneName: string): boolean {
+  const normalizedDomainName = normalizeDnsNameForComparison(domainName);
+  const normalizedZoneName = normalizeDnsNameForComparison(zoneName);
+  return normalizedDomainName === normalizedZoneName || normalizedDomainName.endsWith('.' + normalizedZoneName);
+}
+
+function normalizeDnsNameForComparison(name: string): string {
+  const lowerCaseName = name.toLowerCase();
+  return lowerCaseName.endsWith('.') ? lowerCaseName.substring(0, lowerCaseName.length - 1) : lowerCaseName;
 }
