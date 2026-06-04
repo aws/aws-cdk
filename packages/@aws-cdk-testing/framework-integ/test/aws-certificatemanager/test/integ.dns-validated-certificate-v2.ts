@@ -7,9 +7,9 @@
  * The ACM certificate is validated via DNS against the hosted zone,
  * so you must own the domain.
  */
-import * as acm from 'aws-cdk-lib/aws-certificatemanager';
-import * as route53 from 'aws-cdk-lib/aws-route53';
-import * as cdk from 'aws-cdk-lib';
+import { DnsValidatedCertificateV2 } from 'aws-cdk-lib/aws-certificatemanager';
+import { PublicHostedZone } from 'aws-cdk-lib/aws-route53';
+import { App, CfnOutput, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 const hostedZoneId = process.env.CDK_INTEG_HOSTED_ZONE_ID ?? process.env.HOSTED_ZONE_ID;
@@ -19,25 +19,25 @@ if (!hostedZoneName) throw new Error('For this test you must provide your own Ho
 const domainName = process.env.CDK_INTEG_DOMAIN_NAME ?? process.env.DOMAIN_NAME;
 if (!domainName) throw new Error('For this test you must provide your own DomainName as an env var "DOMAIN_NAME". See framework-integ/README.md for details.');
 
-const app = new cdk.App({
+const app = new App({
   treeMetadata: false,
 });
-const stack = new cdk.Stack(app, 'integ-dns-validated-certificate-v2', {
+const stack = new Stack(app, 'integ-dns-validated-certificate-v2', {
   env: {
     region: 'us-east-2',
   },
 });
-const hostedZone = route53.PublicHostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+const hostedZone = PublicHostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
   hostedZoneId,
   zoneName: hostedZoneName,
 });
 
-const certificate = new acm.DnsValidatedCertificateV2(stack, 'Certificate', {
+const certificate = new DnsValidatedCertificateV2(stack, 'Certificate', {
   domainName,
   hostedZone,
 });
 
-new cdk.CfnOutput(stack, 'CertificateArn', {
+new CfnOutput(stack, 'CertificateArn', {
   value: certificate.certificateArn,
 });
 

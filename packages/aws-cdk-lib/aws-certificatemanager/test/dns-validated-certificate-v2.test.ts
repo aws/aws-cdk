@@ -1,7 +1,7 @@
 import { Template, Match } from '../../assertions';
-import * as cloudfront from '../../aws-cloudfront';
-import * as origins from '../../aws-cloudfront-origins';
-import * as route53 from '../../aws-route53';
+import { Distribution } from '../../aws-cloudfront';
+import { HttpOrigin } from '../../aws-cloudfront-origins';
+import { HostedZone, PublicHostedZone } from '../../aws-route53';
 import { App, CfnOutput, CfnResource, Duration, RemovalPolicy, Stack, Token } from '../../core';
 import { DnsValidatedCertificateV2 } from '../lib';
 
@@ -10,7 +10,7 @@ test('creates certificate in us-east-1 support stack by default', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   const certificate = new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -44,7 +44,7 @@ test('certificate arn can be used as an output in the containing stack', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   const certificate = new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -64,7 +64,7 @@ test('creates certificate in containing stack when the target region is the cont
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'us-east-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -80,7 +80,7 @@ test('can create certificate in an explicit non-default region', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -97,7 +97,7 @@ test('support stack inherits containing stack account and stack tags', () => {
     env: { account: '111111111111', region: 'eu-west-1' },
     tags: { team: 'edge' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -114,7 +114,7 @@ test('reuses one support stack for multiple certificates in the same containing 
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   new DnsValidatedCertificateV2(stack, 'FirstCertificate', {
     domainName: 'first.example.com',
@@ -134,7 +134,7 @@ test('can customize support stack id', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -153,7 +153,7 @@ test('throws when custom support stack id resolves to a stack in another region'
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   expect(() => new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -170,7 +170,7 @@ test('throws when custom support stack id resolves to a stack in another account
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   expect(() => new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -179,19 +179,95 @@ test('throws when custom support stack id resolves to a stack in another account
   })).toThrow(/must be in account "111111111111", got "222222222222"/);
 });
 
+test('can tag the certificate in the support stack', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    tags: {
+      application: 'edge',
+      costCenter: 'web',
+    },
+  });
+
+  Template.fromStack(getCertificateStack(app, stack)).hasResourceProperties('AWS::CertificateManager::Certificate', {
+    Tags: Match.arrayWith([
+      { Key: 'application', Value: 'edge' },
+      { Key: 'costCenter', Value: 'web' },
+    ]),
+  });
+});
+
+test('can tag the certificate in the containing stack', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'us-east-1' },
+  });
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    tags: {
+      application: 'edge',
+    },
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
+    Tags: Match.arrayWith([
+      { Key: 'application', Value: 'edge' },
+    ]),
+  });
+});
+
+test('certificate name takes precedence over the Name tag', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    certificateName: 'FriendlyCertificateName',
+    tags: {
+      Name: 'IgnoredNameTag',
+      application: 'edge',
+    },
+  });
+
+  Template.fromStack(getCertificateStack(app, stack)).hasResourceProperties('AWS::CertificateManager::Certificate', {
+    Tags: Match.arrayWith([
+      { Key: 'application', Value: 'edge' },
+      { Key: 'Name', Value: 'FriendlyCertificateName' },
+    ]),
+  });
+  Template.fromStack(getCertificateStack(app, stack)).hasResourceProperties('AWS::CertificateManager::Certificate', {
+    Tags: Match.not(Match.arrayWith([
+      { Key: 'Name', Value: 'IgnoredNameTag' },
+    ])),
+  });
+});
+
 test('throws for cross-region certificates when hosted zone id is unresolved', () => {
   const app = new App();
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = new route53.PublicHostedZone(stack, 'HostedZone', {
+  const hostedZone = new PublicHostedZone(stack, 'HostedZone', {
     zoneName: 'example.com',
   });
 
   expect(() => new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
     hostedZone,
-  })).toThrow(/requires a concrete hostedZoneId/);
+  })).toThrow(/require a concrete hostedZoneId/);
 });
 
 test('throws for cross-partition certificate references', () => {
@@ -199,12 +275,12 @@ test('throws for cross-partition certificate references', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'cn-north-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   expect(() => new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
     hostedZone,
-  })).toThrow(/does not support cross-partition references/);
+  })).toThrow(/cross-partition references are not supported/);
 });
 
 test('adds validation error on domain mismatch when hosted zone name is available', () => {
@@ -212,7 +288,7 @@ test('adds validation error on domain mismatch when hosted zone name is availabl
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+  const hostedZone = HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
     hostedZoneId: 'Z123456',
     zoneName: 'hello.com',
   });
@@ -230,7 +306,7 @@ test('adds validation error on subject alternative name mismatch when hosted zon
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+  const hostedZone = HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
     hostedZoneId: 'Z123456',
     zoneName: 'example.com',
   });
@@ -249,7 +325,7 @@ test('does not add validation error when domain names differ only by case', () =
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+  const hostedZone = HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
     hostedZoneId: 'Z123456',
     zoneName: 'example.com',
   });
@@ -268,7 +344,7 @@ test('does not try to validate unresolved tokens', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
+  const hostedZone = HostedZone.fromHostedZoneAttributes(stack, 'HostedZone', {
     hostedZoneId: 'Z123456',
     zoneName: Token.asString('example.com'),
   });
@@ -286,7 +362,7 @@ test('can set removal policy on the certificate in the support stack with props'
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -304,7 +380,7 @@ test('can set removal policy on the certificate in the containing stack with pro
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'us-east-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -322,7 +398,7 @@ test('can set removal policy on the certificate in the support stack', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   const certificate = new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -340,7 +416,7 @@ test('metricDaysToExpiry uses certificate region', () => {
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
 
   const certificate = new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
@@ -366,15 +442,15 @@ test('cloudfront distribution can consume cross-region certificate weak referenc
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'eu-west-1' },
   });
-  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+  const hostedZone = HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
   const certificate = new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
     hostedZone,
   });
 
-  new cloudfront.Distribution(stack, 'Distribution', {
+  new Distribution(stack, 'Distribution', {
     defaultBehavior: {
-      origin: new origins.HttpOrigin('example.com'),
+      origin: new HttpOrigin('example.com'),
     },
     domainNames: ['test.example.com'],
     certificate,

@@ -89,7 +89,7 @@ new acm.Certificate(this, 'Certificate', {
 
 ## Cross-region Certificates
 
-ACM certificates that are used with CloudFront -- or higher-level constructs which rely on CloudFront -- must be in the `us-east-1` region.
+ACM certificates that are used with CloudFront -- or higher-level constructs which rely on CloudFront, such as Amazon Cognito custom domains -- must be in the `us-east-1` region.
 `DnsValidatedCertificateV2` creates a DNS validated certificate in `us-east-1` by default and returns a weak
 cross-region reference to the certificate ARN. CDK resolves this reference through `Fn::GetStackOutput`, so you
 do not need to define a separate certificate stack in your application.
@@ -101,6 +101,9 @@ declare const hostedZone: route53.IHostedZone;
 const cert = new acm.DnsValidatedCertificateV2(this, 'Certificate', {
   domainName: '*.example.com',
   hostedZone,
+  tags: {
+    application: 'edge',
+  },
 });
 
 new cloudfront.Distribution(this, 'Distribution', {
@@ -117,7 +120,7 @@ For cross-region certificates, pass a hosted zone with a concrete hosted zone ID
 be in the same AWS partition because `Fn::GetStackOutput` does not support cross-partition references.
 
 `DnsValidatedCertificateV2` always uses DNS validation through the `hostedZone` property. Use `Certificate`
-directly if you need email validation or another certificate validation configuration.
+directly if you need email validation, private certificates, or another certificate validation configuration.
 
 `Fn::GetStackOutput` creates a weak reference to the support stack output. CloudFormation will not prevent
 you from deleting the support stack or changing the output while another stack still references it.
@@ -126,8 +129,9 @@ Automatic DNS validation is available when the validation domain is hosted in Ro
 The hosted zone must be authoritative for the certificate domain name and any subject alternative names.
 
 Tags configured through the containing stack's `tags` prop are copied to the generated certificate support
-stack. Tags applied with `Tags.of()` to the containing stack or directly to the `DnsValidatedCertificateV2`
-construct are only applied to the certificate when it is created in the containing stack.
+stack. Use the `tags` prop to apply tags to the certificate in both same-region and cross-region cases.
+Tags applied with `Tags.of()` to the containing stack or directly to the `DnsValidatedCertificateV2` construct
+are only applied to the certificate when it is created in the containing stack.
 
 ## Requesting private certificates
 
