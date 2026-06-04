@@ -686,17 +686,17 @@ import * as cdk from "aws-cdk-lib/core";
 import * as events from "aws-cdk-lib/aws-events";
 
 /**
- * EventBridge event pattern for aws.service@Created
+ * EventBridge event pattern for aws.service@Created-event
  */
-export class Created {
+export class CreatedEvent {
   /**
    * EventBridge event pattern for Created
    */
-  public static eventPattern(options?: Created.CreatedProps): events.EventPattern {
+  public static eventPattern(options?: CreatedEvent.CreatedEventProps): events.EventPattern {
     return {
       source: ["aws.service"],
       detailType: ["Created"],
-      detail: convertCreatedDetailToEventPattern(options),
+      detail: convertCreatedEventDetailToEventPattern(options),
       version: options?.eventMetadata?.version,
       resources: options?.eventMetadata?.resources,
       region: options?.eventMetadata?.region
@@ -704,11 +704,11 @@ export class Created {
   }
 }
 
-export namespace Created {
+export namespace CreatedEvent {
   /**
-   * Props type for aws.service@Created event
+   * Props type for aws.service@Created-event event
    */
-  export interface CreatedProps {
+  export interface CreatedEventProps {
     /**
      * source-class property
      *
@@ -746,7 +746,7 @@ export namespace Created {
 }
 
 // @ts-ignore TS6133
-function convertCreatedDetailToEventPattern(obj?: Created.CreatedProps): any {
+function convertCreatedEventDetailToEventPattern(obj?: CreatedEvent.CreatedEventProps): any {
   const ret = ({
     "source-class": obj?.sourceClass,
     "dest-class": obj?.destClass,
