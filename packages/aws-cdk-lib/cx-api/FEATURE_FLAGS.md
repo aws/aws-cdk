@@ -203,6 +203,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/core:aspectPrioritiesMutating": true,
     "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
     "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:defaultCrossStackReferences": "weak",
     "@aws-cdk/core:enableAdditionalMetadataCollection": true,
     "@aws-cdk/core:enablePartitionLiterals": true,
     "@aws-cdk/core:explicitStackTags": true,
@@ -2499,7 +2500,7 @@ The flag is read from the **consumer** stack's context, not the producer's.
 | Since | Unset behaves like | Recommended value |
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
-| 2.254.0 | `"strong"` | `"strong"` |
+| 2.254.0 | `"strong"` | `"weak"` |
 
 
 ### @aws-cdk/aws-cloudwatch:compositeAlarmGeneratedName

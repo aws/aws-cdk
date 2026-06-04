@@ -1889,7 +1889,7 @@ export const FLAGS: Record<string, FlagInfo> = {
 
       **Migration from weak to strong**: set directly to \`"strong"\` (single deployment).`,
     introducedIn: { v2: '2.254.0' },
-    recommendedValue: 'strong',
+    recommendedValue: 'weak',
     unconfiguredBehavesLike: { v2: 'strong' },
   },
 
