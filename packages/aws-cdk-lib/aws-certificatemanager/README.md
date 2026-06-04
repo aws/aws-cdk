@@ -116,6 +116,9 @@ For cross-region certificates, pass a hosted zone with a concrete hosted zone ID
 `HostedZone.fromLookup()` or `HostedZone.fromHostedZoneId()`. The containing stack and certificate stack must
 be in the same AWS partition because `Fn::GetStackOutput` does not support cross-partition references.
 
+`DnsValidatedCertificateV2` always uses DNS validation through the `hostedZone` property. Use `Certificate`
+directly if you need email validation or another certificate validation configuration.
+
 `Fn::GetStackOutput` creates a weak reference to the support stack output. CloudFormation will not prevent
 you from deleting the support stack or changing the output while another stack still references it.
 

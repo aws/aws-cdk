@@ -1,5 +1,5 @@
 import type { Construct } from 'constructs';
-import type { CertificateProps, ICertificate } from './certificate';
+import type { CertificateProps, ICertificate, KeyAlgorithm } from './certificate';
 import { Certificate, CertificateValidation } from './certificate';
 import { CertificateBase } from './certificate-base';
 import * as route53 from '../../aws-route53';
@@ -9,10 +9,19 @@ import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import { RegionInfo } from '../../region-info';
 
+const DNS_VALIDATED_CERTIFICATE_V2_SYMBOL = Symbol.for('@aws-cdk/aws-certificatemanager.DnsValidatedCertificateV2');
+
 /**
  * Properties to create a DNS validated certificate managed by AWS Certificate Manager.
  */
-export interface DnsValidatedCertificateV2Props extends CertificateProps {
+export interface DnsValidatedCertificateV2Props {
+  /**
+   * Fully-qualified domain name to request a certificate for.
+   *
+   * May contain wildcards, such as ``*.domain.com``.
+   */
+  readonly domainName: string;
+
   /**
    * Route 53 Hosted Zone used to perform DNS validation of the request.
    *
@@ -23,6 +32,58 @@ export interface DnsValidatedCertificateV2Props extends CertificateProps {
    * [disable-awslint:prefer-ref-interface]
    */
   readonly hostedZone: route53.IHostedZone;
+
+  /**
+   * Alternative domain names on your certificate.
+   *
+   * Use this to register alternative domain names that represent the same site.
+   *
+   * @default - No additional FQDNs will be included as alternative domain names.
+   */
+  readonly subjectAlternativeNames?: string[];
+
+  /**
+   * Enable or disable export of this certificate.
+   *
+   * If you issue an exportable public certificate, there is a charge at certificate issuance and again when the certificate renews.
+   * Ref: https://aws.amazon.com/certificate-manager/pricing
+   *
+   * @default false
+   */
+  readonly allowExport?: boolean;
+
+  /**
+   * Enable or disable transparency logging for this certificate.
+   *
+   * Once a certificate has been logged, it cannot be removed from the log.
+   * Opting out at that point will have no effect. If you opt out of logging
+   * when you request a certificate and then choose later to opt back in,
+   * your certificate will not be logged until it is renewed.
+   * If you want the certificate to be logged immediately, we recommend that you issue a new one.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency
+   *
+   * @default true
+   */
+  readonly transparencyLoggingEnabled?: boolean;
+
+  /**
+   * The certificate name.
+   *
+   * Since the certificate resource doesn't support providing a physical name, the value provided here will be recorded in the `Name` tag.
+   *
+   * @default the full, absolute path of this construct
+   */
+  readonly certificateName?: string;
+
+  /**
+   * Specifies the algorithm of the public and private key pair that your certificate uses to encrypt data.
+   *
+   * @see https://docs.aws.amazon.com/acm/latest/userguide/acm-certificate.html#algorithms.title
+   *
+   * @default KeyAlgorithm.RSA_2048
+   */
+  readonly keyAlgorithm?: KeyAlgorithm;
 
   /**
    * AWS region that will host the certificate.
@@ -37,6 +98,13 @@ export interface DnsValidatedCertificateV2Props extends CertificateProps {
    * @default - `dns-validated-certificate-stack-${stack.node.addr}-${region}`
    */
   readonly stackId?: string;
+
+  /**
+   * Policy to apply when the certificate is removed from this stack.
+   *
+   * @default RemovalPolicy.DESTROY
+   */
+  readonly removalPolicy?: cdk.RemovalPolicy;
 }
 
 /**
@@ -48,11 +116,19 @@ export interface DnsValidatedCertificateV2Props extends CertificateProps {
  * exposes the certificate ARN through a weak cross-stack reference.
  *
  * @resource AWS::CertificateManager::Certificate
+ * @stateful
  */
 @propertyInjectable
 export class DnsValidatedCertificateV2 extends CertificateBase implements ICertificate {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-certificatemanager.DnsValidatedCertificateV2';
+
+  /**
+   * Return whether the indicated object is a DnsValidatedCertificateV2.
+   */
+  public static isDnsValidatedCertificateV2(x: any): x is DnsValidatedCertificateV2 {
+    return x !== null && typeof x === 'object' && DNS_VALIDATED_CERTIFICATE_V2_SYMBOL in x;
+  }
 
   private static readonly DEFAULT_REGION = 'us-east-1';
 
@@ -76,14 +152,8 @@ export class DnsValidatedCertificateV2 extends CertificateBase implements ICerti
 
   constructor(scope: Construct, id: string, props: DnsValidatedCertificateV2Props) {
     super(scope, id);
+    Object.defineProperty(this, DNS_VALIDATED_CERTIFICATE_V2_SYMBOL, { value: true });
     addConstructMetadata(this, props);
-
-    if (props.validation || props.validationMethod !== undefined || props.validationDomains !== undefined) {
-      cdk.Annotations.of(this).addWarningV2(
-        '@aws-cdk/aws-certificatemanager:dnsValidatedCertificateV2ValidationIgnored',
-        'The validation, validationMethod, and validationDomains properties are ignored by DnsValidatedCertificateV2. Use the hostedZone property for DNS validation.',
-      );
-    }
 
     this.certificateDomainName = props.domainName;
     this.subjectAlternativeNames = props.subjectAlternativeNames;
@@ -112,6 +182,9 @@ export class DnsValidatedCertificateV2 extends CertificateBase implements ICerti
 
     const certificateProps = certificatePropsForDnsValidation(this, props, certificateHostedZone);
     this.certificate = new Certificate(certificateScope, createInContainingStack ? 'Certificate' : cdk.Names.uniqueId(this), certificateProps);
+    if (props.removalPolicy !== undefined) {
+      this.certificate.applyRemovalPolicy(props.removalPolicy);
+    }
 
     if (createInContainingStack) {
       this.certificateArn = this.certificate.certificateArn;
@@ -251,9 +324,7 @@ function certificatePropsForDnsValidation(
     hostedZone: _hostedZone,
     region: _region,
     stackId: _stackId,
-    validation: _validation,
-    validationMethod: _validationMethod,
-    validationDomains: _validationDomains,
+    removalPolicy: _removalPolicy,
     certificateName,
     ...certificateProps
   } = props;
@@ -273,6 +344,7 @@ function normalizeZoneName(hostedZone: route53.IHostedZone): string | undefined 
     }
     return zoneName.endsWith('.') ? zoneName.substring(0, zoneName.length - 1) : zoneName;
   } catch {
+    // ID-only hosted zone imports intentionally do not expose zoneName.
     return undefined;
   }
 }

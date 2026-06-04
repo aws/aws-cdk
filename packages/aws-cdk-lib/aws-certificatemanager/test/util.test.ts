@@ -38,6 +38,7 @@ describe('isDnsValidatedCertificate', () => {
     });
 
     expect(isDnsValidatedCertificate(cert)).toBeFalsy();
+    expect(isDnsValidatedCertificateV2(cert)).toBeFalsy();
   });
 
   test('fromCertificateArn is not a DnsValidatedCertificate', () => {
@@ -46,6 +47,7 @@ describe('isDnsValidatedCertificate', () => {
     const cert = Certificate.fromCertificateArn(stack, 'Certificate', 'cert-arn');
 
     expect(isDnsValidatedCertificate(cert)).toBeFalsy();
+    expect(isDnsValidatedCertificateV2(cert)).toBeFalsy();
   });
 
   test('new DnsValidatedCertificateV2 is not a DnsValidatedCertificate', () => {

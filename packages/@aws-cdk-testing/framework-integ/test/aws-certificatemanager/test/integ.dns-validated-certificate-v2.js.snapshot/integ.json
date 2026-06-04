@@ -1,0 +1,18 @@
+{
+  "enableLookups": true,
+  "version": "54.0.0",
+  "testCases": {
+    "integ-dns-validated-certificate-v2-test/DefaultTest": {
+      "stacks": [
+        "integ-dns-validated-certificate-v2"
+      ],
+      "regions": [
+        "us-east-2"
+      ],
+      "diffAssets": true,
+      "assertionStack": "integ-dns-validated-certificate-v2-test/DefaultTest/DeployAssert",
+      "assertionStackName": "integdnsvalidatedcertificatev2testDefaultTestDeployAssert0E42C9F9"
+    }
+  },
+  "minimumCliVersion": "2.1126.0"
+}

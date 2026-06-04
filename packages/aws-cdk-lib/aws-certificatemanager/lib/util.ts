@@ -26,7 +26,7 @@ export function isDnsValidatedCertificate(cert: ICertificate): cert is DnsValida
 }
 
 export function isDnsValidatedCertificateV2(cert: ICertificate): cert is DnsValidatedCertificateV2 {
-  return cert instanceof DnsValidatedCertificateV2;
+  return DnsValidatedCertificateV2.isDnsValidatedCertificateV2(cert);
 }
 
 export function getCertificateRegion(cert: ICertificate): string | undefined {

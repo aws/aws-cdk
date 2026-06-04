@@ -1,9 +1,9 @@
-import { Template, Match, Annotations } from '../../assertions';
+import { Template, Match } from '../../assertions';
 import * as cloudfront from '../../aws-cloudfront';
 import * as origins from '../../aws-cloudfront-origins';
 import * as route53 from '../../aws-route53';
 import { App, CfnOutput, CfnResource, Duration, RemovalPolicy, Stack, Token } from '../../core';
-import { CertificateValidation, DnsValidatedCertificateV2, ValidationMethod } from '../lib';
+import { DnsValidatedCertificateV2 } from '../lib';
 
 test('creates certificate in us-east-1 support stack by default', () => {
   const app = new App();
@@ -281,7 +281,25 @@ test('does not try to validate unresolved tokens', () => {
   Template.fromStack(stack);
 });
 
-test('warns and ignores all certificate validation properties', () => {
+test('can set removal policy on the certificate in the support stack with props', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', {
+    env: { account: '111111111111', region: 'eu-west-1' },
+  });
+  const hostedZone = route53.HostedZone.fromHostedZoneId(stack, 'HostedZone', 'Z123456');
+
+  new DnsValidatedCertificateV2(stack, 'Certificate', {
+    domainName: 'test.example.com',
+    hostedZone,
+    removalPolicy: RemovalPolicy.RETAIN,
+  });
+
+  Template.fromStack(getCertificateStack(app, stack)).hasResource('AWS::CertificateManager::Certificate', {
+    DeletionPolicy: 'Retain',
+  });
+});
+
+test('can set removal policy on the certificate in the containing stack with props', () => {
   const app = new App();
   const stack = new Stack(app, 'Stack', {
     env: { account: '111111111111', region: 'us-east-1' },
@@ -291,23 +309,11 @@ test('warns and ignores all certificate validation properties', () => {
   new DnsValidatedCertificateV2(stack, 'Certificate', {
     domainName: 'test.example.com',
     hostedZone,
-    validation: CertificateValidation.fromEmail(),
-    validationMethod: ValidationMethod.EMAIL,
-    validationDomains: {
-      'test.example.com': 'example.com',
-    },
+    removalPolicy: RemovalPolicy.RETAIN,
   });
 
-  Annotations.fromStack(stack).hasWarning(
-    '/Stack/Certificate',
-    Match.stringLikeRegexp('validation, validationMethod, and validationDomains properties are ignored'),
-  );
-  Template.fromStack(stack).hasResourceProperties('AWS::CertificateManager::Certificate', {
-    DomainValidationOptions: [{
-      DomainName: 'test.example.com',
-      HostedZoneId: 'Z123456',
-    }],
-    ValidationMethod: 'DNS',
+  Template.fromStack(stack).hasResource('AWS::CertificateManager::Certificate', {
+    DeletionPolicy: 'Retain',
   });
 });
 
