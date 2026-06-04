@@ -1074,20 +1074,21 @@ describe('stack', () => {
     expect(customResources2.length).toBeGreaterThan(0);
   });
 
-  test('emits a single warning per stack when cross-stack reference flag is unset', () => {
-    // GIVEN - no context flag set
+  test('emits a single warning per app when cross-stack reference flag is unset', () => {
+    // GIVEN - no context flag set, multiple consumer stacks
     const app = new App();
     const stack1 = new Stack(app, 'Stack1');
     const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
     const resource2 = new CfnResource(stack1, 'Resource2', { type: 'AWS::SNS::Topic' });
     const stack2 = new Stack(app, 'Stack2');
+    const stack3 = new Stack(app, 'Stack3');
 
-    // WHEN - multiple cross-stack references from the same consumer
+    // WHEN - cross-stack references from multiple consumers
     new CfnResource(stack2, 'Consumer1', {
       type: 'AWS::S3::Bucket',
       properties: { Prop1: resource1.getAtt('Arn') },
     });
-    new CfnResource(stack2, 'Consumer2', {
+    new CfnResource(stack3, 'Consumer2', {
       type: 'AWS::S3::Bucket',
       properties: { Prop2: resource2.getAtt('Arn') },
     });
@@ -1095,12 +1096,11 @@ describe('stack', () => {
     const assembly = app.synth();
     const warnings = getWarnings(assembly);
 
-    // THEN - only one warning on the consumer stack
+    // THEN - only one warning in the entire app
     const relevantWarnings = warnings.filter(w =>
       w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
     );
     expect(relevantWarnings).toHaveLength(1);
-    expect(relevantWarnings[0].path).toContain('Stack2');
   });
 
   test('no warning when cross-stack reference flag is explicitly set', () => {

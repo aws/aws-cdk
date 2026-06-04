@@ -136,22 +136,23 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
     return reference;
   }
 
-  // Emit a once-per-stack warning nudging users toward weak references
-  if (!(consumer as any)[WEAK_REFS_WARNING_EMITTED]) {
+  // Emit a once-per-app warning nudging users toward weak references
+  const appRoot = consumer.node.root;
+  if (!(appRoot as any)[WEAK_REFS_WARNING_EMITTED]) {
     const contextStrength = crossStackReferenceStrength(consumer);
     if (contextStrength === undefined) {
-      (consumer as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      (appRoot as any)[WEAK_REFS_WARNING_EMITTED] = true;
       Annotations.of(consumer).addWarningV2(
         '@aws-cdk/core:crossStackReferencesDefaultStrong',
-        `We recommend you set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "both" and deploy everywhere. ` +
-        '(More information: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+        `No cross-stack-reference strength configured, defaulting to "strong". We recommend you set feature flag "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "both", then deploy everywhere, then set it to "weak". Alternatively, set it to "strong" explicitly to lock in the current producer-protecting behavior. ` +
+        '(See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
       );
     } else if (contextStrength === 'both') {
-      (consumer as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      (appRoot as any)[WEAK_REFS_WARNING_EMITTED] = true;
       Annotations.of(consumer).addWarningV2(
         '@aws-cdk/core:crossStackReferencesBothTransitional',
-        `After you have deployed everywhere, set "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "weak". ` +
-        '(More information: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+        `Feature flag "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" currently set to "both". This is a transitory state. After you have finished deploying this application everywhere, set it to "weak". ` +
+        '(See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
       );
     }
   }
