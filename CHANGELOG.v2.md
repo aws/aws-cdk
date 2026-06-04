@@ -41,7 +41,6 @@ All notable changes to this project will be documented in this file. See [standa
 * **integ-tests:** responseURL logged in onTimeout ([#37972](https://github.com/aws/aws-cdk/issues/37972)) ([b9259dd](https://github.com/aws/aws-cdk/commit/b9259dd430e013b806c52afa6bf5e8d7491f6bc6))
 * **lambda-nodejs:** bundling rejects entry paths containing ".." ([#38022](https://github.com/aws/aws-cdk/issues/38022)) ([a7cc53c](https://github.com/aws/aws-cdk/commit/a7cc53c0b1dfc569f934cc38b54d7f35172b66cd)), closes [#38017](https://github.com/aws/aws-cdk/issues/38017) [#37572](https://github.com/aws/aws-cdk/issues/37572) [#37572](https://github.com/aws/aws-cdk/issues/37572)
 * **lambda-nodejs:** perf counters e2e test uses incorrect filename ([#38033](https://github.com/aws/aws-cdk/issues/38033)) ([d88637f](https://github.com/aws/aws-cdk/commit/d88637fb21922374450730c2a15844fc966ca4e7))
-* **mediapackagev2:** cdnAuth on OriginEndpoint now generates the required policy ([#38013](https://github.com/aws/aws-cdk/issues/38013)) ([1d56b46](https://github.com/aws/aws-cdk/commit/1d56b46abd477f188021d32d77551be1377765d0))
 
 ## [2.257.0](https://github.com/aws/aws-cdk/compare/v2.256.1...v2.257.0) (2026-05-21)
 
