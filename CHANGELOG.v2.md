@@ -9,26 +9,10 @@ All notable changes to this project will be documented in this file. See [standa
 
 * ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
 
-- aws-pcaconnectorad: AWS::PCAConnectorAD::ServicePrincipalName: ConnectorArn property is now required.
-- aws-pcaconnectorad: AWS::PCAConnectorAD::ServicePrincipalName: DirectoryRegistrationArn property is now required.
-- aws-pcaconnectorad: AWS::PCAConnectorAD::TemplateGroupAccessControlEntry: GroupSecurityIdentifier property is now required.
-- aws-pcaconnectorad: AWS::PCAConnectorAD::TemplateGroupAccessControlEntry: TemplateArn property is now required.
-* **mediapackagev2:** `OriginEndpoint.addToResourcePolicy()` no longer accepts an
-optional `cdnAuth` second argument. `MediaPackageV2OriginProps.cdnAuth` has
-been removed. Set `cdnAuth` on `OriginEndpointProps` instead.
-
-### Describe any new or updated permissions being added
-
-
-
-
-### Description of how you validated changes
-
-
-
-### Checklist
-- [x] My code adheres to the [CONTRIBUTING GUIDE](https://github.com/aws/aws-cdk/blob/main/CONTRIBUTING.md) and [DESIGN GUIDELINES](https://github.com/aws/aws-cdk/blob/main/docs/DESIGN_GUIDELINES.md)
-* **elasticache:** `CacheEngine` and `UserEngine` are now classes instead of string enums. Usage as props (`CacheEngine.VALKEY_8`, `UserEngine.REDIS`) is unchanged; code reading these values must use `.engineType` / `.majorEngineVersion` instead of string comparisons.
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::ServicePrincipalName: ConnectorArn property is now required.
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::ServicePrincipalName: DirectoryRegistrationArn property is now required.
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::TemplateGroupAccessControlEntry: GroupSecurityIdentifier property is now required.
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::TemplateGroupAccessControlEntry: TemplateArn property is now required.
 
 ### Features
 
