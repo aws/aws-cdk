@@ -1,0 +1,160 @@
+{
+  "/integ-cloudfront-stack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.cloudfront-cross-region-cert.js:71:25)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-stack/Distro": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "defaultBehavior": {
+          "origin": "*"
+        },
+        "certificate": "*",
+        "domainNames": "*"
+      }
+    }
+  ],
+  "/integ-cloudfront-stack/Custom::CrossRegionExportReaderCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/integ-cloudfront-stack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-cloudfront-stack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/integ-cloudfront-stack/Distro/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Distro87EBE6BA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Distribution (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
+        "new Distribution (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Distribution (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-cloudfront/test/integ.cloudfront-cross-region-cert.js:86:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/integ-cloudfront-stack/ExportsReader/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-cloudfront-stack/Custom::CrossRegionExportReaderCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionExportReaderCustomResourceProviderRole10531BBD"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new CrossRegionSsmReaderProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:66:9)",
+        "CrossRegionSsmReaderProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:63:28)",
+        "CrossRegionSsmReaderProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:54:21)",
+        "new ExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
+        "ExportReader.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
+      ]
+    }
+  ],
+  "/integ-cloudfront-stack/Custom::CrossRegionExportReaderCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomCrossRegionExportReaderCustomResourceProviderHandler46647B68"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new CrossRegionSsmReaderProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:66:9)",
+        "CrossRegionSsmReaderProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:63:28)",
+        "CrossRegionSsmReaderProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:54:21)",
+        "new ExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
+        "ExportReader.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
+      ]
+    }
+  ],
+  "/integ-cloudfront-stack/ExportsReader/Resource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsReader8B249524"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:51:31)",
+        "ExportReader.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)",
+        "resolveReferences (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)"
+      ]
+    }
+  ]
+}
