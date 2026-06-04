@@ -1,6 +1,0 @@
-{
-  "/": "If you need to regenerate the lockfile, temporarily rename this file to package.json",
-  "dependencies": {
-    "delay": "5.0.0"
-  }
-}
