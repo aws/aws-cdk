@@ -95,7 +95,8 @@ cross-region reference to the certificate ARN. CDK resolves this reference throu
 do not need to define a separate certificate stack in your application.
 
 ```ts
-import { aws_cloudfront as cloudfront, aws_cloudfront_origins as origins } from 'aws-cdk-lib';
+import { aws_certificatemanager as acm, aws_cloudfront as cloudfront } from 'aws-cdk-lib';
+import { aws_cloudfront_origins as origins, aws_route53 as route53 } from 'aws-cdk-lib';
 declare const hostedZone: route53.IHostedZone;
 
 const cert = new acm.DnsValidatedCertificateV2(this, 'Certificate', {
