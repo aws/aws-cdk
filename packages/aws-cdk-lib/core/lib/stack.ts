@@ -27,6 +27,7 @@ import { PropertyInjectors } from './prop-injectors';
 import * as cxschema from '../../cloud-assembly-schema';
 import { INCLUDE_PREFIX_IN_UNIQUE_NAME_GENERATION } from '../../cx-api';
 import * as cxapi from '../../cx-api';
+import { profileFn } from './private/perf';
 
 // Must be a 'require' to not run afoul of ESM module import rules
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -272,6 +273,49 @@ export class Stack extends Construct implements ITaggable {
   }
 
   /**
+   * Override the reference strength for a specific cross-stack reference value.
+   *
+   * Use this to weaken (or strengthen) an individual reference without
+   * affecting other references to the same resource. For example:
+   *
+   * ```ts
+   * // producerStack defines an SNS topic
+   * declare const topic: sns.Topic;
+   *
+   * // consumerStack subscribes to it with a weak reference,
+   * // so the producer can be torn down without blocking on this consumer
+   * const consumerStack = new Stack(app, 'Consumer', {
+   *   env: { account: '123456789012', region: 'us-east-1' },
+   * });
+   * new sns.Subscription(consumerStack, 'Subscription', {
+   *   topic: sns.Topic.fromTopicArn(consumerStack, 'Topic', Stack.consumeReference(topic.topicArn)),
+   *   endpoint: 'https://example.com/webhook',
+   *   protocol: sns.SubscriptionProtocol.HTTPS,
+   * });
+   * ```
+   *
+   * @param value A tokenized string reference (e.g. `bucket.bucketArn`).
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public static consumeReference(value: string, strength: ReferenceStrength = ReferenceStrength.BOTH): string {
+    return Token.asString(makeCustomCoupledReference(value, strength));
+  }
+
+  /**
+   * Override the reference strength for a specific cross-stack string list reference.
+   *
+   * This is the string list equivalent of `consumeReference`.
+   *
+   * @param value A tokenized string list reference.
+   * @param strength The reference strength to use. Defaults to `BOTH`.
+   * @returns A token that resolves to the same value but uses the overridden strength.
+   */
+  public static consumeListReference(value: string[], strength: ReferenceStrength = ReferenceStrength.BOTH): string[] {
+    return Token.asList(makeCustomCoupledReference(value, strength));
+  }
+
+  /**
    * Tags to be applied to the stack.
    */
   public readonly tags: TagManager;
@@ -467,6 +511,10 @@ export class Stack extends Construct implements ITaggable {
 
     Object.defineProperty(this, STACK_SYMBOL, { value: true });
 
+    if (!this.node.tryGetContext(cxapi.DISABLE_CREATION_STACK_TRACES) || debugModeEnabled()) {
+      this.node.addMetadata(cxschema.ArtifactMetadataEntryType.CREATION_STACK, captureStackTrace(new.target));
+    }
+
     this._logicalIds = new LogicalIDs();
 
     const { account, region, environment } = this.parseEnvironment(props.env);
@@ -624,6 +672,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Resolve a tokenized value in the context of the current stack.
    */
+  @profileFn('Stack.resolve', { telemetry: true })
   public resolve(obj: any): any {
     return resolve(obj, {
       scope: this,
@@ -1882,6 +1931,7 @@ function count(xs: string[]): Record<string, number> {
 // These imports have to be at the end to prevent circular imports
 /* eslint-disable import/order */
 import { CfnOutput } from './cfn-output';
+import { ReferenceStrength } from './cross-stack-reference-strength';
 import type { Element } from './deps';
 import { addDependency } from './deps';
 import { Names } from './names';
@@ -1894,13 +1944,27 @@ import { Stage } from './stage';
 import type { ITaggable } from './tag-manager';
 import { TagManager } from './tag-manager';
 import { Token, Tokenization } from './token';
-import { getExportable, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
+import { getExportable, CustomCoupledReference, STRING_LIST_REFERENCE_DELIMITER } from './private/refs';
+import { CfnReference } from './private/cfn-reference';
 import { Fact, RegionInfo } from '../../region-info';
 import { deployTimeLookup } from './private/region-lookup';
 import { makeUniqueResourceName } from './private/unique-resource-name';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { Intrinsic } from './private/intrinsic';
 import { mutatingAspectPrio32333 } from './private/aspect-prio';
-import { AssumptionError, ValidationError } from './errors';
+import { AssumptionError, UnscopedValidationError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
+import { debugModeEnabled } from './debug';
+import { captureStackTrace } from './stack-trace';
 /* eslint-enable import/order */
+
+function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
+  const resolvable = Tokenization.reverse(value);
+  if (!resolvable || !CfnReference.isCfnReference(resolvable)) {
+    throw new UnscopedValidationError(
+      lit`ConsumeReferenceRequiresResourceAttribute`,
+      'consumeReference: the value must be a resource attribute reference (like \'bucket.bucketArn\')',
+    );
+  }
+  return new CustomCoupledReference(resolvable, strength);
+}
