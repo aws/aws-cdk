@@ -3,7 +3,8 @@ import { RemovalPolicy, ArnFormat, Duration, Fn, Lazy, Names, Resource, Stack, T
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
-import type { IRole, PolicyStatement, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
+import type { IRole, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, StarPrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnOriginEndpoint } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { IOriginEndpointRef, OriginEndpointReference } from 'aws-cdk-lib/aws-mediapackagev2';
 import { ValidationError, UnscopedValidationError, CfnResource } from 'aws-cdk-lib/core';
@@ -1054,9 +1055,8 @@ export interface IOriginEndpoint extends IResource, IOriginEndpointRef {
    * If you have already defined one, it will append to the policy already created.
    *
    * @param statement - The policy statement to add
-   * @param cdnAuth - Optional CDN authorization configuration. Only the first CDN auth configuration is used if provided multiple times.
    */
-  addToResourcePolicy(statement: PolicyStatement, cdnAuth?: CdnAuthConfiguration): AddToResourcePolicyResult;
+  addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
 
   /**
    * Create a CloudWatch metric.
@@ -1828,6 +1828,35 @@ export interface OriginEndpointOptions {
 
   /**
    * Provide access to MediaPackage V2 Origin Endpoint via secret header.
+   *
+   * Use this when your CDN doesn't support AWS Signature Version 4 (SigV4)
+   * authentication. For SigV4-based access with Amazon CloudFront, see
+   * `MediaPackageV2Origin`.
+   *
+   * Setting `cdnAuth` auto-creates the following policy on the OriginEndpoint:
+   *
+   * ```json
+   * {
+   *   "Version":"2012-10-17",
+   *   "Statement": [
+   *     {
+   *       "Sid": "AllowGetObjectAccessForAuthorizedRequest",
+   *       "Effect": "Allow",
+   *       "Principal": "*",
+   *       "Action": "mediapackagev2:GetObject",
+   *       "Resource": "arn:aws:mediapackagev2:us-east-1:111122223333:channelGroup/channelGroupName/channel/channelName/originEndpoint/originEndpointName",
+   *       "Condition": {
+   *         "Bool": {
+   *           "mediapackagev2:RequestHasMatchingCdnAuthHeader": "true"
+   *         }
+   *       }
+   *     }
+   *   ]
+   * }
+   * ```
+   *
+   * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth.html
+   * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
    *
    * @default undefined - Not configured on endpoint
    */
@@ -2653,36 +2682,21 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
 
   /**
    * CDN authorization configuration to be applied when the policy is created.
+   * Set by subclass constructors when `cdnAuth` is provided in props.
    */
-  private cdnAuthConfig?: CdnAuthConfiguration;
-
-  /**
-   * Set CDN auth config. Used by subclass constructors.
-   * @internal
-   */
-  protected _setCdnAuth(cdnAuth: CdnAuthConfiguration): void {
-    if (!this.cdnAuthConfig) {
-      this.cdnAuthConfig = cdnAuth;
-    }
-  }
+  protected cdnAuthConfig?: CdnAuthConfiguration;
 
   /**
    * Configure origin endpoint policy.
    *
-   * You can only add 1 OriginEndpointPolicy to an OriginEndpoint.
-   * If you have already defined one, it will append to the policy already created.
+   * You can only add 1 OriginEndpointPolicy to an OriginEndpoint. If you have already
+   * defined one, this will append to the policy already created.
+   *
+   * To configure CDN authentication, set `cdnAuth` on the construct's props instead.
    *
    * @param statement - The policy statement to add
-   * @param cdnAuth - Optional CDN authorization configuration. If provided, the policy will be
-   *                  created with CDN authentication enabled using secrets from AWS Secrets Manager.
-   *                  If cdnAuth is provided multiple times, only the first configuration is used.
    */
-  public addToResourcePolicy(statement: PolicyStatement, cdnAuth?: CdnAuthConfiguration): AddToResourcePolicyResult {
-    // Store CDN auth config if provided (only if not already set)
-    if (cdnAuth && !this.cdnAuthConfig) {
-      this.cdnAuthConfig = cdnAuth;
-    }
-
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new OriginEndpointPolicy(this, 'Policy', {
         originEndpoint: this,
@@ -3012,9 +3026,32 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
 
     origin.applyRemovalPolicy(props?.removalPolicy ?? RemovalPolicy.DESTROY);
 
-    // Pre-set CDN auth config if provided in props
+    // When cdnAuth is set, pre-create the endpoint policy with the AWS-recommended gating
+    // statement. The principal is `*` (anonymous) because CDN requests to MediaPackage are
+    // unsigned HTTPS — only the matching CDN-Identifier header proves authorisation.
+    // See https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
     if (props.cdnAuth) {
-      this._setCdnAuth(props.cdnAuth);
+      if (props.cdnAuth.secrets.length === 0) {
+        throw new ValidationError(
+          lit`CdnAuthSecretsRequired`,
+          'cdnAuth.secrets must contain at least one secret. CDN authorization needs a secret to validate incoming CDN-Identifier headers.',
+          this,
+        );
+      }
+
+      this.cdnAuthConfig = props.cdnAuth;
+      this.addToResourcePolicy(new PolicyStatement({
+        sid: 'AllowGetObjectAccessForAuthorizedRequest',
+        effect: Effect.ALLOW,
+        principals: [new StarPrincipal()],
+        actions: ['mediapackagev2:GetObject'],
+        resources: [this.originEndpointArn],
+        conditions: {
+          Bool: {
+            'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
+          },
+        },
+      }));
     }
   }
 }

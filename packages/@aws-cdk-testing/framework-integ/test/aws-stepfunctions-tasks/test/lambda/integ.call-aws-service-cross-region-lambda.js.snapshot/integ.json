@@ -1,13 +1,17 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "testCases": {
     "IntegTest/DefaultTest": {
       "stacks": [
-        "aws-stepfunctions-call-aws-service-cross-region-lambda-integ"
+        "aws-sfn-call-aws-service-cross-region-lambda"
       ],
-      "assertionStack": "IntegTest/DefaultTest/DeployAssert",
-      "assertionStackName": "IntegTestDefaultTestDeployAssertE3E7D2A4"
+      "regions": [
+        "us-east-1",
+        "us-west-2"
+      ],
+      "assertionStack": "AssertionStack",
+      "assertionStackName": "AssertionStack"
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1119.0"
 }

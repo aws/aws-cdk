@@ -33,6 +33,7 @@ export * from './cfn-tag';
 export * from './cfn-json';
 export * from './removal-policy';
 export * from './removal-policies';
+export * from './cross-stack-reference-strength';
 export * from './arn';
 export * from './duration';
 export * from './bitrate';

@@ -1,31 +1,31 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268": {
+    "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
       "source": {
-        "path": "asset.92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268",
+        "path": "asset.2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-east-1-17e8fcf8": {
+        "current_account-us-east-1-99630b58": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip",
+          "objectKey": "2a7dce285d9e8889d82d23f62c85baa7de5d0861151a9e01d0e58855559b38c1.zip",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }
       }
     },
-    "6b01781d54f38b8ab9be4662690ce22c3ad489788a55301f8f701276004b54d5": {
+    "52f416d06ba56ab7f3ba68cde29d092334abc71a0cffe9b0ee1a1e4b6f8167b8": {
       "displayName": "cdk-route53-ebs-token-endpoint-integ Template",
       "source": {
         "path": "cdk-route53-ebs-token-endpoint-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-1-da9cb4ab": {
+        "current_account-us-east-1-594fbb4a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1",
-          "objectKey": "6b01781d54f38b8ab9be4662690ce22c3ad489788a55301f8f701276004b54d5.json",
+          "objectKey": "52f416d06ba56ab7f3ba68cde29d092334abc71a0cffe9b0ee1a1e4b6f8167b8.json",
           "region": "us-east-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-1"
         }

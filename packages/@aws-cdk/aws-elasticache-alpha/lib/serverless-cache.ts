@@ -9,7 +9,6 @@ import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
-import { UserEngine } from './common';
 import type { IServerlessCache } from './serverless-cache-base';
 import { ServerlessCacheBase, CacheEngine } from './serverless-cache-base';
 import type { IUserGroup } from './user-group';
@@ -328,18 +327,14 @@ export class ServerlessCache extends ServerlessCacheBase {
 
         if (this.engine) {
           let defaultPort: ec2.Port;
-          switch (this.engine) {
-            case CacheEngine.VALKEY_LATEST:
-            case CacheEngine.VALKEY_7:
-            case CacheEngine.VALKEY_8:
-            case CacheEngine.REDIS_LATEST:
-            case CacheEngine.REDIS_7:
+          switch (this.engine.engineType) {
+            case 'valkey':
+            case 'redis':
               // Document showing the default port
               // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(6379);
               break;
-            case CacheEngine.MEMCACHED_LATEST:
-            case CacheEngine.MEMCACHED_1_6:
+            case 'memcached':
               // Document showing the default port
               // https://docs.aws.amazon.com/AmazonElastiCache/latest/dg/set-up.html#elasticache-install-grant-access-VPN
               defaultPort = ec2.Port.tcp(11211);
@@ -443,11 +438,9 @@ export class ServerlessCache extends ServerlessCacheBase {
     const securityGroupIds = securityGroupConfig.securityGroupIds;
     this.securityGroups = securityGroupConfig.securityGroups;
 
-    const [engine, version] = this.engine.split('_');
-
     const resource = new CfnServerlessCache(this, 'Resource', {
-      engine: engine,
-      majorEngineVersion: version,
+      engine: this.engine.engineType,
+      majorEngineVersion: this.engine.majorEngineVersion,
       serverlessCacheName: this.serverlessCacheName,
       description: props.description,
       cacheUsageLimits: this.renderCacheUsageLimits(props.cacheUsageLimits),
@@ -590,11 +583,11 @@ export class ServerlessCache extends ServerlessCacheBase {
   private validateUserGroupCompatibility(engine: CacheEngine, userGroup?: IUserGroup): void {
     if (!userGroup) return;
 
-    if (engine === CacheEngine.MEMCACHED_LATEST) {
+    if (engine.engineType === 'memcached') {
       throw new ValidationError(lit`MemcachedUserGroupNotSupported`, 'User groups cannot be used with Memcached engines. Only Redis and Valkey engines support user groups.', this);
     }
 
-    if (engine === CacheEngine.REDIS_LATEST && userGroup.engine !== UserEngine.REDIS) {
+    if (engine.engineType === 'redis' && userGroup.engine?.engineType !== 'redis') {
       throw new ValidationError(lit`RedisUserGroupMismatch`, 'Redis cache can only use Redis user groups.', this);
     }
   }

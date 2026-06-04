@@ -758,4 +758,23 @@ describe('Job', () => {
       });
     });
   });
+
+  describe('Create PySpark ETL Job with notifyDelayAfter', () => {
+    beforeEach(() => {
+      job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        notifyDelayAfter: cdk.Duration.minutes(10),
+      });
+    });
+
+    test('NotificationProperty is set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NotificationProperty: {
+          NotifyDelayAfter: 10,
+        },
+      });
+    });
+  });
 });

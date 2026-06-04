@@ -126,7 +126,6 @@ describe('main function', () => {
         atmosphereRoleArn: 'arn:aws:iam::123456789:role/test',
         endpoint: 'https://test-endpoint.com',
         pool: 'test-pool',
-        batchSize: undefined,
       });
     });
 
@@ -186,31 +185,6 @@ describe('main function', () => {
       });
 
       expect(deployIntegTestsSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('batch size handling', () => {
-    it('should pass undefined batchSize when not provided', async () => {
-      await main(baseConfig);
-
-      expect(deployIntegTestsSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          batchSize: undefined,
-        }),
-      );
-    });
-
-    it('should pass batchSize when provided', async () => {
-      await main({
-        ...baseConfig,
-        batchSize: 5,
-      });
-
-      expect(deployIntegTestsSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          batchSize: 5,
-        }),
-      );
     });
   });
 
