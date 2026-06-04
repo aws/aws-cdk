@@ -181,6 +181,59 @@ describe('CodeDeploy Server Deployment Group', () => {
     });
   });
 
+  describe('the autoScalingGroups property', () => {
+    function newAsg(stack: cdk.Stack, id: string): autoscaling.AutoScalingGroup {
+      return new autoscaling.AutoScalingGroup(stack, id, {
+        instanceType: ec2.InstanceType.of(ec2.InstanceClass.STANDARD3, ec2.InstanceSize.SMALL),
+        machineImage: new ec2.AmazonLinuxImage(),
+        vpc: new ec2.Vpc(stack, `VPC${id}`),
+      });
+    }
+
+    test('is an empty array by default', () => {
+      const stack = new cdk.Stack();
+
+      const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
+
+      expect(deploymentGroup.autoScalingGroups).toEqual([]);
+    });
+
+    test('reflects the ASGs passed at construction', () => {
+      const stack = new cdk.Stack();
+      const asg = newAsg(stack, 'ASG');
+
+      const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup', {
+        autoScalingGroups: [asg],
+      });
+
+      expect(deploymentGroup.autoScalingGroups).toEqual([asg]);
+    });
+
+    test('is a live view that reflects ASGs added after construction', () => {
+      const stack = new cdk.Stack();
+      const asg = newAsg(stack, 'ASG');
+
+      const deploymentGroup = new codedeploy.ServerDeploymentGroup(stack, 'DeploymentGroup');
+      expect(deploymentGroup.autoScalingGroups).toEqual([]);
+
+      deploymentGroup.addAutoScalingGroup(asg);
+
+      expect(deploymentGroup.autoScalingGroups).toEqual([asg]);
+    });
+
+    test('is undefined on an imported Deployment Group', () => {
+      const stack = new cdk.Stack();
+
+      const deploymentGroup: codedeploy.IServerDeploymentGroup =
+        codedeploy.ServerDeploymentGroup.fromServerDeploymentGroupAttributes(stack, 'MyDG', {
+          application: codedeploy.ServerApplication.fromServerApplicationName(stack, 'MyApp', 'MyApp'),
+          deploymentGroupName: 'MyDG',
+        });
+
+      expect(deploymentGroup.autoScalingGroups).toBeUndefined();
+    });
+  });
+
   test('can be created with an ALB Target Group as the load balancer', () => {
     const stack = new cdk.Stack();
 

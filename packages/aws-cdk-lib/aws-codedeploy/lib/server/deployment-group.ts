@@ -392,7 +392,7 @@ export class ServerDeploymentGroup extends DeploymentGroupBase implements IServe
     this.alarms.push(alarm);
   }
 
-  public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] | undefined {
+  public get autoScalingGroups(): autoscaling.IAutoScalingGroup[] {
     return this._autoScalingGroups.get().slice();
   }
 
