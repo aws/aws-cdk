@@ -382,6 +382,23 @@
       "disable"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
+    "UserEngine": [
+      "valkey",
+      "redis"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts": {
+    "CacheEngine": [
+      "valkey",
+      "valkey_7",
+      "valkey_8",
+      "redis",
+      "redis_7",
+      "memcached",
+      "memcached_1.6"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
     "DataStorageUnit": [
       "GB"
@@ -6481,13 +6498,6 @@
       "StringToStringMap",
       "KeyValue",
       "NotTaggable"
-    ]
-  },
-  "aws-cdk/packages/aws-cdk-lib/core/lib/cross-stack-reference-strength.ts": {
-    "ReferenceStrength": [
-      "strong",
-      "weak",
-      "both"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.ts": {
