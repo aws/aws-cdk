@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "97317135f1248b79c6e2346fac6992bb36b6b7b56fca1a05b64bc3601ffe4224": {
+      "displayName": "oac-cross-stack-distribution Template",
+      "source": {
+        "path": "oac-cross-stack-distribution.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8122e207": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "97317135f1248b79c6e2346fac6992bb36b6b7b56fca1a05b64bc3601ffe4224.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
