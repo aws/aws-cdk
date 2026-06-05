@@ -27,6 +27,7 @@ import {
   ValidationError,
 } from '../../../core';
 import { memoizedGetter } from '../../../core/lib/helpers-internal';
+import { lit } from '../../../core/lib/private/literal-string';
 import * as cxapi from '../../../cx-api';
 import type { IServiceRef, ServiceReference } from '../../../interfaces/generated/aws-ecs-interfaces.generated';
 import { RegionInfo } from '../../../region-info';
@@ -904,14 +905,14 @@ export abstract class BaseService extends Resource
 
     if (props.forceNewDeployment !== undefined) {
       if (!this.isEcsDeploymentController) {
-        throw new ValidationError('ForceNewDeploymentRequiresEcsController', 'forceNewDeployment requires the ECS deployment controller.', this);
+        throw new ValidationError(lit`ForceNewDeploymentRequiresEcsController`, 'forceNewDeployment requires the ECS deployment controller.', this);
       }
 
       const enabled = props.forceNewDeployment.enabled;
       const nonce = props.forceNewDeployment.nonce;
 
       if (nonce !== undefined && !Token.isUnresolved(nonce) && (nonce.length < 1 || nonce.length > 255)) {
-        throw new ValidationError('ForceNewDeploymentNonceInvalidLength', `forceNewDeployment nonce must be between 1 and 255 characters, got ${nonce.length}`, this);
+        throw new ValidationError(lit`ForceNewDeploymentNonceInvalidLength`, `forceNewDeployment nonce must be between 1 and 255 characters, got ${nonce.length}`, this);
       }
 
       this.resource.forceNewDeployment = {
@@ -1025,13 +1026,13 @@ export abstract class BaseService extends Resource
     // support this CloudFormation property. The AWS documentation does not explicitly
     // state this restriction; a documentation update has been requested.
     if (!this.isEcsDeploymentController) {
-      throw new ValidationError('EcsControllerRequired', 'forceNewDeployment requires the ECS deployment controller.', this);
+      throw new ValidationError(lit`EcsControllerRequired`, 'forceNewDeployment requires the ECS deployment controller.', this);
     }
 
     const resolvedNonce = nonce ?? new Date().toISOString();
 
     if (!Token.isUnresolved(resolvedNonce) && (resolvedNonce.length < 1 || resolvedNonce.length > 255)) {
-      throw new ValidationError('ForceDeploymentErrorInvalidLength', `forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
+      throw new ValidationError(lit`ForceDeploymentErrorInvalidLength`, `forceNewDeployment nonce must be between 1 and 255 characters, got ${resolvedNonce.length}`, this);
     }
 
     this.resource.forceNewDeployment = {
