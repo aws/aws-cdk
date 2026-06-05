@@ -209,6 +209,7 @@
       "ANTHROPIC_CLAUDE_SONNET_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
       "ANTHROPIC_CLAUDE_OPUS_4_7",
+      "ANTHROPIC_CLAUDE_OPUS_4_8",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_OPUS_4_5_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_1_V1_0",
@@ -247,6 +248,24 @@
     "ToolChoice": [
       "ANY",
       "AUTO"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
+    "UserEngine": [
+      "VALKEY",
+      "REDIS"
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts": {
+    "CacheEngine": [
+      "VALKEY_LATEST",
+      "VALKEY_7",
+      "VALKEY_8",
+      "VALKEY_9",
+      "REDIS_LATEST",
+      "REDIS_7",
+      "MEMCACHED_LATEST",
+      "MEMCACHED_1_6"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/connection.ts": {
@@ -818,6 +837,7 @@
       "ANTHROPIC_CLAUDE_OPUS_4_5_20251101_V1_0",
       "ANTHROPIC_CLAUDE_OPUS_4_6_V1",
       "ANTHROPIC_CLAUDE_OPUS_4_7",
+      "ANTHROPIC_CLAUDE_OPUS_4_8",
       "ANTHROPIC_CLAUDE_SONNET_4_6",
       "ANTHROPIC_CLAUDE_INSTANT_V1",
       "ANTHROPIC_CLAUDE_INSTANT_V1_2_100K",
@@ -2307,7 +2327,31 @@
       "V2_7_2",
       "V2_8_0",
       "V2_8_1",
-      "V2_8_2"
+      "V2_8_2",
+      "V2_8_3",
+      "V2_9_0",
+      "V2_9_1",
+      "V2_9_2",
+      "V2_10_0",
+      "V2_10_1",
+      "V2_11_0",
+      "V2_12_0",
+      "V2_13_0",
+      "V2_13_1",
+      "V2_13_2",
+      "V2_13_3",
+      "V2_13_4",
+      "V2_14_0",
+      "V2_14_1",
+      "V2_15_0",
+      "V2_16_0",
+      "V2_17_0",
+      "V2_17_1",
+      "V3_0_0",
+      "V3_1_0",
+      "V3_2_0",
+      "V3_2_1",
+      "V3_2_2"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks-v2/lib/cluster.ts": {
@@ -2374,7 +2418,31 @@
       "V2_7_2",
       "V2_8_0",
       "V2_8_1",
-      "V2_8_2"
+      "V2_8_2",
+      "V2_8_3",
+      "V2_9_0",
+      "V2_9_1",
+      "V2_9_2",
+      "V2_10_0",
+      "V2_10_1",
+      "V2_11_0",
+      "V2_12_0",
+      "V2_13_0",
+      "V2_13_1",
+      "V2_13_2",
+      "V2_13_3",
+      "V2_13_4",
+      "V2_14_0",
+      "V2_14_1",
+      "V2_15_0",
+      "V2_16_0",
+      "V2_17_0",
+      "V2_17_1",
+      "V3_0_0",
+      "V3_1_0",
+      "V3_2_0",
+      "V3_2_1",
+      "V3_2_2"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-eks/lib/cluster.ts": {
@@ -3047,6 +3115,7 @@
       "VER_16_11",
       "VER_16_11_LIMITLESS",
       "VER_16_13",
+      "VER_16_13_LIMITLESS",
       "VER_17_1",
       "VER_17_2",
       "VER_17_4",
@@ -3239,6 +3308,7 @@
       "VER_5_7_44_RDS_20250508",
       "VER_5_7_44_RDS_20250818",
       "VER_5_7_44_RDS_20251212",
+      "VER_5_7_44_RDS_20260212",
       "VER_8_0",
       "VER_8_0_11",
       "VER_8_0_13",
@@ -3269,12 +3339,14 @@
       "VER_8_0_43",
       "VER_8_0_44",
       "VER_8_0_45",
+      "VER_8_0_46",
       "VER_8_4_3",
       "VER_8_4_4",
       "VER_8_4_5",
       "VER_8_4_6",
       "VER_8_4_7",
-      "VER_8_4_8"
+      "VER_8_4_8",
+      "VER_8_4_9"
     ],
     "PostgresEngineVersion": [
       "VER_9_5",
@@ -3817,7 +3889,9 @@
       "REDSHIFT_ROTATION_SINGLE_USER",
       "REDSHIFT_ROTATION_MULTI_USER",
       "MONGODB_ROTATION_SINGLE_USER",
-      "MONGODB_ROTATION_MULTI_USER"
+      "MONGODB_ROTATION_MULTI_USER",
+      "DB2_ROTATION_SINGLE_USER",
+      "DB2_ROTATION_MULTI_USER"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ses-actions/lib/bounce.ts": {
