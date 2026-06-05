@@ -13,6 +13,7 @@ const MAX_DELIVERY_NAME_LENGTH = 60;
 
 /**
  * Log types for AgentCore Runtime observability
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class LogType {
   /**
@@ -44,6 +45,7 @@ export class LogType {
 
 /**
  * Configuration for logging with log type and destination
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface LoggingConfig {
   /**
@@ -75,6 +77,7 @@ interface LoggingDestinationBindConfig {
  * - `LoggingDestination.cloudWatchLogs(logGroup)` - Send logs to CloudWatch Logs
  * - `LoggingDestination.s3(bucket)` - Send logs to S3
  * - `LoggingDestination.firehose(stream)` - Send logs to Kinesis Data Firehose
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class LoggingDestination {
   /**
@@ -261,6 +264,7 @@ class XRayResourcePolicy extends Construct {
  * @param scope The construct scope
  * @param sourceArn The ARN of the source resource (runtime)
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function configureTracingDelivery(
   scope: Construct,
@@ -338,6 +342,7 @@ export function configureTracingDelivery(
  * @param sourceArn The ARN of the source resource (runtime)
  * @param loggingConfigs Array of logging configurations
  * @internal
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export function configureLoggingDelivery(
   scope: Construct,
