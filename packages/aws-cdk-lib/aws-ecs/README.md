@@ -2487,16 +2487,20 @@ This approach also allows you to explicitly disable the feature with `enabled: f
 declare const cluster: ecs.Cluster;
 declare const taskDefinition: ecs.TaskDefinition;
 
-// Force a new deployment with a stable nonce
+// Force a new deployment on every `cdk deploy` by using a time-based nonce
 const service = new ecs.FargateService(this, 'Service', {
   cluster,
   taskDefinition,
   forceNewDeployment: {
     enabled: true,
-    nonce: 'v1.2.3',
+    nonce: Date.now().toString(),
   },
 });
 ```
+
+Calling the `forceNewDeployment()` method takes precedence over the constructor option. The nonce passed
+to the method (or the auto-generated one when none is provided) overrides any value configured through the
+`forceNewDeployment` property.
 
 ## Mixins
 

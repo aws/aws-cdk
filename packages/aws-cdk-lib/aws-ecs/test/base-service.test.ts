@@ -952,12 +952,14 @@ describe('forceNewDeployment constructor option', () => {
     });
   });
 
-  test('should set forceNewDeployment with enabled true by default', () => {
+  test('should set EnableForceNewDeployment to true without a nonce when only enabled is specified', () => {
     // WHEN
     new ecs.FargateService(stack, 'FargateService', {
       cluster,
       taskDefinition,
-      forceNewDeployment: {},
+      forceNewDeployment: {
+        enabled: true,
+      },
     });
 
     // THEN
@@ -965,6 +967,7 @@ describe('forceNewDeployment constructor option', () => {
     template.hasResourceProperties('AWS::ECS::Service', {
       ForceNewDeployment: {
         EnableForceNewDeployment: true,
+        ForceNewDeploymentNonce: Match.absent(),
       },
     });
   });
@@ -1009,27 +1012,7 @@ describe('forceNewDeployment constructor option', () => {
     });
   });
 
-  test('should set forceNewDeployment with only nonce specified', () => {
-    // WHEN
-    new ecs.FargateService(stack, 'FargateService', {
-      cluster,
-      taskDefinition,
-      forceNewDeployment: {
-        nonce: 'deployment-2024-01-01',
-      },
-    });
-
-    // THEN
-    const template = Template.fromStack(stack);
-    template.hasResourceProperties('AWS::ECS::Service', {
-      ForceNewDeployment: {
-        EnableForceNewDeployment: true,
-        ForceNewDeploymentNonce: 'deployment-2024-01-01',
-      },
-    });
-  });
-
-  test('should work with Ec2Service', () => {
+  test('should set forceNewDeployment on an Ec2Service with enabled and nonce', () => {
     // GIVEN
     cluster.addCapacity('DefaultAutoScalingGroup', {
       instanceType: new ec2.InstanceType('t3.micro'),
@@ -1082,6 +1065,7 @@ describe('forceNewDeployment constructor option', () => {
         cluster,
         taskDefinition,
         forceNewDeployment: {
+          enabled: true,
           nonce: '',
         },
       });
@@ -1095,6 +1079,7 @@ describe('forceNewDeployment constructor option', () => {
         cluster,
         taskDefinition,
         forceNewDeployment: {
+          enabled: true,
           nonce: 'a'.repeat(256),
         },
       });
@@ -1107,6 +1092,7 @@ describe('forceNewDeployment constructor option', () => {
       cluster,
       taskDefinition,
       forceNewDeployment: {
+        enabled: true,
         nonce: 'a'.repeat(255),
       },
     });
@@ -1159,6 +1145,7 @@ describe('forceNewDeployment constructor option', () => {
       cluster,
       taskDefinition,
       forceNewDeployment: {
+        enabled: true,
         nonce: cdk.Lazy.string({ produce: () => 'resolved-later' }),
       },
     });

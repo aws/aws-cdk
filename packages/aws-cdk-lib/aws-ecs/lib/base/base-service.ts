@@ -105,10 +105,8 @@ export interface ForceNewDeployment {
    * When set to `true`, Amazon ECS will start a new deployment even if there
    * are no changes to the service configuration. When set to `false`, the
    * `ForceNewDeployment` property is explicitly set with `EnableForceNewDeployment: false`.
-   *
-   * @default true
    */
-  readonly enabled?: boolean;
+  readonly enabled: boolean;
 
   /**
    * A unique nonce value that signals Amazon ECS to start a new deployment.
@@ -909,7 +907,7 @@ export abstract class BaseService extends Resource
         throw new ValidationError('ForceNewDeploymentRequiresEcsController', 'forceNewDeployment requires the ECS deployment controller.', this);
       }
 
-      const enabled = props.forceNewDeployment.enabled ?? true;
+      const enabled = props.forceNewDeployment.enabled;
       const nonce = props.forceNewDeployment.nonce;
 
       if (nonce !== undefined && !Token.isUnresolved(nonce) && (nonce.length < 1 || nonce.length > 255)) {
