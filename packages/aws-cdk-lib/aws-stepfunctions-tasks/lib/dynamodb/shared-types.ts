@@ -1,5 +1,6 @@
 import { transformAttributeValueMap, validateJsonata, validateJsonPath } from './private/utils';
 import { UnscopedValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 
 /**
  * Determines the level of detail about provisioned throughput consumption that is returned.
@@ -95,7 +96,7 @@ export class DynamoProjectionExpression {
    */
   public atIndex(index: number): DynamoProjectionExpression {
     if (!this.expression.length) {
-      throw new UnscopedValidationError('ExpressionStartAttribute', 'Expression must start with an attribute');
+      throw new UnscopedValidationError(lit`ExpressionStartAttribute`, 'Expression must start with an attribute');
     }
 
     this.expression.push(`[${index}]`);

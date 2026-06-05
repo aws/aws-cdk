@@ -6,6 +6,7 @@ import type { Metric, MetricOptions } from '../../../aws-cloudwatch';
 import { Lazy, Stack } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
+import { lit } from '../../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
 import type { StageOptions, IStage, StageAttributes } from '../common';
 import type { IApi } from '../common/api';
@@ -169,11 +170,11 @@ export class HttpStage extends HttpStageBase {
       public readonly api = attrs.api;
 
       get url(): string {
-        throw new ValidationError('UrlAvailableImportedStages', 'url is not available for imported stages.', scope);
+        throw new ValidationError(lit`UrlAvailableImportedStages`, 'url is not available for imported stages.', scope);
       }
 
       get domainUrl(): string {
-        throw new ValidationError('DomainUrlAvailableImportedStages', 'domainUrl is not available for imported stages.', scope);
+        throw new ValidationError(lit`DomainUrlAvailableImportedStages`, 'domainUrl is not available for imported stages.', scope);
       }
 
       /**
@@ -245,7 +246,7 @@ export class HttpStage extends HttpStageBase {
 
   public get domainUrl(): string {
     if (!this._apiMapping) {
-      throw new ValidationError('DomainUrlAvailableMappingAssociated', 'domainUrl is not available when no API mapping is associated with the Stage', this);
+      throw new ValidationError(lit`DomainUrlAvailableMappingAssociated`, 'domainUrl is not available when no API mapping is associated with the Stage', this);
     }
     return this._apiMapping.domainUrl;
   }

@@ -3,6 +3,7 @@ import type { IFunction } from './function-base';
 import type { Duration } from '../../core';
 import { Token, Stack } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import { RegionInfo, FactName } from '../../region-info';
 
 /**
@@ -200,24 +201,24 @@ export abstract class ParamsAndSecretsLayerVersion {
    */
   private environmentVariablesFromOptions(scope: Construct): { [key: string]: any } {
     if (this.options.cacheSize !== undefined && (this.options.cacheSize < 0 || this.options.cacheSize > 1000)) {
-      throw new ValidationError('CacheSizeInclusiveProvided', `Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`, scope);
+      throw new ValidationError(lit`CacheSizeInclusiveProvided`, `Cache size must be between 0 and 1000 inclusive - provided: ${this.options.cacheSize}`, scope);
     }
 
     if (this.options.httpPort !== undefined && (this.options.httpPort < 1 || this.options.httpPort > 65535)) {
-      throw new ValidationError('PortInclusiveProvided', `HTTP port must be between 1 and 65535 inclusive - provided: ${this.options.httpPort}`, scope);
+      throw new ValidationError(lit`PortInclusiveProvided`, `HTTP port must be between 1 and 65535 inclusive - provided: ${this.options.httpPort}`, scope);
     }
 
     // max connections has no maximum limit
     if (this.options.maxConnections !== undefined && this.options.maxConnections < 1) {
-      throw new ValidationError('MaximumConnectionsLeastProvided', `Maximum connections must be at least 1 - provided: ${this.options.maxConnections}`, scope);
+      throw new ValidationError(lit`MaximumConnectionsLeastProvided`, `Maximum connections must be at least 1 - provided: ${this.options.maxConnections}`, scope);
     }
 
     if (this.options.secretsManagerTtl !== undefined && this.options.secretsManagerTtl.toSeconds() > 300) {
-      throw new ValidationError('MaximumCachedSecretSecondsProvided', `Maximum TTL for a cached secret is 300 seconds - provided: ${this.options.secretsManagerTtl.toSeconds()} seconds`, scope);
+      throw new ValidationError(lit`MaximumCachedSecretSecondsProvided`, `Maximum TTL for a cached secret is 300 seconds - provided: ${this.options.secretsManagerTtl.toSeconds()} seconds`, scope);
     }
 
     if (this.options.parameterStoreTtl !== undefined && this.options.parameterStoreTtl.toSeconds() > 300) {
-      throw new ValidationError('MaximumCachedParameterSecondsProvided', `Maximum TTL for a cached parameter is 300 seconds - provided: ${this.options.parameterStoreTtl.toSeconds()} seconds`, scope);
+      throw new ValidationError(lit`MaximumCachedParameterSecondsProvided`, `Maximum TTL for a cached parameter is 300 seconds - provided: ${this.options.parameterStoreTtl.toSeconds()} seconds`, scope);
     }
 
     return {
@@ -247,7 +248,7 @@ export abstract class ParamsAndSecretsLayerVersion {
     if (region !== undefined && !Token.isUnresolved(region)) {
       const layerArn = RegionInfo.get(region).paramsAndSecretsLambdaLayerArn(version, architecture);
       if (layerArn === undefined) {
-        throw new ValidationError('ParametersSecretsExtensionSupportedRegion', `Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`, scope);
+        throw new ValidationError(lit`ParametersSecretsExtensionSupportedRegion`, `Parameters and Secrets Extension is not supported in region ${region} for ${architecture} architecture`, scope);
       }
       return layerArn;
     }

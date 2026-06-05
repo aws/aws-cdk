@@ -2,6 +2,7 @@ import type { Construct } from 'constructs';
 import { FargateTaskDefinition } from '../../../aws-ecs';
 import { EcsTask } from '../../../aws-events-targets';
 import { Annotations, ValidationError } from '../../../core';
+import { lit } from '../../../core/lib/private/literal-string';
 import type { FargateServiceBaseProps } from '../base/fargate-service-base';
 import type { ScheduledTaskBaseProps, ScheduledTaskImageProps } from '../base/scheduled-task-base';
 import { ScheduledTaskBase } from '../base/scheduled-task-base';
@@ -69,7 +70,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
     super(scope, id, props);
 
     if (props.scheduledFargateTaskDefinitionOptions && props.scheduledFargateTaskImageOptions) {
-      throw new ValidationError('SpecifyScheduledFargateTaskDefinition', 'You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.', this);
+      throw new ValidationError(lit`SpecifyScheduledFargateTaskDefinition`, 'You must specify either a scheduledFargateTaskDefinitionOptions or scheduledFargateTaskOptions, not both.', this);
     } else if (props.scheduledFargateTaskDefinitionOptions) {
       this.taskDefinition = props.scheduledFargateTaskDefinitionOptions.taskDefinition;
     } else if (props.scheduledFargateTaskImageOptions) {
@@ -88,7 +89,7 @@ export class ScheduledFargateTask extends ScheduledTaskBase {
         logging: taskImageOptions.logDriver ?? this.createAWSLogDriver(this.node.id),
       });
     } else {
-      throw new ValidationError('SpecifyOneTaskDefinitionImage', 'You must specify one of: taskDefinition or image', this);
+      throw new ValidationError(lit`SpecifyOneTaskDefinitionImage`, 'You must specify one of: taskDefinition or image', this);
     }
 
     if (props.taskDefinition) {

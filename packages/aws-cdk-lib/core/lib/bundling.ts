@@ -6,6 +6,8 @@ import { ExecutionError, UnscopedValidationError } from './errors';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
+import { lit } from './private/literal-string';
+import { profileFn } from './private/perf';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
@@ -255,6 +257,7 @@ export class BundlingDockerImage {
   /**
    * Runs a Docker image
    */
+  @profileFn('BundlingDockerImage.run', { telemetry: true })
   public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
@@ -309,11 +312,12 @@ export class BundlingDockerImage {
    * @param outputPath the destination path for the copy operation
    * @returns the destination path
    */
+  @profileFn('BundlingDockerImage.cp', { telemetry: true })
   public cp(imagePath: string, outputPath?: string): string {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
-      throw new ExecutionError('FailedToFailedExtractContainer', 'Failed to extract container ID from Docker create output');
+      throw new ExecutionError(lit`FailedToFailedExtractContainer`, 'Failed to extract container ID from Docker create output');
     }
 
     const containerId = match[1];
@@ -323,7 +327,7 @@ export class BundlingDockerImage {
       dockerExec(['cp', containerPath, destPath]);
       return destPath;
     } catch (err) {
-      throw new ExecutionError('FailedToFailedCopyFiles', `Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
+      throw new ExecutionError(lit`FailedToFailedCopyFiles`, `Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
@@ -340,11 +344,12 @@ export class DockerImage extends BundlingDockerImage {
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
+  @profileFn('DockerImage.fromBuild', { telemetry: true })
   public static fromBuild(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
     if (options.file && isAbsolute(options.file)) {
-      throw new UnscopedValidationError('MustBeFileRelativeDocker', `"file" must be relative to the docker build directory. Got ${options.file}`);
+      throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
     // Image tag derived from path and build options
@@ -352,20 +357,26 @@ export class DockerImage extends BundlingDockerImage {
     const tagHash = crypto.createHash('sha256').update(input).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    const dockerArgs: string[] = [
-      'build', '-t', tag,
-      ...(options.file ? ['-f', join(path, options.file)] : []),
-      ...(options.platform ? ['--platform', options.platform] : []),
-      ...(options.network ? ['--network', options.network] : []),
-      ...(options.targetStage ? ['--target', options.targetStage] : []),
-      ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
-      ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
-      ...(options.cacheDisabled ? ['--no-cache'] : []),
-      ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
-      path,
-    ];
+    // Skip the build if the image already exists in the local Docker daemon.
+    // The tag is deterministic (content-addressed from path + all options),
+    // so an existing image with this tag is guaranteed to be up-to-date.
+    if (!this.isImageCached(tag)) {
+      const dockerArgs: string[] = [
+        'build', '-t', tag,
+        ...(options.file ? ['-f', join(path, options.file)] : []),
+        ...(options.platform ? ['--platform', options.platform] : []),
+        ...(options.network ? ['--network', options.network] : []),
+        ...(options.targetStage ? ['--target', options.targetStage] : []),
+        ...(options.cacheFrom ? [...options.cacheFrom.map(cacheFrom => ['--cache-from', this.cacheOptionToFlag(cacheFrom)]).flat()] : []),
+        ...(options.cacheTo ? ['--cache-to', this.cacheOptionToFlag(options.cacheTo)] : []),
+        ...(options.cacheDisabled ? ['--no-cache'] : []),
+        ...flatten(Object.entries(buildArgs).map(([k, v]) => ['--build-arg', `${k}=${v}`])),
+        ...flatten(Object.entries(options.buildContexts || {}).map(([k, v]) => ['--build-context', `${k}=${v}`])),
+        path,
+      ];
 
-    dockerExec(dockerArgs);
+      dockerExec(dockerArgs);
+    }
 
     // Fingerprints the directory containing the Dockerfile we're building and
     // differentiates the fingerprint based on build arguments. We do this so
@@ -383,6 +394,14 @@ export class DockerImage extends BundlingDockerImage {
    */
   public static override fromRegistry(image: string) {
     return new DockerImage(image);
+  }
+
+  private static isImageCached(tag: string): boolean {
+    const prog = process.env.CDK_DOCKER ?? 'docker';
+    const proc = spawnSync(prog, ['image', 'inspect', tag], {
+      stdio: 'ignore',
+    });
+    return proc.status === 0;
   }
 
   private static cacheOptionToFlag(option: DockerCacheOption): string {
@@ -593,6 +612,19 @@ export interface DockerBuildOptions {
   readonly buildArgs?: { [key: string]: string };
 
   /**
+   * Build contexts to pass to the `docker build` command.
+   *
+   * Build contexts can be used to specify additional directories or images
+   * to use during the build. Each entry specifies a named build context
+   * and its source (a directory path, a URL, or a docker image).
+   *
+   * @see https://docs.docker.com/build/building/context/#additional-build-contexts
+   *
+   * @default - no additional build contexts
+   */
+  readonly buildContexts?: { [key: string]: string };
+
+  /**
    * Name of the Dockerfile, must relative to the docker build path.
    *
    * @default `Dockerfile`
@@ -674,3 +706,8 @@ function isSeLinux(): boolean {
     return false;
   }
 }
+
+/**
+ * If this symbol is present on the `BundlingOptions`, it will be used as the source of an additional timer measurement.
+ */
+export const PERF_BUNDLING_SRC_SYM = Symbol.for('@aws-cdk/core.bundlingSource');

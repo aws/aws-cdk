@@ -1,21 +1,23 @@
-
 import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import { Duration } from 'aws-cdk-lib';
 import { Annotations, Template, Match } from 'aws-cdk-lib/assertions';
+import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as logs from 'aws-cdk-lib/aws-logs';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import { CustomClaimOperator } from '../../../lib/common/types';
 import { RuntimeNetworkConfiguration } from '../../../lib/network/network-configuration';
 import { RuntimeCustomClaim } from '../../../lib/runtime/inbound-auth/custom-claim';
 import { RuntimeAuthorizerConfiguration } from '../../../lib/runtime/inbound-auth/runtime-authorizer-configuration';
+import { LoggingDestination, LogType } from '../../../lib/runtime/observability';
 import { Runtime } from '../../../lib/runtime/runtime';
 import { AgentCoreRuntime, AgentRuntimeArtifact } from '../../../lib/runtime/runtime-artifact';
-import { RuntimeEndpoint } from '../../../lib/runtime/runtime-endpoint';
 import {
   ProtocolType,
 } from '../../../lib/runtime/types';
@@ -1288,30 +1290,66 @@ describe('Runtime addEndpoint tests', () => {
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
-    const endpoint = runtime.addEndpoint('test_endpoint', {
+    runtime.addEndpoint('test_endpoint', {
       description: 'Test endpoint',
       version: '2',
     });
 
-    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
-
-    app.synth();
     const template = Template.fromStack(stack);
-
-    // Should have both runtime and endpoint resources
-    template.resourceCountIs('AWS::BedrockAgentCore::Runtime', 1);
-    template.resourceCountIs('AWS::BedrockAgentCore::RuntimeEndpoint', 1);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Name: 'test_endpoint',
+      Description: 'Test endpoint',
+      AgentRuntimeVersion: '2',
+    });
   });
 
-  test('Should add endpoint with default version', () => {
+  test('Should fall back to the runtime\'s agentRuntimeVersion when version is not provided', () => {
     const runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
       agentRuntimeArtifact: agentRuntimeArtifact,
     });
 
-    const endpoint = runtime.addEndpoint('test_endpoint');
+    runtime.addEndpoint('test_endpoint');
 
-    expect(endpoint).toBeInstanceOf(RuntimeEndpoint);
+    const template = Template.fromStack(stack);
+    // When options.version is omitted, the endpoint uses the runtime resource's AgentRuntimeVersion attribute
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Name: 'test_endpoint',
+      AgentRuntimeVersion: Match.objectLike({
+        'Fn::GetAtt': Match.arrayWith([Match.stringLikeRegexp('testruntime.*'), 'AgentRuntimeVersion']),
+      }),
+    });
+  });
+
+  test('Should add multiple endpoints to the same runtime', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('endpoint_a');
+    runtime.addEndpoint('endpoint_b');
+    runtime.addEndpoint('endpoint_c');
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_a' });
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_b' });
+    template.hasResourceProperties('AWS::BedrockAgentCore::RuntimeEndpoint', { Name: 'endpoint_c' });
+  });
+
+  test('Should create a DependsOn from the endpoint to the runtime resource', () => {
+    const runtime = new Runtime(stack, 'test-runtime', {
+      runtimeName: 'test_runtime',
+      agentRuntimeArtifact: agentRuntimeArtifact,
+    });
+
+    runtime.addEndpoint('dependent_endpoint');
+
+    const template = Template.fromStack(stack);
+    template.hasResource('AWS::BedrockAgentCore::RuntimeEndpoint', {
+      Properties: { Name: 'dependent_endpoint' },
+      DependsOn: Match.arrayWith([Match.stringLikeRegexp('testruntime.*')]),
+    });
   });
 });
 
@@ -1529,25 +1567,21 @@ describe('RuntimeNetworkConfiguration tests', () => {
 });
 
 describe('Runtime metrics and grant methods tests', () => {
-  let app: cdk.App;
   let stack: cdk.Stack;
   let runtime: Runtime;
-  let repository: ecr.Repository;
-  let agentRuntimeArtifact: AgentRuntimeArtifact;
+
+  function alarmForMetric(id: string, metric: cloudwatch.Metric): void {
+    new cloudwatch.Alarm(stack, id, { metric, evaluationPeriods: 1, threshold: 1 });
+  }
 
   beforeEach(() => {
-    app = new cdk.App();
-    stack = new cdk.Stack(app, 'test-stack', {
-      env: {
-        account: '123456789012',
-        region: 'us-east-1',
-      },
-    });
+    const app = new cdk.App();
+    stack = new cdk.Stack(app, 'test-stack');
 
-    repository = new ecr.Repository(stack, 'TestRepository', {
+    const repository = new ecr.Repository(stack, 'TestRepository', {
       repositoryName: 'test-agent-runtime',
     });
-    agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'v1.0.0');
 
     runtime = new Runtime(stack, 'test-runtime', {
       runtimeName: 'test_runtime',
@@ -1555,69 +1589,107 @@ describe('Runtime metrics and grant methods tests', () => {
     });
   });
 
-  test('Should create metricInvocations metric', () => {
-    const metric = runtime.metricInvocations();
-    expect(metric.metricName).toBe('Invocations');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricInvocations() produces Invocations with Sum statistic', () => {
+    alarmForMetric('InvocAlarm', runtime.metricInvocations());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricInvocationsAggregated metric', () => {
-    const metric = runtime.metricInvocationsAggregated();
-    expect(metric.metricName).toBe('Invocations');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    // The dimension value will be tokenized in CDK
-    expect(metric.dimensions?.Resource).toBeDefined();
+  test('metricInvocationsAggregated() produces Invocations with Resource dimension', () => {
+    alarmForMetric('InvocAggAlarm', runtime.metricInvocationsAggregated());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Invocations',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ]),
+    });
   });
 
-  test('Should create metricThrottles metric', () => {
-    const metric = runtime.metricThrottles();
-    expect(metric.metricName).toBe('Throttles');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricThrottles() produces Throttles with Sum statistic', () => {
+    alarmForMetric('ThrottlesAlarm', runtime.metricThrottles());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Throttles',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricSystemErrors metric', () => {
-    const metric = runtime.metricSystemErrors();
-    expect(metric.metricName).toBe('SystemErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricSystemErrors() produces SystemErrors with Sum statistic', () => {
+    alarmForMetric('SysErrAlarm', runtime.metricSystemErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SystemErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricUserErrors metric', () => {
-    const metric = runtime.metricUserErrors();
-    expect(metric.metricName).toBe('UserErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricUserErrors() produces UserErrors with Sum statistic', () => {
+    alarmForMetric('UserErrAlarm', runtime.metricUserErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'UserErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricLatency metric', () => {
-    const metric = runtime.metricLatency();
-    expect(metric.metricName).toBe('Latency');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Average');
+  test('metricLatency() produces Latency with Average statistic', () => {
+    alarmForMetric('LatencyAlarm', runtime.metricLatency());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Latency',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Average',
+    });
   });
 
-  test('Should create metricTotalErrors metric', () => {
-    const metric = runtime.metricTotalErrors();
-    expect(metric.metricName).toBe('TotalErrors');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricTotalErrors() produces TotalErrors with Sum statistic', () => {
+    alarmForMetric('TotalErrAlarm', runtime.metricTotalErrors());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'TotalErrors',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricSessionCount metric', () => {
-    const metric = runtime.metricSessionCount();
-    expect(metric.metricName).toBe('SessionCount');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    expect(metric.statistic).toBe('Sum');
+  test('metricSessionCount() produces SessionCount with Sum statistic', () => {
+    alarmForMetric('SessionCountAlarm', runtime.metricSessionCount());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'SessionCount',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Statistic: 'Sum',
+    });
   });
 
-  test('Should create metricSessionsAggregated metric', () => {
-    const metric = runtime.metricSessionsAggregated();
-    expect(metric.metricName).toBe('Sessions');
-    expect(metric.namespace).toBe('AWS/Bedrock-AgentCore');
-    // The dimension value will be tokenized in CDK
-    expect(metric.dimensions?.Resource).toBeDefined();
+  test('metricSessionsAggregated() produces Sessions with Resource dimension', () => {
+    alarmForMetric('SessionsAggAlarm', runtime.metricSessionsAggregated());
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::CloudWatch::Alarm', {
+      MetricName: 'Sessions',
+      Namespace: 'AWS/Bedrock-AgentCore',
+      Dimensions: Match.arrayWith([
+        Match.objectLike({ Name: 'Resource' }),
+      ]),
+    });
   });
 
   test('Should grant invoke permissions', () => {
@@ -2999,5 +3071,303 @@ describe('Runtime Optional Physical Names', () => {
 
     expect(runtime.agentRuntimeName).toBeDefined();
     expect(runtime.agentRuntimeName).not.toBe('');
+  });
+});
+
+describe('Runtime observability tests', () => {
+  test('Should configure tracing delivery with runtime ARN as source', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'TracingTestStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const runtime = new Runtime(stack, 'TracingRuntime', {
+      runtimeName: 'tracing_runtime',
+      agentRuntimeArtifact,
+      tracingEnabled: true,
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    // Verify delivery source uses runtime ARN as resource
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'TRACES',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination is configured for X-Ray
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'XRAY',
+    });
+
+    // Verify X-Ray resource policy allows logs delivery service
+    template.hasResourceProperties('AWS::XRay::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":"xray:PutTraceSegments","Condition":{"ForAllValues:ArnLike":{"logs:LogGeneratingResourceArns":["',
+            { 'Fn::GetAtt': ['TracingRuntime80A99119', 'AgentRuntimeArn'] },
+            '"]},"StringEquals":{"aws:SourceAccount":"123456789012"},"ArnLike":{"aws:SourceArn":"arn:',
+            { Ref: 'AWS::Partition' },
+            ':logs:us-east-1:123456789012:delivery-source:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"*"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('Should not create observability resources when not configured', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'NoObservabilityStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    new Runtime(stack, 'NoObservabilityRuntime', {
+      runtimeName: 'no_observability_runtime',
+      agentRuntimeArtifact,
+    });
+
+    const template = Template.fromStack(stack);
+
+    expect(() => {
+      template.hasResourceProperties('AWS::Logs::DeliverySource', {});
+    }).toThrow();
+  });
+
+  test('Should configure CloudWatch Logs destination with log group ARN', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'LoggingCWLStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const logGroup = new logs.LogGroup(stack, 'AppLogGroup');
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(logGroup),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedLogGroupArn = stack.resolve(logGroup.logGroupArn);
+
+    // Verify delivery source uses runtime ARN and correct log type
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination points to the log group ARN
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'CWL',
+      DestinationResourceArn: resolvedLogGroupArn,
+    });
+
+    // Verify CloudWatch Logs resource policy allows logs delivery service
+    template.hasResourceProperties('AWS::Logs::ResourcePolicy', {
+      PolicyDocument: {
+        'Fn::Join': [
+          '',
+          [
+            '{"Statement":[{"Action":["logs:CreateLogStream","logs:PutLogEvents"],"Condition":{"StringEquals":{"aws:SourceAccount":"123456789012"},"ArnLike":{"aws:SourceArn":"arn:',
+            { Ref: 'AWS::Partition' },
+            ':logs:us-east-1:123456789012:*"}},"Effect":"Allow","Principal":{"Service":"delivery.logs.amazonaws.com"},"Resource":"',
+            { 'Fn::GetAtt': ['AppLogGroup7D8CD952', 'Arn'] },
+            ':log-stream:*"}],"Version":"2012-10-17"}',
+          ],
+        ],
+      },
+    });
+  });
+
+  test('Should configure S3 destination with bucket ARN and policy', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'LoggingS3Stack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const bucket = new s3.Bucket(stack, 'LogBucket');
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_s3_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.USAGE_LOGS,
+          destination: LoggingDestination.s3(bucket),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedBucketArn = stack.resolve(bucket.bucketArn);
+
+    // Verify delivery source uses runtime ARN and USAGE_LOGS type
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'USAGE_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination points to the S3 bucket ARN
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'S3',
+      DestinationResourceArn: resolvedBucketArn,
+    });
+
+    // Verify S3 bucket policy allows logs delivery service
+    template.hasResourceProperties('AWS::S3::BucketPolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Effect: 'Allow',
+            Principal: { Service: 'delivery.logs.amazonaws.com' },
+            Action: 's3:PutObject',
+            Condition: {
+              StringEquals: {
+                's3:x-amz-acl': 'bucket-owner-full-control',
+                'aws:SourceAccount': '123456789012',
+              },
+            },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('Should create separate delivery sources for different log types', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'MultiLogTypeStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    const appLogGroup = new logs.LogGroup(stack, 'AppLogGroup');
+    const usageLogGroup = new logs.LogGroup(stack, 'UsageLogGroup');
+
+    const runtime = new Runtime(stack, 'MultiLogRuntime', {
+      runtimeName: 'multi_log_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(appLogGroup),
+        },
+        {
+          logType: LogType.USAGE_LOGS,
+          destination: LoggingDestination.cloudWatchLogs(usageLogGroup),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+
+    // Verify APPLICATION_LOGS delivery source
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify USAGE_LOGS delivery source
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'USAGE_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+  });
+
+  test('Should configure Firehose destination with stream ARN and tag', () => {
+    const app = new cdk.App();
+    const stack = new cdk.Stack(app, 'LoggingFirehoseStack', {
+      env: {
+        account: '123456789012',
+        region: 'us-east-1',
+      },
+    });
+
+    const repository = new ecr.Repository(stack, 'TestRepository');
+    const agentRuntimeArtifact = AgentRuntimeArtifact.fromEcrRepository(repository, 'latest');
+
+    // Create an S3 bucket as the Firehose destination
+    const destinationBucket = new s3.Bucket(stack, 'DestinationBucket');
+
+    // Create a Firehose delivery stream
+    const deliveryStream = new firehose.DeliveryStream(stack, 'LogDeliveryStream', {
+      destination: new firehose.S3Bucket(destinationBucket),
+    });
+
+    const runtime = new Runtime(stack, 'LoggingRuntime', {
+      runtimeName: 'logging_firehose_runtime',
+      agentRuntimeArtifact,
+      loggingConfigs: [
+        {
+          logType: LogType.APPLICATION_LOGS,
+          destination: LoggingDestination.firehose(deliveryStream),
+        },
+      ],
+    });
+
+    const template = Template.fromStack(stack);
+    const resolvedRuntimeArn = stack.resolve(runtime.agentRuntimeArn);
+    const resolvedStreamArn = stack.resolve(deliveryStream.deliveryStreamArn);
+
+    // Verify delivery source uses runtime ARN and APPLICATION_LOGS type
+    template.hasResourceProperties('AWS::Logs::DeliverySource', {
+      LogType: 'APPLICATION_LOGS',
+      ResourceArn: resolvedRuntimeArn,
+    });
+
+    // Verify delivery destination points to the Firehose stream ARN
+    template.hasResourceProperties('AWS::Logs::DeliveryDestination', {
+      DeliveryDestinationType: 'FH',
+      DestinationResourceArn: resolvedStreamArn,
+    });
+
+    // Verify the Firehose stream is tagged with LogDeliveryEnabled
+    template.hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+      Tags: [
+        {
+          Key: 'LogDeliveryEnabled',
+          Value: 'true',
+        },
+      ],
+    });
   });
 });

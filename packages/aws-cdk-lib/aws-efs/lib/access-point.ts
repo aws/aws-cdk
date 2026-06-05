@@ -4,6 +4,7 @@ import { CfnAccessPoint } from './efs.generated';
 import type { IResource } from '../../core';
 import { ArnFormat, Resource, Stack, Tags, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { AccessPointReference, IAccessPointRef, IFileSystemRef } from '../../interfaces/generated/aws-efs-interfaces.generated';
 
@@ -233,7 +234,7 @@ export class AccessPoint extends AccessPointBase {
 
     const clientToken = props.clientToken;
     if ((clientToken?.length === 0 || (clientToken && clientToken.length > 64)) && !Token.isUnresolved(clientToken)) {
-      throw new ValidationError('LengthClienttokenRangeCharacters', `The length of \'clientToken\' must range from 1 to 64 characters, got: ${clientToken.length} characters`, this);
+      throw new ValidationError(lit`LengthClienttokenRangeCharacters`, `The length of \'clientToken\' must range from 1 to 64 characters, got: ${clientToken.length} characters`, this);
     }
 
     const resource = new CfnAccessPoint(this, 'Resource', {
@@ -281,20 +282,20 @@ class ImportedAccessPoint extends AccessPointBase {
 
     if (!attrs.accessPointId) {
       if (!attrs.accessPointArn) {
-        throw new ValidationError('OneAccessPointIdAccess', 'One of accessPointId or AccessPointArn is required!', this);
+        throw new ValidationError(lit`OneAccessPointIdAccess`, 'One of accessPointId or AccessPointArn is required!', this);
       }
 
       this.accessPointArn = attrs.accessPointArn;
       let maybeApId = Stack.of(scope).splitArn(attrs.accessPointArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName;
 
       if (!maybeApId) {
-        throw new ValidationError('AccessPointProvideResourceName', 'ARN for AccessPoint must provide the resource name.', this);
+        throw new ValidationError(lit`AccessPointProvideResourceName`, 'ARN for AccessPoint must provide the resource name.', this);
       }
 
       this.accessPointId = maybeApId;
     } else {
       if (attrs.accessPointArn) {
-        throw new ValidationError('OneAccessPointIdAccess', 'Only one of accessPointId or AccessPointArn can be provided!', this);
+        throw new ValidationError(lit`OneAccessPointIdAccess`, 'Only one of accessPointId or AccessPointArn can be provided!', this);
       }
 
       this.accessPointId = attrs.accessPointId;
@@ -310,7 +311,7 @@ class ImportedAccessPoint extends AccessPointBase {
 
   public get fileSystem() {
     if (!this._fileSystem) {
-      throw new ValidationError('FileSystemAvailableAccessPoint', "fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.", this);
+      throw new ValidationError(lit`FileSystemAvailableAccessPoint`, "fileSystem is only available if 'fromAccessPointAttributes()' is used and a fileSystem is passed in as an attribute.", this);
     }
 
     return toIFileSystem(this._fileSystem);
@@ -319,7 +320,7 @@ class ImportedAccessPoint extends AccessPointBase {
 
 function toIFileSystem(fileSystem: IFileSystemRef): IFileSystem {
   if (!('fileSystemId' in fileSystem) || !('fileSystemArn' in fileSystem)) {
-    throw new UnscopedValidationError('FilesystemInstanceShouldImplement', `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
+    throw new UnscopedValidationError(lit`FilesystemInstanceShouldImplement`, `'fileSystem' instance should implement IFileSystem, but doesn't: ${fileSystem.constructor.name}`);
   }
   return fileSystem as IFileSystem;
 }

@@ -1,0 +1,18 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "CrossAccountMultiConsumerTest/DefaultTest": {
+      "stacks": [
+        "CrossAccountMultiConsumerOne",
+        "CrossAccountMultiConsumerTwo"
+      ],
+      "regions": [
+        "eu-central-1"
+      ],
+      "diffAssets": true,
+      "assertionStack": "CrossAccountMultiConsumerTest/DefaultTest/DeployAssert",
+      "assertionStackName": "CrossAccountMultiConsumerTestDefaultTestDeployAssertD9EFF748"
+    }
+  },
+  "minimumCliVersion": "2.1121.0"
+}

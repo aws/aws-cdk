@@ -3,6 +3,7 @@ import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as sfn from '../../aws-stepfunctions';
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { EvalNodejsSingletonFunction } from '../../custom-resource-handlers/dist/aws-stepfunctions-tasks/eval-nodejs-provider.generated';
 
 /**
@@ -141,7 +142,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.
   const uuid = guidsMap[runtimeKey];
 
   if (!uuid) {
-    throw new UnscopedValidationError('RuntimeCurrentlySupported', `The runtime ${runtime?.name} is currently not supported.`);
+    throw new UnscopedValidationError(lit`RuntimeCurrentlySupported`, `The runtime ${runtime?.name} is currently not supported.`);
   }
 
   return new EvalNodejsSingletonFunction(scope, 'EvalFunction', {
