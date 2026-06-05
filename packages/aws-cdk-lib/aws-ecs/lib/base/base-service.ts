@@ -103,11 +103,21 @@ export interface DeploymentCircuitBreaker {
  */
 export interface ForceNewDeployment {
   /**
-   * Whether to force a new deployment of the service.
+   * Whether to enable the force-new-deployment mechanism for the service.
    *
-   * When set to `true`, Amazon ECS will start a new deployment even if there
-   * are no changes to the service configuration. When set to `false`, the
-   * `ForceNewDeployment` property is explicitly set with `EnableForceNewDeployment: false`.
+   * Setting this to `true` enables the mechanism, but on its own it does not
+   * force a new deployment on every `cdk deploy`: CloudFormation only starts a
+   * new deployment when it detects a change in the template, and the signal for
+   * that is the `nonce` value changing between deployments. If `nonce` is not
+   * provided or its value stays the same across deployments, no new deployment
+   * is forced. When set to `false`, the `ForceNewDeployment` property is rendered
+   * with `EnableForceNewDeployment: false`.
+   *
+   * To force a new deployment on every `cdk deploy`, provide a `nonce` with a
+   * unique, time-varying value such as a timestamp, random string, or sequence
+   * number (e.g. `Date.now().toString()`).
+   *
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-properties-ecs-service-forcenewdeployment.html
    */
   readonly enabled: boolean;
 
