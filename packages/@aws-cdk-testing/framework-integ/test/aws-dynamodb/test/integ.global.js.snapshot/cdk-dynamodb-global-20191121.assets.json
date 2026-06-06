@@ -1,61 +1,61 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
-    "a9854d8d69a4fb6085bf154e7714d8ff34857eb55343e80372a2709519b35f41": {
+    "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code",
       "source": {
-        "path": "asset.a9854d8d69a4fb6085bf154e7714d8ff34857eb55343e80372a2709519b35f41",
+        "path": "asset.4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-eu-west-1-2a112665": {
+        "current_account-eu-west-1-3ac3fa01": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "a9854d8d69a4fb6085bf154e7714d8ff34857eb55343e80372a2709519b35f41.zip",
+          "objectKey": "4d2c2c30987e559ad00cb6dfc2aae9a6cc6a9174835e3ff830903eefe6346e1c.zip",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
       }
     },
-    "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e": {
+    "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code",
       "source": {
-        "path": "asset.d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e",
+        "path": "asset.775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-eu-west-1-99915091": {
+        "current_account-eu-west-1-5de8eae4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip",
+          "objectKey": "775803ec04ddcc7cbb5479b0d84ac848097d215c16587dc92070925fac5cbf3e.zip",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
       }
     },
-    "8656eb39e9815e9a1d34f6772a2ca6c29af0654fcb8c8812694b7f559e9e8ef2": {
+    "aab884459d8fbfc6cb8d6fd41f10be75a6172ad01aba699e868676ae5ca6cfb2": {
       "displayName": "@aws-cdk--aws-dynamodb.ReplicaProvider Nested Stack Template",
       "source": {
         "path": "cdkdynamodbglobal20191121awscdkawsdynamodbReplicaProviderB281C954.nested.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1-d73b81d0": {
+        "current_account-eu-west-1-ffe87506": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "8656eb39e9815e9a1d34f6772a2ca6c29af0654fcb8c8812694b7f559e9e8ef2.json",
+          "objectKey": "aab884459d8fbfc6cb8d6fd41f10be75a6172ad01aba699e868676ae5ca6cfb2.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
       }
     },
-    "d8e921097ba0920313cf4beca5d8a0437571ed3c54f36b417b83f3e1a2c0c9c0": {
+    "d5b32d95514eac435a50c441d36e7434a1a8da65ff1eb16dfeb891c778c21a82": {
       "displayName": "cdk-dynamodb-global-20191121 Template",
       "source": {
         "path": "cdk-dynamodb-global-20191121.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1-b9e9ae1c": {
+        "current_account-eu-west-1-943bbec0": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "d8e921097ba0920313cf4beca5d8a0437571ed3c54f36b417b83f3e1a2c0c9c0.json",
+          "objectKey": "d5b32d95514eac435a50c441d36e7434a1a8da65ff1eb16dfeb891c778c21a82.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }

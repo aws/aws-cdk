@@ -40,6 +40,7 @@ import {
  * for consistent authentication across environments.
  *
  * @see https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/understanding-agent-identities.html
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IWorkloadIdentity extends IResource, iam.IGrantable, IWorkloadIdentityRef {
   /**
@@ -97,6 +98,7 @@ export interface IWorkloadIdentity extends IResource, iam.IGrantable, IWorkloadI
 
 /**
  * Properties for a new {@link WorkloadIdentity}.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface WorkloadIdentityProps {
   /**
@@ -123,6 +125,7 @@ export interface WorkloadIdentityProps {
 
 /**
  * Attributes for importing an existing workload identity.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface WorkloadIdentityAttributes {
   /**
@@ -240,6 +243,10 @@ abstract class WorkloadIdentityBase extends Resource implements IWorkloadIdentit
  * @resource AWS::BedrockAgentCore::WorkloadIdentity
  */
 @propertyInjectable
+/**
+ * This API has been graduated to stable.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export class WorkloadIdentity extends WorkloadIdentityBase {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = '@aws-cdk.aws-bedrock-agentcore-alpha.WorkloadIdentity';

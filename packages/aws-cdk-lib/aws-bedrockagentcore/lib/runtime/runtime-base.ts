@@ -24,10 +24,19 @@ import {
 } from '../../../aws-cloudwatch';
 import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
+import * as logs from '../../../aws-logs';
 import { Resource } from '../../../core';
 import type { IResource, ResourceProps } from '../../../core';
 import { ValidationError } from '../../../core/lib/errors';
 import { lit } from '../../../core/lib/helpers-internal';
+
+/**
+ * The endpoint name suffix for the AgentCore-managed default endpoint log group.
+ * The default endpoint exists for every runtime and its application log group is
+ * named `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`.
+ * @internal
+ */
+const DEFAULT_ENDPOINT_NAME = 'DEFAULT';
 
 /******************************************************************************
  *                                Interface
@@ -88,6 +97,23 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
    * @example "2024-01-15T14:45:00Z"
    */
   readonly lastUpdatedAt?: string;
+
+  /**
+   * The CloudWatch Logs application log group for the default endpoint of this runtime,
+   * located at `/aws/bedrock-agentcore/runtimes/{agentRuntimeId}-DEFAULT`. Use this
+   * property to attach metric filters, subscription filters, or alarms to the log
+   * group without hardcoding its name.
+   *
+   * The log group is created by the AgentCore service on the runtime's first
+   * invocation, not by CDK. Constructs that require the log group to exist at
+   * deploy time (such as `MetricFilter`) may race the first invocation; in that
+   * case, ensure at least one invocation has occurred before deploying the
+   * dependent resources, or pre-create the log group with a `LogRetention`
+   * custom resource using the same name.
+   *
+   * @example "/aws/bedrock-agentcore/runtimes/runtime-abc123-DEFAULT"
+   */
+  readonly applicationLogGroup: logs.ILogGroup;
 
   // ------------------------------------------------------
   // Metrics
@@ -214,6 +240,25 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
       agentRuntimeArn: this.agentRuntimeArn,
     };
   }
+
+  /**
+   * Memoized accessor for the default endpoint application log group.
+   * The log group reference is constructed on first access so that runtimes
+   * which never reference it do not pollute the construct tree with an
+   * imported child.
+   */
+  public get applicationLogGroup(): logs.ILogGroup {
+    if (!this._applicationLogGroup) {
+      this._applicationLogGroup = logs.LogGroup.fromLogGroupName(
+        this,
+        'ApplicationLogGroup',
+        `/aws/bedrock-agentcore/runtimes/${this.agentRuntimeId}-${DEFAULT_ENDPOINT_NAME}`,
+      );
+    }
+    return this._applicationLogGroup;
+  }
+
+  private _applicationLogGroup?: logs.ILogGroup;
 
   /**
    * An accessor for the Connections object that will fail if this Runtime does not have a VPC
