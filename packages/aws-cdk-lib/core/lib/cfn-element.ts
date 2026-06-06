@@ -65,6 +65,7 @@ export abstract class CfnElement extends Construct {
 
     this.stack = Stack.of(this);
 
+    // eslint-disable-next-line no-restricted-syntax
     this.logicalId = Lazy.uncachedString({ produce: () => this._synthesizeLogicalId() }, {
       displayHint: `${notTooLong(Node.of(this).path)}.LogicalID`,
     });
