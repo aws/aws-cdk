@@ -1,4 +1,4 @@
-import { exactOptionalAssignabilityDiagnostics } from '@aws-cdk/cdk-build-tools';
+import { exactOptionalAssignabilityDiagnosticsForPackage } from '@aws-cdk/cdk-build-tools';
 
 /**
  * Regression guard for https://github.com/aws/aws-cdk/issues/37996.
@@ -10,44 +10,16 @@ import { exactOptionalAssignabilityDiagnostics } from '@aws-cdk/cdk-build-tools'
  * library doesn't build with the flag, so these breaks slip past its own compile
  * and only surface downstream.
  *
- * The shared harness compiles this snippet with the flag on; the assertion is
- * that this package's concrete classes stay assignable to their interfaces.
+ * The shared harness enumerates every exported, non-abstract class in this
+ * package and compiles `const _: IFoo = foo` for each interface it implements
+ * (its own and inherited) with the flag on. Enumerating — rather than listing
+ * classes by hand — keeps the guard complete by construction: a newly-added
+ * class, or a new optional getter on an existing one, is caught automatically.
  */
-
-// One type-only assignment per concrete class -> interface pair to lock in.
-// `declare const` avoids constructor boilerplate; the assignment is the assertion.
-const ASSIGNABILITY_SNIPPET = `
-import {
-  Cluster, ICluster,
-  TaskDefinition, ITaskDefinition,
-  Ec2TaskDefinition, IEc2TaskDefinition,
-  ExternalTaskDefinition, IExternalTaskDefinition,
-  FargateTaskDefinition, IFargateTaskDefinition,
-} from '../lib';
-
-declare const cluster: Cluster;
-const _cluster: ICluster = cluster;
-void _cluster;
-
-declare const taskDefinition: TaskDefinition;
-const _taskDefinition: ITaskDefinition = taskDefinition;
-void _taskDefinition;
-
-declare const ec2TaskDefinition: Ec2TaskDefinition;
-const _ec2TaskDefinition: IEc2TaskDefinition = ec2TaskDefinition;
-void _ec2TaskDefinition;
-
-declare const externalTaskDefinition: ExternalTaskDefinition;
-const _externalTaskDefinition: IExternalTaskDefinition = externalTaskDefinition;
-void _externalTaskDefinition;
-
-declare const fargateTaskDefinition: FargateTaskDefinition;
-const _fargateTaskDefinition: IFargateTaskDefinition = fargateTaskDefinition;
-void _fargateTaskDefinition;
-`;
-
 describe('exactOptionalPropertyTypes assignability (issue #37996)', () => {
+  // Enumerating + compiling the source graph through the compiler API is heavier
+  // than a normal unit test; give it room under the suite's 60s ceiling.
   test('aws-ecs concrete classes are assignable to their interfaces under the flag', () => {
-    expect(exactOptionalAssignabilityDiagnostics(__dirname, ASSIGNABILITY_SNIPPET)).toEqual([]);
-  }, 30_000);
+    expect(exactOptionalAssignabilityDiagnosticsForPackage(__dirname)).toEqual([]);
+  }, 45_000);
 });
