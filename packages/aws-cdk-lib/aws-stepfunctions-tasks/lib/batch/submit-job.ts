@@ -3,7 +3,7 @@ import type * as ec2 from '../../../aws-ec2';
 import * as iam from '../../../aws-iam';
 import * as sfn from '../../../aws-stepfunctions';
 import type { Size } from '../../../core';
-import { Stack, ValidationError, withResolved } from '../../../core';
+import { ArnFormat, Stack, ValidationError, withResolved } from '../../../core';
 import { lit } from '../../../core/lib/private/literal-string';
 import { integrationResourceArn, isJsonPathOrJsonataExpression, validatePatternSupported } from '../private/task-utils';
 
@@ -309,15 +309,12 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
 
   private configurePolicyStatements(): iam.PolicyStatement[] {
     return [
-      // Resource level access control for job-definition requires revision which batch does not support yet
-      // Using the alternative permissions as mentioned here:
-      // https://docs.aws.amazon.com/batch/latest/userguide/batch-supported-iam-actions-resources.html
       new iam.PolicyStatement({
         resources: isJsonPathOrJsonataExpression(this.props.jobQueueArn) ? ['*'] : [
           Stack.of(this).formatArn({
             service: 'batch',
             resource: 'job-definition',
-            resourceName: '*',
+            resourceName: `${this.getJobDefinitionName()}:*`,
           }),
           this.props.jobQueueArn,
         ],
@@ -333,6 +330,13 @@ export class BatchSubmitJob extends sfn.TaskStateBase {
         actions: ['events:PutTargets', 'events:PutRule', 'events:DescribeRule'],
       }),
     ];
+  }
+
+  private getJobDefinitionName(): string {
+    // Extract the job definition name from the ARN.
+    // ARN format: arn:partition:batch:region:account:job-definition/name[:revision]
+    const resourceName = Stack.of(this).splitArn(this.props.jobDefinitionArn, ArnFormat.SLASH_RESOURCE_NAME).resourceName!;
+    return resourceName.split(':')[0];
   }
 
   private configureContainerOverrides(containerOverrides: BatchContainerOverrides) {
