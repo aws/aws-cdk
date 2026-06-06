@@ -16,7 +16,7 @@
      "JobName": "\"PySparkETLJobNoMetrics\""
     },
     "flattenResponse": "false",
-    "salt": "1754412116849"
+    "salt": "1780305345426"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -64,15 +64,6 @@
          "Resource": [
           "*"
          ]
-        },
-        {
-         "Action": [
-          "glue:GetJob"
-         ],
-         "Effect": "Allow",
-         "Resource": [
-          "*"
-         ]
         }
        ]
       }
@@ -83,20 +74,12 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": {
-     "Fn::FindInMap": [
-      "LatestNodeRuntimeMap",
-      {
-       "Ref": "AWS::Region"
-      },
-      "value"
-     ]
-    },
+    "Runtime": "nodejs22.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c74d4e3c82f2db3767a5b28f12d80d3dc43fdb041406fd738e1a754a716b9f96.zip"
+     "S3Key": "642d8e8ca8e53fa044f62ae97b83bfd1c4198d5257165b8720d3d698fe1fc9b5.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
@@ -107,27 +90,6 @@
      ]
     }
    }
-  },
-  "AwsApiCallGluegetJob9366a700db91c5431a3ceda943746630": {
-   "Type": "Custom::DeployAssert@SdkCallGluegetJob",
-   "Properties": {
-    "ServiceToken": {
-     "Fn::GetAtt": [
-      "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F",
-      "Arn"
-     ]
-    },
-    "service": "Glue",
-    "api": "getJob",
-    "expected": "{\"$ObjectLike\":{\"Job\":{\"DefaultArguments\":{\"name\":\"not\",\"pattern\":{\"name\":\"objectLike\",\"pattern\":{\"--enable-metrics\":{\"name\":\"anyValue\"},\"--enable-observability-metrics\":{\"name\":\"anyValue\"}},\"partial\":true}}}}}",
-    "parameters": {
-     "JobName": "\"RayJobNoMetrics\""
-    },
-    "flattenResponse": "false",
-    "salt": "1754412116851"
-   },
-   "UpdateReplacePolicy": "Delete",
-   "DeletionPolicy": "Delete"
   },
   "AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d": {
    "Type": "Custom::DeployAssert@SdkCallGluegetJob",
@@ -145,7 +107,7 @@
      "JobName": "\"PySparkETLJobSelectiveMetrics\""
     },
     "flattenResponse": "false",
-    "salt": "1754412116851"
+    "salt": "1780305345428"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -160,156 +122,12 @@
     ]
    }
   },
-  "AssertionResultsAwsApiCallGluegetJob9366a700db91c5431a3ceda943746630": {
-   "Value": {
-    "Fn::GetAtt": [
-     "AwsApiCallGluegetJob9366a700db91c5431a3ceda943746630",
-     "assertion"
-    ]
-   }
-  },
   "AssertionResultsAwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d": {
    "Value": {
     "Fn::GetAtt": [
      "AwsApiCallGluegetJob6b166eaabdaab4362694e965eee1555d",
      "assertion"
     ]
-   }
-  }
- },
- "Mappings": {
-  "LatestNodeRuntimeMap": {
-   "af-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-east-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-northeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-south-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-1": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-2": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-3": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-4": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-5": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-6": {
-    "value": "nodejs22.x"
-   },
-   "ap-southeast-7": {
-    "value": "nodejs22.x"
-   },
-   "ca-central-1": {
-    "value": "nodejs22.x"
-   },
-   "ca-west-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-north-1": {
-    "value": "nodejs22.x"
-   },
-   "cn-northwest-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-central-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-isoe-west-1": {
-    "value": "nodejs18.x"
-   },
-   "eu-north-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-south-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-1": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-2": {
-    "value": "nodejs22.x"
-   },
-   "eu-west-3": {
-    "value": "nodejs22.x"
-   },
-   "eusc-de-east-1": {
-    "value": "nodejs22.x"
-   },
-   "il-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-central-1": {
-    "value": "nodejs22.x"
-   },
-   "me-south-1": {
-    "value": "nodejs22.x"
-   },
-   "mx-central-1": {
-    "value": "nodejs22.x"
-   },
-   "sa-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-east-2": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-east-1": {
-    "value": "nodejs22.x"
-   },
-   "us-gov-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-iso-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-iso-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-east-1": {
-    "value": "nodejs18.x"
-   },
-   "us-isob-west-1": {
-    "value": "nodejs18.x"
-   },
-   "us-west-1": {
-    "value": "nodejs22.x"
-   },
-   "us-west-2": {
-    "value": "nodejs22.x"
    }
   }
  },
