@@ -37,7 +37,7 @@ export interface ValidationViolatingConstruct extends report.PolicyViolatingReso
 /**
  * JSON representation of the report.
  */
-export interface PolicyValidationReportJson {
+export interface LegacyPolicyValidationReportJson {
   /**
    * Report title.
    */
@@ -47,13 +47,13 @@ export interface PolicyValidationReportJson {
    * Reports for all of the validation plugins registered
    * in the app
    */
-  readonly pluginReports: PluginReportJson[];
+  readonly pluginReports: LegacyPluginReportJson[];
 }
 
 /**
  * A report from a single plugin
  */
-export interface PluginReportJson {
+export interface LegacyPluginReportJson {
   /**
    * List of violations in the report.
    */
@@ -62,7 +62,7 @@ export interface PluginReportJson {
   /**
    * Report summary.
    */
-  readonly summary: PolicyValidationReportSummary;
+  readonly summary: LegacyPolicyValidationReportSummary;
 
   /**
    * Plugin version.
@@ -73,7 +73,7 @@ export interface PluginReportJson {
 /**
  * Summary of the report.
  */
-export interface PolicyValidationReportSummary {
+export interface LegacyPolicyValidationReportSummary {
   /**
    * The final status of the validation (pass/fail)
    */
@@ -104,6 +104,70 @@ export interface NamedValidationPluginReport extends report.PolicyValidationPlug
 }
 
 /**
+ * JSON representation of the validation report, matching cloud-assembly-schema.
+ */
+export interface PolicyValidationReportJson {
+  readonly version: string;
+  readonly title?: string;
+  readonly pluginReports: PluginReportJson[];
+}
+
+export interface PluginReportJson {
+  readonly pluginName: string;
+  readonly pluginVersion?: string;
+  readonly conclusion: PolicyValidationReportConclusion;
+  readonly metadata?: { readonly [key: string]: string };
+  readonly violations: PolicyViolationJson[];
+  readonly suppressedViolations?: SuppressedViolationJson[];
+}
+
+export type PolicyValidationReportConclusion = 'success' | 'failure';
+
+export interface PolicyViolationJson {
+  readonly ruleName: string;
+  readonly description: string;
+  readonly suggestedFix?: string;
+  readonly severity: PolicyViolationSeverity;
+  readonly customSeverity?: string;
+  readonly ruleMetadata?: { readonly [key: string]: string };
+  readonly violatingConstructs: ViolatingConstructJson[];
+}
+
+export type PolicyViolationSeverity = 'fatal' | 'error' | 'warning' | 'info' | 'custom';
+
+export interface ViolatingConstructJson {
+  readonly constructPath: string;
+  readonly constructFqn?: string;
+  readonly libraryVersion?: string;
+  readonly cloudFormationResource?: CloudFormationResourceJson;
+  readonly stackTraces?: string[];
+}
+
+export interface CloudFormationResourceJson {
+  readonly templatePath: string;
+  readonly logicalId: string;
+  readonly propertyPaths?: string[];
+}
+
+export interface SuppressedViolationJson extends PolicyViolationJson {
+  readonly acknowledgedId: string;
+  readonly reason?: string;
+  readonly acknowledgedAt?: string;
+  readonly acknowledgedStackTrace?: string;
+}
+
+/**
+ * A violation that was suppressed, carrying acknowledgement metadata.
+ * Used internally to pass suppressed violations from synthesis to the formatter.
+ */
+export interface SuppressedViolation extends report.PolicyViolation {
+  readonly acknowledgedId: string;
+  readonly reason?: string;
+  readonly acknowledgedAt?: string;
+  readonly acknowledgedStackTrace?: string;
+}
+
+/**
  * The report emitted by the plugin after evaluation.
  */
 export class PolicyValidationReportFormatter {
@@ -113,7 +177,7 @@ export class PolicyValidationReportFormatter {
   }
 
   public formatPrettyPrinted(reps: NamedValidationPluginReport[]): string {
-    const json = this.formatJson(reps);
+    const json = this.formatLegacyJson(reps);
     const output = [json.title];
     output.push('-'.repeat(json.title.length));
 
@@ -187,7 +251,7 @@ export class PolicyValidationReportFormatter {
     return output.join(os.EOL);
   }
 
-  public formatJson(reps: NamedValidationPluginReport[]): PolicyValidationReportJson {
+  public formatLegacyJson(reps: NamedValidationPluginReport[]): LegacyPolicyValidationReportJson {
     return {
       title: 'Validation Report',
       pluginReports: reps
@@ -234,6 +298,124 @@ export class PolicyValidationReportFormatter {
         })),
     };
   }
+
+  public formatJson(
+    reps: NamedValidationPluginReport[],
+    schemaVersion: string,
+    suppressedByReport?: Map<number, SuppressedViolation[]>,
+  ): PolicyValidationReportJson {
+    return {
+      version: schemaVersion,
+      title: 'Validation Report',
+      pluginReports: this.buildPluginReports(reps, suppressedByReport),
+    };
+  }
+
+  private formatViolationJson(violation: report.PolicyViolation): PolicyViolationJson {
+    const severity = normalizeSeverity(violation.severity);
+    return {
+      ruleName: violation.ruleName,
+      description: violation.description,
+      suggestedFix: violation.fix,
+      severity: severity.severity,
+      customSeverity: severity.customSeverity,
+      ruleMetadata: violation.ruleMetadata,
+      violatingConstructs: violation.violatingResources.map(resource => {
+        const constructPath = resource.constructPath ?? (
+          resource.templatePath && resource.resourceLogicalId
+            ? this.tree.getConstructByLogicalId(
+              path.basename(resource.templatePath),
+              resource.resourceLogicalId,
+            )?.node.path
+            : undefined
+        );
+        const construct = constructPath
+          ? this.tree.getConstructByPath(constructPath)
+          : undefined;
+        const constructInfo = construct
+          ? this.tree.constructTraceLevelFromTreeNode(construct)
+          : undefined;
+
+        const result: ViolatingConstructJson = {
+          constructPath: constructPath ?? 'N/A',
+          constructFqn: constructInfo?.construct,
+          libraryVersion: constructInfo?.libraryVersion,
+          cloudFormationResource: resource.resourceLogicalId && resource.templatePath
+            ? {
+              templatePath: resource.templatePath,
+              logicalId: resource.resourceLogicalId,
+              propertyPaths: resource.locations.length > 0 ? resource.locations : undefined,
+            }
+            : undefined,
+          stackTraces: constructPath
+            ? this.formatStackTraces(constructPath)
+            : undefined,
+        };
+        return result;
+      }),
+    };
+  }
+
+  private formatSuppressedViolationJson(sv: SuppressedViolation): SuppressedViolationJson {
+    const base = this.formatViolationJson(sv);
+    return {
+      ...base,
+      acknowledgedId: sv.acknowledgedId,
+      reason: sv.reason || undefined,
+      acknowledgedAt: sv.acknowledgedAt || undefined,
+      acknowledgedStackTrace: sv.acknowledgedStackTrace || undefined,
+    };
+  }
+
+  private buildPluginReports(
+    reps: NamedValidationPluginReport[],
+    suppressedByReport?: Map<number, SuppressedViolation[]>,
+  ): PluginReportJson[] {
+    const results: PluginReportJson[] = [];
+    for (let idx = 0; idx < reps.length; idx++) {
+      const rep = reps[idx];
+      const suppressed = suppressedByReport?.get(idx);
+      if (rep.success && rep.violations.length === 0 && !suppressed) continue;
+      results.push({
+        pluginName: rep.pluginName,
+        pluginVersion: rep.pluginVersion,
+        conclusion: (rep.success ? 'success' : 'failure') as PolicyValidationReportConclusion,
+        metadata: rep.metadata,
+        violations: rep.violations.map(violation => this.formatViolationJson(violation)),
+        suppressedViolations: suppressed
+          ? suppressed.map(sv => this.formatSuppressedViolationJson(sv))
+          : undefined,
+      });
+    }
+    return results;
+  }
+
+  private formatStackTraces(constructPath: string): string[] | undefined {
+    const trace = this.reportTrace.formatJson(constructPath);
+    if (!trace) return undefined;
+    const lines: string[] = [];
+    let current: ConstructTrace | undefined = trace;
+    while (current) {
+      if (current.location) {
+        lines.push(current.location);
+      }
+      current = current.child;
+    }
+    return lines.length > 0 ? [lines.join('\n')] : undefined;
+  }
+}
+
+const KNOWN_SEVERITIES = new Set(['fatal', 'error', 'warning', 'info']);
+
+function normalizeSeverity(severity: string | undefined): { severity: PolicyViolationSeverity; customSeverity?: string } {
+  if (!severity) {
+    return { severity: 'error' };
+  }
+  const lower = severity.toLowerCase();
+  if (KNOWN_SEVERITIES.has(lower)) {
+    return { severity: lower as PolicyViolationSeverity };
+  }
+  return { severity: 'custom', customSeverity: severity };
 }
 
 function reset(s: string) {
