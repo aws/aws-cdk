@@ -1,5 +1,5 @@
 
-import * as child_process from 'child_process';
+import child_process from 'child_process';
 import { bockfs } from '@aws-cdk/cdk-build-tools';
 import { Annotations, Template, Match } from '../../assertions';
 import { Vpc } from '../../aws-ec2';
