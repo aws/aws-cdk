@@ -17,7 +17,7 @@ import * as cloudwatch from '../../aws-cloudwatch';
 import * as iam from '../../aws-iam';
 import type * as kms from '../../aws-kms';
 import type { RemovalPolicy } from '../../core';
-import { Arn, ArnFormat, Resource, Stack, Token, ValidationError } from '../../core';
+import { Arn, ArnFormat, Aws, Resource, Stack, Token, ValidationError } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
@@ -307,16 +307,13 @@ abstract class LogGroupBase extends Resource implements ILogGroup {
 
   private convertArnPrincipalToAccountId(principal: iam.IPrincipal) {
     if (principal.principalAccount) {
-      // we use ArnPrincipal here because the constructor inserts the argument
-      // into the template without mutating it, which means that there is no
-      // ARN created by this call.
-      return new iam.ArnPrincipal(principal.principalAccount);
+      return new iam.ArnPrincipal(`arn:${Aws.PARTITION}:iam::${principal.principalAccount}:root`);
     }
 
     if (principal instanceof iam.ArnPrincipal && principal.arn !== '*') {
       const parsedArn = Arn.split(principal.arn, ArnFormat.SLASH_RESOURCE_NAME);
       if (parsedArn.account) {
-        return new iam.ArnPrincipal(parsedArn.account);
+        return new iam.ArnPrincipal(`arn:${parsedArn.partition ?? Aws.PARTITION}:iam::${parsedArn.account}:root`);
       }
     }
 
