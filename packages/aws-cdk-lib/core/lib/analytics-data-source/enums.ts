@@ -545,6 +545,10 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "DSSE_MANAGED",
     "DSSE"
   ],
+  "BucketNamespace": [
+    "global",
+    "account-regional"
+  ],
   "BucketNotificationDestinationType": [
     0,
     1,
@@ -583,15 +587,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   "CacheConfigType": [
     "AMPLIFY_MANAGED",
     "AMPLIFY_MANAGED_NO_COOKIES"
-  ],
-  "CacheEngine": [
-    "valkey",
-    "valkey_7",
-    "valkey_8",
-    "redis",
-    "redis_7",
-    "memcached",
-    "memcached_1.6"
   ],
   "Capability": [
     "ALL",
@@ -2165,6 +2160,8 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     "c8i-flex",
     "compute7-amd",
     "c7a",
+    "compute8-amd",
+    "c8a",
     "storage2",
     "d2",
     "storage3",
@@ -3557,6 +3554,11 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
     0,
     1
   ],
+  "ReferenceStrength": [
+    "strong",
+    "weak",
+    "both"
+  ],
   "RegistryType": [
     "private",
     "public"
@@ -4513,10 +4515,6 @@ export const AWS_CDK_ENUMS: { [key: string]: any } = {
   ],
   "UsagePlanKeyType": [
     "API_KEY"
-  ],
-  "UserEngine": [
-    "valkey",
-    "redis"
   ],
   "UserPoolDefaultAction": [
     "ALLOW",
