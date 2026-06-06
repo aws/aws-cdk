@@ -49,6 +49,7 @@ test('feature flag defaults may not be changed anymore', () => {
     [feats.AUTOMATIC_L1_TRAITS]: true,
     [feats.DEFAULT_CROSS_STACK_REFERENCES]: 'strong',
     [feats.BATCH_DEFAULT_AL2023]: false,
+    [feats.EKS_DEFAULT_AL2023]: false,
     [feats.ANNOTATIONS_IN_VALIDATION_REPORT]: false,
     [feats.CLOUDWATCH_COMPOSITE_ALARM_GENERATED_NAME]: false,
 
