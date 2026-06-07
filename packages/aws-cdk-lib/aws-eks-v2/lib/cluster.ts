@@ -1467,7 +1467,7 @@ export class Cluster extends ClusterBase {
 
       // give the handler role admin access to the cluster
       // so it can deploy/query any resource.
-      this._clusterAdminAccess = this.grantClusterAdmin('ClusterAdminRoleAccess', this._kubectlProvider?.role!.roleArn);
+      this._clusterAdminAccess = this.grantClusterAdminAccess('ClusterAdminRoleAccess', this._kubectlProvider?.role!);
 
       // Ensure kubectl is marked as ready only after admin access has been granted
       this._kubectlReadyBarrier.node.addDependency(this._clusterAdminAccess);
@@ -1476,11 +1476,7 @@ export class Cluster extends ClusterBase {
     // do not create a masters role if one is not provided. Trusting the accountRootPrincipal() is too permissive.
     if (props.mastersRole) {
       const mastersRole = props.mastersRole;
-      this.grantAccess('mastersRoleAccess', props.mastersRole.roleArn, [
-        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
-          accessScopeType: AccessScopeType.CLUSTER,
-        }),
-      ]);
+      this.grantClusterAdminAccess('mastersRoleAccess', props.mastersRole);
 
       commonCommandOptions.push(`--role-arn ${mastersRole.roleArn}`);
     }
@@ -1562,6 +1558,19 @@ export class Cluster extends ClusterBase {
    * @param principal - The IAM principal (role or user) to be granted access to the EKS cluster.
    * @returns the access entry construct
    */
+  /**
+   * Grants the specified IAM principal cluster admin access to the EKS cluster.
+   *
+   * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
+   * access permissions. This allows the IAM principal to perform the actions permitted
+   * by the cluster admin access.
+   * [disable-awslint:no-grants]
+   *
+   * @param id - The ID of the `AccessEntry` construct to be created.
+   * @param principal - The ARN of the IAM principal (role or user) to be granted cluster admin access.
+   * @returns the access entry construct
+   * @deprecated Use `grantClusterAdminAccess` to pass an IAM principal construct directly.
+   */
   @MethodMetadata()
   public grantClusterAdmin(id: string, principal: string): AccessEntry {
     const newEntry = new AccessEntry(this, id, {
@@ -1574,6 +1583,33 @@ export class Cluster extends ClusterBase {
       ],
     });
     this.accessEntries.set(principal, newEntry);
+    return newEntry;
+  }
+
+  /**
+   * Grants the specified IAM principal cluster admin access to the EKS cluster.
+   *
+   * This method creates an `AccessEntry` construct that grants the specified IAM principal the cluster admin
+   * access permissions. This allows the IAM principal to perform the actions permitted
+   * by the cluster admin access.
+   * [disable-awslint:no-grants]
+   *
+   * @param id - The ID of the `AccessEntry` construct to be created.
+   * @param iamPrincipal - The IAM principal (role or user) to be granted cluster admin access.
+   * @returns the access entry construct
+   */
+  @MethodMetadata()
+  public grantClusterAdminAccess(id: string, iamPrincipal: iam.IPrincipal): AccessEntry {
+    const newEntry = new AccessEntry(this, id, {
+      iamPrincipal,
+      cluster: this,
+      accessPolicies: [
+        AccessPolicy.fromAccessPolicyName('AmazonEKSClusterAdminPolicy', {
+          accessScopeType: AccessScopeType.CLUSTER,
+        }),
+      ],
+    });
+    this.accessEntries.set(newEntry.accessEntryRef.principalArn, newEntry);
     return newEntry;
   }
 

@@ -61,6 +61,13 @@ class EksAccessEntryIamPrincipal extends Stack {
       iamPrincipal: user,
       accessEntryType: eks.AccessEntryType.STANDARD,
     });
+
+    // Test 3: grantClusterAdminAccess using an IAM Role
+    const adminRole = new iam.Role(this, 'AdminRole', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    cluster.grantClusterAdminAccess('AdminRoleAccess', adminRole);
   }
 }
 
