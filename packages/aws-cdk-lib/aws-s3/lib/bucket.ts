@@ -33,8 +33,10 @@ import {
   Tokenization,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
-import { memoizedGetter } from '../../core/lib/helpers-internal';
+import type { IArrayBox, IBox } from '../../core/lib/helpers-internal';
+import { Box, memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { CfnReference } from '../../core/lib/private/cfn-reference';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
@@ -1732,6 +1734,23 @@ export enum TransitionDefaultMinimumObjectSize {
   VARIES_BY_STORAGE_CLASS = 'varies_by_storage_class',
 }
 
+/**
+ * The namespace for the bucket name when using `bucketNamePrefix`.
+ *
+ * Determines how CloudFormation generates the unique portion of the bucket name.
+ */
+export enum BucketNamespace {
+  /**
+   * The bucket name is globally unique.
+   */
+  GLOBAL = 'global',
+
+  /**
+   * The bucket name is unique within the account and region.
+   */
+  ACCOUNT_REGIONAL = 'account-regional',
+}
+
 export interface BucketProps {
   /**
    * The kind of server-side encryption to apply to this bucket.
@@ -1791,9 +1810,40 @@ export interface BucketProps {
   /**
    * Physical name of this bucket.
    *
+   * Cannot be used together with `bucketNamePrefix` or `bucketNamespace`.
+   *
    * @default - Assigned by CloudFormation (recommended).
    */
   readonly bucketName?: string;
+
+  /**
+   * A prefix for the bucket name in the account-regional namespace.
+   *
+   * Requires `bucketNamespace` to be set to `ACCOUNT_REGIONAL`.
+   * Cannot be used together with `bucketName`.
+   *
+   * CloudFormation appends `-<accountId>-<region>-an` to form the full name.
+   * For example, `my-app` becomes `my-app-123456789012-us-east-1-an`.
+   *
+   * Must contain only lowercase letters, numbers, and hyphens.
+   * Must start and end with a lowercase letter or number.
+   *
+   * @default - No prefix.
+   */
+  readonly bucketNamePrefix?: string;
+
+  /**
+   * The namespace for the bucket name.
+   *
+   * AWS recommends `ACCOUNT_REGIONAL` for improved security, as bucket names
+   * are scoped to your account and cannot be claimed by other accounts.
+   * When set to `ACCOUNT_REGIONAL`, `bucketNamePrefix` is required.
+   * When set to `GLOBAL`, it can be used standalone to explicitly specify the default namespace.
+   *
+   * @see https://docs.aws.amazon.com/AmazonS3/latest/userguide/gpbucketnamespaces.html
+   * @default - Global namespace.
+   */
+  readonly bucketNamespace?: BucketNamespace;
 
   /**
    * Policy to apply when the bucket is removed from this stack.
@@ -2095,6 +2145,7 @@ export interface Tag {
  *
  */
 @propertyInjectable
+@noBoxStackTraces
 export class Bucket extends BucketBase {
   /**
    * Uniquely identifies this class.
@@ -2132,7 +2183,7 @@ export class Bucket extends BucketBase {
     const newEndpoint = `s3-website.${region}.${urlSuffix}`;
 
     let staticDomainEndpoint = regionInfo.s3StaticWebsiteEndpoint
-      ?? Lazy.string({ produce: () => stack.regionalFact(regionInformation.FactName.S3_STATIC_WEBSITE_ENDPOINT, newEndpoint) });
+        ?? Lazy.string({ produce: () => stack.regionalFact(regionInformation.FactName.S3_STATIC_WEBSITE_ENDPOINT, newEndpoint) });
 
     // Deprecated use of bucketWebsiteNewUrlFormat
     if (attrs.bucketWebsiteNewUrlFormat !== undefined) {
@@ -2249,6 +2300,17 @@ export class Bucket extends BucketBase {
   }
 
   /**
+   * Maximum length for the bucket name prefix in the account-regional namespace.
+   *
+   * The account-regional suffix format is `-<accountId(12)>-<region>-an`.
+   * For the shortest region codes (9 chars, e.g. `us-east-1`), the suffix
+   * is 26 chars, leaving 37 chars for the prefix within the 63-char bucket
+   * name limit. Longer region codes (e.g. `ap-southeast-1`) will have a
+   * shorter effective limit enforced by CloudFormation at deploy time.
+   */
+  private static readonly MAX_BUCKET_NAME_PREFIX_LENGTH = 37;
+
+  /**
    * Return any errors against the bucket name
    */
   private static _validateBucketName(physicalName: string, allowLegacyBucketNaming: boolean = false): string[] {
@@ -2274,28 +2336,28 @@ export class Bucket extends BucketBase {
       errors.push(allowLegacyBucketNaming
         ? 'Bucket name must only contain uppercase or lowercase characters and the symbols, period (.), underscore (_), and dash (-)'
         : 'Bucket name must only contain lowercase characters and the symbols, period (.) and dash (-)'
-        + ` (offset: ${illegalCharMatch.index})`,
+          + ` (offset: ${illegalCharMatch.index})`,
       );
     }
     if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(0))) {
       errors.push(allowLegacyBucketNaming
         ? 'Bucket name must start with an uppercase, lowercase character or number'
         : 'Bucket name must start with a lowercase character or number'
-        + ' (offset: 0)',
+          + ' (offset: 0)',
       );
     }
     if (!allowedEdgeCharsetRegEx.test(bucketName.charAt(bucketName.length - 1))) {
       errors.push(allowLegacyBucketNaming
         ? 'Bucket name must end with an uppercase, lowercase character or number'
         : 'Bucket name must end with a lowercase character or number'
-        + ` (offset: ${bucketName.length - 1})`,
+          + ` (offset: ${bucketName.length - 1})`,
       );
     }
 
     const consecSymbolMatch = bucketName.match(/\.-|-\.|\.\./);
     if (consecSymbolMatch) {
       errors.push('Bucket name must not have dash next to period, or period next to dash, or consecutive periods'
-        + ` (offset: ${consecSymbolMatch.index})`);
+          + ` (offset: ${consecSymbolMatch.index})`);
     }
     if (/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(bucketName)) {
       errors.push('Bucket name must not resemble an IP address');
@@ -2311,6 +2373,73 @@ export class Bucket extends BucketBase {
     const errors = Bucket._validateBucketName(physicalName, allowLegacyBucketNaming);
     if (errors.length > 0) {
       throw new ValidationError(lit`InvalidBucketNameValue`, `Invalid S3 bucket name (value: ${physicalName})${EOL}${errors.join(EOL)}`, scope);
+    }
+  }
+
+  /**
+   * Return any errors against the bucket name prefix.
+   */
+  private static _validateBucketNamePrefix(prefix?: string): string[] {
+    if (!prefix || Token.isUnresolved(prefix)) {
+      return [];
+    }
+
+    const errors: string[] = [];
+
+    if (prefix.length > Bucket.MAX_BUCKET_NAME_PREFIX_LENGTH) {
+      errors.push(`Bucket name prefix must be ${Bucket.MAX_BUCKET_NAME_PREFIX_LENGTH} characters or fewer`);
+    }
+    if (!/^[a-z0-9]/.test(prefix)) {
+      errors.push('Bucket name prefix must start with a lowercase letter or number');
+    }
+    if (!/[a-z0-9]$/.test(prefix)) {
+      errors.push('Bucket name prefix must end with a lowercase letter or number');
+    }
+    if (/[^a-z0-9-]/.test(prefix)) {
+      errors.push('Bucket name prefix must only contain lowercase letters, numbers, and hyphens');
+    }
+
+    return errors;
+  }
+
+  /**
+   * Like '_validateBucketNamePrefix', but throws a scoped ValidationError
+   */
+  private static validateBucketNamePrefixScoped(scope: IConstruct, prefix?: string): void {
+    const errors = Bucket._validateBucketNamePrefix(prefix);
+    if (errors.length > 0) {
+      throw new ValidationError(lit`InvalidBucketNamePrefixValue`, `Invalid S3 bucket name prefix (value: ${prefix})${EOL}${errors.join(EOL)}`, scope);
+    }
+  }
+
+  private static validateBucketNamingCombination(scope: IConstruct, props: BucketProps): void {
+    if (props.bucketName && props.bucketNamePrefix) {
+      throw new ValidationError(
+        lit`BucketNameConflictsWithPrefix`,
+        '\'bucketName\' and \'bucketNamePrefix\' cannot be used together',
+        scope,
+      );
+    }
+    if (props.bucketName && props.bucketNamespace && props.bucketNamespace !== BucketNamespace.GLOBAL) {
+      throw new ValidationError(
+        lit`BucketNameConflictsWithNamespace`,
+        '\'bucketName\' cannot be used with \'bucketNamespace\' (except GLOBAL). Use \'bucketNamePrefix\' with \'bucketNamespace\' instead',
+        scope,
+      );
+    }
+    if (props.bucketNamePrefix && props.bucketNamespace !== BucketNamespace.ACCOUNT_REGIONAL) {
+      throw new ValidationError(
+        lit`BucketNamePrefixRequiresAccountRegional`,
+        '\'bucketNamePrefix\' requires \'bucketNamespace\' to be set to ACCOUNT_REGIONAL',
+        scope,
+      );
+    }
+    if (props.bucketNamespace === BucketNamespace.ACCOUNT_REGIONAL && !props.bucketNamePrefix) {
+      throw new ValidationError(
+        lit`AccountRegionalNamespaceRequiresPrefix`,
+        '\'bucketNamespace\' ACCOUNT_REGIONAL requires \'bucketNamePrefix\' to be specified',
+        scope,
+      );
     }
   }
 
@@ -2350,13 +2479,14 @@ export class Bucket extends BucketBase {
   public set disallowPublicAccess(_value: boolean | undefined) {
     // Ignored — value is derived from the CfnBucket resource via reflection
   }
-  private accessControl?: BucketAccessControl;
-  private readonly lifecycleRules: LifecycleRule[] = [];
+  private readonly accessControl: IBox<BucketAccessControl | undefined>;
+  private readonly ownershipControls: IBox<CfnBucket.OwnershipControlsProperty | undefined>;
+  private readonly lifecycleRules: IArrayBox<LifecycleRule> = Box.fromArray();
   private readonly transitionDefaultMinimumObjectSize?: TransitionDefaultMinimumObjectSize;
   private readonly eventBridgeEnabled?: boolean;
-  private readonly metrics: BucketMetrics[] = [];
-  private readonly cors: CorsRule[] = [];
-  private readonly inventories: Inventory[] = [];
+  private readonly metrics: IArrayBox<BucketMetrics> = Box.fromArray();
+  private readonly cors: IArrayBox<CorsRule> = Box.fromArray();
+  private readonly inventories: IArrayBox<Inventory> = Box.fromArray();
   private readonly _resource: CfnBucket;
   private readonly reflection: BucketReflection;
 
@@ -2373,7 +2503,9 @@ export class Bucket extends BucketBase {
     const { bucketEncryption, encryptionKey } = this.parseEncryption(props);
     this.encryptionKey = encryptionKey;
 
+    Bucket.validateBucketNamingCombination(this, props);
     Bucket.validateBucketNameScoped(this, this.physicalName);
+    Bucket.validateBucketNamePrefixScoped(this, props.bucketNamePrefix);
 
     let publicAccessBlockConfig: BlockPublicAccessOptions | undefined = props.blockPublicAccess;
     if (props.blockPublicAccess && FeatureFlags.of(this).isEnabled(cxapi.S3_PUBLIC_ACCESS_BLOCKED_BY_DEFAULT)) {
@@ -2387,19 +2519,27 @@ export class Bucket extends BucketBase {
     this.replicationRoleArn = replicationConfiguration?.role;
     this.objectOwnership = props.objectOwnership;
     this.transitionDefaultMinimumObjectSize = props.transitionDefaultMinimumObjectSize;
+    this.accessControl = Box.fromValue<BucketAccessControl | undefined>(props.accessControl);
+    this.ownershipControls = Box.fromValue<CfnBucket.OwnershipControlsProperty | undefined>(
+      this.parseOwnershipControls(props.accessControl),
+    );
+
     const resource = new CfnBucket(this, 'Resource', {
       bucketName: this.physicalName,
+      bucketNamePrefix: props.bucketNamePrefix,
+      bucketNamespace: props.bucketNamespace,
       bucketEncryption,
       versioningConfiguration: props.versioned ? { status: 'Enabled' } : undefined,
-      lifecycleConfiguration: Lazy.any({ produce: () => this.parseLifecycleConfiguration() }),
+      lifecycleConfiguration: this.lifecycleRules.derive(rules => this.parseLifecycleConfiguration(rules)),
       websiteConfiguration,
       publicAccessBlockConfiguration: publicAccessBlockConfig,
-      metricsConfigurations: Lazy.any({ produce: () => this.parseMetricConfiguration() }),
-      corsConfiguration: Lazy.any({ produce: () => this.parseCorsConfiguration() }),
-      accessControl: Lazy.string({ produce: () => this.accessControl }),
+      metricsConfigurations: this.metrics.derive(m => this.parseMetricConfiguration(m)),
+      corsConfiguration: this.cors.derive(c => this.parseCorsConfiguration(c)),
+      // eslint-disable-next-line @cdklabs/no-unconditional-token-allocation
+      accessControl: Token.asString(this.accessControl),
       loggingConfiguration: this.parseServerAccessLogs(props),
-      inventoryConfigurations: Lazy.any({ produce: () => this.parseInventoryConfiguration() }),
-      ownershipControls: Lazy.any({ produce: () => this.parseOwnershipControls() }),
+      inventoryConfigurations: this.inventories.derive(inv => this.parseInventoryConfiguration(inv)),
+      ownershipControls: this.ownershipControls,
       accelerateConfiguration: props.transferAcceleration ? { accelerationStatus: 'Enabled' } : undefined,
       intelligentTieringConfigurations: this.parseTieringConfig(props),
       objectLockEnabled: objectLockConfiguration ? true : props.objectLockEnabled,
@@ -2419,8 +2559,6 @@ export class Bucket extends BucketBase {
     this.bucketDualStackDomainName = resource.attrDualStackDomainName;
     this.bucketRegionalDomainName = resource.attrRegionalDomainName;
 
-    this.accessControl = props.accessControl;
-
     // Enforce AWS Foundational Security Best Practice
     if (props.enforceSSL) {
       this.enforceSSLStatement();
@@ -2431,11 +2569,11 @@ export class Bucket extends BucketBase {
 
     if (props.serverAccessLogsBucket instanceof Bucket) {
       props.serverAccessLogsBucket.allowLogDelivery(this, props.serverAccessLogsPrefix);
-    // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
-    // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
-    // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
-    // For example, we should not allow log delivery to `this` if given an imported bucket or
-    // another situation that causes `instanceof` to fail
+      // It is possible that `serverAccessLogsBucket` was specified but is some other `IBucket`
+      // that cannot have the ACLs or bucket policy applied. In that scenario, we should only
+      // setup log delivery permissions to `this` if a bucket was not specified at all, as documented.
+      // For example, we should not allow log delivery to `this` if given an imported bucket or
+      // another situation that causes `instanceof` to fail
     } else if (!props.serverAccessLogsBucket && props.serverAccessLogsPrefix) {
       this.allowLogDelivery(this, props.serverAccessLogsPrefix);
     } else if (props.serverAccessLogsBucket) {
@@ -2717,35 +2855,35 @@ export class Bucket extends BucketBase {
    * Parse the lifecycle configuration out of the bucket props
    * @param props Par
    */
-  private parseLifecycleConfiguration(): CfnBucket.LifecycleConfigurationProperty | undefined {
-    if (!this.lifecycleRules || this.lifecycleRules.length === 0) {
+  private parseLifecycleConfiguration(lifecycleRules: readonly LifecycleRule[]): CfnBucket.LifecycleConfigurationProperty | undefined {
+    if (!lifecycleRules || lifecycleRules.length === 0) {
       return undefined;
     }
 
     const self = this;
 
     return {
-      rules: this.lifecycleRules.map(parseLifecycleRule),
+      rules: lifecycleRules.map(parseLifecycleRule),
       transitionDefaultMinimumObjectSize: this.transitionDefaultMinimumObjectSize,
     };
 
     function parseLifecycleRule(rule: LifecycleRule): CfnBucket.RuleProperty {
       const enabled = rule.enabled ?? true;
       if ((rule.expiredObjectDeleteMarker)
-      && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
+          && (rule.expiration || rule.expirationDate || self.parseTagFilters(rule.tagFilters))) {
         // ExpiredObjectDeleteMarker cannot be specified with ExpirationInDays, ExpirationDate, or TagFilters.
         throw new ValidationError(lit`ExpiredObjectDeleteMarkerCannot`, 'ExpiredObjectDeleteMarker cannot be specified with expiration, ExpirationDate, or TagFilters.', self);
       }
 
       if (
         rule.abortIncompleteMultipartUploadAfter === undefined &&
-        rule.expiration === undefined &&
-        rule.expirationDate === undefined &&
-        rule.expiredObjectDeleteMarker === undefined &&
-        rule.noncurrentVersionExpiration === undefined &&
-        rule.noncurrentVersionsToRetain === undefined &&
-        rule.noncurrentVersionTransitions === undefined &&
-        rule.transitions === undefined
+          rule.expiration === undefined &&
+          rule.expirationDate === undefined &&
+          rule.expiredObjectDeleteMarker === undefined &&
+          rule.noncurrentVersionExpiration === undefined &&
+          rule.noncurrentVersionsToRetain === undefined &&
+          rule.noncurrentVersionTransitions === undefined &&
+          rule.transitions === undefined
       ) {
         throw new ValidationError(lit`RulesLeastFollowingProperties`, 'All rules for `lifecycleRules` must have at least one of the following properties: `abortIncompleteMultipartUploadAfter`, `expiration`, `expirationDate`, `expiredObjectDeleteMarker`, `noncurrentVersionExpiration`, `noncurrentVersionsToRetain`, `noncurrentVersionTransitions`, or `transitions`', self);
       }
@@ -2806,8 +2944,8 @@ export class Bucket extends BucketBase {
     // KMS_MANAGED can't be used for logging since the account can't access the logging service key - account can't read logs
     if (
       !props.serverAccessLogsBucket &&
-      props.encryption &&
-      [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
+        props.encryption &&
+        [BucketEncryption.KMS_MANAGED, BucketEncryption.DSSE_MANAGED].includes(props.encryption)
     ) {
       throw new ValidationError(lit`KmsManagedKeyNotSupportedForAccessLogs`, 'Default bucket encryption with KMS managed or DSSE managed key is not supported for Server Access Logging target buckets', this);
     }
@@ -2824,14 +2962,14 @@ export class Bucket extends BucketBase {
     };
   }
 
-  private parseMetricConfiguration(): CfnBucket.MetricsConfigurationProperty[] | undefined {
-    if (!this.metrics || this.metrics.length === 0) {
+  private parseMetricConfiguration(metrics: readonly BucketMetrics[]): CfnBucket.MetricsConfigurationProperty[] | undefined {
+    if (!metrics || metrics.length === 0) {
       return undefined;
     }
 
     const self = this;
 
-    return this.metrics.map(parseMetric);
+    return metrics.map(parseMetric);
 
     function parseMetric(metric: BucketMetrics): CfnBucket.MetricsConfigurationProperty {
       return {
@@ -2842,12 +2980,12 @@ export class Bucket extends BucketBase {
     }
   }
 
-  private parseCorsConfiguration(): CfnBucket.CorsConfigurationProperty | undefined {
-    if (!this.cors || this.cors.length === 0) {
+  private parseCorsConfiguration(cors: readonly CorsRule[]): CfnBucket.CorsConfigurationProperty | undefined {
+    if (!cors || cors.length === 0) {
       return undefined;
     }
 
-    return { corsRules: this.cors.map(parseCors) };
+    return { corsRules: cors.map(parseCors) };
 
     function parseCors(rule: CorsRule): CfnBucket.CorsRuleProperty {
       return {
@@ -2872,7 +3010,7 @@ export class Bucket extends BucketBase {
     }));
   }
 
-  private parseOwnershipControls(): CfnBucket.OwnershipControlsProperty | undefined {
+  private parseOwnershipControls(accessControl: BucketAccessControl | undefined): CfnBucket.OwnershipControlsProperty | undefined {
     // Enabling an ACL explicitly is required for all new buckets.
     // https://aws.amazon.com/about-aws/whats-new/2022/12/amazon-s3-automatically-enable-block-public-access-disable-access-control-lists-buckets-april-2023/
     const aclsThatDoNotRequireObjectOwnership = [
@@ -2880,13 +3018,13 @@ export class Bucket extends BucketBase {
       BucketAccessControl.BUCKET_OWNER_READ,
       BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
     ];
-    const accessControlRequiresObjectOwnership = (this.accessControl && !aclsThatDoNotRequireObjectOwnership.includes(this.accessControl));
+    const accessControlRequiresObjectOwnership = (accessControl && !aclsThatDoNotRequireObjectOwnership.includes(accessControl));
     if (!this.objectOwnership && !accessControlRequiresObjectOwnership) {
       return undefined;
     }
 
     if (accessControlRequiresObjectOwnership && this.objectOwnership === ObjectOwnership.BUCKET_OWNER_ENFORCED) {
-      throw new ValidationError(lit`MustBeObjectownershipAccesscontrol`, `objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${this.accessControl}"`, this);
+      throw new ValidationError(lit`MustBeObjectownershipAccesscontrol`, `objectOwnership must be set to "${ObjectOwnership.OBJECT_WRITER}" when accessControl is "${accessControl}"`, this);
     }
 
     return {
@@ -3133,20 +3271,21 @@ export class Bucket extends BucketBase {
         resources: [this.arnForObjects(prefix ? `${prefix}*` : '*')],
         conditions: conditions,
       }));
-    } else if (this.accessControl && this.accessControl !== BucketAccessControl.LOG_DELIVERY_WRITE) {
+    } else if (this.accessControl.get() && this.accessControl.get() !== BucketAccessControl.LOG_DELIVERY_WRITE) {
       throw new ValidationError(lit`CannotEnableLogDeliveryBucket`, "Cannot enable log delivery to this bucket because the bucket's ACL has been set and can't be changed", this);
     } else {
-      this.accessControl = BucketAccessControl.LOG_DELIVERY_WRITE;
+      this.accessControl.set(BucketAccessControl.LOG_DELIVERY_WRITE);
+      this.ownershipControls.set(this.parseOwnershipControls(BucketAccessControl.LOG_DELIVERY_WRITE));
     }
   }
 
-  private parseInventoryConfiguration(): CfnBucket.InventoryConfigurationProperty[] | undefined {
-    if (!this.inventories || this.inventories.length === 0) {
+  private parseInventoryConfiguration(inventories: readonly Inventory[]): CfnBucket.InventoryConfigurationProperty[] | undefined {
+    if (!inventories || inventories.length === 0) {
       return undefined;
     }
     const inventoryIdValidationRegex = /[^\w\.\-]/g;
 
-    return this.inventories.map((inventory, index) => {
+    return inventories.map((inventory, index) => {
       const format = inventory.format ?? InventoryFormat.CSV;
       const frequency = inventory.frequency ?? InventoryFrequency.WEEKLY;
       if (inventory.inventoryId !== undefined && (inventory.inventoryId.length > 64 || inventoryIdValidationRegex.test(inventory.inventoryId))) {
