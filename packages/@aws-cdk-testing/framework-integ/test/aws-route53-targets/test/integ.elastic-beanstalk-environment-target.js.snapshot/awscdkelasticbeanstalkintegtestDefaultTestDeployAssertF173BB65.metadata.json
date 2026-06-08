@@ -1,0 +1,56 @@
+{
+  "/aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
+        "new IntegTestCase (packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (packages/@aws-cdk-testing/framework-integ/test/aws-route53-targets/test/integ.elastic-beanstalk-environment-target.js:128:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/aws-cdk-elasticbeanstalk-integ-test/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "visit (packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ]
+}
