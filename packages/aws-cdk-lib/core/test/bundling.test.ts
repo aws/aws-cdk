@@ -55,15 +55,6 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    // image inspect returns non-zero (image not cached)
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
-      signal: null,
-    });
 
     const imageHash = '123456abcdef';
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
@@ -85,50 +76,15 @@ describe('bundling', () => {
     const tag = `cdk-${tagHash}`;
 
     expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
-      'image', 'inspect', tag,
-    ], { stdio: 'ignore' })).toEqual(true);
-
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
-  });
-
-  test('fromBuild skips docker build when image is already cached', () => {
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
-      status: 0,
-      stderr: Buffer.from('stderr'),
-      stdout: Buffer.from('stdout'),
-      pid: 123,
-      output: ['stdout', 'stderr'],
-      signal: null,
-    });
-
-    const imageHash = '123456abcdef';
-    sinon.stub(FileSystem, 'fingerprint').callsFake(() => imageHash);
-
-    const image = DockerImage.fromBuild('docker-path', {
-      buildArgs: { TEST_ARG: 'cdk-test' },
-    });
-
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      buildArgs: { TEST_ARG: 'cdk-test' },
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
-
-    // Only the image inspect call should have been made — no build
-    expect(spawnSyncStub.calledOnce).toEqual(true);
-    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
-      'image', 'inspect', tag,
-    ], { stdio: 'ignore' })).toEqual(true);
-    expect(image.image).toEqual(tag);
   });
 
   test('bundling with image from asset with cache disabled', () => {
@@ -140,14 +96,6 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
-      signal: null,
-    });
 
     const imageHash = '123456abcdef';
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
@@ -164,13 +112,13 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--no-cache',
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -183,14 +131,6 @@ describe('bundling', () => {
       stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
       signal: null,
     });
 
@@ -208,13 +148,13 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--platform', platform,
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -227,14 +167,6 @@ describe('bundling', () => {
       stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
       signal: null,
     });
 
@@ -259,7 +191,7 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--cache-from', 'type=s3,region=us-west-2,bucket=my-bucket,name=foo',
       '--cache-from', 'type=gha,url=https://example.com,token=abc123,scope=gh-ref-image2',
@@ -267,7 +199,7 @@ describe('bundling', () => {
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -280,14 +212,6 @@ describe('bundling', () => {
       stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
       signal: null,
     });
 
@@ -305,13 +229,13 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--target', targetStage,
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -324,14 +248,6 @@ describe('bundling', () => {
       stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
       signal: null,
     });
 
@@ -349,13 +265,13 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--network', network,
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -397,20 +313,12 @@ describe('bundling', () => {
   });
 
   test('BundlerDockerImage json is the bundler image if building an image', () => {
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+    sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('stdout'),
       pid: 123,
       output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
       signal: null,
     });
     const imageHash = '123456abcdef';
@@ -437,40 +345,24 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
-      signal: null,
-    });
 
     const imagePath = path.join(__dirname, 'fs', 'fixtures', 'test1');
     DockerImage.fromAsset(imagePath, {
       file: 'my-dockerfile',
     });
 
-    expect(spawnSyncStub.calledTwice).toEqual(true);
+    expect(spawnSyncStub.calledOnce).toEqual(true);
     const expected = path.join(imagePath, 'my-dockerfile');
-    expect(new RegExp(`-f ${expected}`).test(spawnSyncStub.secondCall.args[1]?.join(' ') ?? '')).toEqual(true);
+    expect(new RegExp(`-f ${expected}`).test(spawnSyncStub.firstCall.args[1]?.join(' ') ?? '')).toEqual(true);
   });
 
   test('fromAsset', () => {
-    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+    sinon.stub(child_process, 'spawnSync').returns({
       status: 0,
       stderr: Buffer.from('stderr'),
       stdout: Buffer.from('sha256:1234567890abcdef'),
       pid: 123,
       output: ['stdout', 'stderr'],
-      signal: null,
-    });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
       signal: null,
     });
 
@@ -866,14 +758,6 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
-      signal: null,
-    });
 
     const imageHash = '123456abcdef';
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
@@ -896,14 +780,14 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--build-context', 'mycontext=/path/to/context',
       '--build-context', 'alpine=docker-image://alpine:latest',
       'docker-path',
     ])).toEqual(true);
 
-    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'run', '--rm',
       tag,
     ])).toEqual(true);
@@ -918,14 +802,6 @@ describe('bundling', () => {
       output: ['stdout', 'stderr'],
       signal: null,
     });
-    spawnSyncStub.onFirstCall().returns({
-      status: 1,
-      stderr: Buffer.from(''),
-      stdout: Buffer.from(''),
-      pid: 123,
-      output: ['', ''],
-      signal: null,
-    });
 
     const imageHash = '123456abcdef';
     const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
@@ -952,7 +828,7 @@ describe('bundling', () => {
     })).digest('hex');
     const tag = `cdk-${tagHash}`;
 
-    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--build-arg', 'TEST_ARG=cdk-test',
       '--build-context', 'mycontext=/path/to/context',
