@@ -149,6 +149,31 @@ new neptune.DatabaseInstance(this, 'Instance', {
 });
 ```
 
+## Publicly accessible
+
+You can make instances publicly accessible by setting the `publiclyAccessible` property to `true` on the cluster.
+Note that iam authentication is required for this to be enabled:
+
+```ts
+new neptune.DatabaseCluster(this, 'Cluster', {
+    vpc,
+    instanceType: neptune.InstanceType.R5_LARGE,
+    publiclyAccessible: true,
+    iamAuthentication: true,
+});
+```
+
+Alternatively, you can also make individual instances publicly accessible, by setting the respective property on 
+the instance:
+
+```ts fixture=with-cluster
+new neptune.DatabaseInstance(this, 'Instance', {
+    cluster,
+    instanceType: neptune.InstanceType.R5_LARGE,
+    publiclyAccessible: true,
+});
+```
+
 ## Port
 
 By default, Neptune uses port `8182`. You can override the default port by specifying the `port` property:

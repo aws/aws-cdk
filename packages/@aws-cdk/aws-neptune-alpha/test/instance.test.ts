@@ -125,6 +125,23 @@ describe('DatabaseInstance', () => {
     });
   });
 
+  test.each([true, false])('instance with publiclyAccessible', (publiclyAccessible) => {
+    // GIVEN
+    const stack = testStack();
+
+    // WHEN
+    new DatabaseInstance(stack, 'Instance', {
+      cluster: stack.cluster,
+      instanceType: InstanceType.R5_LARGE,
+      publiclyAccessible,
+    });
+
+    // THEN
+    Template.fromStack(stack).hasResourceProperties('AWS::Neptune::DBInstance', {
+      PubliclyAccessible: publiclyAccessible,
+    });
+  });
+
   test('instance type from CfnParameter', () => {
     // GIVEN
     const stack = testStack();
