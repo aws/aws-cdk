@@ -1,0 +1,140 @@
+{
+  "/cdk-integ-lambda-bundling": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.bundling.js:43:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-bundling/Function": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "runtime": "*",
+        "handler": "*"
+      }
+    }
+  ],
+  "/cdk-integ-lambda-bundling/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
+        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
+        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
+        "synthesizeTree (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
+        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-bundling/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
+        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
+        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
+        "synthesizeTree (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
+        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-bundling/Function/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/cdk-integ-lambda-bundling/Function/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Function76856677"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:694:29)",
+        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.bundling.js:19:20)",
+        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.bundling.js:43:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-bundling/Exports/Output{\"Ref\":\"Function76856677\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefFunction76856677C48862D5"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "TestStack.exportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
+        "createImportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
+        "resolveValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
+        "resolveReferences (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
+        "prepareApp (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
+        "process.<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:116:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-bundling/Function/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FunctionServiceRole675BB04A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:609:39)",
+        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.bundling.js:19:20)",
+        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.bundling.js:43:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/cdk-integ-lambda-bundling/Function/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}
