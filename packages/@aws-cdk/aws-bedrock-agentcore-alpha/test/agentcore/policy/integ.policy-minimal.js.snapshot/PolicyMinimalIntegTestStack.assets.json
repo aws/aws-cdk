@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "4929e34451d9857ccd91f7971ed11919f68c032b588393f3a32fa3e3f889835d": {
-      "displayName": "PolicyIntegTestStack Template",
+    "64d60aa886b6101bdd038f47b1d67413ba0240de770c346c9496c6f6e4b1ee09": {
+      "displayName": "PolicyMinimalIntegTestStack Template",
       "source": {
-        "path": "PolicyIntegTestStack.template.json",
+        "path": "PolicyMinimalIntegTestStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-9f70d656": {
+        "current_account-current_region-5dbb1158": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "4929e34451d9857ccd91f7971ed11919f68c032b588393f3a32fa3e3f889835d.json",
+          "objectKey": "64d60aa886b6101bdd038f47b1d67413ba0240de770c346c9496c6f6e4b1ee09.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

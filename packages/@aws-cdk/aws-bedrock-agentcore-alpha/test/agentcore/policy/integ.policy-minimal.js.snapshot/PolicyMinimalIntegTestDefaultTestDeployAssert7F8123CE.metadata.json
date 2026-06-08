@@ -1,17 +1,17 @@
 {
-  "/PolicyIntegTest/DefaultTest/DeployAssert": [
+  "/PolicyMinimalIntegTest/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
         "new IntegTestCase (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy.js:160:1)",
+        "<anonymous> (/workplace/alvazjor/aws-cdk-repo/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/policy/integ.policy-minimal.js:51:1)",
         "...node internals..."
       ]
     }
   ],
-  "/PolicyIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/PolicyMinimalIntegTest/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "/PolicyIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/PolicyMinimalIntegTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"
