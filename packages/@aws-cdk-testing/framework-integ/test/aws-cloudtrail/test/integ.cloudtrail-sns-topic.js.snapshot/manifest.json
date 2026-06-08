@@ -1,0 +1,135 @@
+{
+  "version": "22.0.0",
+  "artifacts": {
+    "integ-cloudtrail-sns-topic.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "integ-cloudtrail-sns-topic.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "integ-cloudtrail-sns-topic": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "integ-cloudtrail-sns-topic.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6eaaafeb13c4375b70517d040fa167eff377037d6b9dd13d5351e0b60a45cc9f.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "integ-cloudtrail-sns-topic.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "integ-cloudtrail-sns-topic.assets"
+      ],
+      "metadata": {
+        "/integ-cloudtrail-sns-topic/Topic/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicBFC7AF6E"
+          }
+        ],
+        "/integ-cloudtrail-sns-topic/Topic/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TopicPolicyA1747468"
+          }
+        ],
+        "/integ-cloudtrail-sns-topic/Trail/S3/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrailS30071F172"
+          }
+        ],
+        "/integ-cloudtrail-sns-topic/Trail/S3/Policy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "TrailS3PolicyE42170FE"
+          }
+        ],
+        "/integ-cloudtrail-sns-topic/Trail/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Trail022F0CF2"
+          }
+        ],
+        "/integ-cloudtrail-sns-topic/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/integ-cloudtrail-sns-topic/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "integ-cloudtrail-sns-topic"
+    },
+    "CloudTrailSnsTopicTestDefaultTestDeployAssert4B2E898D.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CloudTrailSnsTopicTestDefaultTestDeployAssert4B2E898D.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CloudTrailSnsTopicTestDefaultTestDeployAssert4B2E898D": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "CloudTrailSnsTopicTestDefaultTestDeployAssert4B2E898D.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/477f46917f7d59cef9c7791bfd834b32703f089221f335f0c84d7815821a21c6.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CloudTrailSnsTopicTestDefaultTestDeployAssert4B2E898D.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CloudTrailSnsTopicTestDefaultTestDeployAssert4B2E898D.assets"
+      ],
+      "metadata": {
+        "/CloudTrailSnsTopicTest/DefaultTest/DeployAssert/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CloudTrailSnsTopicTest/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CloudTrailSnsTopicTest/DefaultTest/DeployAssert"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}
