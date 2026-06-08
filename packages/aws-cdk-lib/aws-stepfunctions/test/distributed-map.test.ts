@@ -1977,6 +1977,30 @@ describe('Distributed Map State', () => {
 
     Annotations.fromStack(stack).hasWarning('/Default/Map State', Match.stringLikeRegexp('Property \'ProcessorConfig.executionType\' is ignored, use the \'mapExecutionType\' in the \'DistributedMap\' class instead.'));
   });
+
+  test('DistributedMap.jsonata() passes QueryLanguage to ItemProcessor graph rendering', () => {
+    // GIVEN
+    const stack = new cdk.Stack();
+
+    // WHEN - Create a JSONata DistributedMap with a Pass state inside
+    const map = stepfunctions.DistributedMap.jsonata(stack, 'Map State', {
+      stateName: 'My-Map-State',
+      items: stepfunctions.ProvideItems.jsonata('{% $inputForMap %}'),
+    });
+    map.itemProcessor(new stepfunctions.Pass(stack, 'Pass State'));
+
+    // THEN - The ItemProcessor graph should be rendered correctly
+    // This test verifies that the queryLanguage is passed to processor.toGraphJson()
+    const rendered = render(map);
+
+    // The Map state should have QueryLanguage: JSONata (because it's created with .jsonata())
+    expect(rendered.States['My-Map-State'].QueryLanguage).toBe('JSONata');
+
+    // The ItemProcessor should contain the nested states graph
+    expect(rendered.States['My-Map-State'].ItemProcessor.StartAt).toBe('Pass State');
+    expect(rendered.States['My-Map-State'].ItemProcessor.States['Pass State'].Type).toBe('Pass');
+    expect(rendered.States['My-Map-State'].ItemProcessor.States['Pass State'].End).toBe(true);
+  });
 });
 
 function render(sm: stepfunctions.IChainable, queryLanguage?: stepfunctions.QueryLanguage) {

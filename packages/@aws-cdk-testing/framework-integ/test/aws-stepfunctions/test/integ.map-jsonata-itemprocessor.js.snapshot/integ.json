@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "cdk-stepfunctions-map-jsonata-itemprocessor-test/DefaultTest": {
+      "stacks": [
+        "cdk-stepfunctions-map-jsonata-itemprocessor-stack"
+      ],
+      "assertionStack": "cdk-stepfunctions-map-jsonata-itemprocessor-test/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkstepfunctionsmapjsonataitemprocessortestDefaultTestDeployAssert9E8FB2E2"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

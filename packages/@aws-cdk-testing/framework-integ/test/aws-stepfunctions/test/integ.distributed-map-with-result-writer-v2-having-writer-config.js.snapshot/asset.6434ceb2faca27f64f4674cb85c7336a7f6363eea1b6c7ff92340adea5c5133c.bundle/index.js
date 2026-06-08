@@ -9263,15 +9263,9 @@ var init_AwsSdkSigV4ASigner = __esm({
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 // ../../../node_modules/@aws-sdk/core/node_modules/@smithy/property-provider/dist-cjs/index.js
 var require_dist_cjs36 = __commonJS({
   "../../../node_modules/@aws-sdk/core/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
-========
-// ../../../node_modules/@smithy/property-provider/dist-cjs/index.js
-var require_dist_cjs36 = __commonJS({
-  "../../../node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
     var __getOwnPropNames2 = Object.getOwnPropertyNames;
@@ -12845,11 +12839,7 @@ var require_dist_cjs38 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs39 = __commonJS({
-========
-var require_dist_cjs38 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-env/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -12881,11 +12871,7 @@ var require_dist_cjs38 = __commonJS({
       fromEnv: () => fromEnv
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_property_provider2 = require_dist_cjs38();
-========
-    var import_property_provider2 = require_dist_cjs36();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var ENV_KEY = "AWS_ACCESS_KEY_ID";
     var ENV_SECRET = "AWS_SECRET_ACCESS_KEY";
     var ENV_SESSION = "AWS_SESSION_TOKEN";
@@ -13004,11 +12990,7 @@ var require_slurpFile3 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs40 = __commonJS({
-========
-var require_dist_cjs39 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -13173,11 +13155,7 @@ var require_dist_cjs39 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs41 = __commonJS({
-========
-var require_dist_cjs40 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-node/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -13325,7 +13303,6 @@ var require_dist_cjs40 = __commonJS({
   }
 });
 
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 // ../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/property-provider/dist-cjs/index.js
 var require_dist_cjs42 = __commonJS({
   "../../../node_modules/@smithy/credential-provider-imds/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
@@ -13477,10 +13454,6 @@ var require_dist_cjs42 = __commonJS({
 
 // ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
 var require_dist_cjs43 = __commonJS({
-========
-// ../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js
-var require_dist_cjs41 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@smithy/credential-provider-imds/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -13516,11 +13489,7 @@ var require_dist_cjs41 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var import_url = require("url");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_property_provider2 = require_dist_cjs42();
-========
-    var import_property_provider2 = require_dist_cjs36();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var import_buffer = require("buffer");
     var import_http2 = require("http");
     function httpRequest(options) {
@@ -14035,11 +14004,7 @@ var require_checkUrl = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.checkUrl = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var property_provider_1 = require_dist_cjs44();
-========
-    var property_provider_1 = require_dist_cjs36();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var ECS_CONTAINER_HOST = "169.254.170.2";
     var EKS_CONTAINER_HOST_IPv4 = "169.254.170.23";
     var EKS_CONTAINER_HOST_IPv6 = "[fd00:ec2::23]";
@@ -14082,11 +14047,7 @@ var require_requestHelpers = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.getCredentials = exports2.createGetRequest = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var property_provider_1 = require_dist_cjs44();
-========
-    var property_provider_1 = require_dist_cjs36();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var protocol_http_1 = require_dist_cjs2();
     var smithy_client_1 = require_dist_cjs34();
     var util_stream_1 = require_dist_cjs22();
@@ -14166,11 +14127,7 @@ var require_fromHttp = __commonJS({
     exports2.fromHttp = void 0;
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var node_http_handler_1 = require_dist_cjs19();
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var property_provider_1 = require_dist_cjs44();
-========
-    var property_provider_1 = require_dist_cjs36();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var promises_1 = tslib_1.__importDefault(require("fs/promises"));
     var checkUrl_1 = require_checkUrl();
     var requestHelpers_1 = require_requestHelpers();
@@ -14230,11 +14187,7 @@ Set AWS_CONTAINER_CREDENTIALS_FULL_URI or AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs45 = __commonJS({
-========
-var require_dist_cjs42 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
@@ -14424,11 +14377,7 @@ var require_package2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs46 = __commonJS({
-========
-var require_dist_cjs43 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/util-user-agent-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -14512,11 +14461,7 @@ var require_dist_cjs43 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/hash-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs47 = __commonJS({
-========
-var require_dist_cjs44 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@smithy/hash-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -14580,11 +14525,7 @@ var require_dist_cjs44 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs48 = __commonJS({
-========
-var require_dist_cjs45 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@smithy/util-body-length-node/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -14883,11 +14824,7 @@ var require_dist_cjs49 = __commonJS({
 });
 
 // ../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs50 = __commonJS({
-========
-var require_dist_cjs46 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@smithy/util-defaults-mode-node/dist-cjs/index.js"(exports2, module2) {
     var __create2 = Object.create;
     var __defProp2 = Object.defineProperty;
@@ -14924,11 +14861,7 @@ var require_dist_cjs46 = __commonJS({
     module2.exports = __toCommonJS2(src_exports);
     var import_config_resolver = require_dist_cjs11();
     var import_node_config_provider = require_dist_cjs26();
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_property_provider2 = require_dist_cjs49();
-========
-    var import_property_provider2 = require_dist_cjs36();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var AWS_EXECUTION_ENV = "AWS_EXECUTION_ENV";
     var AWS_REGION_ENV = "AWS_REGION";
     var AWS_DEFAULT_REGION_ENV = "AWS_DEFAULT_REGION";
@@ -14989,11 +14922,7 @@ var require_dist_cjs46 = __commonJS({
       }
       if (!process.env[ENV_IMDS_DISABLED]) {
         try {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
           const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs43()));
-========
-          const { getInstanceMetadataEndpoint, httpRequest } = await Promise.resolve().then(() => __toESM2(require_dist_cjs41()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           const endpoint = await getInstanceMetadataEndpoint();
           return (await httpRequest({ ...endpoint, path: IMDS_REGION_PATH })).toString();
         } catch (e) {
@@ -15012,7 +14941,6 @@ var require_runtimeConfig = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package2());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var util_user_agent_node_1 = require_dist_cjs46();
     var config_resolver_1 = require_dist_cjs11();
     var hash_node_1 = require_dist_cjs47();
@@ -15024,19 +14952,6 @@ var require_runtimeConfig = __commonJS({
     var runtimeConfig_shared_1 = require_runtimeConfig_shared();
     var smithy_client_1 = require_dist_cjs34();
     var util_defaults_mode_node_1 = require_dist_cjs50();
-========
-    var util_user_agent_node_1 = require_dist_cjs43();
-    var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
@@ -15069,11 +14984,7 @@ var require_runtimeConfig = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs51 = __commonJS({
-========
-var require_dist_cjs47 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/region-config-resolver/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -15171,11 +15082,7 @@ var require_dist_cjs47 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs52 = __commonJS({
-========
-var require_dist_cjs48 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/client-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -15245,11 +15152,7 @@ var require_dist_cjs48 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig();
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_region_config_resolver = require_dist_cjs51();
-========
-    var import_region_config_resolver = require_dist_cjs47();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var import_protocol_http8 = require_dist_cjs2();
     var import_smithy_client4 = require_dist_cjs34();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
@@ -16004,7 +15907,6 @@ var require_runtimeConfig2 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package3());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var credential_provider_node_1 = require_dist_cjs69();
     var util_user_agent_node_1 = require_dist_cjs46();
     var config_resolver_1 = require_dist_cjs11();
@@ -16017,20 +15919,6 @@ var require_runtimeConfig2 = __commonJS({
     var runtimeConfig_shared_1 = require_runtimeConfig_shared2();
     var smithy_client_1 = require_dist_cjs34();
     var util_defaults_mode_node_1 = require_dist_cjs50();
-========
-    var credential_provider_node_1 = require_dist_cjs64();
-    var util_user_agent_node_1 = require_dist_cjs43();
-    var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared2();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
@@ -16064,11 +15952,7 @@ var require_runtimeConfig2 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs53 = __commonJS({
-========
-var require_dist_cjs49 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/client-sso-oidc/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -16146,11 +16030,7 @@ var require_dist_cjs49 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig2();
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_region_config_resolver = require_dist_cjs51();
-========
-    var import_region_config_resolver = require_dist_cjs47();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var import_protocol_http8 = require_dist_cjs2();
     var import_smithy_client4 = require_dist_cjs34();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
@@ -17049,11 +16929,7 @@ var require_dist_cjs49 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs54 = __commonJS({
-========
-var require_dist_cjs50 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17289,11 +17165,7 @@ var require_slurpFile4 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs55 = __commonJS({
-========
-var require_dist_cjs51 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/token-providers/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17458,11 +17330,7 @@ var require_dist_cjs51 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs56 = __commonJS({
-========
-var require_dist_cjs52 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/token-providers/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -17504,11 +17372,7 @@ var require_dist_cjs52 = __commonJS({
     var REFRESH_MESSAGE = `To refresh this SSO session run 'aws sso login' with the corresponding profile.`;
     var ssoOidcClientsHash = {};
     var getSsoOidcClient = /* @__PURE__ */ __name(async (ssoRegion) => {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
       const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs53()));
-========
-      const { SSOOIDCClient } = await Promise.resolve().then(() => __toESM2(require_dist_cjs49()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
       if (ssoOidcClientsHash[ssoRegion]) {
         return ssoOidcClientsHash[ssoRegion];
       }
@@ -17517,11 +17381,7 @@ var require_dist_cjs52 = __commonJS({
       return ssoOidcClient;
     }, "getSsoOidcClient");
     var getNewSsoOidcToken = /* @__PURE__ */ __name(async (ssoToken, ssoRegion) => {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
       const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs53()));
-========
-      const { CreateTokenCommand } = await Promise.resolve().then(() => __toESM2(require_dist_cjs49()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
       const ssoOidcClient = await getSsoOidcClient(ssoRegion);
       return ssoOidcClient.send(
         new CreateTokenCommand({
@@ -17532,11 +17392,7 @@ var require_dist_cjs52 = __commonJS({
         })
       );
     }, "getNewSsoOidcToken");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_property_provider2 = require_dist_cjs54();
-========
-    var import_property_provider2 = require_dist_cjs50();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var validateTokenExpiry = /* @__PURE__ */ __name((token) => {
       if (token.expiration && token.expiration.getTime() < Date.now()) {
         throw new import_property_provider2.TokenProviderError(`Token is expired. ${REFRESH_MESSAGE}`, false);
@@ -17550,11 +17406,7 @@ var require_dist_cjs52 = __commonJS({
         );
       }
     }, "validateTokenKey");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_shared_ini_file_loader = require_dist_cjs55();
-========
-    var import_shared_ini_file_loader = require_dist_cjs51();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var import_fs = require("fs");
     var { writeFile } = import_fs.promises;
     var writeSSOTokenToFile = /* @__PURE__ */ __name((id, ssoToken) => {
@@ -17658,11 +17510,7 @@ var require_dist_cjs52 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs57 = __commonJS({
-========
-var require_dist_cjs53 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -17898,11 +17746,7 @@ var require_slurpFile5 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs58 = __commonJS({
-========
-var require_dist_cjs54 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-sso/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -18067,11 +17911,7 @@ var require_dist_cjs54 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs59 = __commonJS({
-========
-var require_dist_cjs55 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-sso/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -18104,11 +17944,7 @@ var require_dist_cjs55 = __commonJS({
     var init_loadSso = __esm2({
       "src/loadSso.ts"() {
         "use strict";
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
         import_client_sso = require_dist_cjs52();
-========
-        import_client_sso = require_dist_cjs48();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
       }
     });
     var src_exports = {};
@@ -18119,15 +17955,9 @@ var require_dist_cjs55 = __commonJS({
     });
     module2.exports = __toCommonJS2(src_exports);
     var isSsoProfile = /* @__PURE__ */ __name((arg) => arg && (typeof arg.sso_start_url === "string" || typeof arg.sso_account_id === "string" || typeof arg.sso_session === "string" || typeof arg.sso_region === "string" || typeof arg.sso_role_name === "string"), "isSsoProfile");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_token_providers = require_dist_cjs56();
     var import_property_provider2 = require_dist_cjs57();
     var import_shared_ini_file_loader = require_dist_cjs58();
-========
-    var import_token_providers = require_dist_cjs52();
-    var import_property_provider2 = require_dist_cjs53();
-    var import_shared_ini_file_loader = require_dist_cjs54();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var SHOULD_FAIL_CREDENTIAL_CHAIN = false;
     var resolveSSOCredentials = /* @__PURE__ */ __name(async ({
       ssoStartUrl,
@@ -18383,11 +18213,7 @@ var require_slurpFile6 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs60 = __commonJS({
-========
-var require_dist_cjs56 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -18552,11 +18378,7 @@ var require_dist_cjs56 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs61 = __commonJS({
-========
-var require_dist_cjs57 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-ini/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -19032,7 +18854,6 @@ var require_runtimeConfig3 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package4());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var credential_provider_node_1 = require_dist_cjs69();
     var util_user_agent_node_1 = require_dist_cjs46();
     var config_resolver_1 = require_dist_cjs11();
@@ -19046,21 +18867,6 @@ var require_runtimeConfig3 = __commonJS({
     var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
     var smithy_client_1 = require_dist_cjs34();
     var util_defaults_mode_node_1 = require_dist_cjs50();
-========
-    var credential_provider_node_1 = require_dist_cjs64();
-    var util_user_agent_node_1 = require_dist_cjs43();
-    var config_resolver_1 = require_dist_cjs11();
-    var core_2 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
@@ -19159,11 +18965,7 @@ var require_runtimeExtensions = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.resolveRuntimeExtensions = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var region_config_resolver_1 = require_dist_cjs51();
-========
-    var region_config_resolver_1 = require_dist_cjs47();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var protocol_http_1 = require_dist_cjs2();
     var smithy_client_1 = require_dist_cjs34();
     var httpAuthExtensionConfiguration_1 = require_httpAuthExtensionConfiguration();
@@ -19247,11 +19049,7 @@ var require_STSClient = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs62 = __commonJS({
-========
-var require_dist_cjs58 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/client-sts/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -20710,11 +20508,7 @@ var require_slurpFile7 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs63 = __commonJS({
-========
-var require_dist_cjs59 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/shared-ini-file-loader/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -20879,11 +20673,7 @@ var require_dist_cjs59 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/property-provider/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs64 = __commonJS({
-========
-var require_dist_cjs60 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-process/node_modules/@smithy/property-provider/dist-cjs/index.js"(exports2, module2) {
     var __defProp2 = Object.defineProperty;
     var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
@@ -21032,11 +20822,7 @@ var require_dist_cjs60 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs65 = __commonJS({
-========
-var require_dist_cjs61 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-process/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -21062,13 +20848,8 @@ var require_dist_cjs61 = __commonJS({
       fromProcess: () => fromProcess
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_shared_ini_file_loader = require_dist_cjs63();
     var import_property_provider2 = require_dist_cjs64();
-========
-    var import_shared_ini_file_loader = require_dist_cjs59();
-    var import_property_provider2 = require_dist_cjs60();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var import_child_process = require("child_process");
     var import_util = require("util");
     var getValidatedProcessCredentials = /* @__PURE__ */ __name((profileName, data, profiles) => {
@@ -21322,11 +21103,7 @@ var require_fromWebToken = __commonJS({
       const { roleArn, roleSessionName, webIdentityToken, providerId, policyArns, policy, durationSeconds } = init;
       let { roleAssumerWithWebIdentity } = init;
       if (!roleAssumerWithWebIdentity) {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
         const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs62()));
-========
-        const { getDefaultRoleAssumerWithWebIdentity } = await Promise.resolve().then(() => __importStar2(require_dist_cjs58()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
         roleAssumerWithWebIdentity = getDefaultRoleAssumerWithWebIdentity({
           ...init.clientConfig,
           credentialProviderLogger: init.logger,
@@ -21353,11 +21130,7 @@ var require_fromTokenFile = __commonJS({
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
     exports2.fromTokenFile = void 0;
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var property_provider_1 = require_dist_cjs66();
-========
-    var property_provider_1 = require_dist_cjs36();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var fs_1 = require("fs");
     var fromWebToken_1 = require_fromWebToken();
     var ENV_TOKEN_FILE = "AWS_WEB_IDENTITY_TOKEN_FILE";
@@ -21385,11 +21158,7 @@ var require_fromTokenFile = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs67 = __commonJS({
-========
-var require_dist_cjs62 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -21414,11 +21183,7 @@ var require_dist_cjs62 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs68 = __commonJS({
-========
-var require_dist_cjs63 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-ini/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -21454,7 +21219,6 @@ var require_dist_cjs63 = __commonJS({
       fromIni: () => fromIni
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_shared_ini_file_loader = require_dist_cjs60();
     var import_property_provider2 = require_dist_cjs61();
     var resolveCredentialSource = /* @__PURE__ */ __name((credentialSource, profileName, logger) => {
@@ -21462,34 +21226,17 @@ var require_dist_cjs63 = __commonJS({
         EcsContainer: async (options) => {
           const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs45()));
           const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs43()));
-========
-    var import_shared_ini_file_loader = require_dist_cjs56();
-    var import_property_provider2 = require_dist_cjs57();
-    var resolveCredentialSource = /* @__PURE__ */ __name((credentialSource, profileName, logger) => {
-      const sourceProvidersMap = {
-        EcsContainer: async (options) => {
-          const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs42()));
-          const { fromContainerMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs41()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is EcsContainer");
           return (0, import_property_provider2.chain)(fromHttp(options ?? {}), fromContainerMetadata(options));
         },
         Ec2InstanceMetadata: async (options) => {
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Ec2InstanceMetadata");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
           const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs43()));
-========
-          const { fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs41()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           return fromInstanceMetadata(options);
         },
         Environment: async (options) => {
           logger == null ? void 0 : logger.debug("@aws-sdk/credential-provider-ini - credential_source is Environment");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
           const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs39()));
-========
-          const { fromEnv } = await Promise.resolve().then(() => __toESM2(require_dist_cjs38()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           return fromEnv(options);
         }
       };
@@ -21526,11 +21273,7 @@ var require_dist_cjs63 = __commonJS({
       (_a = options.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-ini - resolveAssumeRoleCredentials (STS)");
       const data = profiles[profileName];
       if (!options.roleAssumer) {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
         const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs62()));
-========
-        const { getDefaultRoleAssumer } = await Promise.resolve().then(() => __toESM2(require_dist_cjs58()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
         options.roleAssumer = getDefaultRoleAssumer(
           {
             ...options.clientConfig,
@@ -21589,22 +21332,14 @@ var require_dist_cjs63 = __commonJS({
       return options.roleAssumer(sourceCreds, params);
     }, "resolveAssumeRoleCredentials");
     var isProcessProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.credential_process === "string", "isProcessProfile");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs65())).then(
-========
-    var resolveProcessCredentials = /* @__PURE__ */ __name(async (options, profile) => Promise.resolve().then(() => __toESM2(require_dist_cjs61())).then(
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
       ({ fromProcess }) => fromProcess({
         ...options,
         profile
       })()
     ), "resolveProcessCredentials");
     var resolveSsoCredentials = /* @__PURE__ */ __name(async (profile, options = {}) => {
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
       const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs59()));
-========
-      const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs55()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
       return fromSSO({
         profile,
         logger: options.logger
@@ -21624,11 +21359,7 @@ var require_dist_cjs63 = __commonJS({
       });
     }, "resolveStaticCredentials");
     var isWebIdentityProfile = /* @__PURE__ */ __name((arg) => Boolean(arg) && typeof arg === "object" && typeof arg.web_identity_token_file === "string" && typeof arg.role_arn === "string" && ["undefined", "string"].indexOf(typeof arg.role_session_name) > -1, "isWebIdentityProfile");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs67())).then(
-========
-    var resolveWebIdentityCredentials = /* @__PURE__ */ __name(async (profile, options) => Promise.resolve().then(() => __toESM2(require_dist_cjs62())).then(
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
       ({ fromTokenFile: fromTokenFile2 }) => fromTokenFile2({
         webIdentityTokenFile: profile.web_identity_token_file,
         roleArn: profile.role_arn,
@@ -21673,11 +21404,7 @@ var require_dist_cjs63 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs69 = __commonJS({
-========
-var require_dist_cjs64 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/credential-provider-node/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __create2 = Object.create;
@@ -21715,7 +21442,6 @@ var require_dist_cjs64 = __commonJS({
       defaultProvider: () => defaultProvider
     });
     module2.exports = __toCommonJS2(src_exports);
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_credential_provider_env = require_dist_cjs39();
     var import_shared_ini_file_loader = require_dist_cjs40();
     var import_property_provider2 = require_dist_cjs41();
@@ -21726,18 +21452,6 @@ var require_dist_cjs64 = __commonJS({
       if (process.env[ENV_CMDS_RELATIVE_URI] || process.env[ENV_CMDS_FULL_URI]) {
         (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - remoteProvider::fromHttp/fromContainerMetadata");
         const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs45()));
-========
-    var import_credential_provider_env = require_dist_cjs38();
-    var import_shared_ini_file_loader = require_dist_cjs39();
-    var import_property_provider2 = require_dist_cjs40();
-    var ENV_IMDS_DISABLED = "AWS_EC2_METADATA_DISABLED";
-    var remoteProvider = /* @__PURE__ */ __name(async (init) => {
-      var _a, _b;
-      const { ENV_CMDS_FULL_URI, ENV_CMDS_RELATIVE_URI, fromContainerMetadata, fromInstanceMetadata } = await Promise.resolve().then(() => __toESM2(require_dist_cjs41()));
-      if (process.env[ENV_CMDS_RELATIVE_URI] || process.env[ENV_CMDS_FULL_URI]) {
-        (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - remoteProvider::fromHttp/fromContainerMetadata");
-        const { fromHttp } = await Promise.resolve().then(() => __toESM2(require_dist_cjs42()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
         return (0, import_property_provider2.chain)(fromHttp(init), fromContainerMetadata(init));
       }
       if (process.env[ENV_IMDS_DISABLED]) {
@@ -21791,41 +21505,25 @@ var require_dist_cjs64 = __commonJS({
               { logger: init.logger }
             );
           }
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
           const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs59()));
-========
-          const { fromSSO } = await Promise.resolve().then(() => __toESM2(require_dist_cjs55()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           return fromSSO(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromIni");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
           const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs68()));
-========
-          const { fromIni } = await Promise.resolve().then(() => __toESM2(require_dist_cjs63()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           return fromIni(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromProcess");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
           const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs65()));
-========
-          const { fromProcess } = await Promise.resolve().then(() => __toESM2(require_dist_cjs61()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           return fromProcess(init)();
         },
         async () => {
           var _a;
           (_a = init.logger) == null ? void 0 : _a.debug("@aws-sdk/credential-provider-node - defaultProvider::fromTokenFile");
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
           const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs67()));
-========
-          const { fromTokenFile: fromTokenFile2 } = await Promise.resolve().then(() => __toESM2(require_dist_cjs62()));
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
           return fromTokenFile2(init)();
         },
         async () => {
@@ -21951,7 +21649,6 @@ var require_runtimeConfig4 = __commonJS({
     var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
     var package_json_1 = tslib_1.__importDefault(require_package());
     var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var credential_provider_node_1 = require_dist_cjs69();
     var util_user_agent_node_1 = require_dist_cjs46();
     var config_resolver_1 = require_dist_cjs11();
@@ -21964,20 +21661,6 @@ var require_runtimeConfig4 = __commonJS({
     var runtimeConfig_shared_1 = require_runtimeConfig_shared4();
     var smithy_client_1 = require_dist_cjs34();
     var util_defaults_mode_node_1 = require_dist_cjs50();
-========
-    var credential_provider_node_1 = require_dist_cjs64();
-    var util_user_agent_node_1 = require_dist_cjs43();
-    var config_resolver_1 = require_dist_cjs11();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs35();
-    var node_config_provider_1 = require_dist_cjs26();
-    var node_http_handler_1 = require_dist_cjs19();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs32();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared4();
-    var smithy_client_1 = require_dist_cjs34();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var smithy_client_2 = require_dist_cjs34();
     var getRuntimeConfig = (config) => {
       (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
@@ -22011,11 +21694,7 @@ var require_runtimeConfig4 = __commonJS({
 });
 
 // ../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var require_dist_cjs70 = __commonJS({
-========
-var require_dist_cjs65 = __commonJS({
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
   "../../../node_modules/@aws-sdk/client-sfn/dist-cjs/index.js"(exports2, module2) {
     "use strict";
     var __defProp2 = Object.defineProperty;
@@ -22209,11 +21888,7 @@ var require_dist_cjs65 = __commonJS({
       UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
     };
     var import_runtimeConfig = require_runtimeConfig4();
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
     var import_region_config_resolver = require_dist_cjs51();
-========
-    var import_region_config_resolver = require_dist_cjs47();
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
     var import_protocol_http8 = require_dist_cjs2();
     var import_smithy_client4 = require_dist_cjs34();
     var getHttpAuthExtensionConfiguration = /* @__PURE__ */ __name((runtimeConfig) => {
@@ -33767,11 +33442,7 @@ var import_helpers_internal = __toESM(require_helpers_internal());
 // lib/assertions/providers/lambda-handler/base.ts
 var https = __toESM(require("https"));
 var url = __toESM(require("url"));
-<<<<<<<< HEAD:packages/@aws-cdk-testing/framework-integ/test/aws-stepfunctions/test/integ.distribution-map-with-result-writer-v2-jsonata.js.snapshot/asset.6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.bundle/index.js
 var import_client_sfn = __toESM(require_dist_cjs70());
-========
-var import_client_sfn = __toESM(require_dist_cjs65());
->>>>>>>> upstream/main:packages/@aws-cdk-testing/framework-integ/test/aws-apigatewayv2-integrations/test/http/integ.eventbridge.js.snapshot/asset.dbfd73e719899bcfce45d97c81ee582409750d7dfa369f6e49371ce5c5ed1703.bundle/index.js
 var CustomResourceHandler = class {
   constructor(event, context) {
     this.event = event;
