@@ -1,5 +1,4 @@
 import child_process from 'child_process';
-import * as crypto from 'crypto';
 import * as path from 'path';
 import sinon from 'sinon';
 import { DockerBuildSecret, DockerImage, FileSystem } from '../lib';
@@ -76,13 +75,7 @@ describe('bundling', () => {
     });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      buildArgs: {
-        TEST_ARG: 'cdk-test',
-      },
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'image', 'inspect', tag,
@@ -117,11 +110,7 @@ describe('bundling', () => {
       buildArgs: { TEST_ARG: 'cdk-test' },
     });
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      buildArgs: { TEST_ARG: 'cdk-test' },
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     // Only the image inspect call should have been made — no build
     expect(spawnSyncStub.calledOnce).toEqual(true);
@@ -129,6 +118,23 @@ describe('bundling', () => {
       'image', 'inspect', tag,
     ], { stdio: 'ignore' })).toEqual(true);
     expect(image.image).toEqual(tag);
+  });
+
+  test('fromBuild rebuilds when source content changes', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').callsFake((_cmd, args) => ({
+      // inspect always misses; build always succeeds
+      status: (args as string[])[0] === 'image' ? 1 : 0,
+      stderr: Buffer.from(''), stdout: Buffer.from(''), pid: 123, output: ['', ''], signal: null,
+    }));
+
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint').returns('aaa');
+    DockerImage.fromBuild('docker-path');
+    expect(spawnSyncStub.calledWith(dockerCmd, ['build', '-t', 'cdk-aaa', 'docker-path'])).toEqual(true);
+
+    // Simulate source change by returning a different fingerprint
+    fingerprintStub.returns('bbb');
+    DockerImage.fromBuild('docker-path');
+    expect(spawnSyncStub.calledWith(dockerCmd, ['build', '-t', 'cdk-bbb', 'docker-path'])).toEqual(true);
   });
 
   test('bundling with image from asset with cache disabled', () => {
@@ -158,11 +164,7 @@ describe('bundling', () => {
     });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      cacheDisabled: true,
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
@@ -202,11 +204,7 @@ describe('bundling', () => {
     const image = DockerImage.fromBuild('docker-path', { platform: platform });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      platform,
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
@@ -253,11 +251,7 @@ describe('bundling', () => {
     const image = DockerImage.fromBuild('docker-path', options);
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      ...options,
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
@@ -299,11 +293,7 @@ describe('bundling', () => {
     const image = DockerImage.fromBuild('docker-path', { targetStage: targetStage });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      targetStage,
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
@@ -343,11 +333,7 @@ describe('bundling', () => {
     const image = DockerImage.fromBuild('docker-path', { network });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      network,
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
@@ -419,11 +405,7 @@ describe('bundling', () => {
 
     const image = DockerImage.fromBuild('docker-path');
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-    })).digest('hex');
-
-    expect(image.image).toEqual(`cdk-${tagHash}`);
+    expect(image.image).toEqual(`cdk-${imageHash}`);
     expect(image.toJSON()).toEqual(imageHash);
     expect(fingerprintStub.calledWith('docker-path', sinon.match({ extraHash: JSON.stringify({}) }))).toEqual(true);
   });
@@ -887,14 +869,7 @@ describe('bundling', () => {
     });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      buildContexts: {
-        mycontext: '/path/to/context',
-        alpine: 'docker-image://alpine:latest',
-      },
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
@@ -941,16 +916,7 @@ describe('bundling', () => {
     });
     image.run();
 
-    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
-      path: 'docker-path',
-      buildArgs: {
-        TEST_ARG: 'cdk-test',
-      },
-      buildContexts: {
-        mycontext: '/path/to/context',
-      },
-    })).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    const tag = `cdk-${imageHash}`;
 
     expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
       'build', '-t', tag,
