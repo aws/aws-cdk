@@ -871,7 +871,7 @@ export class MediaStream {
       attributes: {
         fmtp: {
           exactFramerate: config.fmtp.exactFramerate?.toString(),
-          par: config.fmtp.par?.value,
+          par: config.fmtp.par?.toString(),
           colorimetry: config.fmtp.colorimetry?.value,
           range: config.fmtp.videoRange?.value,
           scanMode: config.fmtp.scanMode?.value,

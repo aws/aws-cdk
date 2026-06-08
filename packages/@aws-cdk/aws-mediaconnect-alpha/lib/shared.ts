@@ -811,30 +811,57 @@ export class Framerate {
  */
 export class PixelAspectRatio {
   /** Square pixels (`1:1`). */
-  public static readonly SQUARE = new PixelAspectRatio('1:1');
+  public static readonly SQUARE = new PixelAspectRatio(1, 1);
 
   /**
    * Define a pixel aspect ratio.
    *
-   * @param horizontal Horizontal component of the ratio.
-   * @param vertical Vertical component of the ratio.
+   * @param numerator Numerator of the ratio.
+   * @param denominator Denominator of the ratio.
    */
-  public static of(horizontal: number, vertical: number): PixelAspectRatio {
-    if (!Number.isInteger(horizontal) || horizontal <= 0) {
-      throw new UnscopedValidationError(lit`PixelAspectRatioHorizontal`, `Pixel aspect ratio horizontal component must be a positive integer, got ${horizontal}`);
+  public static of(numerator: number, denominator: number): PixelAspectRatio {
+    if (!Number.isInteger(numerator) || numerator <= 0) {
+      throw new UnscopedValidationError(lit`PixelAspectRatioNumerator`, `Pixel aspect ratio numerator must be a positive integer, got ${numerator}`);
     }
-    if (!Number.isInteger(vertical) || vertical <= 0) {
-      throw new UnscopedValidationError(lit`PixelAspectRatioVertical`, `Pixel aspect ratio vertical component must be a positive integer, got ${vertical}`);
+    if (!Number.isInteger(denominator) || denominator <= 0) {
+      throw new UnscopedValidationError(lit`PixelAspectRatioDenominator`, `Pixel aspect ratio denominator must be a positive integer, got ${denominator}`);
     }
-    return new PixelAspectRatio(`${horizontal}:${vertical}`);
+    return new PixelAspectRatio(numerator, denominator);
   }
 
-  /** @param value The PAR string value in `horizontal:vertical` form. */
-  private constructor(public readonly value: string) {}
+  /** @internal */
+  private readonly _numeratorValue: number;
+  /** @internal */
+  private readonly _denominatorValue: number;
 
-  /** Returns the string value. */
+  /**
+   * @param numerator Numerator of the ratio.
+   * @param denominator Denominator of the ratio.
+   */
+  private constructor(numerator: number, denominator: number) {
+    this._numeratorValue = numerator;
+    this._denominatorValue = denominator;
+  }
+
+  /** Returns the string value in `numerator:denominator` form. */
   public toString(): string {
-    return this.value;
+    return `${this._numeratorValue}:${this._denominatorValue}`;
+  }
+
+  /**
+   * The numerator of the ratio.
+   * @internal
+   */
+  public _numerator(): number {
+    return this._numeratorValue;
+  }
+
+  /**
+   * The denominator of the ratio.
+   * @internal
+   */
+  public _denominator(): number {
+    return this._denominatorValue;
   }
 }
 
