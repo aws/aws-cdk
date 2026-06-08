@@ -794,7 +794,6 @@ export class Table extends TableBase implements ITaggableV2 {
     this.tableArn = this._resource.attrTableArn;
     this.cdkTagManager = this._resource.cdkTagManager;
     this._resource.applyRemovalPolicy(props.removalPolicy);
-    this.node.addDependency(this.namespace);
   }
 
   /**
