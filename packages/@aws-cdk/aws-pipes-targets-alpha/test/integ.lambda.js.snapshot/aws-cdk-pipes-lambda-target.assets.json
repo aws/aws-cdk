@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "files": {
     "17f11fcd08888571765fa70b9736c3bbb0d5098be088eadfa080ecba1f52b09b": {
       "displayName": "TargetLambdaFunction/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "5c79ac091839c3919106a494abb5b933b7240160ec94b45c69895a5720099b25": {
+    "e76fd994d08ca009abf4a244e7941a7a46c299497ce143ceb84bbaaaf868c2a7": {
       "displayName": "aws-cdk-pipes-lambda-target Template",
       "source": {
         "path": "aws-cdk-pipes-lambda-target.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-f36b6a55": {
+        "current_account-current_region-73967853": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5c79ac091839c3919106a494abb5b933b7240160ec94b45c69895a5720099b25.json",
+          "objectKey": "e76fd994d08ca009abf4a244e7941a7a46c299497ce143ceb84bbaaaf868c2a7.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
