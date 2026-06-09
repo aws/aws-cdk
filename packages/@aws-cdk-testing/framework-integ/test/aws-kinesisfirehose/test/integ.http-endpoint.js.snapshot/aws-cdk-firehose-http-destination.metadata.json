@@ -1,0 +1,609 @@
+{
+  "/aws-cdk-firehose-http-destination/DestinationBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
+    {
+      "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
+      "data": true
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "timeout": "*",
+        "environment": "*",
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {}
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "timeout": "*",
+        "environment": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationLogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "autoDeleteObjects": true,
+        "removalPolicy": "destroy"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupLogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupKey": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DataProcessorFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "timeout": "*",
+        "runtime": "*",
+        "code": "*",
+        "handler": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "entry": "*",
+        "timeout": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DeliveryStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "destination": "*",
+        "encryption": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/@aws-cdk--aws-kinesisfirehose.CidrBlocks": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawskinesisfirehoseCidrBlocks"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationBucket4BECDB47"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationFunction0A624293"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/FunctionUrl": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "function": "*",
+        "authType": "NONE"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/invoke-function-url": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationFunctioninvokefunctionurl87DDBA16"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/invoke-function": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationFunctioninvokefunctionE0F9D8D6"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationLogGroup1A672AAF"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationLogGroup/HttpEndpointDestination": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackupBucket26B8E51C"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketAutoDeleteObjects"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupBucket/Policy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "bucket": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupBucket/AutoDeleteObjectsCustomResource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupLogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackupLogGroupB15A0768"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupLogGroup/S3Backup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroup": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupKey/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackupKey60B97760"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DataProcessorFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DataProcessorFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DataProcessorFunctionAD472B9A"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DataProcessorFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DeliveryStream/HttpEndpointDestinationRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DeliveryStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStream58CF96DB"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/Exports/Output{\"Ref\":\"DeliveryStream58CF96DB\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDeliveryStream58CF96DB919FEA68"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/Exports/Output{\"Ref\":\"DestinationBucket4BECDB47\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefDestinationBucket4BECDB47A299B8F3"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/Exports/Output{\"Ref\":\"BackupBucket26B8E51C\"}": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ExportsOutputRefBackupBucket26B8E51C0D3CA3CE"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationBucketPolicyFCD81088"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationBucketAutoDeleteObjectsCustomResource8ECA4428"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationFunctionServiceRoleFE2C858C"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationFunctionLogGroup06CB1ACD"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/FunctionUrl/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationFunctionFunctionUrl704C6BEC"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationLogGroup/HttpEndpointDestination/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationLogGroupHttpEndpointDestination67538D8D"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupBucket/Policy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackupBucketPolicy8C403F71"
+    },
+    {
+      "type": "aws:cdk:analytics:mixin",
+      "data": {
+        "mixin": "aws-cdk-lib.aws_s3.mixins.BucketPolicyStatements"
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupBucket/AutoDeleteObjectsCustomResource/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackupBucketAutoDeleteObjectsCustomResourceD2F511C5"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/BackupLogGroup/S3Backup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BackupLogGroupS3BackupA7B3FB1E"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DataProcessorFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DataProcessorFunctionServiceRole12E05500"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DataProcessorFunction/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DataProcessorFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DataProcessorFunctionLogGroup81545B5B"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DeliveryStream/HttpEndpointDestinationRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamHttpEndpointDestinationRole6013E317"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DeliveryStream/HttpEndpointDestinationRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DestinationFunction/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DestinationFunctionServiceRoleDefaultPolicy9D2EB01F"
+    }
+  ],
+  "/aws-cdk-firehose-http-destination/DeliveryStream/HttpEndpointDestinationRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DeliveryStreamHttpEndpointDestinationRoleDefaultPolicy44226229"
+    }
+  ]
+}

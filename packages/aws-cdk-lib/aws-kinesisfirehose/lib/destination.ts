@@ -13,6 +13,13 @@ export interface DestinationConfig {
   readonly extendedS3DestinationConfiguration?: CfnDeliveryStream.ExtendedS3DestinationConfigurationProperty;
 
   /**
+   * HTTP endpoint destination configuration properties.
+   *
+   * @default - HTTP endpoint destination is not used.
+   */
+  readonly httpEndpointDestinationConfiguration?: CfnDeliveryStream.HttpEndpointDestinationConfigurationProperty;
+
+  /**
    * Any resources that were created by the destination when binding it to the stack that must be deployed before the delivery stream is deployed.
    *
    * @default []
