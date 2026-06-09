@@ -18,7 +18,7 @@ of readers (up to 15).
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   credentials: rds.Credentials.fromGeneratedSecret('clusteradmin'), // Optional - will default to 'admin' username and generated password
   writer: rds.ClusterInstance.provisioned('writer', {
     publiclyAccessible: false,
@@ -59,7 +59,7 @@ If there isn't a constant for the exact version you want to use,
 all of the `Version` classes have a static `of` method that can be used to create an arbitrary version.
 
 ```ts
-const customEngineVersion = rds.AuroraMysqlEngineVersion.of('5.7.mysql_aurora.2.08.1');
+const customEngineVersion = rds.AuroraMysqlEngineVersion.of('8.4.mysql_aurora.8.4.9', '8.4');
 ```
 
 By default, the master password will be generated and stored in AWS Secrets Manager with auto-generated description.
@@ -74,7 +74,7 @@ For details, see [Regions and Availability Zones](https://docs.aws.amazon.com/Am
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer', {
     availabilityZone: 'us-east-1a',
   }),
@@ -87,7 +87,7 @@ To use dual-stack mode, specify `NetworkType.DUAL` on the `networkType` property
 ```ts
 declare const vpc: ec2.Vpc; // VPC and subnets must have IPv6 CIDR blocks
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_02_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer', {
     publiclyAccessible: false,
   }),
@@ -108,7 +108,7 @@ To enable local write forwarding, set the `enableLocalWriteForwarding` property 
 declare const vpc: ec2.IVpc;
 
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   readers: [
     rds.ClusterInstance.serverlessV2('readerInstance1'),
@@ -126,7 +126,7 @@ Use `DatabaseClusterFromSnapshot` to create a cluster from a snapshot:
 ```ts
 declare const vpc: ec2.Vpc;
 new rds.DatabaseClusterFromSnapshot(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.aurora({ version: rds.AuroraEngineVersion.VER_1_22_2 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
   snapshotIdentifier: 'mySnapshot',
@@ -140,7 +140,7 @@ To do so, set `autoMinorVersionUpgrade` to `false`.
 declare const vpc: ec2.IVpc;
 
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   autoMinorVersionUpgrade: false,
@@ -160,7 +160,7 @@ Use `InstanceUpdateBehavior.BULK` to update all instances at once.
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('Instance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.SMALL),
   }),
@@ -184,7 +184,7 @@ a serverless v2 reader.
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [
     rds.ClusterInstance.serverlessV2('reader'),
@@ -211,7 +211,7 @@ v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverle
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer'),
   readers: [
     rds.ClusterInstance.serverlessV2('reader'),
@@ -278,7 +278,7 @@ the default values:
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0.5,
   serverlessV2MaxCapacity: 2,
@@ -311,7 +311,7 @@ For more information, see [Scaling to Zero ACUs with automatic pause and resume 
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_08_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
   serverlessV2MinCapacity: 0,
   serverlessV2AutoPauseDuration: Duration.hours(1),
@@ -330,7 +330,7 @@ scaled to handle the write load.
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.serverlessV2('writer'),
   readers: [
     // will be put in promotion tier 1 and will scale with the writer
@@ -379,7 +379,7 @@ a higher minimum capacity.
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.R6G, ec2.InstanceSize.XLARGE4),
   }),
@@ -415,7 +415,7 @@ to use for a cluster instances:
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer', {
     caCertificate: rds.CaCertificate.RDS_CA_RSA2048_G1,
   }),
@@ -435,7 +435,7 @@ To schedule modifications to database instances in the next scheduled maintenanc
 ```ts
 declare const vpc: ec2.Vpc;
 new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer', {
     applyImmediately: false,
   }),
@@ -464,7 +464,7 @@ By default, when a database cluster is deleted, automated backups are removed im
 declare const vpc: ec2.IVpc;
 // Retain automated backups after cluster deletion
 new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_01_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
   deleteAutomatedBackups: false,
@@ -486,7 +486,7 @@ For example, in order to migrate from this deprecated config:
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   instances: 2,
   instanceProps: {
@@ -515,7 +515,7 @@ const instanceProps = {
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   vpcSubnets: { subnetType: ec2.SubnetType.PUBLIC },
   vpc,
@@ -540,7 +540,7 @@ declare const primaryCluster: rds.DatabaseCluster;
 
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   writer: rds.ClusterInstance.serverlessV2('Writer'),
   vpc,
@@ -779,7 +779,7 @@ new rds.DatabaseInstance(this, 'Instance', {
 // Setting public accessibility for DB cluster instance
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   writer: rds.ClusterInstance.serverlessV2('Writer', {
     publiclyAccessible: true,
@@ -1005,7 +1005,7 @@ The following example shows granting connection access for RDS Proxy to an IAM r
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
@@ -1031,7 +1031,7 @@ user use the `clientPasswordAuthType` property:
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
@@ -1080,7 +1080,7 @@ The following example shows granting connection access for an IAM role to an Aur
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
@@ -1135,7 +1135,7 @@ const iamRole = new iam.Role(this, 'Role', {
 });
 
 new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_05_1 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.provisioned('Instance', {
     instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE3, ec2.InstanceSize.MEDIUM),
   }),
@@ -1197,7 +1197,7 @@ const importBucket = new s3.Bucket(this, 'importbucket');
 const exportBucket = new s3.Bucket(this, 'exportbucket');
 new rds.DatabaseCluster(this, 'dbcluster', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_03_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
@@ -1262,8 +1262,8 @@ declare const vpc: ec2.Vpc;
 
 // Exporting logs from a cluster
 const cluster = new rds.DatabaseCluster(this, 'Database', {
-  engine: rds.DatabaseClusterEngine.aurora({
-    version: rds.AuroraEngineVersion.VER_1_17_9, // different version class for each engine type
+  engine: rds.DatabaseClusterEngine.auroraMysql({
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7, // different version class for each engine type
   }),
   writer: rds.ClusterInstance.provisioned('writer'),
   vpc,
@@ -1395,7 +1395,7 @@ const parameterGroup = rds.ParameterGroup.forInstance(this, 'InstanceParameterGr
 ```ts
 const clusterParameterGroup = rds.ParameterGroup.forCluster(this, 'ClusterParameterGroup', {
   engine: rds.DatabaseClusterEngine.auroraMysql({
-    version: rds.AuroraMysqlEngineVersion.VER_3_04_0,
+    version: rds.AuroraMysqlEngineVersion.VER_8_4_7,
   }),
   description: 'Parameter group for Aurora MySQL',
   parameters: {
@@ -1725,7 +1725,7 @@ standard support date for an additional cost. To configure the life cycle type, 
 declare const vpc: ec2.IVpc;
 
 new rds.DatabaseCluster(this, 'DatabaseCluster', {
-  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_3_07_0 }),
+  engine: rds.DatabaseClusterEngine.auroraMysql({ version: rds.AuroraMysqlEngineVersion.VER_8_4_7 }),
   writer: rds.ClusterInstance.serverlessV2('writerInstance'),
   vpc,
   engineLifecycleSupport: rds.EngineLifecycleSupport.OPEN_SOURCE_RDS_EXTENDED_SUPPORT,
