@@ -11,7 +11,7 @@
     },
     "service": "IoT",
     "api": "getTopicRule",
-    "expected": "{\"$ObjectLike\":{\"rule\":{\"actions\":[{\"http\":{\"url\":\"https://example.com/batch\",\"enableBatching\":true,\"batchConfig\":{\"maxBatchOpenMs\":100,\"maxBatchSize\":5,\"maxBatchSizeBytes\":1024}}}]}}}",
+    "expected": "{\"$ObjectLike\":{\"rule\":{\"actions\":[{\"http\":{\"url\":\"https://example.com/batch\",\"enableBatching\":true,\"batchConfig\":{\"maxBatchOpenMs\":100,\"maxBatchSize\":5,\"maxBatchSizeBytes\":1024,\"batchAcrossTopics\":true}}}]}}}",
     "parameters": {
      "ruleName": {
       "Fn::Join": [
@@ -27,7 +27,7 @@
      }
     },
     "flattenResponse": "false",
-    "salt": "1767971206098"
+    "salt": "1779550622177"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -81,7 +81,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "6434ceb2faca27f64f4674cb85c7336a7f6363eea1b6c7ff92340adea5c5133c.zip"
+     "S3Key": "e6ae1e78dddd8c7e0bc984bc40f987981c09301d6d87d60e665438716701c905.zip"
     },
     "Timeout": 120,
     "Handler": "index.handler",
