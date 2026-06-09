@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "test-rds-instance-manage-master-password/DefaultTest": {
+      "stacks": [
+        "aws-cdk-rds-instance-manage-master-password-integ"
+      ],
+      "assertionStack": "test-rds-instance-manage-master-password/DefaultTest/DeployAssert",
+      "assertionStackName": "testrdsinstancemanagemasterpasswordDefaultTestDeployAssertA0A59850"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

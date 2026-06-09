@@ -7,7 +7,7 @@ import type { IInstanceEngine } from './instance-engine';
 import type { IOptionGroup } from './option-group';
 import type { IParameterGroup } from './parameter-group';
 import { ParameterGroup } from './parameter-group';
-import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless } from './private/util';
+import { applyDefaultRotationOptions, defaultDeletionProtection, engineDescription, renderCredentials, setupS3ImportExport, helperRemovalPolicy, renderUnless, validateManagedPasswordCredentials } from './private/util';
 import type { Credentials, EngineLifecycleSupport, RotationMultiUserOptions, RotationSingleUserOptions, SnapshotCredentials } from './props';
 import { PerformanceInsightRetention } from './props';
 import type { DatabaseProxyOptions } from './proxy';
@@ -1140,6 +1140,8 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
   protected readonly sourceCfnProps: CfnDBInstanceProps;
   protected readonly instanceType: ec2.InstanceType;
 
+  protected manageMasterUserPassword?: boolean;
+
   private readonly singleUserRotationApplication: secretsmanager.SecretRotationApplication;
   private readonly multiUserRotationApplication: secretsmanager.SecretRotationApplication;
 
@@ -1218,6 +1220,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    *                if you want to override the defaults
    */
   public addRotationSingleUser(options: RotationSingleUserOptions = {}): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddSingleUserRotation`, 'Cannot add single user rotation for an instance without secret.', this);
     }
@@ -1241,6 +1246,9 @@ abstract class DatabaseInstanceSource extends DatabaseInstanceNew implements IDa
    * Adds the multi user rotation to this instance.
    */
   public addRotationMultiUser(id: string, options: RotationMultiUserOptions): secretsmanager.SecretRotation {
+    if (this.manageMasterUserPassword) {
+      throw new ValidationError(lit`CannotAddRotationWithManageMasterUserPassword`, 'Cannot add rotation when `manageMasterUserPassword` is enabled. RDS automatically rotates the master password when it manages the secret.', this);
+    }
     if (!this.secret) {
       throw new ValidationError(lit`CannotAddMultiUserRotation`, 'Cannot add multi user rotation for an instance without secret.', this);
     }
@@ -1299,6 +1307,17 @@ export interface DatabaseInstanceProps extends DatabaseInstanceSourceProps {
   readonly credentials?: Credentials;
 
   /**
+   * Whether to use RDS native integration with AWS Secrets Manager for master user password management.
+   *
+   * When enabled, RDS generates and manages the master user password in Secrets Manager.
+   * Cannot be used together with credentials containing a password.
+   *
+   * @default false
+   * @see https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-secrets-manager.html
+   */
+  readonly manageMasterUserPassword?: boolean;
+
+  /**
    * For supported engines, specifies the character set to associate with the
    * DB instance.
    *
@@ -1354,15 +1373,43 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     // Validate database instance props
     validateDatabaseInstanceProps(this, props);
 
-    const credentials = renderCredentials(this, props.engine, props.credentials);
-    const secret = credentials.secret;
+    // Validate manageMasterUserPassword conflicts with unsupported credential properties
+    if (props.manageMasterUserPassword) {
+      validateManagedPasswordCredentials(this, props.credentials);
+    }
+
+    this.manageMasterUserPassword = props.manageMasterUserPassword;
+
+    // Prepare credential-specific configuration
+    let secret: secretsmanager.ISecret | undefined;
+    let masterUsername: string | undefined;
+    let masterUserPassword: string | undefined;
+    let manageMasterUserPassword: boolean | undefined;
+    let masterUserSecret: { kmsKeyId: string } | undefined;
+
+    if (props.manageMasterUserPassword) {
+      // RDS-managed approach: RDS creates and manages the Secret automatically
+      masterUsername = props.credentials?.username ?? props.engine.defaultUsername ?? 'admin';
+      manageMasterUserPassword = props.manageMasterUserPassword;
+      masterUserSecret = props.credentials?.encryptionKey
+        ? { kmsKeyId: props.credentials.encryptionKey.keyId }
+        : undefined;
+    } else {
+      // Standard approach: CDK creates and manages the Secret via DatabaseSecret
+      const credentials = renderCredentials(this, props.engine, props.credentials);
+      secret = credentials.secret;
+      masterUsername = credentials.username;
+      masterUserPassword = credentials.password?.unsafeUnwrap();
+    }
 
     const instance = new CfnDBInstance(this, 'Resource', {
       ...this.sourceCfnProps,
       characterSetName: props.characterSetName,
       kmsKeyId: props.storageEncryptionKey && props.storageEncryptionKey.keyRef.keyArn,
-      masterUsername: credentials.username,
-      masterUserPassword: credentials.password?.unsafeUnwrap(),
+      masterUsername,
+      masterUserPassword,
+      manageMasterUserPassword,
+      masterUserSecret,
       storageEncrypted: props.storageEncryptionKey ? true : props.storageEncrypted,
     });
 
@@ -1371,15 +1418,22 @@ export class DatabaseInstance extends DatabaseInstanceSource implements IDatabas
     this.dbInstanceEndpointPort = instance.attrEndpointPort;
     this.instanceResourceId = instance.attrDbiResourceId;
 
+    // Set up the secret reference
+    if (props.manageMasterUserPassword) {
+      this.secret = secretsmanager.Secret.fromSecretCompleteArn(
+        this,
+        'ManagedSecret',
+        instance.attrMasterUserSecretSecretArn,
+      );
+    } else if (secret) {
+      this.secret = secret.attach(this);
+    }
+
     // create a number token that represents the port of the instance
     const portAttribute = Token.asNumber(instance.attrEndpointPort);
     this.instanceEndpoint = new Endpoint(instance.attrEndpointAddress, portAttribute);
 
     instance.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.SNAPSHOT);
-
-    if (secret) {
-      this.secret = secret.attach(this);
-    }
 
     this.setLogRetention();
   }
