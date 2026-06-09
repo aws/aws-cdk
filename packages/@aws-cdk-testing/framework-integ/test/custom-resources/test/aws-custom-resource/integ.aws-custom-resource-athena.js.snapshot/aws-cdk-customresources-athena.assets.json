@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "8b1c21efe0e24332f92ed71e98107d8a27ee1544c62b7b191805e0913fcfdf0f": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "96b399e72e15214bd870c38ca089c0fb683ccc9ce3e84543452ff6ce46b92972": {
+    "dc85b049259e223cedb549ea741711b96297ba6a750d05f9a7ea4c32e8fc3755": {
       "displayName": "aws-cdk-customresources-athena Template",
       "source": {
         "path": "aws-cdk-customresources-athena.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-751a8f80": {
+        "current_account-current_region-aaf8af4b": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "96b399e72e15214bd870c38ca089c0fb683ccc9ce3e84543452ff6ce46b92972.json",
+          "objectKey": "dc85b049259e223cedb549ea741711b96297ba6a750d05f9a7ea4c32e8fc3755.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

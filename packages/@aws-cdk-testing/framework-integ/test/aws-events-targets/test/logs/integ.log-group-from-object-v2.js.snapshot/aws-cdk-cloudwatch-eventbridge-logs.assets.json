@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "8b1c21efe0e24332f92ed71e98107d8a27ee1544c62b7b191805e0913fcfdf0f": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "6faba0af67adf3d449dac0bd638257c01a24cfbd2a29ccdf145a4ea571e9f7e2": {
+    "d517a8d0dd25a054dcc47306351e7b526dd70627e5ca07af97b6b18b30242d7f": {
       "displayName": "aws-cdk-cloudwatch-eventbridge-logs Template",
       "source": {
         "path": "aws-cdk-cloudwatch-eventbridge-logs.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-5321423e": {
+        "current_account-current_region-333ee87a": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "6faba0af67adf3d449dac0bd638257c01a24cfbd2a29ccdf145a4ea571e9f7e2.json",
+          "objectKey": "d517a8d0dd25a054dcc47306351e7b526dd70627e5ca07af97b6b18b30242d7f.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

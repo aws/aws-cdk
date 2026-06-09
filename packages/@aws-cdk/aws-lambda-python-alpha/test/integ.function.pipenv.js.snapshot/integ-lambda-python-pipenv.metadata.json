@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -56,16 +56,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
-        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
-        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
-        "synthesizeTree (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
-        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -77,16 +77,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
-        "/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418: (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:418:3)",
-        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:475:9)",
-        "visit (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:472:9)",
-        "synthesizeTree (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:411:5)",
-        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -114,12 +114,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:694:29)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:19:35)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -148,12 +148,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:694:29)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:24:35)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:57:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -182,12 +182,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:694:29)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:29:43)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:62:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -216,12 +216,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:694:29)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:37:43)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:70:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -234,15 +234,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "TestStack.exportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
-        "createImportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:67:5)",
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:333:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:261:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:100:5)",
         "...node internals..."
       ]
     }
@@ -255,15 +255,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "TestStack.exportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
-        "createImportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:67:5)",
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:333:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:261:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:100:5)",
         "...node internals..."
       ]
     }
@@ -276,15 +276,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "TestStack.exportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
-        "createImportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:67:5)",
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:333:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:261:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:100:5)",
         "...node internals..."
       ]
     }
@@ -297,15 +297,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "TestStack.exportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1113:17)",
-        "createImportValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:250:33)",
-        "resolveValue (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:177:16)",
-        "resolveReferences (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:53:30)",
-        "prepareApp (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
-        "synthesize (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:43:36)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
-        "App.synth (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:67:5)",
+        "TestStack.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack.js:1213:17)",
+        "createImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:333:33)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:261:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:100:5)",
         "...node internals..."
       ]
     }
@@ -318,14 +318,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:609:39)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:19:35)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -344,14 +344,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:609:39)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:24:35)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:57:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -370,14 +370,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:609:39)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:29:43)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:62:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }
@@ -396,14 +396,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
-        "new Role (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:609:39)",
-        "new Function (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:91:13)",
-        "new PythonFunction (/Users/kumsmrit/workplace/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:37:43)",
-        "<anonymous> (/Users/kumsmrit/workplace/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:52:18)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/lib/function.js:124:13)",
+        "new PythonFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:70:43)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-lambda-python-alpha/test/integ.function.pipenv.js:85:18)",
         "...node internals..."
       ]
     }

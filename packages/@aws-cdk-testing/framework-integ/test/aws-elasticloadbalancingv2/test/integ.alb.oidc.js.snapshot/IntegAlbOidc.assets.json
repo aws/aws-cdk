@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "bea78ce725e22a5e0d82378f6b49028c09ba86499286d6945a0506e820854e92": {
       "displayName": "IntegAlbOidc/Custom::VpcRestrictDefaultSGCustomResourceProvider Code",
@@ -43,16 +43,16 @@
         }
       }
     },
-    "5a4fff1efbe99a3540e02c0bb4b1ae0edcc4e9414efd69c232e8e5d52d92431d": {
+    "609e6436a654f31ea9d05514cca7b4e8e0b9473978bcc7116c3d6d884ca03aa5": {
       "displayName": "IntegAlbOidc Template",
       "source": {
         "path": "IntegAlbOidc.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-f88d408c": {
+        "current_account-current_region-72625c67": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5a4fff1efbe99a3540e02c0bb4b1ae0edcc4e9414efd69c232e8e5d52d92431d.json",
+          "objectKey": "609e6436a654f31ea9d05514cca7b4e8e0b9473978bcc7116c3d6d884ca03aa5.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
