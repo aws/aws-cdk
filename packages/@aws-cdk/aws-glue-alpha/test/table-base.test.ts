@@ -350,6 +350,39 @@ describe('parition indexes', () => {
         keyNames: ['part'],
       })).toThrow(/Index name must be between 1 and 255 characters, but got 0/);
     });
+
+    test('each new partition index depends on the previous one', () => {
+      const stack = new cdk.Stack();
+      const database = new glue.Database(stack, 'Database');
+
+      const table = new glue.S3Table(stack, 'Table', {
+        database,
+        columns: [{ name: 'col', type: glue.Schema.STRING }],
+        partitionKeys: [
+          { name: 'year', type: glue.Schema.SMALL_INT },
+          { name: 'month', type: glue.Schema.SMALL_INT },
+        ],
+        dataFormat: glue.DataFormat.JSON,
+      });
+
+      table.addPartitionIndex({ indexName: 'index1', keyNames: ['year'] });
+      table.addPartitionIndex({ indexName: 'index2', keyNames: ['month'] });
+
+      const template = Template.fromStack(stack);
+      const resources = template.toJSON().Resources;
+
+      // Find the index2 custom resource by logical ID
+      const index2LogicalId = Object.keys(resources).find(k =>
+        k.includes('partitionindexindex2') && resources[k].Type === 'Custom::GluePartitionIndex',
+      )!;
+
+      // index2 should depend on index1 (not the other way around)
+      expect(resources[index2LogicalId].DependsOn).toEqual(
+        expect.arrayContaining([
+          expect.stringMatching(/partitionindexindex1/),
+        ]),
+      );
+    });
   });
 });
 

@@ -1,0 +1,319 @@
+{
+  "/aws-cdk-glue-partition-projection": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:7:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/Database": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInteger": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableDate": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableEnum": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInjected": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableMultiple": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433: (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:433:3)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:490:9)",
+        "visit (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:487:9)",
+        "synthesizeTree (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:5)",
+        "synthesize (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "App.synth (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:167:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/Database/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseB269D8BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Database (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/database.js:117:29)",
+        "new Database (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:8:18)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInteger/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "S3_MANAGED",
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInteger/Table": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableIntegerTableFDD1B215"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:143:29)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableDate/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "S3_MANAGED",
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableDate/Table": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableDateTable95A0F4A1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:143:29)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:34:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableEnum/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "S3_MANAGED",
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableEnum/Table": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableEnumTableF18874FE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:143:29)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:57:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInjected/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "S3_MANAGED",
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInjected/Table": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableInjectedTable7165BACE"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:143:29)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:76:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableMultiple/Bucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "S3_MANAGED",
+        "encryptionKey": "*"
+      }
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableMultiple/Table": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableMultipleTable3A543510"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:143:29)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:93:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInteger/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableIntegerBucketD9685175"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "createBucket (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:299:22)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:139:59)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableDate/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableDateBucket859C392D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "createBucket (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:299:22)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:139:59)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:34:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableEnum/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableEnumBucket1019891D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "createBucket (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:299:22)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:139:59)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:57:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableInjected/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableInjectedBucketD6778F64"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "createBucket (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:299:22)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:139:59)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:76:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-partition-projection/TableMultiple/Bucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableMultipleBucketC9DE89BA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1406:30)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "createBucket (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:299:22)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/lib/s3-table.js:139:59)",
+        "new S3Table (/workplace/abdlrmn/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk/aws-glue-alpha/test/integ.partition-projection.js:93:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
