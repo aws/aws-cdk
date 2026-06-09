@@ -1092,6 +1092,28 @@ Policy Validation Report Summary
       expect(output).toContain('annotation::KeptRule');
     });
 
+    test('acknowledging warnings added via Annotations.addWarningV2 with unqualified IDs', () => {
+      const app = new core.App({ context: annotationReportContext });
+      const stack = new core.Stack(app, 'MyStack');
+      const construct = new Construct(stack, 'MyConstruct');
+      new core.CfnResource(construct, 'Resource', {
+        type: 'Test::Resource::Fake',
+        properties: {},
+      });
+
+      // Add warning via Annotations.addWarningV2() with an unqualified ID
+      core.Annotations.of(construct).addWarningV2('@aws-cdk/aws-s3:bucketNotEncrypted', 'Bucket is not encrypted');
+
+      // Acknowledge via Validations.acknowledge() with the same unqualified ID
+      core.Validations.of(construct).acknowledge({ id: '@aws-cdk/aws-s3:bucketNotEncrypted', reason: 'Accepted risk' });
+
+      app.synth();
+
+      // The warning should be acknowledged and not appear in the output
+      const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+      expect(output).not.toContain('@aws-cdk/aws-s3:bucketNotEncrypted');
+    });
+
     test('annotation report works alongside plugin reports', () => {
       const app = new core.App({
         context: annotationReportContext,
