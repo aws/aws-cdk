@@ -1,13 +1,16 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
+import type { IOriginRequestPolicyRef, OriginRequestPolicyReference } from './cloudfront.generated';
 import { CfnOriginRequestPolicy } from './cloudfront.generated';
 import { Names, Resource, Token, UnscopedValidationError, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a Origin Request Policy
  */
-export interface IOriginRequestPolicy {
+export interface IOriginRequestPolicy extends IOriginRequestPolicyRef {
   /**
    * The ID of the origin request policy
    * @attribute
@@ -79,17 +82,27 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
   public static fromOriginRequestPolicyId(scope: Construct, id: string, originRequestPolicyId: string): IOriginRequestPolicy {
     return new class extends Resource implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = originRequestPolicyId;
+      public readonly originRequestPolicyRef = {
+        originRequestPolicyId: originRequestPolicyId,
+      };
     }(scope, id);
   }
 
   /** Use an existing managed origin request policy. */
   private static fromManagedOriginRequestPolicy(managedOriginRequestPolicyId: string): IOriginRequestPolicy {
-    return new class implements IOriginRequestPolicy {
+    return new class extends DetachedConstruct implements IOriginRequestPolicy {
       public readonly originRequestPolicyId = managedOriginRequestPolicyId;
+      public readonly originRequestPolicyRef = {
+        originRequestPolicyId: managedOriginRequestPolicyId,
+      };
+      constructor() {
+        super('The result of fromManagedOriginRequestPolicy can not be used in this API');
+      }
     }();
   }
 
   public readonly originRequestPolicyId: string;
+  public readonly originRequestPolicyRef: OriginRequestPolicyReference;
 
   constructor(scope: Construct, id: string, props: OriginRequestPolicyProps = {}) {
     super(scope, id, {
@@ -100,7 +113,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
 
     const originRequestPolicyName = props.originRequestPolicyName ?? Names.uniqueId(this);
     if (!Token.isUnresolved(originRequestPolicyName) && !originRequestPolicyName.match(/^[\w-]+$/i)) {
-      throw new ValidationError(`'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`, this);
+      throw new ValidationError(lit`OriginRequestPolicyNameInvalidCharacters`, `'originRequestPolicyName' can only include '-', '_', and alphanumeric characters, got: '${props.originRequestPolicyName}'`, this);
     }
 
     const cookies = props.cookieBehavior ?? OriginRequestCookieBehavior.none();
@@ -126,6 +139,7 @@ export class OriginRequestPolicy extends Resource implements IOriginRequestPolic
       },
     });
 
+    this.originRequestPolicyRef = resource.originRequestPolicyRef;
     this.originRequestPolicyId = resource.ref;
   }
 }
@@ -147,7 +161,7 @@ export class OriginRequestCookieBehavior {
   /** All cookies except the provided `cookies` are included in requests that CloudFront sends to the origin. */
   public static denyList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('At least one cookie to deny must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneCookieToDenyMustBeProvided`, 'At least one cookie to deny must be provided');
     }
     return new OriginRequestCookieBehavior('allExcept', cookies);
   }
@@ -155,7 +169,7 @@ export class OriginRequestCookieBehavior {
   /** Only the provided `cookies` are included in requests that CloudFront sends to the origin. */
   public static allowList(...cookies: string[]) {
     if (cookies.length === 0) {
-      throw new UnscopedValidationError('At least one cookie to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneCookieToAllowMustBeProvided`, 'At least one cookie to allow must be provided');
     }
     return new OriginRequestCookieBehavior('whitelist', cookies);
   }
@@ -189,7 +203,7 @@ export class OriginRequestHeaderBehavior {
   public static all(...cloudfrontHeaders: string[]) {
     if (cloudfrontHeaders.length > 0) {
       if (!cloudfrontHeaders.every(header => header.startsWith('CloudFront-'))) {
-        throw new UnscopedValidationError('additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with \'CloudFront-\'');
+        throw new UnscopedValidationError(lit`AdditionalCloudFrontHeadersMustBeginWithCloudFront`, 'additional CloudFront headers passed to `OriginRequestHeaderBehavior.all()` must begin with \'CloudFront-\'');
       }
       return new OriginRequestHeaderBehavior('allViewerAndWhitelistCloudFront', cloudfrontHeaders);
     } else {
@@ -200,10 +214,10 @@ export class OriginRequestHeaderBehavior {
   /** Listed headers are included in requests that CloudFront sends to the origin. */
   public static allowList(...headers: string[]) {
     if (headers.length === 0) {
-      throw new UnscopedValidationError('At least one header to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneHeaderToAllowMustBeProvided`, 'At least one header to allow must be provided');
     }
     if (headers.map(header => header.toLowerCase()).some(header => ['authorization', 'accept-encoding'].includes(header))) {
-      throw new UnscopedValidationError('you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
+      throw new UnscopedValidationError(lit`CannotPassAuthorizationOrAcceptEncodingHeaders`, 'you cannot pass `Authorization` or `Accept-Encoding` as header values; use a CachePolicy to forward these headers instead');
     }
     return new OriginRequestHeaderBehavior('whitelist', headers);
   }
@@ -211,7 +225,7 @@ export class OriginRequestHeaderBehavior {
   /** All headers except the provided `headers` are included in requests that CloudFront sends to the origin. */
   public static denyList(...headers: string[]) {
     if (headers.length === 0) {
-      throw new UnscopedValidationError('At least one header to deny must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneHeaderToDenyMustBeProvided`, 'At least one header to deny must be provided');
     }
     return new OriginRequestHeaderBehavior('allExcept', headers);
   }
@@ -244,7 +258,7 @@ export class OriginRequestQueryStringBehavior {
   /** Only the provided `queryStrings` are included in requests that CloudFront sends to the origin. */
   public static allowList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('At least one query string to allow must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneQueryStringToAllowMustBeProvided`, 'At least one query string to allow must be provided');
     }
     return new OriginRequestQueryStringBehavior('whitelist', queryStrings);
   }
@@ -252,7 +266,7 @@ export class OriginRequestQueryStringBehavior {
   /** All query strings except the provided `queryStrings` are included in requests that CloudFront sends to the origin. */
   public static denyList(...queryStrings: string[]) {
     if (queryStrings.length === 0) {
-      throw new UnscopedValidationError('At least one query string to deny must be provided');
+      throw new UnscopedValidationError(lit`AtLeastOneQueryStringToDenyMustBeProvided`, 'At least one query string to deny must be provided');
     }
     return new OriginRequestQueryStringBehavior('allExcept', queryStrings);
   }

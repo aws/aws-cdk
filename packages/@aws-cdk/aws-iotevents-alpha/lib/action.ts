@@ -1,6 +1,6 @@
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Construct } from 'constructs';
-import { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
+import type * as iam from 'aws-cdk-lib/aws-iam';
+import type { CfnDetectorModel } from 'aws-cdk-lib/aws-iotevents';
+import type { Construct } from 'constructs';
 
 /**
  * Options when binding a Action to a detector model.

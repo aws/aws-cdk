@@ -1,7 +1,6 @@
-import { Construct } from 'constructs';
-import { Match, Template, Annotations } from '../../assertions';
+import { Match, Template } from '../../assertions';
 import { Duration, Stack } from '../../core';
-import { Alarm, AnomalyDetectionAlarm, ComparisonOperator, CfnAlarm, Metric, MathExpression, TreatMissingData } from '../lib';
+import { Alarm, AnomalyDetectionAlarm, ComparisonOperator, Metric, MathExpression, TreatMissingData } from '../lib';
 
 describe('AnomalyDetectionAlarm', () => {
   let stack: Stack;
@@ -80,6 +79,69 @@ describe('AnomalyDetectionAlarm', () => {
         ]),
       });
     });
+
+    test('uses metric period for anomaly detection band', () => {
+      // GIVEN
+      const metricWithCustomPeriod = new Metric({
+        namespace: 'AWS/EC2',
+        metricName: 'CPUUtilization',
+        period: Duration.minutes(10),
+      });
+
+      // WHEN
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: metricWithCustomPeriod,
+        evaluationPeriods: 3,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+        EvaluationPeriods: 3,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 600,
+            }),
+          }),
+        ]),
+      });
+    });
+
+    test('uses default period when metric has no explicit period set', () => {
+      // WHEN
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
+        metric: metric,
+        evaluationPeriods: 3,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::CloudWatch::Alarm', {
+        ComparisonOperator: 'LessThanLowerOrGreaterThanUpperThreshold',
+        EvaluationPeriods: 3,
+        ThresholdMetricId: 'expr_1',
+        Metrics: Match.arrayWith([
+          Match.objectLike({
+            Expression: 'ANOMALY_DETECTION_BAND(m0, 2)',
+            Id: 'expr_1',
+            ReturnData: true,
+          }),
+          Match.objectLike({
+            Id: 'm0',
+            MetricStat: Match.objectLike({
+              Period: 300,
+            }),
+          }),
+        ]),
+      });
+    });
   });
 
   describe('Validation', () => {
@@ -110,7 +172,7 @@ describe('AnomalyDetectionAlarm', () => {
   describe('Behavior', () => {
     test('correctly sets up anomaly detection band', () => {
       // WHEN
-      const alarm = new AnomalyDetectionAlarm(stack, 'Alarm', {
+      new AnomalyDetectionAlarm(stack, 'Alarm', {
         metric,
         evaluationPeriods: 3,
         comparisonOperator: ComparisonOperator.LESS_THAN_LOWER_OR_GREATER_THAN_UPPER_THRESHOLD,

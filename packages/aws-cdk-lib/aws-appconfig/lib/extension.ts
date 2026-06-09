@@ -1,14 +1,18 @@
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { CfnExtension, CfnExtensionAssociation } from './appconfig.generated';
 import { getHash, stringifyObjects } from './private/hash';
-import * as events from '../../aws-events';
+import type * as events from '../../aws-events';
 import * as iam from '../../aws-iam';
-import * as lambda from '../../aws-lambda';
-import * as sns from '../../aws-sns';
-import * as sqs from '../../aws-sqs';
-import { ArnFormat, IResource, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
+import type * as lambda from '../../aws-lambda';
+import type * as sns from '../../aws-sns';
+import type * as sqs from '../../aws-sqs';
+import type { IResource } from '../../core';
+import { ArnFormat, Names, PhysicalName, Resource, Stack, ValidationError } from '../../core';
+import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import type { IExtensionRef, ExtensionReference } from '../../interfaces/generated/aws-appconfig-interfaces.generated';
 
 /**
  * Defines Extension action points.
@@ -138,8 +142,8 @@ export class EventBridgeDestination implements IEventDestination {
   public readonly extensionUri: string;
   public readonly type: SourceType;
 
-  constructor(bus: events.IEventBus) {
-    this.extensionUri = bus.eventBusArn;
+  constructor(bus: events.IEventBusRef) {
+    this.extensionUri = bus.eventBusRef.eventBusArn;
     this.type = SourceType.EVENTS;
   }
 }
@@ -388,6 +392,13 @@ export class Extension extends Resource implements IExtension {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-appconfig.Extension';
 
+  public get extensionRef(): ExtensionReference {
+    return {
+      extensionId: this.extensionId,
+      extensionArn: this.extensionArn,
+    };
+  }
+
   /**
    * Imports an extension into the CDK using its Amazon Resource Name (ARN).
    *
@@ -398,12 +409,12 @@ export class Extension extends Resource implements IExtension {
   public static fromExtensionArn(scope: Construct, id: string, extensionArn: string): IExtension {
     const parsedArn = Stack.of(scope).splitArn(extensionArn, ArnFormat.SLASH_RESOURCE_NAME);
     if (!parsedArn.resourceName) {
-      throw new ValidationError(`Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
+      throw new ValidationError(lit`InvalidExtensionArnFormat`, `Missing required /$/{extensionId}//$/{extensionVersionNumber} from configuration profile ARN: ${parsedArn.resourceName}`, scope);
     }
 
     const resourceName = parsedArn.resourceName.split('/');
     if (resourceName.length != 2 || !resourceName[0] || !resourceName[1]) {
-      throw new ValidationError('Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
+      throw new ValidationError(lit`MissingExtensionArnParameters`, 'Missing required parameters for extension ARN: format should be /$/{extensionId}//$/{extensionVersionNumber}', scope);
     }
 
     const extensionId = resourceName[0];
@@ -413,6 +424,13 @@ export class Extension extends Resource implements IExtension {
       public readonly extensionId = extensionId;
       public readonly extensionVersionNumber = parseInt(extensionVersionNumber);
       public readonly extensionArn = extensionArn;
+
+      public get extensionRef(): ExtensionReference {
+        return {
+          extensionId: this.extensionId,
+          extensionArn: this.extensionArn,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -442,6 +460,13 @@ export class Extension extends Resource implements IExtension {
       public readonly name = attrs.name;
       public readonly actions = attrs.actions;
       public readonly description = attrs.description;
+
+      public get extensionRef(): ExtensionReference {
+        return {
+          extensionId: this.extensionId,
+          extensionArn: this.extensionArn,
+        };
+      }
     }
 
     return new Import(scope, id, {
@@ -479,7 +504,14 @@ export class Extension extends Resource implements IExtension {
    *
    * @attribute
    */
-  public readonly extensionArn: string;
+  @memoizedGetter
+  public get extensionArn(): string {
+    return this.getResourceArnAttribute(this._cfnExtension.attrArn, {
+      service: 'appconfig',
+      resource: 'extension',
+      resourceName: `${this.extensionId}/${this.extensionVersionNumber}`,
+    });
+  }
 
   /**
    * The ID of the extension.
@@ -496,7 +528,7 @@ export class Extension extends Resource implements IExtension {
   public readonly extensionVersionNumber: number;
 
   private readonly _cfnExtension: CfnExtension;
-  private executionRole?: iam.IRole;
+  private executionRole?: iam.IRoleRef;
 
   constructor(scope: Construct, id: string, props: ExtensionProps) {
     super(scope, id, {
@@ -527,7 +559,7 @@ export class Extension extends Resource implements IExtension {
               Uri: extensionUri,
               ...(sourceType === SourceType.EVENTS || cur.invokeWithoutExecutionRole
                 ? {}
-                : { RoleArn: this.executionRole?.roleArn || this.getExecutionRole(cur.eventDestination, name).roleArn }),
+                : { RoleArn: this.executionRole?.roleRef.roleArn || this.getExecutionRole(cur.eventDestination, name).roleRef.roleArn }),
               ...(cur.description ? { Description: cur.description } : {}),
             },
           ];
@@ -549,14 +581,9 @@ export class Extension extends Resource implements IExtension {
 
     this.extensionId = this._cfnExtension.attrId;
     this.extensionVersionNumber = this._cfnExtension.attrVersionNumber;
-    this.extensionArn = this.getResourceArnAttribute(this._cfnExtension.attrArn, {
-      service: 'appconfig',
-      resource: 'extension',
-      resourceName: `${this.extensionId}/${this.extensionVersionNumber}`,
-    });
   }
 
-  private getExecutionRole(eventDestination: IEventDestination, actionName: string): iam.IRole {
+  private getExecutionRole(eventDestination: IEventDestination, actionName: string): iam.IRoleRef {
     const versionNumber = this.latestVersionNumber ? this.latestVersionNumber + 1 : 1;
     const combinedObjects = stringifyObjects(this.name, versionNumber, actionName);
     this.executionRole = new iam.Role(this, `Role${getHash(combinedObjects)}`, {
@@ -571,7 +598,7 @@ export class Extension extends Resource implements IExtension {
   }
 }
 
-export interface IExtension extends IResource {
+export interface IExtension extends IResource, IExtensionRef {
   /**
    * The actions for the extension.
    */

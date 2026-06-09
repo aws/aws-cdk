@@ -38,7 +38,7 @@ Flags come in three types:
 | [@aws-cdk/core:enablePartitionLiterals](#aws-cdkcoreenablepartitionliterals) | Make ARNs concrete if AWS partition is known | 2.38.0 | fix |
 | [@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker](#aws-cdkaws-ecsdisableexplicitdeploymentcontrollerforcircuitbreaker) | Avoid setting the "ECS" deployment controller when adding a circuit breaker | 2.51.0 | fix |
 | [@aws-cdk/aws-events:eventsTargetQueueSameAccount](#aws-cdkaws-eventseventstargetqueuesameaccount) | Event Rules may only push to encrypted SQS queues in the same account | 2.51.0 | fix |
-| [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | fix |
+| [@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName](#aws-cdkaws-iamimportedrolestacksafedefaultpolicyname) | Enable this feature to create default policy names for imported roles that depend on the stack the role is in. | 2.60.0 | fix |
 | [@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy](#aws-cdkaws-s3serveraccesslogsusebucketpolicy) | Use S3 Bucket Policy instead of ACLs for Server Access Logging | 2.60.0 | fix |
 | [@aws-cdk/customresources:installLatestAwsSdkDefault](#aws-cdkcustomresourcesinstalllatestawssdkdefault) | Whether to install the latest SDK by default in AwsCustomResource | 2.60.0 | new default |
 | [@aws-cdk/aws-route53-patters:useCertificate](#aws-cdkaws-route53-pattersusecertificate) | Use the official `Certificate` resource instead of `DnsValidatedCertificate` | 2.61.0 | new default |
@@ -84,8 +84,6 @@ Flags come in three types:
 | [@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault](#aws-cdkaws-ec2bastionhostuseamazonlinux2023bydefault) | When enabled, the BastionHost construct will use the latest Amazon Linux 2023 AMI, instead of Amazon Linux 2. | 2.172.0 | new default |
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | 2.172.0 | config |
 | [@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource](#aws-cdkaws-route53-targetsuserpooldomainnamemethodwithoutcustomresource) | When enabled, use a new method for DNS Name of user pool domain target without creating a custom resource. | 2.174.0 | fix |
-| [@aws-cdk/aws-ecs:disableEcsImdsBlocking](#aws-cdkaws-ecsdisableecsimdsblocking) | When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)** | 2.175.0 | temporary |
-| [@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature](#aws-cdkaws-ecsenableimdsblockingdeprecatedfeature) | When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)** | 2.175.0 | temporary |
 | [@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault](#aws-cdkaws-elasticloadbalancingv2albdualstackwithoutpublicipv4securitygrouprulesdefault) | When enabled, the default security group ingress rules will allow IPv6 ingress from anywhere | 2.176.0 | fix |
 | [@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections](#aws-cdkaws-iamoidcrejectunauthorizedconnections) | When enabled, the default behaviour of OIDC provider will reject unauthorized connections | 2.177.0 | fix |
 | [@aws-cdk/core:enableAdditionalMetadataCollection](#aws-cdkcoreenableadditionalmetadatacollection) | When enabled, CDK will expand the scope of usage data collected to better inform CDK development and improve communication for security concerns and emerging issues. | 2.178.0 | config |
@@ -105,6 +103,20 @@ Flags come in three types:
 | [@aws-cdk/aws-lambda:useCdkManagedLogGroup](#aws-cdkaws-lambdausecdkmanagedloggroup) | When enabled, CDK creates and manages loggroup for the lambda function | 2.200.0 | new default |
 | [@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal](#aws-cdkaws-kmsapplyimportedaliaspermissionstoprincipal) | Enable grant methods on Aliases imported by name to use kms:ResourceAliases condition | 2.202.0 | fix |
 | [@aws-cdk/core:explicitStackTags](#aws-cdkcoreexplicitstacktags) | When enabled, stack tags need to be assigned explicitly on a Stack. | 2.205.0 | new default |
+| [@aws-cdk/aws-signer:signingProfileNamePassedToCfn](#aws-cdkaws-signersigningprofilenamepassedtocfn) | Pass signingProfileName to CfnSigningProfile | 2.212.0 | fix |
+| [@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener](#aws-cdkaws-ecs-patternssecgroupsdisablesimplicitopenlistener) | Disable implicit openListener when custom security groups are provided | 2.214.0 | new default |
+| [@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId](#aws-cdkaws-ecs-patternsuniquetargetgroupid) | When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement | 2.221.0 | fix |
+| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | 2.221.0 | fix |
+| [@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault](#aws-cdkaws-elasticloadbalancingv2networkloadbalancerwithsecuritygroupbydefault) | When enabled, Network Load Balancer will be created with a security group by default. | 2.222.0 | new default |
+| [@aws-cdk/aws-route53-patterns:useDistribution](#aws-cdkaws-route53-patternsusedistribution) | Use the `Distribution` resource instead of `CloudFrontWebDistribution` | 2.233.0 | new default |
+| [@aws-cdk/aws-eks:useNativeOidcProvider](#aws-cdkaws-eksusenativeoidcprovider) | When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider). | 2.237.0 | fix |
+| [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | 2.239.0 | new default |
+| [@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2\_0](#aws-cdkaws-cloudfrontdefaultfunctionruntimev2_0) | Use cloudfront-js-2.0 as the default runtime for CloudFront Functions | 2.245.0 | new default |
+| [@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy](#aws-cdkaws-elasticloadbalancingv2usepostquantumtlspolicy) | When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default | 2.245.0 | new default |
+| [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
+| [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
+| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
+| [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | V2NEXT | new default |
 
 <!-- END table -->
 
@@ -116,84 +128,94 @@ The following json shows the current recommended set of flags, as `cdk init` wou
 ```json
 {
   "context": {
+    "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
+    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
+    "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
+    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
+    "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
+    "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
+    "@aws-cdk/aws-batch:defaultToAL2023": true,
+    "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": true,
+    "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
+    "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
+    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
+    "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
+    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
+    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
+    "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": true,
+    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
+    "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
+    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
+    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
+    "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
+    "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
+    "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
+    "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": true,
+    "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": true,
+    "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
+    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
+    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
+    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
+    "@aws-cdk/aws-efs:denyAnonymousAccess": true,
+    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
+    "@aws-cdk/aws-eks:defaultToAL2023": true,
+    "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
+    "@aws-cdk/aws-eks:useNativeOidcProvider": true,
+    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
+    "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": true,
+    "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": true,
+    "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
+    "@aws-cdk/aws-events:requireEventBusPolicySid": true,
+    "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true,
+    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
+    "@aws-cdk/aws-kms:aliasNameRef": true,
+    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
+    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
+    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
+    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
+    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true,
+    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
+    "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
+    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
+    "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
+    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
+    "@aws-cdk/aws-redshift:columnId": true,
+    "@aws-cdk/aws-route53-patterns:useDistribution": true,
+    "@aws-cdk/aws-route53-patters:useCertificate": true,
+    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
+    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
+    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
+    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
+    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
+    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
+    "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
+    "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": true,
+    "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
+    "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
+    "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
+    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
+    "@aws-cdk/core:annotationsInValidationReport": true,
+    "@aws-cdk/core:aspectPrioritiesMutating": true,
+    "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
     "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/core:defaultCrossStackReferences": "weak",
+    "@aws-cdk/core:enableAdditionalMetadataCollection": true,
+    "@aws-cdk/core:enablePartitionLiterals": true,
+    "@aws-cdk/core:explicitStackTags": true,
+    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
     "@aws-cdk/core:target-partitions": [
       "aws",
       "aws-cn"
     ],
-    "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
-    "@aws-cdk/aws-ec2:uniqueImdsv2TemplateName": true,
-    "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
-    "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
-    "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
-    "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
-    "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
-    "@aws-cdk/aws-apigateway:disableCloudWatchRole": true,
-    "@aws-cdk/core:enablePartitionLiterals": true,
-    "@aws-cdk/aws-events:eventsTargetQueueSameAccount": true,
-    "@aws-cdk/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
-    "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
-    "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
-    "@aws-cdk/aws-route53-patters:useCertificate": true,
-    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
-    "@aws-cdk/aws-rds:databaseProxyUniqueResourceName": true,
-    "@aws-cdk/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
-    "@aws-cdk/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
-    "@aws-cdk/aws-ec2:launchTemplateDefaultUserData": true,
-    "@aws-cdk/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
-    "@aws-cdk/aws-redshift:columnId": true,
-    "@aws-cdk/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
-    "@aws-cdk/aws-ec2:restrictDefaultSecurityGroup": true,
-    "@aws-cdk/aws-apigateway:requestValidatorUniqueId": true,
-    "@aws-cdk/aws-kms:aliasNameRef": true,
-    "@aws-cdk/aws-kms:applyImportedAliasPermissionsToPrincipal": true,
-    "@aws-cdk/aws-autoscaling:generateLaunchTemplateInsteadOfLaunchConfig": true,
-    "@aws-cdk/core:includePrefixInUniqueNameGeneration": true,
-    "@aws-cdk/aws-efs:denyAnonymousAccess": true,
-    "@aws-cdk/aws-opensearchservice:enableOpensearchMultiAzWithStandby": true,
-    "@aws-cdk/aws-lambda-nodejs:useLatestRuntimeVersion": true,
-    "@aws-cdk/aws-efs:mountTargetOrderInsensitiveLogicalId": true,
-    "@aws-cdk/aws-rds:auroraClusterChangeScopeOfInstanceParameterGroupWithEachParameters": true,
-    "@aws-cdk/aws-appsync:useArnForSourceApiAssociationIdentifier": true,
-    "@aws-cdk/aws-rds:preventRenderingDeprecatedCredentials": true,
-    "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
-    "@aws-cdk/aws-cloudwatch-actions:changeLambdaPermissionLogicalIdForLambdaAction": true,
-    "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
-    "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
-    "@aws-cdk/aws-kms:reduceCrossAccountRegionPolicyScope": true,
-    "@aws-cdk/aws-eks:nodegroupNameAttribute": true,
-    "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": true,
-    "@aws-cdk/aws-ecs:removeDefaultDeploymentAlarm": true,
     "@aws-cdk/custom-resources:logApiResponseDataPropertyTrueDefault": false,
-    "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
-    "@aws-cdk/core:explicitStackTags": true,
-    "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": false,
-    "@aws-cdk/aws-ecs:disableEcsImdsBlocking": true,
-    "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": true,
-    "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": true,
-    "@aws-cdk/aws-ec2:ec2SumTImeoutEnabled": true,
-    "@aws-cdk/aws-appsync:appSyncGraphQLAPIScopeLambdaPermission": true,
-    "@aws-cdk/aws-rds:setCorrectValueForDatabaseInstanceReadReplicaInstanceResourceId": true,
-    "@aws-cdk/core:cfnIncludeRejectComplexResourceUpdateCreatePolicyIntrinsics": true,
-    "@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages": true,
-    "@aws-cdk/aws-stepfunctions-tasks:fixRunEcsTaskPolicy": true,
-    "@aws-cdk/aws-ec2:bastionHostUseAmazonLinux2023ByDefault": true,
-    "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
-    "@aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault": true,
-    "@aws-cdk/aws-iam:oidcRejectUnauthorizedConnections": true,
-    "@aws-cdk/core:enableAdditionalMetadataCollection": true,
-    "@aws-cdk/aws-lambda:createNewPoliciesWithAddToRolePolicy": false,
-    "@aws-cdk/aws-s3:setUniqueReplicationRoleName": true,
-    "@aws-cdk/aws-events:requireEventBusPolicySid": true,
-    "@aws-cdk/core:aspectPrioritiesMutating": true,
-    "@aws-cdk/aws-dynamodb:retainTableReplica": true,
-    "@aws-cdk/aws-stepfunctions:useDistributedMapResultWriterV2": true,
-    "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true,
-    "@aws-cdk/aws-ec2:requirePrivateSubnetsForEgressOnlyInternetGateway": true,
-    "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
-    "@aws-cdk/aws-lambda:useCdkManagedLogGroup": true
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
+    "@aws-cdk/s3-notifications:addS3TrustKeyPolicyForSnsSubscriptions": true
   }
 }
 ```
@@ -241,6 +263,9 @@ are migrating a v1 CDK project to v2, explicitly set any of these flags which do
 | [@aws-cdk/core:aspectStabilization](#aws-cdkcoreaspectstabilization) | When enabled, a stabilization loop will be run when invoking Aspects during synthesis. | config |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceStageRoleTrustScope](#aws-cdkpipelinesreducestageroletrustscope) | Remove the root account principal from Stage addActions trust policy | new default |  | `false` | `true` |
 | [@aws-cdk/pipelines:reduceCrossAccountActionRoleTrustScope](#aws-cdkpipelinesreducecrossaccountactionroletrustscope) | When enabled, scopes down the trust policy for the cross-account action role | new default |  | `false` | `true` |
+| [@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint](#aws-cdkaws-stepfunctions-taskshttpinvokedynamicjsonpathendpoint) | When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks. | fix |  | `false` | `true` |
+| [@aws-cdk/core:automaticL1Traits](#aws-cdkcoreautomaticl1traits) | Automatically use the default L1 traits for L1 constructs` | new default |  | `false` | `true` |
+| [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | config |  | `false` | `"strong"` |
 
 <!-- END diff -->
 
@@ -869,7 +894,7 @@ always apply, regardless of the value of this flag.
 
 ### @aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName
 
-*Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in.*
+*Enable this feature to create default policy names for imported roles that depend on the stack the role is in.*
 
 Flag type: Backwards incompatible bugfix
 
@@ -892,7 +917,7 @@ This new implementation creates default policy names based on the constructs nod
 
 Flag type: Backwards incompatible bugfix
 
-Enable this feature flag to use S3 Bucket Policy for granting permission fo Server Access Logging
+Enable this feature flag to use S3 Bucket Policy for granting permission for Server Access Logging
 rather than using the canned `LogDeliveryWrite` ACL. ACLs do not work when Object Ownership is
 enabled on the bucket.
 
@@ -1272,7 +1297,7 @@ Set this flag to false for existing mount targets.
 Flag type: New default behavior
 
 If this is set, and a `runtime` prop is not passed to, Lambda NodeJs
-functions will us the latest version of the runtime provided by the Lambda
+functions will use the latest version of the runtime provided by the Lambda
 service. Do not use this if you your lambda function is reliant on dependencies
 shipped as part of the runtime environment.
 
@@ -1494,7 +1519,7 @@ When this feature flag is disabled, it will keep the root account principal in t
 
 Flag type: New default behavior
 
-When this featuer flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
+When this feature flag is enabled, remove the default deployment alarm settings when creating a AWS ECS service.
 
 
 | Since | Unset behaves like | Recommended value |
@@ -1745,8 +1770,8 @@ the latest Amazon Linux 2023 version will be used instead of Amazon Linux 2.
 
 Flag type: Configuration option
 
-Currently, when Aspects are invoked in one single pass of the construct tree.
-This means that the Aspects that create other Aspects are not run and Aspects that create new nodes of the tree sometimes do not inherit their parent Aspects.
+Previously, Aspects were invoked in a single pass of the construct tree.
+This meant that Aspects which created other Aspects were not run, and Aspects that created new nodes in the tree sometimes did not inherit their parent Aspects.
 
 When this feature flag is enabled, a stabilization loop is run to recurse the construct tree multiple times when invoking Aspects.
 
@@ -1773,49 +1798,6 @@ If the flag is set to false then a custom resource will be created when using `U
 | ----- | ----- | ----- |
 | (not in v1) |  |  |
 | 2.174.0 | `false` | `true` |
-
-
-### @aws-cdk/aws-ecs:disableEcsImdsBlocking
-
-*When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)***
-
-Flag type: Temporary flag
-
-In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. CDK cannot guarantee the correct execution of the feature in all platforms. Setting this feature flag
-to true will ensure CDK does not attempt to implement IMDS blocking. By <ins>**end of 2025**</ins>, CDK will remove the
-IMDS blocking feature. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-
-It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.175.0 | `false` | `true` |
-
-**Compatibility with old behavior:** It is strongly recommended to set this flag to true. However, if necessary, set this flag to false to continue using the old implementation.
-
-
-### @aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature
-
-*When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)***
-
-Flag type: Temporary flag
-
-In an ECS Cluster with `MachineImageType.AMAZON_LINUX_2`, the canContainersAccessInstanceRole=false option attempts to add commands to block containers from
-accessing IMDS. Set this flag to true in order to use new and updated commands. Please note that this
-feature alone with this feature flag will be deprecated by <ins>**end of 2025**</ins> as CDK cannot
-guarantee the correct execution of the feature in all platforms. See [Github discussion](https://github.com/aws/aws-cdk/discussions/32609) for more information.
-It is recommended to follow ECS documentation to block IMDS for your specific platform and cluster configuration.
-
-
-| Since | Unset behaves like | Recommended value |
-| ----- | ----- | ----- |
-| (not in v1) |  |  |
-| 2.175.0 | `false` | `false` |
-
-**Compatibility with old behavior:** Set this flag to false in order to continue using old and outdated commands. However, it is **not** recommended.
 
 
 ### @aws-cdk/aws-elasticloadbalancingV2:albDualstackWithoutPublicIpv4SecurityGroupRulesDefault
@@ -1985,7 +1967,7 @@ When enabled, table replica will be default to the removal policy of source tabl
 
 Flag type: New default behavior
 
-When this feature flag is enabled, the SDK API call response to desribe user pool client values will be logged in the custom
+When this feature flag is enabled, the SDK API call response to describe user pool client values will be logged in the custom
 resource lambda function logs.
 
 When this feature flag is disabled, the SDK API call response to describe user pool client values will not be logged in the custom
@@ -2164,7 +2146,7 @@ When this feature flag is disabled, a loggroup is created by Lambda service on f
 of the function (existing behavior).
 LogGroups created in this way do not support Tag propagation, Property Injectors, Aspects.
 
-DO NOT ENABLE: If you have and existing app defining a lambda function and
+DO NOT ENABLE: If you have an existing app defining a lambda function and
 have not supplied a logGroup or logRetention prop and your lambda function has
 executed at least once, the logGroup has been already created with the same name
 so your deployment will start failing.
@@ -2223,6 +2205,330 @@ and Stack tags must be configured explicitly on the Stack object.
 | 2.205.0 | `false` | `true` |
 
 **Compatibility with old behavior:** Configure stack-level tags using `new Stack(..., { tags: { ... } })`.
+
+
+### @aws-cdk/aws-signer:signingProfileNamePassedToCfn
+
+*Pass signingProfileName to CfnSigningProfile*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, the `signingProfileName` property is passed to the L1 `CfnSigningProfile` construct,
+which ensures that the AWS Signer profile is created with the specified name.
+
+When disabled, the `signingProfileName` is not passed to CloudFormation, maintaining backward
+compatibility with existing deployments where CloudFormation auto-generated profile names.
+
+This feature flag is needed because enabling it can cause existing signing profiles to be
+replaced during deployment if a `signingProfileName` was specified but not previously used
+in the CloudFormation template.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.212.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener
+
+*Disable implicit openListener when custom security groups are provided*
+
+Flag type: New default behavior
+
+ApplicationLoadBalancedServiceBase currently defaults openListener to true, which creates
+security group rules allowing ingress from 0.0.0.0/0. This can be a security risk when
+users provide custom security groups on their load balancer, expecting those to be the
+only ingress rules.
+
+If this flag is not set, openListener will always default to true for backward compatibility.
+If true, openListener will default to false when custom security groups are detected on the
+load balancer, and true otherwise. Users can still explicitly set openListener: true to
+override this behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.214.0 | `false` | `true` |
+
+**Compatibility with old behavior:** You can pass `openListener: true` explicitly to maintain the old behavior.
+
+
+### @aws-cdk/aws-ecs-patterns:uniqueTargetGroupId
+
+*When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, ECS patterns will generate unique target group IDs that include
+both the load balancer type (public/private) and load balancer name. This prevents CloudFormation
+conflicts when switching between public and private load balancers or when changing load balancer names.
+
+Without this flag, target groups use generic IDs like 'ECS' which can cause conflicts when the
+underlying load balancer is replaced due to changes in internetFacing or loadBalancerName properties.
+
+This is a breaking change as it will cause target group replacement when the flag is enabled.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.221.0 | `false` | `true` |
+
+
+### @aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint
+
+*When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, the JSONPath apiEndpoint value will be resolved dynamically at runtime, while slightly increasing the size of the state machine definition.
+When disabled, the JSONPath apiEndpoint property will only support a static string value.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.221.0 | `true` | `true` |
+
+
+### @aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault
+
+*When enabled, Network Load Balancer will be created with a security group by default.*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, Network Load Balancer will be created with a security group by default.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.222.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to create Network Load Balancer without a security group by default.
+
+
+### @aws-cdk/aws-route53-patterns:useDistribution
+
+*Use the `Distribution` resource instead of `CloudFrontWebDistribution`*
+
+Flag type: New default behavior
+
+Enable this feature flag to use the new `Distribution` resource instead
+of the deprecated `CloudFrontWebDistribution` construct.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.233.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Define a `CloudFrontWebDistribution` explicitly
+
+
+### @aws-cdk/aws-eks:useNativeOidcProvider
+
+*When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider).*
+
+Flag type: Backwards incompatible bugfix
+
+When this feature flag is enabled, EKS clusters will use the native AWS::IAM::OIDCProvider
+      CloudFormation resource instead of the custom resource provider for creating OIDC providers.
+
+			WARNING: Enabling this flag on a cluster with an existing OIDC provider created by the custom resource (iam.OpenIDConnectProvider)
+			will cause the OIDC provider to be replaced with the native resource, which may lead to disruption.
+
+			To migrate in place without disruption, follow the guide at: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-eks/README.md#migrating-from-the-deprecated-eksopenidconnectprovider-to-eksoidcprovidernative
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.237.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to use the custom resource provider.
+
+
+### @aws-cdk/core:automaticL1Traits
+
+*Automatically use the default L1 traits for L1 constructs`*
+
+Flag type: New default behavior
+
+When enabled, the construct library will apply default L1 traits for types that
+have no traits defined yet. Traits regulate behaviors such as how to create
+resource policies, or how to find an encryption key for a given L1 construct.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.239.0 | `true` | `true` |
+
+**Compatibility with old behavior:** Register traits explicitly for each resource type
+
+
+### @aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0
+
+*Use cloudfront-js-2.0 as the default runtime for CloudFront Functions*
+
+Flag type: New default behavior
+
+When enabled, CloudFront Functions will use cloudfront-js-2.0 runtime by default instead of cloudfront-js-1.0.
+The runtime can still be configured explicitly using the `runtime` property.
+
+If `keyValueStore` is specified, the runtime will always be cloudfront-js-2.0 regardless of this flag.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.245.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Set `runtime: FunctionRuntime.JS_1_0` explicitly to use the v1.0 runtime.
+
+
+### @aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy
+
+*When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default*
+
+Flag type: New default behavior
+
+When this feature flag is enabled, HTTPS and TLS listeners that do not have an explicit
+`sslPolicy` will use the post-quantum cryptography policy
+`ELBSecurityPolicy-TLS13-1-2-PQ-2025-09` by default.
+
+This policy uses the non-restricted variant (without -Res-) to maintain AES-CBC cipher support
+for TLS 1.2 clients, ensuring nearly 100% backward compatibility with the previous CDK default.
+Post-quantum policies provide protection against "Harvest Now, Decrypt Later" attacks using
+hybrid ML-KEM key exchange.
+
+When disabled (default), no explicit SSL policy is set, preserving the existing CDK behavior
+where `RECOMMENDED_TLS` (`ELBSecurityPolicy-TLS13-1-2-2021-06`) is used.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.245.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Disable this feature flag to preserve existing behavior where no explicit SSL policy is set.
+
+
+### @aws-cdk/aws-batch:defaultToAL2023
+
+*Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2*
+
+Flag type: New default behavior
+
+When enabled, EC2 Batch compute environments (both ECS and EKS) that do not specify an `imageType`
+will default to `ECS_AL2023` or `EKS_AL2023` instead of the deprecated `ECS_AL2` or `EKS_AL2`
+(Amazon Linux 2, reaching EOL June 2026 for ECS; already EOL for EKS).
+
+For EKS compute environments with a launch template, `userdataType` will automatically be set
+to `EKS_NODEADM` when an AL2023 image type is used, as required by the AWS Batch API.
+
+When disabled, the default `imageType` remains `ECS_AL2` / `EKS_AL2` for backward compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.249.0 | `false` | `true` |
+
+**Compatibility with old behavior:** Explicitly set `imageType` to `ECS_AL2` or `EKS_AL2` in your compute environment images configuration.
+
+**Warning**: Enabling this flag on existing stacks may cause compute environment replacement, which terminates running jobs. To migrate safely, first pin existing environments to their current imageType explicitly, then enable the flag.
+
+
+### @aws-cdk/core:annotationsInValidationReport
+
+*Include construct annotations (warnings and errors) in the policy validation report*
+
+Flag type: Configuration option
+
+When enabled, construct annotations added via `Annotations.of()` or `Validations.of()`
+are collected post-synthesis and included in the policy validation report alongside
+plugin violations. Annotations appear under a "Construct Annotations" source entry.
+
+When disabled, annotations are only displayed through the CLI's standard metadata
+output (e.g. `[Warning at /path] message`) and do not appear in the validation report.
+
+Note: enabling this flag may cause annotations to appear twice — once in the CLI's
+standard output and once in the validation report — until the CLI is updated to
+consolidate both displays.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.253.0 | `false` | `true` |
+
+
+### @aws-cdk/core:defaultCrossStackReferences
+
+*Controls whether cross-region stack references are strong, weak, or both*
+
+Flag type: Configuration option
+
+Controls the default type of cross-region stack references. Accepted values are
+`"strong"`, `"weak"`, and `"both"`. This setting only affects same-account,
+cross-region references. Cross-account references are always weak, and same-region
+references are always strong (Fn::ImportValue).
+
+The flag is read from the **consumer** stack's context, not the producer's.
+
+- `"strong"` (default): Uses ExportWriter/ExportReader custom resources that
+  write values to SSM Parameters in the consuming region. This prevents the
+  producing stack from being deleted while consumers exist.
+- `"weak"`: Uses Fn::GetStackOutput to read an output directly from the
+  producing stack. Simpler (no extra infrastructure), but the producing stack
+  can be deleted independently of consumers.
+- `"both"`: A transitional state for migrating from strong to weak. The producer
+  keeps the ExportWriter (continues writing to SSM) and also adds an Output. The
+  consumer switches to Fn::GetStackOutput. This allows removing the ExportReader
+  without breaking anything.
+
+**Migration from strong to weak**: set to `"both"` and deploy, then set to
+`"weak"` and deploy again.
+
+**Migration from weak to strong**: set directly to `"strong"` (single deployment).
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| 2.254.0 | `"strong"` | `"weak"` |
+
+
+### @aws-cdk/aws-eks:defaultToAL2023
+
+*Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2*
+
+Flag type: New default behavior
+
+When enabled, EKS managed node groups that do not specify an `amiType` will default to
+AL2023 AMI types (AL2023_x86_64_STANDARD, AL2023_ARM_64_STANDARD) instead of the deprecated
+AL2 types (AL2_x86_64, AL2_ARM_64).
+
+This only affects non-GPU instance types. GPU instances continue to default to AL2_x86_64_GPU
+because AL2023 splits GPU support into separate NVIDIA and Neuron AMI variants.
+
+Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
+
+When disabled, the default AMI types remain AL2 for backward compatibility.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
+
+**Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
 
 
 <!-- END details -->

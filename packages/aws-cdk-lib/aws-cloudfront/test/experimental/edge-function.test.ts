@@ -1,6 +1,6 @@
 import * as path from 'path';
 import { Match, Template } from '../../../assertions';
-import * as cloudwatch from '../../../aws-cloudwatch';
+import type * as cloudwatch from '../../../aws-cloudwatch';
 import * as iam from '../../../aws-iam';
 import * as lambda from '../../../aws-lambda';
 import * as cdk from '../../../core';
@@ -108,6 +108,25 @@ describe('stacks', () => {
     const fnStack = getFnStack();
 
     expect(fnStack.account).toEqual('111111111111');
+  });
+
+  test('us-east-1 stack inherits tags of parent stack', () => {
+    stack = new cdk.Stack(app, 'StackWithDefaultAccount', {
+      env: { region: 'testregion' },
+      tags: {
+        abc: 'def',
+      },
+    });
+
+    new cloudfront.experimental.EdgeFunction(
+      stack,
+      'MyFn',
+      defaultEdgeFunctionProps(),
+    );
+
+    const fnStack = getFnStack();
+
+    expect(fnStack.tags.tagValues()).toEqual({ abc: 'def' });
   });
 
   test('us-east-1 stack inherits account of parent stack, when parent stack account is undefined', () => {

@@ -1,8 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
 import * as path from 'path';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
-import { StackProps, Stack } from 'aws-cdk-lib';
+import type { Construct } from 'constructs';
+import type { StackProps } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import {
@@ -46,7 +47,7 @@ class StackUnderTest extends Stack {
     });
 
     const lambdaFunction = new Function(this, 'MyFunc', {
-      runtime: Runtime.NODEJS_18_X,
+      runtime: Runtime.NODEJS_20_X,
       handler: 'index.handler',
       code: Code.fromAsset(path.join(__dirname, 'params-and-secrets-handler')),
       architecture: props.architecture,

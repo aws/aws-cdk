@@ -4,8 +4,8 @@ import { App, Stack, CfnResource, FileAssetPackaging, Token, Lazy, Duration } fr
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { BucketEncryption } from 'aws-cdk-lib/aws-s3';
-import * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
-import * as cxapi from 'aws-cdk-lib/cx-api';
+import type * as cxschema from 'aws-cdk-lib/cloud-assembly-schema';
+import type * as cxapi from 'aws-cdk-lib/cx-api';
 import { evaluateCFN } from './evaluate-cfn';
 import { APP_ID, CFN_CONTEXT, getAssetManifest, isAssetManifest, last, readAssetManifest } from './util';
 import { AppStagingSynthesizer, DEPLOY_TIME_PREFIX } from '../lib';
@@ -24,6 +24,35 @@ describe(AppStagingSynthesizer, () => {
         region: 'us-east-1',
       },
     });
+  });
+
+  test('uses qualifier in deployment roles and staging context', () => {
+    // GIVEN
+    const qualifier = 'custom-qualifier';
+    const customApp = new App({
+      defaultStackSynthesizer: AppStagingSynthesizer.defaultResources({
+        appId: APP_ID,
+        bootstrapQualifier: qualifier,
+        stagingBucketEncryption: BucketEncryption.S3_MANAGED,
+      }),
+    });
+    new Stack(customApp, 'CustomStack', {
+      env: {
+        account: '111111111111',
+        region: 'us-east-1',
+      },
+    });
+
+    // WHEN
+    const assembly = customApp.synth();
+    const artifact = assembly.getStackArtifact('CustomStack');
+
+    // THEN
+    // The deployment role should contain the custom qualifier
+    expect(artifact.assumeRoleArn).toBe(`arn:\${AWS::Partition}:iam::111111111111:role/cdk-${qualifier}-deploy-role-111111111111-us-east-1`);
+
+    // The CloudFormation execution role should contain the custom qualifier
+    expect(artifact.cloudFormationExecutionRoleArn).toBe(`arn:\${AWS::Partition}:iam::111111111111:role/cdk-${qualifier}-cfn-exec-role-111111111111-us-east-1`);
   });
 
   test('stack template is in asset manifest', () => {

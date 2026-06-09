@@ -1,14 +1,13 @@
 import { InstanceType, Vpc, Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { AsgCapacityProvider, Cluster, ContainerImage, EcsOptimizedImage } from 'aws-cdk-lib/aws-ecs';
 import { AutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
+import type { CfnResource } from 'aws-cdk-lib';
 import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import { NetworkMultipleTargetGroupsEc2Service } from 'aws-cdk-lib/aws-ecs-patterns';
 
 const app = new App({
   postCliContext: {
-    '@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature': false,
-    '@aws-cdk/aws-ecs:disableEcsImdsBlocking': false,
   },
 });
 const stack = new Stack(app, 'aws-ecs-integ-nlb-healthchecks');
@@ -19,6 +18,13 @@ const securityGroup = new SecurityGroup(stack, 'MyAutoScalingGroupSG', {
   allowAllOutbound: true,
 });
 securityGroup.addIngressRule(Peer.anyIpv4(), Port.tcpRange(32768, 65535));
+
+// Suppress security guardian rule for intentional test setup
+const cfnSecurityGroup = securityGroup.node.defaultChild as CfnResource;
+cfnSecurityGroup.addMetadata('guard', {
+  SuppressedRules: ['EC2_NO_OPEN_SECURITY_GROUPS'],
+});
+
 const provider = new AsgCapacityProvider(stack, 'MyProvider', {
   autoScalingGroup: new AutoScalingGroup(stack, 'MyAutoScalingGroup', {
     vpc,
@@ -26,7 +32,6 @@ const provider = new AsgCapacityProvider(stack, 'MyProvider', {
     machineImage: EcsOptimizedImage.amazonLinux2(),
     securityGroup,
   }),
-  capacityProviderName: 'my-capacity-provider',
 });
 cluster.addAsgCapacityProvider(provider);
 
@@ -71,6 +76,20 @@ networkMultipleTargetGroupsFargateService.targetGroups[0].configureHealthCheck({
 
 networkMultipleTargetGroupsFargateService.targetGroups[1].configureHealthCheck({});
 
-new IntegTest(app, 'Integ', { testCases: [stack] });
+networkMultipleTargetGroupsFargateService.loadBalancers.forEach(lb => {
+  const nlbSg = new SecurityGroup(stack, `NlbSg${lb.node.id}`, { vpc, allowAllOutbound: false });
+  nlbSg.addEgressRule(securityGroup, Port.tcpRange(32768, 65535), 'NLB health checks to targets');
+  lb.connections.addSecurityGroup(nlbSg);
+});
+
+new IntegTest(app, 'Integ', {
+  testCases: [stack],
+  cdkCommandOptions: {
+    destroy: {
+      // https://github.com/aws/aws-cdk/issues/19275
+      expectError: true,
+    },
+  },
+});
 
 app.synth();

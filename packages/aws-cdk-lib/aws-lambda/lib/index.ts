@@ -24,9 +24,12 @@ export * from './log-retention';
 export * from './architecture';
 export * from './function-url';
 export * from './runtime-management';
+export * from './tenancy-config';
+export * from './durable-config';
 export * from './params-and-secrets-layers';
 export * from './snapstart-config';
 export * from './schema-registry';
+export * from './capacity-provider';
 
 // AWS::Lambda CloudFormation Resources:
 export * from './lambda.generated';

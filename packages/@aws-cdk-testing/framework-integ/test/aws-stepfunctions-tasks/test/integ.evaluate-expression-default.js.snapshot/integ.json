@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EvaluateExpressionDefaultTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-sfn-evaluate-expression-default-integ"
+      ],
+      "assertionStack": "EvaluateExpressionDefaultTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EvaluateExpressionDefaultTestDeployAssert91679210"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

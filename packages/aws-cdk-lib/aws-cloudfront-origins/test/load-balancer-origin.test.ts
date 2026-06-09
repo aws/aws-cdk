@@ -61,3 +61,46 @@ test('Can customize properties of the origin', () => {
     },
   });
 });
+
+test('renders responseCompletionTimeout in origin property', () => {
+  const loadBalancer = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'elbv2', {
+    loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:111111111111:loadbalancer/net/mylb/5d1b75f4f1cee11e',
+    loadBalancerDnsName: 'mylb-5d1b75f4f1cee11e.elb.us-west-2.amazonaws.com',
+  });
+
+  const origin = new LoadBalancerV2Origin(loadBalancer, {
+    responseCompletionTimeout: Duration.seconds(120),
+  });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(originBindConfig.originProperty?.responseCompletionTimeout).toEqual(120);
+});
+
+test('configure both responseCompletionTimeout and readTimeout', () => {
+  const loadBalancer = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'elbv2', {
+    loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:111111111111:loadbalancer/net/mylb/5d1b75f4f1cee11e',
+    loadBalancerDnsName: 'mylb-5d1b75f4f1cee11e.elb.us-west-2.amazonaws.com',
+  });
+
+  const origin = new LoadBalancerV2Origin(loadBalancer, {
+    responseCompletionTimeout: Duration.seconds(60),
+    readTimeout: Duration.seconds(60),
+  });
+
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+  expect(originBindConfig.originProperty?.responseCompletionTimeout).toEqual(60);
+});
+
+test('throw error for configuring readTimeout less than responseCompletionTimeout value', () => {
+  const loadBalancer = elbv2.NetworkLoadBalancer.fromNetworkLoadBalancerAttributes(stack, 'elbv2', {
+    loadBalancerArn: 'arn:aws:elasticloadbalancing:us-west-2:111111111111:loadbalancer/net/mylb/5d1b75f4f1cee11e',
+    loadBalancerDnsName: 'mylb-5d1b75f4f1cee11e.elb.us-west-2.amazonaws.com',
+  });
+
+  expect(() => {
+    new LoadBalancerV2Origin(loadBalancer, {
+      responseCompletionTimeout: Duration.seconds(30),
+      readTimeout: Duration.seconds(60),
+    });
+  }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
+});

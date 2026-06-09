@@ -3,9 +3,10 @@ import * as iam from '../../aws-iam';
 import * as kms from '../../aws-kms';
 import { CfnParameter, Duration, Stack, App, Token } from '../../core';
 import * as sqs from '../lib';
+import { QueueGrants } from '../lib';
 import { validateRedriveAllowPolicy } from '../lib/validate-queue-props';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 test('default properties', () => {
   const stack = new Stack();
@@ -121,6 +122,55 @@ test('message retention period can be provided as a parameter', () => {
         'DeletionPolicy': 'Delete',
       },
     },
+  });
+});
+
+test.each([
+  { size: 1023, valid: false, description: 'just below lower bound' },
+  { size: 1024, valid: true, description: 'at lower bound' },
+  { size: 1048576, valid: true, description: 'at upper bound' },
+  { size: 1048577, valid: false, description: 'just above upper bound' },
+])('maxMessageSizeBytes validation for $size bytes ($description)', ({ size, valid }) => {
+  const stack = new Stack();
+  const constructId = `QueueWithSize${size}`;
+  const action = () => new sqs.Queue(stack, constructId, { maxMessageSizeBytes: size });
+
+  if (valid) {
+    expect(action).not.toThrow();
+  } else {
+    expect(action).toThrow(`Queue initialization failed due to the following validation error(s):\n- maximum message size must be between 1,024 and 1,048,576 bytes, but ${size} was provided`);
+  }
+});
+
+test('maxMessageSizeBytes works with CDK tokens', () => {
+  const stack = new Stack();
+  const parameter = new CfnParameter(stack, 'MessageSize', { type: 'Number' });
+
+  // Should not throw for tokens (validation skipped)
+  expect(() => new sqs.Queue(stack, 'TokenQueue', {
+    maxMessageSizeBytes: parameter.valueAsNumber,
+  })).not.toThrow();
+});
+
+test('multiple validation errors include maxMessageSizeBytes', () => {
+  const stack = new Stack();
+
+  expect(() => new sqs.Queue(stack, 'MultiError', {
+    maxMessageSizeBytes: 2000000,
+    retentionPeriod: Duration.seconds(30),
+  })).toThrow(/maximum message size must be between 1,024 and 1,048,576 bytes.*message retention period must be between 60 and 1,209,600 seconds/s);
+});
+
+test('maxMessageSizeBytes synthesizes correct CloudFormation', () => {
+  const stack = new Stack();
+
+  new sqs.Queue(stack, 'LargeMessageQueue', {
+    maxMessageSizeBytes: 1048576,
+  });
+
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::SQS::Queue', {
+    MaximumMessageSize: 1048576,
   });
 });
 
@@ -449,6 +499,62 @@ describe('grants', () => {
         ],
         'Version': '2012-10-17',
       },
+    });
+  });
+
+  test('grant on CfnQueue with KMS key grants key permissions', () => {
+    const stack = new Stack();
+    const key = new kms.CfnKey(stack, 'Key');
+    const cfnQueue = new sqs.CfnQueue(stack, 'Queue', {
+      kmsMasterKeyId: key.attrKeyId,
+    });
+    const role = new iam.Role(stack, 'Role', {
+      assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+    });
+
+    QueueGrants.fromQueue(cfnQueue).sendMessages(role);
+
+    Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+      KeyPolicy: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'kms:Decrypt',
+              'kms:Encrypt',
+              'kms:ReEncrypt*',
+              'kms:GenerateDataKey*',
+            ],
+            Resource: '*',
+            Principal: { 'AWS': { 'Fn::GetAtt': ['Role1ABCC5F0', 'Arn'] } },
+          }),
+        ]),
+      },
+    });
+  });
+
+  test('grant on CfnQueue adds statement to queue policy', () => {
+    const stack = new Stack();
+    const cfnQueue = new sqs.CfnQueue(stack, 'Queue');
+    const principal = new iam.ServicePrincipal('lambda.amazonaws.com');
+
+    QueueGrants.fromQueue(cfnQueue).sendMessages(principal);
+
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::SQS::QueuePolicy', {
+      PolicyDocument: {
+        Statement: Match.arrayWith([
+          Match.objectLike({
+            Action: [
+              'sqs:SendMessage',
+              'sqs:GetQueueAttributes',
+              'sqs:GetQueueUrl',
+            ],
+            Principal: { Service: 'lambda.amazonaws.com' },
+            Resource: { 'Fn::GetAtt': ['Queue', 'Arn'] },
+          }),
+        ]),
+      },
+      Queues: [{ 'Ref': 'Queue' }],
     });
   });
 });

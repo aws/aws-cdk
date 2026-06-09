@@ -1,5 +1,5 @@
 {
-  "version": "20.0.0",
+  "version": "50.0.0",
   "testCases": {
     "integ.serverless-cluster": {
       "stacks": [
@@ -10,5 +10,6 @@
     }
   },
   "synthContext": {},
-  "enableLookups": false
+  "enableLookups": false,
+  "minimumCliVersion": "2.1105.0"
 }

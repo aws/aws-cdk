@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "metricfilter-apply-on-transformed-logs/DefaultTest": {
+      "stacks": [
+        "aws-cdk-metricfilter-apply-on-transformed-logs-integ"
+      ],
+      "assertionStack": "metricfilter-apply-on-transformed-logs/DefaultTest/DeployAssert",
+      "assertionStackName": "metricfilterapplyontransformedlogsDefaultTestDeployAssert539E1412"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

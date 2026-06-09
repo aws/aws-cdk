@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "commonjs",
-    "lib": ["es2020", "dom"],
+    "target": "ES2022",
+    "module": "Node20",
+    "lib": [
+      "es2022",
+      "dom"
+    ],
     "strict": true,
     "alwaysStrict": true,
     "declaration": true,
@@ -15,8 +18,18 @@
     "resolveJsonModule": true,
     "composite": true,
     "incremental": true,
-    "moduleResolution": "node"
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "types": [
+      "jest",
+      "node"
+    ],
+    "noUncheckedSideEffectImports": true
   },
-  "include": ["**/*.ts"],
-  "exclude": ["**/*.d.ts"]
+  "include": [
+    "**/*.ts"
+  ],
+  "exclude": [
+    "**/*.d.ts"
+  ]
 }

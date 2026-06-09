@@ -146,6 +146,17 @@ new acm.PrivateCertificate(this, 'PrivateCertificate', {
 });
 ```
 
+## Requesting public SSL/TLS certificates exportable to use anywhere
+
+AWS Certificate Manager can issue an exportable public certificate. There is a charge at certificate issuance and again when the certificate renews. See [opting out of certificate transparency logging](https://docs.aws.amazon.com/acm/latest/userguide/acm-exportable-certificates.html) for details.
+
+```ts
+new acm.Certificate(this, 'Certificate', {
+  domainName: 'test.example.com',
+  allowExport: true,
+});
+```
+
 ## Requesting certificates without transparency logging
 
 Transparency logging can be opted out of for AWS Certificate Manager certificates. See [opting out of certificate transparency logging](https://docs.aws.amazon.com/acm/latest/userguide/acm-bestpractices.html#best-practices-transparency) for limits.
@@ -196,7 +207,7 @@ all certificates. This metric is emitted by AWS Certificates Manager once per
 day until the certificate has effectively expired.
 
 An alarm can be created to determine whether a certificate is soon due for
-renewal ussing the following code:
+renewal using the following code:
 
 ```ts
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';

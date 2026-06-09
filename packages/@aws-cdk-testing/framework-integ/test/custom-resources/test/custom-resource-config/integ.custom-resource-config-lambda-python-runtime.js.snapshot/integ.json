@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "48.0.0",
   "testCases": {
     "integ-test-custom-resource-config-lambda-python-runtime/DefaultTest": {
       "stacks": [
@@ -9,5 +9,6 @@
       "assertionStack": "integ-test-custom-resource-config-lambda-python-runtime/DefaultTest/DeployAssert",
       "assertionStackName": "integtestcustomresourceconfiglambdapythonruntimeDefaultTestDeployAssert91E3D6DA"
     }
-  }
+  },
+  "minimumCliVersion": "2.1024.0"
 }

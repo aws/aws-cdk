@@ -1,16 +1,16 @@
 {
-  "version": "44.0.0",
+  "version": "48.0.0",
   "files": {
-    "be7579fcee3d43a5509f2053dde36067624f434771c914a4c7841c2281c0fc1b": {
+    "2538e176b7b85a36529ed1b09362f64e6b45d84b0e985a662c47951d18025332": {
       "displayName": "SfnRestApiWithoutDefaultMethodResponses Template",
       "source": {
         "path": "SfnRestApiWithoutDefaultMethodResponses.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region": {
+        "current_account-current_region-e9ee8aec": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "be7579fcee3d43a5509f2053dde36067624f434771c914a4c7841c2281c0fc1b.json",
+          "objectKey": "2538e176b7b85a36529ed1b09362f64e6b45d84b0e985a662c47951d18025332.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,109 +1,124 @@
 {
  "Resources": {
-  "ImportedNewVPCInternetGatewayIGWA7EB1B6C": {
+  "ImportedVpcInternetGatewayIGWEAD05AAE": {
    "Type": "AWS::EC2::InternetGateway"
   },
-  "ImportedNewVPCInternetGatewayGWAttachment5928F3D0": {
+  "ImportedVpcInternetGatewayGWAttachment49D2DADA": {
    "Type": "AWS::EC2::VPCGatewayAttachment",
    "Properties": {
     "InternetGatewayId": {
      "Fn::GetAtt": [
-      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
+      "ImportedVpcInternetGatewayIGWEAD05AAE",
       "InternetGatewayId"
      ]
     },
-    "VpcId": "vpc-08193db3ccc4f909f"
+    "VpcId": {
+     "Fn::ImportValue": "SourceVpcId"
+    }
    }
   },
-  "ImportedNewVPCImportedPublicSubnetDefaultRoute56DCABA4": {
+  "ImportedVpcImportedPublicSubnetDefaultRouteF693B926": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Fn::GetAtt": [
-      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
+      "ImportedVpcInternetGatewayIGWEAD05AAE",
       "InternetGatewayId"
      ]
     },
-    "RouteTableId": "rtb-014f3043098fe4b96"
+    "RouteTableId": {
+     "Fn::ImportValue": "PublicSubnetRtId"
+    }
    },
    "DependsOn": [
-    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
-    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
+    "ImportedVpcInternetGatewayGWAttachment49D2DADA",
+    "ImportedVpcInternetGatewayIGWEAD05AAE"
    ]
   },
-  "ImportedNewVPCAddnewImportedSubnetDefaultRoute40344A0C": {
+  "ImportedVpcNewSubnet1DefaultRoute1897AD25": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Fn::GetAtt": [
-      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
+      "ImportedVpcInternetGatewayIGWEAD05AAE",
       "InternetGatewayId"
      ]
     },
     "RouteTableId": {
      "Fn::GetAtt": [
-      "AddnewImportedSubnetRouteTable73C1E1B7",
+      "NewSubnet1RouteTable8C7C326E",
       "RouteTableId"
      ]
     }
    },
    "DependsOn": [
-    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
-    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
+    "ImportedVpcInternetGatewayGWAttachment49D2DADA",
+    "ImportedVpcInternetGatewayIGWEAD05AAE"
    ]
   },
-  "ImportedNewVPCAddnewImportedSubnet2DefaultRouteE8630009": {
+  "ImportedVpcNewSubnet2DefaultRouteFC66E94C": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "DestinationCidrBlock": "0.0.0.0/0",
     "GatewayId": {
      "Fn::GetAtt": [
-      "ImportedNewVPCInternetGatewayIGWA7EB1B6C",
+      "ImportedVpcInternetGatewayIGWEAD05AAE",
       "InternetGatewayId"
      ]
     },
     "RouteTableId": {
      "Fn::GetAtt": [
-      "AddnewImportedSubnet2RouteTable2F07FB4F",
+      "NewSubnet2RouteTable75319D74",
       "RouteTableId"
      ]
     }
    },
    "DependsOn": [
-    "ImportedNewVPCInternetGatewayGWAttachment5928F3D0",
-    "ImportedNewVPCInternetGatewayIGWA7EB1B6C"
+    "ImportedVpcInternetGatewayGWAttachment49D2DADA",
+    "ImportedVpcInternetGatewayIGWEAD05AAE"
    ]
   },
-  "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA": {
+  "ImportedVpcEgressOnlyGWEIGW5788B31B": {
+   "Type": "AWS::EC2::EgressOnlyInternetGateway",
+   "Properties": {
+    "VpcId": {
+     "Fn::ImportValue": "SourceVpcId"
+    }
+   }
+  },
+  "ImportedVpcNATGatewayReImportedSubnetEIP52CB3DF2": {
    "Type": "AWS::EC2::EIP",
    "Properties": {
     "Domain": "vpc"
    }
   },
-  "ImportedNewVPCNATGatewayIsolatedSubnet1NATGatewayC32B9442": {
+  "ImportedVpcNATGatewayReImportedSubnetNATGateway23516CFB": {
    "Type": "AWS::EC2::NatGateway",
    "Properties": {
     "AllocationId": {
      "Fn::GetAtt": [
-      "ImportedNewVPCNATGatewayIsolatedSubnet1EIP439F54BA",
+      "ImportedVpcNATGatewayReImportedSubnetEIP52CB3DF2",
       "AllocationId"
      ]
     },
-    "SubnetId": "subnet-0d441651f6653d4a7"
+    "SubnetId": {
+     "Fn::ImportValue": "IsolatedSubnetId"
+    }
    }
   },
-  "ImportedNewVPCEgressOnlyGWEIGWF9D837A6": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": "vpc-08193db3ccc4f909f"
-   }
-  },
-  "AddnewImportedSubnet53655C69": {
+  "NewSubnet1SubnetEBD39D16": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.2.2.0/24",
     "Tags": [
      {
@@ -111,10 +126,12 @@
       "Value": "Public"
      }
     ],
-    "VpcId": "vpc-08193db3ccc4f909f"
+    "VpcId": {
+     "Fn::ImportValue": "SourceVpcId"
+    }
    }
   },
-  "AddnewImportedSubnetRouteTable73C1E1B7": {
+  "NewSubnet1RouteTable8C7C326E": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
@@ -123,27 +140,36 @@
       "Value": "DefaultCDKRouteTable"
      }
     ],
-    "VpcId": "vpc-08193db3ccc4f909f"
+    "VpcId": {
+     "Fn::ImportValue": "SourceVpcId"
+    }
    }
   },
-  "AddnewImportedSubnetRouteTableAssociationE5634175": {
+  "NewSubnet1RouteTableAssociation21DACAC2": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
      "Fn::GetAtt": [
-      "AddnewImportedSubnetRouteTable73C1E1B7",
+      "NewSubnet1RouteTable8C7C326E",
       "RouteTableId"
      ]
     },
     "SubnetId": {
-     "Ref": "AddnewImportedSubnet53655C69"
+     "Ref": "NewSubnet1SubnetEBD39D16"
     }
    }
   },
-  "AddnewImportedSubnet2SubnetD9533DC5": {
+  "NewSubnet2Subnet7C3A12B2": {
    "Type": "AWS::EC2::Subnet",
    "Properties": {
-    "AvailabilityZone": "us-west-2a",
+    "AvailabilityZone": {
+     "Fn::Select": [
+      0,
+      {
+       "Fn::GetAZs": ""
+      }
+     ]
+    },
     "CidrBlock": "10.3.2.0/24",
     "Tags": [
      {
@@ -151,57 +177,12 @@
       "Value": "Public"
      }
     ],
-    "VpcId": "vpc-08193db3ccc4f909f"
-   }
-  },
-  "AddnewImportedSubnet2RouteTable2F07FB4F": {
-   "Type": "AWS::EC2::RouteTable",
-   "Properties": {
-    "Tags": [
-     {
-      "Key": "Name",
-      "Value": "DefaultCDKRouteTable"
-     }
-    ],
-    "VpcId": "vpc-08193db3ccc4f909f"
-   }
-  },
-  "AddnewImportedSubnet2RouteTableAssociationA2C6CDF7": {
-   "Type": "AWS::EC2::SubnetRouteTableAssociation",
-   "Properties": {
-    "RouteTableId": {
-     "Fn::GetAtt": [
-      "AddnewImportedSubnet2RouteTable2F07FB4F",
-      "RouteTableId"
-     ]
-    },
-    "SubnetId": {
-     "Ref": "AddnewImportedSubnet2SubnetD9533DC5"
+    "VpcId": {
+     "Fn::ImportValue": "SourceVpcId"
     }
    }
   },
-  "ImportedIPAMVPCEgressOnlyGWEIGW52C5892F": {
-   "Type": "AWS::EC2::EgressOnlyInternetGateway",
-   "Properties": {
-    "VpcId": "vpc-02407f4a207815a97"
-   }
-  },
-  "AddnewSubnettoImportedIpamSubnet0F5C302A": {
-   "Type": "AWS::EC2::Subnet",
-   "Properties": {
-    "AvailabilityZone": "us-west-2a",
-    "CidrBlock": "10.2.1.0/28",
-    "Ipv6CidrBlock": "2600:1f24:6c:4000::/64",
-    "Tags": [
-     {
-      "Key": "aws-cdk:subnet-type",
-      "Value": "Public"
-     }
-    ],
-    "VpcId": "vpc-02407f4a207815a97"
-   }
-  },
-  "AddnewSubnettoImportedIpamRouteTable1AE0FBA3": {
+  "NewSubnet2RouteTable75319D74": {
    "Type": "AWS::EC2::RouteTable",
    "Properties": {
     "Tags": [
@@ -210,20 +191,22 @@
       "Value": "DefaultCDKRouteTable"
      }
     ],
-    "VpcId": "vpc-02407f4a207815a97"
+    "VpcId": {
+     "Fn::ImportValue": "SourceVpcId"
+    }
    }
   },
-  "AddnewSubnettoImportedIpamRouteTableAssociation20268806": {
+  "NewSubnet2RouteTableAssociation15FA3E2F": {
    "Type": "AWS::EC2::SubnetRouteTableAssociation",
    "Properties": {
     "RouteTableId": {
      "Fn::GetAtt": [
-      "AddnewSubnettoImportedIpamRouteTable1AE0FBA3",
+      "NewSubnet2RouteTable75319D74",
       "RouteTableId"
      ]
     },
     "SubnetId": {
-     "Ref": "AddnewSubnettoImportedIpamSubnet0F5C302A"
+     "Ref": "NewSubnet2Subnet7C3A12B2"
     }
    }
   }

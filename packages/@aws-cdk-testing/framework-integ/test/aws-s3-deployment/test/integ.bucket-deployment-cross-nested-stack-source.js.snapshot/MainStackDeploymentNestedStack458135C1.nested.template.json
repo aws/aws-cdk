@@ -5,7 +5,7 @@
    "Properties": {
     "Tags": [
      {
-      "Key": "aws-cdk:cr-owned:a6109ee2",
+      "Key": "aws-cdk:cr-owned:f273f307",
       "Value": "true"
      }
     ]
@@ -13,7 +13,7 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain"
   },
-  "DeploymentAwsCliLayerB82B26A3": {
+  "DeployWithCrossNestedStackSourceAwsCliLayer1F4C151B": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
@@ -25,7 +25,7 @@
     "Description": "/opt/awscli/aws"
    }
   },
-  "DeploymentCustomResource47E8B2E6": {
+  "DeployWithCrossNestedStackSourceCustomResource74A727EA": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -40,12 +40,21 @@
      }
     ],
     "SourceObjectKeys": [
-     "238ad5eeb6d728bec8e7d742afb5c1d03ec8c73888bddf97ea9a3dffd3dbf7ad.zip"
+     "6e5e47dea668bae2ff62a51b010dbfe9f1243863347a037b706dd627165cc333.zip"
     ],
     "SourceMarkers": [
      {
       "<<marker:0xbaba:0>>": {
-       "Ref": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+       "Fn::Join": [
+        "",
+        [
+         "\"",
+         {
+          "Ref": "referencetoMainStackResourceNestedStackNestedStackResourceNestedStackNestedStackResource185D699DOutputsMainStackResourceNestedStackUserPoolEB3BCBB9Ref"
+         },
+         "\""
+        ]
+       ]
       }
      }
     ],
@@ -55,6 +64,7 @@
     "DestinationBucketName": {
      "Ref": "Bucket83908E77"
     },
+    "WaitForDistributionInvalidation": true,
     "Prune": true,
     "OutputObjectKeys": true
    },
@@ -193,7 +203,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "9a1fcb4a7ecba81ad70e9d3fb241f6794497da945dae5f25924e4dd002b65f2d.zip"
+     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
     },
     "Environment": {
      "Variables": {
@@ -203,7 +213,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeploymentAwsCliLayerB82B26A3"
+      "Ref": "DeployWithCrossNestedStackSourceAwsCliLayer1F4C151B"
      }
     ],
     "Role": {
@@ -212,7 +222,7 @@
       "Arn"
      ]
     },
-    "Runtime": "python3.11",
+    "Runtime": "python3.13",
     "Timeout": 900
    },
    "DependsOn": [

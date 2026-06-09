@@ -5,7 +5,7 @@ import * as cdk from '../../core';
 import * as cxapi from '../../cx-api';
 import { LogRetention, RetentionDays } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('log retention', () => {
   test('log retention construct', () => {
@@ -43,15 +43,7 @@ describe('log retention', () => {
 
     Template.fromStack(stack).hasResourceProperties('AWS::Lambda::Function', {
       Handler: 'index.handler',
-      Runtime: {
-        'Fn::FindInMap': [
-          'LatestNodeRuntimeMap',
-          {
-            Ref: 'AWS::Region',
-          },
-          'value',
-        ],
-      },
+      Runtime: 'nodejs22.x',
     });
 
     Template.fromStack(stack).hasResourceProperties('Custom::LogRetention', {

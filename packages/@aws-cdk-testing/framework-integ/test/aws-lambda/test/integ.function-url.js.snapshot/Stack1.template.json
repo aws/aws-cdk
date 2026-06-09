@@ -138,6 +138,20 @@
     "Principal": "*"
    }
   },
+  "NoAuthFunctionUrlsinvokefunction95ED1A84": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "NoAuthFunctionUrls65ABC157",
+      "Arn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "*"
+   }
+  },
   "CorsFunctionUrlsServiceRole6227B597": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -222,6 +236,20 @@
     "Principal": "*"
    }
   },
+  "CorsFunctionUrlsinvokefunctionC0E078FD": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "CorsFunctionUrlsD81CF424",
+      "Arn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
+    "Principal": "*"
+   }
+  },
   "StreamFunctionUrlsServiceRoleAF76EC5D": {
    "Type": "AWS::IAM::Role",
    "Properties": {
@@ -296,6 +324,20 @@
      ]
     },
     "FunctionUrlAuthType": "NONE",
+    "Principal": "*"
+   }
+  },
+  "StreamFunctionUrlsinvokefunction7DC2262A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "StreamFunctionUrlsAAB55C9C",
+      "Arn"
+     ]
+    },
+    "InvokedViaFunctionUrl": true,
     "Principal": "*"
    }
   }

@@ -1,7 +1,8 @@
-import { ScheduleTargetBase, ScheduleTargetBaseProps } from './target';
-import { IRole } from '../../aws-iam';
-import { IScheduleTarget } from '../../aws-scheduler';
-import * as sns from '../../aws-sns';
+import type { ScheduleTargetBaseProps } from './target';
+import { ScheduleTargetBase } from './target';
+import type { IRole } from '../../aws-iam';
+import type { IScheduleTarget } from '../../aws-scheduler';
+import type * as sns from '../../aws-sns';
 
 /**
  * Use an Amazon SNS topic as a target for AWS EventBridge Scheduler.

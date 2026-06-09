@@ -1,5 +1,5 @@
 import { AssertionError } from './error';
-import { Resource, Template } from './template';
+import type { Resource, Template } from './template';
 
 /**
  * Check a template for cyclic dependencies

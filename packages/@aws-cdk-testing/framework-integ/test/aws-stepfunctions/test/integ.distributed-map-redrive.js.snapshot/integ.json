@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "DistributedMap/DefaultTest": {
+      "stacks": [
+        "UnlabeledDistributedMapRedrive",
+        "LabeledDistributedMapRedrive"
+      ],
+      "assertionStack": "DistributedMap/DefaultTest/DeployAssert",
+      "assertionStackName": "DistributedMapDefaultTestDeployAssertFD6CBCC4"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

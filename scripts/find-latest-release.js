@@ -16,7 +16,7 @@ async function main(matchRange) {
     throw new Error(`Not a valid range: ${matchRange}`);
   }
 
-  const { stdout, error } = cp.spawnSync('npm', ['view', 'aws-cdk', 'versions', '--json'], { maxBuffer: 10_000_000 });
+  const { stdout, error } = cp.spawnSync('npm', ['view', 'aws-cdk-lib', 'versions', '--json'], { maxBuffer: 10_000_000 });
   if (error) { throw error; }
   const versions = JSON.parse(stdout.toString('utf-8'));
 

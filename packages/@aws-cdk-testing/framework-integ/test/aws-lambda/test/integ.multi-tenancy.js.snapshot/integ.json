@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "lambda-multi-tenancy/DefaultTest": {
+      "stacks": [
+        "aws-cdk-lambda-multi-tenancy"
+      ],
+      "assertionStack": "lambda-multi-tenancy/DefaultTest/DeployAssert",
+      "assertionStackName": "lambdamultitenancyDefaultTestDeployAssert762E2B73"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

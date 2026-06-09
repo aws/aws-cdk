@@ -1,0 +1,13 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "EcsExecBatchTest/DefaultTest": {
+      "stacks": [
+        "EcsExecBatchStack"
+      ],
+      "assertionStack": "EcsExecBatchTest/DefaultTest/DeployAssert",
+      "assertionStackName": "EcsExecBatchTestDefaultTestDeployAssert6BC6470B"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

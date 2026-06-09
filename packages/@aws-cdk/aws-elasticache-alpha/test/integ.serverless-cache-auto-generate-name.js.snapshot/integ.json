@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "aws-cdk-serverless-cache-integ-auto-generate-name/DefaultTest": {
+      "stacks": [
+        "aws-cdk-serverless-cache-auto-generate-name"
+      ],
+      "stackUpdateWorkflow": false,
+      "assertionStack": "aws-cdk-serverless-cache-integ-auto-generate-name/DefaultTest/DeployAssert",
+      "assertionStackName": "awscdkserverlesscacheintegautogeneratenameDefaultTestDeployAssert2DED2717"
+    }
+  },
+  "minimumCliVersion": "2.1033.0"
+}

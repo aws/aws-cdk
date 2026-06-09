@@ -1,0 +1,14 @@
+{
+  "version": "48.0.0",
+  "testCases": {
+    "integ-test-bucket-deployment-security-groups-multiple/DefaultTest": {
+      "stacks": [
+        "test-bucket-deployment-security-groups-multiple"
+      ],
+      "diffAssets": false,
+      "assertionStack": "integ-test-bucket-deployment-security-groups-multiple/DefaultTest/DeployAssert",
+      "assertionStackName": "integtestbucketdeploymentsecuritygroupsmultipleDefaultTestDeployAssert4825C1EE"
+    }
+  },
+  "minimumCliVersion": "2.1027.0"
+}

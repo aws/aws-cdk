@@ -1,9 +1,10 @@
-import { Construct, Node } from 'constructs';
-import { CfnRestApi } from './apigateway.generated';
-import { IRestApi } from './restapi';
-import * as s3 from '../../aws-s3';
+import type { Construct } from 'constructs';
+import { Node } from 'constructs';
+import type { CfnRestApi, IRestApiRef } from './apigateway.generated';
+import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as cxapi from '../../cx-api';
 
 /**
@@ -89,7 +90,7 @@ export abstract class ApiDefinition {
    * Definition to bind to it. Specifically it's required to allow assets to add
    * metadata for tooling like SAM CLI to be able to find their origins.
    */
-  public bindAfterCreate(_scope: Construct, _restApi: IRestApi) {
+  public bindAfterCreate(_scope: Construct, _restApi: IRestApiRef) {
     return;
   }
 }
@@ -134,14 +135,14 @@ export interface ApiDefinitionConfig {
 export class S3ApiDefinition extends ApiDefinition {
   private bucketName: string;
 
-  constructor(bucket: s3.IBucket, private key: string, private objectVersion?: string) {
+  constructor(bucket: s3.IBucketRef, private key: string, private objectVersion?: string) {
     super();
 
-    if (!bucket.bucketName) {
-      throw new ValidationError('bucketName is undefined for the provided bucket', bucket);
+    if (!bucket.bucketRef.bucketName) {
+      throw new ValidationError(lit`BucketNameUndefinedProvidedBucket`, 'bucketName is undefined for the provided bucket', bucket);
     }
 
-    this.bucketName = bucket.bucketName;
+    this.bucketName = bucket.bucketRef.bucketName;
   }
 
   public bind(_scope: Construct): ApiDefinitionConfig {
@@ -163,11 +164,11 @@ export class InlineApiDefinition extends ApiDefinition {
     super();
 
     if (typeof(definition) !== 'object') {
-      throw new UnscopedValidationError('definition should be of type object');
+      throw new UnscopedValidationError(lit`ShouldBeDefinitionShouldType`, 'definition should be of type object');
     }
 
     if (Object.keys(definition).length === 0) {
-      throw new UnscopedValidationError('JSON definition cannot be empty');
+      throw new UnscopedValidationError(lit`JsonDefinitionCannotEmpty`, 'JSON definition cannot be empty');
     }
   }
 
@@ -198,7 +199,7 @@ export class AssetApiDefinition extends ApiDefinition {
     }
 
     if (this.asset.isZipArchive) {
-      throw new ValidationError(`Asset cannot be a .zip file or a directory (${this.path})`, scope);
+      throw new ValidationError(lit`AssetCannotZipFileDirectory`, `Asset cannot be a .zip file or a directory (${this.path})`, scope);
     }
 
     return {
@@ -209,13 +210,13 @@ export class AssetApiDefinition extends ApiDefinition {
     };
   }
 
-  public bindAfterCreate(scope: Construct, restApi: IRestApi) {
+  public bindAfterCreate(scope: Construct, restApi: IRestApiRef) {
     if (!scope.node.tryGetContext(cxapi.ASSET_RESOURCE_METADATA_ENABLED_CONTEXT)) {
       return; // not enabled
     }
 
     if (!this.asset) {
-      throw new ValidationError('bindToResource() must be called after bind()', scope);
+      throw new ValidationError(lit`BindResourceCalledBind`, 'bindToResource() must be called after bind()', scope);
     }
 
     const child = Node.of(restApi).defaultChild as CfnRestApi;

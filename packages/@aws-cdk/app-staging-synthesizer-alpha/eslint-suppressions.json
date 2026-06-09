@@ -1,0 +1,17 @@
+{
+  "lib/app-staging-synthesizer.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 5
+    }
+  },
+  "lib/default-staging-stack.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 4
+    }
+  },
+  "lib/private/app-global.ts": {
+    "@cdklabs/no-throw-default-error": {
+      "count": 1
+    }
+  }
+}

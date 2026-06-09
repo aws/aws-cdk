@@ -1,5 +1,5 @@
 {
-  "version": "35.0.0",
+  "version": "45.0.0",
   "testCases": {
     "noCpuScalingQueueProcessingFargateServiceTest/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "noCpuScalingQueueProcessingFargateServiceTest/DefaultTest/DeployAssert",
       "assertionStackName": "noCpuScalingQueueProcessingFargateServiceTestDefaultTestDeployAssertE4E4F855"
     }
-  }
+  },
+  "minimumCliVersion": "2.1020.2"
 }

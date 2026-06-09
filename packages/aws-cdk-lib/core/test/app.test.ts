@@ -4,9 +4,13 @@ import { Construct } from 'constructs';
 import * as fs from 'fs-extra';
 import { ContextProvider } from '../../cloud-assembly-schema';
 import * as cxapi from '../../cx-api';
-import { CfnResource, DefaultStackSynthesizer, Stack, StackProps } from '../lib';
+import type { StackProps } from '../lib';
+import { CfnResource, DefaultStackSynthesizer, Stack, Stage } from '../lib';
+import { flattenMeta } from './util';
 import { Annotations } from '../lib/annotations';
-import { App, AppProps } from '../lib/app';
+import type { AppProps } from '../lib/app';
+import { App } from '../lib/app';
+import { profileFn } from '../lib/private/perf';
 
 function withApp(props: AppProps, block: (app: App) => void): cxapi.CloudAssembly {
   const app = new App({
@@ -73,13 +77,16 @@ describe('app', () => {
         s1c2: { Type: 'DummyResource', Properties: { Foo: 123 } },
       },
     });
-    expect(stack1.manifest.metadata).toEqual({
-      '/stack1': [{ type: 'meta', data: 111 }],
-      '/stack1/s1c1': [{ type: 'aws:cdk:logicalId', data: 's1c1' }],
-      '/stack1/s1c2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2' },
-          { type: 'aws:cdk:warning', data: 'warning1 [ack: warning1]' },
-          { type: 'aws:cdk:warning', data: 'warning2 [ack: warning2]' }],
+    expect(flattenMeta(stack1.metadata)).toMatchObject({
+      '/stack1': { meta: [111] },
+      '/stack1/s1c1': { 'aws:cdk:logicalId': ['s1c1'] },
+      '/stack1/s1c2': {
+        'aws:cdk:logicalId': ['s1c2'],
+        'aws:cdk:warning': [
+          'warning1 [ack: warning1]',
+          'warning2 [ack: warning2]',
+        ],
+      },
     });
 
     const stack2 = response.stacks[1];
@@ -94,18 +101,25 @@ describe('app', () => {
         s1c2r25F685FFF: { Type: 'ResourceType2' },
       },
     });
-    expect(stack2.manifest.metadata).toEqual({
-      '/stack2/s2c1': [{ type: 'aws:cdk:logicalId', data: 's2c1' }],
-      '/stack2/s1c2': [{ type: 'meta', data: { key: 'value' } }],
-      '/stack2/s1c2/r1':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r1D1791C01' }],
-      '/stack2/s1c2/r2':
-        [{ type: 'aws:cdk:logicalId', data: 's1c2r25F685FFF' }],
+    expect(flattenMeta(stack2.metadata)).toMatchObject({
+      '/stack2/s2c1': {
+        'aws:cdk:logicalId': ['s2c1'],
+      },
+      '/stack2/s1c2': { meta: [{ key: 'value' }] },
+      '/stack2/s1c2/r1': {
+        'aws:cdk:logicalId': ['s1c2r1D1791C01'],
+      },
+      '/stack2/s1c2/r2': {
+        'aws:cdk:logicalId': ['s1c2r25F685FFF'],
+      },
     });
   });
 
   test('context can be passed through CONTEXT_OVERFLOW_LOCATION_ENV', async () => {
     const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    process.on('exit', () => {
+      fs.rmSync(contextDir, { force: true, recursive: true });
+    });
     const overflow = path.join(contextDir, 'overflow.json');
     fs.writeJSONSync(overflow, {
       key1: 'val1',
@@ -131,6 +145,10 @@ describe('app', () => {
 
   test('context passed through CONTEXT_OVERFLOW_LOCATION_ENV is merged with the context passed through CONTEXT_ENV', async () => {
     const contextDir = await fs.mkdtemp(path.join(os.tmpdir(), 'cdk-context'));
+    process.on('exit', () => {
+      fs.rmSync(contextDir, { force: true, recursive: true });
+    });
+
     const contextLocation = path.join(contextDir, 'context-temp.json');
     fs.writeJSONSync(contextLocation, {
       key1: 'val1',
@@ -360,6 +378,49 @@ describe('app', () => {
     expect(app.node.tryGetContext('isString')).toEqual('string');
     expect(app.node.tryGetContext('isNumber')).toEqual(10);
     expect(app.node.tryGetContext('isObject')).toEqual({ isString: 'string', isNumber: 10 });
+  });
+
+  test('App.of() returns the app when scope is app', () => {
+    const app = new App();
+    expect(App.of(app)).toBe(app);
+  });
+
+  test('App.of() returns the app when scope is stack->stage->app', () => {
+    const app = new App();
+    const stage = new Stage(app, 'TestStage');
+    const stack = new Stack(stage, 'TestStack');
+    expect(App.of(stack)).toBe(app);
+  });
+
+  test('App performance counter report only contains telemetry: true measurements', () => {
+    // GIVEN
+    const countersDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-counters'));
+    const countersFile = path.join(countersDir, 'counters.json');
+    process.env[cxapi.PERF_COUNTERS_FILE_ENV] = countersFile;
+    try {
+      const yes = profileFn('yes', { telemetry: true })(() => {});
+      const no = profileFn('no')(() => {});
+
+      // WHEN
+      const app = new App({
+        outdir: countersDir,
+      });
+      yes();
+      no();
+      app.synth();
+
+      // THEN
+      const counters = JSON.parse(fs.readFileSync(countersFile, 'utf-8')).counters;
+      expect(counters).toMatchObject({
+        yes: expect.anything(),
+      });
+      expect(counters).not.toMatchObject({
+        no: expect.anything(),
+      });
+    } finally {
+      fs.rmSync(countersDir, { force: true, recursive: true });
+      delete process.env[cxapi.PERF_COUNTERS_FILE_ENV];
+    }
   });
 });
 

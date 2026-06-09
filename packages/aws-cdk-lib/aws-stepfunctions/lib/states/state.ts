@@ -1,9 +1,12 @@
-import { IConstruct, Construct, Node } from 'constructs';
+import type { IConstruct } from 'constructs';
+import { Construct, Node } from 'constructs';
 import { Token, UnscopedValidationError } from '../../../core';
-import { Condition } from '../condition';
+import { lit } from '../../../core/lib/private/literal-string';
+import type { Condition } from '../condition';
 import { FieldUtils } from '../fields';
-import { StateGraph } from '../state-graph';
-import { CatchProps, Errors, IChainable, INextable, ProcessorConfig, ProcessorMode, QueryLanguage, RetryProps } from '../types';
+import type { StateGraph } from '../state-graph';
+import type { CatchProps, IChainable, INextable, ProcessorConfig, RetryProps } from '../types';
+import { Errors, ProcessorMode, QueryLanguage } from '../types';
 
 /**
  * Properties shared by all states
@@ -342,8 +345,7 @@ export abstract class State extends Construct implements IChainable {
     if (this.containingGraph === graph) { return; }
 
     if (this.containingGraph) {
-      // eslint-disable-next-line max-len
-      throw new UnscopedValidationError(`Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
+      throw new UnscopedValidationError(lit`StateAlreadyInGraph`, `Trying to use state '${this.stateId}' in ${graph}, but is already in ${this.containingGraph}. Every state can only be used in one graph.`);
     }
 
     this.containingGraph = graph;
@@ -412,7 +414,7 @@ export abstract class State extends Construct implements IChainable {
   protected makeNext(next: State) {
     // Can't be called 'setNext' because of JSII
     if (this._next) {
-      throw new UnscopedValidationError(`State '${this.id}' already has a next state`);
+      throw new UnscopedValidationError(lit`StateAlreadyHasNextState`, `State '${this.id}' already has a next state`);
     }
     this._next = next;
     next.addIncoming(this);
@@ -469,7 +471,7 @@ export abstract class State extends Construct implements IChainable {
   protected makeDefault(def: State) {
     // Can't be called 'setDefault' because of JSII
     if (this.defaultChoice) {
-      throw new UnscopedValidationError(`Choice '${this.id}' already has a default next state`);
+      throw new UnscopedValidationError(lit`ChoiceAlreadyHasDefaultNext`, `Choice '${this.id}' already has a default next state`);
     }
     this.defaultChoice = def;
   }
@@ -588,7 +590,7 @@ export abstract class State extends Construct implements IChainable {
   protected renderQueryLanguage(topLevelQueryLanguage?: QueryLanguage): any {
     topLevelQueryLanguage = topLevelQueryLanguage ?? QueryLanguage.JSON_PATH;
     if (topLevelQueryLanguage === QueryLanguage.JSONATA && this.queryLanguage === QueryLanguage.JSON_PATH) {
-      throw new UnscopedValidationError(`'queryLanguage' can not be 'JSONPath' if set to 'JSONata' for whole state machine ${this.node.path}`);
+      throw new UnscopedValidationError(lit`ConflictingQueryLanguages`, `'queryLanguage' can not be 'JSONPath' if set to 'JSONata' for whole state machine ${this.node.path}`);
     }
     const queryLanguage = topLevelQueryLanguage === QueryLanguage.JSON_PATH && this.queryLanguage === QueryLanguage.JSONATA
       ? QueryLanguage.JSONATA : undefined;
@@ -780,7 +782,7 @@ function compareErrors(a?: string[], b?: string[]) {
  */
 function validateErrors(errors?: string[]) {
   if (errors?.includes(Errors.ALL) && errors.length > 1) {
-    throw new UnscopedValidationError(`${Errors.ALL} must appear alone in an error list`);
+    throw new UnscopedValidationError(lit`ErrorAllMustAppearAlone`, `${Errors.ALL} must appear alone in an error list`);
   }
 }
 
@@ -803,7 +805,7 @@ export function renderJsonPath(jsonPath?: string): undefined | null | string {
   if (jsonPath === undefined) { return undefined; }
 
   if (!Token.isUnresolved(jsonPath) && !jsonPath.startsWith('$')) {
-    throw new UnscopedValidationError(`Expected JSON path to start with '$', got: ${jsonPath}`);
+    throw new UnscopedValidationError(lit`InvalidJsonPathStart`, `Expected JSON path to start with '$', got: ${jsonPath}`);
   }
   return jsonPath;
 }
@@ -819,14 +821,14 @@ interface Prefixable {
  * Whether an object is a Prefixable
  */
 function isPrefixable(x: any): x is Prefixable {
-  return typeof(x) === 'object' && x.addPrefix;
+  return typeof(x) === 'object' && 'addPrefix' in x;
 }
 
 /**
  * Whether an object is INextable
  */
 function isNextable(x: any): x is INextable {
-  return typeof(x) === 'object' && x.next;
+  return typeof(x) === 'object' && 'next' in x;
 }
 
 /**

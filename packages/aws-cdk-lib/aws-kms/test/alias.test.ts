@@ -5,7 +5,8 @@ import { ArnPrincipal, PolicyStatement } from '../../aws-iam';
 import { App, Arn, Aws, CfnOutput, Stack } from '../../core';
 import { KMS_ALIAS_NAME_REF, KMS_APPLY_IMPORTED_ALIAS_PERMISSIONS_TO_PRINCIPAL } from '../../cx-api';
 import { Alias } from '../lib/alias';
-import { IKey, Key } from '../lib/key';
+import type { IKey } from '../lib/key';
+import { Key } from '../lib/key';
 
 test('default alias', () => {
   const app = new App();
@@ -909,6 +910,19 @@ test('aliasArn should be a valid ARN', () => {
     // aliasName already contains the '/'
     resource: alias.aliasName,
   }, stack));
+});
+
+test('Alias keyRef should reference the Alias, not the underlying key', () => {
+  // GIVEN
+  const app = new App();
+  const stack = new Stack(app, 'Test');
+  const key = new Key(stack, 'Key');
+
+  // WHEN
+  const alias = key.addAlias('alias/foo');
+
+  // THEN
+  expect(alias.keyRef.keyArn).toEqual(alias.aliasArn);
 });
 
 class AliasOutputsConstruct extends Construct {

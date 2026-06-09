@@ -1,7 +1,7 @@
-import * as child_process from 'child_process';
+import child_process from 'child_process';
 import * as crypto from 'crypto';
 import * as path from 'path';
-import * as sinon from 'sinon';
+import sinon from 'sinon';
 import { DockerBuildSecret, DockerImage, FileSystem } from '../lib';
 
 const dockerCmd = process.env.CDK_DOCKER ?? 'docker';
@@ -232,6 +232,42 @@ describe('bundling', () => {
     expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
       'build', '-t', tag,
       '--target', targetStage,
+      'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
+    ])).toEqual(true);
+  });
+
+  test('bundling with image from asset with network', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+    const network = 'host';
+
+    const image = DockerImage.fromBuild('docker-path', { network });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      network,
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
+      'build', '-t', tag,
+      '--network', network,
       'docker-path',
     ])).toEqual(true);
 
@@ -711,6 +747,93 @@ describe('bundling', () => {
       'alpine',
       'cool', 'command',
     ], { encoding: 'utf-8', stdio: ['ignore', process.stderr, 'inherit'] })).toEqual(true);
+  });
+
+  test('bundling with image from asset with build contexts', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+
+    const image = DockerImage.fromBuild('docker-path', {
+      buildContexts: {
+        mycontext: '/path/to/context',
+        alpine: 'docker-image://alpine:latest',
+      },
+    });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      buildContexts: {
+        mycontext: '/path/to/context',
+        alpine: 'docker-image://alpine:latest',
+      },
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
+      'build', '-t', tag,
+      '--build-context', 'mycontext=/path/to/context',
+      '--build-context', 'alpine=docker-image://alpine:latest',
+      'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
+    ])).toEqual(true);
+  });
+
+  test('bundling with image from asset with build args and build contexts', () => {
+    const spawnSyncStub = sinon.stub(child_process, 'spawnSync').returns({
+      status: 0,
+      stderr: Buffer.from('stderr'),
+      stdout: Buffer.from('stdout'),
+      pid: 123,
+      output: ['stdout', 'stderr'],
+      signal: null,
+    });
+
+    const imageHash = '123456abcdef';
+    const fingerprintStub = sinon.stub(FileSystem, 'fingerprint');
+    fingerprintStub.callsFake(() => imageHash);
+
+    const image = DockerImage.fromBuild('docker-path', {
+      buildArgs: {
+        TEST_ARG: 'cdk-test',
+      },
+      buildContexts: {
+        mycontext: '/path/to/context',
+      },
+    });
+    image.run();
+
+    const tagHash = crypto.createHash('sha256').update(JSON.stringify({
+      path: 'docker-path',
+      buildArgs: {
+        TEST_ARG: 'cdk-test',
+      },
+      buildContexts: {
+        mycontext: '/path/to/context',
+      },
+    })).digest('hex');
+    const tag = `cdk-${tagHash}`;
+
+    expect(spawnSyncStub.firstCall.calledWith(dockerCmd, [
+      'build', '-t', tag,
+      '--build-arg', 'TEST_ARG=cdk-test',
+      '--build-context', 'mycontext=/path/to/context',
+      'docker-path',
+    ])).toEqual(true);
   });
 
   test('ensure correct Docker CLI arguments are returned', () => {

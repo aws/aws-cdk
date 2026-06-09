@@ -45,7 +45,7 @@
        {
         "Ref": "AWS::Region"
        },
-       "\",\"metrics\":[[\"testNamespace\",\"testName\",\"Bar\",\"Baz\",\"Foo\",\"Bar\"]],\"yAxis\":{}}}]}"
+       "\",\"metrics\":[[\"testNamespace\",\"testName\"]],\"yAxis\":{}}}]}"
       ]
      ]
     },

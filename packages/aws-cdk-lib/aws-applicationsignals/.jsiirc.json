@@ -4,7 +4,7 @@
       "package": "software.amazon.awscdk.services.applicationsignals"
     },
     "dotnet": {
-      "package": "Amazon.CDK.AWS.ApplicationSignals"
+      "namespace": "Amazon.CDK.AWS.ApplicationSignals"
     },
     "python": {
       "module": "aws_cdk.aws_applicationsignals"

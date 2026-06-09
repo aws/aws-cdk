@@ -1247,6 +1247,177 @@ describe('DatabaseCluster', () => {
       }).toThrow("I/O-optimized storage is supported starting with engine version 5.0.0, got '3.6.0'");
     });
   });
+
+  describe('serverless clusters', () => {
+    test('can create a serverless cluster', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+          password: cdk.SecretValue.unsafePlainText('tooshort'),
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 1,
+        },
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 0.5,
+          MaxCapacity: 1,
+        },
+      });
+      // Should not create any instances
+      Template.fromStack(stack).resourceCountIs('AWS::DocDB::DBInstance', 0);
+    });
+
+    test('serverless cluster has empty instance arrays', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      const cluster = new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 2,
+        },
+      });
+
+      // THEN
+      expect(cluster.instanceIdentifiers).toEqual([]);
+      expect(cluster.instanceEndpoints).toEqual([]);
+    });
+
+    test('cannot specify instanceType with serverless configuration', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          vpc,
+          instanceType: ec2.InstanceType.of(ec2.InstanceClass.R5, ec2.InstanceSize.LARGE),
+          serverlessV2ScalingConfiguration: {
+            minCapacity: 0.5,
+            maxCapacity: 1,
+          },
+        });
+      }).toThrow('Cannot specify both instanceType and serverlessV2ScalingConfiguration');
+    });
+
+    test('provisioned cluster requires instanceType', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          vpc,
+        });
+      }).toThrow('Either instanceType (for provisioned clusters) or serverlessV2ScalingConfiguration (for serverless clusters) must be specified');
+    });
+
+    test('serverless cluster with all configuration options', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 1,
+          maxCapacity: 4,
+        },
+        engineVersion: '5.0.0',
+        deletionProtection: true,
+        exportAuditLogsToCloudWatch: true,
+      });
+
+      // THEN
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 1,
+          MaxCapacity: 4,
+        },
+        EngineVersion: '5.0.0',
+        DeletionProtection: true,
+        EnableCloudwatchLogsExports: ['audit'],
+      });
+    });
+
+    test('serverless cluster requires engine version 5.0.0 or higher', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN/THEN
+      expect(() => {
+        new DatabaseCluster(stack, 'Database', {
+          masterUser: {
+            username: 'admin',
+          },
+          vpc,
+          serverlessV2ScalingConfiguration: {
+            minCapacity: 0.5,
+            maxCapacity: 1,
+          },
+          engineVersion: '4.0.0',
+        });
+      }).toThrow("DocumentDB serverless requires engine version 5.0.0 or higher, got '4.0.0'");
+    });
+
+    test('serverless cluster allows engine version 5.0.0', () => {
+      // GIVEN
+      const stack = testStack();
+      const vpc = new ec2.Vpc(stack, 'VPC');
+
+      // WHEN
+      new DatabaseCluster(stack, 'Database', {
+        masterUser: {
+          username: 'admin',
+        },
+        vpc,
+        serverlessV2ScalingConfiguration: {
+          minCapacity: 0.5,
+          maxCapacity: 1,
+        },
+        engineVersion: '5.0.0',
+      });
+
+      // THEN - should not throw
+      Template.fromStack(stack).hasResourceProperties('AWS::DocDB::DBCluster', {
+        EngineVersion: '5.0.0',
+        ServerlessV2ScalingConfiguration: {
+          MinCapacity: 0.5,
+          MaxCapacity: 1,
+        },
+      });
+    });
+  });
 });
 
 function testStack() {

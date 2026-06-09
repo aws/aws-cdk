@@ -755,6 +755,10 @@ new pipelines.CodeBuildStep('Synth', {
   buildEnvironment: {
     computeType: codebuild.ComputeType.LARGE,
     privileged: true,
+    dockerServer: {
+      computeType: codebuild.DockerServerComputeType.SMALL,
+      securityGroups: [mySecurityGroup],
+    },
   },
   timeout: Duration.minutes(90),
   fileSystemLocations: [

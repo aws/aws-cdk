@@ -1,6 +1,6 @@
-import { Construct } from 'constructs';
-import { CfnProject } from './codebuild.generated';
-import { IProject } from './project';
+import type { Construct } from 'constructs';
+import type { CfnProject } from './codebuild.generated';
+import type { IProject } from './project';
 
 /**
  * The type returned from `IFileSystemLocation#bind`.
@@ -8,7 +8,7 @@ import { IProject } from './project';
 export interface FileSystemConfig {
   /**
    * File system location wrapper property.
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-projectfilesystemlocation.html
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codebuild-project-projectfilesystemlocation.html
    */
   readonly location: CfnProject.ProjectFileSystemLocationProperty;
 }

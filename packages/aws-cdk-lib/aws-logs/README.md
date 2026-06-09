@@ -68,14 +68,14 @@ Or more conveniently, write permissions to the log group can be granted as follo
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');
-logGroup.grantWrite(new iam.ServicePrincipal('es.amazonaws.com'));
+logGroup.grants.write(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
 Similarly, read permissions can be granted to the log group as follows.
 
 ```ts
 const logGroup = new logs.LogGroup(this, 'LogGroup');
-logGroup.grantRead(new iam.ServicePrincipal('es.amazonaws.com'));
+logGroup.grants.read(new iam.ServicePrincipal('es.amazonaws.com'));
 ```
 
 Be aware that any ARNs or tokenized values passed to the resource policy will be converted into AWS Account IDs.
@@ -109,9 +109,10 @@ Log events matching a particular filter can be sent to either a Lambda function
 or a Kinesis stream.
 
 If the Kinesis stream lives in a different account, a `CrossAccountDestination`
-object needs to be added in the destination account which will act as a proxy
-for the remote Kinesis stream. This object is automatically created for you
-if you use the CDK Kinesis library.
+object must be explicitly created in the destination account which will act as a proxy
+for the remote Kinesis stream.
+
+Note: The aws-cdk-lib/aws-logs-destinations KinesisDestination construct does not automatically create a CrossAccountDestination for cross-account scenarios.
 
 Create a `SubscriptionFilter`, initialize it with an appropriate `Pattern` (see
 below) and supply the intended destination:
@@ -199,7 +200,6 @@ the name `Namespace/MetricName`.
 
 You can expose a metric on a metric filter by calling the `MetricFilter.metric()` API.
 This has a default of `statistic = 'avg'` if the statistic is not set in the `props`.
-Additionally, if the metric filter was created with a dimension map, those dimensions will be included in the metric.
 
 ```ts
 declare const logGroup: logs.LogGroup;
@@ -403,6 +403,10 @@ new logs.QueryDefinition(this, 'QueryDefinition', {
       'loggingType = "ERROR"',
       'loggingMessage = "A very strange error occurred!"',
     ],
+    statsStatements: [
+      'count(loggingMessage) as loggingErrors',
+      'count(differentLoggingMessage) as differentLoggingErrors',
+    ],
     sort: '@timestamp desc',
     limit: 20,
   }),
@@ -457,6 +461,19 @@ new logs.LogGroup(this, 'LogGroupLambda', {
   dataProtectionPolicy: dataProtectionPolicy,
 });
 ```
+
+## Configure Deletion Protection
+
+Indicates whether deletion protection is enabled for this log group. When enabled, deletion protection blocks all deletion operations until it is explicitly disabled.
+
+For more information, see [Protecting log groups from deletion](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/protecting-log-groups-from-deletion.html).
+
+```ts
+new logs.LogGroup(this, 'LogGroup', {
+  deletionProtectionEnabled: true,
+});
+```
+
 
 ## Field Index Policies
 
@@ -541,6 +558,10 @@ new logs.Transformer(this, 'Transformer', {
 ```
 
 For more details on CloudWatch Logs transformation processors, refer to the [AWS documentation](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CloudWatch-Logs-Transformation-Processors.html).
+
+### Usage of metric filters on transformed logs
+
+In order to use the transformed logs as search pattern, set the parameter `applyOnTransformedLogs: true` in the MetricFilterProps.
 
 ## Notes
 

@@ -6,7 +6,7 @@ import { Bucket } from '../../aws-s3';
 import * as cdk from '../../core';
 import * as sources from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('KinesisEventSource', () => {
   test('sufficiently complex example', () => {

@@ -1,13 +1,22 @@
-import { Construct } from 'constructs';
-import { CfnResponseHeadersPolicy } from './cloudfront.generated';
-import { Duration, Names, Resource, Token, ValidationError, withResolved } from '../../core';
+import type { Construct } from 'constructs';
+import type {
+  IResponseHeadersPolicyRef,
+  ResponseHeadersPolicyReference,
+} from './cloudfront.generated';
+import {
+  CfnResponseHeadersPolicy,
+} from './cloudfront.generated';
+import type { Duration } from '../../core';
+import { Names, Resource, Token, ValidationError, withResolved } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { DetachedConstruct } from '../../core/lib/private/detached-construct';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
 /**
  * Represents a response headers policy.
  */
-export interface IResponseHeadersPolicy {
+export interface IResponseHeadersPolicy extends IResponseHeadersPolicyRef {
   /**
    * The ID of the response headers policy
    * @attribute
@@ -97,17 +106,27 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   public static fromResponseHeadersPolicyId(scope: Construct, id: string, responseHeadersPolicyId: string): IResponseHeadersPolicy {
     class Import extends Resource implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = responseHeadersPolicyId;
+      public readonly responseHeadersPolicyRef = {
+        responseHeadersPolicyId: responseHeadersPolicyId,
+      };
     }
     return new Import(scope, id);
   }
 
   private static fromManagedResponseHeadersPolicy(managedResponseHeadersPolicyId: string): IResponseHeadersPolicy {
-    return new class implements IResponseHeadersPolicy {
+    return new class extends DetachedConstruct implements IResponseHeadersPolicy {
       public readonly responseHeadersPolicyId = managedResponseHeadersPolicyId;
+      public readonly responseHeadersPolicyRef = {
+        responseHeadersPolicyId: managedResponseHeadersPolicyId,
+      };
+      constructor() {
+        super('The result of fromManagedResponseHeadersPolicy can not be used in this API');
+      }
     };
   }
 
   public readonly responseHeadersPolicyId: string;
+  public readonly responseHeadersPolicyRef: ResponseHeadersPolicyReference;
 
   constructor(scope: Construct, id: string, props: ResponseHeadersPolicyProps = {}) {
     super(scope, id, {
@@ -132,6 +151,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
       },
     });
 
+    this.responseHeadersPolicyRef = resource.responseHeadersPolicyRef;
     this.responseHeadersPolicyId = resource.ref;
   }
 
@@ -139,9 +159,14 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     withResolved(behavior.accessControlAllowMethods, (methods) => {
       const allowedMethods = ['GET', 'DELETE', 'HEAD', 'OPTIONS', 'PATCH', 'POST', 'PUT', 'ALL'];
       if (methods.includes('ALL') && methods.length !== 1) {
-        throw new ValidationError("accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.", this);
+        throw new ValidationError(lit`AccessControlAllowMethodsAllCannotBeCombined`, "accessControlAllowMethods - 'ALL' cannot be combined with specific HTTP methods.", this);
       } else if (!methods.every((method) => Token.isUnresolved(method) || allowedMethods.includes(method))) {
-        throw new ValidationError(`accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`, this);
+        throw new ValidationError(lit`AccessControlAllowMethodsContainsUnexpectedMethod`, `accessControlAllowMethods contains unexpected method name; allowed values: ${allowedMethods.join(', ')}`, this);
+      }
+    });
+    withResolved(behavior.accessControlAllowHeaders, (headers) => {
+      if (behavior.accessControlAllowCredentials && headers.some(header => !Token.isUnresolved(header) && header.includes('*'))) {
+        throw new ValidationError(lit`AccessControlAllowHeadersCannotContainWildcard`, 'accessControlAllowHeaders cannot contain "*" or headers with "*" when accessControlAllowCredentials is true', this);
       }
     });
 
@@ -182,7 +207,7 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
     return {
       items: headers.map(header => {
         if (!Token.isUnresolved(header) && readonlyHeaders.includes(header.toLowerCase())) {
-          throw new ValidationError(`Cannot remove read-only header ${header}`, this);
+          throw new ValidationError(lit`CannotRemoveReadOnlyHeader`, `Cannot remove read-only header ${header}`, this);
         }
         return { header };
       }),
@@ -192,11 +217,11 @@ export class ResponseHeadersPolicy extends Resource implements IResponseHeadersP
   private _renderServerTimingHeadersConfig(samplingRate: number): CfnResponseHeadersPolicy.ServerTimingHeadersConfigProperty {
     if (!Token.isUnresolved(samplingRate)) {
       if ((samplingRate < 0 || samplingRate > 100)) {
-        throw new ValidationError(`Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`, this);
+        throw new ValidationError(lit`SamplingRateMustBeBetween0And100`, `Sampling rate must be between 0 and 100 (inclusive), received ${samplingRate}`, this);
       }
 
       if (!hasMaxDecimalPlaces(samplingRate, 4)) {
-        throw new ValidationError(`Sampling rate can have up to four decimal places, received ${samplingRate}`, this);
+        throw new ValidationError(lit`SamplingRateCanHaveUpToFourDecimalPlaces`, `Sampling rate can have up to four decimal places, received ${samplingRate}`, this);
       }
     }
 

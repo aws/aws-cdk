@@ -1,11 +1,13 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
 import { CfnResource, Duration, Stack } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { AssertionsProvider } from './providers';
+import type { ProviderOptions } from './providers';
 
 /**
  * Options for creating a WaiterStateMachine
  */
-export interface WaiterStateMachineOptions {
+export interface WaiterStateMachineOptions extends ProviderOptions {
   /**
    * The total time that the state machine will wait
    * for a successful response
@@ -90,11 +92,13 @@ export class WaiterStateMachine extends Construct {
     this.isCompleteProvider = new AssertionsProvider(this, 'IsCompleteProvider', {
       handler: 'index.isComplete',
       uuid: '76b3e830-a873-425f-8453-eddd85c86925',
+      providerLogLevel: props.providerLogLevel,
     });
 
     const timeoutProvider = new AssertionsProvider(this, 'TimeoutProvider', {
       handler: 'index.onTimeout',
       uuid: '5c1898e0-96fb-4e3e-95d5-f6c67f3ce41a',
+      providerLogLevel: props.providerLogLevel,
     });
 
     const role = new CfnResource(this, 'Role', {

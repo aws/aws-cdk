@@ -1,3 +1,6 @@
+import { UnscopedValidationError } from 'aws-cdk-lib';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
+
 /**
  * A column of a table.
  */
@@ -137,10 +140,10 @@ export class Schema {
    */
   public static char(length: number): Type {
     if (length <= 0 || length > 255) {
-      throw new Error(`char length must be (inclusively) between 1 and 255, but was ${length}`);
+      throw new UnscopedValidationError(lit`CharLengthOutOfRange`, `char length must be (inclusively) between 1 and 255, but was ${length}`);
     }
     if (length % 1 !== 0) {
-      throw new Error(`char length must be a positive integer, was ${length}`);
+      throw new UnscopedValidationError(lit`CharLengthNotInteger`, `char length must be a positive integer, was ${length}`);
     }
     return {
       isPrimitive: true,
@@ -155,10 +158,10 @@ export class Schema {
    */
   public static varchar(length: number): Type {
     if (length <= 0 || length > 65535) {
-      throw new Error(`varchar length must be (inclusively) between 1 and 65535, but was ${length}`);
+      throw new UnscopedValidationError(lit`VarcharLengthOutOfRange`, `varchar length must be (inclusively) between 1 and 65535, but was ${length}`);
     }
     if (length % 1 !== 0) {
-      throw new Error(`varchar length must be a positive integer, was ${length}`);
+      throw new UnscopedValidationError(lit`VarcharLengthNotInteger`, `varchar length must be a positive integer, was ${length}`);
     }
     return {
       isPrimitive: true,
@@ -186,7 +189,7 @@ export class Schema {
    */
   public static map(keyType: Type, valueType: Type): Type {
     if (!keyType.isPrimitive) {
-      throw new Error(`the key type of a 'map' must be a primitive, but was ${keyType.inputString}`);
+      throw new UnscopedValidationError(lit`MapKeyTypeNotPrimitive`, `the key type of a 'map' must be a primitive, but was ${keyType.inputString}`);
     }
     return {
       isPrimitive: false,

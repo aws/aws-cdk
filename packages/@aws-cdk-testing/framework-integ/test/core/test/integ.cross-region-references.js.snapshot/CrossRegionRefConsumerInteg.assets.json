@@ -1,31 +1,31 @@
 {
-  "version": "41.0.0",
+  "version": "53.0.0",
   "files": {
-    "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d": {
+    "931dea6e8e5819cc926c16717b6cc6d2befb2aea4e3a1e84432f57cb7757394f": {
       "displayName": "CrossRegionRefConsumerInteg/Custom::CrossRegionExportReaderCustomResourceProvider Code",
       "source": {
-        "path": "asset.d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d",
+        "path": "asset.931dea6e8e5819cc926c16717b6cc6d2befb2aea4e3a1e84432f57cb7757394f",
         "packaging": "zip"
       },
       "destinations": {
-        "current_account-us-east-2": {
+        "current_account-us-east-2-9e2c4e53": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "d6fa38886a871b64de769ec5016af90a071e6429aa8e7de84f595e4e2462e17d.zip",
+          "objectKey": "931dea6e8e5819cc926c16717b6cc6d2befb2aea4e3a1e84432f57cb7757394f.zip",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }
       }
     },
-    "778ece359c8855771047ebd30547f83db3c96a688a995a5ccda3e9ba5a009726": {
+    "26cb18efb1d9eb77c78de4b281db2d71425e0ec55f0de557c6138d97ee76f833": {
       "displayName": "CrossRegionRefConsumerInteg Template",
       "source": {
         "path": "CrossRegionRefConsumerInteg.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-us-east-2": {
+        "current_account-us-east-2-96fe70e4": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-2",
-          "objectKey": "778ece359c8855771047ebd30547f83db3c96a688a995a5ccda3e9ba5a009726.json",
+          "objectKey": "26cb18efb1d9eb77c78de4b281db2d71425e0ec55f0de557c6138d97ee76f833.json",
           "region": "us-east-2",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-us-east-2"
         }

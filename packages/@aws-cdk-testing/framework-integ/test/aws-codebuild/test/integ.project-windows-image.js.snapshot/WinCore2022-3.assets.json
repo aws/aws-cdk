@@ -1,0 +1,20 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "a78aea08cf1c849d8e5af74f085b179bf70c64ad4a66c55b1b0386b6e68807be": {
+      "displayName": "WinCore2022-3 Template",
+      "source": {
+        "path": "WinCore2022-3.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-22f56a90": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "a78aea08cf1c849d8e5af74f085b179bf70c64ad4a66c55b1b0386b6e68807be.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

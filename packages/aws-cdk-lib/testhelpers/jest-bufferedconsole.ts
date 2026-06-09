@@ -4,7 +4,7 @@
  * A Jest environment that buffers outputs to `console.log()` and only shows it for failing tests.
  */
 import type { EnvironmentContext, JestEnvironment, JestEnvironmentConfig } from '@jest/environment';
-import { Circus } from '@jest/types';
+import type { Circus } from '@jest/types';
 import { TestEnvironment as NodeEnvironment } from 'jest-environment-node';
 
 interface ConsoleMessage {
@@ -100,7 +100,7 @@ export default class TestEnvironment extends NodeEnvironment implements JestEnvi
 type TestDescription = PartialBy<Pick<Circus.TestEntry, 'name' | 'parent'>, 'parent'>;
 
 // Utility type to make specific fields optional
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 function fullTestName(test: TestDescription) {
   let ret = test.name;

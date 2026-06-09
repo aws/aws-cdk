@@ -1,17 +1,17 @@
-import { IEventSourceMapping } from './event-source-mapping';
-import { IFunction } from './function-base';
+import type { IEventSourceMapping } from './event-source-mapping';
+import type { IFunction } from './function-base';
 
 /**
- * The format target function should recieve record in.
+ * The format target function should receive record in.
  */
 export class EventRecordFormat {
   /**
-   * The target function will recieve records as json objects.
+   * The target function will receive records as json objects.
    */
   public static readonly JSON = new EventRecordFormat('JSON');
 
   /**
-   * The target function will recieve records in same format as the schema source.
+   * The target function will receive records in same format as the schema source.
    */
   public static readonly SOURCE = new EventRecordFormat('SOURCE');
 
@@ -49,6 +49,26 @@ export class KafkaSchemaRegistryAccessConfigType {
    * The Secrets Manager ARN of your secret key containing the root CA certificate (X.509 PEM) used for TLS encryption of your schema registry.
    */
   public static readonly SERVER_ROOT_CA_CERTIFICATE = new KafkaSchemaRegistryAccessConfigType('SERVER_ROOT_CA_CERTIFICATE');
+  /**
+   * The name of the virtual host in your schema registry. Lambda uses this broker host as the event source.
+   */
+  public static readonly VIRTUAL_HOST = new KafkaSchemaRegistryAccessConfigType('VIRTUAL_HOST');
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-256 authentication of your self-managed broker.
+   */
+  public static readonly SASL_SCRAM_256_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_256_AUTH');
+  /**
+   * The Secrets Manager ARN of your secret key used for SASL SCRAM-512 authentication of your self-managed broker.
+   */
+  public static readonly SASL_SCRAM_512_AUTH = new KafkaSchemaRegistryAccessConfigType('SASL_SCRAM_512_AUTH');
+  /**
+   * The VPC security group used to manage access to your self-managed brokers.
+   */
+  public static readonly VPC_SECURITY_GROUP = new KafkaSchemaRegistryAccessConfigType('VPC_SECURITY_GROUP');
+  /**
+   * The subnets associated with your VPC. Lambda connects to these subnets to fetch data from your self-managed cluster.
+   */
+  public static readonly VPC_SUBNET = new KafkaSchemaRegistryAccessConfigType('VPC_SUBNET');
 
   /** A custom source access configuration property for schema registry */
   public static of(name: string): KafkaSchemaRegistryAccessConfigType {
