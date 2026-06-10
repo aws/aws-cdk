@@ -1,8 +1,8 @@
 
-import * as child_process from 'child_process';
-import * as fs from 'fs';
-import * as os from 'os';
-import * as path from 'path';
+import child_process from 'child_process';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { version as delayVersion } from 'delay/package.json';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
@@ -29,7 +29,7 @@ beforeEach(() => {
   jest.spyOn(Code, 'fromAsset');
 
   detectPackageInstallationMock = jest.spyOn(PackageInstallation, 'detect').mockReturnValue({
-    isLocal: true,
+    isWorkspacePackage: true,
     version: '0.8.8',
   });
 
@@ -290,6 +290,84 @@ test('throws with ESM and NODEJS_12_X', () => {
   })).toThrow(/ECMAScript module output format is not supported by the nodejs12.x runtime/);
 });
 
+test('allows entry whose filename contains ".." (regression for issue #38017)', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry: '/project/lib/app..js',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('allows entry inside a directory whose name contains ".." (regression for issue #38017)', () => {
+  // pnpm content-addressed tarball deps land at paths like
+  // node_modules/.pnpm/file+..+other+pkg+0.0.1 which contain '..' mid-segment
+  // but are clearly under projectRoot.
+  expect(() => Bundling.bundle(stack, {
+    entry: '/project/node_modules/.pnpm/file+..+other+pkg+0.0.1/lib/handler.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('allows depsLockFilePath inside a directory whose name contains ".." (regression for issue #38017)', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath: '/project/.pnpm/file+..+pkg/yarn.lock',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).not.toThrow();
+});
+
+test('throws when entry is outside projectRoot', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry: '/other/escape.ts',
+    projectRoot,
+    depsLockFilePath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/entryPath \(\/other\/escape\.ts\) should be under projectRoot/);
+});
+
+test('throws when depsLockFilePath is outside projectRoot', () => {
+  expect(() => Bundling.bundle(stack, {
+    entry,
+    projectRoot,
+    depsLockFilePath: '/other/yarn.lock',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/depsLockFilePath \(\/other\/yarn\.lock\) should be under projectRoot/);
+});
+
+test('throws when entry is on a different Windows drive than projectRoot', () => {
+  // On Windows, path.relative() cannot produce a relative path across drives and
+  // returns the absolute target path instead. Simulate that here: mock the
+  // platform, the relative() result, and isAbsolute() to apply win32 rules.
+  const osPlatformMock = jest.spyOn(os, 'platform').mockReturnValue('win32');
+  jest.spyOn(path, 'relative').mockReturnValueOnce('D:\\other\\entry.ts');
+  jest.spyOn(path, 'isAbsolute').mockImplementation((p) => path.win32.isAbsolute(p));
+
+  expect(() => Bundling.bundle(stack, {
+    entry: 'D:\\other\\entry.ts',
+    projectRoot: 'C:\\my-project',
+    depsLockFilePath: 'C:\\my-project\\package-lock.json',
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    forceDockerBundling: true,
+  })).toThrow(/entryPath \(D:\\other\\entry\.ts\) should be under projectRoot/);
+
+  osPlatformMock.mockRestore();
+});
+
 test('esbuild bundling source map default', () => {
   Bundling.bundle(stack, {
     entry,
@@ -394,7 +472,7 @@ test('esbuild bundling with feature flag enabled using Node Latest', () => {
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node24\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });
@@ -583,10 +661,10 @@ test('Detects yarn.lock', () => {
 });
 
 test('Detects pnpm-lock.yaml', () => {
-  const pnpmLock = '/project/pnpm-lock.yaml';
+  const pnpmLock = path.join(__dirname, '..', 'pnpm-lock.yaml');
   Bundling.bundle(stack, {
     entry: __filename,
-    projectRoot,
+    projectRoot: path.dirname(pnpmLock),
     depsLockFilePath: pnpmLock,
     runtime: STANDARD_RUNTIME,
     architecture: Architecture.X86_64,
@@ -731,7 +809,7 @@ test('Local bundling', () => {
 
 test('Incorrect esbuild version', () => {
   detectPackageInstallationMock.mockReturnValueOnce({
-    isLocal: true,
+    isWorkspacePackage: true,
     version: '3.4.5',
   });
 
@@ -1087,7 +1165,7 @@ test('bundling using NODEJS_LATEST doesn\'t externalize anything by default', ()
     bundling: expect.objectContaining({
       command: [
         'bash', '-c',
-        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node22\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
+        '\'esbuild\' \'--bundle\' \'/asset-input/lib/handler.ts\' \'--target=node24\' \'--platform=node\' \'--outfile=/asset-output/index.js\'',
       ],
     }),
   });

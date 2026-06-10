@@ -119,20 +119,10 @@ describe('synthesis', () => {
     const session = app.synth();
 
     // THEN
-    expect(session.getStackByName('one-stack').metadata).toEqual({
-      '/one-stack': [
-        {
-          type: 'aws:cdk:stack-tags',
-          data: [
-            {
-              key: 'boomTag',
-              value: 'BOOM',
-            },
-          ],
-        },
-      ],
-      // no logicalId entry
-    });
+    const metaDataTypes = Object.values(session.getStackByName('one-stack').metadata)
+      .flatMap((xs) => xs.map(x => x.type));
+
+    expect(metaDataTypes).not.toContain('aws:cdk:logicalId');
   });
 
   test('single empty stack', () => {

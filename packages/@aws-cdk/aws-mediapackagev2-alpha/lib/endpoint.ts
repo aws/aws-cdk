@@ -3,7 +3,8 @@ import { RemovalPolicy, ArnFormat, Duration, Fn, Lazy, Names, Resource, Stack, T
 import type { ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
-import type { IRole, PolicyStatement, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
+import type { IRole, AddToResourcePolicyResult } from 'aws-cdk-lib/aws-iam';
+import { Effect, PolicyStatement, StarPrincipal } from 'aws-cdk-lib/aws-iam';
 import { CfnOriginEndpoint } from 'aws-cdk-lib/aws-mediapackagev2';
 import type { IOriginEndpointRef, OriginEndpointReference } from 'aws-cdk-lib/aws-mediapackagev2';
 import { ValidationError, UnscopedValidationError, CfnResource } from 'aws-cdk-lib/core';
@@ -1054,9 +1055,8 @@ export interface IOriginEndpoint extends IResource, IOriginEndpointRef {
    * If you have already defined one, it will append to the policy already created.
    *
    * @param statement - The policy statement to add
-   * @param cdnAuth - Optional CDN authorization configuration. Only the first CDN auth configuration is used if provided multiple times.
    */
-  addToResourcePolicy(statement: PolicyStatement, cdnAuth?: CdnAuthConfiguration): AddToResourcePolicyResult;
+  addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult;
 
   /**
    * Create a CloudWatch metric.
@@ -1829,6 +1829,35 @@ export interface OriginEndpointOptions {
   /**
    * Provide access to MediaPackage V2 Origin Endpoint via secret header.
    *
+   * Use this when your CDN doesn't support AWS Signature Version 4 (SigV4)
+   * authentication. For SigV4-based access with Amazon CloudFront, see
+   * `MediaPackageV2Origin`.
+   *
+   * Setting `cdnAuth` auto-creates the following policy on the OriginEndpoint:
+   *
+   * ```json
+   * {
+   *   "Version":"2012-10-17",
+   *   "Statement": [
+   *     {
+   *       "Sid": "AllowGetObjectAccessForAuthorizedRequest",
+   *       "Effect": "Allow",
+   *       "Principal": "*",
+   *       "Action": "mediapackagev2:GetObject",
+   *       "Resource": "arn:aws:mediapackagev2:us-east-1:111122223333:channelGroup/channelGroupName/channel/channelName/originEndpoint/originEndpointName",
+   *       "Condition": {
+   *         "Bool": {
+   *           "mediapackagev2:RequestHasMatchingCdnAuthHeader": "true"
+   *         }
+   *       }
+   *     }
+   *   ]
+   * }
+   * ```
+   *
+   * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth.html
+   * @see https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
+   *
    * @default undefined - Not configured on endpoint
    */
   readonly cdnAuth?: CdnAuthConfiguration;
@@ -1880,6 +1909,15 @@ export interface OriginEndpointAttributes {
    * @attribute
    */
   readonly originEndpointName: string;
+
+  /**
+   * The AWS region where the origin endpoint lives.
+   *
+   * Required for cross-region imports to construct the correct ARN.
+   *
+   * @default - the importing stack's region
+   */
+  readonly region?: string;
 }
 
 /**
@@ -2538,6 +2576,38 @@ export class Segment {
 
 abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
   /**
+   * Creates an OriginEndpoint construct that represents an external (imported) Origin Endpoint from its ARN.
+   *
+   * The ARN is expected to be in the format:
+   * `arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>/originEndpoint/<endpointName>`
+   */
+  public static fromOriginEndpointArn(scope: Construct, id: string, originEndpointArn: string): IOriginEndpoint {
+    if (Token.isUnresolved(originEndpointArn)) {
+      throw new ValidationError(
+        lit`TokenArnNotSupported`,
+        'Cannot parse a token ARN. Use OriginEndpoint.fromOriginEndpointAttributes() with explicit channelGroupName, channelName, originEndpointName, and region values instead.',
+        scope,
+      );
+    }
+    const parsedArn = Stack.of(scope).splitArn(originEndpointArn, ArnFormat.SLASH_RESOURCE_NAME);
+    // resourceName is "<groupName>/channel/<channelName>/originEndpoint/<endpointName>"
+    const [channelGroupName, , channelName, , originEndpointName] = parsedArn.resourceName?.split('/') ?? [];
+    if (!channelGroupName || !channelName || !originEndpointName) {
+      throw new ValidationError(
+        lit`InvalidOriginEndpointArn`,
+        `Could not parse origin endpoint ARN: ${originEndpointArn}. Expected format: arn:<partition>:mediapackagev2:<region>:<account>:channelGroup/<groupName>/channel/<channelName>/originEndpoint/<endpointName>`,
+        scope,
+      );
+    }
+    return OriginEndpointBase.fromOriginEndpointAttributes(scope, id, {
+      channelGroupName,
+      channelName,
+      originEndpointName,
+      region: parsedArn.region,
+    });
+  }
+
+  /**
    * Creates an OriginEndpoint construct that represents an external (imported) Origin Endpoint.
    */
   public static fromOriginEndpointAttributes(scope: Construct, id: string, attrs: OriginEndpointAttributes): IOriginEndpoint {
@@ -2563,6 +2633,7 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
         resource: `channelGroup/${attrs.channelGroupName}/channel/${this.channelName}/originEndpoint`,
         arnFormat: ArnFormat.SLASH_RESOURCE_NAME,
         resourceName: this.originEndpointName,
+        region: attrs.region,
       });
     }
 
@@ -2611,36 +2682,21 @@ abstract class OriginEndpointBase extends Resource implements IOriginEndpoint {
 
   /**
    * CDN authorization configuration to be applied when the policy is created.
+   * Set by subclass constructors when `cdnAuth` is provided in props.
    */
-  private cdnAuthConfig?: CdnAuthConfiguration;
-
-  /**
-   * Set CDN auth config. Used by subclass constructors.
-   * @internal
-   */
-  protected _setCdnAuth(cdnAuth: CdnAuthConfiguration): void {
-    if (!this.cdnAuthConfig) {
-      this.cdnAuthConfig = cdnAuth;
-    }
-  }
+  protected cdnAuthConfig?: CdnAuthConfiguration;
 
   /**
    * Configure origin endpoint policy.
    *
-   * You can only add 1 OriginEndpointPolicy to an OriginEndpoint.
-   * If you have already defined one, it will append to the policy already created.
+   * You can only add 1 OriginEndpointPolicy to an OriginEndpoint. If you have already
+   * defined one, this will append to the policy already created.
+   *
+   * To configure CDN authentication, set `cdnAuth` on the construct's props instead.
    *
    * @param statement - The policy statement to add
-   * @param cdnAuth - Optional CDN authorization configuration. If provided, the policy will be
-   *                  created with CDN authentication enabled using secrets from AWS Secrets Manager.
-   *                  If cdnAuth is provided multiple times, only the first configuration is used.
    */
-  public addToResourcePolicy(statement: PolicyStatement, cdnAuth?: CdnAuthConfiguration): AddToResourcePolicyResult {
-    // Store CDN auth config if provided (only if not already set)
-    if (cdnAuth && !this.cdnAuthConfig) {
-      this.cdnAuthConfig = cdnAuth;
-    }
-
+  public addToResourcePolicy(statement: PolicyStatement): AddToResourcePolicyResult {
     if (!this.policy && this.autoCreatePolicy) {
       this.policy = new OriginEndpointPolicy(this, 'Policy', {
         originEndpoint: this,
@@ -2887,6 +2943,23 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
       });
     });
 
+    // Validate manifest name uniqueness across all manifest types
+    const allManifestNames = [
+      ...this.hlsManifests.map(m => m.manifestName),
+      ...this.llHlsManifests.map(m => m.manifestName),
+      ...this.dashManifests.map(m => m.manifestName),
+      ...this.mssManifests.map(m => m.manifestName),
+    ].filter(name => !Token.isUnresolved(name));
+
+    const duplicateNames = [...new Set(allManifestNames.filter((name, i) => allManifestNames.indexOf(name) !== i))];
+    if (duplicateNames.length > 0) {
+      throw new ValidationError(
+        lit`DuplicateManifestName`,
+        `Duplicate manifest names: [${duplicateNames.join(', ')}]. Each manifest in an OriginEndpoint must have a unique manifestName.`,
+        this,
+      );
+    }
+
     // Validate manifest and container type compatibility
     if (this.mssManifests.length > 0 && containerType !== ContainerType.ISM) {
       throw new ValidationError(lit`MssRequiresIsm`, 'MSS manifests require ISM container type. Use Segment.ism() for MSS manifests.', this);
@@ -2911,10 +2984,10 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
       originEndpointName: this.physicalName,
       description: props.description,
       tags: props?.tags ? renderTags(props.tags) : undefined,
-      hlsManifests: Lazy.any({ produce: () => this.hlsManifests }, { omitEmptyArray: true }),
-      lowLatencyHlsManifests: Lazy.any({ produce: () => this.llHlsManifests }, { omitEmptyArray: true }),
-      dashManifests: Lazy.any({ produce: () => this.dashManifests }, { omitEmptyArray: true }),
-      mssManifests: Lazy.any({ produce: () => this.mssManifests }, { omitEmptyArray: true }),
+      hlsManifests: omitEmptyArray(this.hlsManifests),
+      lowLatencyHlsManifests: omitEmptyArray(this.llHlsManifests),
+      dashManifests: omitEmptyArray(this.dashManifests),
+      mssManifests: omitEmptyArray(this.mssManifests),
       containerType: containerType,
       startoverWindowSeconds: props.startoverWindow?.toSeconds(),
       segment: this.segmentValidation(containerType, props.segment),
@@ -2953,9 +3026,37 @@ export class OriginEndpoint extends OriginEndpointBase implements IOriginEndpoin
 
     origin.applyRemovalPolicy(props?.removalPolicy ?? RemovalPolicy.DESTROY);
 
-    // Pre-set CDN auth config if provided in props
+    // When cdnAuth is set, pre-create the endpoint policy with the AWS-recommended gating
+    // statement. The principal is `*` (anonymous) because CDN requests to MediaPackage are
+    // unsigned HTTPS — only the matching CDN-Identifier header proves authorisation.
+    // See https://docs.aws.amazon.com/mediapackage/latest/userguide/cdn-auth-setup.html
     if (props.cdnAuth) {
-      this._setCdnAuth(props.cdnAuth);
+      if (props.cdnAuth.secrets.length === 0) {
+        throw new ValidationError(
+          lit`CdnAuthSecretsRequired`,
+          'cdnAuth.secrets must contain at least one secret. CDN authorization needs a secret to validate incoming CDN-Identifier headers.',
+          this,
+        );
+      }
+
+      this.cdnAuthConfig = props.cdnAuth;
+      this.addToResourcePolicy(new PolicyStatement({
+        sid: 'AllowGetObjectAccessForAuthorizedRequest',
+        effect: Effect.ALLOW,
+        principals: [new StarPrincipal()],
+        actions: ['mediapackagev2:GetObject'],
+        resources: [this.originEndpointArn],
+        conditions: {
+          Bool: {
+            'mediapackagev2:RequestHasMatchingCdnAuthHeader': 'true',
+          },
+        },
+      }));
     }
   }
 }
+
+function omitEmptyArray<A>(a: Array<A>): Array<A> | undefined {
+  return a.length > 0 ? a : undefined;
+}
+
