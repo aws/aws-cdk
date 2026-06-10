@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:22:18)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:22:18)",
         "...node internals..."
       ]
     }
@@ -16,16 +16,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "CloudFrontTarget.getHostedZoneId (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-targets/lib/cloudfront-target.js:27:13)",
-        "CloudFrontTarget.bind (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-targets/lib/cloudfront-target.js:63:44)",
-        "new RecordSet (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:396:83)",
-        "new RecordSet (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ARecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:560:13)",
-        "new ARecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90:1)",
+        "CloudFrontTarget.getHostedZoneId (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-targets/lib/cloudfront-target.js:27:13)",
+        "CloudFrontTarget.bind (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-targets/lib/cloudfront-target.js:63:44)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:396:83)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:560:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90:1)",
         "Array.forEach (:)",
-        "new HttpsRedirect (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)"
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)"
       ]
     }
   ],
@@ -43,16 +43,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -64,16 +64,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -160,16 +160,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
-        "new CrossRegionSsmReaderProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:66:9)",
-        "CrossRegionSsmReaderProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:63:28)",
-        "CrossRegionSsmReaderProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:54:21)",
-        "new ExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
-        "ExportReader.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
-        "ExportWriter.addToExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
-        "ExportWriter.exportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
-        "createCrossRegionImportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
-        "resolveValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:131:25)",
+        "new CrossRegionSsmReaderProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:65:9)",
+        "CrossRegionSsmReaderProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:62:28)",
+        "CrossRegionSsmReaderProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:53:21)",
+        "new ExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
+        "ExportReader.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
       ]
     }
   ],
@@ -181,16 +181,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResourceProviderBase (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
-        "new CrossRegionSsmReaderProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:66:9)",
-        "CrossRegionSsmReaderProvider.getOrCreateProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:63:28)",
-        "CrossRegionSsmReaderProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:54:21)",
-        "new ExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
-        "ExportReader.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
-        "ExportWriter.addToExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
-        "ExportWriter.exportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
-        "createCrossRegionImportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
-        "resolveValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
+        "new CustomResourceProviderBase (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider-base.js:153:24)",
+        "new CrossRegionSsmReaderProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:65:9)",
+        "CrossRegionSsmReaderProvider.getOrCreateProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:62:28)",
+        "CrossRegionSsmReaderProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/dist/core/cross-region-ssm-reader-provider.generated.js:53:21)",
+        "new ExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:31:104)",
+        "ExportReader.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)"
       ]
     }
   ],
@@ -202,11 +202,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
-        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new HttpsRedirect (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:43:32)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:43:32)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
         "...node internals..."
       ]
     }
@@ -219,11 +219,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Distribution (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
-        "new Distribution (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Distribution (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new HttpsRedirect (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:53:28)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cloudfront/lib/distribution.js:293:34)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Distribution (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:53:28)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
         "...node internals..."
       ]
     }
@@ -236,14 +236,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new RecordSet (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:391:31)",
-        "new RecordSet (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new ARecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:560:13)",
-        "new ARecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90:1)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:391:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:560:13)",
+        "new ARecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:90:1)",
         "Array.forEach (:)",
-        "new HttpsRedirect (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
         "...node internals..."
       ]
     }
@@ -256,14 +256,14 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new RecordSet (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:391:31)",
-        "new RecordSet (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new AaaaRecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53/lib/record-set.js:626:13)",
-        "new AaaaRecord (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:91: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:91:1)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:391:31)",
+        "new RecordSet (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new AaaaRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53/lib/record-set.js:626:13)",
+        "new AaaaRecord (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:91: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:91:1)",
         "Array.forEach (:)",
-        "new HttpsRedirect (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
+        "new HttpsRedirect (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-route53-patterns/lib/website-redirect.js:83:21)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-route53-patterns/test/integ.hosted-redirect.js:33:18)",
         "...node internals..."
       ]
     }
@@ -276,16 +276,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new ExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:51:31)",
-        "ExportReader.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
-        "ExportWriter.addToExportReader (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
-        "ExportWriter.exportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
-        "createCrossRegionImportValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
-        "resolveValue (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)",
-        "resolveReferences (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)"
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:51:31)",
+        "ExportReader.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-reader-provider.js:23:15)",
+        "ExportWriter.addToExportReader (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:151:68)",
+        "ExportWriter.exportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/cross-region-export-providers/export-writer-provider.js:112:21)",
+        "createCrossRegionImportValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:357:35)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:237:20)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)"
       ]
     }
   ]

@@ -3,7 +3,7 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -22,8 +22,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:69:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:69:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -36,8 +36,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:70:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:70:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -50,8 +50,8 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:71:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:71:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -64,16 +64,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -85,16 +85,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
-        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
-        "DefaultStackSynthesizer.synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
-        "/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
-        "visit (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
-        "synthesizeTree (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
-        "synthesize (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
-        "App.synth (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
       ]
     }
   ],
@@ -106,11 +106,11 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
-        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Bucket (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:47:24)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.js:1447:30)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Bucket (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:47:24)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -251,12 +251,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:51:26)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:51:26)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -309,13 +309,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3FileProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:81:29)",
-        "S3FileProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3FileProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:81:29)",
+        "S3FileProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -358,12 +358,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:51:26)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:53:23)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:51:26)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:53:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -376,12 +376,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:51:26)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:57:23)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:51:26)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:57:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -394,12 +394,12 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new CustomResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:53:9)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:53:9)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -428,13 +428,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:78:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:78:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -487,13 +487,13 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:83:28)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:83:28)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -632,15 +632,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3FileProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:81:29)",
-        "S3FileProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3FileProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:81:29)",
+        "S3FileProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -745,16 +745,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3FileProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:80:25)",
-        "S3FileProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3FileProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:80:25)",
+        "S3FileProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:48:23)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
       ]
     }
   ],
@@ -798,15 +798,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:78:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:78:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -825,15 +825,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:83:28)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:83:28)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -970,16 +970,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
       ]
     }
   ],
@@ -1135,16 +1135,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
       ]
     }
   ],
@@ -1300,16 +1300,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)"
       ]
     }
   ],
@@ -1428,15 +1428,15 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new WaiterStateMachine (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:133:30)",
-        "new WaiterStateMachine (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:194:44)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
-        "<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:133:30)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:194:44)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:80:15)",
         "...node internals..."
       ]
     }
@@ -1449,16 +1449,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:671:27)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3FileProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:81:29)",
-        "S3FileProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:671:27)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3FileProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:81:29)",
+        "S3FileProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)"
       ]
     }
   ],
@@ -1470,16 +1470,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3FileProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:80:25)",
-        "S3FileProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
-        "new S3File (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3FileProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:80:25)",
+        "S3FileProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)",
+        "new S3File (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:52:42)"
       ]
     }
   ],
@@ -1527,16 +1527,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3FileProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:80:25)",
-        "S3FileProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3FileProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:80:25)",
+        "S3FileProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-file.js:74:67)"
       ]
     }
   ],
@@ -1548,16 +1548,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:671:27)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:83:28)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:671:27)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:83:28)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
       ]
     }
   ],
@@ -1569,16 +1569,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
       ]
     }
   ],
@@ -1642,16 +1642,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
       ]
     }
   ],
@@ -1663,16 +1663,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:260:22)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:260:22)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
       ]
     }
   ],
@@ -1684,16 +1684,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
       ]
     }
   ],
@@ -1749,16 +1749,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
       ]
     }
   ],
@@ -1770,16 +1770,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:260:22)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:260:22)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
       ]
     }
   ],
@@ -1791,16 +1791,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
-        "new Function (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)"
       ]
     }
   ],
@@ -1856,16 +1856,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:257:18)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
       ]
     }
   ],
@@ -1877,16 +1877,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToRolePolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
-        "WrappedClass.createFunction (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:260:22)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:247:33)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:225:29)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:260:22)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)"
       ]
     }
   ],
@@ -1898,16 +1898,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
-        "new Role (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new WaiterStateMachine (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:102:26)",
-        "new WaiterStateMachine (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:194:44)",
-        "new Provider (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "new S3AssertProvider (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
-        "S3AssertProvider.getOrCreate (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
-        "new S3Assert (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
-        "new TestStack (/Users/kornherm/code/aws/aws-cdk-a/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)"
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:102:26)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:194:44)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new S3AssertProvider (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:98:25)",
+        "S3AssertProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:72:79)",
+        "new S3Assert (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integration-test-fixtures/s3-assert.js:54:44)",
+        "new TestStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/custom-resources/test/provider-framework/integ.provider.js:62:9)"
       ]
     }
   ],
@@ -1957,16 +1957,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
-        "Grant.addToPrincipalOrResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
-        "WrappedClass.grant (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:33)",
-        "WrappedClass.grantInvoke (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
       ]
     }
   ],
@@ -1978,16 +1978,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
-        "Grant.addToPrincipalOrResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
-        "WrappedClass.grant (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:33)",
-        "WrappedClass.grantInvoke (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
       ]
     }
   ],
@@ -1999,16 +1999,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
-        "Grant.addToPrincipalOrResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
-        "WrappedClass.grant (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:33)",
-        "WrappedClass.grantInvoke (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
       ]
     }
   ],
@@ -2020,16 +2020,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
-        "Grant.addToPrincipalOrResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
-        "WrappedClass.grant (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:33)",
-        "WrappedClass.grantInvoke (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
-        "WrappedClass.addPermissions (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
       ]
     }
   ],
@@ -2041,16 +2041,16 @@
     {
       "type": "aws:cdk:creationStack",
       "data": [
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
-        "new Policy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
-        "WrappedClass.addToPrincipalPolicy (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
-        "WrappedClass.<anonymous> (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
-        "Grant.addToPrincipal (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
-        "Grant.addToPrincipalOrResource (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
-        "WrappedClass.grant (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:33)",
-        "WrappedClass.grantInvoke (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
-        "new WaiterStateMachine (/Users/kornherm/code/aws/aws-cdk-a/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:105:37)"
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:105:37)"
       ]
     }
   ]

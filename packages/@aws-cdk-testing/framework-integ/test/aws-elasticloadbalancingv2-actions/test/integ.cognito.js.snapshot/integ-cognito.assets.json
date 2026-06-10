@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "8b1c21efe0e24332f92ed71e98107d8a27ee1544c62b7b191805e0913fcfdf0f": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -29,16 +29,16 @@
         }
       }
     },
-    "5217cb1b821853b0762609b90d6f15e1d84b81d7aff584c3350d4a3f62421635": {
+    "ad2b2aa61dded797bd99595f38275d39c54bf2f001efde7a85aef1b7e5dc86be": {
       "displayName": "integ-cognito Template",
       "source": {
         "path": "integ-cognito.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-27278422": {
+        "current_account-current_region-6c2d8650": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "5217cb1b821853b0762609b90d6f15e1d84b81d7aff584c3350d4a3f62421635.json",
+          "objectKey": "ad2b2aa61dded797bd99595f38275d39c54bf2f001efde7a85aef1b7e5dc86be.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "d49bf1db2e9aa6c09920f5a0ac00d4de22d0e815c6788ad63f6ec433f7f64b24": {
       "displayName": "integ-distribution-lambda-cross-region/Custom::CrossRegionStringParameterReaderCustomResourceProvider Code",
@@ -16,16 +16,16 @@
         }
       }
     },
-    "df558a06ac388dfa34d001ab3f9275b42fab95b2f6c33d7b5594b6975f98db26": {
+    "1d288bffe898b4f04c33ad57d62555761082c57cc427f7d77223a5cde4c43f9d": {
       "displayName": "integ-distribution-lambda-cross-region Template",
       "source": {
         "path": "integ-distribution-lambda-cross-region.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-eu-west-1-4f94f7a7": {
+        "current_account-eu-west-1-8f8a3ea0": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-eu-west-1",
-          "objectKey": "df558a06ac388dfa34d001ab3f9275b42fab95b2f6c33d7b5594b6975f98db26.json",
+          "objectKey": "1d288bffe898b4f04c33ad57d62555761082c57cc427f7d77223a5cde4c43f9d.json",
           "region": "eu-west-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-eu-west-1"
         }
