@@ -371,16 +371,20 @@ class FragmentedTreeWriter {
 }
 
 function nodeCount(root: Node) {
-  let ret = 0;
-  recurse(root);
-  return ret;
+  let count = 0;
+  const stack = [root];
 
-  function recurse(x: Node) {
-    ret += 1;
-    for (const child of Object.values(x.children ?? {})) {
-      recurse(child);
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    count += 1;
+    if (current.children) {
+      for (const child of Object.values(current.children)) {
+        stack.push(child);
+      }
     }
   }
+
+  return count;
 }
 
 /**
