@@ -74,7 +74,7 @@ export function captureCallStack(upTo: Function | undefined): CallSite[] {
 
 function formatExternalFrame(trace: [string, number, number, string]): string {
   const [filename, line, column, name] = trace;
-  return `${name} (${filename}:${line}:${column})`;
+  return `${name} (${filename}:${line}${column > 0 ? ':' + column : ''})`;
 }
 
 /**
@@ -177,9 +177,9 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
       while (i < stack.length && stack[i].fileName.includes('node:')) {
         i++;
       }
-    } else if (isJsiiRuntime(frame)) {
+    } else if (isHostInternalFrame(frame)) {
       skip({ fileName: 'jsii runtime' });
-      while (i < stack.length && isJsiiRuntime(stack[i])) {
+      while (i < stack.length && isHostInternalFrame(stack[i])) {
         i++;
       }
     } else {
@@ -217,9 +217,12 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
   }
 }
 
-// Detects the jsii runtime bundle (program.js in a temp directory, single-line with high column offsets).
-function isJsiiRuntime(frame: CallSite): boolean {
-  return /^1:\d{4,}$/.test(frame.sourceLocation) && /[/\\]program\.js$/.test(frame.fileName);
+/**
+ * Whether the call site comes from the internals of the host that sent us the stack trace
+ */
+function isHostInternalFrame(frame: CallSite): boolean {
+  const hostDirName = (global as any)[Symbol.for('jsii.context.hostDirName')];
+  return frame.fileName.includes(hostDirName);
 }
 
 interface CallSite {
