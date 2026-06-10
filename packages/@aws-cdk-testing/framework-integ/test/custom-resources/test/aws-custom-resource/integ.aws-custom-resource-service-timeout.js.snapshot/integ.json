@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "testCases": {
     "aws-cdk-customresources-service-timeout-integ-test/DefaultTest": {
       "stacks": [
@@ -11,5 +11,5 @@
       "assertionStackName": "awscdkcustomresourcesservicetimeoutintegtestDefaultTestDeployAssert593A6038"
     }
   },
-  "minimumCliVersion": "2.1125.0"
+  "minimumCliVersion": "2.1126.0"
 }

@@ -35,7 +35,7 @@
      "DomainConfig.AccessPolicies.Options.Statement.0.Action",
      "DomainConfig.AccessPolicies.Options.Statement.0.Resource"
     ],
-    "salt": "1780423228264"
+    "salt": "1780567335807"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete"
@@ -84,7 +84,7 @@
   "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Code": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
