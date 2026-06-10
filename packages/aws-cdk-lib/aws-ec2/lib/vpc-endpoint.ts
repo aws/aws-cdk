@@ -847,16 +847,16 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     port?: number,
     props?: InterfaceVpcEndpointAwsServiceProps,
   ) {
-    const regionPrefix = props?.global ? '' : (Lazy.uncachedString({
+    const regionPrefix = props?.global ? '' : (Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => Stack.of(context.scope).region,
     }) + '.');
-    const defaultEndpointPrefix = Lazy.uncachedString({
+    const defaultEndpointPrefix = Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointPrefix(name, regionName);
       },
     });
-    const defaultEndpointSuffix = Lazy.uncachedString({
+    const defaultEndpointSuffix = Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointSuffix(name, regionName);
