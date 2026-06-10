@@ -26,16 +26,26 @@ export function captureStackTrace(
 ): string[] {
   if (!limit) {
     // Fast path without try/finally
-    return renderCallStackJustMyCode(captureCallStack(below), false);
+    return withExternalTrace(renderCallStackJustMyCode(captureCallStack(below), false));
   }
 
   const previousLimit = Error.stackTraceLimit;
   try {
     Error.stackTraceLimit = limit;
-    return renderCallStackJustMyCode(captureCallStack(below), false);
+    return withExternalTrace(renderCallStackJustMyCode(captureCallStack(below), false));
   } finally {
     Error.stackTraceLimit = previousLimit;
   }
+}
+
+function withExternalTrace(internal: string[]) {
+  const hostTrace: [string, number, number, string][] | undefined =
+    (global as any)[Symbol.for('jsii.context.hostStackTrace')];
+
+  if (hostTrace != null) {
+    return internal.concat(hostTrace.map(formatExternalFrame));
+  }
+  return internal;
 }
 
 /**
@@ -60,6 +70,11 @@ export function captureCallStack(upTo: Function | undefined): CallSite[] {
     trace = parseErrorStack(obj.stack);
   }
   return trace;
+}
+
+function formatExternalFrame(trace: [string, number, number, string]): string {
+  const [filename, line, column, name] = trace;
+  return `${name} (${filename}:${line}:${column})`;
 }
 
 /**
@@ -162,6 +177,11 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
       while (i < stack.length && stack[i].fileName.includes('node:')) {
         i++;
       }
+    } else if (isJsiiRuntime(frame)) {
+      skip({ fileName: 'jsii runtime' });
+      while (i < stack.length && isJsiiRuntime(stack[i])) {
+        i++;
+      }
     } else {
       reportSkipped(true);
       const prefix = indent ? '    at ' : '';
@@ -195,6 +215,11 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
     }
     skipped = [];
   }
+}
+
+// Detects the jsii runtime bundle (program.js in a temp directory, single-line with high column offsets).
+function isJsiiRuntime(frame: CallSite): boolean {
+  return /^1:\d{4,}$/.test(frame.sourceLocation) && /[/\\]program\.js$/.test(frame.fileName);
 }
 
 interface CallSite {
