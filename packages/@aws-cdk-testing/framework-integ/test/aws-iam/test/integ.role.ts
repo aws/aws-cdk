@@ -21,8 +21,8 @@ const importedRole = Role.fromRoleArn(stack, 'TestImportedRole', role.roleArn);
 policy.attachToRole(importedRole);
 
 // Ensure immutable role is not attached to policy, see https://github.com/aws/aws-cdk/issues/38103
-const role2 = new Role(stack, 'Role2', { assumedBy: new AccountRootPrincipal() });
-const immutableImportedRole = Role.fromRoleArn(stack, 'ImportedRole', role2.roleArn, { mutable: false });
+const immutableTestRole = new Role(stack, 'ImmutableTestRole', { assumedBy: new ServicePrincipal('sqs.amazonaws.com') });
+const immutableImportedRole = Role.fromRoleArn(stack, 'ImportedImmutableRole', immutableTestRole.roleArn, { mutable: false });
 policy.attachToRole(immutableImportedRole);
 
 // Role with an external ID

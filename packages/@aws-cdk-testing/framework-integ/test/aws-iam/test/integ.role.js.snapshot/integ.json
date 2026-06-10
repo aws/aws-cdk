@@ -1,5 +1,5 @@
 {
-  "version": "41.0.0",
+  "version": "54.0.0",
   "testCases": {
     "integ-iam-role/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-iam-role/DefaultTest/DeployAssert",
       "assertionStackName": "integiamroleDefaultTestDeployAssert48737E31"
     }
-  }
+  },
+  "minimumCliVersion": "2.1126.0"
 }
