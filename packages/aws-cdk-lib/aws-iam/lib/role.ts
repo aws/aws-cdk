@@ -864,7 +864,7 @@ export interface IRole extends IIdentity, IRoleRef {
   readonly roleName: string;
 
   /**
-   * Whether this role is mutable.
+   * Returns whether role is mutable.
    *
    * @attribute
    */
