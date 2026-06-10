@@ -4,6 +4,7 @@ import type { ArnComponents } from './arn';
 import { Arn, ArnFormat } from './arn';
 import { CfnResource } from './cfn-resource';
 import { RESOURCE_SYMBOL } from './constants';
+import type { ReferenceStrength } from './cross-stack-reference-strength';
 import { ValidationError } from './errors';
 import type { IBox } from './helpers-internal';
 import { Box } from './helpers-internal';
@@ -239,6 +240,25 @@ export abstract class Resource extends Construct implements IResource {
     child.applyRemovalPolicy(policy);
   }
 
+  /**
+   * Override the cross-stack reference strength for this resource.
+   *
+   * When set, any cross-stack reference to this resource will use the specified
+   * mechanism instead of the global default determined by the
+   * `@aws-cdk/core:defaultCrossStackReferences` context key. This is useful for
+   * selectively weakening specific references to avoid the "deadly embrace" problem
+   * without changing the app-wide default.
+   *
+   * @param strength - The reference strength to use for this resource.
+   */
+  public applyCrossStackReferenceStrength(strength: ReferenceStrength) {
+    const child = this.node.defaultChild;
+    if (!child || !CfnResource.isCfnResource(child)) {
+      throw new ValidationError(lit`CannotApplyCrossStackReferenceStrength`, 'Cannot apply CrossStackReferenceStrength: no child or not a CfnResource. Apply the override on the CfnResource directly.', this);
+    }
+    child.applyCrossStackReferenceStrength(strength);
+  }
+
   protected generatePhysicalName(): string {
     return generatePhysicalName(this);
   }
@@ -320,6 +340,7 @@ function mimicReference(refSource: any, producer: IStringProducer): string {
     failConcat: false,
   });
   if (!Reference.isReference(reference)) {
+    // eslint-disable-next-line no-restricted-syntax
     return Lazy.uncachedString(producer);
   }
 
