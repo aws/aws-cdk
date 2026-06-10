@@ -1,5 +1,5 @@
 import { App, ArnFormat, Bitrate, Duration, Lazy, Stack, Token } from 'aws-cdk-lib';
-import { Template } from 'aws-cdk-lib/assertions';
+import { Template, Match } from 'aws-cdk-lib/assertions';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 
@@ -722,4 +722,109 @@ test('imported router output has undefined createdAt and updatedAt', () => {
   const imported = RouterOutput.fromRouterOutputArn(stack, 'ImportedOutput3', 'arn:aws:mediaconnect:us-east-1:123456789012:router-output:test');
   expect(imported.createdAt).toBeUndefined();
   expect(imported.updatedAt).toBeUndefined();
+});
+
+test('MediaLive input transit encryption auto-creates a role and orders its policy before the router output', () => {
+  const secret = new Secret(stack, 'secret');
+
+  new RouterOutput(stack, 'routerOutput', {
+    routerOutputName: 'transit-auto-role',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterOutputTier.OUTPUT_20,
+    configuration: RouterOutputConfiguration.mediaLiveInput({
+      mediaLiveInputArn: 'arn:aws:medialive:us-east-1:123456789012:input:1234567',
+      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
+      destinationTransitEncryption: { secret },
+    }),
+  });
+
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::MediaConnect::RouterOutput', {
+    Configuration: {
+      MediaLiveInput: {
+        DestinationTransitEncryption: { EncryptionKeyType: 'SECRETS_MANAGER' },
+      },
+    },
+  });
+
+  template.hasResource('AWS::MediaConnect::RouterOutput', {
+    DependsOn: Match.arrayWith([Match.stringLikeRegexp('DestinationTransitEncryptionRoleDefaultPolicy')]),
+  });
+});
+
+test('SRT output encryption auto-creates a role and orders its policy before the router output', () => {
+  const secret = new Secret(stack, 'secret');
+
+  new RouterOutput(stack, 'routerOutput', {
+    routerOutputName: 'srt-auto-role',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterOutputTier.OUTPUT_20,
+    configuration: RouterOutputConfiguration.standard({
+      protocol: RouterOutputProtocol.srtCaller({
+        destinationAddress: '203.0.113.10',
+        destinationPort: 9001,
+        minimumLatency: Duration.millis(200),
+        encryptionConfiguration: { secret },
+      }),
+      networkInterface,
+    }),
+  });
+
+  Template.fromStack(stack).hasResource('AWS::MediaConnect::RouterOutput', {
+    DependsOn: Match.arrayWith([Match.stringLikeRegexp('EncryptionRoleDefaultPolicy')]),
+  });
+});
+
+test('MediaLive input transit encryption defaults to AUTOMATIC and adds no role or dependency when no secret is given', () => {
+  new RouterOutput(stack, 'routerOutput', {
+    routerOutputName: 'transit-automatic',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterOutputTier.OUTPUT_20,
+    configuration: RouterOutputConfiguration.mediaLiveInput({
+      mediaLiveInputArn: 'arn:aws:medialive:us-east-1:123456789012:input:1234567',
+      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
+    }),
+  });
+
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::MediaConnect::RouterOutput', {
+    Configuration: {
+      MediaLiveInput: {
+        DestinationTransitEncryption: { EncryptionKeyType: 'AUTOMATIC' },
+      },
+    },
+  });
+  // No secret means no auto-created role and no ordering dependency on the router output.
+  const roles = template.findResources('AWS::IAM::Role', {
+    Properties: { Description: 'Auto-generated MediaConnect role for accessing the encryption secret' },
+  });
+  expect(Object.keys(roles)).toHaveLength(0);
+  template.hasResource('AWS::MediaConnect::RouterOutput', { DependsOn: Match.absent() });
+});
+
+test('MediaLive input transit encryption with an explicit role does not auto-create a role', () => {
+  const role = new Role(stack, 'role', { assumedBy: new ServicePrincipal('mediaconnect.amazonaws.com') });
+  const secret = new Secret(stack, 'secret');
+
+  new RouterOutput(stack, 'routerOutput', {
+    routerOutputName: 'transit-explicit-role',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterOutputTier.OUTPUT_20,
+    configuration: RouterOutputConfiguration.mediaLiveInput({
+      mediaLiveInputArn: 'arn:aws:medialive:us-east-1:123456789012:input:1234567',
+      mediaLivePipelineId: MediaLivePipeline.PIPELINE_0,
+      destinationTransitEncryption: { role, secret },
+    }),
+  });
+
+  const roles = Template.fromStack(stack).findResources('AWS::IAM::Role', {
+    Properties: { Description: 'Auto-generated MediaConnect role for accessing the encryption secret' },
+  });
+  expect(Object.keys(roles)).toHaveLength(0);
 });

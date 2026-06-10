@@ -556,11 +556,11 @@ export interface SrtPasswordEncryption {
  * The secret must live in the same AWS account and Region as the consuming resource.
  * MediaConnect does not support cross-account or cross-Region secrets.
  *
- * **Trust-policy scope on routers.** Router I/O ARNs use a service-generated id that is
- * unknown at synth time, and pinning the live ARN would create a CloudFormation
- * dependency cycle — so the auto-created role pins `aws:SourceArn` to a wildcarded ARN
- * (`arn:...:routerInput:*` / `arn:...:routerOutput:*`). To pin the exact ARN, supply your
- * own `role`.
+ * **Trust-policy scope on routers.** Router I/O ids are service-generated (unknown at synth
+ * time), and pinning the live ARN would create a CloudFormation dependency cycle — so the
+ * auto-created role pins `aws:SourceArn` to a wildcarded ARN (`arn:...:routerInput:*` /
+ * `arn:...:routerOutput:*`) plus `aws:SourceAccount`. To pin a tighter trust policy, supply
+ * your own `role`.
  *
  * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  */
@@ -587,11 +587,11 @@ export interface TransitEncryption {
  * The secret must live in the same AWS account and Region as the router I/O that uses
  * it. MediaConnect does not support cross-account or cross-Region secrets.
  *
- * **Trust-policy scope on routers.** Router I/O ARNs use a service-generated id that is
- * unknown at synth time, and pinning the live ARN would create a CloudFormation
- * dependency cycle — so the auto-created role pins `aws:SourceArn` to a wildcarded ARN
- * (`arn:...:routerInput:*` / `arn:...:routerOutput:*`). To pin the exact ARN, supply your
- * own `role`.
+ * **Trust-policy scope on routers.** Router I/O ids are service-generated (unknown at synth
+ * time), and pinning the live ARN would create a CloudFormation dependency cycle — so the
+ * auto-created role pins `aws:SourceArn` to a wildcarded ARN (`arn:...:routerInput:*` /
+ * `arn:...:routerOutput:*`) plus `aws:SourceAccount`. To pin a tighter trust policy, supply
+ * your own `role`.
  *
  * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  */
@@ -621,9 +621,10 @@ export enum EncryptionKeyType {
 
 /**
  * Resolve an IAM role for MediaConnect to access a Secrets Manager secret. Returns the
- * user-provided `role` if present, otherwise auto-creates a scoped role: inline
- * secret read, `kms:Decrypt` when the secret has a CMK, and a trust policy with
- * `aws:SourceAccount` (plus `aws:SourceArn` when `sourceArn` is given).
+ * user-provided `role` if present, otherwise auto-creates a scoped role: inline secret read,
+ * `kms:Decrypt` when the secret has a CMK, and a trust policy with `aws:SourceAccount`
+ * (plus `aws:SourceArn` when `sourceArn` is given). The returned `grant` lets callers order
+ * the role's secret-read policy before the consuming resource — required for router I/O.
  *
  * @see https://docs.aws.amazon.com/mediaconnect/latest/ug/cross-service-confused-deputy-prevention.html
  * @internal
@@ -634,8 +635,8 @@ export function resolveEncryptionRole(
   role: IRole | undefined,
   secret: ISecret,
   sourceArn?: string,
-): IRole {
-  if (role) return role;
+): { role: IRole; grant?: Grant } {
+  if (role) return { role };
 
   const conditions: Record<string, Record<string, string>> = {
     StringEquals: { 'aws:SourceAccount': Aws.ACCOUNT_ID },
@@ -651,19 +652,19 @@ export function resolveEncryptionRole(
 
   // Grant helper: adds secret read (GetSecretValue/DescribeSecret) plus kms:Decrypt
   // (with a kms:ViaService condition) when the secret uses a customer-managed key.
-  secret.grantRead(created);
+  const readGrant = secret.grantRead(created);
 
   // grantRead covers 2 of the 4 secret-read actions MediaConnect's policy needs; add the
   // other 2, scoped to the same secret. (Skipping the doc's `ListSecrets` — it needs
   // `Resource: *` and isn't required to read a known secret.)
   // https://docs.aws.amazon.com/mediaconnect/latest/ug/iam-policy-examples-asm-secrets.html
-  Grant.addToPrincipal({
+  const extraGrant = Grant.addToPrincipal({
     grantee: created,
     actions: ['secretsmanager:GetResourcePolicy', 'secretsmanager:ListSecretVersionIds'],
     resourceArns: [secret.secretArn],
   });
 
-  return created;
+  return { role: created, grant: readGrant.combine(extraGrant) };
 }
 
 /**
@@ -671,7 +672,7 @@ export function resolveEncryptionRole(
  * @internal
  */
 export function renderStaticKeyEncryption(scope: Construct, encryption: StaticKeyEncryption, sourceArn?: string) {
-  const role = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret, sourceArn);
+  const { role } = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret, sourceArn);
   return {
     keyType: KeyType.STATIC_KEY.value,
     roleArn: role.roleArn,
@@ -685,7 +686,7 @@ export function renderStaticKeyEncryption(scope: Construct, encryption: StaticKe
  * @internal
  */
 export function renderSrtPasswordEncryption(scope: Construct, encryption: SrtPasswordEncryption, sourceArn?: string) {
-  const role = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret, sourceArn);
+  const { role } = resolveEncryptionRole(scope, 'EncryptionRole', encryption.role, encryption.secret, sourceArn);
   return {
     keyType: KeyType.SRT_PASSWORD.value,
     roleArn: role.roleArn,
@@ -699,7 +700,7 @@ export function renderSrtPasswordEncryption(scope: Construct, encryption: SrtPas
  * @internal
  */
 export function renderRouterSrtEncryption(scope: Construct, id: string, encryption: RouterSrtEncryption, sourceArn?: string) {
-  const role = resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn);
+  const { role } = resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn);
   return {
     encryptionKey: {
       roleArn: role.roleArn,
@@ -715,7 +716,7 @@ export function renderRouterSrtEncryption(scope: Construct, id: string, encrypti
  */
 export function renderTransitEncryption(scope: Construct, id: string, encryption?: TransitEncryption, sourceArn?: string) {
   if (encryption) {
-    const role = resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn);
+    const { role } = resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn);
     return {
       encryptionKeyConfiguration: {
         secretsManager: {
@@ -732,6 +733,36 @@ export function renderTransitEncryption(scope: Construct, id: string, encryption
       automatic: {},
     },
   };
+}
+
+/**
+ * Resolve transit encryption to its CFN config plus the auto-created role's secret-read
+ * grant (when a role was auto-created).
+ * @internal
+ */
+export function resolveTransitEncryption(scope: Construct, id: string, encryption?: TransitEncryption, sourceArn?: string) {
+  const resolved = encryption
+    ? resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn)
+    : undefined;
+  const config = renderTransitEncryption(
+    scope,
+    id,
+    encryption && resolved ? { ...encryption, role: resolved.role } : encryption,
+    sourceArn,
+  );
+  return { config, grant: resolved?.grant };
+}
+
+/**
+ * Resolve router SRT encryption to its CFN config plus the auto-created role's secret-read
+ * grant (when a role was auto-created), so the consuming router I/O can order it before
+ * itself. See {@link resolveTransitEncryption} for why the ordering matters.
+ * @internal
+ */
+export function resolveRouterSrtEncryption(scope: Construct, id: string, encryption: RouterSrtEncryption, sourceArn?: string) {
+  const resolved = resolveEncryptionRole(scope, id, encryption.role, encryption.secret, sourceArn);
+  const config = renderRouterSrtEncryption(scope, id, { ...encryption, role: resolved.role }, sourceArn);
+  return { config, grant: resolved.grant };
 }
 
 /**

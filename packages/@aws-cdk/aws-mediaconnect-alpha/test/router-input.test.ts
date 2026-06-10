@@ -476,9 +476,8 @@ test('SRT Listener with decryption auto-creates a role when none is provided', (
 
   const template = Template.fromStack(stack);
   // A scoped role was auto-created on the RouterInput. The trust policy carries
-  // both `aws:SourceAccount` and a wildcarded `aws:SourceArn` ArnLike condition
-  // — the wildcard covers the unconfigurable router-input id segment in the ARN.
-  // See README "Encryption — sharp edge for routers" for the full rationale.
+  // `aws:SourceAccount` and a wildcarded `aws:SourceArn` ArnLike — the wildcard covers the
+  // service-generated router-input id segment in the ARN.
   template.hasResourceProperties('AWS::IAM::Role', {
     AssumeRolePolicyDocument: {
       Statement: Match.arrayWith([
@@ -511,6 +510,85 @@ test('SRT Listener with decryption auto-creates a role when none is provided', (
       },
     },
   });
+});
+
+test('input-level transit encryption auto-creates a role and orders its secret-read policy before the router input', () => {
+  const secret = new Secret(stack, 'secret');
+
+  new RouterInput(stack, 'routerInput', {
+    routerInputName: 'transit-auto-role',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    transitEncryption: { secret },
+    configuration: RouterInputConfiguration.standard({
+      protocol: RouterInputProtocol.srtListener({ port: 5000, minimumLatency: Duration.millis(200) }),
+      networkInterface,
+    }),
+  });
+
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::MediaConnect::RouterInput', {
+    TransitEncryption: { EncryptionKeyType: 'SECRETS_MANAGER' },
+  });
+
+  template.hasResource('AWS::MediaConnect::RouterInput', {
+    DependsOn: Match.arrayWith([Match.stringLikeRegexp('TransitEncryptionRoleDefaultPolicy')]),
+  });
+});
+
+test('input-level transit encryption defaults to AUTOMATIC and adds no role or dependency when no secret is given', () => {
+  new RouterInput(stack, 'routerInput', {
+    routerInputName: 'transit-automatic',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    configuration: RouterInputConfiguration.standard({
+      protocol: RouterInputProtocol.srtListener({ port: 5000, minimumLatency: Duration.millis(200) }),
+      networkInterface,
+    }),
+  });
+
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::MediaConnect::RouterInput', {
+    TransitEncryption: { EncryptionKeyType: 'AUTOMATIC' },
+  });
+  // No secret means no auto-created role and no ordering dependency on the router input.
+  const roles = template.findResources('AWS::IAM::Role', {
+    Properties: { Description: 'Auto-generated MediaConnect role for accessing the encryption secret' },
+  });
+  expect(Object.keys(roles)).toHaveLength(0);
+  template.hasResource('AWS::MediaConnect::RouterInput', { DependsOn: Match.absent() });
+});
+
+test('input-level transit encryption with an explicit role does not auto-create a role', () => {
+  const role = new Role(stack, 'role', { assumedBy: new ServicePrincipal('mediaconnect.amazonaws.com') });
+  const secret = new Secret(stack, 'secret');
+
+  new RouterInput(stack, 'routerInput', {
+    routerInputName: 'transit-explicit-role',
+    maximumBitrate: Bitrate.mbps(5),
+    routingScope: RoutingScope.REGIONAL,
+    tier: RouterInputTier.INPUT_20,
+    transitEncryption: { role, secret },
+    configuration: RouterInputConfiguration.standard({
+      protocol: RouterInputProtocol.srtListener({ port: 5000, minimumLatency: Duration.millis(200) }),
+      networkInterface,
+    }),
+  });
+
+  const template = Template.fromStack(stack);
+
+  template.hasResourceProperties('AWS::MediaConnect::RouterInput', {
+    TransitEncryption: { EncryptionKeyType: 'SECRETS_MANAGER' },
+  });
+  // Only the user-supplied role exists — no auto-created MediaConnect encryption role.
+  const roles = template.findResources('AWS::IAM::Role', {
+    Properties: { Description: 'Auto-generated MediaConnect role for accessing the encryption secret' },
+  });
+  expect(Object.keys(roles)).toHaveLength(0);
 });
 
 test('mediaConnectFlowWithoutConnection', () => {

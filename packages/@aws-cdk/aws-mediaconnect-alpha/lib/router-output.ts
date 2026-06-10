@@ -2,6 +2,7 @@ import type { Bitrate, IResource } from 'aws-cdk-lib';
 import { Arn, ArnFormat, Duration, Lazy, Names, Resource, Stack, Token, UnscopedValidationError, ValidationError } from 'aws-cdk-lib';
 import type { MetricOptions } from 'aws-cdk-lib/aws-cloudwatch';
 import { Metric, Unit } from 'aws-cdk-lib/aws-cloudwatch';
+import type { Grant } from 'aws-cdk-lib/aws-iam';
 import { CfnRouterOutput } from 'aws-cdk-lib/aws-mediaconnect';
 import type { IRouterOutputRef, RouterOutputReference } from 'aws-cdk-lib/aws-mediaconnect';
 import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
@@ -12,7 +13,7 @@ import type { IFlow } from './flow';
 import type { MaintenanceConfiguration, ForwardErrorCorrection, RoutingScope } from './router-input';
 import type { IRouterNetworkInterface } from './router-network-interface';
 import type { MediaLivePipeline, RouterSrtEncryption, TransitEncryption } from './shared';
-import { renderTags, exceedsRouterTierBitrate, renderRouterSrtEncryption, renderTransitEncryption, validateMaintenanceTime } from './shared';
+import { renderTags, exceedsRouterTierBitrate, resolveRouterSrtEncryption, resolveTransitEncryption, validateMaintenanceTime } from './shared';
 
 /**
  * Protocol options available for Router Output configurations
@@ -432,23 +433,26 @@ export class RouterOutputProtocol {
   public _bind(scope: Construct, routerOutputArn?: string): {
     name: RouterOutputProtocolOptions;
     config: CfnRouterOutput.RouterOutputProtocolConfigurationProperty;
+    grant?: Grant;
   } {
     if (!this._encryption) {
       return { name: this._protocolName, config: this._config };
     }
 
-    const encryptionConfiguration = renderRouterSrtEncryption(scope, 'EncryptionRole', this._encryption, routerOutputArn);
+    const { config: encryptionConfiguration, grant } = resolveRouterSrtEncryption(scope, 'EncryptionRole', this._encryption, routerOutputArn);
 
     if (this._config.srtListener) {
       return {
         name: this._protocolName,
         config: { srtListener: { ...this._config.srtListener, encryptionConfiguration } },
+        grant,
       };
     }
     if (this._config.srtCaller) {
       return {
         name: this._protocolName,
         config: { srtCaller: { ...this._config.srtCaller, encryptionConfiguration } },
+        grant,
       };
     }
     return { name: this._protocolName, config: this._config };
@@ -644,7 +648,7 @@ export abstract class RouterOutputConfiguration {
    * @internal
    */
   public abstract _bind(scope: Construct, routerOutputArn?: string): {
-    config: CfnRouterOutput.RouterOutputConfigurationProperty; availabilityZone?: string;
+    config: CfnRouterOutput.RouterOutputConfigurationProperty; availabilityZone?: string; grant?: Grant;
   };
 }
 
@@ -665,6 +669,7 @@ class StandardRouterOutputConfig extends RouterOutputConfiguration {
           protocolConfiguration: protocol.config,
         },
       },
+      grant: protocol.grant,
     };
   }
 }
@@ -680,15 +685,17 @@ class MediaLiveInputRouterOutputConfig extends RouterOutputConfiguration {
   ) { super(); }
 
   public _bind(scope: Construct, routerOutputArn?: string) {
+    const transit = resolveTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption, routerOutputArn);
     return {
       config: {
         mediaLiveInput: {
           mediaLiveInputArn: this.options.mediaLiveInputArn,
           mediaLivePipelineId: this.options.mediaLivePipelineId,
-          destinationTransitEncryption: renderTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption, routerOutputArn),
+          destinationTransitEncryption: transit.config,
         },
       },
       availabilityZone: this.availabilityZone,
+      grant: transit.grant,
     };
   }
 }
@@ -713,15 +720,17 @@ class MediaConnectFlowRouterOutputConfig extends RouterOutputConfiguration {
   ) { super(); }
 
   public _bind(scope: Construct, routerOutputArn?: string) {
+    const transit = resolveTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption, routerOutputArn);
     return {
       config: {
         mediaConnectFlow: {
           flowArn: this.options.flow?.flowArn,
           flowSourceArn: this.options.flow?.sourceArn,
-          destinationTransitEncryption: renderTransitEncryption(scope, 'DestinationTransitEncryptionRole', this.options.destinationTransitEncryption, routerOutputArn),
+          destinationTransitEncryption: transit.config,
         },
       },
       availabilityZone: this.availabilityZone,
+      grant: transit.grant,
     };
   }
 }
@@ -980,6 +989,11 @@ export class RouterOutput extends RouterOutputBase implements IRouterOutput {
     this.ipAddress = routerOutput.attrIpAddress;
     this.createdAt = routerOutput.attrCreatedAt;
     this.updatedAt = routerOutput.attrUpdatedAt;
+
+    // Without this the router input can be created before the
+    // policy is attached ("access denied" at create time). Ordering the grant before the
+    // router input pulls the policy in as a dependency.
+    configBind.grant?.applyBefore(routerOutput);
   }
 }
 

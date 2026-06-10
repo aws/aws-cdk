@@ -14,7 +14,7 @@ import type { IFlowOutput } from './flow-output';
 import { RouterInputGrants } from './mediaconnect-grants.generated';
 import type { IRouterNetworkInterface } from './router-network-interface';
 import type { MaintenanceDay, MediaLivePipeline, RouterSrtEncryption, TransitEncryption } from './shared';
-import { renderTags, exceedsRouterTierBitrate, renderRouterSrtEncryption, renderTransitEncryption, validateMaintenanceTime } from './shared';
+import { renderTags, exceedsRouterTierBitrate, renderRouterSrtEncryption, renderTransitEncryption, resolveTransitEncryption, validateMaintenanceTime } from './shared';
 
 /**
  * Protocol options available for Router Input configurations
@@ -1410,9 +1410,7 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
       throw new ValidationError(lit`RouterInputAzRegionMismatch`, `Availability zone '${configBind.availabilityZone}' must be within region '${targetRegion}'`, this);
     }
 
-    // Set up transit encryption — the render helper creates a role (with inlined
-    // secret-read permissions) when one isn't provided.
-    const transitEncryption = renderTransitEncryption(this, 'TransitEncryptionRole', props.transitEncryption, routerInputArn);
+    const transit = resolveTransitEncryption(this, 'TransitEncryptionRole', props.transitEncryption, routerInputArn);
 
     const routerinput = new CfnRouterInput(this, 'Resource', {
       name: this.physicalName,
@@ -1425,7 +1423,7 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
         default: {},
       },
       configuration: configBind.config,
-      transitEncryption,
+      transitEncryption: transit.config,
       regionName: targetRegion,
       availabilityZone: configBind.availabilityZone,
       tags: props.tags ? renderTags(props.tags) : undefined,
@@ -1436,6 +1434,11 @@ export class RouterInput extends RouterInputBase implements IRouterInput {
     this.ipAddress = routerinput.attrIpAddress;
     this.createdAt = routerinput.attrCreatedAt;
     this.updatedAt = routerinput.attrUpdatedAt;
+
+    // Without this the router input can be created before the
+    // policy is attached ("access denied" at create time). Ordering the grant before the
+    // router input pulls the policy in as a dependency.
+    transit.grant?.applyBefore(routerinput);
 
     // Compute ingest endpoints for protocol-based variants
     this._endpoints = props.configuration._endpoints(routerinput.attrIpAddress);

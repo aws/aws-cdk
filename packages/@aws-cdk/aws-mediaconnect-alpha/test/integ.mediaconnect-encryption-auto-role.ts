@@ -26,6 +26,7 @@ import {
   RoutingScope,
 } from '../lib/router-input';
 import { RouterNetworkConfiguration, RouterNetworkInterface } from '../lib/router-network-interface';
+import { RouterOutput, RouterOutputConfiguration, RouterOutputProtocol, RouterOutputTier } from '../lib/router-output';
 import { EncryptionAlgorithm } from '../lib/shared';
 
 const app = new cdk.App();
@@ -44,6 +45,9 @@ const srtPasswordSecret = new Secret(stack, 'SrtPasswordSecret', {
 });
 const routerSrtSecret = new Secret(stack, 'RouterSrtSecret', {
   description: 'RouterInput SRT decryption',
+});
+const routerTransitSecret = new Secret(stack, 'RouterTransitSecret', {
+  description: 'RouterInput input-level transit encryption',
 });
 
 // Flow with TransitEncryption auto-role on the router source.
@@ -101,6 +105,10 @@ new RouterInput(stack, 'RouterInput', {
   maximumBitrate: cdk.Bitrate.mbps(5),
   routingScope: RoutingScope.REGIONAL,
   tier: RouterInputTier.INPUT_20,
+  // Input-level transit encryption with an auto-created role. MediaConnect reads this
+  // secret at create time, so the router input must depend on the role's secret-read
+  // policy — this exercises that ordering end-to-end.
+  transitEncryption: { secret: routerTransitSecret },
   configuration: RouterInputConfiguration.standard({
     networkInterface: network,
     protocol: RouterInputProtocol.srtListener({
@@ -111,6 +119,49 @@ new RouterInput(stack, 'RouterInput', {
         // role omitted -> auto-created
       },
     }),
+  }),
+});
+
+// RouterOutput SRT Caller with RouterSrtEncryption auto-role, and a MediaLive-input
+// destination with TransitEncryption auto-role — both exercise the create-time secret-read
+// ordering on the output side.
+const outputSrtSecret = new Secret(stack, 'OutputSrtSecret', {
+  description: 'RouterOutput SRT encryption',
+});
+const outputTransitSecret = new Secret(stack, 'OutputTransitSecret', {
+  description: 'RouterOutput transit encryption',
+});
+
+new RouterOutput(stack, 'SrtOutput', {
+  routerOutputName: 'auto-role-srt-output',
+  maximumBitrate: cdk.Bitrate.mbps(5),
+  routingScope: RoutingScope.REGIONAL,
+  tier: RouterOutputTier.OUTPUT_20,
+  configuration: RouterOutputConfiguration.standard({
+    networkInterface: network,
+    protocol: RouterOutputProtocol.srtCaller({
+      destinationAddress: '203.0.113.20',
+      destinationPort: 9300,
+      minimumLatency: Duration.millis(120),
+      encryptionConfiguration: {
+        secret: outputSrtSecret,
+        // role omitted -> auto-created
+      },
+    }),
+  }),
+});
+
+new RouterOutput(stack, 'MediaLiveOutput', {
+  routerOutputName: 'auto-role-medialive-output',
+  maximumBitrate: cdk.Bitrate.mbps(5),
+  routingScope: RoutingScope.REGIONAL,
+  tier: RouterOutputTier.OUTPUT_20,
+  configuration: RouterOutputConfiguration.mediaLiveInputWithoutConnection({
+    availabilityZone: `${stack.region}a`,
+    destinationTransitEncryption: {
+      secret: outputTransitSecret,
+      // role omitted -> auto-created
+    },
   }),
 });
 
