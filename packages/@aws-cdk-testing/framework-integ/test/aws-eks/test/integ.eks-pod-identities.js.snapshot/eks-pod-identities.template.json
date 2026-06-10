@@ -525,7 +525,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "a1acfc2b5f4f6b183fd2bb9863f486bc5edef6a357b355a070d9a0e502df418c.zip"
+     "S3Key": "55549d0bfa9628b306c349544b7d95017221e259e17875f3d38f2a3d2da5043f.zip"
     },
     "Timeout": 900,
     "MemorySize": 128,
@@ -536,7 +536,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -1182,7 +1182,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/7d6d736b2c6879d60a22b7bc08c6d16c3fcc3c6020bbe4b5f93002b477116930.json"
+       "/45edd3cace2fe475f2ab3feef38fd1e767e70da3fe1219610e1413168bf9f45c.json"
       ]
      ]
     }
@@ -1232,7 +1232,7 @@
        {
         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
        },
-       "/519fd963da9f48894fd43b074f64a15bf5623138a6ff644a8d03a0365f97c7c8.json"
+       "/c34ef02ab06e50b4b8e01cf657ed0708f6f71ded18638003f59f015c109744cc.json"
       ]
      ]
     }
