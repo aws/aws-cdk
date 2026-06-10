@@ -39,7 +39,7 @@ import type * as sns from '../../aws-sns';
 import * as sqs from '../../aws-sqs';
 import type { IAspect, RemovalPolicy, Size } from '../../core';
 import {
-  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn, Lazy,
+  Annotations, ArnFormat, CfnResource, Duration, FeatureFlags, Fn,
   Names, Stack, Token,
 } from '../../core';
 import { UnscopedValidationError, ValidationError } from '../../core/lib/errors';
@@ -724,13 +724,11 @@ export class Function extends FunctionBase {
     const cfn = this._currentVersion.node.defaultChild as CfnResource;
     const originalLogicalId = this.stack.resolve(cfn.logicalId) as string;
 
-    cfn.overrideLogicalId(Lazy.uncachedString({
-      produce: () => {
-        const hash = calculateFunctionHash(this, this.hashMixins.join(''));
-        const logicalId = trimFromStart(originalLogicalId, 255 - 32);
-        return `${logicalId}${hash}`;
-      },
-    }));
+    cfn.overrideLogicalId(Token.asString(this.hashMixins.derive((mixins) => {
+      const hash = calculateFunctionHash(this, mixins.join(''));
+      const logicalId = trimFromStart(originalLogicalId, 255 - 32);
+      return `${logicalId}${hash}`;
+    })));
 
     return this._currentVersion;
   }
@@ -978,7 +976,7 @@ export class Function extends FunctionBase {
   private _currentVersion?: Version;
 
   private _architecture?: Architecture;
-  private hashMixins = new Array<string>();
+  private hashMixins = Box.fromArray<string>([], { omitEmpty: false });
 
   /**
    * The tenancy configuration for this function.

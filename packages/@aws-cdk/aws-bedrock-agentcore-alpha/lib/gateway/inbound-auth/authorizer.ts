@@ -9,6 +9,7 @@ import type { GatewayCustomClaim } from './custom-claim';
 
 /**
  * Gateway authorizer type
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export enum GatewayAuthorizerType {
   /** Custom JWT authorizer type */
@@ -21,6 +22,7 @@ export enum GatewayAuthorizerType {
 
 /**
  * Abstract interface for gateway authorizer configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IGatewayAuthorizerConfig {
   /**
@@ -40,6 +42,7 @@ export interface IGatewayAuthorizerConfig {
  *****************************************************************************/
 /**
  * Custom JWT authorizer configuration
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CustomJwtConfiguration {
   /**
@@ -79,6 +82,7 @@ export interface CustomJwtConfiguration {
 
 /**
  * Custom JWT authorizer configuration implementation
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class CustomJwtAuthorizer implements IGatewayAuthorizerConfig {
   public readonly authorizerType = GatewayAuthorizerType.CUSTOM_JWT;
@@ -121,6 +125,7 @@ export class CustomJwtAuthorizer implements IGatewayAuthorizerConfig {
 /**
  * AWS IAM authorizer configuration implementation
  *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class IamAuthorizer implements IGatewayAuthorizerConfig {
   public readonly authorizerType = GatewayAuthorizerType.AWS_IAM;
@@ -141,6 +146,7 @@ export class IamAuthorizer implements IGatewayAuthorizerConfig {
 
 /**
  * No authorization configuration implementation
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class NoAuthAuthorizer implements IGatewayAuthorizerConfig {
   public readonly authorizerType = GatewayAuthorizerType.NONE;
@@ -157,6 +163,11 @@ export class NoAuthAuthorizer implements IGatewayAuthorizerConfig {
  *                               Factory
  *****************************************************************************/
 
+/**
+ * Properties for configuring a Cognito authorizer.
+ *
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
+ */
 export interface CognitoAuthorizerProps {
   /**
    * The Cognito User Pool to use for authentication
@@ -186,6 +197,7 @@ export interface CognitoAuthorizerProps {
 }
 /**
  * Factory class for creating Gateway Authorizers
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class GatewayAuthorizer {
   /**
