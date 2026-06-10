@@ -195,7 +195,7 @@
       "Value": "SingleInstance"
      }
     ],
-    "SolutionStackName": "64bit Amazon Linux 2023 v6.7.3 running Node.js 22"
+    "SolutionStackName": "64bit Amazon Linux 2023 v6.11.1 running Node.js 22"
    },
    "DependsOn": [
     "Application"
@@ -282,7 +282,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "92444d52aa0a6745ce2adb1266ff6e4bae543708f8291d9853e5f4cd713ef268.zip"
+     "S3Key": "8b1c21efe0e24332f92ed71e98107d8a27ee1544c62b7b191805e0913fcfdf0f.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -291,7 +291,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 120
    },
    "DependsOn": [

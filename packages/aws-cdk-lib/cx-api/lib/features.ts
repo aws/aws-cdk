@@ -154,6 +154,7 @@ export const CLOUDFRONT_FUNCTION_DEFAULT_RUNTIME_V2_0 = '@aws-cdk/aws-cloudfront
 export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy';
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
+export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 
@@ -1841,6 +1842,29 @@ export const FLAGS: Record<string, FlagInfo> = {
   },
 
   //////////////////////////////////////////////////////////////////////
+  [EKS_DEFAULT_AL2023]: {
+    type: FlagType.ApiDefault,
+    summary: 'Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2',
+    detailsMd: `
+      When enabled, EKS managed node groups that do not specify an \`amiType\` will default to
+      AL2023 AMI types (AL2023_x86_64_STANDARD, AL2023_ARM_64_STANDARD) instead of the deprecated
+      AL2 types (AL2_x86_64, AL2_ARM_64).
+
+      This only affects non-GPU instance types. GPU instances continue to default to AL2_x86_64_GPU
+      because AL2023 splits GPU support into separate NVIDIA and Neuron AMI variants.
+
+      Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
+
+      When disabled, the default AMI types remain AL2 for backward compatibility.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: `Explicitly set \`amiType\` to the desired AL2 type (e.g., \`NodegroupAmiType.AL2_X86_64\`) in your nodegroup configuration.
+
+**Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.`,
+  },
+
+  //////////////////////////////////////////////////////////////////////
   [ANNOTATIONS_IN_VALIDATION_REPORT]: {
     type: FlagType.VisibleContext,
     summary: 'Include construct annotations (warnings and errors) in the policy validation report',
@@ -1887,8 +1911,8 @@ export const FLAGS: Record<string, FlagInfo> = {
       \`"weak"\` and deploy again.
 
       **Migration from weak to strong**: set directly to \`"strong"\` (single deployment).`,
-    introducedIn: { v2: 'V2NEXT' },
-    recommendedValue: 'strong',
+    introducedIn: { v2: '2.254.0' },
+    recommendedValue: 'weak',
     unconfiguredBehavesLike: { v2: 'strong' },
   },
 };

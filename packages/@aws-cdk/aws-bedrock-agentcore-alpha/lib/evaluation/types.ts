@@ -19,6 +19,7 @@ import type * as iam from 'aws-cdk-lib/aws-iam';
  *
  * These evaluators assess different aspects of agent performance
  * at various levels (session, trace, or tool call).
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class BuiltinEvaluator {
   /**
@@ -101,6 +102,7 @@ export class BuiltinEvaluator {
 
 /**
  * The execution status of an online evaluation configuration.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class ExecutionStatus {
   /**
@@ -128,6 +130,7 @@ export class ExecutionStatus {
 
 /**
  * Filter operators for online evaluation filtering.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class FilterOperator {
   /**
@@ -190,6 +193,7 @@ export class FilterOperator {
  * - `FilterValue.string()` for string comparisons
  * - `FilterValue.number()` for numeric comparisons
  * - `FilterValue.boolean()` for boolean comparisons
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class FilterValue {
   /**
@@ -239,6 +243,7 @@ export class FilterValue {
  *
  * Filters determine which agent traces should be included in the evaluation
  * based on trace properties.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface FilterConfig {
   /**
@@ -264,6 +269,7 @@ export interface FilterConfig {
 
 /**
  * Configuration for CloudWatch Logs data source.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CloudWatchLogsDataSourceConfig {
   /**
@@ -291,6 +297,7 @@ export interface CloudWatchLogsDataSourceConfig {
  * Base properties for creating an OnlineEvaluationConfig.
  * The actual OnlineEvaluationProps is defined in online-evaluation-config.ts
  * to avoid circular dependencies.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OnlineEvaluationBaseProps {
   /**
@@ -362,6 +369,7 @@ export interface OnlineEvaluationBaseProps {
 
 /**
  * The result of binding an EvaluatorReference.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface EvaluatorReferenceBindResult {
   /**
@@ -372,6 +380,7 @@ export interface EvaluatorReferenceBindResult {
 
 /**
  * The result of binding a DataSourceConfig.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface DataSourceConfigBindResult {
   /**
@@ -384,6 +393,7 @@ export interface DataSourceConfigBindResult {
  * The level at which a custom evaluator assesses agent performance.
  *
  * Determines what granularity of data the evaluator operates on.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class EvaluationLevel {
   /**
@@ -418,6 +428,7 @@ export class EvaluationLevel {
  * A categorical rating scale option for custom evaluators.
  *
  * Categorical scales define discrete labels for scoring agent performance.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface CategoricalRatingOption {
   /**
@@ -439,6 +450,7 @@ export interface CategoricalRatingOption {
  * A numerical rating scale option for custom evaluators.
  *
  * Numerical scales define labeled numeric values for scoring agent performance.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface NumericalRatingOption {
   /**
@@ -467,6 +479,7 @@ export interface NumericalRatingOption {
  * Inference configuration for a custom LLM-as-a-Judge evaluator.
  *
  * Controls how the foundation model generates evaluation responses.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface EvaluatorInferenceConfig {
   /**
@@ -497,6 +510,7 @@ export interface EvaluatorInferenceConfig {
 
 /**
  * Attributes for importing an existing Evaluator.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface EvaluatorAttributes {
   /**
@@ -519,6 +533,7 @@ export interface EvaluatorAttributes {
 
 /**
  * Attributes for importing an existing OnlineEvaluationConfig.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface OnlineEvaluationConfigAttributes {
   /**
