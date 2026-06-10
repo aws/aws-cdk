@@ -28,6 +28,7 @@ import type { BuiltinEvaluator, EvaluatorReferenceBindResult } from './types';
  * // Using custom evaluators
  * declare const myCustomEvaluator: agentcore.IEvaluator;
  * const custom = agentcore.EvaluatorReference.custom(myCustomEvaluator);
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export class EvaluatorReference {
   /**

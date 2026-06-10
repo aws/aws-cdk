@@ -1,0 +1,1582 @@
+{
+  "/aws-cdk-dynamodb-global-replicas-provisioned": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:47:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "partitionKey": {
+          "name": "*",
+          "type": "S"
+        },
+        "removalPolicy": "destroy",
+        "replicationRegions": "*",
+        "billingMode": "PROVISIONED"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "autoScaleWriteCapacity": [
+          {
+            "minCapacity": "*",
+            "maxCapacity": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:302:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:310:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:202:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:343:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:474:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:531:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:528:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:95:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableCD117FA1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1029:26)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/ScalingRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaus-east-2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/StackRegionNotEqualsus-east-2": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableStackRegionNotEqualsuseast2D20A1E77"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1589:37)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaeu-west-3": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/StackRegionNotEqualseu-west-3": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableStackRegionNotEqualseuwest302B3591C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1589:37)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "timeout": "*",
+        "code": "*",
+        "handler": "*",
+        "runtime": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:is-custom-resource-handler-runtime-family",
+      "data": 0
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole348A0C9ARef": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRole348A0C9ARef"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:557:22)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:217:29)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:62:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole750F1EE9Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRole750F1EE9Ref"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:557:22)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:217:29)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:62:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventACC2C387Arn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderframeworkonEventACC2C387Arn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackOutput (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:557:22)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:217:29)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:62:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/reference-to-awscdkdynamodbglobalreplicasprovisionedTable12280A12Ref": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "referencetoawscdkdynamodbglobalreplicasprovisionedTable12280A12Ref"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "createNestedStackParameter (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:536:17)",
+        "resolveValue (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:202:16)",
+        "resolveReferences (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/refs.js:127:30)",
+        "prepareApp (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/prepare-app.js:46:36)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:83:36)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:220:96)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:208:27)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:62:5)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStack/@aws-cdk--aws-dynamodb.ReplicaProvider.NestedStackResource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "awscdkawsdynamodbReplicaProviderNestedStackawscdkawsdynamodbReplicaProviderNestedStackResource18E3F12D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new NestedStack (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/nested-stack.js:121:25)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:72:9)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B77/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "roles": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A/Resource": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "description": "*",
+        "roles": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaus-east-2/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableReplicauseast28A15C236"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1568:39)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/Replicaeu-west-3/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableReplicaeuwest314C3E552"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource.js:141:29)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new CustomResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1568:39)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/WriteScaling/Target": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "serviceNamespace": "dynamodb",
+        "scalableDimension": "*",
+        "resourceId": "*",
+        "role": "*",
+        "minCapacity": "*",
+        "maxCapacity": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "scaleToTrackMetric": [
+          "*",
+          {
+            "policyName": "*",
+            "disableScaleIn": "*",
+            "scaleInCooldown": "*",
+            "targetValue": "*",
+            "predefinedMetric": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandler42BEBAE0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaOnEventFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated.js:42:9)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:74:31)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandler7073F4DA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaIsCompleteFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated.js:56:9)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:78:34)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "code": "*",
+        "description": "*",
+        "runtime": "*",
+        "handler": "*",
+        "timeout": "*",
+        "loggingFormat": "JSON",
+        "applicationLogLevelV2": "FATAL",
+        "logGroup": "*",
+        "vpc": "*",
+        "vpcSubnets": "*",
+        "securityGroups": "*",
+        "role": "*",
+        "functionName": "*",
+        "environmentEncryption": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addEnvironment": [
+          "*",
+          "*"
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B77/Resource/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderOnEventHandlerServiceRoleD9856B771F8F2CCB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/managed-policy.js:269:34)",
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SourceTableAttachedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1718:24)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1515:42)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/SourceTableAttachedManagedPolicy-awscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A/Resource/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableSourceTableAttachedManagedPolicyawscdkdynamodbglobalreplicasprovisionedawscdkawsdynamodbReplicaProviderIsCompleteHandlerServiceRoleBE2B1C1A5DC546D2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/managed-policy.js:269:34)",
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ManagedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new SourceTableAttachedPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1718:24)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1516:45)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:48:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/WriteScaling/Target/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableWriteScalingTargetE5669214"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new ScalableTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/scalable-target.js:234:30)",
+        "new ScalableTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new ScalableTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new BaseScalableAttribute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/base-scalable-attribute.js:38:23)",
+        "new ScalableTableAttribute (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/scalable-table-attribute.js:49:1)",
+        "WrappedClass.autoScaleWriteCapacity (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1229:56)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:54:7)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandlerServiceRole15A26729"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaOnEventFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated.js:42:9)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:74:31)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "IsCompleteHandlerServiceRole5810CC58"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaIsCompleteFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resource-handlers/dist/aws-dynamodb/replica-provider.generated.js:56:9)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:78:34)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/IsCompleteHandler/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEvent83C1D0A7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisComplete26D7B0CB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeout0B47CA38"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:732:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Providerwaiterstatemachine5D4A9DF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:133:30)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:194:44)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/Table/WriteScaling/Target/Tracking/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TableWriteScalingTargetTrackingD78DCCD8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new TargetTrackingScalingPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/target-tracking-scaling-policy.js:79:26)",
+        "WrappedClass.scaleToTrackMetric (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/scalable-target.js:318:20)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "ScalableTableAttribute.doScaleToTrackMetric (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-applicationautoscaling/lib/base-scalable-attribute.js:96:21)",
+        "ScalableTableAttribute.scaleOnUtilization (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/scalable-table-attribute.js:69:15)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-dynamodb/test/integ.global-replicas-provisioned.js:57:4)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/OnEventHandler/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "OnEventHandlerServiceRoleDefaultPolicyC57085D4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "ReplicaOnEventFunction.addToRolePolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:254:23)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:82:29)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRole9FF04296"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:189:42)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisCompleteServiceRoleB1087139"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:191:49)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeoutServiceRole28643D26"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:647:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createFunction (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:234:24)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:192:46)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/Code/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderwaiterstatemachineRole0C7159F9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:491:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:102:26)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:194:44)",
+        "new Provider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new ReplicaProvider (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:106:25)",
+        "ReplicaProvider.getOrCreate (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/replica-provider.js:57:48)",
+        "WrappedClass.createReplicaTables (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1512:67)",
+        "new Table (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-dynamodb/lib/table.js:1075:22)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onEvent/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonEventServiceRoleDefaultPolicy48CD2133"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "ReplicaOnEventFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "ReplicaOnEventFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-isComplete/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkisCompleteServiceRoleDefaultPolicy2E7140AC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "ReplicaOnEventFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "ReplicaOnEventFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/framework-onTimeout/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderframeworkonTimeoutServiceRoleDefaultPolicy2688969F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "ReplicaOnEventFunction.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "ReplicaOnEventFunction.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "WrappedClass.addPermissions (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/provider.js:220:38)"
+      ]
+    }
+  ],
+  "/aws-cdk-dynamodb-global-replicas-provisioned/@aws-cdk--aws-dynamodb.ReplicaProvider/Provider/waiter-state-machine/Role/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ProviderwaiterstatemachineRoleDefaultPolicyD3C3DA1A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:552:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:202:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:87:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:524:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:328:26)",
+        "new WaiterStateMachine (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/custom-resources/lib/provider-framework/waiter-state-machine.js:105:37)"
+      ]
+    }
+  ]
+}

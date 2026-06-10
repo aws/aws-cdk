@@ -112,6 +112,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.
   const lambdaPurpose = 'Eval';
 
   const nodeJsGuids = {
+    [lambda.Runtime.NODEJS_24_X.name]: 'a5c17f50-0de1-497b-8ec0-fabdc9086cc5',
     [lambda.Runtime.NODEJS_22_X.name]: 'b64e1fb8-9c89-4f7d-8a34-2e2a1c5f6d7e',
     [lambda.Runtime.NODEJS_20_X.name]: '9757c267-6d7c-45c2-af77-37a30d93d2c6',
     [lambda.Runtime.NODEJS_18_X.name]: '078d40d3-fb4e-4d53-94a7-9c46fc11fe02',
@@ -125,6 +126,7 @@ function createEvalFn(runtime: lambda.Runtime | undefined, architecture: lambda.
   };
 
   const nodeJsArmGuids = {
+    [lambda.Runtime.NODEJS_24_X.name]: '1662dbae-12a4-4a04-86f0-29531a7be268',
     [lambda.Runtime.NODEJS_22_X.name]: '672bfe19-76c9-448b-9584-ee75ca09edbf',
     [lambda.Runtime.NODEJS_20_X.name]: '105f0693-c082-4e9b-83f3-9007507676f0',
     [lambda.Runtime.NODEJS_18_X.name]: 'b1565b13-7d88-4f24-ac63-f9b23c325a55',
