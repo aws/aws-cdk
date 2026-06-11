@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "46021eccb14589db702bcc458861887dcc5758b28fa9c6ce44b57ef8f4feaa42": {
+    "fc6c0641d0581426e3e81e862c49bef98001b968ddcb58556a1dbacd20989f50": {
       "displayName": "AwsCdkVpcEndpointDnsIntegTestDefaultTestDeployAssertFB27EF1F Template",
       "source": {
         "path": "AwsCdkVpcEndpointDnsIntegTestDefaultTestDeployAssertFB27EF1F.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-36dab312": {
+        "current_account-current_region-50d1b2be": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "46021eccb14589db702bcc458861887dcc5758b28fa9c6ce44b57ef8f4feaa42.json",
+          "objectKey": "fc6c0641d0581426e3e81e862c49bef98001b968ddcb58556a1dbacd20989f50.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
