@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "8b1c21efe0e24332f92ed71e98107d8a27ee1544c62b7b191805e0913fcfdf0f": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "130d05d107582c625bf19b263c4ec1ac698300d9e9e3d0b216f2249dcbea439a": {
+    "e158395ba835bf762f6f053ea539f35382cb40bdcc38c7bc6eca1c2c87252496": {
       "displayName": "lambda-logssubscription-integ Template",
       "source": {
         "path": "lambda-logssubscription-integ.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-4a79f12e": {
+        "current_account-current_region-08ea7039": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "130d05d107582c625bf19b263c4ec1ac698300d9e9e3d0b216f2249dcbea439a.json",
+          "objectKey": "e158395ba835bf762f6f053ea539f35382cb40bdcc38c7bc6eca1c2c87252496.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

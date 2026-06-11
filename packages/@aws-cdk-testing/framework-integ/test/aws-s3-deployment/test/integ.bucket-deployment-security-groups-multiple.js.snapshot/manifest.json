@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "test-bucket-deployment-security-groups-multiple.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b57dc88b92c738f8501bbf3b0602f724dd0998b9ced038ddee2cd80eb5394fc.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f42d14fe303cfbb2596482d14b6e3642915efec9ac7888b1157ddfd87f13534a.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,484 +33,7 @@
       "dependencies": [
         "test-bucket-deployment-security-groups-multiple.assets"
       ],
-      "metadata": {
-        "/test-bucket-deployment-security-groups-multiple/TestVpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "restrictDefaultSecurityGroup": false,
-              "natGateways": "*",
-              "subnetConfiguration": [
-                {
-                  "cidrMask": "*",
-                  "name": "*",
-                  "subnetType": "Isolated"
-                }
-              ]
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcE77CE678"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcIsolatedSubnet1Subnet541B14FE"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcIsolatedSubnet1RouteTable8109E0F7"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcIsolatedSubnet1RouteTableAssociation69023F0F"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": "*"
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcIsolatedSubnet2Subnet3A7015F1"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcIsolatedSubnet2RouteTableF2751065"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/IsolatedSubnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcIsolatedSubnet2RouteTableAssociationBF1DF8E3"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/S3Endpoint": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "service": {
-                "name": "*"
-              }
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/TestVpc/S3Endpoint/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "TestVpcS3Endpoint79A815C2"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/SecurityGroup1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*",
-              "allowAllOutbound": true
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/SecurityGroup1/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecurityGroup1F554B36F"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/SecurityGroup2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*",
-              "allowAllOutbound": false
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEgressRule": [
-                {
-                  "canInlineRule": true,
-                  "connections": "*",
-                  "uniqueId": "*"
-                },
-                {},
-                "*"
-              ]
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/SecurityGroup2/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "SecurityGroup23BE86BB7"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Destination": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "websiteIndexDocument": "*",
-              "publicReadAccess": false,
-              "removalPolicy": "destroy",
-              "autoDeleteObjects": true
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Destination/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "Destination920A3C57"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Destination/Policy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "bucket": "*"
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Destination/Policy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DestinationPolicy7982387E"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Destination/AutoDeleteObjectsCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Destination/AutoDeleteObjectsCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DestinationAutoDeleteObjectsCustomResource15E926BA"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::S3AutoDeleteObjectsCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::S3AutoDeleteObjectsCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::S3AutoDeleteObjectsCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/DeployWithMultipleSecurityGroups/AwsCliLayer": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {}
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/DeployWithMultipleSecurityGroups/AwsCliLayer/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployWithMultipleSecurityGroupsAwsCliLayer78DA2223"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/DeployWithMultipleSecurityGroups/CustomResourceHandler": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "uuid": "*",
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "lambdaPurpose": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "securityGroups": [
-                "*",
-                "*"
-              ],
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addMetadata": [
-                "*",
-                true
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addMetadata": [
-                "*",
-                "*"
-              ]
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/DeployWithMultipleSecurityGroups/CustomResource-c87a409b7d9dd2258720adf509b7727165810e0611": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/DeployWithMultipleSecurityGroups/CustomResource-c87a409b7d9dd2258720adf509b7727165810e0611/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DeployWithMultipleSecurityGroupsCustomResourcec87a409b7d9dd2258720adf509b7727165810e0611DDD6FB1C"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457c": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "layers": [
-                "*"
-              ],
-              "environment": "*",
-              "timeout": "*",
-              "role": "*",
-              "memorySize": "*",
-              "ephemeralStorageSize": "*",
-              "vpc": "*",
-              "vpcSubnets": "*",
-              "securityGroups": [
-                "*",
-                "*"
-              ],
-              "filesystem": "*",
-              "logGroup": "*",
-              "code": "*",
-              "handler": "*",
-              "runtime": "*"
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addEnvironment": [
-                "*",
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addLayers": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:is-custom-resource-handler-singleton",
-            "data": true
-          },
-          {
-            "type": "aws:cdk:is-custom-resource-handler-runtime-family",
-            "data": 2
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457c/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachInlinePolicy": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addToPrincipalPolicy": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457c/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457c/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457cServiceRole9E14E303"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457c/ServiceRole/DefaultPolicy": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "attachToRole": [
-                "*"
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addStatements": [
-                {}
-              ]
-            }
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457c/ServiceRole/DefaultPolicy/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457cServiceRoleDefaultPolicyC65E9706"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/Custom::CDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457c/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756Cc87a409b7d9dd2258720adf509b7727165810e0611c8d032bce6f87bea726e997157fd20ebe07b3fd294c8dfd7e8d298db9b9285f880a2dc5e27fd73e6457cF4AB49C7"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/test-bucket-deployment-security-groups-multiple/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "test-bucket-deployment-security-groups-multiple.metadata.json",
       "displayName": "test-bucket-deployment-security-groups-multiple"
     },
     "integtestbucketdeploymentsecuritygroupsmultipleDefaultTestDeployAssert4825C1EE.assets": {
@@ -545,20 +68,7 @@
       "dependencies": [
         "integtestbucketdeploymentsecuritygroupsmultipleDefaultTestDeployAssert4825C1EE.assets"
       ],
-      "metadata": {
-        "/integ-test-bucket-deployment-security-groups-multiple/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/integ-test-bucket-deployment-security-groups-multiple/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "integtestbucketdeploymentsecuritygroupsmultipleDefaultTestDeployAssert4825C1EE.metadata.json",
       "displayName": "integ-test-bucket-deployment-security-groups-multiple/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -573,6 +83,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -591,6 +102,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -702,7 +214,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -856,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -887,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1043,6 +550,7 @@
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
           },
           "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
           },
@@ -1054,12 +562,48 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }

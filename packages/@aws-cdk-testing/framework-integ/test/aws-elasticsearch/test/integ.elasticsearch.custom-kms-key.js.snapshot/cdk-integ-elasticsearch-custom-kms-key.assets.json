@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "8b1c21efe0e24332f92ed71e98107d8a27ee1544c62b7b191805e0913fcfdf0f": {
       "displayName": "AWS679f53fac002430cb0da5b7982bd2287/Code",
@@ -15,16 +15,16 @@
         }
       }
     },
-    "46ce6c4e995ad38f7adadd4a0c7546a44b9a2510fa916a66b2336c9514cf2e5c": {
+    "c2a58e430107dc28849e32ab538ccc70d9bded9b9edeba3cb98e66d68549fb15": {
       "displayName": "cdk-integ-elasticsearch-custom-kms-key Template",
       "source": {
         "path": "cdk-integ-elasticsearch-custom-kms-key.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-288152cc": {
+        "current_account-current_region-c897b966": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "46ce6c4e995ad38f7adadd4a0c7546a44b9a2510fa916a66b2336c9514cf2e5c.json",
+          "objectKey": "c2a58e430107dc28849e32ab538ccc70d9bded9b9edeba3cb98e66d68549fb15.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
