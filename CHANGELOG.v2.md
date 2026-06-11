@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.259.0](https://github.com/aws/aws-cdk/compare/v2.258.1...v2.259.0) (2026-06-11)
+
+
+### Features
+
+* **core:** recommend the use of weak references if no choice has been made ([#38070](https://github.com/aws/aws-cdk/issues/38070)) ([6e74e5e](https://github.com/aws/aws-cdk/commit/6e74e5ebbea3959a86af3aea038df0ab87aa27b6))
+* **ecs:** add forceNewDeployment option for Fargate and EC2 services ([#36797](https://github.com/aws/aws-cdk/issues/36797)) ([3d9c4df](https://github.com/aws/aws-cdk/commit/3d9c4df185026440f5668b82dd2adb47e0c366de)), closes [#27762](https://github.com/aws/aws-cdk/issues/27762)
+* **eks:** use the recommended AL2023 instead of AL2 AMI type (under feature flag) ([#37850](https://github.com/aws/aws-cdk/issues/37850)) ([6a2dcb7](https://github.com/aws/aws-cdk/commit/6a2dcb7ab6e2d4a69999625947ab6a152b82bc19)), closes [#32211](https://github.com/aws/aws-cdk/issues/32211)
+
+
+### Bug Fixes
+
+* **spec2cdk:** sanitize hyphens in EventBridge event namespace names ([#38088](https://github.com/aws/aws-cdk/issues/38088)) ([b8f41bf](https://github.com/aws/aws-cdk/commit/b8f41bf4f2a8ef3556f3279c7fdd8259f3b6086b)), closes [40aws-cdk/spec2cdk/lib/naming/conventions.ts#L195](https://github.com/40aws-cdk/spec2cdk/lib/naming/conventions.ts/issues/L195)
+
+
+### Reverts
+
+* "chore(bundling): check if docker image is cached before building" ([#38116](https://github.com/aws/aws-cdk/issues/38116)) ([359f2fb](https://github.com/aws/aws-cdk/commit/359f2fbbebb58da0e911b0550b49033fcc84f371)), closes [aws/aws-cdk#37951](https://github.com/aws/aws-cdk/issues/37951)
+
 ## [2.258.1](https://github.com/aws/aws-cdk/compare/v2.258.0...v2.258.1) (2026-06-08)
 
 
