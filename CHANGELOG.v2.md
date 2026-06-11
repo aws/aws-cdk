@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.258.1](https://github.com/aws/aws-cdk/compare/v2.258.0...v2.258.1) (2026-06-08)
+
+
+### Reverts
+
+* "chore(bundling): check if docker image is cached before building" ([#38116](https://github.com/aws/aws-cdk/issues/38116)) ([8ec236c](https://github.com/aws/aws-cdk/commit/8ec236cfd72bd53b44e1c29a62f3c3077923f43c)), closes [aws/aws-cdk#37951](https://github.com/aws/aws-cdk/issues/37951)
+
 ## [2.258.0](https://github.com/aws/aws-cdk/compare/v2.257.0...v2.258.0) (2026-06-04)
 
 
