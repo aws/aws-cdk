@@ -1,5 +1,5 @@
-import { Github } from './github.js';
 import { PROJECT_NUMBER, REPOSITORY } from './config.js';
+import { Github } from './github.js';
 import { projectIds, getPriorityFromLabels, isBotLogin } from './utils.js';
 
 export const syncIssue = async (issue: string) => {

@@ -1,8 +1,8 @@
+import { Stack, Size } from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import { SecurityGroup, SubnetType, Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Key } from 'aws-cdk-lib/aws-kms';
-import { Stack, Size } from 'aws-cdk-lib';
-import { CacheEngine, ServerlessCache, UserEngine, UserGroup } from '../lib';
+import { AccessControl, CacheEngine, NoPasswordUser, ServerlessCache, UserEngine, UserGroup } from '../lib';
 
 describe('serverless cache', () => {
   describe('create valid templates', () => {
@@ -27,6 +27,7 @@ describe('serverless cache', () => {
       [CacheEngine.REDIS_LATEST],
       [CacheEngine.REDIS_7],
       [CacheEngine.MEMCACHED_LATEST],
+      [CacheEngine.MEMCACHED_1_6],
     ])('import serverless cache for %s', (cacheEngine) => {
       const cache = ServerlessCache.fromServerlessCacheAttributes(stack, 'ImportedCache', {
         serverlessCacheName: 'my-serverless-cache',
@@ -96,6 +97,7 @@ describe('serverless cache', () => {
       [CacheEngine.REDIS_LATEST, 'redis', Match.absent()],
       [CacheEngine.REDIS_7, 'redis', '7'],
       [CacheEngine.MEMCACHED_LATEST, 'memcached', Match.absent()],
+      [CacheEngine.MEMCACHED_1_6, 'memcached', '1.6'],
     ])('test serverless cache version for %s', (cacheEngine, engine, version) => {
       new ServerlessCache(stack, 'Cache', {
         description: 'Serverless cache',
@@ -107,6 +109,22 @@ describe('serverless cache', () => {
         Description: 'Serverless cache',
         Engine: engine,
         MajorEngineVersion: version,
+      });
+    });
+
+    test('allow security group ingress with endpoint port', () => {
+      const cache = new ServerlessCache(stack, 'Cache', {
+        vpc,
+      });
+      new SecurityGroup(stack, 'SecurityGroup', { vpc }).connections.allowToDefaultPort(cache);
+
+      Template.fromStack(stack).hasResourceProperties('AWS::EC2::SecurityGroupIngress', {
+        FromPort: {
+          'Fn::GetAtt': ['Cache18F6EE16', 'Endpoint.Port'],
+        },
+        ToPort: {
+          'Fn::GetAtt': ['Cache18F6EE16', 'Endpoint.Port'],
+        },
       });
     });
   });
@@ -322,6 +340,134 @@ describe('serverless cache', () => {
       },
     ])('$testDescription', ({ serverlessCacheName, serverlessCacheArn, errorMessage }) => {
       expect(() => ServerlessCache.fromServerlessCacheAttributes(stack, 'ImportedCache', { serverlessCacheArn, serverlessCacheName })).toThrow(errorMessage);
+    });
+  });
+
+  describe('CacheEngine class', () => {
+    let stack: Stack, vpc: Vpc;
+    beforeEach(() => {
+      stack = new Stack();
+      vpc = new Vpc(stack, 'VPC');
+    });
+
+    test('of() returns an instance with the expected engineType and majorEngineVersion', () => {
+      const engine = CacheEngine.of('valkey', '8');
+      expect(engine.engineType).toBe('valkey');
+      expect(engine.majorEngineVersion).toBe('8');
+    });
+
+    test('of() accepts an explicit engineType and majorEngineVersion', () => {
+      const engine = CacheEngine.of('valkey', '9');
+      expect(engine.engineType).toBe('valkey');
+      expect(engine.majorEngineVersion).toBe('9');
+    });
+
+    test('of() accepts an undefined majorEngineVersion', () => {
+      const engine = CacheEngine.of('valkey');
+      expect(engine.engineType).toBe('valkey');
+      expect(engine.majorEngineVersion).toBeUndefined();
+    });
+
+    test('named static members expose the correct engineType and majorEngineVersion', () => {
+      expect(CacheEngine.VALKEY_8.engineType).toBe('valkey');
+      expect(CacheEngine.VALKEY_8.majorEngineVersion).toBe('8');
+      expect(CacheEngine.VALKEY_LATEST.majorEngineVersion).toBeUndefined();
+      expect(CacheEngine.MEMCACHED_1_6.engineType).toBe('memcached');
+      expect(CacheEngine.MEMCACHED_1_6.majorEngineVersion).toBe('1.6');
+    });
+
+    test('VALKEY_9 maps to engineType=valkey and majorEngineVersion=9', () => {
+      expect(CacheEngine.VALKEY_9.engineType).toBe('valkey');
+      expect(CacheEngine.VALKEY_9.majorEngineVersion).toBe('9');
+    });
+
+    test('toString() renders engineType_majorEngineVersion for versioned engines', () => {
+      expect(CacheEngine.VALKEY_8.toString()).toBe('valkey_8');
+      expect(CacheEngine.MEMCACHED_1_6.toString()).toBe('memcached_1.6');
+    });
+
+    test('toString() renders only engineType when majorEngineVersion is undefined', () => {
+      expect(CacheEngine.VALKEY_LATEST.toString()).toBe('valkey');
+      expect(CacheEngine.REDIS_LATEST.toString()).toBe('redis');
+    });
+
+    test('named static members synthesize with the expected CloudFormation properties', () => {
+      new ServerlessCache(stack, 'Cache', {
+        vpc,
+        engine: CacheEngine.VALKEY_9,
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        Engine: 'valkey',
+        MajorEngineVersion: '9',
+      });
+    });
+
+    test('of() for an unknown major version synthesizes correctly', () => {
+      new ServerlessCache(stack, 'Cache', {
+        vpc,
+        engine: CacheEngine.of('valkey', '9'),
+      });
+
+      Template.fromStack(stack).hasResourceProperties('AWS::ElastiCache::ServerlessCache', {
+        Engine: 'valkey',
+        MajorEngineVersion: '9',
+      });
+    });
+
+    test('MEMCACHED_1_6 with a user group throws MemcachedUserGroupNotSupported', () => {
+      const userGroup = new UserGroup(stack, 'UserGroup', {});
+
+      expect(() => new ServerlessCache(stack, 'Cache', {
+        vpc,
+        engine: CacheEngine.MEMCACHED_1_6,
+        userGroup,
+      })).toThrow('User groups cannot be used with Memcached engines.');
+    });
+
+    test('REDIS_7 with a Valkey user group throws RedisUserGroupMismatch', () => {
+      const userGroup = new UserGroup(stack, 'UserGroup', {
+        engine: UserEngine.VALKEY,
+      });
+
+      expect(() => new ServerlessCache(stack, 'Cache', {
+        vpc,
+        engine: CacheEngine.REDIS_7,
+        userGroup,
+      })).toThrow('Redis cache can only use Redis user groups.');
+    });
+
+    test('imported cache with VALKEY_9 resolves the correct default port', () => {
+      const cache = ServerlessCache.fromServerlessCacheAttributes(stack, 'ImportedCache', {
+        serverlessCacheName: 'my-cache',
+        engine: CacheEngine.VALKEY_9,
+        securityGroups: [new SecurityGroup(stack, 'SG', { vpc })],
+      });
+
+      expect(cache.connections.defaultPort?.toString()).toContain('6379');
+    });
+
+    test('of() does not return the same instance as a named static member', () => {
+      expect(CacheEngine.of('valkey', '8')).not.toBe(CacheEngine.VALKEY_8);
+      expect(CacheEngine.of('valkey')).not.toBe(CacheEngine.VALKEY_LATEST);
+    });
+
+    test('VALKEY_9 with a Redis user group synthesizes without error', () => {
+      const userGroup = new UserGroup(stack, 'UserGroup', {
+        engine: UserEngine.REDIS,
+        users: [new NoPasswordUser(stack, 'DefaultUser', {
+          userId: 'default',
+          userName: 'default',
+          engine: UserEngine.REDIS,
+          accessControl: AccessControl.fromAccessString('on ~* +@all'),
+        })],
+      });
+
+      expect(() => new ServerlessCache(stack, 'Cache', {
+        vpc,
+        engine: CacheEngine.VALKEY_9,
+        userGroup,
+      })).not.toThrow();
     });
   });
 });

@@ -9,7 +9,7 @@
       "Value": "true"
      },
      {
-      "Key": "aws-cdk:cr-owned:4b49afe7",
+      "Key": "aws-cdk:cr-owned:a210877d",
       "Value": "true"
      }
     ]
@@ -128,7 +128,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": {
      "Fn::Join": [
       "",
@@ -146,19 +146,19 @@
     "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
    ]
   },
-  "DeployMe5AwsCliLayerF0F79631": {
+  "DeployWithDeployedBucketAwsCliLayer44B2D41A": {
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "c49d356cac773d491c5f7ac148995a1181498a8e289429f8612a7f7e3814f535.zip"
+     "S3Key": "a72522445441e9b66c2f16956c54d4786af8c61c156b80c48a6e7c32fcc49023.zip"
     },
     "Description": "/opt/awscli/aws"
    }
   },
-  "DeployMe5CustomResource44BEE629": {
+  "DeployWithDeployedBucketCustomResourceF972C614": {
    "Type": "Custom::CDKBucketDeployment",
    "Properties": {
     "ServiceToken": {
@@ -324,7 +324,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3423a042b818e31c1e34a19d6689ab2e5f9b70fcbe9e71df66f241b20a200bd9.zip"
+     "S3Key": "97e9ebf0b174a5c8f7faa505739022b7f509edddffcab9211dcd08b759944c4f.zip"
     },
     "Environment": {
      "Variables": {
@@ -334,7 +334,7 @@
     "Handler": "index.handler",
     "Layers": [
      {
-      "Ref": "DeployMe5AwsCliLayerF0F79631"
+      "Ref": "DeployWithDeployedBucketAwsCliLayer44B2D41A"
      }
     ],
     "Role": {
@@ -373,7 +373,7 @@
               ":",
               {
                "Fn::GetAtt": [
-                "DeployMe5CustomResource44BEE629",
+                "DeployWithDeployedBucketCustomResourceF972C614",
                 "DestinationBucketArn"
                ]
               }

@@ -210,12 +210,55 @@ To get the partition key and sort key of the table or indexes you have configure
 
 ```ts
 declare const table: dynamodb.Table;
+
+// For single keys, use schema() (deprecated for multi-attribute keys)
 const schema = table.schema();
 const partitionKey = schema.partitionKey;
 const sortKey = schema.sortKey;
 
-// In case you want to get schema details for any secondary index
-// const { partitionKey, sortKey } = table.schema(INDEX_NAME);
+// For multi-attribute keys, use schemaV2() which returns normalized arrays
+const schemaV2 = table.schemaV2();
+const partitionKeys = schemaV2.partitionKeys; // Attribute[]
+const sortKeys = schemaV2.sortKeys; // Attribute[]
+
+// Get schema for a specific index
+const indexSchema = table.schemaV2('INDEX_NAME');
+```
+
+Note: `schema()` is deprecated for indexes with multi-attribute keys and will throw an error. Use `schemaV2()` instead, which always returns normalized arrays.
+
+## Global Secondary Indexes with multi-attribute Keys
+
+Global secondary indexes support multi-attribute keys, allowing you to specify multiple partition keys and/or multiple sort keys. This enables more flexible query patterns for complex data models.
+
+**Key Constraints:**
+- You can specify up to **4 partition keys** per global secondary index
+- You can specify up to **4 sort keys** per global secondary index
+- Use **either** `partitionKey` (singular) **or** `partitionKeys` (plural), but not both
+- Use **either** `sortKey` (singular) **or** `sortKeys` (plural), but not both
+- At least one partition key must be specified (either `partitionKey` or `partitionKeys`)
+- For multiple keys, you **must** use the plural parameters (`partitionKeys` and/or `sortKeys`)
+- **Keys cannot be added or modified after index creation** - attempting to add additional keys to an existing index will result in an error
+
+**Example:**
+
+```ts
+const table = new dynamodb.Table(this, 'Table', {
+  partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
+  sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
+});
+
+table.addGlobalSecondaryIndex({
+  indexName: 'multi-attribute-gsi',
+  partitionKeys: [
+    { name: 'gsi_pk1', type: dynamodb.AttributeType.STRING },
+    { name: 'gsi_pk2', type: dynamodb.AttributeType.NUMBER },
+  ],
+  sortKeys: [
+    { name: 'gsi_sk1', type: dynamodb.AttributeType.STRING },
+    { name: 'gsi_sk2', type: dynamodb.AttributeType.BINARY },
+  ],
+});
 ```
 
 ## Kinesis Stream

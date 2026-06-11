@@ -1,7 +1,8 @@
 import * as path from 'path';
-import { App, Stack, StackProps } from 'aws-cdk-lib';
+import type { StackProps } from 'aws-cdk-lib';
+import { App, Stack } from 'aws-cdk-lib';
 import { IntegTest, ExpectedResult } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 
 /**
@@ -20,7 +21,7 @@ class TestStack extends Stack {
     const fn = new lambda.Function(this, 'Function', {
       code: lambda.Code.fromAsset(assetPath, {
         bundling: {
-          image: lambda.Runtime.PYTHON_3_9.bundlingImage,
+          image: lambda.Runtime.PYTHON_3_10.bundlingImage,
           command: [
             'bash', '-c', [
               'cp -au . /asset-output',
@@ -31,7 +32,7 @@ class TestStack extends Stack {
           network: 'host',
         },
       }),
-      runtime: lambda.Runtime.PYTHON_3_9,
+      runtime: lambda.Runtime.PYTHON_3_10,
       handler: 'index.handler',
     });
 

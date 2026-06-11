@@ -1,9 +1,11 @@
+
 import * as fs from 'fs';
 import * as path from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { Template } from '../../../assertions';
 import * as cxapi from '../../../cx-api';
-import { App, AssetStaging, CustomResourceProvider, DockerImageAssetLocation, DockerImageAssetSource, Duration, FileAssetLocation, FileAssetSource, ISynthesisSession, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderBaseProps, CustomResourceProviderOptions, CustomResourceProviderRuntime } from '../../lib';
+import type { AssetStaging, DockerImageAssetLocation, DockerImageAssetSource, FileAssetLocation, FileAssetSource, ISynthesisSession, CustomResourceProviderOptions } from '../../lib';
+import { App, CustomResourceProvider, Duration, Size, Stack, CfnResource, determineLatestNodeRuntimeName, CustomResourceProviderBase, CustomResourceProviderRuntime } from '../../lib';
 import { CUSTOMIZE_ROLES_CONTEXT_KEY } from '../../lib/helpers-internal';
 import { toCloudFormation } from '../util';
 
@@ -178,7 +180,6 @@ describe('custom resource provider', () => {
     // it up from the output.
     const staging = stack.node.tryFindChild('Custom:MyResourceTypeCustomResourceProvider')?.node.tryFindChild('Staging') as AssetStaging;
     const assetHash = staging.assetHash;
-    const sourcePath = staging.sourcePath;
     const paramNames = Object.keys(cfn.Parameters);
     const bucketParam = paramNames[0];
     const keyParam = paramNames[1];
@@ -463,11 +464,11 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
-    // Since all regions now have the same latest Node.js runtime (nodejs22.x),
+    // Since all regions now have the same latest Node.js runtime (nodejs24.x),
     // the CDK optimizes by using the literal value instead of creating a mapping
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -482,7 +483,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -497,7 +498,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -512,7 +513,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -525,10 +526,10 @@ describe('latest Lambda node runtime', () => {
     TestCustomResourceProvider.getOrCreateProvider(stack, 'TestCrProvider');
 
     // THEN
-    // ADC regions now also use nodejs22.x as the latest runtime
+    // ADC regions now also use nodejs24.x as the latest runtime
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs22.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });
@@ -543,7 +544,7 @@ describe('latest Lambda node runtime', () => {
     // THEN
     Template.fromStack(stack).hasResource('AWS::Lambda::Function', {
       Properties: {
-        Runtime: 'nodejs18.x',
+        Runtime: 'nodejs24.x',
       },
     });
   });

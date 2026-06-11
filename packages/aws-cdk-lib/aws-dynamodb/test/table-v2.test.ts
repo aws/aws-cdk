@@ -1,13 +1,26 @@
-import { Match, Template } from '../../assertions';
+import { Annotations, Match, Template } from '../../assertions';
 import { ArnPrincipal, PolicyDocument, PolicyStatement } from '../../aws-iam';
+import * as iam from '../../aws-iam';
 import { Stream } from '../../aws-kinesis';
 import { Key } from '../../aws-kms';
-import { CfnDeletionPolicy, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import { App, CfnDeletionPolicy, Fn, Lazy, RemovalPolicy, Stack, Tags } from '../../core';
+import type {
+  GlobalSecondaryIndexPropsV2,
+  LocalSecondaryIndexProps,
+} from '../lib';
 import {
-  AttributeType, Billing, Capacity, GlobalSecondaryIndexPropsV2, TableV2,
-  LocalSecondaryIndexProps, ProjectionType, StreamViewType, TableClass, TableEncryptionV2,
+  AttributeType,
+  Billing,
+  Capacity,
+  TableV2,
+  ProjectionType,
+  StreamViewType,
+  TableClass,
+  TableEncryptionV2,
   MultiRegionConsistency,
   ContributorInsightsMode,
+  GlobalTableSettingsReplicationMode,
+  TableV2MultiAccountReplica,
 } from '../lib';
 
 describe('table', () => {
@@ -211,7 +224,7 @@ describe('table', () => {
     }).toThrow('`recoveryPeriodInDays` must be a value between `1` and `35`.');
   });
 
-  test('recoveryPeriodInDays set but pitr disabled', () => {
+  test('recoveryPeriodInDays set but pitr ENABLED', () => {
     const stack = new Stack(undefined, 'Stack');
     expect(() => {
       new TableV2(stack, 'Table', {
@@ -1253,6 +1266,125 @@ describe('table', () => {
       ],
     });
     Template.fromStack(stack).hasResource('AWS::DynamoDB::GlobalTable', { DeletionPolicy: CfnDeletionPolicy.RETAIN });
+  });
+});
+
+describe('grants', () => {
+  test('grantReadData with AccountRootPrincipal uses wildcard resources', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: {
+        name: 'id',
+        type: AttributeType.STRING,
+      },
+    });
+
+    // WHEN
+    table.grantReadData(new iam.AccountRootPrincipal());
+
+    // THEN - Should create resource policy with wildcard to avoid circular dependency
+    Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+      Replicas: Match.arrayWith([
+        Match.objectLike({
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: Match.arrayWith([
+                Match.objectLike({
+                  Action: [
+                    'dynamodb:BatchGetItem',
+                    'dynamodb:Query',
+                    'dynamodb:GetItem',
+                    'dynamodb:Scan',
+                    'dynamodb:ConditionCheckItem',
+                    'dynamodb:DescribeTable',
+                  ],
+                  Effect: 'Allow',
+                  Resource: '*', // Wildcard to avoid circular dependency
+                  Principal: Match.anyValue(), // AccountRootPrincipal
+                }),
+              ]),
+            },
+          },
+        }),
+      ]),
+    });
+  });
+
+  test('grant* with ServicePrincipal throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(() => table.grantReadWriteData(new iam.ServicePrincipal('bedrock.amazonaws.com')))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('grant with ServicePrincipal throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // THEN
+    expect(() => table.grant(new iam.ServicePrincipal('bedrock.amazonaws.com'), 'dynamodb:GetItem'))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test('grant* with wrapped ServicePrincipal (withConditions) throws error', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('bedrock.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+
+    // THEN
+    expect(() => table.grantReadData(principal))
+      .toThrow(/DynamoDB grant\* methods do not support ServicePrincipal grantees/);
+  });
+
+  test.each([
+    'redshift.amazonaws.com',
+    'replication.dynamodb.amazonaws.com',
+    'glue.amazonaws.com',
+  ])('grant* with allowlisted ServicePrincipal %s succeeds', (serviceName) => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const grant = table.grantReadWriteData(new iam.ServicePrincipal(serviceName));
+
+    // THEN
+    expect(grant.success).toBe(true);
+  });
+
+  test('grant* with wrapped allowlisted ServicePrincipal succeeds', () => {
+    // GIVEN
+    const stack = new Stack();
+    const table = new TableV2(stack, 'Table', {
+      partitionKey: { name: 'id', type: AttributeType.STRING },
+    });
+
+    // WHEN
+    const principal = new iam.ServicePrincipal('redshift.amazonaws.com').withConditions({
+      StringEquals: { 'aws:SourceAccount': '123456789012' },
+    });
+    const grant = table.grantReadWriteData(principal);
+
+    // THEN
+    expect(grant.success).toBe(true);
   });
 });
 
@@ -3148,7 +3280,7 @@ test('Resource policy test', () => {
   });
 
   // WHEN
-  const table = new TableV2(stack, 'Table', {
+  new TableV2(stack, 'Table', {
     partitionKey: { name: 'metric', type: AttributeType.STRING },
     resourcePolicy: doc,
   });
@@ -3180,12 +3312,62 @@ test('Resource policy test', () => {
   });
 });
 
+test('Resource policy is scoped to primary region only when resourcePolicyPerReplica feature flag is enabled', () => {
+  // GIVEN
+  const app = new App({
+    postCliContext: {
+      '@aws-cdk/aws-dynamodb:resourcePolicyPerReplica': true,
+    },
+  });
+  const stack = new Stack(app, 'Stack', { env: { region: 'eu-west-1' } });
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:*'],
+        principals: [new iam.AccountRootPrincipal()],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+    resourcePolicy: doc,
+    replicas: [{
+      region: 'eu-west-2',
+    }],
+  });
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: Match.arrayWith([
+      Match.objectLike({
+        Region: 'eu-west-2',
+        ResourcePolicy: Match.absent(),
+      }),
+      Match.objectLike({
+        Region: 'eu-west-1',
+        ResourcePolicy: Match.objectLike({
+          PolicyDocument: Match.objectLike({
+            Statement: Match.arrayWith([
+              Match.objectLike({ Action: 'dynamodb:*' }),
+            ]),
+          }),
+        }),
+      }),
+    ]),
+  });
+});
+
 test('Warm Throughput test on-demand', () => {
   // GIVEN
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
 
   // WHEN
-  const table = new TableV2(stack, 'Table', {
+  new TableV2(stack, 'Table', {
     partitionKey: { name: 'id', type: AttributeType.STRING },
     warmThroughput: {
       readUnitsPerSecond: 13000,
@@ -3416,10 +3598,103 @@ describe('MRSC global tables validation', () => {
   });
 });
 
+test('TableV2 addToResourcePolicy works with wildcard resources', () => {
+  // GIVEN
+  const stack = new Stack();
+
+  // WHEN
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: ['*'], // Wildcard avoids circular dependency - same pattern as KMS
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ResourcePolicy: {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: Match.anyValue(),
+                },
+                Action: ['dynamodb:GetItem', 'dynamodb:PutItem'],
+                Resource: '*',
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('TableV2 addToResourcePolicy allows scoped ARN resources when table has explicit name', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  // WHEN - Create table with explicit name (enables scoped resource policies)
+  const table = new TableV2(stack, 'Table', {
+    tableName: 'my-explicit-table-name', // Explicit name enables scoped ARN construction
+    partitionKey: { name: 'id', type: AttributeType.STRING },
+  });
+
+  // With explicit table name, we can use scoped resources without circular dependency
+  table.addToResourcePolicy(new iam.PolicyStatement({
+    actions: ['dynamodb:GetItem', 'dynamodb:Query'],
+    principals: [new iam.AccountRootPrincipal()],
+    resources: [
+      // This works because table name is known at synthesis time
+      Fn.sub('arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name'),
+    ],
+  }));
+
+  // THEN
+  const template = Template.fromStack(stack);
+  template.hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ResourcePolicy: {
+          PolicyDocument: {
+            Version: '2012-10-17',
+            Statement: [
+              {
+                Effect: 'Allow',
+                Principal: {
+                  AWS: Match.anyValue(),
+                },
+                Action: ['dynamodb:GetItem', 'dynamodb:Query'],
+                Resource: {
+                  'Fn::Sub': 'arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/my-explicit-table-name',
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
 test('Contributor Insights Specification - tableV2', () => {
   const stack = new Stack();
 
-  const table = new TableV2(stack, 'TableV2', {
+  new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
     sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
     contributorInsightsSpecification: {
@@ -3456,7 +3731,7 @@ test('Contributor Insights Specification - tableV2', () => {
 test('Contributor Insights Specification - tableV2 - without mode', () => {
   const stack = new Stack();
 
-  const table = new TableV2(stack, 'TableV2', {
+  new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
     sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
     contributorInsightsSpecification: {
@@ -3491,7 +3766,7 @@ test('Contributor Insights Specification - tableV2 - without mode', () => {
 test('Contributor Insights Specification - index', () => {
   const stack = new Stack(undefined, 'Stack', { env: { region: 'eu-west-1' } });
 
-  const table = new TableV2(stack, 'TableV2', {
+  new TableV2(stack, 'TableV2', {
     partitionKey: { name: 'hashKey', type: AttributeType.STRING },
     sortKey: { name: 'sortKey', type: AttributeType.NUMBER },
     globalSecondaryIndexes: [
@@ -3565,7 +3840,7 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   const stack = new Stack();
 
   expect(() => {
-    const table = new TableV2(stack, 'Tablev2', {
+    new TableV2(stack, 'Tablev2', {
       partitionKey: { name: 'pk', type: AttributeType.STRING },
       sortKey: { name: 'sk', type: AttributeType.STRING },
       contributorInsights: true,
@@ -3579,3 +3854,780 @@ test('ContributorInsightsSpecification && ContributorInsights - v2', () => {
   }).toThrow('`contributorInsightsSpecification` and `contributorInsights` are set. Use `contributorInsightsSpecification` only.');
 });
 
+test('grantMultiAccountReplicationTo adds required resource policy statements', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1:222222222222:table/RemoteTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Sid: 'AllowMultiAccountReplicaAssociation222222222222',
+                Effect: 'Allow',
+                Action: 'dynamodb:AssociateTableReplica',
+                Resource: '*',
+                Principal: {
+                  AWS: {
+                    'Fn::Join': ['', ['arn:', { Ref: 'AWS::Partition' }, ':iam::222222222222:root']],
+                  },
+                },
+              },
+              {
+                Sid: 'AllowReplicationServiceReadWrite222222222222',
+                Effect: 'Allow',
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+                Resource: '*',
+                Principal: {
+                  Service: 'replication.dynamodb.amazonaws.com',
+                },
+                Condition: {
+                  StringEquals: {
+                    'aws:SourceAccount': ['111111111111', '222222222222'],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('grantMultiAccountReplicationTo grants KMS permissions for encrypted tables', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const key = new Key(stack, 'Key');
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.customerManagedKey(key),
+  });
+
+  table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1:222222222222:table/RemoteTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: [
+            'kms:Decrypt',
+            'kms:DescribeKey',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 'replication.dynamodb.amazonaws.com',
+          },
+        }),
+      ]),
+    },
+  });
+});
+
+test('grantMultiAccountReplicationFrom adds required resource policy statements', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.grants.multiAccountReplicationFrom('arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Sid: 'AllowReplicationService',
+                Effect: 'Allow',
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+                Resource: '*',
+                Principal: {
+                  Service: 'replication.dynamodb.amazonaws.com',
+                },
+                Condition: {
+                  StringEquals: {
+                    'aws:SourceAccount': ['222222222222', '111111111111'],
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('grantMultiAccountReplicationFrom grants KMS permissions for encrypted tables', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  const key = new Key(stack, 'Key');
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    encryption: TableEncryptionV2.customerManagedKey(key),
+  });
+
+  table.grants.multiAccountReplicationFrom('arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable');
+
+  Template.fromStack(stack).hasResourceProperties('AWS::KMS::Key', {
+    KeyPolicy: {
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: [
+            'kms:Decrypt',
+            'kms:DescribeKey',
+            'kms:Encrypt',
+            'kms:ReEncrypt*',
+            'kms:GenerateDataKey*',
+          ],
+          Effect: 'Allow',
+          Principal: {
+            Service: 'replication.dynamodb.amazonaws.com',
+          },
+        }),
+      ]),
+    },
+  });
+});
+
+test('TableV2MultiAccountReplica creates replica with permissions', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+    globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
+  });
+
+  // Grants are automatically set up - no manual call needed
+
+  // Source table should have resource policy with account principal
+  Template.fromStack(sourceStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Action: 'dynamodb:AssociateTableReplica',
+              }),
+              Match.objectLike({
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+              }),
+            ]),
+          },
+        },
+      },
+    ],
+  });
+
+  // Replica table should be created with source ARN and replication mode in replicas
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: Stack.of(replicaStack).region,
+        GlobalTableSettingsReplicationMode: 'ENABLED',
+        ResourcePolicy: {
+          PolicyDocument: {
+            Statement: Match.arrayWith([
+              Match.objectLike({
+                Sid: 'AllowReplicationService',
+                Action: [
+                  'dynamodb:ReadDataForReplication',
+                  'dynamodb:WriteDataForReplication',
+                  'dynamodb:ReplicateSettings',
+                ],
+                Principal: {
+                  Service: 'replication.dynamodb.amazonaws.com',
+                },
+              }),
+            ]),
+          },
+        },
+      },
+    ],
+  });
+
+  // Verify replica has source ARN reference (using Fn::Join for cross-stack reference)
+  const replicaTemplate = Template.fromStack(replicaStack);
+  const resources = replicaTemplate.findResources('AWS::DynamoDB::GlobalTable');
+  const replicaTable = Object.values(resources)[0];
+  expect(replicaTable.Properties.GlobalTableSourceArn).toBeDefined();
+});
+
+test('TableV2MultiAccountReplica throws when same account', () => {
+  const app = new App();
+  const stack = new Stack(app, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    new TableV2MultiAccountReplica(stack, 'Replica', {
+      replicaSourceTable: table,
+    });
+  }).toThrow('Multi-account replica must be in a different account than the source table. For same-account replication, use addReplica() instead.');
+});
+
+test('TableV2MultiAccountReplica on imported table does not throw', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    'arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable',
+  );
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: importedTable,
+  });
+
+  // Should issue a warning about missing resource policy
+  const warnings = Annotations.fromStack(replicaStack).findWarning('*', Match.stringLikeRegexp('.*imported without a resource policy.*'));
+  expect(warnings.length).toBe(1);
+  expect(warnings[0].entry.data).toContain('manually configure multi-account replication permissions');
+});
+
+test('TableV2MultiAccountReplica works with fromTableArn without key schema', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  // Import using fromTableArn - no key schema needed
+  const importedTable = TableV2.fromTableArn(
+    replicaStack,
+    'ImportedTable',
+    'arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable',
+  );
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: importedTable,
+  });
+
+  // Verify replica is created with globalTableSourceArn
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalTableSourceArn: 'arn:aws:dynamodb:us-east-2:111111111111:table/SourceTable',
+  });
+});
+
+test('grantMultiAccountReplicationTo validates ARN has account', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.grants.multiAccountReplicationTo('arn:aws:dynamodb:us-east-1::table/RemoteTable');
+  }).toThrow('Invalid table ARN');
+});
+
+test('grantMultiAccountReplicationFrom validates ARN has account', () => {
+  const stack = new Stack(undefined, 'Stack', { env: { account: '222222222222', region: 'us-east-1' } });
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.grants.multiAccountReplicationFrom('arn:aws:dynamodb:us-east-2::table/SourceTable');
+  }).toThrow('Invalid table ARN');
+});
+
+test('TableV2MultiAccountReplica throws error when replica is in same region', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-1' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const table = new TableV2(sourceStack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: table,
+    });
+  }).toThrow(/Multi-account replica must be in a different region/);
+});
+
+test('TableV2MultiAccountReplica with all optional parameters', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  const kinesisStream = {
+    streamArn: 'arn:aws:kinesis:us-east-1:222222222222:stream/MyStream',
+  } as any;
+
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+    globalTableSettingsReplicationMode: GlobalTableSettingsReplicationMode.ALL,
+    deletionProtection: true,
+    tableClass: TableClass.STANDARD_INFREQUENT_ACCESS,
+    kinesisStream,
+    contributorInsightsSpecification: { enabled: true },
+    pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
+    tags: [{ key: 'Environment', value: 'Test' }],
+    removalPolicy: RemovalPolicy.DESTROY,
+  });
+
+  // Grants are automatically set up - no manual call needed
+
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      Match.objectLike({
+        Region: 'us-east-1',
+        GlobalTableSettingsReplicationMode: 'ENABLED',
+        DeletionProtectionEnabled: true,
+        TableClass: 'STANDARD_INFREQUENT_ACCESS',
+        KinesisStreamSpecification: {
+          StreamArn: 'arn:aws:kinesis:us-east-1:222222222222:stream/MyStream',
+        },
+        ContributorInsightsSpecification: { Enabled: true },
+        PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true },
+        Tags: [{ Key: 'Environment', Value: 'Test' }],
+      }),
+    ],
+  });
+});
+
+test('TableV2MultiAccountReplica throws when replicaSourceTable is missing', () => {
+  const app = new App();
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'Replica', {});
+  }).toThrow('replicaSourceTable is required for TableV2MultiAccountReplica');
+});
+
+test('TableV2MultiAccountReplica with custom encryption', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack', { env: { account: '111111111111', region: 'us-east-2' } });
+  const replicaStack = new Stack(app, 'ReplicaStack', { env: { account: '222222222222', region: 'us-east-1' } });
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  const key = new Key(replicaStack, 'Key');
+  new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+    replicaSourceTable: sourceTable,
+    encryption: TableEncryptionV2.customerManagedKey(key),
+  });
+
+  Template.fromStack(replicaStack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      Match.objectLike({
+        SSESpecification: {
+          KMSMasterKeyId: {
+            'Fn::GetAtt': [Match.stringLikeRegexp('Key'), 'Arn'],
+          },
+        },
+      }),
+    ],
+  });
+});
+
+test('TableV2MultiAccountReplica does not throw when account/region are tokens', () => {
+  const app = new App();
+  const sourceStack = new Stack(app, 'SourceStack');
+  const replicaStack = new Stack(app, 'ReplicaStack');
+
+  const sourceTable = new TableV2(sourceStack, 'SourceTable', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  // Should not throw when accounts/regions are unresolved tokens
+  expect(() => {
+    new TableV2MultiAccountReplica(replicaStack, 'ReplicaTable', {
+      replicaSourceTable: sourceTable,
+    });
+  }).not.toThrow();
+});
+
+test('can add GSI with compound partition keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKeys: [
+      { name: 'gsi1pk1', type: AttributeType.STRING },
+      { name: 'gsi1pk2', type: AttributeType.NUMBER },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    AttributeDefinitions: [
+      { AttributeName: 'pk', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk1', AttributeType: 'S' },
+      { AttributeName: 'gsi1pk2', AttributeType: 'N' },
+    ],
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk1', KeyType: 'HASH' },
+          { AttributeName: 'gsi1pk2', KeyType: 'HASH' },
+        ],
+      },
+    ],
+  });
+});
+
+test('can add GSI with multi-attribute sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+    sortKeys: [
+      { name: 'gsi1sk1', type: AttributeType.STRING },
+      { name: 'gsi1sk2', type: AttributeType.NUMBER },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk', KeyType: 'HASH' },
+          { AttributeName: 'gsi1sk1', KeyType: 'RANGE' },
+          { AttributeName: 'gsi1sk2', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
+});
+
+test('throws when both partitionKey and partitionKeys defined', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      partitionKeys: [{ name: 'gsi1pk2', type: AttributeType.NUMBER }],
+    });
+  }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
+});
+
+test('throws when both sortKey and sortKeys defined', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      sortKey: { name: 'gsi1sk', type: AttributeType.STRING },
+      sortKeys: [{ name: 'gsi1sk2', type: AttributeType.NUMBER }],
+    });
+  }).toThrow('At most one of \'sortKey\', \'sortKeys\' may be specified');
+});
+test('throws when more than 4 partition keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKeys: [
+        { name: 'pk1', type: AttributeType.STRING },
+        { name: 'pk2', type: AttributeType.STRING },
+        { name: 'pk3', type: AttributeType.STRING },
+        { name: 'pk4', type: AttributeType.STRING },
+        { name: 'pk5', type: AttributeType.STRING },
+      ],
+    });
+  }).toThrow('Maximum of 4 partition keys allowed');
+});
+
+test('throws when more than 4 sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      partitionKey: { name: 'gsi1pk', type: AttributeType.STRING },
+      sortKeys: [
+        { name: 'sk1', type: AttributeType.STRING },
+        { name: 'sk2', type: AttributeType.STRING },
+        { name: 'sk3', type: AttributeType.STRING },
+        { name: 'sk4', type: AttributeType.STRING },
+        { name: 'sk5', type: AttributeType.STRING },
+      ],
+    });
+  }).toThrow('Maximum of 4 sort keys allowed');
+});
+
+test('throws when no partition key specified', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  expect(() => {
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      sortKey: { name: 'sk', type: AttributeType.STRING },
+    });
+  }).toThrow('Exactly one of \'partitionKey\', \'partitionKeys\' must be specified');
+});
+
+test('can add GSI with both multi-attribute partition and sort keys', () => {
+  const stack = new Stack();
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+  });
+
+  table.addGlobalSecondaryIndex({
+    indexName: 'GSI1',
+    partitionKeys: [
+      { name: 'gsi1pk1', type: AttributeType.STRING },
+      { name: 'gsi1pk2', type: AttributeType.NUMBER },
+    ],
+    sortKeys: [
+      { name: 'gsi1sk1', type: AttributeType.STRING },
+      { name: 'gsi1sk2', type: AttributeType.BINARY },
+    ],
+  });
+
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    GlobalSecondaryIndexes: [
+      {
+        IndexName: 'GSI1',
+        KeySchema: [
+          { AttributeName: 'gsi1pk1', KeyType: 'HASH' },
+          { AttributeName: 'gsi1pk2', KeyType: 'HASH' },
+          { AttributeName: 'gsi1sk1', KeyType: 'RANGE' },
+          { AttributeName: 'gsi1sk2', KeyType: 'RANGE' },
+        ],
+      },
+    ],
+  });
+});
+
+test('stream resource policy on primary table', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:DescribeStream', 'dynamodb:GetRecords', 'dynamodb:GetShardIterator'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+    streamResourcePolicy: doc,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ReplicaStreamSpecification: {
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: [
+                    'dynamodb:DescribeStream',
+                    'dynamodb:GetRecords',
+                    'dynamodb:GetShardIterator',
+                  ],
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('stream resource policy on replica table', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack', { env: { region: 'us-east-1' } });
+
+  const doc = new PolicyDocument({
+    statements: [
+      new PolicyStatement({
+        actions: ['dynamodb:GetRecords'],
+        principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+        resources: ['*'],
+      }),
+    ],
+  });
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+    replicas: [
+      {
+        region: 'us-west-2',
+        streamResourcePolicy: doc,
+      },
+    ],
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: Match.arrayWith([
+      Match.objectLike({
+        Region: 'us-west-2',
+        ReplicaStreamSpecification: {
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetRecords',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      }),
+      Match.objectLike({
+        Region: 'us-east-1',
+        ReplicaStreamSpecification: Match.absent(),
+      }),
+    ]),
+  });
+});
+
+test('addToStreamResourcePolicy on primary table', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  const table = new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+  });
+
+  // WHEN
+  table.addToStreamResourcePolicy(new PolicyStatement({
+    actions: ['dynamodb:GetRecords'],
+    principals: [new ArnPrincipal('arn:aws:iam::111122223333:user/foobar')],
+    resources: ['*'],
+  }));
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ReplicaStreamSpecification: {
+          ResourcePolicy: {
+            PolicyDocument: {
+              Statement: [
+                {
+                  Action: 'dynamodb:GetRecords',
+                  Effect: 'Allow',
+                  Principal: {
+                    AWS: 'arn:aws:iam::111122223333:user/foobar',
+                  },
+                  Resource: '*',
+                },
+              ],
+              Version: '2012-10-17',
+            },
+          },
+        },
+      },
+    ],
+  });
+});
+
+test('no stream resource policy by default', () => {
+  // GIVEN
+  const stack = new Stack(undefined, 'Stack');
+
+  // WHEN
+  new TableV2(stack, 'Table', {
+    partitionKey: { name: 'pk', type: AttributeType.STRING },
+    dynamoStream: StreamViewType.NEW_AND_OLD_IMAGES,
+  });
+
+  // THEN
+  Template.fromStack(stack).hasResourceProperties('AWS::DynamoDB::GlobalTable', {
+    Replicas: [
+      {
+        Region: {
+          Ref: 'AWS::Region',
+        },
+        ReplicaStreamSpecification: Match.absent(),
+      },
+    ],
+  });
+});

@@ -1,3 +1,5 @@
+import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import * as cdk from 'aws-cdk-lib';
 import {
   CertificateAuthority,
   CfnCertificate,
@@ -5,8 +7,6 @@ import {
   CfnCertificateAuthorityActivation,
 } from 'aws-cdk-lib/aws-acmpca';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as cdk from 'aws-cdk-lib';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as msk from '../lib';
 
 const app = new cdk.App();

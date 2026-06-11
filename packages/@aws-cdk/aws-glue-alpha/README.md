@@ -42,7 +42,7 @@ and deploy new resources.
 
 A Job encapsulates a script that connects to data sources, processes
 them, and then writes output to a data target. There are four types of Glue
-Jobs: Spark (ETL and Streaming), Python Shell, Ray, and Flex Jobs. Most
+Jobs: Spark (ETL and Streaming), Python Shell, and Flex Jobs. Most
 of the required parameters for these jobs are common across all types,
 but there are a few differences depending on the languages supported
 and features provided by each type. For all job types, the L2 defaults
@@ -113,7 +113,7 @@ new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V3_0,
+  glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
   maxConcurrentRuns: 100,
@@ -169,7 +169,7 @@ new glue.PySparkStreamingJob(stack, 'PySparkStreamingJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V3_0,
+  glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
   maxConcurrentRuns: 100,
@@ -222,7 +222,7 @@ new glue.PySparkEtlJob(stack, 'pySparkEtlJob', {
   description: 'This is a description',
   role,
   script,
-  glueVersion: glue.GlueVersion.V3_0,
+  glueVersion: glue.GlueVersion.V5_1,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
   maxConcurrentRuns: 100,
@@ -270,6 +270,7 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 declare const stack: cdk.Stack;
 declare const role: iam.IRole;
 declare const script: glue.Code;
+declare const extraPythonFile: glue.Code;
 new glue.PythonShellJob(stack, 'PythonShellJob', {
   jobName: 'PythonShellJobCustomName',
   description: 'This is a description',
@@ -277,6 +278,7 @@ new glue.PythonShellJob(stack, 'PythonShellJob', {
   maxCapacity: glue.MaxCapacity.DPU_1,
   role,
   script,
+  extraPythonFiles: [extraPythonFile],
   glueVersion: glue.GlueVersion.V2_0,
   continuousLogging: { enabled: false },
   workerType: glue.WorkerType.G_2X,
@@ -296,52 +298,10 @@ new glue.PythonShellJob(stack, 'PythonShellJob', {
 
 ### Ray Jobs
 
-Glue Ray jobs use worker type Z.2X and Glue version 4.0. These are not
-overrideable since these are the only configuration that Glue Ray jobs
-currently support. The runtime defaults to Ray2.4 and min workers defaults to 3.
+> **⚠️ DEPRECATED:** AWS Glue for Ray is closed to new customers as of April 30, 2026 and is in maintenance mode.
+> Migrate to [Amazon EKS with KubeRay Operator](https://docs.aws.amazon.com/glue/latest/dg/awsglue-ray-jobs-availability-change.html).
 
-Reference the ray-job.test.ts unit tests for examples of required-only and
-optional job parameters when creating these types of jobs.
-
-Example with only required parameters:
-
-```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-declare const stack: cdk.Stack;
-declare const role: iam.IRole;
-declare const script: glue.Code;
-new glue.RayJob(stack, 'ImportedJob', { role, script });
-```
-
-Example with optional override parameters:
-
-```ts
-import * as cdk from 'aws-cdk-lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-declare const stack: cdk.Stack;
-declare const role: iam.IRole;
-declare const script: glue.Code;
-new glue.RayJob(stack, 'ImportedJob', {
-  role,
-  script,
-  jobName: 'RayCustomJobName',
-  description: 'This is a description',
-  workerType: glue.WorkerType.Z_2X,
-  numberOfWorkers: 5,
-  runtime: glue.Runtime.RAY_TWO_FOUR,
-  maxRetries: 3,
-  maxConcurrentRuns: 100,
-  timeout: cdk.Duration.hours(2),
-  connections: [glue.Connection.fromConnectionName(stack, 'Connection', 'connectionName')],
-  securityConfiguration: glue.SecurityConfiguration.fromSecurityConfigurationName(stack, 'SecurityConfig', 'securityConfigName'),
-  tags: {
-    FirstTagName: 'FirstTagValue',
-    SecondTagName: 'SecondTagValue',
-    XTagName: 'XTagValue',
-  },
-});
-```
+The `RayJob` construct, `Runtime.RAY_TWO_FOUR`, and `JobType.RAY` are deprecated and will be removed in a future release.
 
 ### Metrics Control
 
@@ -371,7 +331,7 @@ new glue.PySparkEtlJob(stack, 'SelectiveJob', {
 });
 ```
 
-This feature is available for all Spark job types (ETL, Streaming, Flex) and Ray jobs.
+This feature is available for all Spark job types (ETL, Streaming, Flex).
 
 ### Enable Job Run Queuing
 
@@ -710,6 +670,186 @@ new glue.S3Table(this, 'MyTable', {
   }],
   dataFormat: glue.DataFormat.JSON,
   enablePartitionFiltering: true,
+});
+```
+
+### Partition Projection
+
+Partition projection allows Athena to automatically add new partitions as new data arrives, without requiring `ALTER TABLE ADD PARTITION` statements. This improves query performance and reduces management overhead by eliminating the need to manually manage partition metadata.
+
+For more information, see the [AWS documentation on partition projection](https://docs.aws.amazon.com/athena/latest/ug/partition-projection.html).
+
+#### INTEGER Projection
+
+For partition keys with sequential numeric values:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'year',
+    type: glue.Schema.INTEGER,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    year: glue.PartitionProjectionConfiguration.integer({
+      min: 2020,
+      max: 2023,
+      interval: 1,  // optional, defaults to 1
+      digits: 4,    // optional, pads with leading zeros
+    }),
+  },
+});
+```
+
+#### DATE Projection
+
+For partition keys with date or timestamp values. Supports both fixed dates and relative dates using `NOW`:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'date',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    date: glue.PartitionProjectionConfiguration.date({
+      min: '2020-01-01',
+      max: '2023-12-31',
+      format: 'yyyy-MM-dd',
+      interval: 1,  // optional, defaults to 1
+      intervalUnit: glue.DateIntervalUnit.DAYS,  // optional: YEARS, MONTHS, WEEKS, DAYS, HOURS, MINUTES, SECONDS
+    }),
+  },
+});
+```
+
+You can also use relative dates with `NOW`:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'date',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    date: glue.PartitionProjectionConfiguration.date({
+      min: 'NOW-3YEARS',
+      max: 'NOW',
+      format: 'yyyy-MM-dd',
+    }),
+  },
+});
+```
+
+#### ENUM Projection
+
+For partition keys with a known set of values:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'region',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    region: glue.PartitionProjectionConfiguration.enum({
+      values: ['us-east-1', 'us-west-2', 'eu-west-1'],
+    }),
+  },
+});
+```
+
+#### INJECTED Projection
+
+For custom partition values injected at query time:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [{
+    name: 'custom',
+    type: glue.Schema.STRING,
+  }],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    custom: glue.PartitionProjectionConfiguration.injected(),
+  },
+});
+```
+
+#### Multiple Partition Projections
+
+You can configure partition projection for multiple partition keys:
+
+```ts
+declare const myDatabase: glue.Database;
+new glue.S3Table(this, 'MyTable', {
+  database: myDatabase,
+  columns: [{
+    name: 'data',
+    type: glue.Schema.STRING,
+  }],
+  partitionKeys: [
+    {
+      name: 'year',
+      type: glue.Schema.INTEGER,
+    },
+    {
+      name: 'month',
+      type: glue.Schema.INTEGER,
+    },
+    {
+      name: 'region',
+      type: glue.Schema.STRING,
+    },
+  ],
+  dataFormat: glue.DataFormat.JSON,
+  partitionProjection: {
+    year: glue.PartitionProjectionConfiguration.integer({
+      min: 2020,
+      max: 2023,
+    }),
+    month: glue.PartitionProjectionConfiguration.integer({
+      min: 1,
+      max: 12,
+      digits: 2,
+    }),
+    region: glue.PartitionProjectionConfiguration.enum({
+      values: ['us-east-1', 'us-west-2'],
+    }),
+  },
 });
 ```
 

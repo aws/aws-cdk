@@ -1,4 +1,3 @@
-import * as path from 'path';
 import { Template } from '../../assertions';
 import * as opensearch from '../../aws-opensearchservice';
 import * as cdk from '../../core';

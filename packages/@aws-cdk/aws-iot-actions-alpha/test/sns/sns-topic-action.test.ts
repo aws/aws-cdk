@@ -1,8 +1,8 @@
+import * as iot from '@aws-cdk/aws-iot-alpha';
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as iot from '@aws-cdk/aws-iot-alpha';
 import * as sns from 'aws-cdk-lib/aws-sns';
-import * as cdk from 'aws-cdk-lib';
 import * as actions from '../../lib';
 
 const SNS_TOPIC_ARN = 'arn:aws:sns::123456789012:test-topic';

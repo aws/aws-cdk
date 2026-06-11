@@ -1,10 +1,12 @@
+/* eslint-disable @cdklabs/no-throw-default-error */
+
 /* eslint-disable max-len */
-/* eslint-disable no-console */
+
 import * as cfnResponse from './cfn-response';
 import * as consts from './consts';
 import { invokeFunction, startExecution } from './outbound';
 import { getEnv, log, parseJsonPayload } from './util';
-import { IsCompleteResponse, OnEventResponse } from '../types';
+import type { IsCompleteResponse, OnEventResponse } from '../types';
 
 // use consts for handler names to compiler-enforce the coupling with construction code.
 export = {
@@ -55,13 +57,11 @@ async function onEvent(cfnRequest: AWSLambda.CloudFormationCustomResourceEvent) 
   // ok, we are not complete, so kick off the waiter workflow
   const waiter = {
     stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
-    name: resourceEvent.RequestId,
     input: JSON.stringify(resourceEvent),
   };
 
   log('starting waiter', {
     stateMachineArn: getEnv(consts.WAITER_STATE_MACHINE_ARN_ENV),
-    name: resourceEvent.RequestId,
   });
 
   // kick off waiter state machine

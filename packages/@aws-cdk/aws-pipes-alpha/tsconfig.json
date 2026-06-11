@@ -9,7 +9,7 @@
     "lib": [
       "es2022"
     ],
-    "module": "commonjs",
+    "module": "Node20",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -25,8 +25,14 @@
     "stripInternal": false,
     "target": "es2022",
     "composite": true,
+    "isolatedModules": true,
     "tsBuildInfoFile": "tsconfig.tsbuildinfo",
-    "esModuleInterop": false
+    "esModuleInterop": true,
+    "types": [
+      "jest",
+      "node"
+    ],
+    "noUncheckedSideEffectImports": true
   },
   "include": [
     "**/*.ts"

@@ -1,8 +1,8 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../lib';
 
 describe('AgentActionGroupExecutor', () => {

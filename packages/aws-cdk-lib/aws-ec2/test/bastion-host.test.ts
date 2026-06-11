@@ -229,7 +229,6 @@ describe('bastion host', () => {
     const stack = new Stack();
     const vpc = new Vpc(stack, 'VPC');
     const sshKeys = ['foo', 'bar'];
-    const hashdigest = '450c0dd0c96b2841';
 
     // WHEN
     const bastionHostOld = new BastionHostLinux(stack, 'BastionHostUserDataCausesReplacement', {

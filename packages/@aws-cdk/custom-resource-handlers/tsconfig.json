@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2022",
-    "module": "commonjs",
+    "module": "Node20",
     "lib": [
       "es2022"
     ],
@@ -19,15 +19,21 @@
     "composite": true,
     "incremental": true,
     "skipLibCheck": true,
-    "esModuleInterop": false
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "types": [
+      "jest",
+      "node"
+    ],
+    "noUncheckedSideEffectImports": true
   },
   "include": [
-    "**/*.ts",
-    "**/*.d.ts"
+    "**/*.ts"
   ],
   "exclude": [
-    "**/test/**/*.ts",
-    "dist",
+    "**/*.d.ts",
+    "dist/**/*.ts",
+    "test/custom-resources-framework/expected/**/*.ts",
     "runtime-determiner"
   ]
 }

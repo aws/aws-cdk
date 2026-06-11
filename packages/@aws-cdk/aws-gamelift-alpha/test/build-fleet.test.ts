@@ -1,9 +1,9 @@
 import * as path from 'path';
+import * as cdk from 'aws-cdk-lib';
 import { Template, Match, Annotations } from 'aws-cdk-lib/assertions';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
 import * as gamelift from '../lib';
 
 describe('build fleet', () => {

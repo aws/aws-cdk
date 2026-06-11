@@ -3,7 +3,7 @@ import { User } from 'aws-cdk-lib/aws-iam';
 import * as opensearch from 'aws-cdk-lib/aws-opensearchservice';
 import * as cdk from 'aws-cdk-lib';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import * as appsync from 'aws-cdk-lib/aws-appsync';
 
 class OpensSearch23Stack extends cdk.Stack {
@@ -30,7 +30,9 @@ class OpensSearch23Stack extends cdk.Stack {
 
     const api = new appsync.GraphqlApi(this, 'api', {
       name: 'api',
-      schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      definition: {
+        schema: appsync.SchemaFile.fromAsset(path.join(__dirname, 'appsync.test.graphql')),
+      },
     });
 
     const ds = api.addOpenSearchDataSource('ds', domain);

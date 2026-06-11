@@ -7,8 +7,8 @@
  * None of this is CDK-specific business logic.
  */
 
-import { PullRequestLinterBase } from "../linter-base";
-import { createOctomock } from "./octomock";
+import { PullRequestLinterBase } from '../linter-base';
+import { createOctomock } from './octomock';
 
 const octomock = createOctomock();
 
@@ -44,7 +44,7 @@ test('ignore if dismissing reviews throws a specific "already dismissed" error',
         state: 'CHANGES_REQUESTED',
         body: 'some comment',
       },
-    ]
+    ],
   });
   octomock.pulls.dismissReview.mockRejectedValue({
     status: 422,
@@ -75,7 +75,7 @@ test('throw if dismissing reviews throws any other error', async () => {
         state: 'CHANGES_REQUESTED',
         body: 'some comment',
       },
-    ]
+    ],
   });
   octomock.pulls.dismissReview.mockRejectedValue({
     status: 422,

@@ -245,7 +245,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
 const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     securityGroup.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443));
 for (const gateway of provider.gatewayInstances) {
-  bucket.grantWrite(gateway);
+  bucket.grants.write(gateway);
   gateway.addSecurityGroup(securityGroup);
 }
 ```
@@ -415,7 +415,7 @@ const vpc = new ec2.Vpc(this, 'TheVPC', {
       // group of the same type.
       name: 'Ingress',
 
-      // 'cidrMask' specifies the IP addresses in the range of of individual
+      // 'cidrMask' specifies the IP addresses in the range of individual
       // subnets in the group. Each of the subnets in this group will contain
       // `2^(32 address bits - 24 subnet bits) - 2 reserved addresses = 254`
       // usable IP addresses.
@@ -619,7 +619,7 @@ instance around:
 ### Importing an existing VPC
 
 If your VPC is created outside your CDK app, you can use `Vpc.fromLookup()`.
-The CDK CLI will search for the specified VPC in the the stack's region and
+The CDK CLI will search for the specified VPC in the stack's region and
 account, and import the subnet configuration. Looking up can be done by VPC
 ID, but more flexibly by searching for a specific tag on the VPC.
 
@@ -795,6 +795,17 @@ declare const appFleet: autoscaling.AutoScalingGroup;
 const prefixList = new ec2.PrefixList(this, 'PrefixList', { maxEntries: 10 });
 appFleet.connections.allowFrom(prefixList, ec2.Port.HTTPS);
 ```
+
+#### Rule Configuration Interfaces
+
+The `IPeer` interface provides type-safe methods for generating security group rule configurations.
+The `toIngressRuleConfig()` and `toEgressRuleConfig()` methods return strongly-typed interfaces
+instead of `any`, enabling better IDE autocompletion and compile-time type checking:
+
+- `IngressRuleConfig`: Configuration for ingress rules with properties like `cidrIp`, `cidrIpv6`,
+  `sourcePrefixListId`, `sourceSecurityGroupId`, and `sourceSecurityGroupOwnerId`
+- `EgressRuleConfig`: Configuration for egress rules with properties like `cidrIp`, `cidrIpv6`,
+  `destinationPrefixListId`, and `destinationSecurityGroupId`
 
 ### Port Ranges
 
@@ -1907,7 +1918,7 @@ You can configure [tag propagation on volume creation](https://docs.aws.amazon.c
 
 #### Throughput on GP3 Volumes
 
-You can specify the `throughput` of a GP3 volume from 125 (default) to 1000.
+You can specify the `throughput` of a GP3 volume from 125 (default) to 2000.
 
 ```ts
 new ec2.Volume(this, 'Volume', {
@@ -1939,13 +1950,39 @@ The `volumeInitializationRate` must be:
 
 ### Configuring Instance Metadata Service (IMDS)
 
-#### Toggling IMDSv1
+#### Comprehensive Metadata Options
 
-You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options to either
-allow both IMDSv1 and IMDSv2 or enforce IMDSv2 when interacting with the IMDS.
+You can configure [EC2 Instance Metadata Service](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html) options using individual properties. This provides comprehensive control over all metadata service settings:
 
-To do this for a single `Instance`, you can use the `requireImdsv2` property.
-The example below demonstrates IMDSv2 being required on a single `Instance`:
+```ts
+declare const vpc: ec2.Vpc;
+declare const instanceType: ec2.InstanceType;
+declare const machineImage: ec2.IMachineImage;
+
+// Example 1: Enforce IMDSv2 with comprehensive options
+new ec2.Instance(this, 'Instance', {
+  vpc,
+  instanceType,
+  machineImage,
+  httpEndpoint: true,
+  httpProtocolIpv6: false,
+  httpPutResponseHopLimit: 2,
+  httpTokens: ec2.HttpTokens.REQUIRED,
+  instanceMetadataTags: true,
+});
+
+// Example 2: Enforce IMDSv2 with minimal configuration
+new ec2.Instance(this, 'SecureInstance', {
+  vpc,
+  instanceType,
+  machineImage,
+  httpTokens: ec2.HttpTokens.REQUIRED,
+});
+```
+
+#### Simple IMDSv2 Enforcement
+
+For simple IMDSv2 enforcement without additional configuration, you can use the `requireImdsv2` property:
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -1957,11 +1994,12 @@ new ec2.Instance(this, 'Instance', {
   instanceType,
   machineImage,
 
-  // ...
-
+  // Simple IMDSv2 enforcement
   requireImdsv2: true,
 });
 ```
+
+#### Applying to Multiple Instances
 
 You can also use the either the `InstanceRequireImdsv2Aspect` for EC2 instances or the `LaunchTemplateRequireImdsv2Aspect` for EC2 launch templates
 to apply the operation to multiple instances or launch templates, respectively.
@@ -2370,10 +2408,10 @@ new ec2.FlowLog(this, 'FlowLogWithKeyPrefix', {
 import * as firehose from 'aws-cdk-lib/aws-kinesisfirehose';
 
 declare const vpc: ec2.Vpc;
-declare const deliveryStream: firehose.CfnDeliveryStream;
+declare const deliveryStream: firehose.IDeliveryStream;
 
-vpc.addFlowLog('FlowLogsKinesisDataFirehose', {
-  destination: ec2.FlowLogDestination.toKinesisDataFirehoseDestination(deliveryStream.attrArn),
+vpc.addFlowLog('FlowLogsFirehose', {
+  destination: ec2.FlowLogDestination.toFirehose(deliveryStream),
 });
 ```
 
@@ -2611,7 +2649,7 @@ Please note this feature does not support Launch Configurations.
 
 ## Detailed Monitoring
 
-The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](http://aws.amazon.com/cloudwatch/pricing/).
+The following demonstrates how to enable [Detailed Monitoring](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-cloudwatch-new.html) for an EC2 instance. Keep in mind that Detailed Monitoring results in [additional charges](https://aws.amazon.com/cloudwatch/pricing/).
 
 ```ts
 declare const vpc: ec2.Vpc;

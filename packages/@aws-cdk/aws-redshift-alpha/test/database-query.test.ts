@@ -1,9 +1,10 @@
+import * as cdk from 'aws-cdk-lib';
 import { Match, Template } from 'aws-cdk-lib/assertions';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
-import * as cdk from 'aws-cdk-lib';
 import * as redshift from '../lib';
-import { DatabaseQuery, DatabaseQueryProps } from '../lib/private/database-query';
+import type { DatabaseQueryProps } from '../lib/private/database-query';
+import { DatabaseQuery } from '../lib/private/database-query';
 
 describe('database query', () => {
   let stack: cdk.Stack;

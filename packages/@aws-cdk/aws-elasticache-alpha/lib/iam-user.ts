@@ -1,11 +1,13 @@
-import { Construct } from 'constructs';
-import { UserEngine } from './common';
 import { CfnUser } from 'aws-cdk-lib/aws-elasticache';
-import { UserBase, UserBaseProps } from './user-base';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
+import type { Construct } from 'constructs';
+import { UserEngine } from './common';
+import type { UserBaseProps } from './user-base';
+import { UserBase } from './user-base';
 
 const ELASTICACHE_IAMUSER_SYMBOL = Symbol.for('@aws-cdk/aws-elasticache.IamUser');
 
@@ -89,11 +91,11 @@ export class IamUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     if (this.userName !== this.userId) {
-      throw new ValidationError('For IAM authentication, userName must be equal to userId.', this);
+      throw new ValidationError(lit`IamUserNameMustEqualUserId`, 'For IAM authentication, userName must be equal to userId.', this);
     }
 
     this.resource = new CfnUser(this, 'Resource', {
-      engine: this.engine,
+      engine: this.engine.engineType,
       userId: props.userId,
       userName: this.userName,
       accessString: this.accessString,
@@ -112,6 +114,7 @@ export class IamUser extends UserBase {
 
   /**
    * Grant connect permissions to the given IAM identity.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The IAM identity to grant permissions to.
    */
@@ -122,6 +125,7 @@ export class IamUser extends UserBase {
 
   /**
    * Grant the given identity custom permissions.
+   * [disable-awslint:no-grants]
    *
    * @param grantee The IAM identity to grant permissions to.
    * @param actions The actions to grant.

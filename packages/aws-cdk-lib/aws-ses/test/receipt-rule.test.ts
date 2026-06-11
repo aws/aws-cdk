@@ -2,7 +2,7 @@ import { Template } from '../../assertions';
 import { Stack } from '../../core';
 import { ReceiptRule, ReceiptRuleSet, TlsPolicy } from '../lib';
 
-/* eslint-disable quote-props */
+/* eslint-disable @stylistic/quote-props */
 
 describe('receipt rule', () => {
   test('can create receipt rules with second after first', () => {

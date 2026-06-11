@@ -1404,7 +1404,7 @@ describe('State Machine', () => {
       encryptionConfiguration: new sfn.CustomerManagedEncryptionConfiguration(activityKey),
     });
 
-    const stateMachine = new sfn.StateMachine(stack, 'MyStateMachine', {
+    new sfn.StateMachine(stack, 'MyStateMachine', {
       stateMachineName: 'MyStateMachine',
       definitionBody: sfn.DefinitionBody.fromChainable(sfn.Chain.start(new task.StepFunctionsInvokeActivity(stack, 'Activity', {
         activity: activity,

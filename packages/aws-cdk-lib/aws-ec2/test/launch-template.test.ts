@@ -1,7 +1,7 @@
 import { stringLike } from './util';
 import { Annotations, Template, Match } from '../../assertions';
+import type { CfnInstanceProfile } from '../../aws-iam';
 import {
-  CfnInstanceProfile,
   Role,
   ServicePrincipal,
   InstanceProfile,
@@ -15,9 +15,9 @@ import {
   Tags,
 } from '../../core';
 import * as cxapi from '../../cx-api';
+import type { BlockDevice } from '../lib';
 import {
   AmazonLinuxImage,
-  BlockDevice,
   BlockDeviceVolume,
   CpuCredits,
   EbsDeviceVolumeType,
@@ -38,8 +38,6 @@ import {
   WindowsImage,
   WindowsVersion,
 } from '../lib';
-
-/* eslint-disable jest/expect-expect */
 
 describe('LaunchTemplate', () => {
   let app: App;
@@ -408,7 +406,7 @@ describe('LaunchTemplate', () => {
       },
     });
   });
-  test.each([124, 1001])('throws if throughput is set less than 125 or more than 1000', (throughput) => {
+  test.each([124, 2001])('throws if throughput is set less than 125 or more than 2000', (throughput) => {
     expect(() => {
       new LaunchTemplate(stack, 'LaunchTemplate', {
         blockDevices: [{
@@ -419,7 +417,7 @@ describe('LaunchTemplate', () => {
           }),
         }],
       });
-    }).toThrow(/'throughput' must be between 125 and 1000, got/);
+    }).toThrow(/'throughput' must be between 125 and 2000, got/);
   });
   test('throws if throughput is not an integer', () => {
     expect(() => {

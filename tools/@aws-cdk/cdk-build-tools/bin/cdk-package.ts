@@ -1,4 +1,3 @@
-/* eslint-disable @cdklabs/no-throw-default-error */
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as yargs from 'yargs';

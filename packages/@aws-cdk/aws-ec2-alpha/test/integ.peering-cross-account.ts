@@ -33,11 +33,11 @@
  *    - `yarn integ test/integ.vpcpc.js`
 */
 
-import * as vpc_v2 from '../lib/vpc-v2';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { RouteTable } from '../lib/route';
+import * as vpc_v2 from '../lib/vpc-v2';
 
 const app = new cdk.App();
 const account = process.env.CDK_INTEG_ACCOUNT || '123456789012';

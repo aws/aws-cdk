@@ -1,9 +1,9 @@
+import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as kms from 'aws-cdk-lib/aws-kms';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { App } from 'aws-cdk-lib/core';
 import * as core from 'aws-cdk-lib/core';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as kms from 'aws-cdk-lib/aws-kms';
-import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as bedrock from '../../../bedrock';
 
 describe('Agent', () => {
@@ -293,16 +293,27 @@ describe('Agent', () => {
 
       const rule = agent.onEvent('TestRule', {
         description: 'Custom rule description',
+        ruleName: 'MyCustomEventRuleName',
+        eventPattern: {
+          account: ['123456789012'],
+          region: ['us-east-1'],
+          detail: {
+            test: 'value',
+          },
+        },
       });
 
       expect(rule).toBeDefined();
       Template.fromStack(stack).hasResourceProperties('AWS::Events::Rule', {
         Description: 'Custom rule description',
+        Name: 'MyCustomEventRuleName',
         EventPattern: {
           source: ['aws.bedrock'],
           detail: {
             'agent-id': [{ 'Fn::GetAtt': [Match.stringLikeRegexp('TestAgent[A-Z0-9]+'), 'AgentId'] }],
           },
+          account: ['123456789012'],
+          region: ['us-east-1'],
         },
       });
     });
@@ -766,6 +777,35 @@ describe('Agent', () => {
             RelayConversationHistory: 'TO_COLLABORATOR',
           },
         ],
+      });
+    });
+
+    test('applies dependency for existing role', () => {
+      const existingRole = new iam.Role(stack, 'ExistingRole', {
+        assumedBy: new iam.ServicePrincipal('bedrock.amazonaws.com'),
+      });
+
+      new bedrock.Agent(stack, 'Agent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+        existingRole,
+      });
+
+      // Verify CloudFormation template has DependsOn
+      Template.fromStack(stack).hasResource('AWS::Bedrock::Agent', {
+        DependsOn: [Match.stringLikeRegexp('ExistingRoleDefaultPolicy.*')],
+      });
+    });
+
+    test('applies dependency for role created by Agent', () => {
+      new bedrock.Agent(stack, 'Agent', {
+        instruction: 'This is a test instruction that must be at least 40 characters long to be valid',
+        foundationModel: bedrock.BedrockFoundationModel.ANTHROPIC_CLAUDE_3_5_SONNET_V2_0,
+      });
+
+      // Verify CloudFormation template has DependsOn
+      Template.fromStack(stack).hasResource('AWS::Bedrock::Agent', {
+        DependsOn: [Match.stringLikeRegexp('AgentRoleDefaultPolicy.*')],
       });
     });
 

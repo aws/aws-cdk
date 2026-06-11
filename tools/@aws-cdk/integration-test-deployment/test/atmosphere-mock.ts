@@ -1,4 +1,4 @@
-import { Allocation } from '@cdklabs/cdk-atmosphere-client';
+import type { Allocation } from '@cdklabs/cdk-atmosphere-client';
 
 export class AtmosphereAllocationMock {
   static async acquire({ endpoint, pool }: {endpoint: string; pool: string}): Promise<AtmosphereAllocationMock> {

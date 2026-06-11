@@ -1,5 +1,5 @@
 import { Token } from 'aws-cdk-lib';
-import { validateStringFieldLength, validateFieldPattern, throwIfInvalid } from '../../../agentcore/tools/validation-helpers';
+import { validateStringFieldLength, validateFieldPattern, throwIfInvalid } from '../../../lib/tools/validation-helpers';
 
 describe('validation-helpers', () => {
   describe('validateStringFieldLength', () => {

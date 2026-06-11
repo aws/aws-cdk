@@ -6,3 +6,4 @@ export * from './password-user';
 export * from './no-password-user';
 export * from './serverless-cache-base';
 export * from './serverless-cache';
+export * from './elasticache-grants.generated';

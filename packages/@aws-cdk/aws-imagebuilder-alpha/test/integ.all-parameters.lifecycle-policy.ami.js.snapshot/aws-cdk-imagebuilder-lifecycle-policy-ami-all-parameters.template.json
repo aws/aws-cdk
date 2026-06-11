@@ -1,0 +1,203 @@
+{
+ "Resources": {
+  "Role1ABCC5F0": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "imagebuilder.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/EC2ImageBuilderLifecycleExecutionPolicy"
+       ]
+      ]
+     }
+    ]
+   }
+  },
+  "LifecyclePolicyAMI6BEB436A": {
+   "Type": "AWS::ImageBuilder::LifecyclePolicy",
+   "Properties": {
+    "Description": "This is a test lifecycle policy",
+    "ExecutionRole": {
+     "Fn::GetAtt": [
+      "Role1ABCC5F0",
+      "Arn"
+     ]
+    },
+    "Name": "test-ami-lifecycle-policy",
+    "PolicyDetails": [
+     {
+      "Action": {
+       "IncludeResources": {
+        "Amis": true,
+        "Snapshots": true
+       },
+       "Type": "DELETE"
+      },
+      "ExclusionRules": {
+       "Amis": {
+        "IsPublic": true,
+        "LastLaunched": {
+         "Unit": "DAYS",
+         "Value": 20
+        },
+        "Regions": [
+         "us-west-2",
+         "us-east-2"
+        ],
+        "SharedAccounts": [
+         "098765432109"
+        ],
+        "TagMap": {
+         "Environment": "test"
+        }
+       },
+       "TagMap": {
+        "Environment": "test"
+       }
+      },
+      "Filter": {
+       "Type": "COUNT",
+       "Value": 5
+      }
+     },
+     {
+      "Action": {
+       "IncludeResources": {
+        "Amis": false,
+        "Snapshots": false
+       },
+       "Type": "DISABLE"
+      },
+      "ExclusionRules": {
+       "Amis": {
+        "IsPublic": true,
+        "LastLaunched": {
+         "Unit": "DAYS",
+         "Value": 10
+        },
+        "Regions": [
+         "us-west-2",
+         "us-east-2"
+        ],
+        "SharedAccounts": [
+         "098765432109"
+        ],
+        "TagMap": {
+         "Environment": "test"
+        }
+       },
+       "TagMap": {
+        "Environment": "test"
+       }
+      },
+      "Filter": {
+       "RetainAtLeast": 5,
+       "Type": "AGE",
+       "Unit": "DAYS",
+       "Value": 10
+      }
+     },
+     {
+      "Action": {
+       "IncludeResources": {
+        "Amis": false,
+        "Snapshots": false
+       },
+       "Type": "DEPRECATE"
+      },
+      "ExclusionRules": {
+       "Amis": {
+        "IsPublic": true,
+        "LastLaunched": {
+         "Unit": "DAYS",
+         "Value": 1
+        },
+        "Regions": [
+         "us-west-2",
+         "us-east-2"
+        ],
+        "SharedAccounts": [
+         "098765432109"
+        ],
+        "TagMap": {
+         "Environment": "test"
+        }
+       },
+       "TagMap": {
+        "Environment": "test"
+       }
+      },
+      "Filter": {
+       "RetainAtLeast": 5,
+       "Type": "AGE",
+       "Unit": "DAYS",
+       "Value": 10
+      }
+     }
+    ],
+    "ResourceSelection": {
+     "Recipes": [
+      {
+       "Name": "test-ami-lifecycle-policy-recipe",
+       "SemanticVersion": "1.0.0"
+      }
+     ]
+    },
+    "ResourceType": "AMI_IMAGE",
+    "Status": "DISABLED"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -25,12 +25,10 @@ async function main() {
       try {
         require.resolve(name, { paths: [tmpDir] });
 
-        // eslint-disable-next-line no-console
         console.error(`Import of '${name}' should have produced an error, but didn't.`);
         process.exitCode = 1;
       } catch (e: any) {
         if (e.code !== code) {
-          // eslint-disable-next-line no-console
           console.error(`Import of '${name}' should have produced error ${code}, but got ${(e as any).code}.`);
           process.exitCode = 1;
         }
@@ -49,7 +47,6 @@ export async function withTemporaryDirectory<T>(callback: (dir: string) => Promi
 }
 
 main().catch((e) => {
-  // eslint-disable-next-line no-console
   console.error(e);
   process.exitCode = 1;
 });

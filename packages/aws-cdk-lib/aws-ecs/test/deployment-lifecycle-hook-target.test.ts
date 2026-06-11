@@ -3,7 +3,6 @@ import * as ec2 from '../../aws-ec2';
 import * as iam from '../../aws-iam';
 import * as lambda from '../../aws-lambda';
 import * as cdk from '../../core';
-import { App, Stack } from '../../core';
 import * as ecs from '../lib';
 
 describe('DeploymentLifecycleHookTarget', () => {

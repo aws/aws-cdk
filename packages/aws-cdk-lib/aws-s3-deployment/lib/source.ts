@@ -1,12 +1,13 @@
 import * as fs from 'fs';
 import { join, dirname } from 'path';
-import { Construct } from 'constructs';
+import type { Construct } from 'constructs';
 import { renderData } from './render-data';
-import * as iam from '../../aws-iam';
-import * as s3 from '../../aws-s3';
+import type * as iam from '../../aws-iam';
+import type * as s3 from '../../aws-s3';
 import * as s3_assets from '../../aws-s3-assets';
 import { FileSystem, Stack, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import { lit } from '../../core/lib/private/literal-string';
 import * as yaml_cfn from '../../core/lib/private/yaml-cfn';
 
 /**
@@ -132,7 +133,7 @@ export class Source {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         if (!context) {
-          throw new ValidationError('To use a Source.bucket(), context must be provided', scope);
+          throw new ValidationError(lit`Source`, 'To use a Source.bucket(), context must be provided', scope);
         }
 
         bucket.grantRead(context.handlerRole);
@@ -153,7 +154,7 @@ export class Source {
     return {
       bind(scope: Construct, context?: DeploymentSourceContext): SourceConfig {
         if (!context) {
-          throw new ValidationError('To use a Source.asset(), context must be provided', scope);
+          throw new ValidationError(lit`Source`, 'To use a Source.asset(), context must be provided', scope);
         }
 
         let id = 1;
@@ -165,7 +166,7 @@ export class Source {
           ...options,
         });
         if (!asset.isZipArchive) {
-          throw new ValidationError('Asset path must be either a .zip file or a directory', scope);
+          throw new ValidationError(lit`AssetPathZipFileDirectory`, 'Asset path must be either a .zip file or a directory', scope);
         }
         asset.grantRead(context.handlerRole);
 
@@ -193,17 +194,22 @@ export class Source {
     return {
       bind: (scope: Construct, context?: DeploymentSourceContext) => {
         const workdir = FileSystem.mkdtemp('s3-deployment');
-        const outputPath = join(workdir, objectKey);
-        const rendered = renderData(data);
-        fs.mkdirSync(dirname(outputPath), { recursive: true });
-        fs.writeFileSync(outputPath, rendered.text);
-        const asset = this.asset(workdir).bind(scope, context);
-        return {
-          bucket: asset.bucket,
-          zipObjectKey: asset.zipObjectKey,
-          markers: rendered.markers,
-          markersConfig: markersConfig,
-        };
+        try {
+          const outputPath = join(workdir, objectKey);
+          const rendered = renderData(data);
+          fs.mkdirSync(dirname(outputPath), { recursive: true });
+          fs.writeFileSync(outputPath, rendered.text);
+          const asset = this.asset(workdir).bind(scope, context);
+          return {
+            bucket: asset.bucket,
+            zipObjectKey: asset.zipObjectKey,
+            markers: rendered.markers,
+            markersConfig: markersConfig,
+          };
+        } finally {
+          // Calling `this.asset()` has copied files to the assembly, so we can delete the temporary directory.
+          FileSystem.rmrf(workdir);
+        }
       },
     };
   }
@@ -275,7 +281,7 @@ export class Source {
       return obj.map(v => Source.escapeTokens(scope, v));
     }
 
-    if (typeof obj === 'object') {
+    if (obj !== null && typeof obj === 'object') {
       return Object.fromEntries(
         Object.entries(obj).map(([key, value]) => {
           // As JSON keys are always strings, keys are assumed to be either regular strings or string tokens.

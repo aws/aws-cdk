@@ -1,9 +1,9 @@
 import { Template } from '../../../assertions';
 import { AccountPrincipal, Role, ServicePrincipal } from '../../../aws-iam';
 import { Stack, App, Duration } from '../../../core';
+import type { HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, IHttpRouteAuthorizer } from '../../lib';
 import {
-  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute,
-  HttpRouteAuthorizerBindOptions, HttpRouteAuthorizerConfig, HttpRouteIntegrationConfig, HttpRouteKey, IHttpRouteAuthorizer, HttpRouteIntegration,
+  HttpApi, HttpAuthorizer, HttpAuthorizerType, HttpConnectionType, HttpIntegrationType, HttpMethod, HttpRoute, HttpRouteKey, HttpRouteIntegration,
   MappingValue,
   ParameterMapping,
   PayloadFormatVersion,
@@ -756,6 +756,22 @@ describe('HttpRoute', () => {
         { Ref: 'HttpApiF5A9A8A7' },
         '/*/GET/books/*',
       ]],
+    });
+  });
+
+  test('adding a route to a referenced API', () => {
+    const stack = new Stack();
+
+    // Import HTTP API without apiEndpoint
+    const apiGateway = HttpApi.fromHttpApiAttributes(stack, 'ApiGateway', {
+      httpApiId: 'test-api-id',
+    });
+
+    // This fails in 2.234.0 with: "apiEndpoint is not configured on the imported HttpApi"
+    new HttpRoute(stack, 'ProxyApiRoute', {
+      httpApi: apiGateway,
+      routeKey: HttpRouteKey.with('/v2/integrations/{proxy+}', HttpMethod.ANY),
+      integration: new DummyIntegration(),
     });
   });
 });

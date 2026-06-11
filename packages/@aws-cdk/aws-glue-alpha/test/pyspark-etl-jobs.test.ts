@@ -1,9 +1,9 @@
 import * as cdk from 'aws-cdk-lib';
-import * as glue from '../lib';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import { Template, Match } from 'aws-cdk-lib/assertions';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as glue from '../lib';
 
 describe('Job', () => {
   let stack: cdk.Stack;
@@ -755,6 +755,25 @@ describe('Job', () => {
           '--enable-metrics': '',
           '--enable-observability-metrics': 'true',
         }),
+      });
+    });
+  });
+
+  describe('Create PySpark ETL Job with notifyDelayAfter', () => {
+    beforeEach(() => {
+      job = new glue.PySparkEtlJob(stack, 'PySparkETLJob', {
+        role,
+        script,
+        jobName: 'PySparkETLJob',
+        notifyDelayAfter: cdk.Duration.minutes(10),
+      });
+    });
+
+    test('NotificationProperty is set', () => {
+      Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
+        NotificationProperty: {
+          NotifyDelayAfter: 10,
+        },
       });
     });
   });
