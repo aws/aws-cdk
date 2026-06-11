@@ -1,25 +1,30 @@
 import { captureStackTrace, renderCallStackJustMyCode } from '../lib';
 
 describe('captureStackTrace with jsii host trace', () => {
-  const SYMBOL = Symbol.for('jsii.context.hostStackTrace');
+  const TRACE_SYMBOL = Symbol.for('jsii.context.hostStackTrace');
+  const DIR_SYMBOL = Symbol.for('jsii.context.hostDirName');
 
   afterEach(() => {
-    delete (global as any)[SYMBOL];
+    delete (global as any)[TRACE_SYMBOL];
+    delete (global as any)[DIR_SYMBOL];
   });
 
-  test('appends jsii host stack trace frames when present', () => {
-    (global as any)[SYMBOL] = [
-      ['/home/user/app.py', 42, 8, 'MyStack.__init__'],
+  test('appends jsii host stack trace frames, dropping the first frame', () => {
+    (global as any)[TRACE_SYMBOL] = [
+      ['/Users/otaviom/my_app/.venv/lib/python3.14/site-packages/aws_cdk/aws_sqs/__init__.py', 4235, 0, '__init__'],
+      ['/home/user/app.py', 42, 8, '__init__'],
       ['/home/user/main.py', 10, 1, '<module>'],
     ];
 
     const trace = captureStackTrace(captureStackTrace);
 
     expect(trace).toEqual(expect.arrayContaining([
-      'MyStack.__init__ (/home/user/app.py:42:8)',
+      '__init__ (/home/user/app.py:42:8)',
       '<module> (/home/user/main.py:10:1)',
     ]));
-    const hostIndex = trace.indexOf('MyStack.__init__ (/home/user/app.py:42:8)');
+    // The first frame (site-packages) should have been dropped
+    expect(trace.join('\n')).not.toContain('site-packages');
+    const hostIndex = trace.indexOf('__init__ (/home/user/app.py:42:8)');
     const moduleIndex = trace.indexOf('<module> (/home/user/main.py:10:1)');
     expect(hostIndex).toBeGreaterThan(0);
     expect(moduleIndex).toBe(hostIndex + 1);
@@ -35,7 +40,7 @@ describe('captureStackTrace with jsii host trace', () => {
   });
 
   test('handles empty jsii host trace array', () => {
-    (global as any)[SYMBOL] = [];
+    (global as any)[TRACE_SYMBOL] = [];
 
     const trace = captureStackTrace(captureStackTrace);
 
@@ -45,7 +50,8 @@ describe('captureStackTrace with jsii host trace', () => {
   });
 
   test('formats external frame with all components', () => {
-    (global as any)[SYMBOL] = [
+    (global as any)[TRACE_SYMBOL] = [
+      ['/home/user/app.py', 42, 8, '__init__'],
       ['src/my_stack.py', 100, 12, 'MyStack.add_bucket'],
     ];
 
@@ -53,9 +59,26 @@ describe('captureStackTrace with jsii host trace', () => {
 
     expect(trace[trace.length - 1]).toBe('MyStack.add_bucket (src/my_stack.py:100:12)');
   });
+
+  test('omits column from external frame when column is 0', () => {
+    (global as any)[TRACE_SYMBOL] = [
+      ['/home/user/ignored.py', 1, 0, 'ignored'],
+      ['src/my_stack.py', 16, 0, '__init__'],
+    ];
+
+    const trace = captureStackTrace(captureStackTrace);
+
+    expect(trace[trace.length - 1]).toBe('__init__ (src/my_stack.py:16)');
+  });
 });
 
 describe('renderCallStackJustMyCode', () => {
+  const DIR_SYMBOL = Symbol.for('jsii.context.hostDirName');
+
+  afterEach(() => {
+    delete (global as any)[DIR_SYMBOL];
+  });
+
   test('renders namespaced packages correctly', () => {
     const stack: Parameters<typeof renderCallStackJustMyCode>[0] = [
       {
@@ -93,7 +116,9 @@ describe('renderCallStackJustMyCode', () => {
     ]);
   });
 
-  test('filters out jsii runtime (bundled code) frames', () => {
+  test('filters out jsii runtime frames identified by hostDirName', () => {
+    (global as any)[DIR_SYMBOL] = '/private/var/folders/zv/tmpjph88goj/lib';
+
     const stack: Parameters<typeof renderCallStackJustMyCode>[0] = [
       {
         fileName: '/path/to/project/node_modules/aws-cdk-lib/aws-sqs/lib/queue.js',
@@ -134,6 +159,8 @@ describe('renderCallStackJustMyCode', () => {
   });
 
   test('filters jsii runtime frames between user code and external trace', () => {
+    (global as any)[DIR_SYMBOL] = '/private/var/folders/zv/tmpjph88goj/lib';
+
     const stack: Parameters<typeof renderCallStackJustMyCode>[0] = [
       {
         fileName: '/path/to/project/node_modules/aws-cdk-lib/aws-sqs/lib/queue.js',

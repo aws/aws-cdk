@@ -43,7 +43,9 @@ function withExternalTrace(internal: string[]) {
     (global as any)[Symbol.for('jsii.context.hostStackTrace')];
 
   if (hostTrace != null) {
-    return internal.concat(hostTrace.map(formatExternalFrame));
+    // The first frame represents the last call on the non-Javascript side,
+    // to the jsii runtime. This is not interesting to the user, so we drop it
+    return internal.concat(hostTrace.slice(1).map(formatExternalFrame));
   }
   return internal;
 }
