@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "6611813c56ee5ec64f812f46caf03748d8b30fea6e344cc7ac25035891a6dfe8": {
       "source": {
@@ -14,16 +14,16 @@
         }
       }
     },
-    "feb1f9459526b9ce96bb3c00ea84c2e4d76f6d17608d89dd971e9987d303ec5a": {
+    "a1e8103f7031d43c47ef5f70f00645920743bcf82fec2733246e85531ffe9a34": {
       "displayName": "LogGroupDefaultTestDeployAssert353EE07A Template",
       "source": {
         "path": "LogGroupDefaultTestDeployAssert353EE07A.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-14e971d6": {
+        "current_account-current_region-2ebb7fc5": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "feb1f9459526b9ce96bb3c00ea84c2e4d76f6d17608d89dd971e9987d303ec5a.json",
+          "objectKey": "a1e8103f7031d43c47ef5f70f00645920743bcf82fec2733246e85531ffe9a34.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
