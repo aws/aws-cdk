@@ -4,12 +4,19 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [2.259.0](https://github.com/aws/aws-cdk/compare/v2.258.1...v2.259.0) (2026-06-11)
 
+### ⚠ BREAKING CHANGES
+
+* **lambda:** `Runtime.NODEJS_LATEST` now resolves to `nodejs24.x` in every region. Customers who pin to a concrete runtime (`Runtime.NODEJS_22_X`, `useLatestRuntimeVersion: false` in `aws-lambda-nodejs.NodejsFunction`) are unaffected. Existing `AWS::Lambda::Function` resources synthesized with `NODEJS_LATEST` will see `Runtime: nodejs22.x` → `Runtime: nodejs24.x` on next deploy. Lambda accepts runtime updates **in place**.
+
+  **Customer-code compatibility — IMPORTANT**: Node.js 24 removes support for callback-style asynchronous handlers (`(event, context, callback) => {...}`) per the [launch blog](https://aws.amazon.com/blogs/compute/node-js-24-runtime-now-available-in-aws-lambda/). Customers whose Lambda code still uses callback-based handlers will see runtime errors after the bump. Customers should migrate to `async (event, context) => {...}` or pin to `Runtime.NODEJS_22_X` explicitly.
 
 ### Features
 
 * **core:** recommend the use of weak references if no choice has been made ([#38070](https://github.com/aws/aws-cdk/issues/38070)) ([6e74e5e](https://github.com/aws/aws-cdk/commit/6e74e5ebbea3959a86af3aea038df0ab87aa27b6))
 * **ecs:** add forceNewDeployment option for Fargate and EC2 services ([#36797](https://github.com/aws/aws-cdk/issues/36797)) ([3d9c4df](https://github.com/aws/aws-cdk/commit/3d9c4df185026440f5668b82dd2adb47e0c366de)), closes [#27762](https://github.com/aws/aws-cdk/issues/27762)
 * **eks:** use the recommended AL2023 instead of AL2 AMI type (under feature flag) ([#37850](https://github.com/aws/aws-cdk/issues/37850)) ([6a2dcb7](https://github.com/aws/aws-cdk/commit/6a2dcb7ab6e2d4a69999625947ab6a152b82bc19)), closes [#32211](https://github.com/aws/aws-cdk/issues/32211)
+* **lambda:** upgrade lambda and custom resource default runtime to nodejs24.x ([#38031](https://github.com/aws/aws-cdk/issues/38031)) ([36c84c6](https://github.com/aws/aws-cdk/commit/36c84c6d6ef8a4772249afadec78c2d25c44cd90))
+
 
 
 ### Bug Fixes
