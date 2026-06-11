@@ -516,7 +516,8 @@
      "Ref": "LB8A12904C"
     },
     "Port": 443,
-    "Protocol": "HTTPS"
+    "Protocol": "HTTPS",
+    "SslPolicy": "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09"
    }
   },
   "LBListenerAction2RuleDEE172B4": {
@@ -827,7 +828,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "f373062318c7a680ecd7371165350d771c5ac1ac7d3a2a377324d6b16a283684.zip"
+     "S3Key": "8b1c21efe0e24332f92ed71e98107d8a27ee1544c62b7b191805e0913fcfdf0f.zip"
     },
     "Handler": "index.handler",
     "Role": {
@@ -836,7 +837,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 120
    },
    "DependsOn": [
