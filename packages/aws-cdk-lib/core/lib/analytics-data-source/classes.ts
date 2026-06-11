@@ -28613,6 +28613,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
         'stepPercent': '*',
         'stepBakeTime': '*'
       },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
+      },
       'addPlacementStrategies': [
         '*'
       ],
@@ -28873,6 +28877,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'canaryConfiguration': {
         'stepPercent': '*',
         'stepBakeTime': '*'
+      },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
       },
       'attachToApplicationTargetGroup': [
         {
@@ -29243,6 +29251,10 @@ export const AWS_CDK_CONSTRUCTOR_PROPS: { [key: string]: any } = {
       'canaryConfiguration': {
         'stepPercent': '*',
         'stepBakeTime': '*'
+      },
+      'forceNewDeployment': {
+        'enabled': 'boolean',
+        'nonce': '*'
       },
       'attachToClassicLB': [
         '*'
