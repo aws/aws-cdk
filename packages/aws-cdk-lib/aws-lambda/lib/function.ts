@@ -372,7 +372,8 @@ export interface FunctionOptions extends EventInvokeConfigOptions {
 
   /**
    * Enable SnapStart for Lambda Function.
-   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime
+   * SnapStart is currently supported for Java 11, Java 17, Python 3.12, Python 3.13, and .NET 8 runtime,
+   * as well as container image (OCI) deployments.
    *
    * @default - No snapstart
    */
@@ -1723,7 +1724,7 @@ Environment variables can be marked for removal when used in Lambda@Edge by sett
     // See https://docs.aws.amazon.com/lambda/latest/dg/snapstart.html
     Annotations.of(this).addWarningV2('@aws-cdk/aws-lambda:snapStartRequirePublish', 'SnapStart only supports published Lambda versions. Ignore if function already has published versions.');
 
-    if (!props.runtime.supportsSnapStart) {
+    if (props.runtime !== Runtime.FROM_IMAGE && !props.runtime.supportsSnapStart) {
       throw new ValidationError(lit`SnapStartCurrentlySupportedRuntime`, `SnapStart currently not supported by runtime ${props.runtime.name}`, this);
     }
 
