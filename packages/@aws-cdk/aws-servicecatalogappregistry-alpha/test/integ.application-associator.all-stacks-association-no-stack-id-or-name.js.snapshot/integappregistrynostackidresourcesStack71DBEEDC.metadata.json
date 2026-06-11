@@ -1,0 +1,98 @@
+{
+  "/integ-appregistry-no-stackid/resourcesStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association-no-stack-id-or-name.js:46:1)",
+        "...node internals..."
+      ]
+    },
+    {
+      "type": "aws:cdk:warning",
+      "data": "Environment agnostic stack determined, AppRegistry association might not work as expected in case you deploy cross-region or cross-account stack. [ack: @aws-cdk/servicecatalogappregistry:EnvironmentAgnosticStack]",
+      "trace": [
+        "Annotations.addMessage (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:203:29)",
+        "Annotations.addWarningV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/annotations.js:72:18)",
+        "CheckedStageStackAssociator.warning (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:58:37)",
+        "CheckedStageStackAssociator.handleCrossRegionStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:70:18)",
+        "CheckedStageStackAssociator.visit (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:31:18)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:291:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:263:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "Object.<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association-no-stack-id-or-name.js:70:5)",
+        "Module._compile (node:internal/modules/cjs/loader:1521:14)",
+        "Module._extensions..js (node:internal/modules/cjs/loader:1623:10)",
+        "Module.load (node:internal/modules/cjs/loader:1266:32)",
+        "Module._load (node:internal/modules/cjs/loader:1091:12)",
+        "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)",
+        "node:internal/main/run_main_module:28:49"
+      ]
+    }
+  ],
+  "/integ-appregistry-no-stackid/resourcesStack/AppRegistryAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AppRegistryAssociation"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.associateApplicationWithStack (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/application.js:145:13)",
+        "CheckedStageStackAssociator.associate (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:49:26)",
+        "CheckedStageStackAssociator.visit (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/lib/aspects/stack-associator.js:33:18)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:291:38)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "recurse (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:305:43)",
+        "invokeAspectsV2 (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:263:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:35:9)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-servicecatalogappregistry-alpha/test/integ.application-associator.all-stacks-association-no-stack-id-or-name.js:70:5)"
+      ]
+    }
+  ],
+  "/integ-appregistry-no-stackid/resourcesStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)"
+      ]
+    }
+  ],
+  "/integ-appregistry-no-stackid/resourcesStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)"
+      ]
+    }
+  ]
+}

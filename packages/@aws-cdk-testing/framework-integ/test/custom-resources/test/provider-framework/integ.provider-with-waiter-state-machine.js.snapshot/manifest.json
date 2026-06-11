@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "integ-provider-with-waiter-state-machine.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/6b76f03ab60b3fae001581b80483d9cda34be73d8efff5fdb3b94b9a6d23b169.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a440af3df2cb2be1305c25fcdeafd4d00f929fdfa96d20bd0b741547d72d627d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -609,5 +609,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1125.0"
+  "minimumCliVersion": "2.1126.0"
 }

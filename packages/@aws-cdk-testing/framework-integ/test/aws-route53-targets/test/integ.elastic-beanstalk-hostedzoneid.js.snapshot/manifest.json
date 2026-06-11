@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "artifacts": {
     "cdk-route53-ebs-hostedzoneid-integ.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/2a42a7d7d3fe63886699bf9282f30f25d59dfb3cec4bcbba66f3c06bf6b6e0d8.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/f1646b56931c2becd7bff7cb1189d097b460923db1ae109b06114692f5a17f67.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -609,5 +609,5 @@
       }
     }
   },
-  "minimumCliVersion": "2.1125.0"
+  "minimumCliVersion": "2.1126.0"
 }

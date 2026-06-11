@@ -1,5 +1,5 @@
 {
-  "version": "53.0.0",
+  "version": "54.0.0",
   "files": {
     "44e9c4d7a5d3fd2d677e1a7e416b2b56f6b0104bd5eff9cac5557b4c65a9dc61": {
       "displayName": "CrossAccountSourceStack/Custom::S3AutoDeleteObjectsCustomResourceProvider Code",
@@ -61,16 +61,16 @@
         }
       }
     },
-    "e0e822ba443b9ee98c92ded77dedb7c0e4ed5119955177c139dd1c8f3fc42ab0": {
+    "0312741cc54d6244073cf8d59fad2af108f2fa84662b554710686046c50d5908": {
       "displayName": "CrossAccountSourceStack Template",
       "source": {
         "path": "CrossAccountSourceStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "234567890123-test-region-82180dd1": {
+        "234567890123-test-region-e2887867": {
           "bucketName": "cdk-hnb659fds-assets-234567890123-test-region",
-          "objectKey": "e0e822ba443b9ee98c92ded77dedb7c0e4ed5119955177c139dd1c8f3fc42ab0.json",
+          "objectKey": "0312741cc54d6244073cf8d59fad2af108f2fa84662b554710686046c50d5908.json",
           "region": "test-region",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::234567890123:role/cdk-hnb659fds-file-publishing-role-234567890123-test-region"
         }
