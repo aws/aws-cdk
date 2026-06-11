@@ -25,7 +25,7 @@ Principles:
 | Install dependencies | `yarn install` | repo root |
 | Build everything | `npx lerna run build --skip-nx-cache` | repo root |
 | Build aws-cdk-lib | `npx lerna run build --scope=aws-cdk-lib --stream` | repo root |
-| Build alpha module | `yarn build` | `packages/@aws-cdk/aws-{service}-alpha` |
+| Build module | `yarn build` | `packages/aws-cdk-lib/aws-{service}` or `packages/@aws-cdk/aws-{service}-alpha` |
 | Build integ tests | `npx lerna run build --scope=@aws-cdk-testing/framework-integ --stream` | repo root |
 | Test all in package | `yarn test` | `packages/aws-cdk-lib` |
 | Test one module | `yarn test aws-lambda` | `packages/aws-cdk-lib` |
