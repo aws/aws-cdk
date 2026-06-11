@@ -1,8 +1,8 @@
 import * as path from 'path';
 import { promisify } from 'util';
 import * as fs from 'fs-extra';
-import * as _glob from 'glob';
-import * as pLimit from 'p-limit';
+import _glob from 'glob';
+import pLimit from 'p-limit';
 import yargs from 'yargs';
 
 const glob = promisify(_glob);

@@ -7,6 +7,7 @@ import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
 import { lit } from './private/literal-string';
+import { profileFn } from './private/perf';
 
 /**
  * Path inside the bundling container where the host SSH agent socket is mounted
@@ -278,6 +279,7 @@ export class BundlingDockerImage {
   /**
    * Runs a Docker image
    */
+  @profileFn('BundlingDockerImage.run', { telemetry: true })
   public run(options: DockerRunOptions = {}) {
     const volumes = [...(options.volumes ?? [])];
     const environment = { ...(options.environment ?? {}) };
@@ -345,6 +347,7 @@ export class BundlingDockerImage {
    * @param outputPath the destination path for the copy operation
    * @returns the destination path
    */
+  @profileFn('BundlingDockerImage.cp', { telemetry: true })
   public cp(imagePath: string, outputPath?: string): string {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
@@ -376,6 +379,7 @@ export class DockerImage extends BundlingDockerImage {
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
+  @profileFn('DockerImage.fromBuild', { telemetry: true })
   public static fromBuild(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
@@ -740,3 +744,8 @@ function isSeLinux(): boolean {
     return false;
   }
 }
+
+/**
+ * If this symbol is present on the `BundlingOptions`, it will be used as the source of an additional timer measurement.
+ */
+export const PERF_BUNDLING_SRC_SYM = Symbol.for('@aws-cdk/core.bundlingSource');

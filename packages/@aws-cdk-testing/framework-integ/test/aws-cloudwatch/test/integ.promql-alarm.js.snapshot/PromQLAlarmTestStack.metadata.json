@@ -1,0 +1,97 @@
+{
+  "/PromQLAlarmTestStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/local/home/caoxy/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.promql-alarm.js:7:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PromQLAlarmTestStack/BasicPromQLAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PromQLAlarmTestStack/MinimalPromQLAlarm": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/PromQLAlarmTestStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PromQLAlarmTestStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488: (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:488:3)",
+        "visit (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:545:9)",
+        "visit (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:542:9)",
+        "synthesizeTree (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:481:5)",
+        "synthesize (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:55:5)",
+        "App.synth (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PromQLAlarmTestStack/BasicPromQLAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BasicPromQLAlarmA78E509D"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new PromQLAlarm (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/promql-alarm.js:125:26)",
+        "new PromQLAlarm (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/caoxy/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.promql-alarm.js:8:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/PromQLAlarmTestStack/MinimalPromQLAlarm/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MinimalPromQLAlarmF4D0FFBF"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new PromQLAlarm (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/aws-cloudwatch/lib/promql-alarm.js:125:26)",
+        "new PromQLAlarm (/local/home/caoxy/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/local/home/caoxy/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-cloudwatch/test/integ.promql-alarm.js:16:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
