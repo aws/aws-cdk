@@ -90,7 +90,7 @@ gateway.addInterceptor(
 // ===== Lambda Target =====
 const lambdaFunction = new lambda.Function(stack, 'TestFunction', {
   functionName: 'integ-test-gateway-lambda',
-  runtime: lambda.Runtime.NODEJS_22_X,
+  runtime: lambda.Runtime.NODEJS_LATEST,
   handler: 'index.handler',
   code: lambda.Code.fromInline(`
     exports.handler = async (event) => {
