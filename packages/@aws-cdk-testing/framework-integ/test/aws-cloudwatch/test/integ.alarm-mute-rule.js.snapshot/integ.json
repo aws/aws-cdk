@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-alarm-mute-rule/DefaultTest": {
+      "stacks": [
+        "AlarmMuteRuleIntegrationTest"
+      ],
+      "assertionStack": "cdk-integ-alarm-mute-rule/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegalarmmuteruleDefaultTestDeployAssert51F2D464"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}
