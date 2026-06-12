@@ -1,5 +1,4 @@
 import { spawnSync } from 'child_process';
-import * as crypto from 'crypto';
 import { isAbsolute, join } from 'path';
 import type { DockerCacheOption } from './assets';
 import { ExecutionError, UnscopedValidationError } from './errors';
@@ -352,13 +351,16 @@ export class DockerImage extends BundlingDockerImage {
       throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
-    // Image tag derived from path and build options
-    const input = JSON.stringify({ path, ...options });
-    const tagHash = crypto.createHash('sha256').update(input).digest('hex');
-    const tag = `cdk-${tagHash}`;
+    // Fingerprints the directory containing the Dockerfile we're building and
+    // differentiates the fingerprint based on build arguments. We do this so
+    // we can provide a stable image hash. Otherwise, the image ID will be
+    // different every time the Docker layer cache is cleared, due primarily to
+    // timestamps.
+    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
+    const tag = `cdk-${hash}`;
 
     // Skip the build if the image already exists in the local Docker daemon.
-    // The tag is deterministic (content-addressed from path + all options),
+    // The tag is content-addressed from the build context and all options,
     // so an existing image with this tag is guaranteed to be up-to-date.
     if (!this.isImageCached(tag)) {
       const dockerArgs: string[] = [
@@ -378,12 +380,6 @@ export class DockerImage extends BundlingDockerImage {
       dockerExec(dockerArgs);
     }
 
-    // Fingerprints the directory containing the Dockerfile we're building and
-    // differentiates the fingerprint based on build arguments. We do this so
-    // we can provide a stable image hash. Otherwise, the image ID will be
-    // different every time the Docker layer cache is cleared, due primarily to
-    // timestamps.
-    const hash = FileSystem.fingerprint(path, { extraHash: JSON.stringify(options) });
     return new DockerImage(tag, hash);
   }
 
