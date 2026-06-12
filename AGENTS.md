@@ -22,12 +22,20 @@ Principles:
 
 | Task | Command | Working Directory |
 |------|---------|-------------------|
+| Install dependencies | `yarn install` | repo root |
 | Build everything | `npx lerna run build --skip-nx-cache` | repo root |
+| Build aws-cdk-lib | `npx lerna run build --scope=aws-cdk-lib --stream` | repo root |
+| Build module | `yarn build` | `packages/aws-cdk-lib/aws-{service}` or `packages/@aws-cdk/aws-{service}-alpha` |
+| Build integ tests | `npx lerna run build --scope=@aws-cdk-testing/framework-integ --stream` | repo root |
+| Test all in package | `yarn test` | `packages/aws-cdk-lib` |
 | Test one module | `yarn test aws-lambda` | `packages/aws-cdk-lib` |
 | Test one file | `npx jest aws-lambda/test/function.test.ts` | `packages/aws-cdk-lib` |
 | Lint | `npx lerna run lint` | repo root |
+| Lint with auto-fix | `yarn lint --fix` | repo root |
 | Rosetta (README compile check) | `/bin/bash ./scripts/run-rosetta.sh` | repo root |
-| Run integ snapshots | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Run all integ snapshots | `yarn integ` | `packages/@aws-cdk-testing/framework-integ` |
+| Run integ snapshots in module | `yarn integ --directory test/aws-lambda/test` | `packages/@aws-cdk-testing/framework-integ` |
+| Update integ snapshots (no deploy) | `yarn integ --dry-run --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 | Run integ with deploy | `yarn integ test/aws-lambda/test/integ.lambda.js --update-on-failed` | `packages/@aws-cdk-testing/framework-integ` |
 
 > **Note:** All test, lint, integ, and rosetta commands require the project to be compiled first. Run the build command above before any of these.
