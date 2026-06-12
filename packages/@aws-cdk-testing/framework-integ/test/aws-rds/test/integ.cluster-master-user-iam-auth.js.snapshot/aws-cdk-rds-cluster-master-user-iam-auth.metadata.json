@@ -1,0 +1,694 @@
+{
+  "/aws-cdk-rds-cluster-master-user-iam-auth": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:10:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:186:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:141:92)",
+        "process.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:79:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:194:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:104:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:224:18)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:381:3)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:438:9)",
+        "visit (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:435:9)",
+        "synthesizeTree (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:374:5)",
+        "synthesize (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:51:5)",
+        "App.synth (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:141:92)",
+        "process.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:79:51)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCB9E5F0B4"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:725:29)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet1": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet2": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/IGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCIGWB7E252D3"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:780:29)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/VPCGW": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCVPCGW99B986DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:783:29)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database/Subnets": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database/SecurityGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseB269D8BB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:878:29)",
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database/writer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1SubnetB4246D30"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1199:28)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1438:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableFEE4B781"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1218:27)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1438:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1RouteTableAssociation0B0896DC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1223:32)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1438:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1DefaultRoute91CEF279"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1238:27)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:787:36)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet1/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1EIP6AD938E8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1452:50)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:883:22)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:800:26)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet1/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet1NATGatewayE0556630"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1450:25)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:883:22)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:800:26)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2Subnet74179F39"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1199:28)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1438:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTable6F1A15F1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1218:27)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1438:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2RouteTableAssociation5A808732"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1223:32)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1438:13)",
+        "new PublicSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:999:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2DefaultRouteB7481BBA"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addDefaultInternetRoute (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1238:27)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:790:3)",
+        "Array.forEach (:)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:787:36)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet2/EIP": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2EIP4947BC00"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1452:50)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:883:22)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:800:26)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PublicSubnet2/NATGateway": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPublicSubnet2NATGateway3C070193"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addNatGateway (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1450:25)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureNat (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:105:33)",
+        "WrappedClass.createNatGateways (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:883:22)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:800:26)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet1/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1Subnet8BCA10E0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1199:28)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1491:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet1/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableBE8A6027"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1218:27)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1491:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet1/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1RouteTableAssociation347902D1"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1223:32)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1491:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet1/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet1DefaultRouteAE1D6490"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1318:27)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:117:16)",
+        "NatGatewayProvider.configureNat (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:111:18)",
+        "WrappedClass.createNatGateways (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:883:22)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:800:26)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet2/Subnet": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2SubnetCFCDAA7A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1199:28)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1491:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet2/RouteTable": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTable0A19E10E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1218:27)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1491:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet2/RouteTableAssociation": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2RouteTableAssociation0C73D413"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1223:32)",
+        "new Subnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1491:13)",
+        "new PrivateSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006: (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1006:4)",
+        "Array.forEach (:)",
+        "WrappedClass.createSubnetResources (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:970:30)",
+        "WrappedClass.createSubnets (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:929:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:775:18)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/VPC/PrivateSubnet2/DefaultRoute": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "VPCPrivateSubnet2DefaultRouteF4F5CFD2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "WrappedClass.addRoute (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:1318:27)",
+        "WrappedClass.<anonymous> (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "NatGatewayProvider.configureSubnet (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:117:16)",
+        "NatGatewayProvider.configureNat (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/nat.js:111:18)",
+        "WrappedClass.createNatGateways (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:883:22)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/vpc.js:800:26)",
+        "new Vpc (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:11:13)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database/Subnets/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSubnets56F17B9A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SubnetGroup (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/subnet-group.js:92:33)",
+        "new SubnetGroup (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:292:52)",
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:855:13)",
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database/SecurityGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "DatabaseSecurityGroup5C91FDCB"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new SecurityGroup (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-ec2/lib/security-group.js:373:34)",
+        "new SecurityGroup (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new DatabaseClusterNew (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:299:13)",
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:855:13)",
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-rds-cluster-master-user-iam-auth/Database/writer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "Databasewriter2462CC03"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new AuroraClusterInstance (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:240:30)",
+        "new AuroraClusterInstance (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "ClusterInstance.bind (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/aurora-cluster-instance.js:145:16)",
+        "WrappedClass._createInstances (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:444:37)",
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/aws-rds/lib/cluster.js:908:62)",
+        "new DatabaseCluster (/Users/sfb/git/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/sfb/git/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-rds/test/integ.cluster-master-user-iam-auth.js:12:1)",
+        "...node internals..."
+      ]
+    }
+  ]
+}
