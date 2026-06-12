@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import type { IConstruct } from 'constructs';
 import type { LiteralString } from './private/literal-string';
 import { constructInfoFromConstruct } from './private/runtime-info';
-import { captureCallStack, renderCallStackJustMyCode } from './private/stack-trace';
+import { enhancedStackTrace } from './private/stack-trace';
 import type { AssertionError } from '../../assertions/lib/private/error';
 import { ERRORFILE_ENV } from '../../cx-api';
 import type { CloudAssemblyError } from '../../cx-api/lib/private/error';
@@ -144,7 +144,7 @@ abstract class ConstructError extends Error {
 
     // The "stack" field in Node.js includes the error description. If it doesn't, Node will fall back to an
     // ugly way of rendering the error.
-    this.stack = `«${this.name}» ${msg}\n${renderCallStackJustMyCode(captureCallStack(ctr)).join('\n')}`;
+    this.stack = `«${this.name}» ${msg}\n${enhancedStackTrace(ctr).join('\n')}`;
 
     if (scope) {
       this.stack += `\nRelates to construct:\n${renderConstructRootPath(scope)}`;
