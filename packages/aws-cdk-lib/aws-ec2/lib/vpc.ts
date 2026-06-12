@@ -467,6 +467,23 @@ export interface SelectedSubnets {
   readonly isPendingLookup?: boolean;
 }
 
+type Writeable<T> = { -readonly [P in keyof T]: T[P] };
+
+/**
+ * Assigns the lazily-resolved `vpnGatewayId` on a `VpcBase`.
+ *
+ * `vpnGatewayId` is declared `readonly` (to match the `IVpc` contract under
+ * `exactOptionalPropertyTypes`) but is set after construction, so the write
+ * goes through a `Writeable` cast. The `undefined` check keeps the property
+ * absent rather than set to `undefined`, which `exactOptionalPropertyTypes`
+ * forbids.
+ */
+function setVpnGatewayId(vpc: VpcBase, vpnGatewayId: string | undefined): void {
+  if (vpnGatewayId !== undefined) {
+    (vpc as Writeable<VpcBase>).vpnGatewayId = vpnGatewayId;
+  }
+}
+
 /**
  * A new or imported VPC
  */
@@ -524,11 +541,9 @@ abstract class VpcBase extends Resource implements IVpc {
   protected incompleteSubnetDefinition: boolean = false;
 
   /**
-   * Mutable private field for the vpnGatewayId
-   *
-   * @internal
+   * Returns the id of the VPN Gateway (if enabled)
    */
-  protected _vpnGatewayId?: string;
+  public readonly vpnGatewayId?: string;
 
   public get vpcRef(): VPCReference {
     return {
@@ -566,11 +581,12 @@ abstract class VpcBase extends Resource implements IVpc {
       type: VpnConnectionType.IPSEC_1,
     });
 
-    this._vpnGatewayId = vpnGateway.gatewayId;
+    const vpnGatewayId = vpnGateway.gatewayId;
+    setVpnGatewayId(this, vpnGatewayId);
 
     const attachment = new CfnVPCGatewayAttachment(this, 'VPCVPNGW', {
       vpcId: this.vpcId,
-      vpnGatewayId: this._vpnGatewayId,
+      vpnGatewayId,
     });
 
     // Propagate routes on route tables associated with the right subnets
@@ -583,7 +599,7 @@ abstract class VpcBase extends Resource implements IVpc {
 
     const routePropagation = new CfnVPNGatewayRoutePropagation(this, 'RoutePropagation', {
       routeTableIds,
-      vpnGatewayId: this._vpnGatewayId,
+      vpnGatewayId,
     });
     // The AWS::EC2::VPNGatewayRoutePropagation resource cannot use the VPN gateway
     // until it has successfully attached to the VPC.
@@ -639,13 +655,6 @@ abstract class VpcBase extends Resource implements IVpc {
       resourceType: FlowLogResourceType.fromVpc(this),
       ...options,
     });
-  }
-
-  /**
-   * Returns the id of the VPN Gateway (if enabled)
-   */
-  public get vpnGatewayId(): string | undefined {
-    return this._vpnGatewayId;
   }
 
   /**
@@ -2573,7 +2582,7 @@ class ImportedVpc extends VpcBase {
     }, Stack.of(this));
     this.cidr = props.vpcCidrBlock;
     this.availabilityZones = props.availabilityZones;
-    this._vpnGatewayId = props.vpnGatewayId;
+    setVpnGatewayId(this, props.vpnGatewayId);
     this.incompleteSubnetDefinition = isIncomplete;
 
     // None of the values may be unresolved list tokens
@@ -2630,7 +2639,7 @@ class LookedUpVpc extends VpcBase {
       account: this.env.account,
     }, Stack.of(this));
     this.cidr = props.vpcCidrBlock;
-    this._vpnGatewayId = props.vpnGatewayId;
+    setVpnGatewayId(this, props.vpnGatewayId);
     this.incompleteSubnetDefinition = isIncomplete;
 
     const subnetGroups = props.subnetGroups || [];
