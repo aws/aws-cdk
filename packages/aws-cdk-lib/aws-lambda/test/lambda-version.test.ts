@@ -404,3 +404,23 @@ describe('lambda version', () => {
     });
   });
 });
+
+describe('role / tenancyConfig / IVersion assignability (issue #37996)', () => {
+  // Regression coverage: under `exactOptionalPropertyTypes`, Version must stay
+  // assignable to the optional `IFunction.role` / `IFunction.tenancyConfig`. The
+  // IVersion annotation is the type-level guard; the runtime expectations confirm
+  // the getter -> readonly-field refactor preserves the delegated values.
+  test('a concrete Version is assignable to IVersion and inherits role + tenancyConfig from the function', () => {
+    const stack = new cdk.Stack();
+    const fn = new lambda.Function(stack, 'Fn', {
+      code: new lambda.InlineCode('hello()'),
+      handler: 'index.hello',
+      runtime: lambda.Runtime.NODEJS_LATEST,
+      tenancyConfig: lambda.TenancyConfig.PER_TENANT,
+    });
+    const version: lambda.IVersion = new lambda.Version(stack, 'Version', { lambda: fn });
+
+    expect(version.role).toBe(fn.role);
+    expect(version.tenancyConfig).toBe(fn.tenancyConfig);
+  });
+});
