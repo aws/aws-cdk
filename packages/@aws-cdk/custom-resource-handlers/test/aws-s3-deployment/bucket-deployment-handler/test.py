@@ -29,14 +29,23 @@ class TestHandler(unittest.TestCase):
     def test_error_logger(self):
         with patch.object(self.logger, 'error') as error_logger_mock:
             invoke_handler("Create", {}, expected_status="FAILED")
-            error_logger_mock.assert_called_once_with('| cfn_error: b"missing request resource property \'SourceBucketNames\'. props: {}"')
+            error_logger_mock.assert_called_once_with("| cfn_error: missing%20request%20resource%20property%20%27SourceBucketNames%27.%20props%3A%20%7B%7D")
 
     def test_error_logger_encoding_input(self):
         with patch.object(self.logger, 'error') as error_logger_mock:
             invoke_handler("Create", {
                 "Test": "random%0D%0A%5BINFO%5D%20hacking"
             }, expected_status="FAILED")
-            error_logger_mock.assert_called_once_with('| cfn_error: b"missing request resource property \'SourceBucketNames\'. props: {\'Test\': \'random%0D%0A%5BINFO%5D%20hacking\'}"')
+            error_logger_mock.assert_called_once_with("| cfn_error: missing%20request%20resource%20property%20%27SourceBucketNames%27.%20props%3A%20%7B%27Test%27%3A%20%27random%250D%250A%255BINFO%255D%2520hacking%27%7D")
+
+    def test_error_logger_crlf_injection(self):
+        with patch.object(self.logger, 'error') as error_logger_mock:
+            invoke_handler("Create", {
+                "Test": "value\r\n[INFO] injected log line"
+            }, expected_status="FAILED")
+            call_args = error_logger_mock.call_args[0][0]
+            self.assertNotIn('\r', call_args)
+            self.assertNotIn('\n', call_args)
 
     
     def test_cloudfront_waiter_error_message(self):
@@ -82,9 +91,18 @@ class TestHandler(unittest.TestCase):
 
     def test_sanitize_message(self):
         sanitized = index.sanitize_message("twenty-one\r\n%0a%0aINFO:+User+logged+out%3dbadguy")
-        
+
         # Expect the output sanitized string to remove newline characters and enforce double URL encoding
         self.assertEqual(sanitized, 'twenty-one%250a%250aINFO%3A%2BUser%2Blogged%2Bout%253dbadguy')
+
+    def test_sanitize_message_non_string(self):
+        sanitized = index.sanitize_message({"key": "value\r\ninjected"})
+        # Non-string input should be converted to string and sanitized
+        self.assertNotIn('\r', sanitized)
+        self.assertNotIn('\n', sanitized)
+
+    def test_sanitize_message_none(self):
+        self.assertIsNone(index.sanitize_message(None))
 
     def test_create_update(self):
         invoke_handler("Create", {
