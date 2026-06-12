@@ -1,0 +1,221 @@
+{
+  "/aws-cdk-agentcore-memory-stream-delivery": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory-stream-delivery.js:12:15)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryEventStream": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "encryption": "MANAGED"
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryWithStreamDelivery": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "process.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/app.js:93:51)"
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryEventStream/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryEventStream982A05ED"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Stream (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.js:595:27)",
+        "new Stream (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory-stream-delivery.js:14:27)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryWithStreamDelivery/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        }
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryWithStreamDelivery/Memory": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithStreamDeliveryMemoryE85ED633"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Memory (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:753:31)",
+        "new Memory (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory-stream-delivery.js:18:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryWithStreamDelivery/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithStreamDeliveryServiceRole890B7A55"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass._createMemoryRole (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:836:26)",
+        "new Memory (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:717:62)",
+        "new Memory (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-bedrockagentcore/test/agentcore/memory/integ.memory-stream-delivery.js:18:1)",
+        "...node internals, ts-node..."
+      ]
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryWithStreamDelivery/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/aws-cdk-agentcore-memory-stream-delivery/MemoryWithStreamDelivery/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MemoryWithStreamDeliveryServiceRoleDefaultPolicy0FFA2F76"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Function.addToPrincipal (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Function.addToPrincipalOrResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.js:208:28)",
+        "WrappedClass.grantWrite (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-kinesis/lib/stream.js:184:26)",
+        "WrappedClass.addStreamDeliveryResource (/Users/nomuramasatomo/Documents/programming/cdk_work/aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory.js:820:43)"
+      ]
+    }
+  ]
+}
