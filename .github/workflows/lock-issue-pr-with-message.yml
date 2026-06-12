@@ -13,7 +13,7 @@ jobs:
       issues: write
     runs-on: ubuntu-latest
     steps:
-      - uses: aws-actions/closed-issue-message@v2
+      - uses: aws-actions/closed-issue-message@10aaf6366131b673a7c8b7742f8b3849f1d44f18 # v2
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
           message: |
