@@ -26,16 +26,47 @@ export function captureStackTrace(
 ): string[] {
   if (!limit) {
     // Fast path without try/finally
-    return renderCallStackJustMyCode(captureCallStack(below), false);
+    return enhancedStackTrace(below, false);
   }
 
   const previousLimit = Error.stackTraceLimit;
   try {
     Error.stackTraceLimit = limit;
-    return renderCallStackJustMyCode(captureCallStack(below), false);
+    return enhancedStackTrace(below, false);
   } finally {
     Error.stackTraceLimit = previousLimit;
   }
+}
+
+/**
+ * Builds a user-focused stack trace by combining internal JS call frames with
+ * any host-language frames provided by the jsii runtime.
+ *
+ * This helper captures the current call stack up to `upTo`, removes or groups
+ * non-user frames (such as `node_modules`, Node internals, and jsii runtime
+ * internals), optionally prefixes lines with standard stack-trace indentation,
+ * and appends external host frames when available.
+ *
+ * @param upTo the function at which stack capture should stop (exclusive). Pass
+ * `undefined` to use the default capture behavior.
+ * @param indent whether to prefix rendered lines with stack-style indentation
+ * (`"    at "` for user frames). Defaults to `true`.
+ * @returns a rendered stack trace as an array of human-readable lines.
+ */
+export function enhancedStackTrace(upTo: Function | undefined, indent = true): string[] {
+  return withExternalTrace(renderCallStackJustMyCode(captureCallStack(upTo), indent));
+}
+
+function withExternalTrace(internal: string[]) {
+  const hostTrace: [string, number, number, string][] | undefined =
+    (global as any)[Symbol.for('jsii.context.hostStackTrace')];
+
+  if (hostTrace != null) {
+    // The first frame represents the last call on the non-Javascript side,
+    // to the jsii runtime. This is not interesting to the user, so we drop it
+    return internal.concat(hostTrace.slice(1).map(formatExternalFrame));
+  }
+  return internal;
 }
 
 /**
@@ -60,6 +91,11 @@ export function captureCallStack(upTo: Function | undefined): CallSite[] {
     trace = parseErrorStack(obj.stack);
   }
   return trace;
+}
+
+function formatExternalFrame(trace: [string, number, number, string]): string {
+  const [filename, line, column, name] = trace;
+  return `${name} (${filename}:${line}${column > 0 ? ':' + column : ''})`;
 }
 
 /**
@@ -162,6 +198,11 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
       while (i < stack.length && stack[i].fileName.includes('node:')) {
         i++;
       }
+    } else if (isHostInternalFrame(frame)) {
+      skip({ fileName: 'jsii runtime' });
+      while (i < stack.length && isHostInternalFrame(stack[i])) {
+        i++;
+      }
     } else {
       reportSkipped(true);
       const prefix = indent ? '    at ' : '';
@@ -195,6 +236,14 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
     }
     skipped = [];
   }
+}
+
+/**
+ * Whether the call site comes from the internals of the host that sent us the stack trace
+ */
+function isHostInternalFrame(frame: CallSite): boolean {
+  const hostDirName = (global as any)[Symbol.for('jsii.context.hostDirName')];
+  return frame.fileName.includes(hostDirName);
 }
 
 interface CallSite {
