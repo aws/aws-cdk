@@ -208,6 +208,20 @@ v2](https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/aurora-serverle
 - `ReadIOPS`: Instance-level metric that represents the average read I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
 - `WriteIOPS`: Instance-level metric that represents the average write I/O operations per second. This metric is supported by DatabaseCluster and DatabaseClusterFromSnapshot both.
 
+`DatabaseInstance` exposes helpers for the most commonly used instance-level
+metrics published in the `AWS/RDS` namespace. See the
+[Amazon CloudWatch metrics for Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/rds-metrics.html)
+reference for the full list of available metrics.
+
+- CPU & memory: `metricCPUUtilization`, `metricFreeableMemory`, `metricSwapUsage`
+- Connections & latency: `metricDatabaseConnections`, `metricReadLatency`, `metricWriteLatency`
+- Storage: `metricFreeStorageSpace`, `metricBurstBalance`
+- I/O: `metricReadIOPS`, `metricWriteIOPS`, `metricReadThroughput`, `metricWriteThroughput`, `metricDiskQueueDepth`
+- Network: `metricNetworkReceiveThroughput`, `metricNetworkTransmitThroughput`
+- Replication: `metricReplicaLag`
+
+Any other instance-level metric can be accessed through the generic `metric(metricName, props?)` helper.
+
 ```ts
 declare const vpc: ec2.Vpc;
 const cluster = new rds.DatabaseCluster(this, 'Database', {
@@ -1165,7 +1179,7 @@ declare const cluster: rds.DatabaseCluster;
 const cpuUtilization = cluster.metricCPUUtilization();
 
 // The average amount of time taken per disk I/O operation (average over 1 minute)
-const readLatency = instance.metric('ReadLatency', { statistic: 'Average', period: Duration.seconds(60) });
+const readLatency = instance.metricReadLatency({ period: Duration.seconds(60) });
 ```
 
 ## Enabling S3 integration
