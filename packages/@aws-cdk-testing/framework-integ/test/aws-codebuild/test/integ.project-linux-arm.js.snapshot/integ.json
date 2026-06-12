@@ -1,5 +1,5 @@
 {
-  "version": "36.0.5",
+  "version": "53.0.0",
   "testCases": {
     "integ-test-codebuild-project-arm/DefaultTest": {
       "stacks": [
@@ -8,5 +8,6 @@
       "assertionStack": "integ-test-codebuild-project-arm/DefaultTest/DeployAssert",
       "assertionStackName": "integtestcodebuildprojectarmDefaultTestDeployAssert4EE92337"
     }
-  }
+  },
+  "minimumCliVersion": "2.1108.0"
 }
