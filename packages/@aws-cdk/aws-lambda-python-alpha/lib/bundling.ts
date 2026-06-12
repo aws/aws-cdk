@@ -1,9 +1,10 @@
 import * as path from 'path';
 import type { AssetCode, Runtime } from 'aws-cdk-lib/aws-lambda';
 import { Architecture, Code } from 'aws-cdk-lib/aws-lambda';
-import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume } from 'aws-cdk-lib/core';
+import type { BundlingFileAccess, BundlingOptions as CdkBundlingOptions, DockerVolume, ILocalBundling } from 'aws-cdk-lib/core';
 import { AssetStaging, DockerImage, PERF_BUNDLING_SRC_SYM } from 'aws-cdk-lib/core';
 import { profileSpan } from 'aws-cdk-lib/core/lib/helpers-internal';
+import { LocalBundling } from './local-bundling';
 import { Packaging, DependenciesFile } from './packaging';
 import type { BundlingOptions, ICommandHooks } from './types';
 
@@ -77,6 +78,7 @@ export class Bundling implements CdkBundlingOptions {
   public readonly securityOpt?: string;
   public readonly network?: string;
   public readonly bundlingFileAccess?: BundlingFileAccess;
+  public readonly local?: ILocalBundling;
 
   constructor(props: BundlingProps) {
     const {
@@ -92,20 +94,25 @@ export class Bundling implements CdkBundlingOptions {
     } = props;
 
     const outputPath = path.posix.join(AssetStaging.BUNDLING_OUTPUT_DIR, outputPathSuffix);
+    const packaging = Packaging.fromEntry(entry, poetryIncludeHashes, poetryWithoutUrls);
+    const excludes = effectiveExcludes(assetExcludes, packaging);
 
-    const bundlingCommands = this.createBundlingCommand({
-      entry,
+    const bundlingCommands = createBundlingCommand({
       inputDir: AssetStaging.BUNDLING_INPUT_DIR,
       outputDir: outputPath,
-      poetryIncludeHashes,
-      poetryWithoutUrls,
+      packaging,
+      excludes,
       commandHooks,
-      assetExcludes,
     });
 
     if (image) {
       // Use the user's image
       this.image = image;
+    } else if (props.local === true) {
+      // Local bundling skips Docker entirely. Reference the runtime's base
+      // image lazily via fromRegistry so we still expose a valid `image`
+      // without shelling out to `docker build` at synth time.
+      this.image = DockerImage.fromRegistry(runtime.bundlingImage.image);
     } else {
       // Build our own image to do the build in in. We do some counter trickery here: we do want to count
       // the time spent here as part of 'bundle:PythonFunction', but by default only the RUNNING of the Docker
@@ -131,44 +138,57 @@ export class Bundling implements CdkBundlingOptions {
     this.securityOpt = props.securityOpt;
     this.network = props.network;
     this.bundlingFileAccess = props.bundlingFileAccess;
-  }
 
-  private createBundlingCommand(options: BundlingCommandOptions): string[] {
-    const packaging = Packaging.fromEntry(options.entry, options.poetryIncludeHashes, options.poetryWithoutUrls);
-    let bundlingCommands: string[] = [];
-    bundlingCommands.push(...options.commandHooks?.beforeBundling(options.inputDir, options.outputDir) ?? []);
-
-    const excludes = options.assetExcludes ?? [];
-    if (packaging.dependenciesFile == DependenciesFile.UV && !excludes.includes('.python-version')) {
-      excludes.push('.python-version');
+    if (props.local === true) {
+      this.local = new LocalBundling({
+        entry,
+        runtime,
+        architecture,
+        packaging,
+        excludes,
+        manyLinuxTags: props.manyLinuxTags,
+        commandHooks,
+      });
     }
-
-    const exclusionStr = excludes.map(item => `--exclude='${item}'`).join(' ');
-    bundlingCommands.push([
-      'rsync', '-rLv', exclusionStr ?? '', `${options.inputDir}/`, options.outputDir,
-    ].filter(item => item).join(' '));
-    bundlingCommands.push(`cd ${options.outputDir}`);
-    bundlingCommands.push(packaging.exportCommand ?? '');
-
-    if (packaging.dependenciesFile == DependenciesFile.UV) {
-      bundlingCommands.push(`uv pip install -r ${DependenciesFile.PIP} --target ${options.outputDir}`);
-    } else if (packaging.dependenciesFile) {
-      bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${options.outputDir}`);
-    }
-
-    bundlingCommands.push(...options.commandHooks?.afterBundling(options.inputDir, options.outputDir) ?? []);
-    return bundlingCommands;
   }
 }
 
+function createBundlingCommand(options: BundlingCommandOptions): string[] {
+  const { packaging, excludes, inputDir, outputDir } = options;
+  const bundlingCommands: string[] = [];
+  bundlingCommands.push(...options.commandHooks?.beforeBundling(inputDir, outputDir) ?? []);
+
+  const exclusionStr = excludes.map(item => `--exclude='${item}'`).join(' ');
+  bundlingCommands.push([
+    'rsync', '-rLv', exclusionStr, `${inputDir}/`, outputDir,
+  ].filter(item => item).join(' '));
+  bundlingCommands.push(`cd ${outputDir}`);
+  bundlingCommands.push(packaging.exportCommand ?? '');
+
+  if (packaging.dependenciesFile == DependenciesFile.UV) {
+    bundlingCommands.push(`uv pip install -r ${DependenciesFile.PIP} --target ${outputDir}`);
+  } else if (packaging.dependenciesFile) {
+    bundlingCommands.push(`python -m pip install -r ${DependenciesFile.PIP} -t ${outputDir}`);
+  }
+
+  bundlingCommands.push(...options.commandHooks?.afterBundling(inputDir, outputDir) ?? []);
+  return bundlingCommands;
+}
+
 interface BundlingCommandOptions {
-  readonly entry: string;
   readonly inputDir: string;
   readonly outputDir: string;
-  readonly assetExcludes?: string[];
-  readonly poetryIncludeHashes?: boolean;
-  readonly poetryWithoutUrls?: boolean;
+  readonly packaging: Packaging;
+  readonly excludes: string[];
   readonly commandHooks?: ICommandHooks;
+}
+
+function effectiveExcludes(assetExcludes: string[], packaging: Packaging): string[] {
+  const excludes = [...assetExcludes];
+  if (packaging.dependenciesFile === DependenciesFile.UV && !excludes.includes('.python-version')) {
+    excludes.push('.python-version');
+  }
+  return excludes;
 }
 
 /**
