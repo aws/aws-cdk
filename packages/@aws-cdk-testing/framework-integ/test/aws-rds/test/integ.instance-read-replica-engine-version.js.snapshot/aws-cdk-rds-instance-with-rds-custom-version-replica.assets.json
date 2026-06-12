@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "1b241ba43edcc49306f7824190311a91f48411799f028ea2c70ae144a5837fd6": {
+      "displayName": "aws-cdk-rds-instance-with-rds-custom-version-replica Template",
+      "source": {
+        "path": "aws-cdk-rds-instance-with-rds-custom-version-replica.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-0d877b85": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1b241ba43edcc49306f7824190311a91f48411799f028ea2c70ae144a5837fd6.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
