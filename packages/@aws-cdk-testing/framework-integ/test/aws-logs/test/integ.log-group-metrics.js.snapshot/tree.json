@@ -75,7 +75,7 @@
                   "aws:cdk:cloudformation:props": {
                     "comparisonOperator": "GreaterThanOrEqualToThreshold",
                     "evaluationPeriods": 1,
-                    "metricName": "IncomingLogs",
+                    "metricName": "IncomingLogEvents",
                     "namespace": "AWS/Logs",
                     "period": 300,
                     "statistic": "Sum",

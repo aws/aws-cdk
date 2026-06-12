@@ -339,6 +339,26 @@ describe('log group', () => {
     expect(metric.metricName).toEqual('Field');
   });
 
+  test('metricIncomingLogEvents uses correct metric name', () => {
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    const metric = lg.metricIncomingLogEvents();
+
+    expect(metric.metricName).toEqual('IncomingLogEvents');
+    expect(metric.namespace).toEqual('AWS/Logs');
+  });
+
+  test('metricIncomingBytes uses correct metric name', () => {
+    const stack = new Stack();
+    const lg = new LogGroup(stack, 'LogGroup');
+
+    const metric = lg.metricIncomingBytes();
+
+    expect(metric.metricName).toEqual('IncomingBytes');
+    expect(metric.namespace).toEqual('AWS/Logs');
+  });
+
   test('extractMetric allows passing in namespaces with "/"', () => {
     // GIVEN
     const stack = new Stack();
