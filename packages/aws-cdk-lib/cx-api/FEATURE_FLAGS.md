@@ -117,6 +117,7 @@ Flags come in three types:
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | V2NEXT | new default |
+| [@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty](#aws-cdkaws-s3eventbridgenotificationviacfnproperty) | When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource | V2NEXT | fix |
 
 <!-- END table -->
 
@@ -189,6 +190,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-route53-patters:useCertificate": true,
     "@aws-cdk/aws-route53-targets:userPoolDomainNameMethodWithoutCustomResource": true,
     "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
+    "@aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty": true,
     "@aws-cdk/aws-s3:keepNotificationInImportedBucket": false,
     "@aws-cdk/aws-s3:publicAccessBlockedByDefault": true,
     "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": true,
@@ -2529,6 +2531,42 @@ When disabled, the default AMI types remain AL2 for backward compatibility.
 **Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
 
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
+
+
+### @aws-cdk/aws-s3:eventBridgeNotificationViaCfnProperty
+
+*When enabled, S3 EventBridge notifications are set directly on the bucket resource instead of through the notifications custom resource*
+
+Flag type: Backwards incompatible bugfix
+
+Enabling EventBridge notifications on a bucket (via the `eventBridgeEnabled` prop or
+`enableEventBridgeNotification()`) currently routes through the stack-singleton
+`BucketNotificationsHandler` custom resource. That handler accumulates one IAM policy
+statement per bucket, so stacks with many EventBridge-enabled buckets can exceed the
+10,240 byte IAM role policy size limit at deploy time.
+
+EventBridge enablement is a simple boolean on the bucket and, unlike Lambda/SQS/SNS
+notification targets, has no circular-dependency reason to go through the custom resource.
+
+When this feature flag is enabled, EventBridge notifications for buckets created in the
+current stack are set directly on the `AWS::S3::Bucket` resource's
+`NotificationConfiguration.EventBridgeConfiguration` property. A bucket that only enables
+EventBridge no longer creates the custom resource or its per-bucket IAM policy. Buckets that
+also have Lambda/SQS/SNS notifications continue to use the custom resource, which keeps
+rendering the EventBridge configuration so it is not lost. Imported buckets are unaffected
+and continue to use the custom resource.
+
+This flag does not change EventBridge behavior for stacks that have already deployed with the
+flag disabled; leave it disabled for those stacks to avoid moving the configuration between
+the custom resource and the bucket resource in a single deployment.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
+
+**Compatibility with old behavior:** Disable the feature flag to keep routing EventBridge notifications through the notifications custom resource.
 
 
 <!-- END details -->
