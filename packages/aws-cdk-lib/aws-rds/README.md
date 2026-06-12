@@ -997,6 +997,43 @@ const role = new iam.Role(this, 'DBRole', { assumedBy: new iam.AccountPrincipal(
 instance.grantConnect(role); // Grant the role connection access to the DB.
 ```
 
+### IAM Master User Authentication
+
+Aurora DB clusters support configuring the master user to authenticate using IAM instead of a password. When `masterUserAuthenticationType` is set to `MasterUserAuthenticationType.IAM`, no Secrets Manager secret or password is generated — the master user authenticates exclusively via IAM database authentication.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_17_5,
+  }),
+  vpc,
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  iamAuthentication: true,
+  masterUserAuthenticationType: rds.MasterUserAuthenticationType.IAM,
+});
+```
+
+You can also specify a master username without a password:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const cluster = new rds.DatabaseCluster(this, 'Cluster', {
+  engine: rds.DatabaseClusterEngine.auroraPostgres({
+    version: rds.AuroraPostgresEngineVersion.VER_17_5,
+  }),
+  vpc,
+  writer: rds.ClusterInstance.serverlessV2('writer'),
+  iamAuthentication: true,
+  credentials: rds.Credentials.fromUsername('mydbuser'),
+  masterUserAuthenticationType: rds.MasterUserAuthenticationType.IAM,
+});
+```
+
+> **Note**: `iamAuthentication` must be `true` when using `MasterUserAuthenticationType.IAM`. If not set, it will be automatically enabled with a warning. You cannot combine `masterUserAuthenticationType: MasterUserAuthenticationType.IAM` with an explicit `credentials.password` or `credentials.secret`.
+
 ### Proxy
 
 The following example shows granting connection access for RDS Proxy to an IAM role.
