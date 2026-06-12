@@ -2,6 +2,74 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.258.1](https://github.com/aws/aws-cdk/compare/v2.258.0...v2.258.1) (2026-06-08)
+
+
+### Reverts
+
+* "chore(bundling): check if docker image is cached before building" ([#38116](https://github.com/aws/aws-cdk/issues/38116)) ([8ec236c](https://github.com/aws/aws-cdk/commit/8ec236cfd72bd53b44e1c29a62f3c3077923f43c)), closes [aws/aws-cdk#37951](https://github.com/aws/aws-cdk/issues/37951)
+
+## [2.258.0](https://github.com/aws/aws-cdk/compare/v2.257.0...v2.258.0) (2026-06-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::ServicePrincipalName: ConnectorArn property is now required.
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::ServicePrincipalName: DirectoryRegistrationArn property is now required.
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::TemplateGroupAccessControlEntry: GroupSecurityIdentifier property is now required.
+ - aws-pcaconnectorad: AWS::PCAConnectorAD::TemplateGroupAccessControlEntry: TemplateArn property is now required.
+
+### Features
+
+* **core:** trace property assignments in CfnResource.addPropertyOverride ([#38072](https://github.com/aws/aws-cdk/issues/38072)) ([a226372](https://github.com/aws/aws-cdk/commit/a2263723ef9e09423512c1ea7620a586aa3b2090))
+* update L1 CloudFormation resource definitions ([#37993](https://github.com/aws/aws-cdk/issues/37993)) ([664a878](https://github.com/aws/aws-cdk/commit/664a878c881397408f021ec37133b588f5957bed))
+* **aws-cdk-lib:** emits performance counters if synthesis is slow ([#38004](https://github.com/aws/aws-cdk/issues/38004)) ([cb03794](https://github.com/aws/aws-cdk/commit/cb037946a08f8c5939ad1b6fc42f15badcc97c98)), closes [#37919](https://github.com/aws/aws-cdk/issues/37919) [#37843](https://github.com/aws/aws-cdk/issues/37843)
+* **bedrockagentcore:** expose default endpoint application log group on Runtime ([#37812](https://github.com/aws/aws-cdk/issues/37812)) ([8e25d78](https://github.com/aws/aws-cdk/commit/8e25d789ad0555a1141614b792efc19cae4e8f5f)), closes [#37796](https://github.com/aws/aws-cdk/issues/37796)
+* **core:** add scope to IPolicyValidationContext ([#38006](https://github.com/aws/aws-cdk/issues/38006)) ([cae7456](https://github.com/aws/aws-cdk/commit/cae7456b0654f6cb5b4c0ded40b56bde1b77a001))
+* **core:** allow validation plugins to create new files in cloud assembly ([#38007](https://github.com/aws/aws-cdk/issues/38007)) ([d9f38a9](https://github.com/aws/aws-cdk/commit/d9f38a9d381d8523a683c72a72395ade9837ea7e))
+* **core:** fine-grained control over cross-stack reference strength ([#37840](https://github.com/aws/aws-cdk/issues/37840)) ([bddcd44](https://github.com/aws/aws-cdk/commit/bddcd4482464c847526ba0ac5e3e7d460020479b))
+* **core:** include suppressed violations in validation-report.json ([#38009](https://github.com/aws/aws-cdk/issues/38009)) ([f396892](https://github.com/aws/aws-cdk/commit/f396892379e90b1a75225a1238bccd06ca0571a6))
+* **core:** new validation report schema ([#37970](https://github.com/aws/aws-cdk/issues/37970)) ([4e09b52](https://github.com/aws/aws-cdk/commit/4e09b52989a91965c475a180ce729b906e5745fa)), closes [aws/aws-cdk-cli#1515](https://github.com/aws/aws-cdk-cli/issues/1515)
+* **eks:** add AlbControllerVersion support for v2.8.3 through v3.2.2 ([#37752](https://github.com/aws/aws-cdk/issues/37752)) ([20abc6a](https://github.com/aws/aws-cdk/commit/20abc6aedf4c883f95368b015c41c73579d0ea8d)), closes [#37414](https://github.com/aws/aws-cdk/issues/37414)
+* **eks:** add deletionProtection property to Cluster construct ([#36474](https://github.com/aws/aws-cdk/issues/36474)) ([5b19ac5](https://github.com/aws/aws-cdk/commit/5b19ac5be5131d92dcf388a8f6a927cf634cab89)), closes [#36460](https://github.com/aws/aws-cdk/issues/36460)
+* **elasticache:** replace CacheEngine/UserEngine enums with enum-like classes ([#37816](https://github.com/aws/aws-cdk/issues/37816)) ([6ad84b3](https://github.com/aws/aws-cdk/commit/6ad84b3440d6388d97d23c24fddd50d8f9077deb)), closes [#37813](https://github.com/aws/aws-cdk/issues/37813)
+
+
+### Bug Fixes
+
+* **autoscaling:** use of ScheduledAction.endTime is dangerous ([#38014](https://github.com/aws/aws-cdk/issues/38014)) ([109fae7](https://github.com/aws/aws-cdk/commit/109fae75b07144378141ba3d1a5b019301bc0fb2))
+* **aws-cdk-lib:** make token resolution ~25% faster ([#37920](https://github.com/aws/aws-cdk/issues/37920)) ([87483dc](https://github.com/aws/aws-cdk/commit/87483dc4af1bb509b5acb97b99af68fed00f6a80))
+* **bedrockagentcore:** relax allowlistedHeaders pattern to match CFN schema ([#37969](https://github.com/aws/aws-cdk/issues/37969)) ([e0d6c8a](https://github.com/aws/aws-cdk/commit/e0d6c8a2cdd8d2cf5731eb511d93bbd16bbf2291)), closes [#37964](https://github.com/aws/aws-cdk/issues/37964)
+* **cloudwatch:** metric math validation reports quoted strings as unknown identifiers ([#37977](https://github.com/aws/aws-cdk/issues/37977)) ([59bae38](https://github.com/aws/aws-cdk/commit/59bae38ffd2720e9568fa97b019f3ce934fe7896))
+* **core:** cross-region SSM writer orphans parameters when resource is replaced during stack update ([#38059](https://github.com/aws/aws-cdk/issues/38059)) ([f130388](https://github.com/aws/aws-cdk/commit/f13038882ad792109ee9f94831595347731266db))
+* **core:** handle string "false" for boolean context values in validation ([#37989](https://github.com/aws/aws-cdk/issues/37989)) ([a26ed73](https://github.com/aws/aws-cdk/commit/a26ed7334344df5ec68f61c8d2a0157dfed5c0cc))
+* **integ-tests:** responseURL logged in onTimeout ([#37972](https://github.com/aws/aws-cdk/issues/37972)) ([b9259dd](https://github.com/aws/aws-cdk/commit/b9259dd430e013b806c52afa6bf5e8d7491f6bc6))
+* **lambda-nodejs:** bundling rejects entry paths containing ".." ([#38022](https://github.com/aws/aws-cdk/issues/38022)) ([a7cc53c](https://github.com/aws/aws-cdk/commit/a7cc53c0b1dfc569f934cc38b54d7f35172b66cd)), closes [#38017](https://github.com/aws/aws-cdk/issues/38017) [#37572](https://github.com/aws/aws-cdk/issues/37572) [#37572](https://github.com/aws/aws-cdk/issues/37572)
+* **lambda-nodejs:** perf counters e2e test uses incorrect filename ([#38033](https://github.com/aws/aws-cdk/issues/38033)) ([d88637f](https://github.com/aws/aws-cdk/commit/d88637fb21922374450730c2a15844fc966ca4e7))
+
+## [2.257.0](https://github.com/aws/aws-cdk/compare/v2.256.1...v2.257.0) (2026-05-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* ** L1 resources are automatically generated from public CloudFormation Resource Schemas. They are built to closely reflect the real state of CloudFormation. Sometimes these updates can contain changes that are incompatible with previous types, but more accurately reflect reality. In this release we have changed:
+
+  - **aws-neptunegraph**: AWS::NeptuneGraph::GraphSnapshot: GraphIdentifier property is now required.
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#37955](https://github.com/aws/aws-cdk/issues/37955)) ([211b06c](https://github.com/aws/aws-cdk/commit/211b06c28f20dbd2ff7c3fe37efa12636aee46c0))
+* **core:** failSynthOnValidationErrors context key to suppress console output and exit code ([#37909](https://github.com/aws/aws-cdk/issues/37909)) ([deb968f](https://github.com/aws/aws-cdk/commit/deb968fe326a850cdbcf434881839ae9a8b231e7)), closes [aws/aws-cdk-cli#1515](https://github.com/aws/aws-cdk-cli/issues/1515)
+
+## [2.256.1](https://github.com/aws/aws-cdk/compare/v2.256.0...v2.256.1) (2026-05-20)
+
+
+### Bug Fixes
+
+* invalid lock file ([#37943](https://github.com/aws/aws-cdk/issues/37943)) ([73ae91d](https://github.com/aws/aws-cdk/commit/73ae91d5eb074cb975a07de04238cf205111e2fb)), closes [#37726](https://github.com/aws/aws-cdk/issues/37726) [#37929](https://github.com/aws/aws-cdk/issues/37929) [#37870](https://github.com/aws/aws-cdk/issues/37870)
+
 ## [2.256.0](https://github.com/aws/aws-cdk/compare/v2.255.0...v2.256.0) (2026-05-19)
 
 
