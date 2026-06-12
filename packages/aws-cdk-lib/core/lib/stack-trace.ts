@@ -26,16 +26,35 @@ export function captureStackTrace(
 ): string[] {
   if (!limit) {
     // Fast path without try/finally
-    return withExternalTrace(renderCallStackJustMyCode(captureCallStack(below), false));
+    return enhancedStackTrace(below, false);
   }
 
   const previousLimit = Error.stackTraceLimit;
   try {
     Error.stackTraceLimit = limit;
-    return withExternalTrace(renderCallStackJustMyCode(captureCallStack(below), false));
+    return enhancedStackTrace(below, false);
   } finally {
     Error.stackTraceLimit = previousLimit;
   }
+}
+
+/**
+ * Builds a user-focused stack trace by combining internal JS call frames with
+ * any host-language frames provided by the jsii runtime.
+ *
+ * This helper captures the current call stack up to `upTo`, removes or groups
+ * non-user frames (such as `node_modules`, Node internals, and jsii runtime
+ * internals), optionally prefixes lines with standard stack-trace indentation,
+ * and appends external host frames when available.
+ *
+ * @param upTo the function at which stack capture should stop (exclusive). Pass
+ * `undefined` to use the default capture behavior.
+ * @param indent whether to prefix rendered lines with stack-style indentation
+ * (`"    at "` for user frames). Defaults to `true`.
+ * @returns a rendered stack trace as an array of human-readable lines.
+ */
+export function enhancedStackTrace(upTo: Function | undefined, indent = true): string[] {
+  return withExternalTrace(renderCallStackJustMyCode(captureCallStack(upTo), indent));
 }
 
 function withExternalTrace(internal: string[]) {
