@@ -36,7 +36,7 @@ function isCommandAvailable(cmd: string): boolean {
 
 export type PackageManager = 'npm' | 'yarn' | 'pnpm' | 'bun';
 
-const localPkgManagers: Record<PackageManager, boolean> = {
+export const localPkgManagers: Record<PackageManager, boolean> = {
   npm: isCommandAvailable('npm'),
   yarn: isCommandAvailable('yarn'),
   pnpm: isCommandAvailable('pnpm'),
@@ -96,6 +96,35 @@ export const NPM_LOCK_WITH_DELAY = JSON.stringify({
     },
   },
 });
+
+/**
+ * A real pnpm v9 lock file that includes delay@5.0.0.
+ */
+export const PNPM_LOCK_WITH_DELAY = [
+  "lockfileVersion: '9.0'",
+  '',
+  'settings:',
+  '  autoInstallPeers: true',
+  '  excludeLinksFromLockfile: false',
+  '',
+  'importers:',
+  '',
+  '  .:',
+  '    dependencies:',
+  '      delay:',
+  '        specifier: 5.0.0',
+  '        version: 5.0.0',
+  '',
+  'packages:',
+  '',
+  '  delay@5.0.0:',
+  '    resolution: {integrity: sha512-ReEBKkIfe4ya47wlPYf/gu5ib6yUG0/Aez0JQZQz94kiWtRQvZIQbTiehsnwHvLSWJnQdhVeqYue7Id1dKr0qw==}',
+  "    engines: {node: '>=12'}",
+  '',
+  'snapshots:',
+  '',
+  '  delay@5.0.0: {}',
+].join('\n') + '\n';
 
 export interface TestProject {
   dir: string;
