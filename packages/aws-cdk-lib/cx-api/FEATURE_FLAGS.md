@@ -116,6 +116,7 @@ Flags come in three types:
 | [@aws-cdk/aws-batch:defaultToAL2023](#aws-cdkaws-batchdefaulttoal2023) | Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2 | 2.249.0 | new default |
 | [@aws-cdk/core:annotationsInValidationReport](#aws-cdkcoreannotationsinvalidationreport) | Include construct annotations (warnings and errors) in the policy validation report | 2.253.0 | config |
 | [@aws-cdk/core:defaultCrossStackReferences](#aws-cdkcoredefaultcrossstackreferences) | Controls whether cross-region stack references are strong, weak, or both | 2.254.0 | config |
+| [@aws-cdk/aws-codepipeline:crossRegionReplicationBucketDestroy](#aws-cdkaws-codepipelinecrossregionreplicationbucketdestroy) | Destroy CodePipeline cross-region replication buckets | V2NEXT | fix |
 | [@aws-cdk/aws-eks:defaultToAL2023](#aws-cdkaws-eksdefaulttoal2023) | Use AL2023 as the default AMI type for EKS managed node groups using non-GPU instance types instead of the deprecated AL2 | V2NEXT | new default |
 
 <!-- END table -->
@@ -142,6 +143,7 @@ The following json shows the current recommended set of flags, as `cdk init` wou
     "@aws-cdk/aws-codepipeline-actions:useNewDefaultBranchForCodeCommitSource": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
     "@aws-cdk/aws-codepipeline:crossAccountKeysDefaultValueToFalse": true,
+    "@aws-cdk/aws-codepipeline:crossRegionReplicationBucketDestroy": true,
     "@aws-cdk/aws-codepipeline:defaultPipelineTypeToV2": true,
     "@aws-cdk/aws-dynamodb:resourcePolicyPerReplica": true,
     "@aws-cdk/aws-dynamodb:retainTableReplica": true,
@@ -2529,6 +2531,25 @@ When disabled, the default AMI types remain AL2 for backward compatibility.
 **Compatibility with old behavior:** Explicitly set `amiType` to the desired AL2 type (e.g., `NodegroupAmiType.AL2_X86_64`) in your nodegroup configuration.
 
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.
+
+
+### @aws-cdk/aws-codepipeline:crossRegionReplicationBucketDestroy
+
+*Destroy CodePipeline cross-region replication buckets*
+
+Flag type: Backwards incompatible bugfix
+
+When enabled, CodePipeline cross-region support stacks apply `RemovalPolicy.DESTROY`
+and `autoDeleteObjects` to cross-region replication buckets so they are deleted
+during stack destruction.
+
+When disabled, replication buckets keep the legacy retain behavior.
+
+
+| Since | Unset behaves like | Recommended value |
+| ----- | ----- | ----- |
+| (not in v1) |  |  |
+| V2NEXT | `false` | `true` |
 
 
 <!-- END details -->

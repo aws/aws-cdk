@@ -1,0 +1,56 @@
+{
+  "/integ-code-pipeline-nested-stack/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/tmp/aws-cdk-pr-35654/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.ts:60:34)",
+        "new IntegTestCase (/tmp/aws-cdk-pr-35654/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:47:20)",
+        "new IntegTest (/tmp/aws-cdk-pr-35654/packages/@aws-cdk/integ-tests-alpha/lib/test-case.ts:160:29)",
+        "<anonymous> (/tmp/aws-cdk-pr-35654/packages/@aws-cdk-testing/framework-integ/test/aws-codepipeline-actions/test/integ.codepipeline-with-nested-stack.ts:99:1)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/integ-code-pipeline-nested-stack/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ],
+  "/integ-code-pipeline-nested-stack/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426: (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:426:3)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:483:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "visit (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:480:9)",
+        "synthesizeTree (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:419:5)",
+        "synthesize (/tmp/aws-cdk-pr-35654/packages/aws-cdk-lib/core/lib/private/synthesis.js:56:5)"
+      ]
+    }
+  ]
+}

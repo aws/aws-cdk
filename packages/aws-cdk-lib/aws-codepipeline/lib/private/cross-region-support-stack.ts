@@ -4,6 +4,7 @@ import * as s3 from '../../../aws-s3';
 import * as cdk from '../../../core';
 import { makeUniqueResourceName } from '../../../core/lib/private/unique-resource-name';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
+import * as cxapi from '../../../cx-api';
 
 const REQUIRED_ALIAS_PREFIX = 'alias/';
 
@@ -76,12 +77,17 @@ export class CrossRegionSupportConstruct extends Construct {
         removalPolicy: cdk.RemovalPolicy.DESTROY,
       });
     }
+    const destroyReplicationBucket = cdk.FeatureFlags.of(this).isEnabled(cxapi.CODEPIPELINE_CROSS_REGION_REPLICATION_BUCKET_DESTROY);
     this.replicationBucket = new s3.Bucket(this, 'CrossRegionCodePipelineReplicationBucket', {
       bucketName: cdk.PhysicalName.GENERATE_IF_NEEDED,
       encryption: encryptionAlias ? s3.BucketEncryption.KMS : s3.BucketEncryption.KMS_MANAGED,
       encryptionKey: encryptionAlias,
       enforceSSL: true,
       blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      ...(destroyReplicationBucket ? {
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      } : {}),
     });
   }
 }
