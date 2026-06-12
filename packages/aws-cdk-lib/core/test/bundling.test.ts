@@ -86,6 +86,11 @@ describe('bundling', () => {
       '--build-arg', 'TEST_ARG=cdk-test',
       'docker-path',
     ])).toEqual(true);
+
+    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
+    ])).toEqual(true);
   });
 
   test('fromBuild skips docker build when image is already cached', () => {
@@ -169,6 +174,11 @@ describe('bundling', () => {
       'build', '-t', tag,
       '--no-cache',
       'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.thirdCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
     ])).toEqual(true);
   });
 
@@ -862,6 +872,11 @@ describe('bundling', () => {
       '--build-context', 'mycontext=/path/to/context',
       '--build-context', 'alpine=docker-image://alpine:latest',
       'docker-path',
+    ])).toEqual(true);
+
+    expect(spawnSyncStub.secondCall.calledWith(dockerCmd, [
+      'run', '--rm',
+      tag,
     ])).toEqual(true);
   });
 
