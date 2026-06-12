@@ -2303,6 +2303,11 @@
     fast-xml-parser "5.7.3"
     tslib "^2.6.2"
 
+"@aws/cloudformation-validate@^1.0.0-beta":
+  version "1.0.0-beta"
+  resolved "https://registry.npmjs.org/@aws/cloudformation-validate/-/cloudformation-validate-1.0.0-beta.tgz#21c9a6e3592a220f65a843374fcbbe6a43f04eb7"
+  integrity sha512-ybxXEKXUVQzGtyqbjyn/du8qJMb598TVU9JD/MpPQCQXj7wcOa3w52gJhqTggnPkwQmJB2Q/k+CwltZzS06Odw==
+
 "@aws/lambda-invoke-store@^0.2.2":
   version "0.2.4"
   resolved "https://registry.npmjs.org/@aws/lambda-invoke-store/-/lambda-invoke-store-0.2.4.tgz#802f6a50f6b6589063ef63ba8acdee86fcb9f395"

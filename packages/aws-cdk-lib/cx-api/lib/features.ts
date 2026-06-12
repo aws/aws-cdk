@@ -157,6 +157,7 @@ export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
+export const VALIDATE_AGAINST_DEFAULT_RULES = '@aws-cdk/core:validateAgainstDefaultRules';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1914,6 +1915,22 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.254.0' },
     recommendedValue: 'weak',
     unconfiguredBehavesLike: { v2: 'strong' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [VALIDATE_AGAINST_DEFAULT_RULES]: {
+    type: FlagType.VisibleContext,
+    summary: 'Validate synthesized templates against default CloudFormation rules',
+    detailsMd: `
+      When enabled, the CDK will automatically validate all synthesized templates against
+      a default set of CloudFormation rules during synthesis. These rules include schema
+      validation, best-practice linting, and common misconfiguration detection. Violations
+      are reported through the policy validation report.
+
+      When disabled, only explicitly registered validation plugins are run.`,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
   },
 };
 
