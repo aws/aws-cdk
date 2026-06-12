@@ -272,8 +272,10 @@ describe('renderCallStackJustMyCode', () => {
       expect.stringContaining('use --stack-trace-limit to capture more'),
     ]);
   });
+});
 
-  test('top user frame can be extracted', () => {
+describe('topUserFrame', () => {
+  test('simple trace', () => {
     expect(topUserFrame([
       '...new Queue in aws-cdk-lib...',
       'myFunction (/path/to/project/myfile.ts:10:5)',
@@ -282,6 +284,18 @@ describe('renderCallStackJustMyCode', () => {
       fileName: '/path/to/project/myfile.ts',
       sourceLocation: '10:5',
       functionName: 'myFunction',
+    });
+  });
+
+  test('jsii client trace', () => {
+    expect(topUserFrame([
+      '...aws-cdk-lib...',
+      '(no user code in 10 frames, use --stack-trace-limit to capture more)',
+      '<module> (/Users/otaviom/jsii/fubanga/app.py:28)',
+    ])).toEqual({
+      fileName: '/Users/otaviom/jsii/fubanga/app.py',
+      sourceLocation: '28',
+      functionName: '<module>',
     });
   });
 });

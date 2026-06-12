@@ -257,11 +257,11 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
  * be the last user frame that is associated with the given call stack.
  *
  * May return `undefined` if no such call frame is found. We recognize
- * "actual" call frames by them ending in `)`.
+ * "actual" call frames by them containing ` (` and ending in `)`.
  */
 export function topUserFrame(stackTrace: string[]): CallSite | undefined {
   for (const frame of stackTrace) {
-    if (frame.endsWith(')')) {
+    if (frame.includes(' (') && frame.endsWith(')')) {
       return parseStackFrame(frame);
     }
   }
