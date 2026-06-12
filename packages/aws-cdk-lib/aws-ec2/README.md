@@ -1332,6 +1332,21 @@ const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
 
 Detail information about maximum VPN session duration timeout can be found in the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/cvpn-working-max-duration.html).
 
+To configure IPv6 or dual-stack addressing for the Client VPN endpoint, use the `endpointIpAddressType`
+and `trafficIpAddressType` props:
+
+```ts fixture=client-vpn
+const endpoint = vpc.addClientVpnEndpoint('Endpoint', {
+  cidr: '10.100.0.0/16',
+  serverCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/server-certificate-id',
+  clientCertificateArn: 'arn:aws:acm:us-east-1:123456789012:certificate/client-certificate-id',
+  endpointIpAddressType: ec2.ClientVpnEndpointIpAddressType.DUAL_STACK,
+  trafficIpAddressType: ec2.ClientVpnEndpointIpAddressType.DUAL_STACK,
+});
+```
+
+For more information about IPv6 considerations, see the [AWS documentation](https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/ipv6-considerations.html).
+
 ## Instances
 
 You can use the `Instance` class to start up a single EC2 instance. For production setups, we recommend
