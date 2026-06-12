@@ -4,6 +4,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { version as delayVersion } from 'delay/package.json';
+import * as yaml from 'yaml';
 import { Annotations } from '../../assertions';
 import { Architecture, Code, Runtime, RuntimeFamily } from '../../aws-lambda';
 import { App, AssetHashType, BundlingFileAccess, DockerImage, Stack } from '../../core';
@@ -680,6 +681,143 @@ test('Detects pnpm-lock.yaml', () => {
         expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
       ]),
     }),
+  });
+});
+
+describe('pnpm catalogs', () => {
+  // Decodes the `pnpm-workspace.yaml` written into the bundling directory from the
+  // generated Docker command, regardless of whether it was written empty or base64-encoded.
+  function getWorkspaceYaml(): string {
+    const calls = (Code.fromAsset as jest.Mock).mock.calls;
+    const command: string[] = calls[calls.length - 1][1].bundling.command;
+    const script = command[command.length - 1];
+
+    const encoded = script.match(/echo '([A-Za-z0-9+/=]+)' \| base64 -d > "\/asset-output\/pnpm-workspace.yaml"/);
+    if (encoded) {
+      return Buffer.from(encoded[1], 'base64').toString('utf-8');
+    }
+    const empty = script.match(/echo '' > "\/asset-output\/pnpm-workspace.yaml"/);
+    if (empty) {
+      return '';
+    }
+    throw new Error(`Could not find pnpm-workspace.yaml write in command: ${script}`);
+  }
+
+  function createFixture(opts: { dependencies: { [key: string]: string }; workspaceYaml?: string }) {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-pnpm-catalog-'));
+    fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name: 'fixture', dependencies: opts.dependencies }));
+    fs.writeFileSync(path.join(dir, 'pnpm-lock.yaml'), '');
+    fs.writeFileSync(path.join(dir, 'index.ts'), 'export const handler = async () => {};');
+    if (opts.workspaceYaml !== undefined) {
+      fs.writeFileSync(path.join(dir, 'pnpm-workspace.yaml'), opts.workspaceYaml);
+    }
+    return { projectRoot: dir, depsLockFilePath: path.join(dir, 'pnpm-lock.yaml'), entry: path.join(dir, 'index.ts') };
+  }
+
+  test('copies catalog config when a module uses the catalog: protocol', () => {
+    const fixture = createFixture({
+      dependencies: { '@sparticuz/chromium': 'catalog:' },
+      workspaceYaml: [
+        'packages:',
+        '  - apps/*',
+        'catalog:',
+        '  "@sparticuz/chromium": "^133.0.0"',
+        '',
+      ].join('\n'),
+    });
+
+    Bundling.bundle(stack, {
+      ...fixture,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      nodeModules: ['@sparticuz/chromium'],
+      forceDockerBundling: true,
+    });
+
+    const workspace = yaml.parse(getWorkspaceYaml());
+    // catalog config is preserved
+    expect(workspace.catalog).toEqual({ '@sparticuz/chromium': '^133.0.0' });
+    // decoupling from the parent workspace is preserved (no packages globs)
+    expect(workspace.packages).toEqual([]);
+  });
+
+  test('copies named catalogs config', () => {
+    const fixture = createFixture({
+      dependencies: { '@sparticuz/chromium': 'catalog:browsers' },
+      workspaceYaml: [
+        'packages:',
+        '  - apps/*',
+        'catalogs:',
+        '  browsers:',
+        '    "@sparticuz/chromium": "^133.0.0"',
+        '',
+      ].join('\n'),
+    });
+
+    Bundling.bundle(stack, {
+      ...fixture,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      nodeModules: ['@sparticuz/chromium'],
+      forceDockerBundling: true,
+    });
+
+    const workspace = yaml.parse(getWorkspaceYaml());
+    expect(workspace.catalogs).toEqual({ browsers: { '@sparticuz/chromium': '^133.0.0' } });
+    expect(workspace.packages).toEqual([]);
+  });
+
+  test('explicit pnpmWorkspaceYaml takes precedence and is written verbatim', () => {
+    const fixture = createFixture({
+      dependencies: { '@sparticuz/chromium': 'catalog:' },
+      workspaceYaml: 'catalog:\n  "@sparticuz/chromium": "^1.0.0"\n',
+    });
+
+    const explicit = 'catalog:\n  "@sparticuz/chromium": "^999.0.0"\n';
+    Bundling.bundle(stack, {
+      ...fixture,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      nodeModules: ['@sparticuz/chromium'],
+      pnpmWorkspaceYaml: explicit,
+      forceDockerBundling: true,
+    });
+
+    expect(getWorkspaceYaml()).toEqual(explicit);
+  });
+
+  test('writes an empty workspace file when no module uses the catalog: protocol', () => {
+    const fixture = createFixture({
+      dependencies: { '@sparticuz/chromium': '^133.0.0' },
+      workspaceYaml: 'catalog:\n  "@sparticuz/chromium": "^133.0.0"\n',
+    });
+
+    Bundling.bundle(stack, {
+      ...fixture,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      nodeModules: ['@sparticuz/chromium'],
+      forceDockerBundling: true,
+    });
+
+    // Unchanged behavior: catalog blocks are not copied unless a module needs them.
+    expect(getWorkspaceYaml()).toEqual('');
+  });
+
+  test('writes an empty workspace file when catalog is used but no pnpm-workspace.yaml exists', () => {
+    const fixture = createFixture({
+      dependencies: { '@sparticuz/chromium': 'catalog:' },
+    });
+
+    Bundling.bundle(stack, {
+      ...fixture,
+      runtime: STANDARD_RUNTIME,
+      architecture: Architecture.X86_64,
+      nodeModules: ['@sparticuz/chromium'],
+      forceDockerBundling: true,
+    });
+
+    expect(getWorkspaceYaml()).toEqual('');
   });
 });
 
@@ -1702,6 +1840,40 @@ test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
   copyFileSyncMock.mockRestore();
   existsSyncMock.mockRestore();
   rmSyncMock.mockRestore();
+});
+
+test('Local bundling with pnpm writes catalog config when a module uses the catalog: protocol', () => {
+  // Real fixture so resolvePnpmWorkspaceYaml can read the workspace file.
+  // Created before mocking fs.writeFileSync so the fixture files are actually written.
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-pnpm-catalog-local-'));
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name: 'fixture', dependencies: { '@sparticuz/chromium': 'catalog:' } }));
+  fs.writeFileSync(path.join(dir, 'pnpm-lock.yaml'), '');
+  fs.writeFileSync(path.join(dir, 'index.ts'), 'export const handler = async () => {};');
+  fs.writeFileSync(path.join(dir, 'pnpm-workspace.yaml'), 'catalog:\n  "@sparticuz/chromium": "^133.0.0"\n');
+
+  const spawnSyncMock = jest.spyOn(child_process, 'spawnSync').mockReturnValue(spawnSyncMockReturnValue);
+  const writeFileSyncMock = jest.spyOn(fs, 'writeFileSync').mockReturnValue();
+  jest.spyOn(fs, 'copyFileSync').mockReturnValue();
+
+  const bundler = new Bundling(stack, {
+    entry: path.join(dir, 'index.ts'),
+    projectRoot: dir,
+    depsLockFilePath: path.join(dir, 'pnpm-lock.yaml'),
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['@sparticuz/chromium'],
+  });
+
+  bundler.local?.tryBundle('/outdir', { image: STANDARD_RUNTIME.bundlingDockerImage });
+
+  const workspaceWrite = writeFileSyncMock.mock.calls.find((c) => c[0] === '/outdir/pnpm-workspace.yaml');
+  expect(workspaceWrite).toBeDefined();
+  const workspace = yaml.parse(workspaceWrite![1] as string);
+  expect(workspace.catalog).toEqual({ '@sparticuz/chromium': '^133.0.0' });
+  expect(workspace.packages).toEqual([]);
+
+  spawnSyncMock.mockRestore();
+  writeFileSyncMock.mockRestore();
 });
 
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {

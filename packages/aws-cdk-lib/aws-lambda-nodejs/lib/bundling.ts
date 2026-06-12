@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import type { IConstruct } from 'constructs';
+import * as yaml from 'yaml';
 import { PackageInstallation } from './package-installation';
 import { LockFile, PackageManager } from './package-manager';
 import type { BundlingOptions } from './types';
@@ -313,6 +314,56 @@ export class Bundling implements cdk.BundlingOptions {
   }
 
   /**
+   * Resolves the contents of the `pnpm-workspace.yaml` file written into the
+   * bundling directory.
+   *
+   * The bundling directory is intentionally decoupled from the parent pnpm
+   * workspace (see https://github.com/aws/aws-cdk/issues/21910), which is why an
+   * empty workspace file is written by default. That decoupling, however, also
+   * strips any catalog configuration, so `pnpm install` cannot resolve modules
+   * referenced via the `catalog:` protocol.
+   *
+   * Resolution order:
+   * 1. If `pnpmWorkspaceYaml` is set, use it verbatim.
+   * 2. Otherwise, if any module to install uses the `catalog:` protocol, copy the
+   *    `catalog`/`catalogs` blocks from the project's `pnpm-workspace.yaml` (kept
+   *    alongside the lock file) while preserving the decoupling (`packages: []`).
+   * 3. Otherwise, return an empty string (unchanged behavior).
+   */
+  private resolvePnpmWorkspaceYaml(deps: NodeModuleDeps): string {
+    if (this.props.pnpmWorkspaceYaml !== undefined) {
+      return this.props.pnpmWorkspaceYaml;
+    }
+
+    const usesCatalog = Object.values(deps.dependencies).some(
+      (version) => version === 'catalog:' || version.startsWith('catalog:'),
+    );
+    if (!usesCatalog) {
+      return '';
+    }
+
+    // pnpm keeps `pnpm-lock.yaml` and `pnpm-workspace.yaml` together at the workspace root.
+    const lockFilePath = path.join(this.projectRoot, this.relativeDepsLockFilePath);
+    const workspaceYamlPath = path.join(path.dirname(lockFilePath), 'pnpm-workspace.yaml');
+    if (!fs.existsSync(workspaceYamlPath)) {
+      // Nothing to copy. `pnpm install` will fail with a clear catalog error; users
+      // can supply the configuration explicitly via the `pnpmWorkspaceYaml` prop.
+      return '';
+    }
+
+    const parsed = yaml.parse(fs.readFileSync(workspaceYamlPath, 'utf-8')) ?? {};
+    const minimalWorkspace: { [key: string]: any } = { packages: [] };
+    if (parsed.catalog !== undefined) {
+      minimalWorkspace.catalog = parsed.catalog;
+    }
+    if (parsed.catalogs !== undefined) {
+      minimalWorkspace.catalogs = parsed.catalogs;
+    }
+
+    return yaml.stringify(minimalWorkspace);
+  }
+
+  /**
    * Produces shell-command steps for file operations in Docker bundling.
    */
   private dockerFileOps(
@@ -328,7 +379,7 @@ export class Bundling implements cdk.BundlingOptions {
     return [{
       type: 'shell',
       commands: [chain([
-        isPnpm ? osCommand.write(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), '') : '',
+        isPnpm ? osCommand.writeMultiline(pathJoin(options.outputDir, 'pnpm-workspace.yaml'), this.resolvePnpmWorkspaceYaml(deps)) : '',
         osCommand.writeJson(pathJoin(options.outputDir, 'package.json'), { dependencies: deps.dependencies }),
         osCommand.copy(lockFilePath, pathJoin(options.outputDir, this.packageManager.lockFile)),
         osCommand.changeDirectory(options.outputDir),
@@ -353,7 +404,7 @@ export class Bundling implements cdk.BundlingOptions {
       type: 'callback',
       operation: () => {
         if (isPnpm) {
-          fs.writeFileSync(path.join(outputDir, 'pnpm-workspace.yaml'), '');
+          fs.writeFileSync(path.join(outputDir, 'pnpm-workspace.yaml'), this.resolvePnpmWorkspaceYaml(deps));
         }
         fs.writeFileSync(path.join(outputDir, 'package.json'), JSON.stringify({ dependencies: deps.dependencies }));
         fs.copyFileSync(lockFilePath, path.join(outputDir, this.packageManager.lockFile));
@@ -631,6 +682,25 @@ class OsCommand {
   public writeJson(filePath: string, data: any): string {
     const stringifiedData = JSON.stringify(data);
     return this.write(filePath, stringifiedData);
+  }
+
+  /**
+   * Writes potentially multi-line content (e.g. YAML) to a file.
+   *
+   * Empty content falls back to `write` to preserve the existing single-line
+   * behavior. Non-empty content is base64-encoded and decoded in place so that
+   * newlines and shell metacharacters survive the bundling command unchanged.
+   *
+   * Only used by Docker bundling, which always runs in a Linux container, so the
+   * decode relies on the POSIX `base64` utility.
+   */
+  public writeMultiline(filePath: string, data: string): string {
+    if (!data) {
+      return this.write(filePath, data);
+    }
+
+    const encoded = Buffer.from(data, 'utf-8').toString('base64');
+    return `echo '${encoded}' | base64 -d > "${filePath}"`;
   }
 
   public copy(src: string, dest: string): string {
