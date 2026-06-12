@@ -1,0 +1,56 @@
+{
+  "/aws-cdk-glue-iceberg-integ/DefaultTest/DeployAssert": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new DeployAssert (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:38:38)",
+        "new IntegTestCase (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
+        "new IntegTest (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
+        "<anonymous> (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/@aws-cdk/aws-glue-alpha/test/integ.iceberg-table.js:84:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg-integ/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ],
+  "/aws-cdk-glue-iceberg-integ/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416: (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:416:3)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:473:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "visit (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:470:9)",
+        "synthesizeTree (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:409:5)",
+        "synthesize (/Users/rodrigo/Documents/projects/aws-cdk-iceberg/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)"
+      ]
+    }
+  ]
+}
