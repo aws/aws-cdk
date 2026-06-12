@@ -12,7 +12,7 @@ const api = new apigateway.RestApi(stack, 'RestApi', { endpointTypes: [apigatewa
 api.root.addMethod('GET');
 
 new cloudfront.Distribution(stack, 'Distribution', {
-  defaultBehavior: { origin: new origins.RestApiOrigin(api) },
+  defaultBehavior: { origin: new origins.RestApiOrigin(api, { ipAddressType: cloudfront.OriginIpAddressType.DUALSTACK }) },
 });
 
 new IntegTest(app, 'rest-api-origin', {

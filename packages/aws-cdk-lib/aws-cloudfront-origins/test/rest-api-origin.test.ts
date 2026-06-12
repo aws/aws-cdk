@@ -1,4 +1,5 @@
 import * as apigateway from '../../aws-apigateway';
+import * as cloudfront from '../../aws-cloudfront';
 import { Duration, Stack } from '../../core';
 import { RestApiOrigin } from '../lib';
 
@@ -184,4 +185,26 @@ test('throw error for configuring readTimeout less than responseCompletionTimeou
       readTimeout: Duration.seconds(60),
     });
   }).toThrow('responseCompletionTimeout must be equal to or greater than readTimeout (60s), got: 30s.');
+});
+
+test.each([
+  cloudfront.OriginIpAddressType.IPV4,
+  cloudfront.OriginIpAddressType.IPV6,
+  cloudfront.OriginIpAddressType.DUALSTACK,
+])('renders with %s address type', (ipAddressType) => {
+  const api = new apigateway.RestApi(stack, 'RestApi');
+  api.root.addMethod('GET');
+
+  const origin = new RestApiOrigin(api, {
+    ipAddressType,
+  });
+  const originBindConfig = origin.bind(stack, { originId: 'StackOrigin029E19582' });
+
+  expect(stack.resolve(originBindConfig.originProperty?.customOriginConfig)).toMatchObject({
+    originProtocolPolicy: 'https-only',
+    originSslProtocols: [
+      'TLSv1.2',
+    ],
+    ipAddressType,
+  });
 });
