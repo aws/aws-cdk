@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "VpcEndpointCfnSubnetTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-ec2-vpc-endpoint-cfn-subnet"
+      ],
+      "assertionStack": "VpcEndpointCfnSubnetTest/DefaultTest/DeployAssert",
+      "assertionStackName": "VpcEndpointCfnSubnetTestDefaultTestDeployAssert6FE92F88"
+    }
+  },
+  "minimumCliVersion": "2.1122.0"
+}
