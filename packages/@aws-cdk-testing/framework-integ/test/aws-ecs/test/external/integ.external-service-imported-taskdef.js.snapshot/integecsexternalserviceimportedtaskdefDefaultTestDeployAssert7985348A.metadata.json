@@ -1,0 +1,78 @@
+{
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Role": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81Role37ABCE73"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/SingletonFunction1488541a7b23466481b69b4408076b81/Handler": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SingletonFunction1488541a7b23466481b69b4408076b81HandlerCD40AE9F"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625/Default": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625/AssertionResults": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AssertionResultsAwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServices43b6adef85b0fa422c65e9a57aed867d"
+    }
+  ],
+  "/integ-ecs-external-service-imported-taskdef/DefaultTest/DeployAssert/AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625/Default/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "AwsApiCallECSdescribeServices25e4956fba1c95b3cc3d2bf65ae78625"
+    }
+  ]
+}
