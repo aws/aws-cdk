@@ -1,0 +1,21 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "77d4df64e8245fecc05b53daab57d81077c18ed244d604912d8d4f067baff7d2": {
+      "displayName": "QueueStack Template",
+      "source": {
+        "path": "QueueStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "12345678-us-east-2-ae7afd2a": {
+          "bucketName": "cdk-hnb659fds-assets-12345678-us-east-2",
+          "objectKey": "77d4df64e8245fecc05b53daab57d81077c18ed244d604912d8d4f067baff7d2.json",
+          "region": "us-east-2",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::12345678:role/cdk-hnb659fds-file-publishing-role-12345678-us-east-2"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
