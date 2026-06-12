@@ -3,7 +3,7 @@ import type * as lambda from '../../aws-lambda';
 import type * as sns from '../../aws-sns';
 
 /**
- * Use a SNS topic as a Lambda destination
+ * Use an SNS topic as a Lambda destination
  */
 export class SnsDestination implements lambda.IDestination {
   constructor(private readonly topic: sns.ITopic) {

@@ -192,7 +192,7 @@ export class S3ObjectsItemReader implements IItemReader {
 }
 
 /**
- * Base interface for Item Reader configuration properties the iterate over entries in a S3 file
+ * Base interface for Item Reader configuration properties the iterate over entries in an S3 file
  */
 export interface S3FileItemReaderProps extends ItemReaderProps {
   /**
@@ -202,7 +202,7 @@ export interface S3FileItemReaderProps extends ItemReaderProps {
 }
 
 /**
- * Base Item Reader configuration for iterating over entries in a S3 file
+ * Base Item Reader configuration for iterating over entries in an S3 file
  */
 abstract class S3FileItemReader implements IItemReader {
   private readonly _bucket?: IBucket;
@@ -322,7 +322,7 @@ abstract class S3FileItemReader implements IItemReader {
 }
 
 /**
- * Item Reader configuration for iterating over items in a JSON array stored in a S3 file
+ * Item Reader configuration for iterating over items in a JSON array stored in an S3 file
  */
 export class S3JsonItemReader extends S3FileItemReader {
   protected readonly inputType: string = 'JSON';
@@ -474,7 +474,7 @@ export class S3CsvItemReader extends S3FileItemReader {
 }
 
 /**
- * Item Reader configuration for iterating over items in a S3 inventory manifest file stored in S3
+ * Item Reader configuration for iterating over items in an S3 inventory manifest file stored in S3
  */
 export class S3ManifestItemReader extends S3FileItemReader {
   protected readonly inputType: string = 'MANIFEST';
