@@ -883,5 +883,6 @@ function routerTypeToPropName(routerType: RouterType) {
     [RouterType.VPC_PEERING_CONNECTION]: 'vpcPeeringConnectionId',
     [RouterType.VPC_ENDPOINT]: 'vpcEndpointId',
     [RouterType.CORE_NETWORK]: 'coreNetworkArn',
+    [RouterType.ODB_NETWORK]: 'odbNetworkArn',
   })[routerType];
 }
