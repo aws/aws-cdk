@@ -202,8 +202,8 @@ test('esbuild bundling with externals and dependencies', () => {
         'bash', '-c',
         [
           `'esbuild' '--bundle' '/asset-input/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
-          'cp "/asset-input/package-lock.json" "/asset-output/package-lock.json"',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
+          "cp '/asset-input/package-lock.json' '/asset-output/package-lock.json'",
           'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
@@ -677,7 +677,7 @@ test('Detects pnpm-lock.yaml', () => {
     assetHashType: AssetHashType.OUTPUT,
     bundling: expect.objectContaining({
       command: expect.arrayContaining([
-        expect.stringMatching(/echo '' > "\/asset-output\/pnpm-workspace.yaml\".+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
+        expect.stringMatching(/echo '' > '\/asset-output\/pnpm-workspace.yaml\'.+pnpm-lock\.yaml.+pnpm install --config.node-linker=hoisted --config.package-import-method=clone-or-copy --no-prefer-frozen-lockfile && rm -f "\/asset-output\/node_modules\/.modules.yaml"/),
       ]),
     }),
   });
@@ -924,8 +924,8 @@ test('esbuild bundling with projectRoot and externals and dependencies', () => {
         'bash', '-c',
         [
           `'esbuild' '--bundle' '/asset-input/packages/aws-cdk-lib/aws-lambda-nodejs/test/bundling.test.ts' '--target=${STANDARD_TARGET}' '--platform=node' '--outfile=/asset-output/index.js' '--external:abc' '--external:delay'`,
-          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > "/asset-output/package.json"`,
-          'cp "/asset-input/common/package-lock.json" "/asset-output/package-lock.json"',
+          `echo \'{\"dependencies\":{\"delay\":\"${delayVersion}\"}}\' > \'/asset-output/package.json\'`,
+          "cp '/asset-input/common/package-lock.json' '/asset-output/package-lock.json'",
           'cd "/asset-output"',
           'npm ci',
         ].join(' && '),
@@ -1702,6 +1702,62 @@ test('Local bundling with pnpm uses fs for workspace yaml and cleanup', () => {
   copyFileSyncMock.mockRestore();
   existsSyncMock.mockRestore();
   rmSyncMock.mockRestore();
+});
+
+test('Docker bundling escapes shell metacharacters in nodeModules dependency versions does not cause injection', () => {
+  // A malicious (e.g. transitive) dependency version containing a single quote must not
+  // break out of the `echo '...'`.
+  const maliciousVersion = "1.0.0' && touch /asset-input/PWNED && echo '";
+  jest.spyOn(util, 'extractDependencies').mockReturnValue({ delay: maliciousVersion });
+
+  const packageLock = path.join(__dirname, '..', 'package-lock.json');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: path.dirname(packageLock),
+    depsLockFilePath: packageLock,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  const fromAssetCall = (Code.fromAsset as jest.Mock).mock.calls[0];
+  const bashScript: string = fromAssetCall[1].bundling.command[2];
+
+  const shellEscape = (s: string) => "'" + s.replace(/'/g, "'\\''") + "'";
+  const expectedArg = shellEscape(JSON.stringify({ dependencies: { delay: maliciousVersion } }));
+  expect(bashScript).toContain(`echo ${expectedArg} > `);
+
+  // The vulnerable (unescaped) breakout sequence must NOT be present.
+  expect(bashScript).not.toContain('1.0.0\' && touch');
+});
+
+test('Docker bundling escapes shell metacharacters in the nodeModules lock file path', () => {
+  jest.spyOn(util, 'extractDependencies').mockReturnValue({ delay: '5.0.0' });
+
+  const pkgRoot = path.join(__dirname, '..');
+
+  // The lock file path flows into `cp <src> ...` via OsCommand.copy
+  const depsLockPath = path.join(pkgRoot, '$(touch PWNED)', 'package-lock.json');
+  Bundling.bundle(stack, {
+    entry: __filename,
+    projectRoot: pkgRoot,
+    depsLockFilePath: depsLockPath,
+    runtime: STANDARD_RUNTIME,
+    architecture: Architecture.X86_64,
+    nodeModules: ['delay'],
+    forceDockerBundling: true,
+  });
+
+  const fromAssetCall = (Code.fromAsset as jest.Mock).mock.calls[0];
+  const bashScript: string = fromAssetCall[1].bundling.command[2];
+
+  const shellEscape = (s: string) => "'" + s.replace(/'/g, "'\\''") + "'";
+  const src = path.join('/asset-input', path.relative(pkgRoot, depsLockPath));
+  expect(bashScript).toContain(`cp ${shellEscape(src)} `);
+
+  // The vulnerable double-quoted rendering (where `$(...)` would execute) must NOT be present.
+  expect(bashScript).not.toContain(`cp "${src}"`);
 });
 
 function findParentTsConfigPath(dir: string, depth: number = 1, limit: number = 5): string {

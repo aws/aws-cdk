@@ -625,7 +625,7 @@ class OsCommand {
       return `echo ^${data}^ > "${filePath}"`;
     }
 
-    return `echo '${data}' > "${filePath}"`;
+    return `echo ${posixShellEscape(data)} > ${posixShellEscape(filePath)}`;
   }
 
   public writeJson(filePath: string, data: any): string {
@@ -638,7 +638,7 @@ class OsCommand {
       return `copy "${src}" "${dest}"`;
     }
 
-    return `cp "${src}" "${dest}"`;
+    return `cp ${posixShellEscape(src)} ${posixShellEscape(dest)}`;
   }
 
   public changeDirectory(dir: string): string {
