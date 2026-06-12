@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-emx-bridge-vpc/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-bridge-vpc"
+      ],
+      "assertionStack": "cdk-integ-emx-bridge-vpc/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxbridgevpcDefaultTestDeployAssert73CE197C"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

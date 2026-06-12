@@ -1,0 +1,20 @@
+{
+  "version": "52.0.0",
+  "files": {
+    "21bb97e3035e90b25ab4f373a8a676305a33968595896fbbb32c9f204928e207": {
+      "displayName": "aws-cdk-mediaconnect-router-input-failover Template",
+      "source": {
+        "path": "aws-cdk-mediaconnect-router-input-failover.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-8a84d71c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "21bb97e3035e90b25ab4f373a8a676305a33968595896fbbb32c9f204928e207.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

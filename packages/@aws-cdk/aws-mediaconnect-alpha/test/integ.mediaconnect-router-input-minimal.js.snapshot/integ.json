@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-emx-router-input-minimal/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-router-input-minimal"
+      ],
+      "assertionStack": "cdk-integ-emx-router-input-minimal/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxrouterinputminimalDefaultTestDeployAssertCAAEE0BD"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

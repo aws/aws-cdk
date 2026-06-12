@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-emx-flow-vpc/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-vpc"
+      ],
+      "assertionStack": "cdk-integ-emx-flow-vpc/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxflowvpcDefaultTestDeployAssert8B0716FA"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "85ab144d18d48b06ddcfeb3e862b62b96f41a5fb64c87485a322831a4dae6575": {
+      "displayName": "aws-cdk-mediaconnect-flow-rist Template",
+      "source": {
+        "path": "aws-cdk-mediaconnect-flow-rist.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-5174a24c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "85ab144d18d48b06ddcfeb3e862b62b96f41a5fb64c87485a322831a4dae6575.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-emx-bridge-source/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-bridge-source"
+      ],
+      "assertionStack": "cdk-integ-emx-bridge-source/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxbridgesourceDefaultTestDeployAssertCB18160B"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}

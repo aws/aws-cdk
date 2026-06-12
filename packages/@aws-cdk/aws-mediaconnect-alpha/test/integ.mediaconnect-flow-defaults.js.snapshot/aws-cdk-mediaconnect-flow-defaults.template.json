@@ -1,0 +1,125 @@
+{
+ "Resources": {
+  "RistFlowF5B66698": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "defaults-rist",
+    "Source": {
+     "IngestPort": 5000,
+     "Name": "rist-default",
+     "Protocol": "rist",
+     "WhitelistCidr": "203.0.113.0/24"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MergeFlow70FCE4A4": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "defaults-merge",
+    "Source": {
+     "IngestPort": 5000,
+     "Name": "merge-primary",
+     "Protocol": "rist",
+     "WhitelistCidr": "203.0.113.0/24"
+    },
+    "SourceFailoverConfig": {
+     "FailoverMode": "MERGE",
+     "State": "ENABLED"
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "OutputDefault1A6CCE07": {
+   "Type": "AWS::MediaConnect::FlowOutput",
+   "Properties": {
+    "Destination": "203.0.113.20",
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "RistFlowF5B66698",
+      "FlowArn"
+     ]
+    },
+    "Name": "awscdkmediaconnectflowdefaultsOutputDefaultA6E7970E",
+    "Port": 6000,
+    "Protocol": "rtp"
+   }
+  },
+  "EntitlementDefault1C8A3CDE": {
+   "Type": "AWS::MediaConnect::FlowEntitlement",
+   "Properties": {
+    "Description": "Defaults integ entitlement",
+    "FlowArn": {
+     "Fn::GetAtt": [
+      "RistFlowF5B66698",
+      "FlowArn"
+     ]
+    },
+    "Name": "awscdkmediaconnectflowdefaultsEntitlementDefaultE10CB315",
+    "Subscribers": [
+     "111122223333"
+    ]
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttRistFlowF5B66698FlowArnB140E86D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "RistFlowF5B66698",
+     "FlowArn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-mediaconnect-flow-defaults:ExportsOutputFnGetAttRistFlowF5B66698FlowArnB140E86D"
+   }
+  },
+  "ExportsOutputFnGetAttMergeFlow70FCE4A4FlowArn9D1B246A": {
+   "Value": {
+    "Fn::GetAtt": [
+     "MergeFlow70FCE4A4",
+     "FlowArn"
+    ]
+   },
+   "Export": {
+    "Name": "aws-cdk-mediaconnect-flow-defaults:ExportsOutputFnGetAttMergeFlow70FCE4A4FlowArn9D1B246A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

@@ -1,0 +1,194 @@
+{
+  "/aws-cdk-mediaconnect-attributes/Flow": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/FlowArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowArn"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/FlowSourceArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowSourceArn"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/FlowEgressIp": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowEgressIp"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/FlowSourceIngestIp": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowSourceIngestIp"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/FlowSourceIngestPort": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowSourceIngestPort"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/FlowSourceIngestUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowSourceIngestUrl"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/FlowAvailabilityZone": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowAvailabilityZone"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/NetworkInterface": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/NetworkInterfaceArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkInterfaceArn"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/NetworkInterfaceId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkInterfaceId"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/NetworkInterfaceCreatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkInterfaceCreatedAt"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/NetworkInterfaceUpdatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkInterfaceUpdatedAt"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInputArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputArn"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInputId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputId"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInputIpAddress": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputIpAddress"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInputCreatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputCreatedAt"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInputUpdatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputUpdatedAt"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInputIngestUrl": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputIngestUrl"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterOutput": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterOutputArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutputArn"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterOutputId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutputId"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterOutputIpAddress": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutputIpAddress"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterOutputCreatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutputCreatedAt"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterOutputUpdatedAt": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutputUpdatedAt"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/Flow/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "FlowA74D6E88"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/NetworkInterface/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "NetworkInterface4FC75A07"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterInput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterInputEFD0F32D"
+    }
+  ],
+  "/aws-cdk-mediaconnect-attributes/RouterOutput/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RouterOutputD335589D"
+    }
+  ]
+}

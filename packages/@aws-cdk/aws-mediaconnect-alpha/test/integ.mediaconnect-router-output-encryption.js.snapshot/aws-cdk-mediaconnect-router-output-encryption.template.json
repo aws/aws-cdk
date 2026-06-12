@@ -1,0 +1,388 @@
+{
+ "Resources": {
+  "MediaConnectRoleD7F4E63E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "mediaconnect.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role for MediaConnect to access encryption secrets"
+   }
+  },
+  "MediaConnectRoleDefaultPolicy23BF4000": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Ref": "SrtEncryptionSecretBC8A9FA1"
+        },
+        {
+         "Ref": "TransitEncryptionSecret7265F4DF"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "MediaConnectRoleDefaultPolicy23BF4000",
+    "Roles": [
+     {
+      "Ref": "MediaConnectRoleD7F4E63E"
+     }
+    ]
+   }
+  },
+  "SrtEncryptionSecretBC8A9FA1": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "SRT encryption key for router output",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "TransitEncryptionSecret7265F4DF": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Transit encryption key for router output",
+    "GenerateSecretString": {}
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "EncryptedTestFlow3A9F0DF5": {
+   "Type": "AWS::MediaConnect::Flow",
+   "Properties": {
+    "Name": "test-encrypted-router-output-flow",
+    "Source": {
+     "RouterIntegrationState": "ENABLED",
+     "RouterIntegrationTransitDecryption": {
+      "EncryptionKeyConfiguration": {
+       "SecretsManager": {
+        "RoleArn": {
+         "Fn::GetAtt": [
+          "MediaConnectRoleD7F4E63E",
+          "Arn"
+         ]
+        },
+        "SecretArn": {
+         "Ref": "TransitEncryptionSecret7265F4DF"
+        }
+       }
+      },
+      "EncryptionKeyType": "SECRETS_MANAGER"
+     }
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  },
+  "MediaLiveInput": {
+   "Type": "AWS::MediaLive::Input",
+   "Properties": {
+    "Name": "test-router-output-input",
+    "RouterSettings": {
+     "Destinations": [
+      {
+       "AvailabilityZoneName": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Ref": "AWS::Region"
+          },
+          "a"
+         ]
+        ]
+       }
+      },
+      {
+       "AvailabilityZoneName": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Ref": "AWS::Region"
+          },
+          "b"
+         ]
+        ]
+       }
+      }
+     ],
+     "EncryptionType": "SECRETS_MANAGER",
+     "SecretArn": {
+      "Ref": "TransitEncryptionSecret7265F4DF"
+     }
+    },
+    "Type": "MEDIACONNECT_ROUTER"
+   }
+  },
+  "encryptionNetwork4EB98F34": {
+   "Type": "AWS::MediaConnect::RouterNetworkInterface",
+   "Properties": {
+    "Configuration": {
+     "Public": {
+      "AllowRules": [
+       {
+        "Cidr": "172.16.0.0/16"
+       }
+      ]
+     }
+    },
+    "Name": "test-encryption-network"
+   }
+  },
+  "srtCallerEncryptedBFE4265B": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "encryptionNetwork4EB98F34",
+        "Arn"
+       ]
+      },
+      "Protocol": "SRT_CALLER",
+      "ProtocolConfiguration": {
+       "SrtCaller": {
+        "DestinationAddress": "192.168.2.100",
+        "DestinationPort": 9002,
+        "EncryptionConfiguration": {
+         "EncryptionKey": {
+          "RoleArn": {
+           "Fn::GetAtt": [
+            "MediaConnectRoleD7F4E63E",
+            "Arn"
+           ]
+          },
+          "SecretArn": {
+           "Ref": "SrtEncryptionSecretBC8A9FA1"
+          }
+         }
+        },
+        "MinimumLatencyMilliseconds": 150,
+        "StreamId": "encrypted-stream-123"
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 5000000,
+    "Name": "test-srt-caller-encrypted",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "GLOBAL",
+    "Tags": [
+     {
+      "Key": "Encryption",
+      "Value": "SRT"
+     },
+     {
+      "Key": "Environment",
+      "Value": "test"
+     }
+    ],
+    "Tier": "OUTPUT_50"
+   },
+   "DependsOn": [
+    "MediaConnectRoleDefaultPolicy23BF4000"
+   ]
+  },
+  "mediaLiveEncrypted72A8C6AC": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "MediaLiveInput": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "SecretsManager": {
+         "RoleArn": {
+          "Fn::GetAtt": [
+           "MediaConnectRoleD7F4E63E",
+           "Arn"
+          ]
+         },
+         "SecretArn": {
+          "Ref": "TransitEncryptionSecret7265F4DF"
+         }
+        }
+       },
+       "EncryptionKeyType": "SECRETS_MANAGER"
+      },
+      "MediaLiveInputArn": {
+       "Fn::GetAtt": [
+        "MediaLiveInput",
+        "Arn"
+       ]
+      },
+      "MediaLivePipelineId": "PIPELINE_1"
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 5000000,
+    "Name": "test-medialive-encrypted",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tier": "OUTPUT_100"
+   },
+   "DependsOn": [
+    "MediaConnectRoleDefaultPolicy23BF4000"
+   ]
+  },
+  "flowEncrypted84D7F963": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "MediaConnectFlow": {
+      "DestinationTransitEncryption": {
+       "EncryptionKeyConfiguration": {
+        "SecretsManager": {
+         "RoleArn": {
+          "Fn::GetAtt": [
+           "MediaConnectRoleD7F4E63E",
+           "Arn"
+          ]
+         },
+         "SecretArn": {
+          "Ref": "TransitEncryptionSecret7265F4DF"
+         }
+        }
+       },
+       "EncryptionKeyType": "SECRETS_MANAGER"
+      },
+      "FlowArn": {
+       "Fn::GetAtt": [
+        "EncryptedTestFlow3A9F0DF5",
+        "FlowArn"
+       ]
+      },
+      "FlowSourceArn": {
+       "Fn::GetAtt": [
+        "EncryptedTestFlow3A9F0DF5",
+        "Source.SourceArn"
+       ]
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "PreferredDayTime": {
+      "Day": "SATURDAY",
+      "Time": "02:00"
+     }
+    },
+    "MaximumBitrate": 5000000,
+    "Name": "test-flow-encrypted",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "GLOBAL",
+    "Tier": "OUTPUT_20"
+   },
+   "DependsOn": [
+    "MediaConnectRoleDefaultPolicy23BF4000"
+   ]
+  },
+  "ristOutputC041C676": {
+   "Type": "AWS::MediaConnect::RouterOutput",
+   "Properties": {
+    "Configuration": {
+     "Standard": {
+      "NetworkInterfaceArn": {
+       "Fn::GetAtt": [
+        "encryptionNetwork4EB98F34",
+        "Arn"
+       ]
+      },
+      "Protocol": "RIST",
+      "ProtocolConfiguration": {
+       "Rist": {
+        "DestinationAddress": "192.168.2.200",
+        "DestinationPort": 5200
+       }
+      }
+     }
+    },
+    "MaintenanceConfiguration": {
+     "Default": {}
+    },
+    "MaximumBitrate": 5000000,
+    "Name": "test-rist-output",
+    "RegionName": {
+     "Ref": "AWS::Region"
+    },
+    "RoutingScope": "REGIONAL",
+    "Tags": [
+     {
+      "Key": "Environment",
+      "Value": "test"
+     },
+     {
+      "Key": "Protocol",
+      "Value": "RIST"
+     }
+    ],
+    "Tier": "OUTPUT_50"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

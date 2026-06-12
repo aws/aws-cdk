@@ -1,0 +1,13 @@
+{
+  "version": "52.0.0",
+  "testCases": {
+    "cdk-integ-mediaconnect-dual-source/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-dual-source"
+      ],
+      "assertionStack": "cdk-integ-mediaconnect-dual-source/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegmediaconnectdualsourceDefaultTestDeployAssert24350D2A"
+    }
+  },
+  "minimumCliVersion": "2.1107.0"
+}

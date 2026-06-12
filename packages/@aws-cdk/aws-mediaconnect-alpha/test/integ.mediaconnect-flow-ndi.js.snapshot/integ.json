@@ -1,0 +1,13 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "cdk-integ-emx-flow-ndi/DefaultTest": {
+      "stacks": [
+        "aws-cdk-mediaconnect-flow-ndi"
+      ],
+      "assertionStack": "cdk-integ-emx-flow-ndi/DefaultTest/DeployAssert",
+      "assertionStackName": "cdkintegemxflowndiDefaultTestDeployAssert1B9E906A"
+    }
+  },
+  "minimumCliVersion": "2.1119.0"
+}
