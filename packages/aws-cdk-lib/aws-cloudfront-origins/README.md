@@ -927,3 +927,12 @@ new cloudfront.Distribution(this, 'MyDistribution', {
   },
 });
 ```
+
+### Important Function URL Permission Update - Oct 2025
+Starting Oct 2025, Function URL invocation will require two permissions
+- lambda:InvokeFunctionUrl
+- lambda:InvokeFunction (New)
+
+CDK has updated `FunctionUrlOrigin.withOriginAccessControl` to add both permission above.
+
+If your existing CDK stack uses `FunctionUrlOrigin.withOriginAccessControl`, your next deployment will automatically add the `lambda:InvokeFunction` permission without requiring any code changes. This ensures your Function URLs continue working seamlessly. No additional actions are needed.

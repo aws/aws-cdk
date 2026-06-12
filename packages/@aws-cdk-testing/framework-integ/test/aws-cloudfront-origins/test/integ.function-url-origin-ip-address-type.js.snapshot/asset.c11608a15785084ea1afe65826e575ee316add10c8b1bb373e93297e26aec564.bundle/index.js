@@ -1,3 +1,4 @@
+"use strict";
 var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -63,14 +64,18 @@ var init_matcher = __esm({
       }
     };
     MatchResult = class {
+      /**
+       * The target for which this result was generated.
+       */
+      target;
+      failuresHere = /* @__PURE__ */ new Map();
+      captures = /* @__PURE__ */ new Map();
+      finalized = false;
+      innerMatchFailures = /* @__PURE__ */ new Map();
+      _hasFailed = false;
+      _failCount = 0;
+      _cost = 0;
       constructor(target) {
-        this.failuresHere = /* @__PURE__ */ new Map();
-        this.captures = /* @__PURE__ */ new Map();
-        this.finalized = false;
-        this.innerMatchFailures = /* @__PURE__ */ new Map();
-        this._hasFailed = false;
-        this._failCount = 0;
-        this._cost = 0;
         this.target = target;
       }
       /**
@@ -403,9 +408,7 @@ var init_sparse_matrix = __esm({
   "../../aws-cdk-lib/assertions/lib/private/sparse-matrix.ts"() {
     "use strict";
     SparseMatrix = class {
-      constructor() {
-        this.matrix = /* @__PURE__ */ new Map();
-      }
+      matrix = /* @__PURE__ */ new Map();
       get(row, col) {
         return this.matrix.get(row)?.get(col);
       }
@@ -532,6 +535,7 @@ var init_match = __esm({
           throw new AssertionError("LiteralMatch cannot directly contain another matcher. Remove the top-level matcher or nest it more deeply.");
         }
       }
+      partialObjects;
       test(actual) {
         if (Array.isArray(this.pattern)) {
           return new ArrayMatch(this.name, this.pattern, { subsequence: false, partialObjects: this.partialObjects }).test(actual);
@@ -566,6 +570,8 @@ var init_match = __esm({
         this.subsequence = options.subsequence ?? true;
         this.partialObjects = options.partialObjects ?? false;
       }
+      subsequence;
+      partialObjects;
       test(actual) {
         if (!Array.isArray(actual)) {
           return new MatchResult(actual).recordFailure({
@@ -666,6 +672,7 @@ var init_match = __esm({
         this.pattern = pattern;
         this.partial = options.partial ?? true;
       }
+      partial;
       test(actual) {
         if (typeof actual !== "object" || Array.isArray(actual)) {
           return new MatchResult(actual).recordFailure({
@@ -812,7 +819,7 @@ var init_match = __esm({
 var require_helpers_internal = __commonJS({
   "../../aws-cdk-lib/assertions/lib/helpers-internal/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -822,11 +829,11 @@ var require_helpers_internal = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0)
         k2 = k;
       o[k2] = m[k];
-    });
+    }));
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m)
         if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p))
@@ -835,11 +842,23 @@ var require_helpers_internal = __commonJS({
     Object.defineProperty(exports2, "__esModule", { value: true });
     var _noFold;
     exports2.Match = void 0;
-    Object.defineProperty(exports2, _noFold = "Match", { enumerable: true, configurable: true, get: () => (init_match(), __toCommonJS(match_exports)).Match });
+    Object.defineProperty(exports2, _noFold = "Match", { enumerable: true, configurable: true, get: () => {
+      var value = (init_match(), __toCommonJS(match_exports)).Match;
+      Object.defineProperty(exports2, _noFold = "Match", { enumerable: true, configurable: true, value });
+      return value;
+    } });
     exports2.Matcher = void 0;
-    Object.defineProperty(exports2, _noFold = "Matcher", { enumerable: true, configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).Matcher });
+    Object.defineProperty(exports2, _noFold = "Matcher", { enumerable: true, configurable: true, get: () => {
+      var value = (init_matcher(), __toCommonJS(matcher_exports)).Matcher;
+      Object.defineProperty(exports2, _noFold = "Matcher", { enumerable: true, configurable: true, value });
+      return value;
+    } });
     exports2.MatchResult = void 0;
-    Object.defineProperty(exports2, _noFold = "MatchResult", { enumerable: true, configurable: true, get: () => (init_matcher(), __toCommonJS(matcher_exports)).MatchResult });
+    Object.defineProperty(exports2, _noFold = "MatchResult", { enumerable: true, configurable: true, get: () => {
+      var value = (init_matcher(), __toCommonJS(matcher_exports)).MatchResult;
+      Object.defineProperty(exports2, _noFold = "MatchResult", { enumerable: true, configurable: true, value });
+      return value;
+    } });
   }
 });
 
@@ -12093,7 +12112,7 @@ var init_tslib_es6 = __esm({
       };
       return __assign.apply(this, arguments);
     };
-    __createBinding = Object.create ? function(o, m, k, k2) {
+    __createBinding = Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -12102,13 +12121,13 @@ var init_tslib_es6 = __esm({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    };
-    __setModuleDefault = Object.create ? function(o, v) {
+    });
+    __setModuleDefault = Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     };
     ownKeys = function(o) {
@@ -17899,7 +17918,7 @@ var require_dist_cjs49 = __commonJS({
 var require_fromWebToken = __commonJS({
   "../../../node_modules/@aws-sdk/credential-provider-web-identity/dist-cjs/fromWebToken.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -17908,13 +17927,13 @@ var require_fromWebToken = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
-    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? function(o, v) {
+    }));
+    var __setModuleDefault2 = exports2 && exports2.__setModuleDefault || (Object.create ? (function(o, v) {
       Object.defineProperty(o, "default", { enumerable: true, value: v });
-    } : function(o, v) {
+    }) : function(o, v) {
       o["default"] = v;
     });
     var __importStar2 = exports2 && exports2.__importStar || function(mod) {
@@ -30137,6 +30156,12 @@ var init_api_call = __esm({
     init_find_client_constructor();
     init_sdk_info();
     ApiCall = class {
+      service;
+      action;
+      v3PackageName;
+      v3Package;
+      // For testing purposes
+      client;
       // For testing purposes
       constructor(service, action) {
         this.service = normalizeServiceName(service);
@@ -30214,7 +30239,7 @@ var init_api_call = __esm({
 var require_lib4 = __commonJS({
   "../aws-custom-resource-sdk-adapter/lib/index.js"(exports2) {
     "use strict";
-    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? function(o, m, k, k2) {
+    var __createBinding2 = exports2 && exports2.__createBinding || (Object.create ? (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       var desc = Object.getOwnPropertyDescriptor(m, k);
       if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
@@ -30223,10 +30248,10 @@ var require_lib4 = __commonJS({
         } };
       }
       Object.defineProperty(o, k2, desc);
-    } : function(o, m, k, k2) {
+    }) : (function(o, m, k, k2) {
       if (k2 === void 0) k2 = k;
       o[k2] = m[k];
-    });
+    }));
     var __exportStar2 = exports2 && exports2.__exportStar || function(m, exports3) {
       for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports3, p)) __createBinding2(exports3, m, p);
     };
