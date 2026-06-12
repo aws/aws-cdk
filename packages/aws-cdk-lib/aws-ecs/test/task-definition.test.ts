@@ -536,6 +536,48 @@ describe('task definition', () => {
       expect(taskDefinition.taskRole).toEqual(expectTaskRole);
     });
 
+    describe('executionRole', () => {
+      test('is undefined by default', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+
+        // WHEN
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD');
+
+        // THEN
+        expect(taskDefinition.executionRole).toBeUndefined();
+      });
+
+      test('reflects the executionRole passed at construction', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const executionRole = new iam.Role(stack, 'ExecutionRole', {
+          assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com'),
+        });
+
+        // WHEN
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD', { executionRole });
+
+        // THEN
+        expect(taskDefinition.executionRole).toBe(executionRole);
+      });
+
+      test('is populated lazily by obtainExecutionRole and is then exposed', () => {
+        // GIVEN
+        const stack = new cdk.Stack();
+        const taskDefinition = new ecs.Ec2TaskDefinition(stack, 'TD');
+        expect(taskDefinition.executionRole).toBeUndefined();
+
+        // WHEN
+        const obtained = taskDefinition.obtainExecutionRole();
+
+        // THEN — the property reflects the lazily-created role
+        expect(taskDefinition.executionRole).toBe(obtained);
+        // subsequent calls return the same role
+        expect(taskDefinition.obtainExecutionRole()).toBe(obtained);
+      });
+    });
+
     test('returns an imported TaskDefinition that will throw an error when trying to access its yet to defined networkMode', () => {
       // GIVEN
       const stack = new cdk.Stack();
