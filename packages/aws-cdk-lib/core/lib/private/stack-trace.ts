@@ -1,7 +1,3 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import type { Node } from 'constructs';
-import { debugModeEnabled } from '../debug';
-
 /**
  * Captures the current process' stack trace.
  *
@@ -293,27 +289,5 @@ export interface CallSite {
    * Formatted as `<line> [':' <column>]`.
    */
   sourceLocation: string;
-}
-
-/**
- * Records a metadata entry on a construct node to trace a property assignment.
- *
- * When debug mode is enabled (via the `CDK_DEBUG` environment variable),
- * this attaches `aws:cdk:propertyAssignment` metadata to the given node,
- * including a stack trace pointing back to the caller. This is useful for
- * diagnosing where a particular property value was set during synthesis.
- *
- * This is a no-op when debug mode is not enabled.
- *
- * @param node the construct node to attach the metadata to.
- * @param propertyName the name of the property being assigned.
- */
-export function traceProperty(node: Node, propertyName: string) {
-  if (debugModeEnabled()) {
-    node.addMetadata(cxschema.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT, {
-      propertyName,
-      stackTrace: captureStackTrace(traceProperty),
-    });
-  }
 }
 
