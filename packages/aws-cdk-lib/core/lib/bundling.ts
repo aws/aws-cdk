@@ -362,7 +362,13 @@ export class DockerImage extends BundlingDockerImage {
     // Skip the build if the image already exists in the local Docker daemon.
     // The tag is content-addressed from the build context and all options,
     // so an existing image with this tag is guaranteed to be up-to-date.
-    if (!this.isImageCached(tag)) {
+    //
+    // NOTE: we don't support properly hashing all possible types of `--build-context`
+    // yet, so if we detect any of those we skip the cache check and hope the `docker
+    // build` itself is fairly quick in figuring out caching.
+    const usingBuildContexts = Object.keys(options.buildContexts ?? {}).length > 0;
+
+    if (usingBuildContexts || !this.imageAlreadyExists(tag)) {
       const dockerArgs: string[] = [
         'build', '-t', tag,
         ...(options.file ? ['-f', join(path, options.file)] : []),
@@ -392,7 +398,7 @@ export class DockerImage extends BundlingDockerImage {
     return new DockerImage(image);
   }
 
-  private static isImageCached(tag: string): boolean {
+  private static imageAlreadyExists(tag: string): boolean {
     const prog = process.env.CDK_DOCKER ?? 'docker';
     const proc = spawnSync(prog, ['image', 'inspect', tag], {
       stdio: 'ignore',
