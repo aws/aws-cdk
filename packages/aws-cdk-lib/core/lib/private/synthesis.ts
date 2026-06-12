@@ -23,6 +23,7 @@ import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
+import { DefaultValidationPlugin } from '../validation/default-validation-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
@@ -128,7 +129,15 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     plugins.push({ plugin, templatePaths: paths });
   }
 
-  // 2. Construct annotations (as a plugin, only if there are annotations to report)
+  // 2. Default validation engine (when enabled via feature flag)
+  if (FeatureFlags.of(root).isEnabled(cxapi.VALIDATE_AGAINST_DEFAULT_RULES)) {
+    const defaultEnginePaths = assembly.stacksRecursively.map(s => s.templateFullPath);
+    if (defaultEnginePaths.length > 0) {
+      plugins.push({ plugin: new DefaultValidationPlugin(), templatePaths: defaultEnginePaths });
+    }
+  }
+
+  // 3. Construct annotations (as a plugin, only if there are annotations to report)
   if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
     const annotationReport = collectAnnotationReport(root, assembly.directory);
     if (annotationReport) {

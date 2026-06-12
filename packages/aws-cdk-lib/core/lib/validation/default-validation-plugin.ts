@@ -1,0 +1,142 @@
+import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
+import type { Engine, EngineConfig, ExternalRuleSource, RuleInfo, Severity } from '@aws/cloudformation-validate';
+import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
+import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
+
+interface MutableViolation {
+  ruleName: string;
+  description: string;
+  severity?: string;
+  fix?: string;
+  violatingResources: PolicyViolatingResource[];
+  ruleMetadata?: { readonly [key: string]: string };
+}
+
+/**
+ * A custom rule source for the validation engine.
+ */
+export interface ValidationRuleSource {
+  /**
+   * The name of the rule source.
+   */
+  readonly name: string;
+
+  /**
+   * The rule content (e.g., Rego policy source code).
+   */
+  readonly content: string;
+}
+
+/**
+ * Properties for configuring the DefaultValidationPlugin.
+ */
+export interface DefaultValidationPluginProps {
+  /**
+   * The name to use for this plugin instance in validation reports.
+   *
+   * Useful when registering multiple instances with different rule configurations
+   * (e.g., custom rule bundles) to distinguish their results.
+   *
+   * @default 'Default Engine'
+   */
+  readonly name?: string;
+
+  /**
+   * Custom Rego rules to evaluate in addition to built-in rules.
+   *
+   * @default - no custom rules
+   */
+  readonly customRules?: ValidationRuleSource[];
+
+  /**
+   * Custom Guard rules to evaluate in addition to built-in rules.
+   *
+   * @default - no guard rules
+   */
+  readonly guardRules?: ValidationRuleSource[];
+}
+
+/**
+ * Default validation plugin that uses the CloudFormation validation engine
+ * to evaluate templates against built-in rules.
+ */
+export class DefaultValidationPlugin implements IPolicyValidationPlugin {
+  public readonly name: string;
+
+  private readonly engine: Engine;
+
+  constructor(props: DefaultValidationPluginProps = {}) {
+    this.name = props.name ?? 'Default Engine';
+    const config: EngineConfig = {};
+    if (props.customRules) {
+      config.customRules = props.customRules as ExternalRuleSource[];
+    }
+    if (props.guardRules) {
+      config.guardRules = props.guardRules as ExternalRuleSource[];
+    }
+    this.engine = new RegoEngine(config);
+  }
+
+  public get version(): string | undefined {
+    return version();
+  }
+
+  public get ruleIds(): string[] | undefined {
+    return this.engine.listRules().map((r: RuleInfo) => r.id);
+  }
+
+  public validate(context: IPolicyValidationContext): PolicyValidationPluginReport {
+    const violations: MutableViolation[] = [];
+
+    for (const templatePath of context.templatePaths) {
+      const templateFile = new TemplateFile(templatePath);
+      const report = this.engine.validateStandard(templateFile, {});
+
+      for (const diagnostic of report.diagnostics) {
+        const severity = mapSeverity(diagnostic.severity);
+        if (severity === 'debug' || severity === 'informational') {
+          continue;
+        }
+
+        const violatingResource: PolicyViolatingResource = {
+          resourceLogicalId: diagnostic.resourceId,
+          templatePath,
+          locations: diagnostic.propertyPath ? [diagnostic.propertyPath] : [],
+        };
+
+        const existing = violations.find(
+          v => v.ruleName === diagnostic.ruleId && v.severity === severity,
+        );
+
+        if (existing) {
+          existing.violatingResources.push(violatingResource);
+        } else {
+          violations.push({
+            ruleName: diagnostic.ruleId,
+            description: diagnostic.message,
+            severity,
+            fix: diagnostic.suggestedFix,
+            violatingResources: [violatingResource],
+            ruleMetadata: diagnostic.category ? { category: diagnostic.category } : undefined,
+          });
+        }
+      }
+    }
+
+    return {
+      success: violations.every(v => v.severity !== 'error' && v.severity !== 'fatal'),
+      violations,
+    };
+  }
+}
+
+function mapSeverity(severity: Severity): string {
+  switch (severity) {
+    case 'FATAL': return 'fatal';
+    case 'ERROR': return 'error';
+    case 'WARN': return 'warning';
+    case 'INFO': return 'informational';
+    case 'DEBUG': return 'debug';
+    default: return 'warning';
+  }
+}
