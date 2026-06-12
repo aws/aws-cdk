@@ -60,14 +60,3 @@ jobs:
           git config --global user.name 'aws-cdk-automation'
           git config --global user.email 'aws-cdk-automation@users.noreply.github.com'
           git push --force --atomic https://github.com/${{ github.repository }}.git FETCH_HEAD:test-main-pipeline
-      - name: Explain next steps
-        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b
-        with:
-          message: |
-            :arrow_right: **PR build request submitted to `test-main-pipeline`** :arrow_left:
-
-            A maintainer must now check the pipeline and add the `pr-linter/cli-integ-tested` label once the pipeline succeeds.
-          comment-tag: request-cli-integ-test
-          mode: recreate
-          # Post as our automation user
-          github-token: ${{ secrets.PROJEN_GITHUB_TOKEN }}
