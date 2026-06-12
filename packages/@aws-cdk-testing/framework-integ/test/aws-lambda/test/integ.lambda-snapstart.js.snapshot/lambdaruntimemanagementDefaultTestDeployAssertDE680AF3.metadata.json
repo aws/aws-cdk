@@ -1,17 +1,17 @@
 {
-  "/lambda-snapstart-container-image/DefaultTest/DeployAssert": [
+  "/lambda-runtime-management/DefaultTest/DeployAssert": [
     {
       "type": "aws:cdk:creationStack",
       "data": [
         "new DeployAssert (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/assertions/private/deploy-assert.js:39:38)",
         "new IntegTestCase (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:39:24)",
         "new IntegTest (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk/integ-tests-alpha/lib/test-case.js:132:33)",
-        "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart-container-image.js:50:1)",
+        "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:74:1)",
         "...node internals..."
       ]
     }
   ],
-  "/lambda-snapstart-container-image/DefaultTest/DeployAssert/BootstrapVersion": [
+  "/lambda-runtime-management/DefaultTest/DeployAssert/BootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "BootstrapVersion"
@@ -32,7 +32,7 @@
       ]
     }
   ],
-  "/lambda-snapstart-container-image/DefaultTest/DeployAssert/CheckBootstrapVersion": [
+  "/lambda-runtime-management/DefaultTest/DeployAssert/CheckBootstrapVersion": [
     {
       "type": "aws:cdk:logicalId",
       "data": "CheckBootstrapVersion"

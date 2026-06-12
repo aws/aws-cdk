@@ -1,7 +1,7 @@
 import { App, Stack } from 'aws-cdk-lib';
 import * as integ from '@aws-cdk/integ-tests-alpha';
 import * as path from 'path';
-import { Code, Function, Runtime, SnapStartConf } from 'aws-cdk-lib/aws-lambda';
+import { Code, DockerImageCode, DockerImageFunction, Function, Runtime, SnapStartConf } from 'aws-cdk-lib/aws-lambda';
 
 const app = new App({
   postCliContext: {
@@ -36,6 +36,11 @@ new Function(stack, 'DotnetSnapstartLambda', {
   code: Code.fromAsset(path.join(__dirname, 'dotnet-handler')),
   handler: 'Handler',
   runtime: Runtime.DOTNET_8,
+  snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,
+});
+
+const containerImageFn = new DockerImageFunction(stack, 'ContainerImageSnapstartLambda', {
+  code: DockerImageCode.fromImageAsset(path.join(__dirname, 'docker-lambda-handler')),
   snapStart: SnapStartConf.ON_PUBLISHED_VERSIONS,
 });
 
