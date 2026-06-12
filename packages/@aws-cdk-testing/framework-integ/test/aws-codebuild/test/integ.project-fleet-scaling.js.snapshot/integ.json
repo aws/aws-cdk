@@ -1,0 +1,25 @@
+{
+  "version": "53.0.0",
+  "testCases": {
+    "FleetScalingIntegTest/DefaultTest": {
+      "stacks": [
+        "aws-cdk-project-fleet-scaling"
+      ],
+      "regions": [
+        "us-east-1",
+        "us-east-2",
+        "us-west-2",
+        "ap-southeast-2",
+        "eu-central-1"
+      ],
+      "cdkCommandOptions": {
+        "destroy": {
+          "expectError": true
+        }
+      },
+      "assertionStack": "FleetScalingIntegTest/DefaultTest/DeployAssert",
+      "assertionStackName": "FleetScalingIntegTestDefaultTestDeployAssert2C9B40B4"
+    }
+  },
+  "minimumCliVersion": "2.1108.0"
+}
