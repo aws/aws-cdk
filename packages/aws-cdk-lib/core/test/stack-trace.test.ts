@@ -1,4 +1,4 @@
-import { captureStackTrace, renderCallStackJustMyCode, topUserFrame } from '../lib';
+import { captureStackTrace, renderCallStackJustMyCode, topUserFrame } from '../lib/private/stack-trace';
 
 describe('captureStackTrace with jsii host trace', () => {
   const TRACE_SYMBOL = Symbol.for('jsii.context.hostStackTrace');

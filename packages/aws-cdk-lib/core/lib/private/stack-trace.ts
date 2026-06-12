@@ -1,6 +1,6 @@
 import * as cxschema from '@aws-cdk/cloud-assembly-schema';
 import type { Node } from 'constructs';
-import { debugModeEnabled } from './debug';
+import { debugModeEnabled } from '../debug';
 
 /**
  * Captures the current process' stack trace.
