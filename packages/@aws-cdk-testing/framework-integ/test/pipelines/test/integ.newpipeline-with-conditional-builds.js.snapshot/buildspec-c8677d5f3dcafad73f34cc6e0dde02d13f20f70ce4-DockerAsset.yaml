@@ -1,0 +1,34 @@
+{
+  "version": "0.2",
+  "phases": {
+    "install": {
+      "commands": [
+        "npm install -g cdk-assets@latest"
+      ]
+    },
+    "build": {
+      "commands": [
+        "ASSET_MANIFEST='assembly-AssetBuilds-TestStage/AssetBuildsTestStageAppStackBEFB0CAC.assets.json'",
+        "ASSET_ID='3e4669bbf32c538f2913b383b0293fed1dfd522feed18cf1e062d7d2c4d8e45a'",
+        "DEST_ID='current_account-current_region-773f660b'",
+        "",
+        "echo 'Checking if Docker image asset $ASSET_ID exists...'",
+        "REPO_NAME=$(node -e 'const m=require('./$ASSET_MANIFEST');const d=m.dockerImages[$ASSET_ID].destinations[$DEST_ID];const uri=d.repositoryName;console.log(uri);' 2>/dev/null || echo '')",
+        "IMAGE_TAG=$(node -e 'const m=require('./$ASSET_MANIFEST');const d=m.dockerImages[$ASSET_ID].destinations[$DEST_ID];console.log(d.imageTag);' 2>/dev/null || echo '')",
+        "",
+        "if [ -n '$REPO_NAME' ] && [ -n '$IMAGE_TAG' ]; then",
+        "  if aws ecr describe-images --repository-name '$REPO_NAME' --image-ids imageTag='$IMAGE_TAG' &>/dev/null; then",
+        "    echo 'Docker image $ASSET_ID:$IMAGE_TAG already exists in ECR, skipping publish'",
+        "  else",
+        "    echo 'Docker image $ASSET_ID:$IMAGE_TAG does not exist, building and publishing...'",
+        "    cdk-assets --path '$ASSET_MANIFEST' --verbose publish '3e4669bbf32c538f2913b383b0293fed1dfd522feed18cf1e062d7d2c4d8e45a:current_account-current_region-773f660b'",
+        "  fi",
+        "else",
+        "  echo 'Could not extract ECR destination from manifest, publishing anyway...'",
+        "  cdk-assets --path '$ASSET_MANIFEST' --verbose publish '3e4669bbf32c538f2913b383b0293fed1dfd522feed18cf1e062d7d2c4d8e45a:current_account-current_region-773f660b'",
+        "fi",
+        ""
+      ]
+    }
+  }
+}
