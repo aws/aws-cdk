@@ -24,6 +24,9 @@ ENV POETRY_CACHE_DIR=/tmp/poetry-cache
 ENV UV_CACHE_DIR=/tmp/uv-cache
 
 RUN \
+    export PIP_INDEX_URL=${PIP_INDEX_URL} && \
+    export PIP_EXTRA_INDEX_URL=${PIP_EXTRA_INDEX_URL} && \
+    export HTTPS_PROXY=${HTTPS_PROXY} && \
 # create a new virtualenv for python to use
 # so that it isn't using root
     python -m venv /usr/app/venv && \
@@ -46,7 +49,7 @@ RUN \
 # Ensure no temporary files remain in the caches
     rm -rf /tmp/pip-cache/* /tmp/poetry-cache/* /tmp/uv-cache/*
 
-# Setting a non-root user to run default command, 
+# Setting a non-root user to run default command,
 # This will be overridden later when the Docker container is running, using either the local OS user or props.user.
 USER nobody
 
