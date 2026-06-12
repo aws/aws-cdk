@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "74adb086af569a094ab74c1273fb8148928e508af604018febb709dc76a36b65": {
+      "displayName": "CompositeAlarmGeneratedNameStack Template",
+      "source": {
+        "path": "CompositeAlarmGeneratedNameStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-98f39e0b": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "74adb086af569a094ab74c1273fb8148928e508af604018febb709dc76a36b65.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

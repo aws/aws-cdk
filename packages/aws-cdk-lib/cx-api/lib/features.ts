@@ -157,6 +157,7 @@ export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
 export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
+export const CLOUDWATCH_COMPOSITE_ALARM_GENERATED_NAME = '@aws-cdk/aws-cloudwatch:compositeAlarmGeneratedName';
 
 export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
@@ -1914,6 +1915,27 @@ export const FLAGS: Record<string, FlagInfo> = {
     introducedIn: { v2: '2.254.0' },
     recommendedValue: 'weak',
     unconfiguredBehavesLike: { v2: 'strong' },
+  },
+
+  //////////////////////////////////////////////////////////////////////
+  [CLOUDWATCH_COMPOSITE_ALARM_GENERATED_NAME]: {
+    type: FlagType.BugFix,
+    summary: 'When enabled, CompositeAlarm lets CloudFormation generate the alarm name instead of using a stack-static name',
+    detailsMd: `
+      When a \`compositeAlarmName\` is not provided, the \`CompositeAlarm\` construct currently
+      sets the \`AlarmName\` property to a name derived from the construct path. Because that name
+      is static within the synthesized template, deploying the same template more than once into
+      the same account and region (for example via AWS Service Catalog) fails with a name conflict.
+
+      When this feature flag is enabled and no \`compositeAlarmName\` is provided, the construct
+      omits the \`AlarmName\` property and lets CloudFormation generate a unique physical name,
+      matching the behavior of the \`Alarm\` construct. Providing \`compositeAlarmName\` explicitly
+      is unaffected.
+    `,
+    introducedIn: { v2: 'V2NEXT' },
+    recommendedValue: true,
+    unconfiguredBehavesLike: { v2: false },
+    compatibilityWithOldBehaviorMd: 'Pass an explicit `compositeAlarmName`, or disable the feature flag, to keep the generated stack-static alarm name.',
   },
 };
 

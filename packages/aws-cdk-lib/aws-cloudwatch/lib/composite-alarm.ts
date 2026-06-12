@@ -2,11 +2,12 @@ import type { Construct } from 'constructs';
 import type { IAlarm, IAlarmRule } from './alarm-base';
 import { AlarmBase } from './alarm-base';
 import { CfnCompositeAlarm } from './cloudwatch.generated';
-import { ArnFormat, Names, Stack, Duration, ValidationError, Token, Lazy } from '../../core';
+import { ArnFormat, Names, Stack, Duration, ValidationError, Token, Lazy, FeatureFlags } from '../../core';
 import { memoizedGetter } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+import * as cxapi from '../../cx-api';
 import type { IAlarmRef } from '../../interfaces/generated/aws-cloudwatch-interfaces.generated';
 
 /**
@@ -134,8 +135,15 @@ export class CompositeAlarm extends AlarmBase {
   private readonly resource: CfnCompositeAlarm;
 
   constructor(scope: Construct, id: string, props: CompositeAlarmProps) {
+    // When no name is provided, older behavior renders a stack-static name derived from the
+    // construct path, which collides when the same template is deployed more than once into the
+    // same account and region. With the feature flag enabled we omit the name and let
+    // CloudFormation generate a unique one, matching the `Alarm` construct.
+    const letCloudFormationGenerateName = FeatureFlags.of(scope).isEnabled(cxapi.CLOUDWATCH_COMPOSITE_ALARM_GENERATED_NAME) ?? false;
     super(scope, id, {
-      physicalName: props.compositeAlarmName ?? Lazy.string({ produce: () => this.generateUniqueId() }),
+      physicalName: props.compositeAlarmName ?? (letCloudFormationGenerateName
+        ? undefined
+        : Lazy.string({ produce: () => this.generateUniqueId() })),
     });
     // Enhanced CDK Analytics Telemetry
     addConstructMetadata(this, props);
