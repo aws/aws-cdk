@@ -254,7 +254,7 @@
    "Properties": {
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:769fefe998f7bec2cfb5a0a5a3d59d2ad8bb55eedea2bfeba430f9b8a1ed7997"
+      "Fn::Sub": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-${AWS::AccountId}-${AWS::Region}:d2ffcbc233baebd6a975fb7302082cc87d83fb3ce30189fc4bb9ebe7cfbe9205"
      }
     },
     "PackageType": "Image",
@@ -271,6 +271,17 @@
    "DependsOn": [
     "ContainerImageSnapstartLambdaServiceRole7968B8AF"
    ]
+  },
+  "ContainerImageSnapstartLambdaCurrentVersion1F4901A42c47590495224991c3816c51ffc8ea8d": {
+   "Type": "AWS::Lambda::Version",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "ContainerImageSnapstartLambdaA1A8D795"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:do-not-refactor": true
+   }
   }
  },
  "Parameters": {

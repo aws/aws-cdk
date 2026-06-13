@@ -16,7 +16,7 @@
               "constructFqn": "aws-cdk-lib.aws_lambda.Function",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:45:15)\nRun with '--debug' to include location info"
+                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:46:15)\nRun with '--debug' to include location info"
               ]
             },
             {
@@ -24,7 +24,7 @@
               "constructFqn": "aws-cdk-lib.aws_lambda.Function",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:45:15)\nRun with '--debug' to include location info"
+                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:46:15)\nRun with '--debug' to include location info"
               ]
             },
             {
@@ -32,7 +32,7 @@
               "constructFqn": "aws-cdk-lib.aws_lambda.Function",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:45:15)\nRun with '--debug' to include location info"
+                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:46:15)\nRun with '--debug' to include location info"
               ]
             },
             {
@@ -40,7 +40,7 @@
               "constructFqn": "aws-cdk-lib.aws_lambda.Function",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:45:15)\nRun with '--debug' to include location info"
+                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:46:15)\nRun with '--debug' to include location info"
               ]
             },
             {
@@ -48,7 +48,7 @@
               "constructFqn": "aws-cdk-lib.aws_lambda.DockerImageFunction",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:45:15)\nRun with '--debug' to include location info"
+                "<anonymous> (/Users/ckawl/workspace/snapstart-oci/aws-cdk-private/packages/@aws-cdk-testing/framework-integ/test/aws-lambda/test/integ.lambda-snapstart.js:46:15)\nRun with '--debug' to include location info"
               ]
             }
           ]
