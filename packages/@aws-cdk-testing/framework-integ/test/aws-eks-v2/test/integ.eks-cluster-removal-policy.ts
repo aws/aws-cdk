@@ -5,6 +5,7 @@ import type { StackProps } from 'aws-cdk-lib';
 import { App, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { EKS_USE_NATIVE_OIDC_PROVIDER } from 'aws-cdk-lib/cx-api';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as eks from 'aws-cdk-lib/aws-eks-v2';
 
 /**
@@ -39,9 +40,10 @@ class EksClusterRemovalPolicyStack extends Stack {
       accessScope: { type: eks.AccessScopeType.CLUSTER },
       policy: eks.AccessPolicyArn.AMAZON_EKS_CLUSTER_ADMIN_POLICY,
     });
+    const testUser = new iam.User(this, 'TestUser');
     new eks.AccessEntry(this, 'AccessEntry', {
       cluster,
-      principal: 'arn:aws:iam::123456789012:user/test-user',
+      iamPrincipal: testUser,
       accessPolicies: [accessPolicy],
       removalPolicy: RemovalPolicy.DESTROY,
     });
