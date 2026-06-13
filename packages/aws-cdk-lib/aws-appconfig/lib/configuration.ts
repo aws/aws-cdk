@@ -65,6 +65,16 @@ export interface ConfigurationOptions {
   readonly type?: ConfigurationType;
 
   /**
+   * The type of configuration as a string. Use this to specify custom configuration types
+   * that are not available in the ConfigurationType enum.
+   *
+   * This property takes precedence over the 'type' property if both are specified.
+   *
+   * @default - Uses the 'type' property value
+   */
+  readonly typeAsString?: string;
+
+  /**
    * The list of environments to deploy the configuration to.
    *
    * If this parameter is not specified, then there will be no
@@ -143,6 +153,11 @@ export interface IConfiguration extends IConstruct {
   readonly type?: ConfigurationType;
 
   /**
+   * The configuration type as a string.
+   */
+  readonly typeAsString?: string;
+
+  /**
    * The environments to deploy to.
    */
   readonly deployTo?: IEnvironment[];
@@ -193,6 +208,11 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
   public readonly type?: ConfigurationType;
 
   /**
+   * The configuration type as a string.
+   */
+  public readonly typeAsString?: string;
+
+  /**
    * The deployment key for the configuration.
    */
   public readonly deploymentKey?: kms.IKey;
@@ -220,6 +240,7 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
     this.application = props.application;
     this.applicationId = this.application.applicationId;
     this.type = props.type;
+    this.typeAsString = props.typeAsString;
     this.validators = props.validators;
     this.description = props.description;
     this.deployTo = props.deployTo;
@@ -359,6 +380,13 @@ abstract class ConfigurationBase extends Construct implements IConfiguration, IE
       environment.addDeployment(this);
     });
   }
+
+  /**
+   * Gets the effective configuration type, with typeAsString taking precedence over type.
+   */
+  protected effectiveType(): string | undefined {
+    return this.typeAsString || this.type;
+  }
 }
 
 /**
@@ -479,7 +507,7 @@ export class HostedConfiguration extends ConfigurationBase {
       locationUri: 'hosted',
       name: this.name!,
       description: this.description,
-      type: this.type,
+      type: this.effectiveType(),
       validators: this.validators,
       deletionProtectionCheck: this.deletionProtectionCheck,
       kmsKeyIdentifier: props.kmsKey?.keyRef.keyArn,
@@ -619,7 +647,7 @@ export class SourcedConfiguration extends ConfigurationBase {
       name: this.name!,
       description: this.description,
       retrievalRoleArn: this.retrievalRole?.roleArn,
-      type: this.type,
+      type: this.effectiveType(),
       validators: this.validators,
       deletionProtectionCheck: this.deletionProtectionCheck,
     });
