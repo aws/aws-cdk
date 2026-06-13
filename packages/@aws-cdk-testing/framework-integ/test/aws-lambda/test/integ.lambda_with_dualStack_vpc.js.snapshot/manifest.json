@@ -1,5 +1,5 @@
 {
-  "version": "48.0.0",
+  "version": "53.0.0",
   "artifacts": {
     "DualStackVpc.assets": {
       "type": "cdk:asset-manifest",
@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/33b6ac567bfc806190867fc1a0f901a2e208a561fb74fce47c0fe6d12bb7c1eb.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5b8b7f555140aef845bd495b449bb204808b4a2189d19b269d66826dfbfd2309.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -33,619 +33,7 @@
       "dependencies": [
         "DualStackVpc.assets"
       ],
-      "metadata": {
-        "/DualStackVpc/DualStackVpc": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "ipProtocol": "Dual_Stack",
-              "subnetConfiguration": [
-                {
-                  "name": "*",
-                  "subnetType": "Public"
-                },
-                {
-                  "name": "*",
-                  "subnetType": "Public"
-                },
-                {
-                  "name": "*",
-                  "subnetType": "Private"
-                }
-              ],
-              "natGatewayProvider": "*"
-            }
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcE812233C"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/ipv6cidr": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcipv6cidr0D52F270"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet1SubnetC431B310"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet1RouteTable73C65370"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet1RouteTableAssociation85711416"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet1DefaultRoute57B6CABF"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet1DefaultRoute63C453094"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet1EIP4E17F847"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet1/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet1NATGateway7D2A0F59"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {
-              "addNatGateway": [
-                "*"
-              ]
-            }
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet2Subnet9515A153"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet2RouteTableC119E52D"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet2RouteTableAssociationC35EFFE6"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet2DefaultRoute5C081F90"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet2DefaultRoute68F5F8AA5"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2/EIP": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet2EIP45B7D0DE"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public1Subnet2/NATGateway": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public1Subnet2NATGateway76C3674B"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet1Subnet314CDCFE"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet1RouteTableAFB7D529"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet1RouteTableAssociation14B446E0"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet1DefaultRouteD48C6F58"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet1/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet1DefaultRoute6DFD01A58"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet2Subnet509DD3CC"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet2RouteTable2D5742D9"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet2RouteTableAssociation7399CA29"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet2DefaultRoute3D636DA7"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Public2Subnet2/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Public2Subnet2DefaultRoute630FBEA19"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet1": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet1/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet1Subnet2C527D85"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet1/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet1RouteTable9CCA0D06"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet1/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet1RouteTableAssociation0B2158D5"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet1/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet1DefaultRoute0F84EAB9"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet1/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet1DefaultRoute6D3F9C454"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet1/Nat64": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet1Nat649907016D"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet2": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "availabilityZone": "*",
-              "vpcId": "*",
-              "cidrBlock": "*",
-              "mapPublicIpOnLaunch": false,
-              "ipv6CidrBlock": "*",
-              "assignIpv6AddressOnCreation": true
-            }
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          },
-          {
-            "type": "aws:cdk:analytics:method",
-            "data": {}
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet2/Subnet": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet2Subnet0F013554"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet2/RouteTable": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet2RouteTable18BA0241"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet2/RouteTableAssociation": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet2RouteTableAssociationC5571008"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet2/DefaultRoute": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet2DefaultRouteBADA4821"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/Ipv6Private1Subnet2/DefaultRoute6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIpv6Private1Subnet2DefaultRoute68619C7A8"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/IGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcIGW08AC356D"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/VPCGW": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcVPCGW7803C9BB"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/EIGW6": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcEIGW64639A9F2"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/RestrictDefaultSecurityGroupCustomResource": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/DualStackVpc/DualStackVpc/RestrictDefaultSecurityGroupCustomResource/Default": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "DualStackVpcRestrictDefaultSecurityGroupCustomResource5AA79B96"
-          }
-        ],
-        "/DualStackVpc/Custom::VpcRestrictDefaultSGCustomResourceProvider": [
-          {
-            "type": "aws:cdk:is-custom-resource-handler-customResourceProvider",
-            "data": true
-          }
-        ],
-        "/DualStackVpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Role": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderRole26592FE0"
-          }
-        ],
-        "/DualStackVpc/Custom::VpcRestrictDefaultSGCustomResourceProvider/Handler": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CustomVpcRestrictDefaultSGCustomResourceProviderHandlerDC833E5E"
-          }
-        ],
-        "/DualStackVpc/Lambda_with_IPv6_VPC": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "code": "*",
-              "handler": "*",
-              "runtime": "*",
-              "vpc": "*",
-              "ipv6AllowedForDualStack": true
-            }
-          }
-        ],
-        "/DualStackVpc/Lambda_with_IPv6_VPC/ServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "assumedBy": {
-                "principalAccount": "*",
-                "assumeRoleAction": "*"
-              },
-              "managedPolicies": [
-                {
-                  "managedPolicyArn": "*"
-                },
-                {
-                  "managedPolicyArn": "*"
-                }
-              ]
-            }
-          }
-        ],
-        "/DualStackVpc/Lambda_with_IPv6_VPC/ServiceRole/ImportServiceRole": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": "*"
-          }
-        ],
-        "/DualStackVpc/Lambda_with_IPv6_VPC/ServiceRole/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdawithIPv6VPCServiceRoleC3866C85"
-          }
-        ],
-        "/DualStackVpc/Lambda_with_IPv6_VPC/SecurityGroup": [
-          {
-            "type": "aws:cdk:analytics:construct",
-            "data": {
-              "vpc": "*",
-              "description": "*",
-              "allowAllOutbound": "*",
-              "allowAllIpv6Outbound": "*"
-            }
-          }
-        ],
-        "/DualStackVpc/Lambda_with_IPv6_VPC/SecurityGroup/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdawithIPv6VPCSecurityGroup1BC5651B"
-          }
-        ],
-        "/DualStackVpc/Lambda_with_IPv6_VPC/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "LambdawithIPv6VPCF50054B3"
-          }
-        ],
-        "/DualStackVpc/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/DualStackVpc/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "DualStackVpc.metadata.json",
       "displayName": "DualStackVpc"
     },
     "DualStackTestingDefaultTestDeployAssert8ACBFB2C.assets": {
@@ -680,20 +68,7 @@
       "dependencies": [
         "DualStackTestingDefaultTestDeployAssert8ACBFB2C.assets"
       ],
-      "metadata": {
-        "/DualStackTesting/DefaultTest/DeployAssert/BootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "BootstrapVersion"
-          }
-        ],
-        "/DualStackTesting/DefaultTest/DeployAssert/CheckBootstrapVersion": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "CheckBootstrapVersion"
-          }
-        ]
-      },
+      "additionalMetadataFile": "DualStackTestingDefaultTestDeployAssert8ACBFB2C.metadata.json",
       "displayName": "DualStackTesting/DefaultTest/DeployAssert"
     },
     "Tree": {
@@ -708,6 +83,7 @@
         "module": "aws-cdk-lib",
         "flags": {
           "@aws-cdk/aws-signer:signingProfileNamePassedToCfn": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Pass signingProfileName to CfnSigningProfile"
           },
@@ -726,6 +102,7 @@
             }
           },
           "@aws-cdk/aws-ecs-patterns:secGroupsDisablesImplicitOpenListener": {
+            "userValue": true,
             "recommendedValue": true,
             "explanation": "Disable implicit openListener when custom security groups are provided"
           },
@@ -837,7 +214,7 @@
           "@aws-cdk/aws-iam:importedRoleStackSafeDefaultPolicyName": {
             "userValue": true,
             "recommendedValue": true,
-            "explanation": "Enable this feature to by default create default policy names for imported roles that depend on the stack the role is in."
+            "explanation": "Enable this feature to create default policy names for imported roles that depend on the stack the role is in."
           },
           "@aws-cdk/aws-s3:serverAccessLogsUseBucketPolicy": {
             "userValue": true,
@@ -991,6 +368,11 @@
             "recommendedValue": true,
             "explanation": "When enabled, nodegroupName attribute of the provisioned EKS NodeGroup will not have the cluster name prefix."
           },
+          "@aws-cdk/aws-eks:useNativeOidcProvider": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, EKS V2 clusters will use the native OIDC provider resource AWS::IAM::OIDCProvider instead of creating the OIDCProvider with a custom resource (iam.OpenIDConnectProvider)."
+          },
           "@aws-cdk/aws-ec2:ebsDefaultGp3Volume": {
             "userValue": true,
             "recommendedValue": true,
@@ -1022,16 +404,6 @@
             "userValue": true,
             "recommendedValue": true,
             "explanation": "When enabled, stack tags need to be assigned explicitly on a Stack."
-          },
-          "@aws-cdk/aws-ecs:enableImdsBlockingDeprecatedFeature": {
-            "userValue": false,
-            "recommendedValue": false,
-            "explanation": "When set to true along with canContainersAccessInstanceRole=false in ECS cluster, new updated commands will be added to UserData to block container accessing IMDS. **Applicable to Linux only. IMPORTANT: See [details.](#aws-cdkaws-ecsenableImdsBlockingDeprecatedFeature)**"
-          },
-          "@aws-cdk/aws-ecs:disableEcsImdsBlocking": {
-            "userValue": true,
-            "recommendedValue": true,
-            "explanation": "When set to true, CDK synth will throw exception if canContainersAccessInstanceRole is false. **IMPORTANT: See [details.](#aws-cdkaws-ecsdisableEcsImdsBlocking)**"
           },
           "@aws-cdk/aws-ecs:reduceEc2FargateCloudWatchPermissions": {
             "userValue": true,
@@ -1176,10 +548,62 @@
             "userValue": false,
             "recommendedValue": true,
             "explanation": "When enabled, CDK creates and manages loggroup for the lambda function"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:networkLoadBalancerWithSecurityGroupByDefault": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, Network Load Balancer will be created with a security group by default."
+          },
+          "@aws-cdk/aws-stepfunctions-tasks:httpInvokeDynamicJsonPathEndpoint": {
+            "recommendedValue": true,
+            "explanation": "When enabled, allows using a dynamic apiEndpoint with JSONPath format in HttpInvoke tasks.",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-ecs-patterns:uniqueTargetGroupId": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "When enabled, ECS patterns will generate unique target group IDs to prevent conflicts during load balancer replacement"
+          },
+          "@aws-cdk/aws-route53-patterns:useDistribution": {
+            "userValue": true,
+            "recommendedValue": true,
+            "explanation": "Use the `Distribution` resource instead of `CloudFrontWebDistribution`"
+          },
+          "@aws-cdk/aws-cloudfront:defaultFunctionRuntimeV2_0": {
+            "recommendedValue": true,
+            "explanation": "Use cloudfront-js-2.0 as the default runtime for CloudFront Functions"
+          },
+          "@aws-cdk/aws-elasticloadbalancingv2:usePostQuantumTlsPolicy": {
+            "recommendedValue": true,
+            "explanation": "When enabled, HTTPS/TLS listeners use post-quantum TLS policy by default"
+          },
+          "@aws-cdk/core:automaticL1Traits": {
+            "recommendedValue": true,
+            "explanation": "Automatically use the default L1 traits for L1 constructs`",
+            "unconfiguredBehavesLike": {
+              "v2": true
+            }
+          },
+          "@aws-cdk/aws-batch:defaultToAL2023": {
+            "recommendedValue": true,
+            "explanation": "Use AL2023 as the default imageType for EC2 Batch compute environments instead of the deprecated AL2"
+          },
+          "@aws-cdk/core:annotationsInValidationReport": {
+            "recommendedValue": true,
+            "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }
     }
   },
-  "minimumCliVersion": "2.1027.0"
+  "minimumCliVersion": "2.1108.0"
 }
