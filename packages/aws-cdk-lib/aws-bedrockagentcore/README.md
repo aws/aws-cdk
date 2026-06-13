@@ -2826,6 +2826,7 @@ Custom evaluators let you define evaluation logic tailored to your specific use 
 | `evaluatorConfig` | `EvaluatorConfig` | Yes | Configuration defining how the evaluator assesses performance |
 | `level` | `EvaluationLevel` | Yes | The level at which the evaluator operates: `TOOL_CALL`, `TRACE`, or `SESSION` |
 | `description` | `string` | No | Description of the evaluator. Maximum 200 characters |
+| `kmsKey` | `kms.IKey` | No | Customer-managed KMS key used to encrypt the evaluator at rest. Default: an AWS owned key is used |
 | `tags` | `{ [key: string]: string }` | No | Tags for the evaluator. A list of key:value pairs to apply to this Evaluator resource |
 
 #### LLM-as-a-Judge Evaluator
@@ -2893,6 +2894,33 @@ const codeEvaluator = new agentcore.Evaluator(this, 'CodeEvaluator', {
 ```
 
 For code-based evaluators, the construct automatically grants the `bedrock-agentcore.amazonaws.com` service principal permission to invoke the Lambda function, scoped to the specific evaluator resource with `aws:SourceAccount` and `aws:SourceArn` conditions for confused deputy prevention.
+
+#### Evaluator with KMS Encryption
+
+By default, an evaluator is encrypted with an AWS owned key. To use a customer-managed key (for example, to control key rotation and revocation), pass a `kmsKey`:
+
+```typescript fixture=default
+const encryptionKey = new kms.Key(this, 'EvaluatorEncryptionKey', {
+  enableKeyRotation: true,
+  description: 'KMS key for evaluator encryption',
+});
+
+const evaluator = new agentcore.Evaluator(this, 'EncryptedEvaluator', {
+  evaluatorName: 'encrypted_evaluator',
+  level: agentcore.EvaluationLevel.SESSION,
+  evaluatorConfig: agentcore.EvaluatorConfig.llmAsAJudge({
+    instructions: 'Evaluate whether the agent response is helpful.',
+    modelId: 'us.anthropic.claude-sonnet-4-6',
+    ratingScale: agentcore.EvaluatorRatingScale.categorical([
+      { label: 'Good', definition: 'The response is helpful.' },
+      { label: 'Bad', definition: 'The response is not helpful.' },
+    ]),
+  }),
+  kmsKey: encryptionKey,
+});
+```
+
+Ensure the KMS key policy permits the `bedrock-agentcore` service to use the key for encryption and decryption.
 
 #### Using Custom Evaluators with Online Evaluation
 

@@ -23,6 +23,7 @@ import {
 } from './validation-helpers';
 import * as bedrockagentcore from '../../../aws-bedrockagentcore';
 import * as iam from '../../../aws-iam';
+import type * as kms from '../../../aws-kms';
 import { Arn, ArnFormat, Stack } from '../../../core';
 import { addConstructMetadata } from '../../../core/lib/metadata-resource';
 import { propertyInjectable } from '../../../core/lib/prop-injectable';
@@ -64,6 +65,15 @@ export interface EvaluatorProps {
    * @maxLength 200
    */
   readonly description?: string;
+
+  /**
+   * The customer-managed KMS key to use for encrypting the evaluator at rest.
+   *
+   * [disable-awslint:prefer-ref-interface]
+   *
+   * @default - an AWS owned key is used
+   */
+  readonly kmsKey?: kms.IKey;
 
   /**
    * Tags for the evaluator.
@@ -232,6 +242,11 @@ export class Evaluator extends EvaluatorBase {
    */
   public readonly updatedAt?: string;
 
+  /**
+   * The customer-managed KMS key used to encrypt this evaluator, if one was provided.
+   */
+  public readonly kmsKey?: kms.IKey;
+
   constructor(scope: Construct, id: string, props: EvaluatorProps) {
     super(scope, id, { physicalName: props.evaluatorName });
 
@@ -251,6 +266,7 @@ export class Evaluator extends EvaluatorBase {
       evaluatorConfig: props.evaluatorConfig._bind(),
       level: props.level.value,
       description: props.description,
+      kmsKeyArn: props.kmsKey?.keyArn,
       tags: props.tags && Object.keys(props.tags).length > 0
         ? Object.entries(props.tags).map(([key, value]) => ({ key, value }))
         : undefined,
@@ -272,5 +288,6 @@ export class Evaluator extends EvaluatorBase {
     this.status = resource.attrStatus;
     this.createdAt = resource.attrCreatedAt;
     this.updatedAt = resource.attrUpdatedAt;
+    this.kmsKey = props.kmsKey;
   }
 }
