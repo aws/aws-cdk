@@ -173,17 +173,8 @@ export class DataRepositoryAssociation extends Resource implements IDataReposito
     this.validateProps(props);
 
     const dataRepositoryPath = props.bucketPrefix
-      ? `s3://${props.bucket.bucketName}/${props.bucketPrefix.replace(/^\//, '')}`
+      ? `s3://${props.bucket.bucketName}/${props.bucketPrefix.replace(/^\/+/, '')}`
       : `s3://${props.bucket.bucketName}/`;
-
-    const s3Config = props.s3 ? {
-      autoImportPolicy: props.s3.autoImportPolicy
-        ? { events: props.s3.autoImportPolicy.events }
-        : undefined,
-      autoExportPolicy: props.s3.autoExportPolicy
-        ? { events: props.s3.autoExportPolicy.events }
-        : undefined,
-    } : undefined;
 
     const resource = new CfnDataRepositoryAssociation(this, 'Resource', {
       fileSystemId: props.fileSystem.fileSystemId,
@@ -191,7 +182,7 @@ export class DataRepositoryAssociation extends Resource implements IDataReposito
       dataRepositoryPath,
       importedFileChunkSize: props.importedFileChunkSizeMiB,
       batchImportMetaDataOnCreate: props.batchImportMetaDataOnCreate,
-      s3: s3Config,
+      s3: props.s3,
     });
     resource.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.RETAIN);
 
@@ -199,7 +190,9 @@ export class DataRepositoryAssociation extends Resource implements IDataReposito
 
     // Grant FSx service principal read/write access to the bucket so it can
     // fulfil import and export requests on behalf of the file system.
-    props.bucket.grantReadWrite(new ServicePrincipal('fsx.amazonaws.com'));
+    // Add an explicit dependency so CloudFormation creates the bucket policy before the DRA.
+    const grant = props.bucket.grantReadWrite(new ServicePrincipal('fsx.amazonaws.com'));
+    resource.node.addDependency(grant);
   }
 
   private validateProps(props: DataRepositoryAssociationProps): void {

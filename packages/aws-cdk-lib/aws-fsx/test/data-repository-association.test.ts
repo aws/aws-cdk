@@ -78,12 +78,12 @@ describe('DataRepositoryAssociation', () => {
     });
   });
 
-  test('strips leading slash from bucketPrefix', () => {
+  test('strips all leading slashes from bucketPrefix', () => {
     new DataRepositoryAssociation(stack, 'DRA', {
       fileSystem,
       fileSystemPath: '/data',
       bucket,
-      bucketPrefix: '/primary/',
+      bucketPrefix: '//primary/',
     });
 
     Template.fromStack(stack).hasResourceProperties('AWS::FSx::DataRepositoryAssociation', {
@@ -154,6 +154,16 @@ describe('DataRepositoryAssociation', () => {
           bucket,
         });
       }).toThrow(/fileSystemPath must begin with "\/"/);
+    });
+
+    test('throws when fileSystemPath exceeds 4096 characters', () => {
+      expect(() => {
+        new DataRepositoryAssociation(stack, 'DRA', {
+          fileSystem,
+          fileSystemPath: '/' + 'a'.repeat(4096),
+          bucket,
+        });
+      }).toThrow(/fileSystemPath cannot exceed 4096 characters/);
     });
 
     test('throws when importedFileChunkSizeMiB is below 1', () => {
