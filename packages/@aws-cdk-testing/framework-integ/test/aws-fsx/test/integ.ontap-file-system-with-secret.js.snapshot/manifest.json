@@ -1,28 +1,28 @@
 {
   "version": "53.0.0",
   "artifacts": {
-    "AwsCdkFsxOntap.assets": {
+    "AwsCdkFsxOntapWithSecret.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "AwsCdkFsxOntap.assets.json",
+        "file": "AwsCdkFsxOntapWithSecret.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "AwsCdkFsxOntap": {
+    "AwsCdkFsxOntapWithSecret": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "AwsCdkFsxOntap.template.json",
+        "templateFile": "AwsCdkFsxOntapWithSecret.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1320fb0df848a26d2a97c74b7f17920427efd90ee641b7de19fdefddc633cf1b.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9fba37c37e3bdc62e2e7220d13ef143c7b4c377e9be331efffe67352f701f844.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "AwsCdkFsxOntap.assets"
+          "AwsCdkFsxOntapWithSecret.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -31,33 +31,33 @@
         }
       },
       "dependencies": [
-        "AwsCdkFsxOntap.assets"
+        "AwsCdkFsxOntapWithSecret.assets"
       ],
-      "additionalMetadataFile": "AwsCdkFsxOntap.metadata.json",
-      "displayName": "AwsCdkFsxOntap"
+      "additionalMetadataFile": "AwsCdkFsxOntapWithSecret.metadata.json",
+      "displayName": "AwsCdkFsxOntapWithSecret"
     },
-    "FsxOntapIntegTestDefaultTestDeployAssertA094664B.assets": {
+    "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
-        "file": "FsxOntapIntegTestDefaultTestDeployAssertA094664B.assets.json",
+        "file": "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0.assets.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
       }
     },
-    "FsxOntapIntegTestDefaultTestDeployAssertA094664B": {
+    "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0": {
       "type": "aws:cloudformation:stack",
       "environment": "aws://unknown-account/unknown-region",
       "properties": {
-        "templateFile": "FsxOntapIntegTestDefaultTestDeployAssertA094664B.template.json",
+        "templateFile": "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/5969d82e7a0d131e23d10023a22c07f7ef2f863927fe786bd935e62ff3b23aeb.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
-          "FsxOntapIntegTestDefaultTestDeployAssertA094664B.assets"
+          "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0.assets"
         ],
         "lookupRole": {
           "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
@@ -66,10 +66,11 @@
         }
       },
       "dependencies": [
-        "FsxOntapIntegTestDefaultTestDeployAssertA094664B.assets"
+        "AwsCdkFsxOntapWithSecret",
+        "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0.assets"
       ],
-      "additionalMetadataFile": "FsxOntapIntegTestDefaultTestDeployAssertA094664B.metadata.json",
-      "displayName": "FsxOntapIntegTest/DefaultTest/DeployAssert"
+      "additionalMetadataFile": "FsxOntapWithSecretIntegTestDefaultTestDeployAssertAC20D0B0.metadata.json",
+      "displayName": "FsxOntapWithSecretIntegTest/DefaultTest/DeployAssert"
     },
     "Tree": {
       "type": "cdk:tree",

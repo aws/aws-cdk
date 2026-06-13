@@ -283,6 +283,36 @@ managed shared storage built on NetApp's popular ONTAP file system. FSx for ONTA
 SMB, iSCSI), built-in data protection with snapshots and replication, and automatic storage tiering between SSD and
 capacity pool storage.
 
+The L2 covers three resource types:
+
+- `OntapFileSystem` for the file system itself.
+- `OntapStorageVirtualMachine` (SVM) for an isolated server within a file system.
+- `OntapVolume` for a data container within an SVM.
+
+Topics in this section:
+
+- [Basic Usage](#basic-usage-1)
+- [Deployment Types](#deployment-types)
+- [High Availability Pairs](#high-availability-pairs)
+- [Throughput Capacity](#throughput-capacity)
+- [Total Throughput Capacity](#total-throughput-capacity)
+- [SSD IOPS](#ssd-iops)
+- [Encryption at Rest](#encryption-at-rest)
+- [Removal Policy](#removal-policy)
+- [Backups](#backups-1)
+- [Admin Credentials](#admin-credentials)
+- [Storage Virtual Machines](#storage-virtual-machines)
+- [Active Directory join with Secrets Manager](#active-directory-join-with-secrets-manager)
+- [Volumes](#volumes)
+- [FlexGroup Volumes](#flexgroup-volumes)
+- [Data Protection Volumes](#data-protection-volumes)
+- [SnapLock (WORM/Compliance) Volumes](#snaplock-wormcompliance-volumes)
+- [Restoring a Volume from a Backup](#restoring-a-volume-from-a-backup)
+- [Connecting](#connecting-1)
+- [IPv6 Dual-Stack Networking](#ipv6-dual-stack-networking)
+- [Importing Existing Resources](#importing-existing-resources)
+- [Common Pitfalls](#common-pitfalls)
+
 ### Basic Usage
 
 Create an FSx for ONTAP file system with a Storage Virtual Machine (SVM) and Volume:
@@ -297,7 +327,7 @@ const fileSystem = new fsx.OntapFileSystem(this, 'OntapFileSystem', {
   storageCapacityGiB: 1024,
   ontapConfiguration: {
     deploymentType: fsx.OntapDeploymentType.MULTI_AZ_2,
-    throughputCapacityPerHaPair: fsx.MultiAz2ThroughputCapacity.MB_PER_SEC_384,
+    throughputCapacityPerHaPair: fsx.ThroughputCapacityPerHaPair.MB_PER_SEC_384,
     preferredSubnet: vpc.privateSubnets[0],
   },
 });
@@ -305,13 +335,13 @@ const fileSystem = new fsx.OntapFileSystem(this, 'OntapFileSystem', {
 // Create a Storage Virtual Machine
 const svm = new fsx.OntapStorageVirtualMachine(this, 'Svm', {
   fileSystem,
-  name: 'my-svm',
+  name: 'my_svm',
 });
 
 // Create a Volume
 new fsx.OntapVolume(this, 'Volume', {
   storageVirtualMachine: svm,
-  name: 'my-volume',
+  name: 'my_volume',
   sizeInBytes: 107374182400, // 100 GiB
   junctionPath: '/data',
 });
@@ -321,10 +351,10 @@ new fsx.OntapVolume(this, 'Volume', {
 
 FSx for ONTAP supports four deployment types:
 
-- **MULTI_AZ_1** — First-generation multi-AZ, high availability across two AZs
-- **MULTI_AZ_2** — Second-generation multi-AZ with improved performance
-- **SINGLE_AZ_1** — First-generation single-AZ
-- **SINGLE_AZ_2** — Second-generation single-AZ with support for multiple HA pairs
+- **MULTI_AZ_1**: First-generation multi-AZ, high availability across two AZs
+- **MULTI_AZ_2**: Second-generation multi-AZ with improved performance
+- **SINGLE_AZ_1**: First-generation single-AZ
+- **SINGLE_AZ_2**: Second-generation single-AZ with support for multiple HA pairs
 
 ```ts
 declare const vpc: ec2.Vpc;
@@ -336,19 +366,100 @@ const singleAz = new fsx.OntapFileSystem(this, 'SingleAzFileSystem', {
   storageCapacityGiB: 1024,
   ontapConfiguration: {
     deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
-    throughputCapacityPerHaPair: fsx.SingleAz2ThroughputCapacity.MB_PER_SEC_1536,
+    throughputCapacityPerHaPair: fsx.ThroughputCapacityPerHaPair.MB_PER_SEC_1536,
   },
 });
 ```
 
+### High Availability Pairs
+
+A `SINGLE_AZ_2` file system can scale out by running multiple HA pairs of file servers, from 1 (default) up to 12. Storage capacity, IOPS, and throughput all scale linearly with the number of HA pairs. The other deployment types (`SINGLE_AZ_1`, `MULTI_AZ_1`, `MULTI_AZ_2`) only support a single HA pair.
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 12288, // 1024 GiB per HA pair, minimum
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+    haPairs: 12,
+    throughputCapacityPerHaPair: fsx.ThroughputCapacityPerHaPair.MB_PER_SEC_6144,
+  },
+});
+```
+
+For more information, see [High availability and durability](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/high-availability-multi-AZ.html).
+
 ### Throughput Capacity
 
-Each deployment type has its own set of valid throughput capacity values. Use the type-safe classes to specify throughput:
+Throughput capacity per HA pair is configured using the `ThroughputCapacityPerHaPair` class. Valid values depend on the deployment type:
 
-- `SingleAz1ThroughputCapacity` — 128, 256, 512, 1024, 2048, 4096 MBps
-- `MultiAz1ThroughputCapacity` — 128, 256, 512, 1024, 2048, 4096 MBps
-- `SingleAz2ThroughputCapacity` — 1536, 3072, 6144 MBps
-- `MultiAz2ThroughputCapacity` — 384, 768, 1536, 3072, 6144 MBps
+- `SINGLE_AZ_1` and `MULTI_AZ_1`: 128, 256, 512, 1024, 2048, 4096 MBps
+- `SINGLE_AZ_2`: 1536, 3072, 6144 MBps
+- `MULTI_AZ_2`: 384, 768, 1536, 3072, 6144 MBps
+
+For more information, see [Managing throughput capacity](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-throughput-capacity.html).
+
+### SSD IOPS
+
+By default, FSx for ONTAP provisions 3 SSD IOPS per GiB of storage capacity, multiplied by the number of HA pairs. To provision a custom amount, set `diskIops`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 1024,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
+    diskIops: 10000,
+  },
+});
+```
+
+The minimum is 3 IOPS per GiB of storage capacity. The maximum is 80,000 for first-generation deployments and up to 200,000 per HA pair (capped at 2,400,000 total) for second-generation deployments.
+
+### Encryption at Rest
+
+FSx for ONTAP file systems are encrypted at rest by default with an AWS-managed KMS key. To use a customer-managed key, pass it as `kmsKey`:
+
+```ts
+import * as kms from 'aws-cdk-lib/aws-kms';
+
+declare const vpc: ec2.Vpc;
+
+const key = new kms.Key(this, 'FsxKey');
+
+new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 1024,
+  kmsKey: key,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
+  },
+});
+```
+
+### Removal Policy
+
+`OntapFileSystem`, `OntapStorageVirtualMachine`, and `OntapVolume` all default to `RemovalPolicy.RETAIN`. These resources are stateful and removing them on stack delete would silently destroy customer data. To opt in to deletion (for example for ephemeral test stacks), set `removalPolicy: RemovalPolicy.DESTROY` on each construct:
+
+```ts
+import { RemovalPolicy } from 'aws-cdk-lib';
+
+declare const svm: fsx.OntapStorageVirtualMachine;
+
+new fsx.OntapVolume(this, 'EphemeralVolume', {
+  storageVirtualMachine: svm,
+  name: 'temp_vol',
+  sizeInBytes: 53687091200,
+  removalPolicy: RemovalPolicy.DESTROY,
+});
+```
 
 ### Backups
 
@@ -365,7 +476,7 @@ const fileSystem = new fsx.OntapFileSystem(this, 'OntapFileSystem', {
   storageCapacityGiB: 1024,
   ontapConfiguration: {
     deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
-    throughputCapacityPerHaPair: fsx.SingleAz1ThroughputCapacity.MB_PER_SEC_128,
+    throughputCapacityPerHaPair: fsx.ThroughputCapacityPerHaPair.MB_PER_SEC_128,
     automaticBackupRetention: cdk.Duration.days(7),
     dailyAutomaticBackupStartTime: new fsx.DailyAutomaticBackupStartTime({ hour: 1, minute: 0 }),
   },
@@ -373,6 +484,29 @@ const fileSystem = new fsx.OntapFileSystem(this, 'OntapFileSystem', {
 ```
 
 To disable automatic backups, set `automaticBackupRetention` to `Duration.days(0)`.
+
+### Admin Credentials
+
+Admin passwords for the file system (`fsxAdminPassword`) and SVM (`svmAdminPassword`) accept any `SecretValue`. For
+convenience, the `OntapFileSystemSecret` class generates a Secrets Manager secret with a strong password that excludes
+the characters not allowed by FSx for ONTAP (`"`, `@`, `/`, `\`):
+
+```ts
+declare const vpc: ec2.Vpc;
+
+const adminSecret = new fsx.OntapFileSystemSecret(this, 'FsxAdminSecret');
+
+const fileSystem = new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 1024,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
+    throughputCapacityPerHaPair: fsx.ThroughputCapacityPerHaPair.MB_PER_SEC_128,
+    fsxAdminPassword: adminSecret.secretValueFromJson('password'),
+  },
+});
+```
 
 ### Storage Virtual Machines
 
@@ -384,8 +518,23 @@ declare const fileSystem: fsx.OntapFileSystem;
 
 const svm = new fsx.OntapStorageVirtualMachine(this, 'Svm', {
   fileSystem,
-  name: 'my-svm',
+  name: 'my_svm',
   rootVolumeSecurityStyle: fsx.SecurityStyle.UNIX,
+});
+```
+
+To set the SVM admin password, use the same `OntapFileSystemSecret` helper. The file system admin and the SVM admin are
+two different accounts and need two different secrets:
+
+```ts
+declare const fileSystem: fsx.OntapFileSystem;
+
+const svmAdminSecret = new fsx.OntapFileSystemSecret(this, 'SvmAdminSecret');
+
+new fsx.OntapStorageVirtualMachine(this, 'Svm', {
+  fileSystem,
+  name: 'my_svm',
+  svmAdminPassword: svmAdminSecret.secretValueFromJson('password'),
 });
 ```
 
@@ -401,7 +550,7 @@ declare const svm: fsx.OntapStorageVirtualMachine;
 
 const volume = new fsx.OntapVolume(this, 'Volume', {
   storageVirtualMachine: svm,
-  name: 'my-volume',
+  name: 'my_volume',
   sizeInBytes: 214748364800, // 200 GiB
   junctionPath: '/data',
   storageEfficiencyEnabled: true,
@@ -412,16 +561,234 @@ const volume = new fsx.OntapVolume(this, 'Volume', {
 });
 ```
 
+### FlexGroup Volumes
+
+By default, `OntapVolume` creates a FlexVol volume backed by a single aggregate. For very large workloads, you can
+create a FlexGroup volume that spans multiple aggregates. Set `volumeStyle` to `FLEXGROUP` and supply
+`aggregateConfiguration`:
+
+```ts
+declare const svm: fsx.OntapStorageVirtualMachine;
+
+new fsx.OntapVolume(this, 'FlexGroupVolume', {
+  storageVirtualMachine: svm,
+  name: 'flexgroup_vol',
+  sizeInBytes: 1099511627776, // 1 TiB
+  volumeStyle: fsx.VolumeStyle.FLEXGROUP,
+  aggregateConfiguration: {
+    aggregates: ['aggr1', 'aggr2'],
+    constituentsPerAggregate: 8,
+  },
+});
+```
+
+Each aggregate name must match the pattern `aggrX` where `X` is between 1 and 12, and the list must contain between 1
+and 6 entries. `constituentsPerAggregate` ranges from 1 to 200.
+
+### Data Protection Volumes
+
+Data Protection (DP) volumes are read-only and used as SnapMirror destinations. Unlike read/write (RW) volumes, DP
+volumes do not accept `storageEfficiencyEnabled`:
+
+```ts
+declare const svm: fsx.OntapStorageVirtualMachine;
+
+new fsx.OntapVolume(this, 'DpVolume', {
+  storageVirtualMachine: svm,
+  name: 'dp_vol',
+  sizeInBytes: 107374182400,
+  ontapVolumeType: fsx.OntapVolumeType.DP,
+});
+```
+
+The default `ontapVolumeType` is `RW` (read/write) and matches the most common use case.
+
 ### Connecting
 
-To control who can access the file system, use the `.connections` attribute. FSx for ONTAP uses port 2049 (NFS) as the
-default port. This example allows an EC2 instance to connect to the file system:
+To control who can access the file system, use the `.connections` attribute. FSx for ONTAP uses port 2049 (NFSv4) as the
+default port, but the file system also exposes other protocols on different ports.
+
+> **Note:** `connections.allowDefaultPortFrom(instance)` opens **only TCP/2049**, which is sufficient for NFSv4. For
+> **NFSv3** mounts you must additionally allow TCP/UDP **111** (portmapper) and TCP/UDP **635** (mountd), **4045**
+> (lockd), and **4046** (statd). For SMB use TCP **445** (and UDP **137-139** for NetBIOS name resolution). For iSCSI
+> use TCP **3260**. For ONTAP REST/CLI management use TCP **443**.
+
+This example allows an EC2 instance to connect to the file system over NFSv4:
 
 ```ts
 declare const fileSystem: fsx.OntapFileSystem;
 declare const instance: ec2.Instance;
 
 fileSystem.connections.allowDefaultPortFrom(instance);
+```
+
+To allow NFSv3 (which requires the additional ports listed above):
+
+```ts
+declare const fileSystem: fsx.OntapFileSystem;
+declare const instance: ec2.Instance;
+
+fileSystem.connections.allowFrom(instance, ec2.Port.tcp(2049), 'NFS');
+fileSystem.connections.allowFrom(instance, ec2.Port.tcp(111), 'portmapper TCP');
+fileSystem.connections.allowFrom(instance, ec2.Port.udp(111), 'portmapper UDP');
+fileSystem.connections.allowFrom(instance, ec2.Port.tcpRange(635, 635), 'mountd TCP');
+fileSystem.connections.allowFrom(instance, ec2.Port.udpRange(635, 635), 'mountd UDP');
+fileSystem.connections.allowFrom(instance, ec2.Port.tcp(4045), 'lockd');
+fileSystem.connections.allowFrom(instance, ec2.Port.tcp(4046), 'statd');
+```
+
+To also allow SMB access from the same instance:
+
+```ts
+declare const fileSystem: fsx.OntapFileSystem;
+declare const instance: ec2.Instance;
+
+fileSystem.connections.allowFrom(instance, ec2.Port.tcp(445), 'SMB');
+```
+
+### IPv6 Dual-Stack Networking
+
+By default, FSx for ONTAP file systems are created with IPv4-only networking. To enable IPv6 dual-stack, set the
+`networkType` property to `NetworkType.DUAL`:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 1024,
+  networkType: fsx.NetworkType.DUAL,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_1,
+    throughputCapacityPerHaPair: fsx.ThroughputCapacityPerHaPair.MB_PER_SEC_128,
+  },
+});
+```
+
+The VPC and subnets must already be configured with IPv6 CIDR blocks.
+
+### Total Throughput Capacity
+
+In addition to specifying throughput per HA pair via `throughputCapacityPerHaPair`, you can specify the total
+throughput for the file system using `throughputCapacity`. The valid range depends on the deployment type and
+on `haPairs` (multiple HA pairs are only supported on `SINGLE_AZ_2`):
+
+- `SINGLE_AZ_1`: 128 to 4,096 MBps (1 HA pair only)
+- `MULTI_AZ_1`: 128 to 4,096 MBps (1 HA pair only)
+- `MULTI_AZ_2`: 384 to 6,144 MBps (1 HA pair only)
+- `SINGLE_AZ_2`: 1,536 to (6,144 * `haPairs`) MBps, up to 73,728 MBps with 12 HA pairs
+
+`throughputCapacity` divided by `haPairs` must equal one of the valid per-HA-pair values
+listed in the [Throughput Capacity](#throughput-capacity) section above (the per-HA-pair set
+is discrete; values inside the range that don't divide evenly are rejected by FSx).
+
+The two properties are mutually exclusive, set exactly one of them:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new fsx.OntapFileSystem(this, 'OntapFileSystem', {
+  vpc,
+  vpcSubnets: [vpc.privateSubnets[0]],
+  storageCapacityGiB: 12288,
+  ontapConfiguration: {
+    deploymentType: fsx.OntapDeploymentType.SINGLE_AZ_2,
+    haPairs: 2,
+    throughputCapacity: 6144, // total MBps across all HA pairs
+  },
+});
+```
+
+### Active Directory join with Secrets Manager
+
+Storage Virtual Machines can join a self-managed Active Directory domain. The domain-join service account credentials
+can be supplied either inline (`userName` + `password`) or via a Secrets Manager secret using
+`domainJoinServiceAccountSecret` (recommended). The two flows are mutually exclusive:
+
+```ts
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
+
+declare const fileSystem: fsx.OntapFileSystem;
+declare const adServiceAccountSecret: secretsmanager.ISecret;
+
+// FSx for ONTAP must be allowed to read the secret at SVM-create time. Without this
+// resource policy the SVM creation fails at deploy with `Could not retrieve secret`.
+adServiceAccountSecret.addToResourcePolicy(new iam.PolicyStatement({
+  actions: ['secretsmanager:GetSecretValue'],
+  principals: [new iam.ServicePrincipal('fsx.amazonaws.com')],
+  resources: ['*'],
+}));
+
+new fsx.OntapStorageVirtualMachine(this, 'Svm', {
+  fileSystem,
+  name: 'svm1',
+  activeDirectoryConfiguration: {
+    netBiosName: 'SVM1',
+    selfManagedActiveDirectoryConfiguration: {
+      dnsIps: ['10.0.0.10', '10.0.0.11'],
+      domainName: 'corp.example.com',
+      domainJoinServiceAccountSecret: adServiceAccountSecret,
+    },
+  },
+});
+```
+
+The secret must contain a JSON blob with the keys
+`CUSTOMER_MANAGED_ACTIVE_DIRECTORY_USERNAME` and
+`CUSTOMER_MANAGED_ACTIVE_DIRECTORY_PASSWORD`, as required by FSx for ONTAP.
+
+> **Customer-managed KMS keys:** If the secret is encrypted with a
+> customer-managed KMS key (rather than the default AWS-managed key), you must
+> *also* grant `fsx.amazonaws.com` `kms:Decrypt` permission on that key.
+> Without this, SVM creation fails at deploy with `Could not retrieve secret`.
+> The most common AD-join deploy-time failures stem from this missing KMS grant.
+
+See [Storing Active Directory credentials in AWS Secrets Manager](https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/self-managed-AD-best-practices.html#bp-store-ad-creds-using-secret-manager).
+
+### SnapLock (WORM/Compliance) Volumes
+
+SnapLock provides write-once, read-many (WORM) storage for regulatory compliance and ransomware protection. Configure
+SnapLock at volume-creation time via `snaplockConfiguration`:
+
+```ts
+declare const svm: fsx.OntapStorageVirtualMachine;
+
+new fsx.OntapVolume(this, 'WormVolume', {
+  storageVirtualMachine: svm,
+  name: 'compliance_vol',
+  sizeInBytes: 107374182400,
+  junctionPath: '/compliance',
+  snaplockConfiguration: {
+    snaplockType: fsx.SnaplockType.ENTERPRISE,
+    privilegedDelete: fsx.PrivilegedDelete.ENABLED,
+    autocommitPeriod: { type: fsx.AutocommitPeriodType.DAYS, value: 7 },
+    retentionPeriod: {
+      defaultRetention: { type: fsx.RetentionPeriodType.YEARS, value: 7 },
+      minimumRetention: { type: fsx.RetentionPeriodType.DAYS, value: 1 },
+      maximumRetention: { type: fsx.RetentionPeriodType.INFINITE },
+    },
+  },
+});
+```
+
+`SnaplockType.COMPLIANCE` mode forbids deletion until retention expires; `ENTERPRISE` mode permits privileged delete by
+SnapLock administrators.
+
+### Restoring a Volume from a Backup
+
+To create a volume from an existing backup, set the `backupId` property:
+
+```ts
+declare const svm: fsx.OntapStorageVirtualMachine;
+
+new fsx.OntapVolume(this, 'RestoredVolume', {
+  storageVirtualMachine: svm,
+  name: 'restored_vol',
+  sizeInBytes: 107374182400,
+  backupId: 'backup-1234567890abcdef0',
+});
 ```
 
 ### Importing Existing Resources
@@ -439,6 +806,45 @@ const fs = fsx.OntapFileSystem.fromOntapFileSystemAttributes(this, 'ImportedFile
 declare const instance: ec2.Instance;
 fs.connections.allowDefaultPortFrom(instance);
 ```
+
+`resourceArn` is optional on the import and only required if your stack reads
+`fileSystem.resourceArn` (for example to compose ARNs for IAM grants or related
+resources). Accessing `resourceArn` on an import that omitted it raises a
+`ValidationError` so the misuse surfaces clearly at synth. Pass it for the full case:
+
+```ts
+const sg = ec2.SecurityGroup.fromSecurityGroupId(this, 'FsxSecurityGroup', '{SECURITY-GROUP-ID}');
+const fsWithArn = fsx.OntapFileSystem.fromOntapFileSystemAttributes(this, 'ImportedFileSystemWithArn', {
+  dnsName: '{FILE-SYSTEM-DNS-NAME}',
+  fileSystemId: '{FILE-SYSTEM-ID}',
+  resourceArn: '{FILE-SYSTEM-ARN}',
+  securityGroup: sg,
+});
+
+// fsWithArn.resourceArn is now safe to read in IAM grants and ARN composition.
+```
+
+### Common Pitfalls
+
+A few configurations that the L2 catches at synth time, with the fix:
+
+- **Multi-AZ requires exactly 2 subnets in different AZs.** Pass `vpcSubnets: [vpc.privateSubnets[0], vpc.privateSubnets[1]]` and set `preferredSubnet`.
+- **Single-AZ requires exactly 1 subnet** and `preferredSubnet` must not be set.
+- **`haPairs` greater than 1 is only valid on `SINGLE_AZ_2`.** Other deployment types are single-HA-pair only.
+- **`throughputCapacity` divided by `haPairs` must equal a valid per-HA-pair value** for the deployment type. The per-HA-pair set is discrete, see [Throughput Capacity](#throughput-capacity).
+- **`throughputCapacity` and `throughputCapacityPerHaPair` are mutually exclusive.** Set exactly one of them.
+- **`endpointIpv6AddressRange` requires `networkType: NetworkType.DUAL`.**
+- **DP volumes do not accept `storageEfficiencyEnabled`.** Drop the prop on `OntapVolumeType.DP` volumes.
+- **FlexGroup volumes require `aggregateConfiguration`** and FlexVol volumes must not have it.
+- **`junctionPath` must start with `/` and cannot be `/`** (the SVM root namespace), end with `/`, or contain `//`.
+- **Volume `name` must begin with a letter or underscore and contain only ASCII letters, digits, and underscore.** Hyphens, dots, and spaces are rejected at deploy with an opaque `BadRequest`. Use `my_volume`, not `my-volume`.
+- **SVM `name` must begin with a letter and contain only ASCII letters, digits, and underscore.** Same shape as the volume rule, except the leading character must be a letter (no leading underscore).
+
+A few that the L2 cannot catch at synth, with the fix:
+
+- **`Could not retrieve secret` when creating an SVM with `domainJoinServiceAccountSecret`.** The secret needs an explicit resource policy granting `secretsmanager:GetSecretValue` to the `fsx.amazonaws.com` service principal. See [Active Directory join with Secrets Manager](#active-directory-join-with-secrets-manager).
+- **Same `Could not retrieve secret` error when the secret is encrypted with a customer-managed KMS key.** Grant `kms:Decrypt` on the key to the `fsx.amazonaws.com` service principal.
+- **`Minimum storage capacity for ONTAP FlexGroup volumes is 100 GiB per constituent` on `SINGLE_AZ_2` with `haPairs > 1`.** When `haPairs > 1`, FSx implicitly spreads the volume across HA pairs as a multi-constituent FlexGroup. The default layout is **8 constituents per HA pair** (NetApp's default) and FSx enforces a per-constituent minimum of **100 GiB**, so the per-volume floor is `8 * haPairs * 100 GiB`. For `haPairs=2`, that is **1600 GiB minimum**. The CDK only sees the file system's `haPairs` from `OntapFileSystem`, not from the volume props, so this floor is not enforced at synth. Size accordingly.
 
 ## FSx for Windows File Server
 

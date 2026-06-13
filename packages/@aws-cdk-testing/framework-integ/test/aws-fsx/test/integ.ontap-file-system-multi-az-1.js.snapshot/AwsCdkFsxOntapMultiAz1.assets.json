@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22": {
-      "displayName": "FsxOntapIntegTestDefaultTestDeployAssertA094664B Template",
+    "b071093411eaad19602d0b014a639f79dff3f042968e1987ceae54d466555530": {
+      "displayName": "AwsCdkFsxOntapMultiAz1 Template",
       "source": {
-        "path": "FsxOntapIntegTestDefaultTestDeployAssertA094664B.template.json",
+        "path": "AwsCdkFsxOntapMultiAz1.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-d8d86b35": {
+        "current_account-current_region-762f65c1": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "21fbb51d7b23f6a6c262b46a9caee79d744a3ac019fd45422d988b96d44b2a22.json",
+          "objectKey": "b071093411eaad19602d0b014a639f79dff3f042968e1987ceae54d466555530.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

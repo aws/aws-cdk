@@ -4,13 +4,26 @@ import type { FileSystemAttributes, FileSystemProps, IFileSystem } from './file-
 import { FileSystemBase, StorageType } from './file-system';
 import { CfnFileSystem } from './fsx.generated';
 import type { MaintenanceTime } from './maintenance-time';
+import { warnIfPlainTextSecret } from './private/warn-plain-text-secret';
 import type { ISecurityGroup, ISubnet, IRouteTable } from '../../aws-ec2';
 import { Connections, Port, SecurityGroup } from '../../aws-ec2';
 import type { Duration, SecretValue } from '../../core';
-import { Aws, Token, ValidationError } from '../../core';
+import { RemovalPolicy, Token, ValidationError } from '../../core';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
+
+/**
+ * The network type for the file system.
+ *
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-fsx-filesystem.html#cfn-fsx-filesystem-networktype
+ */
+export enum NetworkType {
+  /** IPv4-only file system endpoints */
+  IPV4 = 'IPV4',
+  /** Dual-stack (IPv4 + IPv6) file system endpoints */
+  DUAL = 'DUAL',
+}
 
 /**
  * The different kinds of file system deployments used by NetApp ONTAP.
@@ -46,93 +59,57 @@ export enum OntapDeploymentType {
 /**
  * The throughput capacity per HA pair for an Amazon FSx for NetApp ONTAP file system.
  *
- * Use the static members on the deployment-specific subclasses to select a valid value.
+ * Provides static members for common values. Use the constructor directly to specify
+ * a custom value if a new option becomes available that isn't yet represented.
+ *
+ * @see https://docs.aws.amazon.com/fsx/latest/ONTAPGuide/managing-throughput-capacity.html
  */
-export abstract class ThroughputCapacityPerHaPair {
-  /** The deployment type this throughput value is valid for. */
-  public abstract readonly deploymentType: OntapDeploymentType;
+export class ThroughputCapacityPerHaPair {
+  /** 128 MBps (Gen1: SINGLE_AZ_1, MULTI_AZ_1) */
+  public static readonly MB_PER_SEC_128 = new ThroughputCapacityPerHaPair(128);
+  /** 256 MBps (Gen1: SINGLE_AZ_1, MULTI_AZ_1) */
+  public static readonly MB_PER_SEC_256 = new ThroughputCapacityPerHaPair(256);
+  /** 384 MBps (Gen2: MULTI_AZ_2) */
+  public static readonly MB_PER_SEC_384 = new ThroughputCapacityPerHaPair(384);
+  /** 512 MBps (Gen1: SINGLE_AZ_1, MULTI_AZ_1) */
+  public static readonly MB_PER_SEC_512 = new ThroughputCapacityPerHaPair(512);
+  /** 768 MBps (Gen2: MULTI_AZ_2) */
+  public static readonly MB_PER_SEC_768 = new ThroughputCapacityPerHaPair(768);
+  /** 1024 MBps (Gen1: SINGLE_AZ_1, MULTI_AZ_1) */
+  public static readonly MB_PER_SEC_1024 = new ThroughputCapacityPerHaPair(1024);
+  /** 1536 MBps (Gen2: SINGLE_AZ_2, MULTI_AZ_2) */
+  public static readonly MB_PER_SEC_1536 = new ThroughputCapacityPerHaPair(1536);
+  /** 2048 MBps (Gen1: SINGLE_AZ_1, MULTI_AZ_1) */
+  public static readonly MB_PER_SEC_2048 = new ThroughputCapacityPerHaPair(2048);
+  /** 3072 MBps (Gen2: SINGLE_AZ_2, MULTI_AZ_2) */
+  public static readonly MB_PER_SEC_3072 = new ThroughputCapacityPerHaPair(3072);
+  /** 4096 MBps (Gen1: SINGLE_AZ_1, MULTI_AZ_1) */
+  public static readonly MB_PER_SEC_4096 = new ThroughputCapacityPerHaPair(4096);
+  /** 6144 MBps (Gen2: SINGLE_AZ_2, MULTI_AZ_2) */
+  public static readonly MB_PER_SEC_6144 = new ThroughputCapacityPerHaPair(6144);
 
-  protected constructor(
-    /** The throughput capacity in MBps. */
-    public readonly capacityMBps: number,
-  ) {}
+  /**
+   * Specify a custom throughput capacity value.
+   * Use this if a new value is available that isn't yet represented by a static member.
+   *
+   * @param throughput The throughput capacity in MBps.
+   */
+  constructor(public readonly throughput: number) {}
 }
 
 /**
- * Valid throughput capacity values for SINGLE_AZ_1 (first-generation single-AZ) deployment type.
+ * Valid per-HA-pair throughput values (MBps) by deployment type. Shared between
+ * `validateThroughputCapacityPerHaPair` (per-HA-pair API) and
+ * `validateThroughputCapacityRange` (total API) so the two surfaces stay in sync.
  *
- * Valid values: 128, 256, 512, 1024, 2048, or 4096 MBps.
+ * Source: https://docs.aws.amazon.com/fsx/latest/APIReference/API_UpdateFileSystemOntapConfiguration.html#FSx-UpdateFileSystemOntapConfiguration-request-ThroughputCapacityPerHAPair
  */
-export class SingleAz1ThroughputCapacity extends ThroughputCapacityPerHaPair {
-  public static readonly MB_PER_SEC_128 = new SingleAz1ThroughputCapacity(128);
-  public static readonly MB_PER_SEC_256 = new SingleAz1ThroughputCapacity(256);
-  public static readonly MB_PER_SEC_512 = new SingleAz1ThroughputCapacity(512);
-  public static readonly MB_PER_SEC_1024 = new SingleAz1ThroughputCapacity(1024);
-  public static readonly MB_PER_SEC_2048 = new SingleAz1ThroughputCapacity(2048);
-  public static readonly MB_PER_SEC_4096 = new SingleAz1ThroughputCapacity(4096);
-
-  public readonly deploymentType = OntapDeploymentType.SINGLE_AZ_1;
-
-  private constructor(capacity: number) {
-    super(capacity);
-  }
-}
-
-/**
- * Valid throughput capacity values for MULTI_AZ_1 (first-generation multi-AZ) deployment type.
- *
- * Valid values: 128, 256, 512, 1024, 2048, or 4096 MBps.
- */
-export class MultiAz1ThroughputCapacity extends ThroughputCapacityPerHaPair {
-  public static readonly MB_PER_SEC_128 = new MultiAz1ThroughputCapacity(128);
-  public static readonly MB_PER_SEC_256 = new MultiAz1ThroughputCapacity(256);
-  public static readonly MB_PER_SEC_512 = new MultiAz1ThroughputCapacity(512);
-  public static readonly MB_PER_SEC_1024 = new MultiAz1ThroughputCapacity(1024);
-  public static readonly MB_PER_SEC_2048 = new MultiAz1ThroughputCapacity(2048);
-  public static readonly MB_PER_SEC_4096 = new MultiAz1ThroughputCapacity(4096);
-
-  public readonly deploymentType = OntapDeploymentType.MULTI_AZ_1;
-
-  private constructor(capacity: number) {
-    super(capacity);
-  }
-}
-
-/**
- * Valid throughput capacity values for SINGLE_AZ_2 (second-generation single-AZ) deployment type.
- *
- * Valid values: 1536, 3072, or 6144 MBps.
- */
-export class SingleAz2ThroughputCapacity extends ThroughputCapacityPerHaPair {
-  public static readonly MB_PER_SEC_1536 = new SingleAz2ThroughputCapacity(1536);
-  public static readonly MB_PER_SEC_3072 = new SingleAz2ThroughputCapacity(3072);
-  public static readonly MB_PER_SEC_6144 = new SingleAz2ThroughputCapacity(6144);
-
-  public readonly deploymentType = OntapDeploymentType.SINGLE_AZ_2;
-
-  private constructor(capacity: number) {
-    super(capacity);
-  }
-}
-
-/**
- * Valid throughput capacity values for MULTI_AZ_2 (second-generation multi-AZ) deployment type.
- *
- * Valid values: 384, 768, 1536, 3072, or 6144 MBps.
- */
-export class MultiAz2ThroughputCapacity extends ThroughputCapacityPerHaPair {
-  public static readonly MB_PER_SEC_384 = new MultiAz2ThroughputCapacity(384);
-  public static readonly MB_PER_SEC_768 = new MultiAz2ThroughputCapacity(768);
-  public static readonly MB_PER_SEC_1536 = new MultiAz2ThroughputCapacity(1536);
-  public static readonly MB_PER_SEC_3072 = new MultiAz2ThroughputCapacity(3072);
-  public static readonly MB_PER_SEC_6144 = new MultiAz2ThroughputCapacity(6144);
-
-  public readonly deploymentType = OntapDeploymentType.MULTI_AZ_2;
-
-  private constructor(capacity: number) {
-    super(capacity);
-  }
-}
+const VALID_THROUGHPUT_PER_HA_PAIR: Record<OntapDeploymentType, readonly number[]> = {
+  [OntapDeploymentType.SINGLE_AZ_1]: [128, 256, 512, 1024, 2048, 4096],
+  [OntapDeploymentType.MULTI_AZ_1]: [128, 256, 512, 1024, 2048, 4096],
+  [OntapDeploymentType.SINGLE_AZ_2]: [1536, 3072, 6144],
+  [OntapDeploymentType.MULTI_AZ_2]: [384, 768, 1536, 3072, 6144],
+};
 
 /**
  * The configuration for the Amazon FSx for NetApp ONTAP file system.
@@ -144,7 +121,7 @@ export interface OntapConfiguration {
    * The number of days to retain automatic backups.
    * Setting this to Duration.days(0) disables automatic backups.
    *
-   * @default Duration.days(30)
+   * @default - Amazon FSx default (30 days)
    */
   readonly automaticBackupRetention?: Duration;
 
@@ -163,7 +140,7 @@ export interface OntapConfiguration {
   /**
    * The total number of SSD IOPS provisioned for the file system.
    *
-   * @default - automatic (3 IOPS per GiB × storage capacity × HA pairs)
+   * @default - automatic (3 IOPS per GiB of storage capacity, multiplied by the number of HA pairs)
    */
   readonly diskIops?: number;
 
@@ -185,6 +162,12 @@ export interface OntapConfiguration {
 
   /**
    * The ONTAP administrative password for the `fsxadmin` user.
+   *
+   * Any `SecretValue` is accepted, but for production you should use one that
+   * resolves to a CloudFormation dynamic reference at deploy time (for example
+   * from `OntapFileSystemSecret`, `SecretValue.ssmSecure(...)` or
+   * `SecretValue.cfnParameter(...)`). A literal `SecretValue.unsafePlainText(...)`
+   * will be embedded in the synthesized template and produce a synth-time warning.
    *
    * @default - no admin password set
    */
@@ -214,7 +197,23 @@ export interface OntapConfiguration {
   readonly routeTables?: IRouteTable[];
 
   /**
+   * The total throughput capacity for the file system, in megabytes per second (MBps).
+   *
+   * Mutually exclusive with `throughputCapacityPerHaPair`. For multi-HA-pair
+   * (`SINGLE_AZ_2`) deployments, `throughputCapacity` divided by `haPairs` must be
+   * a valid `throughputCapacityPerHaPair` value, otherwise FSx returns HTTP 400.
+   *
+   * For most use cases prefer `throughputCapacityPerHaPair`; this field exists
+   * for parity with the underlying CFN property.
+   *
+   * @default - not set; uses `throughputCapacityPerHaPair` or service default
+   */
+  readonly throughputCapacity?: number;
+
+  /**
    * The throughput capacity per HA pair for the file system.
+   *
+   * Mutually exclusive with `throughputCapacity`.
    *
    * @default - Amazon FSx determines the throughput based on storage capacity
    */
@@ -244,6 +243,33 @@ export interface OntapFileSystemProps extends FileSystemProps {
    * For SINGLE_AZ_1 and SINGLE_AZ_2: provide exactly one subnet.
    */
   readonly vpcSubnets: ISubnet[];
+
+  /**
+   * The network type of the file system.
+   *
+   * Set to `NetworkType.DUAL` to enable dual-stack (IPv4 + IPv6) endpoints. The
+   * default `NetworkType.IPV4` provides IPv4-only access.
+   *
+   * @default - service default (IPV4)
+   */
+  readonly networkType?: NetworkType;
+}
+
+/**
+ * Interface representing an FSx for NetApp ONTAP file system.
+ */
+export interface IOntapFileSystem extends IFileSystem {
+  /**
+   * The management DNS name of the file system.
+   * @attribute
+   */
+  readonly dnsName: string;
+
+  /**
+   * The Amazon Resource Name (ARN) of the file system.
+   * @attribute
+   */
+  readonly resourceArn: string;
 }
 
 /**
@@ -254,18 +280,39 @@ export interface OntapFileSystemProps extends FileSystemProps {
  * @resource AWS::FSx::FileSystem
  */
 @propertyInjectable
-export class OntapFileSystem extends FileSystemBase {
+export class OntapFileSystem extends FileSystemBase implements IOntapFileSystem {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-fsx.OntapFileSystem';
 
   /**
    * Import an existing FSx for NetApp ONTAP file system from the given properties.
    */
-  public static fromOntapFileSystemAttributes(scope: Construct, id: string, attrs: FileSystemAttributes): IFileSystem {
-    class Import extends FileSystemBase {
+  public static fromOntapFileSystemAttributes(scope: Construct, id: string, attrs: OntapFileSystemAttributes): IOntapFileSystem {
+    class Import extends FileSystemBase implements IOntapFileSystem {
       public readonly dnsName = attrs.dnsName;
       public readonly fileSystemId = attrs.fileSystemId;
       public readonly connections = OntapFileSystem.configureConnections(attrs.securityGroup);
+
+      /**
+       * The Amazon Resource Name (ARN) of the imported file system.
+       *
+       * Throws a `ValidationError` if accessed when `resourceArn` was not supplied
+       * to `fromOntapFileSystemAttributes`. The error is raised eagerly so that
+       * downstream code (IAM grants, related-resource ARN composition, etc.) sees
+       * a clear CDK-side message instead of a confusing CFN-side failure at
+       * deploy time.
+       */
+      public get resourceArn(): string {
+        if (attrs.resourceArn === undefined) {
+          throw new ValidationError(
+            lit`ImportedFsxResourceArnNotProvided`,
+            '\'resourceArn\' was not provided when importing this FSx ONTAP file system. '
+              + 'Pass it to \'fromOntapFileSystemAttributes\' to use ARN-dependent APIs.',
+            this,
+          );
+        }
+        return attrs.resourceArn;
+      }
     }
     return new Import(scope, id);
   }
@@ -285,9 +332,10 @@ export class OntapFileSystem extends FileSystemBase {
   public readonly fileSystemId: string;
 
   /**
-   * The inter-cluster endpoint DNS name assigned to this file system.
+   * The Amazon Resource Name (ARN) of the file system.
+   * @attribute
    */
-  public readonly interClusterDnsName: string;
+  public readonly resourceArn: string;
 
   private readonly fileSystem: CfnFileSystem;
   private readonly deploymentType: OntapDeploymentType;
@@ -310,8 +358,12 @@ export class OntapFileSystem extends FileSystemBase {
       subnetIds: props.vpcSubnets.map(subnet => subnet.subnetId),
       backupId: props.backupId,
       kmsKeyId: props.kmsKey ? props.kmsKey.keyRef.keyId : undefined,
+      networkType: props.networkType,
       ontapConfiguration: {
-        automaticBackupRetentionDays: ontapConfig.automaticBackupRetention?.toDays() ?? 30,
+        // Pass through undefined when unset so Amazon FSx applies its own service-side
+        // default (currently 30 days). This avoids pinning consumers to a CDK-side default
+        // that could drift from the service if it ever changes.
+        automaticBackupRetentionDays: ontapConfig.automaticBackupRetention?.toDays(),
         dailyAutomaticBackupStartTime: ontapConfig.dailyAutomaticBackupStartTime?.toTimestamp(),
         deploymentType: this.deploymentType,
         diskIopsConfiguration: ontapConfig.diskIops != null
@@ -319,22 +371,30 @@ export class OntapFileSystem extends FileSystemBase {
           : { mode: 'AUTOMATIC' },
         endpointIpAddressRange: ontapConfig.endpointIpAddressRange,
         endpointIpv6AddressRange: ontapConfig.endpointIpv6AddressRange,
+        // `unsafeUnwrap()` is safe here: when `fsxAdminPassword` is built from a token-based
+        // SecretValue (Secrets Manager, SSM, CFN parameter, etc.), it returns the dynamic
+        // reference string and the password resolves at deploy time. Literal SecretValues
+        // are caught by `warnIfPlainTextSecret` (called from `validateProps`).
         fsxAdminPassword: ontapConfig.fsxAdminPassword?.unsafeUnwrap(),
         haPairs: ontapConfig.haPairs,
         preferredSubnetId: ontapConfig.preferredSubnet?.subnetId,
         routeTableIds: ontapConfig.routeTables?.map(rt => rt.routeTableId),
-        throughputCapacityPerHaPair: ontapConfig.throughputCapacityPerHaPair?.capacityMBps,
+        throughputCapacity: ontapConfig.throughputCapacity,
+        throughputCapacityPerHaPair: ontapConfig.throughputCapacityPerHaPair?.throughput,
         weeklyMaintenanceStartTime: ontapConfig.weeklyMaintenanceStartTime?.toTimestamp(),
       },
       securityGroupIds: [securityGroup.securityGroupId],
       storageCapacity: props.storageCapacityGiB,
     });
 
-    this.fileSystem.applyRemovalPolicy(props.removalPolicy);
+    // Default to RETAIN: file systems are stateful and own all their SVMs/Volumes.
+    // Deleting the file system on stack delete would silently destroy customer data
+    // even if the user set RETAIN on individual volumes.
+    this.fileSystem.applyRemovalPolicy(props.removalPolicy ?? RemovalPolicy.RETAIN);
 
     this.fileSystemId = this.fileSystem.ref;
     this.dnsName = this.fileSystem.attrDnsName;
-    this.interClusterDnsName = `intercluster.${this.fileSystemId}.fsx.${this.env.region}.${Aws.URL_SUFFIX}`;
+    this.resourceArn = this.fileSystem.attrResourceArn;
   }
 
   private validateProps(props: OntapFileSystemProps): void {
@@ -344,12 +404,15 @@ export class OntapFileSystem extends FileSystemBase {
     this.validateDailyAutomaticBackupStartTime(ontapConfig.automaticBackupRetention, ontapConfig.dailyAutomaticBackupStartTime);
     this.validateDiskIops(props.storageCapacityGiB, ontapConfig.diskIops, ontapConfig.haPairs);
     this.validateEndpointIpAddressRange(ontapConfig.endpointIpAddressRange);
-    this.validateEndpointIpv6AddressRange(ontapConfig.endpointIpv6AddressRange);
+    this.validateEndpointIpv6AddressRange(ontapConfig.endpointIpv6AddressRange, props.networkType);
     this.validateSubnets(props.vpcSubnets, ontapConfig.preferredSubnet);
     this.validateRouteTables(ontapConfig.routeTables);
-    this.validateThroughputCapacity(ontapConfig.throughputCapacityPerHaPair);
     this.validateStorageCapacity(props.storageCapacityGiB, ontapConfig.haPairs);
     this.validateStorageType(props.storageType);
+    this.validateThroughputCapacityPerHaPair(ontapConfig.throughputCapacityPerHaPair);
+    this.validateThroughputCapacityMutualExclusion(ontapConfig.throughputCapacity, ontapConfig.throughputCapacityPerHaPair);
+    this.validateThroughputCapacityRange(ontapConfig.throughputCapacity, ontapConfig.haPairs);
+    warnIfPlainTextSecret(this, 'fsxAdminPassword', ontapConfig.fsxAdminPassword);
   }
 
   private validateHaPairs(haPairs?: number): void {
@@ -357,10 +420,10 @@ export class OntapFileSystem extends FileSystemBase {
     if (!Number.isInteger(haPairs) || haPairs < 1 || haPairs > 12) {
       throw new ValidationError(lit`HaPairsMustBeBetween1And12`, `'haPairs' must be an integer between 1 and 12, got ${haPairs}`, this);
     }
-    if (haPairs > 1
-      && this.deploymentType !== OntapDeploymentType.SINGLE_AZ_2
-      && this.deploymentType !== OntapDeploymentType.MULTI_AZ_2) {
-      throw new ValidationError(lit`HaPairsGreaterThan1OnlyForGen2`, `'haPairs' can only be greater than 1 for second-generation deployment types (SINGLE_AZ_2, MULTI_AZ_2), got ${haPairs} with ${this.deploymentType}`, this);
+    // FSx for ONTAP scale-out (multiple HA pairs) is supported only on SINGLE_AZ_2.
+    // MULTI_AZ_1, MULTI_AZ_2, and SINGLE_AZ_1 are single HA pair only.
+    if (haPairs > 1 && this.deploymentType !== OntapDeploymentType.SINGLE_AZ_2) {
+      throw new ValidationError(lit`HaPairsGreaterThan1OnlyForSingleAz2`, `'haPairs' can only be greater than 1 for SINGLE_AZ_2, got ${haPairs} with ${this.deploymentType}`, this);
     }
   }
 
@@ -381,29 +444,55 @@ export class OntapFileSystem extends FileSystemBase {
   }
 
   private validateDiskIops(storageCapacityGiB: number, diskIops?: number, haPairs: number = 1): void {
-    if (diskIops == null || Token.isUnresolved(diskIops) || Token.isUnresolved(storageCapacityGiB) || Token.isUnresolved(haPairs)) return;
-    const minIops = storageCapacityGiB * 3 * haPairs;
+    if (diskIops == null || Token.isUnresolved(diskIops)) return;
+    if (!Number.isInteger(diskIops)) {
+      throw new ValidationError(lit`DiskIopsMustBeInteger`, `'diskIops' must be an integer, got ${diskIops}`, this);
+    }
+    // The upper bound is independent of storage capacity, so the check still runs even
+    // when storageCapacityGiB is a token. Gen2: 200,000 IOPS per HA pair, capped at the
+    // FSx service limit of 2,400,000 (12 HA pairs * 200,000). Gen1: 80,000 (haPairs is
+    // enforced to be 1 by validateHaPairs).
     const isSecondGen = this.deploymentType === OntapDeploymentType.SINGLE_AZ_2 || this.deploymentType === OntapDeploymentType.MULTI_AZ_2;
-    const maxIops = isSecondGen ? 200_000 * haPairs : 80_000;
-    if (!Number.isInteger(diskIops) || diskIops < minIops || diskIops > maxIops) {
-      throw new ValidationError(lit`DiskIopsMustBeInRange`, `'diskIops' must be an integer between ${minIops} and ${maxIops}, got ${diskIops}`, this);
+    if (!Token.isUnresolved(haPairs)) {
+      const maxIops = isSecondGen ? Math.min(200_000 * haPairs, 2_400_000) : 80_000;
+      if (diskIops > maxIops) {
+        throw new ValidationError(lit`DiskIopsAboveMax`, `'diskIops' must be at most ${maxIops}, got ${diskIops}`, this);
+      }
+    }
+    // The lower bound (3 IOPS per GiB of total SSD capacity) depends on storageCapacityGiB.
+    // Skip when capacity is a token; the FSx service validates the floor at deploy time.
+    if (!Token.isUnresolved(storageCapacityGiB)) {
+      const minIops = storageCapacityGiB * 3;
+      if (diskIops < minIops) {
+        throw new ValidationError(lit`DiskIopsBelowMin`, `'diskIops' must be at least ${minIops} (3 IOPS per GiB of storage capacity), got ${diskIops}`, this);
+      }
     }
   }
 
   private validateEndpointIpAddressRange(range?: string): void {
-    if (range == null || Token.isUnresolved(range)) return;
+    if (range == null) return;
+    // The Multi-AZ scoping check only depends on whether the property is set, so it runs
+    // even when the value is a token. Detailed CIDR validation is left to the FSx service.
     if (!this.isMultiAz()) {
       throw new ValidationError(lit`EndpointIpAddressRangeOnlyForMultiAz`, '\'endpointIpAddressRange\' can only be specified for Multi-AZ file systems', this);
     }
-    if (range.length < 9 || range.length > 17) {
-      throw new ValidationError(lit`EndpointIpAddressRangeLength`, `'endpointIpAddressRange' must be between 9 and 17 characters, got ${range.length}`, this);
-    }
   }
 
-  private validateEndpointIpv6AddressRange(range?: string): void {
-    if (range == null || Token.isUnresolved(range)) return;
+  private validateEndpointIpv6AddressRange(range?: string, networkType?: NetworkType): void {
+    if (range == null) return;
+    // The Multi-AZ scoping check only depends on whether the property is set, so it runs
+    // even when the value is a token. Detailed CIDR validation is left to the FSx service.
     if (!this.isMultiAz()) {
       throw new ValidationError(lit`EndpointIpv6AddressRangeOnlyForMultiAz`, '\'endpointIpv6AddressRange\' can only be specified for Multi-AZ file systems', this);
+    }
+    // IPv6 endpoint ranges are only meaningful on dual-stack file systems. Without
+    // `networkType: NetworkType.DUAL` the FSx API silently drops the property.
+    if (networkType !== NetworkType.DUAL) {
+      throw new ValidationError(
+        lit`EndpointIpv6RequiresDualStack`,
+        '\'endpointIpv6AddressRange\' requires \'networkType: NetworkType.DUAL\'',
+        this,
+      );
     }
   }
 
@@ -414,6 +503,23 @@ export class OntapFileSystem extends FileSystemBase {
       }
       if (vpcSubnets.length !== 2) {
         throw new ValidationError(lit`MultiAzRequiresExactlyTwoSubnets`, `Multi-AZ file systems require exactly 2 subnets in different AZs, got ${vpcSubnets.length}`, this);
+      }
+      // Multi-AZ requires the two subnets to be in different AZs. Skip the check if
+      // either availability zone is an unresolved token (validation falls back to the
+      // FSx service at deploy time).
+      const azs = vpcSubnets.map(s => s.availabilityZone);
+      if (azs.every(az => !Token.isUnresolved(az)) && azs[0] === azs[1]) {
+        throw new ValidationError(lit`MultiAzSubnetsMustBeInDifferentAZs`, `Multi-AZ file systems require the two subnets to be in different availability zones, got both in '${azs[0]}'`, this);
+      }
+      // FSx requires PreferredSubnetId to be one of the values in SubnetIds. Skip the
+      // check if any of the IDs are unresolved tokens (validation falls back to the service).
+      const preferredId = preferredSubnet.subnetId;
+      if (!Token.isUnresolved(preferredId)) {
+        const subnetIds = vpcSubnets.map(s => s.subnetId);
+        const allResolved = subnetIds.every(id => !Token.isUnresolved(id));
+        if (allResolved && !subnetIds.includes(preferredId)) {
+          throw new ValidationError(lit`PreferredSubnetMustBeInVpcSubnets`, '\'preferredSubnet\' must be one of the subnets passed in \'vpcSubnets\'', this);
+        }
       }
     } else {
       if (preferredSubnet) {
@@ -432,17 +538,18 @@ export class OntapFileSystem extends FileSystemBase {
     }
   }
 
-  private validateThroughputCapacity(throughput?: ThroughputCapacityPerHaPair): void {
-    if (!throughput) return;
-    if (throughput.deploymentType !== this.deploymentType) {
-      throw new ValidationError(lit`ThroughputCapacityMustMatchDeploymentType`, `'throughputCapacityPerHaPair' must match deployment type '${this.deploymentType}', but got throughput for '${throughput.deploymentType}'`, this);
-    }
-  }
-
   private validateStorageCapacity(storageCapacityGiB: number, haPairs: number = 1): void {
     if (Token.isUnresolved(storageCapacityGiB) || Token.isUnresolved(haPairs)) return;
+    // Minimum storage capacity:
+    //   Gen1 (haPairs is enforced to 1 by validateHaPairs): 1024 GiB.
+    //   Gen2 SINGLE_AZ_2 (multi-HA scale-out): 1024 GiB per HA pair.
+    // The formula collapses to 1024 for Gen1 and 1024 * haPairs for Gen2.
     const minCapacity = 1024 * haPairs;
-    const maxCapacity = Math.min(1_048_576, 524_288 * haPairs);
+    const isSecondGen = this.deploymentType === OntapDeploymentType.SINGLE_AZ_2 || this.deploymentType === OntapDeploymentType.MULTI_AZ_2;
+    // Gen1: max 196,608 GiB (192 TiB). Gen2: max 524,288 GiB per HA pair, up to 1,048,576 GiB (1 PiB).
+    const maxCapacity = isSecondGen
+      ? Math.min(1_048_576, 524_288 * haPairs)
+      : 196_608;
     if (!Number.isInteger(storageCapacityGiB) || storageCapacityGiB < minCapacity || storageCapacityGiB > maxCapacity) {
       throw new ValidationError(lit`StorageCapacityMustBeInRange`, `'storageCapacityGiB' must be an integer between ${minCapacity} and ${maxCapacity}, got ${storageCapacityGiB}`, this);
     }
@@ -455,7 +562,124 @@ export class OntapFileSystem extends FileSystemBase {
     }
   }
 
+  /**
+   * Validates `throughputCapacityPerHaPair` against the deployment type.
+   *
+   * Source: https://docs.aws.amazon.com/fsx/latest/APIReference/API_UpdateFileSystemOntapConfiguration.html#FSx-UpdateFileSystemOntapConfiguration-request-ThroughputCapacityPerHAPair
+   *
+   * - SINGLE_AZ_1, MULTI_AZ_1: 128, 256, 512, 1024, 2048, 4096
+   * - SINGLE_AZ_2:             1536, 3072, 6144
+   * - MULTI_AZ_2:              384, 768, 1536, 3072, 6144
+   */
+  private validateThroughputCapacityPerHaPair(throughput?: ThroughputCapacityPerHaPair): void {
+    if (!throughput) return;
+    const value = throughput.throughput;
+    if (Token.isUnresolved(value)) return;
+    const allowed = VALID_THROUGHPUT_PER_HA_PAIR[this.deploymentType];
+    if (!allowed.includes(value)) {
+      throw new ValidationError(
+        lit`ThroughputCapacityPerHaPairInvalidForDeploymentType`,
+        `'throughputCapacityPerHaPair' value ${value} MBps is not valid for ${this.deploymentType}. Valid values: ${allowed.join(', ')} MBps`,
+        this,
+      );
+    }
+  }
+
+  private validateThroughputCapacityMutualExclusion(total?: number, perHaPair?: ThroughputCapacityPerHaPair): void {
+    if (total != null && perHaPair != null) {
+      throw new ValidationError(
+        lit`ThroughputCapacityMutuallyExclusive`,
+        '\'throughputCapacity\' and \'throughputCapacityPerHaPair\' are mutually exclusive; specify only one',
+        this,
+      );
+    }
+  }
+
+  private validateThroughputCapacityRange(total?: number, haPairs?: number): void {
+    if (total == null || Token.isUnresolved(total)) return;
+    // The lower bound is the smallest valid per-HA-pair value across the deployment-type
+    // tables (Gen1: 128, MULTI_AZ_2: 384, SINGLE_AZ_2: 1536). Smaller totals always fail
+    // at deploy with `BadRequest` because they cannot be divided into a valid per-HA-pair
+    // value, so the synth-time error here is more actionable than the service one.
+    const minByDeployment: Record<OntapDeploymentType, number> = {
+      [OntapDeploymentType.SINGLE_AZ_1]: 128,
+      [OntapDeploymentType.MULTI_AZ_1]: 128,
+      [OntapDeploymentType.MULTI_AZ_2]: 384,
+      [OntapDeploymentType.SINGLE_AZ_2]: 1536,
+    };
+    const minTotal = minByDeployment[this.deploymentType];
+    // The upper bound is per-HA-pair max times haPairs. For everything except SINGLE_AZ_2,
+    // `validateHaPairs` enforces haPairs = 1, so the cap collapses to a single per-HA-pair
+    // ceiling (4,096 MBps for Gen1, 6,144 MBps for MULTI_AZ_2). The full 73,728 MBps
+    // service hard cap is only reachable on SINGLE_AZ_2 with 12 HA pairs.
+    const perHaPairMax: Record<OntapDeploymentType, number> = {
+      [OntapDeploymentType.SINGLE_AZ_1]: 4096,
+      [OntapDeploymentType.MULTI_AZ_1]: 4096,
+      [OntapDeploymentType.MULTI_AZ_2]: 6144,
+      [OntapDeploymentType.SINGLE_AZ_2]: 6144,
+    };
+    // The integer check and the lower-bound check are independent of haPairs (they are
+    // deployment-type-only constants), so run them before short-circuiting on a tokenized
+    // haPairs. Mirrors the pattern in `validateDiskIops`.
+    if (!Number.isInteger(total) || total < minTotal) {
+      throw new ValidationError(
+        lit`ThroughputCapacityRange`,
+        `'throughputCapacity' must be an integer of at least ${minTotal} MBps for ${this.deploymentType}, got ${total}`,
+        this,
+      );
+    }
+    // Skip the upper-bound check if haPairs is an unresolved token (the FSx service will
+    // validate at deploy time). For other deployment types, validateHaPairs already
+    // ensures haPairs is 1 if it was specified, so default to 1 when unset.
+    if (Token.isUnresolved(haPairs)) return;
+    const effectiveHaPairs = haPairs ?? 1;
+    const maxTotal = perHaPairMax[this.deploymentType] * effectiveHaPairs;
+    if (total > maxTotal) {
+      throw new ValidationError(
+        lit`ThroughputCapacityRange`,
+        `'throughputCapacity' must be at most ${maxTotal} MBps for ${this.deploymentType}`
+          + (this.deploymentType === OntapDeploymentType.SINGLE_AZ_2 ? ` with haPairs=${effectiveHaPairs}` : '')
+          + `, got ${total}`,
+        this,
+      );
+    }
+    // FSx for ONTAP requires `throughputCapacity` to equal `haPairs * validPerHaPairValue`.
+    // The per-HA-pair set is discrete, so values inside the [min, max] window that don't
+    // divide evenly are still rejected by the service with `BadRequest`. Mirror the
+    // strictness of `validateThroughputCapacityPerHaPair` for the total API.
+    const allowedPerHaPair = VALID_THROUGHPUT_PER_HA_PAIR[this.deploymentType];
+    if (total % effectiveHaPairs !== 0 || !allowedPerHaPair.includes(total / effectiveHaPairs)) {
+      throw new ValidationError(
+        lit`ThroughputCapacityNotDivisible`,
+        `'throughputCapacity' (${total}) divided by haPairs (${effectiveHaPairs}) must equal a valid per-HA-pair value for ${this.deploymentType}: ${allowedPerHaPair.join(', ')} MBps`,
+        this,
+      );
+    }
+  }
+
   private isMultiAz(): boolean {
     return this.deploymentType === OntapDeploymentType.MULTI_AZ_1 || this.deploymentType === OntapDeploymentType.MULTI_AZ_2;
   }
 }
+
+/**
+ * Attributes for importing an existing FSx for NetApp ONTAP file system.
+ *
+ * Extends `FileSystemAttributes` with an optional `resourceArn` for symmetry
+ * with the SVM and Volume L2s.
+ */
+export interface OntapFileSystemAttributes extends FileSystemAttributes {
+  /**
+   * The Amazon Resource Name (ARN) of the imported file system.
+   *
+   * Optional: omit this if the importing stack never reads `IOntapFileSystem.resourceArn`.
+   * If omitted, accessing `resourceArn` on the imported file system throws a
+   * `ValidationError` so downstream consumers (IAM grants, related-resource ARN
+   * composition, etc.) get a clear CDK-side error rather than a confusing
+   * CFN-side failure at deploy time.
+   *
+   * @default - not set; accessing `IOntapFileSystem.resourceArn` will throw
+   */
+  readonly resourceArn?: string;
+}
+

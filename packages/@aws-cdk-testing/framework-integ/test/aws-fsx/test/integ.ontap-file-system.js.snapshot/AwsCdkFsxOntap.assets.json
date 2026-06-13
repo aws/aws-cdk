@@ -1,16 +1,16 @@
 {
   "version": "53.0.0",
   "files": {
-    "1320fb0df848a26d2a97c74b7f17920427efd90ee641b7de19fdefddc633cf1b": {
+    "2265f64bca8ef161e868f635faf06e597fdebcfb99e8f97eda1735333f9b263d": {
       "displayName": "AwsCdkFsxOntap Template",
       "source": {
         "path": "AwsCdkFsxOntap.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "current_account-current_region-beed434f": {
+        "current_account-current_region-431f7704": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "1320fb0df848a26d2a97c74b7f17920427efd90ee641b7de19fdefddc633cf1b.json",
+          "objectKey": "2265f64bca8ef161e868f635faf06e597fdebcfb99e8f97eda1735333f9b263d.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }

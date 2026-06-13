@@ -111,19 +111,24 @@ export class LustreMaintenanceTime {
 /**
  * Properties required for setting up a weekly maintenance time.
  *
- * This is a generic alias suitable for any FSx file system type.
+ * Suitable for any FSx file system type (Lustre, ONTAP, OpenZFS, Windows). The
+ * timestamp format `d:HH:MM` (UTC) is identical across all FSx file system types.
  */
-export type MaintenanceTimeProps = LustreMaintenanceTimeProps;
+export interface MaintenanceTimeProps extends LustreMaintenanceTimeProps {}
 
 /**
- * Class for scheduling a weekly maintenance time.
+ * Class for scheduling a weekly maintenance time on any FSx file system type.
  *
- * This is a generic alias suitable for any FSx file system type (ONTAP, OpenZFS, Windows).
- * The format is identical across all FSx file system types: d:HH:MM in UTC.
+ * The timestamp format `d:HH:MM` in UTC is identical across all FSx file system
+ * types (Lustre, ONTAP, OpenZFS, Windows), so this class is interchangeable with
+ * `LustreMaintenanceTime` and can be used wherever a maintenance time is required.
+ *
+ * The explicit constructor (rather than an empty subclass) ensures the JSII
+ * surface for non-TypeScript languages (Python, Java, .NET, Go) exposes a
+ * neutral `MaintenanceTimeProps` rather than the Lustre-named props interface.
  */
-export type MaintenanceTime = LustreMaintenanceTime;
-
-/**
- * @see LustreMaintenanceTime
- */
-export const MaintenanceTime = LustreMaintenanceTime;
+export class MaintenanceTime extends LustreMaintenanceTime {
+  constructor(props: MaintenanceTimeProps) {
+    super(props);
+  }
+}

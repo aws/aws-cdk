@@ -449,15 +449,15 @@
     "FileSystemId": {
      "Ref": "OntapFileSystem2386F5E2"
     },
-    "Name": "test-svm"
+    "Name": "test_svm"
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
   },
   "VolumeA92988D3": {
    "Type": "AWS::FSx::Volume",
    "Properties": {
-    "Name": "test-volume",
+    "Name": "test_volume",
     "OntapConfiguration": {
      "JunctionPath": "/data",
      "SizeInBytes": "107374182400",
@@ -472,8 +472,36 @@
     },
     "VolumeType": "ONTAP"
    },
-   "UpdateReplacePolicy": "Retain",
-   "DeletionPolicy": "Retain"
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete"
+  }
+ },
+ "Outputs": {
+  "FileSystemId": {
+   "Value": {
+    "Ref": "OntapFileSystem2386F5E2"
+   }
+  },
+  "SvmId": {
+   "Value": {
+    "Ref": "Svm3B78B53D"
+   }
+  },
+  "ExportsOutputRefOntapFileSystem2386F5E2CDC770B7": {
+   "Value": {
+    "Ref": "OntapFileSystem2386F5E2"
+   },
+   "Export": {
+    "Name": "AwsCdkFsxOntap:ExportsOutputRefOntapFileSystem2386F5E2CDC770B7"
+   }
+  },
+  "ExportsOutputRefSvm3B78B53D78620EAB": {
+   "Value": {
+    "Ref": "Svm3B78B53D"
+   },
+   "Export": {
+    "Name": "AwsCdkFsxOntap:ExportsOutputRefSvm3B78B53D78620EAB"
+   }
   }
  },
  "Parameters": {
