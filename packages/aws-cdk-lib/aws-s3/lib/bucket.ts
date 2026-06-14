@@ -2421,23 +2421,22 @@ export class Bucket extends BucketBase {
       );
     }
     if (props.bucketName && props.bucketNamespace && props.bucketNamespace !== BucketNamespace.GLOBAL) {
-      throw new ValidationError(
-        lit`BucketNameConflictsWithNamespace`,
-        '\'bucketName\' cannot be used with \'bucketNamespace\' (except GLOBAL). Use \'bucketNamePrefix\' with \'bucketNamespace\' instead',
-        scope,
-      );
+      if (
+        props.bucketNamespace === BucketNamespace.ACCOUNT_REGIONAL &&
+        !Token.isUnresolved(props.bucketName) &&
+        !props.bucketName.endsWith('-an')
+      ) {
+        throw new ValidationError(
+          lit`BucketNameMissingAccountRegionalSuffix`,
+          'When \'bucketNamespace\' is ACCOUNT_REGIONAL, \'bucketName\' must end with \'-<accountId>-<region>-an\'',
+          scope,
+        );
+      }
     }
     if (props.bucketNamePrefix && props.bucketNamespace !== BucketNamespace.ACCOUNT_REGIONAL) {
       throw new ValidationError(
         lit`BucketNamePrefixRequiresAccountRegional`,
         '\'bucketNamePrefix\' requires \'bucketNamespace\' to be set to ACCOUNT_REGIONAL',
-        scope,
-      );
-    }
-    if (props.bucketNamespace === BucketNamespace.ACCOUNT_REGIONAL && !props.bucketNamePrefix) {
-      throw new ValidationError(
-        lit`AccountRegionalNamespaceRequiresPrefix`,
-        '\'bucketNamespace\' ACCOUNT_REGIONAL requires \'bucketNamePrefix\' to be specified',
         scope,
       );
     }
