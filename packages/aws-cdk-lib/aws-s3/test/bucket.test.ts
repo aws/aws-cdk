@@ -936,14 +936,14 @@ describe('bucket', () => {
     }).toThrow(/\'bucketName\' and \'bucketNamePrefix\' cannot be used together/);
   });
 
-  test('bucket with bucketName and bucketNamespace ACCOUNT_REGIONAL throws', () => {
+  test('bucket with bucketName and bucketNamespace ACCOUNT_REGIONAL must end with \'-<accountId>-<region>-an\'', () => {
     const stack = new cdk.Stack();
     expect(() => {
       new s3.Bucket(stack, 'MyBucket', {
         bucketName: 'my-bucket',
         bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
       });
-    }).toThrow(/\'bucketName\' cannot be used with \'bucketNamespace\' \(except GLOBAL\)/);
+    }).toThrow(/\'bucketName\' must end with \'-<accountId>-<region>-an\'/);
   });
 
   test('bucket with bucketName and bucketNamespace GLOBAL is valid', () => {
@@ -957,15 +957,6 @@ describe('bucket', () => {
       BucketName: 'my-bucket',
       BucketNamespace: 'global',
     });
-  });
-
-  test('bucket with bucketNamespace ACCOUNT_REGIONAL but no bucketNamePrefix throws', () => {
-    const stack = new cdk.Stack();
-    expect(() => {
-      new s3.Bucket(stack, 'MyBucket', {
-        bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
-      });
-    }).toThrow(/\'bucketNamespace\' ACCOUNT_REGIONAL requires \'bucketNamePrefix\' to be specified/);
   });
 
   test('bucket with bucketNamespace GLOBAL without bucketNamePrefix is valid', () => {
