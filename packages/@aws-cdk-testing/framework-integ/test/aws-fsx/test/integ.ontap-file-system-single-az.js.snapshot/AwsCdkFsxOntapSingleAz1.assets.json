@@ -1,0 +1,20 @@
+{
+  "version": "53.0.0",
+  "files": {
+    "81aadded4c01c65893fc03d297dd256a178e97c1cb372a242770d9adf7de4f7e": {
+      "displayName": "AwsCdkFsxOntapSingleAz1 Template",
+      "source": {
+        "path": "AwsCdkFsxOntapSingleAz1.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-9e7947e9": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "81aadded4c01c65893fc03d297dd256a178e97c1cb372a242770d9adf7de4f7e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
