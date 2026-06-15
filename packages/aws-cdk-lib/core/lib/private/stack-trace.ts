@@ -1,7 +1,3 @@
-import * as cxschema from '@aws-cdk/cloud-assembly-schema';
-import type { Node } from 'constructs';
-import { debugModeEnabled } from './debug';
-
 /**
  * Captures the current process' stack trace.
  *
@@ -107,7 +103,6 @@ function formatExternalFrame(trace: [string, number, number, string]): string {
  * Error: Some Error message
  * Potentially spread over multiple lines
  *     at <function> (<file>:<line>:<col>)
- *     at <function> (<file>:<line>:<col>)
  *     at <class>.<function> (<file>:<line>:<col>)
  *     at Object.<anonymous> (<file>:<line>:<col>)
  *     at <function> [as somethingElse] (<file>:<line>:<col>)
@@ -127,42 +122,70 @@ export function parseErrorStack(stack: string): CallSite[] {
     .map(line => {
       line = line.slice(framePrefix.length);
 
-      let fileName;
-      let functionName;
-      let sourceLocation;
-
-      // line = <function> (<source>) | <source>
-      const paren = line.indexOf('(');
-      if (paren) {
-        functionName = line.slice(0, paren - 1);
-        line = line.slice(paren + 1, -1);
-      } else {
-        functionName = '<entry>';
-      }
+      const frame = parseStackFrame(line);
 
       // Make this easier to read
-      if (functionName === 'Object.<anonymous>') {
-        functionName = '<anonymous>';
-      }
-      let asI = functionName.indexOf(' [as ');
-      if (asI > -1) {
-        functionName = functionName.slice(0, asI);
+      if (frame.functionName === 'Object.<anonymous>') {
+        frame.functionName = '<anonymous>';
       }
 
-      // line = <file>:<line>:<col>, but file can contain : as well.
-      // Grab at most 2 groups of only digits from the end of the string for source location
-      const m = line.match(/(:[0-9]+){0,2}$/);
-
-      fileName = m ? line.slice(0, -m[0].length) : line;
-      sourceLocation = m ? m[0].slice(1) : '';
-
-      return {
-        fileName,
-        functionName,
-        sourceLocation,
-      };
+      return frame;
     });
 }
+
+/**
+ * Parse a single line of a stack frame into a structured object
+ *
+ * Parses all of these:
+ *
+ * ```
+ * <function> (<file>:<line>:<col>)
+ * <class>.<function> (<file>:<line>:<col>)
+ * Object.<anonymous> (<file>:<line>:<col>)
+ * <function> [as somethingElse] (<file>:<line>:<col>)
+ * new <constructor> (<file>:<line>:<col>)
+ * <file>:<line>:<col>
+ * ```
+ */
+function parseStackFrame(frame: string): CallSite {
+  let fileName;
+  let functionName;
+  let sourceLocation;
+
+  // line = <function> (<source>) | <source>
+  const paren = frame.indexOf('(');
+  if (paren) {
+    functionName = frame.slice(0, paren - 1);
+    frame = frame.slice(paren + 1, -1);
+  } else {
+    functionName = '<entry>';
+  }
+
+  let asI = functionName.indexOf(' [as ');
+  if (asI > -1) {
+    functionName = functionName.slice(0, asI);
+  }
+
+  // line = <file>:<line>:<col>, but file can contain : as well.
+  // Grab at most 2 groups of only digits from the end of the string for source location
+  const m = frame.match(/(:[0-9]+){0,2}$/);
+
+  fileName = m ? frame.slice(0, -m[0].length) : frame;
+  sourceLocation = m ? m[0].slice(1) : '';
+
+  return {
+    fileName,
+    functionName,
+    sourceLocation,
+  };
+}
+
+// Look for `/node_modules/` followed by either
+// - An @ sign, and 2 path segments
+// - No @ sign, and 1 path segment
+const MODULE_RE = /(\/|\\)node_modules(\/|\\)(@[^/\\]+[/\\][^/\\]+|[^@][^/\\]*)/;
+
+const DECORATOR_RE = /(\/|\\)(prop-injectable|no-box-stack-traces)\./;
 
 /**
  * Renders an array of CallSites nicely, focusing on the user application code
@@ -171,13 +194,13 @@ export function parseErrorStack(stack: string): CallSite[] {
  *
  * - If there is '/node_modules/' in the file path, we assume the call stack is a library and we skip it.
  * - If there is 'node:' in the file path, we assume it is NodeJS internals and we skip it.
+ * - We skip (and hide) 'prop-injectable' or 'no-box-stack-traces' in the trace, because those are
+ *   constructor decorators that hide what's interesting (and look weird).
+ *
+ * If `indent` is enabled, we will prefix stack frames of actual files with "  at ", just like
+ * Node does for its stack frames.
  */
 export function renderCallStackJustMyCode(stack: CallSite[], indent = true): string[] {
-  // Look for `/node_modules/` followed by either
-  // - An @ sign, and 2 path segments
-  // - No @ sign, and 1 path segment
-  const moduleRe = /(\/|\\)node_modules(\/|\\)(@[^/\\]+[/\\][^/\\]+|[^@][^/\\]*)/;
-
   const lines = [];
   let skipped = new Array<{ functionName?: string; fileName: string }>();
 
@@ -186,7 +209,11 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
   while (i < stack.length) {
     const frame = stack[i++];
 
-    const pat = frame.fileName.match(moduleRe);
+    if (frame.fileName.match(DECORATOR_RE)) {
+      continue;
+    }
+
+    const pat = frame.fileName.match(MODULE_RE);
     if (pat) {
       while (i < stack.length && stack[i].fileName.includes(pat[0])) {
         i++;
@@ -239,6 +266,24 @@ export function renderCallStackJustMyCode(stack: CallSite[], indent = true): str
 }
 
 /**
+ * Return the first user frame from a "Just My Code" call stack
+ *
+ * With all the NON-"my code" call frames redacted, the top level frame should
+ * be the last user frame that is associated with the given call stack.
+ *
+ * May return `undefined` if no such call frame is found. We recognize
+ * "actual" call frames by them containing ` (` and ending in `)`.
+ */
+export function topUserFrame(stackTrace: string[]): CallSite | undefined {
+  for (const frame of stackTrace) {
+    if (frame.includes(' (') && frame.endsWith(')')) {
+      return parseStackFrame(frame);
+    }
+  }
+  return undefined;
+}
+
+/**
  * Whether the call site comes from the internals of the host that sent us the stack trace
  */
 function isHostInternalFrame(frame: CallSite): boolean {
@@ -246,31 +291,22 @@ function isHostInternalFrame(frame: CallSite): boolean {
   return frame.fileName.includes(hostDirName);
 }
 
-interface CallSite {
+export interface CallSite {
+  /**
+   * Name of the function this call frame is in
+   */
   functionName: string;
-  fileName: string;
-  sourceLocation: string;
-}
 
-/**
- * Records a metadata entry on a construct node to trace a property assignment.
- *
- * When debug mode is enabled (via the `CDK_DEBUG` environment variable),
- * this attaches `aws:cdk:propertyAssignment` metadata to the given node,
- * including a stack trace pointing back to the caller. This is useful for
- * diagnosing where a particular property value was set during synthesis.
- *
- * This is a no-op when debug mode is not enabled.
- *
- * @param node the construct node to attach the metadata to.
- * @param propertyName the name of the property being assigned.
- */
-export function traceProperty(node: Node, propertyName: string) {
-  if (debugModeEnabled()) {
-    node.addMetadata(cxschema.ArtifactMetadataEntryType.PROPERTY_ASSIGNMENT, {
-      propertyName,
-      stackTrace: captureStackTrace(traceProperty),
-    });
-  }
+  /**
+   * The file name this call frame is in
+   */
+  fileName: string;
+
+  /**
+   * The line and optionally column number this call frame is in
+   *
+   * Formatted as `<line> [':' <column>]`.
+   */
+  sourceLocation: string;
 }
 
