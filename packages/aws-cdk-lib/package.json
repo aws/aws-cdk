@@ -136,7 +136,7 @@
   "devDependencies": {
     "@aws-cdk/lambda-layer-kubectl-v31": "^2.1.0",
     "@aws-cdk/lambda-layer-kubectl-v33": "^2.2.2",
-    "@aws-cdk/aws-service-spec": "0.1.184",
+    "@aws-cdk/aws-service-spec": "0.1.186",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/check-peer-dependencies": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
@@ -461,6 +461,7 @@
     "./aws-refactorspaces": "./aws-refactorspaces/index.js",
     "./aws-rekognition": "./aws-rekognition/index.js",
     "./aws-resiliencehub": "./aws-resiliencehub/index.js",
+    "./aws-resiliencehubv2": "./aws-resiliencehubv2/index.js",
     "./aws-resourceexplorer2": "./aws-resourceexplorer2/index.js",
     "./aws-resourcegroups": "./aws-resourcegroups/index.js",
     "./aws-robomaker": "./aws-robomaker/index.js",

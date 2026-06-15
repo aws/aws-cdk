@@ -231,6 +231,7 @@
     "./aws-refactorspaces": "./lib/services/aws-refactorspaces/index.js",
     "./aws-rekognition": "./lib/services/aws-rekognition/index.js",
     "./aws-resiliencehub": "./lib/services/aws-resiliencehub/index.js",
+    "./aws-resiliencehubv2": "./lib/services/aws-resiliencehubv2/index.js",
     "./aws-resourceexplorer2": "./lib/services/aws-resourceexplorer2/index.js",
     "./aws-resourcegroups": "./lib/services/aws-resourcegroups/index.js",
     "./aws-robomaker": "./lib/services/aws-robomaker/index.js",

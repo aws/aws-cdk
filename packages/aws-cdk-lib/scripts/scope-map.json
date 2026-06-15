@@ -1593,6 +1593,13 @@
       }
     ]
   },
+  "aws-resiliencehubv2": {
+    "scopes": [
+      {
+        "namespace": "AWS::ResilienceHubV2"
+      }
+    ]
+  },
   "aws-resourceexplorer2": {
     "scopes": [
       {
