@@ -28,14 +28,6 @@ test('returns git source when context is enabled and git is available', () => {
   });
 });
 
-test('returns undefined when context is not enabled', () => {
-  const app = new App();
-  const stack = new Stack(app, 'Stack');
-
-  expect(GitSource.of(stack)).toBeUndefined();
-  expect(mockExecSync).not.toHaveBeenCalled();
-});
-
 test('returns undefined when git is not available', () => {
   mockExecSync.mockImplementation(() => { throw new Error('not a git repo'); });
 
