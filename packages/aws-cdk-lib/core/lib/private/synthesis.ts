@@ -129,10 +129,12 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     plugins.push({ plugin, templatePaths: paths });
   }
 
-  // 2. Default validation engine (always runs)
-  const defaultEnginePaths = assembly.stacksRecursively.map(s => s.templateFullPath);
-  if (defaultEnginePaths.length > 0) {
-    plugins.push({ plugin: new CloudFormationValidatePlugin(), templatePaths: defaultEnginePaths });
+  // 2. Default validation engine (always runs, unless user registered one explicitly)
+  if (!hasUserRegisteredCloudFormationValidatePlugin(root)) {
+    const defaultEnginePaths = assembly.stacksRecursively.map(s => s.templateFullPath);
+    if (defaultEnginePaths.length > 0) {
+      plugins.push({ plugin: new CloudFormationValidatePlugin(), templatePaths: defaultEnginePaths });
+    }
   }
   const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
 
@@ -652,4 +654,27 @@ function hasModifiedPreExistingFiles(snapshot: Map<string, string>): boolean {
     }
   }
   return false;
+}
+
+/**
+ * Validate that CloudFormationValidatePlugin is registered correctly.
+ * Returns true if the user registered exactly one valid instance, false if none.
+ * Throws if the plugin is registered on a nested Stage or more than once.
+ */
+function hasUserRegisteredCloudFormationValidatePlugin(root: IConstruct): boolean {
+  let count = 0;
+  visitAssemblies(root, 'post', construct => {
+    if (!Stage.isStage(construct)) return;
+    for (const plugin of construct._validationPlugins) {
+      if (!(plugin instanceof CloudFormationValidatePlugin)) continue;
+      if (construct !== root) {
+        throw new UnscopedValidationError(lit`CloudFormationValidatePluginNotAtApp`, 'CloudFormationValidatePlugin can only be registered at the App level, not on a Stage');
+      }
+      count++;
+    }
+  });
+  if (count > 1) {
+    throw new UnscopedValidationError(lit`DuplicateCloudFormationValidatePlugin`, 'only one instance of CloudFormationValidatePlugin can be registered');
+  }
+  return count === 1;
 }

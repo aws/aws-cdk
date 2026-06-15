@@ -92,6 +92,60 @@ describe('CloudFormationValidatePlugin', () => {
     expect(plugin.ruleIds).toBeDefined();
   });
 
+  test('user-registered instance replaces the auto-registered one', () => {
+    const app = new core.App({
+      policyValidationBeta1: [new core.CloudFormationValidatePlugin()],
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+    });
+
+    app.synth();
+
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  test('fails when registering more than one CloudFormationValidatePlugin', () => {
+    const app = new core.App({
+      policyValidationBeta1: [
+        new core.CloudFormationValidatePlugin(),
+        new core.CloudFormationValidatePlugin(),
+      ],
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+    const stack = new core.Stack(app, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+    });
+
+    expect(() => app.synth()).toThrow(/only one instance of CloudFormationValidatePlugin can be registered/);
+  });
+
+  test('fails when registered on a Stage instead of App', () => {
+    const app = new core.App({
+      context: {
+        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
+      },
+    });
+    const stage = new core.Stage(app, 'MyStage');
+    core.Validations.of(stage).addPlugins(new core.CloudFormationValidatePlugin());
+    const stack = new core.Stack(stage, 'TestStack');
+    new core.CfnResource(stack, 'MyBucket', {
+      type: 'AWS::S3::Bucket',
+    });
+
+    expect(() => app.synth()).toThrow(/CloudFormationValidatePlugin can only be registered at the App level/);
+  });
+
   test('plugin validates a template file directly', () => {
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-validate-'));
     const templatePath = path.join(tmpDir, 'template.json');
