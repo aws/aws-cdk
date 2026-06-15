@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'node:path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
 import { flattenMeta, getWarnings, toCloudFormation } from './util';
@@ -19,7 +18,7 @@ import {
   TagManager,
   TagType,
 } from '../lib';
-import { clearGitSourceCache } from '../lib/private/git-source';
+import { GitSource } from '../lib/git-source';
 import { Intrinsic } from '../lib/private/intrinsic';
 import { resolveReferences } from '../lib/private/refs';
 import { PostResolveToken } from '../lib/util';
@@ -3291,7 +3290,7 @@ describe('regionalFact', () => {
   });
 
   test('git source metadata is not included by default', () => {
-    clearGitSourceCache();
+    GitSource._clearCache();
     const app = new App();
     const stack = new Stack(app, 'Stack');
     new CfnResource(stack, 'Resource', { type: 'MyResource' });
@@ -3302,7 +3301,7 @@ describe('regionalFact', () => {
   });
 
   test('git source metadata is included when enableGitSource context is true', () => {
-    clearGitSourceCache();
+    GitSource._clearCache();
     const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
     const stack = new Stack(app, 'Stack');
     new CfnResource(stack, 'Resource', { type: 'MyResource' });
@@ -3311,20 +3310,11 @@ describe('regionalFact', () => {
     const stackArtifact = assembly.getStackByName(stack.stackName);
     const template = stackArtifact.template;
     const source = template?.Metadata?.['AWS::CloudFormation::Source'];
-    const md = JSON.parse(fs.readFileSync(path.join(assembly.directory, stackArtifact.manifest.additionalMetadataFile!)).toString());
-
-    expect(source.Commit).toMatch(/^[a-f0-9]{40}$/);
-    expect(md['/Stack']).toMatchObject([{
-      data: expect.objectContaining({
-        commit: expect.stringMatching(/^[a-f0-9]{40}$/),
-        repository: expect.stringContaining('github.com'),
-      }),
-    }]);
 
     expect(source).toBeDefined();
-    expect(source.Repository).toEqual(md['/Stack'][0].data.repository);
-    expect(source.Commit).toEqual(md['/Stack'][0].data.commit);
-    clearGitSourceCache();
+    expect(source.Commit).toMatch(/^[a-f0-9]{40}$/);
+    expect(source.Repository).toContain('github.com');
+    GitSource._clearCache();
   });
 });
 

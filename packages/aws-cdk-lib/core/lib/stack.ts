@@ -504,8 +504,8 @@ export class Stack extends Construct implements ITaggable {
     }
 
     this._missingContext = new Array<cxschema.MissingContext>();
-    this._stackDependencies = { };
-    this.templateOptions = { };
+    this._stackDependencies = {};
+    this.templateOptions = {};
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
@@ -572,11 +572,11 @@ export class Stack extends Construct implements ITaggable {
 
     // Not for nested stacks
     this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
-      && !this.nestedStackParent;
+        && !this.nestedStackParent;
 
     const synthesizer = (props.synthesizer
-      ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
-      ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
+        ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
+        ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
 
     if (isReusableStackSynthesizer(synthesizer)) {
       // Produce a fresh instance for each stack (should have been the default behavior)
@@ -592,13 +592,19 @@ export class Stack extends Construct implements ITaggable {
     // add the permissions boundary aspect
     this.addPermissionsBoundaryAspect();
 
-    const gitSource = this.node.tryGetContext('@aws-cdk/core:enableGitSource') === true ? getGitSource() : undefined;
-    if (gitSource) {
-      this.addMetadata('AWS::CloudFormation::Source', {
-        Repository: gitSource.repository,
-        Commit: gitSource.commit,
-      });
-      this.node.addMetadata('aws:cdk:source', gitSource);
+    if (GitSource.isEnabledFor(this)) {
+      const gitSource = GitSource.of(this);
+      if (gitSource) {
+        if (this.templateOptions.metadata?.['AWS::CloudFormation::Source']) {
+          Annotations.of(this).addWarningV2('@aws-cdk/core:gitSourceMetadataCollision',
+            'Stack already has AWS::CloudFormation::Source metadata. Git source metadata not added.');
+        } else {
+          this.addMetadata('AWS::CloudFormation::Source', {
+            Repository: gitSource.repository,
+            Commit: gitSource.commit,
+          });
+        }
+      }
     }
   }
 
@@ -1965,8 +1971,7 @@ import { AssumptionError, UnscopedValidationError, ValidationError } from './err
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './stack-trace';
-import { AssumptionError, ValidationError } from './errors';
-import { getGitSource } from './private/git-source';
+import { GitSource } from './git-source';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {

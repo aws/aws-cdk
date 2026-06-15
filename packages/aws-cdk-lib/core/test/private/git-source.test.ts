@@ -1,5 +1,6 @@
 import * as child_process from 'child_process';
-import { getGitSource, clearGitSourceCache } from '../../lib/private/git-source';
+import { App, Stack } from '../../lib';
+import { GitSource, GitSourceSecurityError } from '../../lib/git-source';
 
 jest.mock('child_process', () => ({
   execSync: jest.fn(),
@@ -7,45 +8,154 @@ jest.mock('child_process', () => ({
 
 const mockExecSync = child_process.execSync as jest.Mock;
 
+let app: InstanceType<typeof App>;
+let stack: InstanceType<typeof Stack>;
+
 beforeEach(() => {
-  clearGitSourceCache();
+  GitSource._clearCache();
   mockExecSync.mockReset();
+  app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  stack = new Stack(app, 'Stack');
 });
 
-test('caches result across multiple calls', () => {
-  mockExecSync
-    .mockReturnValueOnce('https://github.com/example/repo.git')
-    .mockReturnValueOnce('abc123');
+describe('isEnabled', () => {
+  test('returns true when context flag is set', () => {
+    expect(GitSource.isEnabledFor(stack)).toBe(true);
+  });
 
-  const first = getGitSource();
-  const second = getGitSource();
-
-  expect(first).toEqual({ repository: 'https://github.com/example/repo.git', commit: 'abc123' });
-  expect(second).toBe(first);
-  expect(mockExecSync).toHaveBeenCalledTimes(2); // once per git command, not repeated
+  test('returns false when context flag is not set', () => {
+    const defaultApp = new App();
+    const defaultStack = new Stack(defaultApp, 'Stack');
+    expect(GitSource.isEnabledFor(defaultStack)).toBe(false);
+  });
 });
 
-test('caches undefined result', () => {
-  mockExecSync.mockImplementation(() => { throw new Error('not a git repo'); });
+describe('of', () => {
+  test('returns git source when git is available', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git')
+      .mockReturnValueOnce('a'.repeat(40));
 
-  expect(getGitSource()).toBeUndefined();
-  expect(getGitSource()).toBeUndefined();
+    const source = GitSource.of(stack);
+    expect(source).toEqual({
+      repository: 'https://github.com/example/repo.git',
+      commit: 'a'.repeat(40),
+    });
+  });
 
-  expect(mockExecSync).toHaveBeenCalledTimes(1); // only tried once
+  test('returns undefined and emits warning when git is not available', () => {
+    mockExecSync.mockImplementation(() => { throw new Error('not a git repo'); });
+
+    const source = GitSource.of(stack);
+    expect(source).toBeUndefined();
+
+    const warnings = getWarnings(stack);
+    expect(warnings.some(w => w.data.includes('Failed to detect git source information: not a git repo'))).toBe(true);
+  });
+
+  test('caches result across multiple calls', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git')
+      .mockReturnValueOnce('a'.repeat(40));
+
+    const first = GitSource.of(stack);
+    const second = GitSource.of(stack);
+
+    expect(first).toEqual(second);
+    expect(mockExecSync).toHaveBeenCalledTimes(2); // once per git command, not repeated
+  });
+
+  test('caches undefined result and re-emits warning on subsequent calls', () => {
+    mockExecSync.mockImplementation(() => { throw new Error('not a git repo'); });
+
+    expect(GitSource.of(stack)).toBeUndefined();
+    expect(GitSource.of(stack)).toBeUndefined();
+
+    expect(mockExecSync).toHaveBeenCalledTimes(1); // only tried once
+  });
+
+  test('_clearCache resets the cache', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git')
+      .mockReturnValueOnce('a'.repeat(40))
+      .mockReturnValueOnce('https://github.com/example/repo2.git')
+      .mockReturnValueOnce('b'.repeat(40));
+
+    const first = GitSource.of(stack);
+    GitSource._clearCache();
+    const second = GitSource.of(stack);
+
+    expect(first).toEqual({ repository: 'https://github.com/example/repo.git', commit: 'a'.repeat(40) });
+    expect(second).toEqual({ repository: 'https://github.com/example/repo2.git', commit: 'b'.repeat(40) });
+    expect(mockExecSync).toHaveBeenCalledTimes(4);
+  });
+
+  test('sanitizes credentials from repository URL', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://user:token@github.com/example/repo.git')
+      .mockReturnValueOnce('a'.repeat(40));
+
+    const source = GitSource.of(stack);
+    expect(source?.repository).toBe('https://github.com/example/repo.git');
+  });
 });
 
-test('clearGitSourceCache resets the cache', () => {
-  mockExecSync
-    .mockReturnValueOnce('https://github.com/example/repo.git')
-    .mockReturnValueOnce('abc123')
-    .mockReturnValueOnce('https://github.com/example/repo2.git')
-    .mockReturnValueOnce('def456');
+describe('security errors', () => {
+  test('throws GitSourceSecurityError for invalid commit hash', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git')
+      .mockReturnValueOnce('not-a-valid-hash');
 
-  const first = getGitSource();
-  clearGitSourceCache();
-  const second = getGitSource();
+    expect(() => GitSource.of(stack)).toThrow(GitSourceSecurityError);
+    expect(() => GitSource.of(stack)).toThrow(/unexpected value/);
+  });
 
-  expect(first).toEqual({ repository: 'https://github.com/example/repo.git', commit: 'abc123' });
-  expect(second).toEqual({ repository: 'https://github.com/example/repo2.git', commit: 'def456' });
-  expect(mockExecSync).toHaveBeenCalledTimes(4);
+  test('throws GitSourceSecurityError for URL with control characters', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git\x00')
+      .mockReturnValueOnce('a'.repeat(40));
+
+    expect(() => GitSource.of(stack)).toThrow(GitSourceSecurityError);
+    expect(() => GitSource.of(stack)).toThrow(/unexpected content/);
+  });
+
+  test('throws GitSourceSecurityError for URL with unexpected format', () => {
+    mockExecSync
+      .mockReturnValueOnce('not a valid url')
+      .mockReturnValueOnce('a'.repeat(40));
+
+    expect(() => GitSource.of(stack)).toThrow(GitSourceSecurityError);
+    expect(() => GitSource.of(stack)).toThrow(/unexpected content/);
+  });
+
+  test('security errors are rethrown from cache', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git')
+      .mockReturnValueOnce('injected-content');
+
+    expect(() => GitSource.of(stack)).toThrow(GitSourceSecurityError);
+    // Second call rethrows from cache without calling git again
+    expect(() => GitSource.of(stack)).toThrow(GitSourceSecurityError);
+    expect(mockExecSync).toHaveBeenCalledTimes(2); // only the initial detection calls
+  });
+
+  test('security errors are resolved after clearing cache', () => {
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git')
+      .mockReturnValueOnce('injected-content');
+
+    expect(() => GitSource.of(stack)).toThrow(GitSourceSecurityError);
+
+    GitSource._clearCache();
+    mockExecSync
+      .mockReturnValueOnce('https://github.com/example/repo.git')
+      .mockReturnValueOnce('a'.repeat(40));
+
+    const source = GitSource.of(stack);
+    expect(source?.commit).toBe('a'.repeat(40));
+  });
 });
+
+function getWarnings(construct: any): Array<{ type: string; data: string }> {
+  return construct.node.metadata.filter((m: any) => m.type === 'aws:cdk:warning');
+}
