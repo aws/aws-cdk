@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "1a4367906232bedb38ceb44322aa9a861c535198cce59110433e51e293b9e278": {
+      "displayName": "CloudFormationValidatePluginStack Template",
+      "source": {
+        "path": "CloudFormationValidatePluginStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-ea3f8d7c": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "1a4367906232bedb38ceb44322aa9a861c535198cce59110433e51e293b9e278.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

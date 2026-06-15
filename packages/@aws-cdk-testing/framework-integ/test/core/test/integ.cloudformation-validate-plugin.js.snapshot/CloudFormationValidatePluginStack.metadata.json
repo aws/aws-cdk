@@ -1,0 +1,111 @@
+{
+  "/CloudFormationValidatePluginStack": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cloudformation-validate-plugin.ts:13:15)",
+        "...node internals, ts-node, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/CloudFormationValidatePluginStack/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:339:17)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:520: (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:520:2)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:585:5)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:581:5)",
+        "synthesizeTree (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:512:3)",
+        "synthesize (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:74:3)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)"
+      ]
+    }
+  ],
+  "/CloudFormationValidatePluginStack/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:349:3)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.ts:153:5)",
+        "DefaultStackSynthesizer.synthesize (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.ts:498:12)",
+        "/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:520: (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:520:2)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:585:5)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:581:5)",
+        "synthesizeTree (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:512:3)",
+        "synthesize (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:74:3)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)"
+      ]
+    }
+  ],
+  "/CloudFormationValidatePluginStack/MyBucket/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "MyBucketF68F3FF0"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Bucket (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/aws-s3/lib/bucket.ts:2527:22)",
+        "new Bucket (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.ts:43:9)",
+        "new Bucket (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.ts:41:7)",
+        "<anonymous> (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/core/test/integ.cloudformation-validate-plugin.ts:15:16)",
+        "...node internals, ts-node, ts-node..."
+      ]
+    }
+  ],
+  "/CloudFormationValidatePluginStack/CDKMetadata/Default": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadata"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MetadataResource (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/metadata-resource.ts:28:24)",
+        "/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:486 (:)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:585:5)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:581:5)",
+        "injectMetadataResources (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:477:3)",
+        "synthesize (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:56:3)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)",
+        "process.<anonymous> (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:263:45)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/CloudFormationValidatePluginStack/CDKMetadata/Condition": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CDKMetadataAvailable"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new MetadataResource (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/metadata-resource.ts:37:27)",
+        "/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:486 (:)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:585:5)",
+        "visit (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:581:5)",
+        "injectMetadataResources (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:477:3)",
+        "synthesize (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.ts:56:3)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/stage.ts:278:55)",
+        "App.synth (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:314:23)",
+        "process.<anonymous> (/Users/conroyka/Desktop/conroyka/aws/aws-cdk/packages/aws-cdk-lib/core/lib/app.ts:263:45)",
+        "...node internals..."
+      ]
+    }
+  ]
+}

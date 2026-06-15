@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "cdaa9e1296cfe72f48ed21592341485b57a1e9e4afedd845b033aef297504d30": {
+      "displayName": "CloudFormationValidatePluginTestDefaultTestDeployAssertD7DAFB01 Template",
+      "source": {
+        "path": "CloudFormationValidatePluginTestDefaultTestDeployAssertD7DAFB01.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-375f7eea": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "cdaa9e1296cfe72f48ed21592341485b57a1e9e4afedd845b033aef297504d30.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
