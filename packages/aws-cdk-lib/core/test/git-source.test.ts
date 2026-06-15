@@ -124,3 +124,34 @@ test('returns undefined for invalid repository URL', () => {
 
   expect(GitSource.of(stack)).toBeUndefined();
 });
+
+test('accepts SHA-256 commit hashes (64 hex chars)', () => {
+  mockExecSync
+    .mockReturnValueOnce('https://github.com/example/repo.git')
+    .mockReturnValueOnce('a'.repeat(64));
+
+  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const stack = new Stack(app, 'Stack');
+
+  const source = GitSource.of(stack);
+  expect(source?.commit).toBe('a'.repeat(64));
+});
+
+test('isEnabledFor accepts string "true" from CLI context', () => {
+  const app = new App({ context: { '@aws-cdk/core:enableGitSource': 'true' } });
+  const stack = new Stack(app, 'Stack');
+
+  expect(GitSource.isEnabledFor(stack)).toBe(true);
+});
+
+test('does not corrupt URLs with @ in path segment', () => {
+  mockExecSync
+    .mockReturnValueOnce('https://git.example.com/team@org/repo.git')
+    .mockReturnValueOnce('a'.repeat(40));
+
+  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const stack = new Stack(app, 'Stack');
+
+  const source = GitSource.of(stack);
+  expect(source?.repository).toBe('https://git.example.com/team@org/repo.git');
+});

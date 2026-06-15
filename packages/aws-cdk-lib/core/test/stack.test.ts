@@ -3312,7 +3312,7 @@ describe('regionalFact', () => {
     const source = template?.Metadata?.['AWS::CloudFormation::Source'];
 
     expect(source).toBeDefined();
-    expect(source.Commit).toMatch(/^[a-f0-9]{40}$/);
+    expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
     expect(source.Repository).toContain('github.com');
     GitSource._clearCache();
   });

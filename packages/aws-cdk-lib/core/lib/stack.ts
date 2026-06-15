@@ -595,15 +595,10 @@ export class Stack extends Construct implements ITaggable {
     if (GitSource.isEnabledFor(this)) {
       const gitSource = GitSource.of(this);
       if (gitSource) {
-        if (this.templateOptions.metadata?.['AWS::CloudFormation::Source']) {
-          Annotations.of(this).addWarningV2('@aws-cdk/core:gitSourceMetadataCollision',
-            'Stack already has AWS::CloudFormation::Source metadata. Git source metadata not added.');
-        } else {
-          this.addMetadata('AWS::CloudFormation::Source', {
-            Repository: gitSource.repository,
-            Commit: gitSource.commit,
-          });
-        }
+        this.addMetadata('AWS::CloudFormation::Source', {
+          Repository: gitSource.repository,
+          Commit: gitSource.commit,
+        });
       }
     }
   }
