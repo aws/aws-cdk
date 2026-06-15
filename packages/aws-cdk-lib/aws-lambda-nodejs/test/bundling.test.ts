@@ -36,7 +36,7 @@ beforeEach(() => {
   jest.spyOn(DockerImage, 'fromBuild').mockReturnValue({
     image: 'built-image',
     cp: () => 'dest-path',
-    run: () => {},
+    run: () => { },
     toJSON: () => 'built-image',
   });
 });
@@ -78,7 +78,7 @@ test('esbuild bundling in Docker', () => {
     }),
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/aws-lambda-nodejs\/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       IMAGE: expect.stringMatching(/build-nodejs/),
     }),
@@ -396,7 +396,7 @@ test('esbuild bundling source map default', () => {
 
 test.each([
   [Runtime.NODEJS_20_X, 'node20'],
-]) ('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
+])('esbuild bundling without aws-sdk v3 and smithy with feature flag enabled using Node 18+', (runtime, target) => {
   const cdkApp = new App({
     context: {
       '@aws-cdk/aws-lambda-nodejs:sdkV3ExcludeSmithyPackages': true,
@@ -742,7 +742,7 @@ test('with Docker build args', () => {
     forceDockerBundling: true,
   });
 
-  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib$/), expect.objectContaining({
+  expect(DockerImage.fromBuild).toHaveBeenCalledWith(expect.stringMatching(/lib\/docker$/), expect.objectContaining({
     buildArgs: expect.objectContaining({
       HELLO: 'WORLD',
     }),
