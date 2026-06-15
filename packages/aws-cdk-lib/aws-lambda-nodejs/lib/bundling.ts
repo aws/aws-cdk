@@ -213,7 +213,7 @@ export class Bundling implements cdk.BundlingOptions {
       // image would count as that. So we add an additional timer span just for the building of the runner image.
       using _span = profileSpan(`bundle:${this[cdk.PERF_BUNDLING_SRC_SYM]}`, { telemetry: true, skipCount: true });
 
-      this.image = cdk.DockerImage.fromBuild(path.join(__dirname, '..', 'lib'), {
+      this.image = cdk.DockerImage.fromBuild(path.join(__dirname, 'docker'), {
         buildArgs: {
           ...props.buildArgs ?? {},
           // If runtime isn't passed use regional default, lowest common denominator is node18
@@ -615,7 +615,7 @@ function stepsToPosixShellCommand(steps: BundlingStep[]): string {
  * OS agnostic command
  */
 class OsCommand {
-  constructor(private readonly osPlatform: NodeJS.Platform) {}
+  constructor(private readonly osPlatform: NodeJS.Platform) { }
 
   public write(filePath: string, data: string): string {
     if (this.osPlatform === 'win32') {
@@ -696,7 +696,7 @@ function chain(commands: string[]): string {
  * Platform specific path join
  */
 function osPathJoin(platform: NodeJS.Platform) {
-  return function(...paths: string[]): string {
+  return function (...paths: string[]): string {
     const joined = path.join(...paths);
     // If we are on win32 but need posix style paths
     if (os.platform() === 'win32' && platform !== 'win32') {
@@ -752,5 +752,5 @@ function isEsmRuntime(runtime: Runtime): boolean {
     Runtime.NODEJS_12_X,
   ];
 
-  return !unsupportedRuntimes.some((r) => {return r.family === runtime.family && r.name === runtime.name;});
+  return !unsupportedRuntimes.some((r) => { return r.family === runtime.family && r.name === runtime.name; });
 }
