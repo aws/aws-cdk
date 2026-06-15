@@ -81,11 +81,10 @@ describe('CloudFormationValidatePlugin', () => {
 
   test('plugin can be instantiated directly with custom rules', () => {
     const plugin = new core.CloudFormationValidatePlugin({
-      name: 'Custom Engine',
       customRules: [{ name: 'my-rule', content: 'package main' }],
     });
 
-    expect(plugin.name).toBe('Custom Engine');
+    expect(plugin.name).toBe('CloudFormation Validate');
     expect(plugin.version).toBeDefined();
     expect(plugin.ruleIds).toBeDefined();
   });

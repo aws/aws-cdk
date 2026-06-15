@@ -32,16 +32,6 @@ export interface ValidationRuleSource {
  */
 export interface CloudFormationValidatePluginProps {
   /**
-   * The name to use for this plugin instance in validation reports.
-   *
-   * Useful when registering multiple instances with different rule configurations
-   * (e.g., custom rule bundles) to distinguish their results.
-   *
-   * @default 'CloudFormation Validate'
-   */
-  readonly name?: string;
-
-  /**
    * Custom Rego rules to evaluate in addition to built-in rules.
    *
    * @default - no custom rules
@@ -61,12 +51,11 @@ export interface CloudFormationValidatePluginProps {
  * to evaluate templates against built-in rules.
  */
 export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
-  public readonly name: string;
+  public readonly name = 'CloudFormation Validate';
 
   private readonly engine: Engine;
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
-    this.name = props.name ?? 'CloudFormation Validate';
     const config: EngineConfig = {};
     if (props.customRules) {
       config.customRules = props.customRules as ExternalRuleSource[];
