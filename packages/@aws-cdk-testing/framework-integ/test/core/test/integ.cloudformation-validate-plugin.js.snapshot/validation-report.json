@@ -3,7 +3,7 @@
   "title": "Validation Report",
   "pluginReports": [
     {
-      "pluginName": "Default Engine",
+      "pluginName": "CloudFormation Validate",
       "pluginVersion": "1.0.0",
       "conclusion": "failure",
       "violations": [

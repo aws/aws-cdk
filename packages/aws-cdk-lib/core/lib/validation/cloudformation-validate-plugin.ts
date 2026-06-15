@@ -37,7 +37,7 @@ export interface CloudFormationValidatePluginProps {
    * Useful when registering multiple instances with different rule configurations
    * (e.g., custom rule bundles) to distinguish their results.
    *
-   * @default 'Default Engine'
+   * @default 'CloudFormation Validate'
    */
   readonly name?: string;
 
@@ -66,7 +66,7 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   private readonly engine: Engine;
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
-    this.name = props.name ?? 'Default Engine';
+    this.name = props.name ?? 'CloudFormation Validate';
     const config: EngineConfig = {};
     if (props.customRules) {
       config.customRules = props.customRules as ExternalRuleSource[];
