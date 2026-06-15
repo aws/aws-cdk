@@ -6,6 +6,8 @@ import { ExecutionError, UnscopedValidationError } from './errors';
 import { FileSystem } from './fs';
 import { dockerExec } from './private/asset-staging';
 import { quiet, reset } from './private/jsii-deprecated';
+import { lit } from './private/literal-string';
+import { profileFn } from './private/perf';
 
 /**
  * Methods to build Docker CLI arguments for builds using secrets.
@@ -255,6 +257,7 @@ export class BundlingDockerImage {
   /**
    * Runs a Docker image
    */
+  @profileFn('BundlingDockerImage.run', { telemetry: true })
   public run(options: DockerRunOptions = {}) {
     const volumes = options.volumes || [];
     const environment = options.environment || {};
@@ -309,11 +312,12 @@ export class BundlingDockerImage {
    * @param outputPath the destination path for the copy operation
    * @returns the destination path
    */
+  @profileFn('BundlingDockerImage.cp', { telemetry: true })
   public cp(imagePath: string, outputPath?: string): string {
     const { stdout } = dockerExec(['create', this.image], {}); // Empty options to avoid stdout redirect here
     const match = stdout.toString().match(/([0-9a-f]{16,})/);
     if (!match) {
-      throw new ExecutionError('FailedToFailedExtractContainer', 'Failed to extract container ID from Docker create output');
+      throw new ExecutionError(lit`FailedToFailedExtractContainer`, 'Failed to extract container ID from Docker create output');
     }
 
     const containerId = match[1];
@@ -323,7 +327,7 @@ export class BundlingDockerImage {
       dockerExec(['cp', containerPath, destPath]);
       return destPath;
     } catch (err) {
-      throw new ExecutionError('FailedToFailedCopyFiles', `Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
+      throw new ExecutionError(lit`FailedToFailedCopyFiles`, `Failed to copy files from ${containerPath} to ${destPath}: ${err}`);
     } finally {
       dockerExec(['rm', '-v', containerId]);
     }
@@ -340,11 +344,12 @@ export class DockerImage extends BundlingDockerImage {
    * @param path The path to the directory containing the Docker file
    * @param options Docker build options
    */
+  @profileFn('DockerImage.fromBuild', { telemetry: true })
   public static fromBuild(path: string, options: DockerBuildOptions = {}) {
     const buildArgs = options.buildArgs || {};
 
     if (options.file && isAbsolute(options.file)) {
-      throw new UnscopedValidationError('MustBeFileRelativeDocker', `"file" must be relative to the docker build directory. Got ${options.file}`);
+      throw new UnscopedValidationError(lit`MustBeFileRelativeDocker`, `"file" must be relative to the docker build directory. Got ${options.file}`);
     }
 
     // Image tag derived from path and build options
@@ -688,3 +693,8 @@ function isSeLinux(): boolean {
     return false;
   }
 }
+
+/**
+ * If this symbol is present on the `BundlingOptions`, it will be used as the source of an additional timer measurement.
+ */
+export const PERF_BUNDLING_SRC_SYM = Symbol.for('@aws-cdk/core.bundlingSource');

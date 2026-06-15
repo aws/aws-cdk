@@ -6,6 +6,7 @@ import { FollowMode } from '../../assets';
 import * as ecr from '../../aws-ecr';
 import type { FileFingerprintOptions, CfnResource } from '../../core';
 import { Annotations, AssetStaging, FeatureFlags, IgnoreMode, Stack, SymlinkFollowMode, Token, Stage, Names, ValidationError, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import * as cxapi from '../../cx-api';
 
@@ -499,14 +500,14 @@ export class DockerImageAsset extends Construct implements IAsset {
     // resolve full path
     const dir = path.resolve(props.directory);
     if (!fs.existsSync(dir)) {
-      throw new ValidationError('CannotFindImageDirectory', `Cannot find image directory at ${dir}`, this);
+      throw new ValidationError(lit`CannotFindImageDirectory`, `Cannot find image directory at ${dir}`, this);
     }
 
     // validate the docker file exists
     this.dockerfilePath = props.file || 'Dockerfile';
     const file = path.join(dir, this.dockerfilePath);
     if (!fs.existsSync(file)) {
-      throw new ValidationError('CannotFindFile', `Cannot find file at ${file}`, this);
+      throw new ValidationError(lit`CannotFindFile`, `Cannot find file at ${file}`, this);
     }
 
     const defaultIgnoreMode = FeatureFlags.of(this).isEnabled(cxapi.DOCKER_IGNORE_SUPPORT)
@@ -651,7 +652,7 @@ export class DockerImageAsset extends Construct implements IAsset {
 function validateProps(props: DockerImageAssetProps) {
   for (const [key, value] of Object.entries(props)) {
     if (Token.isUnresolved(value)) {
-      throw new UnscopedValidationError('CannotTokenValue', `Cannot use Token as value of '${key}': this value is used before deployment starts`);
+      throw new UnscopedValidationError(lit`CannotTokenValue`, `Cannot use Token as value of '${key}': this value is used before deployment starts`);
     }
   }
 
@@ -663,7 +664,7 @@ function validateProps(props: DockerImageAssetProps) {
 function validateBuildProps(buildPropName: string, buildProps?: { [key: string]: string }) {
   for (const [key, value] of Object.entries(buildProps || {})) {
     if (Token.isUnresolved(key) || Token.isUnresolved(value)) {
-      throw new UnscopedValidationError('CannotTokensKeysValues', `Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
+      throw new UnscopedValidationError(lit`CannotTokensKeysValues`, `Cannot use tokens in keys or values of "${buildPropName}" since they are needed before deployment`);
     }
   }
 }

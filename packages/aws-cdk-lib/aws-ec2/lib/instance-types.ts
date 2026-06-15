@@ -1,4 +1,5 @@
 import { UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * What class and generation of instance to use
@@ -793,6 +794,16 @@ export enum InstanceClass {
   C7A = 'c7a',
 
   /**
+   * Compute optimized instances based on 5th generation AMD EPYC (formerly code named Turin), 8th generation
+   */
+  COMPUTE8_AMD = 'compute8-amd',
+
+  /**
+   * Compute optimized instances based on 5th generation AMD EPYC (formerly code named Turin), 8th generation
+   */
+  C8A = 'c8a',
+
+  /**
    * Storage-optimized instances, 2nd generation
    */
   STORAGE2 = 'storage2',
@@ -1241,12 +1252,12 @@ export enum InstanceClass {
   P3DN = 'p3dn',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation
    */
   PARALLEL4_NVME_DRIVE_EXTENDED = 'parallel4-nvme-drive-extended',
 
   /**
-   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation (in developer preview)
+   * Parallel-processing optimized instances with local NVME drive, extended, 4th generation
    */
   P4DE = 'p4de',
 
@@ -1971,6 +1982,8 @@ export class InstanceType {
       [InstanceClass.C7I_FLEX]: 'c7i-flex',
       [InstanceClass.COMPUTE7_AMD]: 'c7a',
       [InstanceClass.C7A]: 'c7a',
+      [InstanceClass.COMPUTE8_AMD]: 'c8a',
+      [InstanceClass.C8A]: 'c8a',
       [InstanceClass.COMPUTE8_GRAVITON4]: 'c8g',
       [InstanceClass.C8G]: 'c8g',
       [InstanceClass.COMPUTE8_GRAVITON4_NVME_DRIVE]: 'c8gd',
@@ -2168,7 +2181,7 @@ export class InstanceType {
     // capture the family, generation, capabilities, and size portions of the instance type id
     const instanceTypeComponents = this.instanceTypeIdentifier.match(/^([a-z]+)(\d{1,2})([a-z\-]*)\.([a-z0-9\-]+)$/);
     if (instanceTypeComponents == null) {
-      throw new UnscopedValidationError('MalformedInstanceTypeIdentifier', 'Malformed instance type identifier');
+      throw new UnscopedValidationError(lit`MalformedInstanceTypeIdentifier`, 'Malformed instance type identifier');
     }
 
     const family = instanceTypeComponents[1];
@@ -2188,7 +2201,7 @@ export class InstanceType {
     const instanceClassId = this.instanceTypeIdentifier.match(instanceClass);
     const otherInstanceClassId = other.instanceTypeIdentifier.match(instanceClass);
     if (instanceClassId == null || otherInstanceClassId == null) {
-      throw new UnscopedValidationError('MalformedInstanceTypeIdentifier', 'Malformed instance type identifier');
+      throw new UnscopedValidationError(lit`MalformedInstanceTypeIdentifier`, 'Malformed instance type identifier');
     }
     return instanceClassId[1] === otherInstanceClassId[1];
   }

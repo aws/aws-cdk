@@ -22,6 +22,7 @@ import type * as ssm from '../../aws-ssm';
 import { PhysicalName, Stack, ArnFormat, Names, RemovalPolicy, ValidationError } from '../../core';
 import * as mimeTypes from 'mime-types';
 import type { DeletionProtectionCheck } from './util';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * Options for the Configuration construct
@@ -645,7 +646,7 @@ export class SourcedConfiguration extends ConfigurationBase {
     if ('grant' in this._retrievalRole) {
       return this._retrievalRole as iam.IRole;
     }
-    throw new ValidationError('InvalidRetrievalRoleInterface', `Retrieval role does not implement IRole: ${this._retrievalRole.constructor.name}`, this);
+    throw new ValidationError(lit`InvalidRetrievalRoleInterface`, `Retrieval role does not implement IRole: ${this._retrievalRole.constructor.name}`, this);
   }
 
   private getRetrievalRole(): iam.Role | undefined {

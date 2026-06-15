@@ -1,6 +1,7 @@
 import * as events from '../../aws-events';
 import type { Duration } from '../../core';
 import { TimeZone, UnscopedValidationError } from '../../core';
+import { lit } from '../../core/lib/private/literal-string';
 
 /**
  * ScheduleExpression for EventBridge Schedule
@@ -23,7 +24,7 @@ export abstract class ScheduleExpression {
       return new LiteralScheduleExpression(`at(${literal})`, timeZone ?? TimeZone.ETC_UTC);
     } catch (e) {
       if (e instanceof RangeError) {
-        throw new UnscopedValidationError('InvalidDate', 'Invalid date');
+        throw new UnscopedValidationError(lit`InvalidDate`, 'Invalid date');
       }
       throw e;
     }

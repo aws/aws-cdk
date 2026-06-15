@@ -39,7 +39,7 @@ experience across the entire AWS surface area.
       - [Prefer Additions](#prefer-additions)
       - [Dropped Mutations](#dropped-mutations)
     - [Factories](#factories)
-    - [Imports](#imports)
+    - [Referenced Resources](#referenced-resources)
       - [“from” Methods](#from-methods)
       - [From-attributes](#from-attributes)
     - [Roles](#roles)
@@ -305,6 +305,9 @@ When to use a Facade:
 - The feature should work with both L1 and L2 constructs.
 - The feature is not *about* the target resource's own behavior.
 
+For detailed implementation guidelines, see the
+[Facades and Traits Design Guidelines](./FACADES_AND_TRAITS_DESIGN_GUIDELINES.md).
+
 The [Grants](#grants) section below describes the most common Facade in detail.
 
 ### Traits
@@ -329,6 +332,9 @@ Examples: `IEncryptedResource` (via `IEncryptedResourceFactory`),
 Traits are primarily an implementation detail used by Facades and the grant
 system. They are not typically part of the public-facing API that end users
 interact with directly.
+
+For detailed implementation guidelines for both Facades and Traits, see the
+[Facades and Traits Design Guidelines](./FACADES_AND_TRAITS_DESIGN_GUIDELINES.md).
 
 ### When to use which
 
@@ -1271,10 +1277,15 @@ export interface ILogGroup {
 }
 ```
 
-### Imports
+### Referenced resources
+
+> "Referenced resources" were formerly called "imported resources", but that may lead to confusion
+> because there is also a feature called "cdk import" that actually brings unowned
+> resources under CloudFormation's control. Therefore the current preferred terminology
+> here has changed to "referencing" instead.
 
 Construct classes should expose a set of static factory methods with a
-“**from**” prefix that will allow users to import *unowned* constructs into
+“**from**” prefix that will allow users to reference *unowned* constructs into
 their app.
 
 The signature of all “from” methods should adhere to the following rules
@@ -1282,14 +1293,14 @@ _[awslint:from-signature]_:
 
 * First argument must be **scope** of type **Construct**.
 * Second argument is a **string**. This string will be used to determine the
-  ID of the new construct. If the import method uses some value that is
+  ID of the new construct. If the referencing method uses some value that is
   promised to be unique within the stack scope (such as ARN, export name),
   this value can be reused as the construct ID.
 * Returns an object that implements the construct interface (**IFoo**).
 
 #### “from” Methods
 
-Resource constructs should export static “from” methods for importing unowned
+Resource constructs should export static “from” methods for referencing unowned
 resources given one or more of its physical attributes such as ARN, name, etc. All
 constructs should have at least one `fromXxx` method _[awslint:from-method]_:
 
@@ -1307,7 +1318,7 @@ static fromFooName(scope: Construct, id: string, bucketName: string): IFoo;
   can use **Stack.parseArn** to achieve this purpose.
 
 If a resource has an ARN attribute, it should implement at least a **fromFooArn**
-import method [_awslint:from-arn_].
+referencing method [_awslint:from-arn_].
 
 To implement **fromAttribute** methods, use the abstract base class construct as
 follows:
@@ -1333,7 +1344,7 @@ If a resource has more than a single attribute (“ARN” and “name” are usu
 considered a single attribute since it's usually possible to convert one to the
 other), then the resource should provide a static **fromAttributes** method to
 allow users to explicitly supply values to all resource attributes when they
-import an external (unowned) resource [_awslint:from-attributes_].
+reference an external (unowned) resource [_awslint:from-attributes_].
 
 ```ts
 static fromFooAttributes(scope: Construct, id: string, attrs: FooAttributes): IFoo;
@@ -1348,29 +1359,33 @@ the user.
 Constructs that represent such resources should conform to the following
 guidelines.
 
-An optional prop called **role** of type **iam.IRole** should be exposed to allow
+An optional prop called **role** of type **iam.IRoleRef** should be exposed to allow
 users to "bring their own role", and use either an owned or unowned role
 _[awslint:role-config-prop]_.
+
+If the construct is going to grant permissions to the role, which is usually the case,
+the type should include **iam.IGrantable**, in a type intersection as follows:
 
 ```ts
 interface FooProps {
   /**
    * The role to associate with foo.
+   *
    * @default - a role will be automatically created
    */
-  role?: iam.IRole;
+  role?: iam.IRoleRef & iam.IGrantable;
 }
 ```
 
-The construct interface should expose a **role** property, and extends
+The construct interface should expose a **role** property, and extend
 **iam.IGrantable** _[awslint:role-property]_:
 
 ```ts
 interface IFoo extends iam.IGrantable {
   /**
-   * The role associated with foo. If foo is imported, no role will be available.
+   * The role associated with foo. If foo is an unowned resource, no role will be available.
    */
-  readonly role?: iam.IRole;
+  readonly role?: iam.IRoleRef;
 }
 ```
 
@@ -1392,7 +1407,7 @@ this resource should have the specified permission.
 
 Implementing **IGrantable** brings an implementation burden of **grantPrincipal:
 IPrincipal**. This property must be set to the **role** if available, or to a
-new **iam.ImportedResourcePrincipal** if the resource is imported and the role
+new **iam.ImportedResourcePrincipal** if the resource is referenced and the role
 is not available.
 
 ### Resource Policies
@@ -1513,7 +1528,7 @@ To enable grant methods to work with L1 constructs, the CDK uses factory
 interfaces called [Traits](#traits) that wrap L1 resources into objects
 exposing higher-level interfaces:
 
-- `IResourcePolicyFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling resource policy 
+- `IResourcePolicyFactory` wraps an L1 into an object implementing `IResourceWithPolicyV2`, enabling resource policy
 manipulation.
 - `IEncryptedResourceFactory` wraps an L1 into an object implementing `IEncryptedResource`, enabling KMS key grants.
 
@@ -1542,7 +1557,7 @@ class MyFactory implements IResourcePolicyFactory {
   }
 }
 
-// After this, every time the Grants class encounters a CfnResource of type 'AWS::Some::Type', 
+// After this, every time the Grants class encounters a CfnResource of type 'AWS::Some::Type',
 // it will be able to use MyFactory to attempt to add statements to its resource policy.
 ResourceWithPolicies.register(scope, 'AWS::Some::Type', new MyFactory());
 ```
@@ -1580,8 +1595,8 @@ where:
 * `Topic` - the class to generate grants for. This will lead to a class named TopicGrants.
 * `isEncrypted` - indicates whether the resource is encrypted with a KMS key. When true, the `actions()` method will
 have an `options` parameter of type `EncryptedPermissionOptions` that allows users to specify additional KMS permissions
-to be granted on the key. If left undefined, but at least one grant method includes `keyActions`, the CDK will assume 
-that the resource is encrypted and the same behavior will apply. Note that if `isEncrypted` is explicitly set to false, 
+to be granted on the key. If left undefined, but at least one grant method includes `keyActions`, the CDK will assume
+that the resource is encrypted and the same behavior will apply. Note that if `isEncrypted` is explicitly set to false,
 it is an error to specify `keyActions` in any of the grants.
 * `hasResourcePolicy` - indicates whether the resource supports a resource policy. When true, all auto-generated methods in the Grants class will attempt to add statements to the resource policy when applicable. When false, the methods will only modify the principal's policy.
 * `publish` - the name of a grant.
@@ -1592,13 +1607,13 @@ it is an error to specify `keyActions` in any of the grants.
 
 Code generated from the `grants.json` file will have a very basic logic: it will try to add the given statement to the
 principal's policy. If `hasResourcePolicy` is true, it will also attempt to add the statement to the resource policy.
-This will only work if the resource implements the `iam.IResourceWithPolicyV2` interface or -- in case of L1s -- if 
+This will only work if the resource implements the `iam.IResourceWithPolicyV2` interface or -- in case of L1s -- if
 there is a `IResourcePolicyFactory` registered for its type (see previous section). If `keyActions` are specified in the
-JSON file, it will also attempt to grant the specified permissions on the associated KMS key, if the resource implements 
+JSON file, it will also attempt to grant the specified permissions on the associated KMS key, if the resource implements
 the `iam.IEncryptedResource` interface (or, similarly to resource policies, if there is a `IEncryptedResourceFactory`
 registered for it).
 
-If your permission use case requires additional logic, such as combining multiple `Grant` instances or handling 
+If your permission use case requires additional logic, such as combining multiple `Grant` instances or handling
 additional parameters, you will need to implement the Grants class manually.
 
 Historically, grant methods were implemented directly on the resource construct interface (e.g.
@@ -1819,16 +1834,29 @@ See <https://github.com/awslabs/aws-cdk/issues/2283>
 ### Tags
 
 The AWS platform has a powerful tagging system that can be used to tag resources
-with key/values. The AWS CDK exposes this capability through the **Tag**
-“aspect”, which can seamlessly tag all resources within a subtree:
+with key/values. The AWS CDK exposes this capability through the **Tags**
+"aspect", which can seamlessly tag all taggable resources within a subtree:
 
 ```ts
-// add a tag to all taggable resource under "myConstruct"
-myConstruct.node.apply(new cdk.Tag("myKey", "myValue"));
+// add a tag to all taggable resources under "myConstruct"
+Tags.of(myConstruct).add("myKey", "myValue");
 ```
 
 Constructs for AWS resources that can be tagged must have an optional **tags**
-hash in their props [_awslint:tags-prop_].
+hash in their props [_awslint:tags-prop_], wired straight through to the
+underlying L1 default child.
+
+Only L1 (`Cfn*`) resources implement the `ITaggable` / `ITaggableV2` interfaces —
+those interfaces are auto-generated as part of the CloudFormation spec import.
+L2 constructs MUST NOT implement `ITaggable` or `ITaggableV2` and MUST NOT
+expose a `TagManager` on themselves; `TagManager.of(l2)` returning `undefined`
+is intentional. `Tags.of(scope)` works on any `IConstruct` and walks the tree
+to apply tags to every taggable L1 underneath, which is the only well-defined
+tagging semantic for an L2 (an L2 typically aggregates multiple L1 resources,
+so there is no single sensible target for tags applied "to the L2").
+
+For the prescriptive agent-oriented version of this rule plus a worked
+anti-pattern, see [AGENTS_CONSTRUCT_DESIGN.md § Tags](./AGENTS_CONSTRUCT_DESIGN.md#tags).
 
 ### Secrets
 
@@ -2034,26 +2062,82 @@ information that can be obtained from the stack trace.
 
 * Do not use FnSub
 
-### Lazys
+### Deferred Values
 
-Do not use a `Lazy` to perform a mutation on the construct tree. For example:
+#### Box API (preferred for new code)
+
+L2 constructs that accumulate state after construction (e.g., alarm actions, policy
+statements, security group rules) should use the **Box API** instead of `Lazy`.
+Boxes are mutable containers that implement `IResolvable` and capture stack traces
+at mutation call sites, enabling accurate property-to-source-code attribution.
+
+**Before (Lazy — legacy, do not use in new code):**
 
 ```ts
-constructor(scope: Scope, id: string, props: MyConstructProps) {
-  this.lazyProperty = Lazy.any({
-    produce: () => {
-      return props.logging.bind(this, this);
-    },
-  });
+class MyL2 extends Resource {
+  private readonly _actions: string[] = [];
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    new CfnResource(this, 'Resource', {
+      // Stack trace captured HERE (constructor), not useful
+      actions: Lazy.list({ produce: () => this._actions }),
+    });
+  }
+
+  addAction(action: string) {
+    this._actions.push(action); // No stack trace captured
+  }
 }
 ```
 
-`bind()` methods mutate the construct tree, and should not be called from a callback
-in a `Lazy`.
+**After (Box — preferred):**
 
-* The why:
- - `Lazy`s are called after the construct tree has already been sythesized. Mutating it
- at this point could have not-obvious consequences.
+```ts
+@noBoxStackTraces
+class MyL2 extends Resource {
+  private readonly _actions: IArrayBox<string> = Box.fromArray([]);
+
+  constructor(scope: Construct, id: string) {
+    super(scope, id);
+    new CfnResource(this, 'Resource', {
+      actions: Token.asList(this._actions),
+    });
+  }
+
+  addAction(action: string) {
+    this._actions.push(action); // Stack trace captured HERE — user's code
+  }
+}
+```
+
+Key rules:
+- `Box.fromArray([])` for lists, `Box.fromValue(x)` for scalars, `Box.fromMap()` for maps, `Box.fromSet()` for sets
+- Pass to L1 via `Token.asList(box)`, `Token.asString(box)`, `Token.asNumber(box)`, or `Token.asAny(box)` for complex/object values
+- `Box.fromArray` resolves to `undefined` when empty by default (no manual empty-array → `undefined` mapping needed). Pass `{ omitEmpty: false }` as the second argument to resolve to an empty array instead
+- Apply `@noBoxStackTraces` on classes that create or mutate Boxes in their constructor
+- Use `box.derive(fn)` for single-source transforms, `Box.combine({ a: boxA, b: boxB }, ({ a, b }) => ...)` for multi-source derived values
+
+See `packages/aws-cdk-lib/core/adr/box-api.md` for the full ADR.
+
+#### Lazy (legacy)
+
+`Lazy` remains available and is not deprecated, but new L2 constructs should prefer
+Boxes for better debuggability. If you must use `Lazy`:
+
+- Do not use a `Lazy` to perform a mutation on the construct tree
+- `Lazy`s are resolved after the construct tree has been synthesized — mutating it
+  at that point has non-obvious consequences
+- For `Lazy.any()` wrapping arrays, pass `{ omitEmptyArray: true }` to resolve empty arrays to `undefined`
+
+```ts
+// DO NOT do this — bind() mutates the construct tree
+this.lazyProperty = Lazy.any({
+  produce: () => {
+    return props.logging.bind(this, this); // BAD: tree mutation in Lazy
+  },
+});
+```
 
 ## Documentation
 

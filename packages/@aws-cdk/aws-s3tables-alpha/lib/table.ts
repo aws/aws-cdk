@@ -12,6 +12,7 @@ import {
   UnscopedValidationError,
   Token,
 } from 'aws-cdk-lib/core';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import { addConstructMetadata } from 'aws-cdk-lib/core/lib/metadata-resource';
 import { propertyInjectable } from 'aws-cdk-lib/core/lib/prop-injectable';
 import type { Construct } from 'constructs';
@@ -318,7 +319,7 @@ export class IcebergTransform {
   public static bucket(n: number): IcebergTransform {
     if (n <= 0 || !Number.isInteger(n)) {
       throw new UnscopedValidationError(
-        'InvalidBucketCount',
+        lit`InvalidBucketCount`,
         'Bucket count must be a positive integer.',
       );
     }
@@ -333,7 +334,7 @@ export class IcebergTransform {
   public static truncate(width: number): IcebergTransform {
     if (width <= 0 || !Number.isInteger(width)) {
       throw new UnscopedValidationError(
-        'InvalidTruncateWidth',
+        lit`InvalidTruncateWidth`,
         'Truncate width must be a positive integer.',
       );
     }
@@ -508,13 +509,13 @@ export interface TablePropertyEntry {
 
 /**
  * Contains details about the metadata for an Iceberg table.
- * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
+ * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html
  */
 export interface IcebergMetadataProperty {
   /**
    * Contains details about the schema for an Iceberg table.
    *
-   * @see http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
+   * @see https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3tables-table-icebergmetadata.html#cfn-s3tables-table-icebergmetadata-icebergschema
    */
   readonly icebergSchema: IcebergSchemaProperty;
 
@@ -723,7 +724,7 @@ export class Table extends TableBase implements ITaggableV2 {
 
     if (errors.length > 0) {
       throw new UnscopedValidationError(
-        'InvalidTableName',
+        lit`InvalidTableName`,
         `Invalid S3 table name (value: ${tableName})${EOL}${errors.join(EOL)}`,
       );
     }
@@ -770,7 +771,7 @@ export class Table extends TableBase implements ITaggableV2 {
 
     if (props.withoutMetadata && props.icebergMetadata) {
       throw new UnscopedValidationError(
-        'MutuallyExclusiveProps',
+        lit`MutuallyExclusiveProps`,
         "TableProps: 'withoutMetadata' and 'icebergMetadata' are mutually exclusive. Specify only one.",
       );
     }
@@ -870,7 +871,7 @@ export class Table extends TableBase implements ITaggableV2 {
     const duplicateKeys = keys.filter((key, index) => keys.indexOf(key) !== index);
     if (duplicateKeys.length > 0) {
       throw new UnscopedValidationError(
-        'DuplicateTablePropertyKey',
+        lit`DuplicateTablePropertyKey`,
         `Duplicate table property keys are not allowed: ${[...new Set(duplicateKeys)].join(', ')}`,
       );
     }

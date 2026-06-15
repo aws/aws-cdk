@@ -15,11 +15,13 @@ import { Token } from 'aws-cdk-lib';
 import type { CfnRuntime } from 'aws-cdk-lib/aws-bedrockagentcore';
 import type { IUserPool, IUserPoolClient } from 'aws-cdk-lib/aws-cognito';
 import { UnscopedValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { RuntimeCustomClaim } from './custom-claim';
 
 /**
  * Abstract base class for runtime authorizer configurations.
  * Provides static factory methods to create different authentication types.
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class RuntimeAuthorizerConfiguration {
   /**
@@ -51,7 +53,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-      throw new UnscopedValidationError('InvalidJwtDiscoveryUrl', 'JWT discovery URL must end with /.well-known/openid-configuration');
+      throw new UnscopedValidationError(lit`InvalidJwtDiscoveryUrl`, 'JWT discovery URL must end with /.well-known/openid-configuration');
     }
     return new JwtAuthorizerConfiguration(discoveryUrl, allowedClients, allowedAudience, allowedScopes, customClaims);
   }
@@ -96,7 +98,7 @@ export abstract class RuntimeAuthorizerConfiguration {
     customClaims?: RuntimeCustomClaim[],
   ): RuntimeAuthorizerConfiguration {
     if (!Token.isUnresolved(discoveryUrl) && !discoveryUrl.endsWith('/.well-known/openid-configuration')) {
-      throw new UnscopedValidationError('InvalidOAuthDiscoveryUrl', 'OAuth discovery URL must end with /.well-known/openid-configuration');
+      throw new UnscopedValidationError(lit`InvalidOAuthDiscoveryUrl`, 'OAuth discovery URL must end with /.well-known/openid-configuration');
     }
     return new OAuthAuthorizerConfiguration(discoveryUrl, clientId, allowedAudience, allowedScopes, customClaims);
   }

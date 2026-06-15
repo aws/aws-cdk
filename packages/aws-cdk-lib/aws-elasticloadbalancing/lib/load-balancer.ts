@@ -6,9 +6,13 @@ import {
   SecurityGroup, SubnetType,
 } from '../../aws-ec2';
 import type { IResource } from '../../core';
-import { Duration, Lazy, Resource } from '../../core';
+import { Duration, Resource, Token } from '../../core';
 import { ValidationError } from '../../core/lib/errors';
+import type { IArrayBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata, MethodMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
+import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 import type { aws_elasticloadbalancing } from '../../interfaces';
 
@@ -244,9 +248,10 @@ export enum LoadBalancingProtocol {
 /**
  * A load balancer with a single listener
  *
- * Routes to a fleet of of instances in a VPC.
+ * Routes to a fleet of instances in a VPC.
  */
 @propertyInjectable
+@noBoxStackTraces
 export class LoadBalancer extends Resource implements ILoadBalancer, IConnectable {
   /**
    * Uniquely identifies this class.
@@ -265,11 +270,11 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
 
   private readonly elb: CfnLoadBalancer;
   private readonly securityGroup: SecurityGroup;
-  private readonly listeners: CfnLoadBalancer.ListenersProperty[] = [];
+  private readonly _listeners: IArrayBox<CfnLoadBalancer.ListenersProperty>;
 
   private readonly instancePorts: number[] = [];
   private readonly targets: ILoadBalancerTarget[] = [];
-  private readonly instanceIds: string[] = [];
+  private readonly _instanceIds: IArrayBox<string>;
 
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
@@ -279,13 +284,16 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
     this.securityGroup = new SecurityGroup(this, 'SecurityGroup', { vpc: props.vpc, allowAllOutbound: false });
     this.connections = new Connections({ securityGroups: [this.securityGroup] });
     // Depending on whether the ELB has public or internal IPs, pick the right backend subnets
+    this._listeners = Box.fromArray([], { omitEmpty: false });
+    this._instanceIds = Box.fromArray();
+
     const selectedSubnets: SelectedSubnets = loadBalancerSubnets(props);
 
     this.elb = new CfnLoadBalancer(this, 'Resource', {
       securityGroups: [this.securityGroup.securityGroupId],
       subnets: selectedSubnets.subnetIds,
-      listeners: Lazy.any({ produce: () => this.listeners }),
-      instances: Lazy.list({ produce: () => this.instanceIds }, { omitEmpty: true }),
+      listeners: this._listeners,
+      instances: Token.asList(this._instanceIds, { displayHint: 'instances' }),
       scheme: props.internetFacing ? 'internet-facing' : 'internal',
       healthCheck: props.healthCheck && healthCheckToJSON(props.healthCheck),
       crossZone: props.crossZone ?? true,
@@ -310,7 +318,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
   @MethodMetadata()
   public addListener(listener: LoadBalancerListener): ListenerPort {
     if (listener.sslCertificateArn && listener.sslCertificateId) {
-      throw new ValidationError('SslCertificateIdDeprecatedSsl', '"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
+      throw new ValidationError(lit`SslCertificateIdDeprecatedSsl`, '"sslCertificateId" is deprecated, please use "sslCertificateArn" only.', this);
     }
     const protocol = ifUndefinedLazy(listener.externalProtocol, () => wellKnownProtocol(this, listener.externalPort));
     const instancePort = listener.internalPort || listener.externalPort;
@@ -319,7 +327,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
       ifUndefined(tryWellKnownProtocol(instancePort),
         isHttpProtocol(protocol) ? LoadBalancingProtocol.HTTP : LoadBalancingProtocol.TCP));
 
-    this.listeners.push({
+    this._listeners.push({
       loadBalancerPort: listener.externalPort.toString(),
       protocol,
       instancePort: instancePort.toString(),
@@ -436,7 +444,7 @@ export class LoadBalancer extends Resource implements ILoadBalancer, IConnectabl
    * @internal
    */
   public _addInstanceId(instanceId: string) {
-    this.instanceIds.push(instanceId);
+    this._instanceIds.push(instanceId);
   }
 }
 
@@ -483,7 +491,7 @@ export class ListenerPort implements IConnectable {
 function wellKnownProtocol(scope: Construct, port: number): LoadBalancingProtocol {
   const proto = tryWellKnownProtocol(port);
   if (!proto) {
-    throw new ValidationError('SupplyProtocolGoPort', `Please supply protocol to go with port ${port}`, scope);
+    throw new ValidationError(lit`SupplyProtocolGoPort`, `Please supply protocol to go with port ${port}`, scope);
   }
   return proto;
 }

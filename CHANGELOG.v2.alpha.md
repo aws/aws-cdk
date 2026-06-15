@@ -2,6 +2,105 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.259.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.258.1-alpha.0...v2.259.0-alpha.0) (2026-06-11)
+
+## [2.258.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.258.0-alpha.0...v2.258.1-alpha.0) (2026-06-08)
+
+## [2.258.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.257.0-alpha.0...v2.258.0-alpha.0) (2026-06-04)
+
+
+### Features
+
+* **integ-tests-alpha:** add option to set the provider log level ([#38005](https://github.com/aws/aws-cdk/issues/38005)) ([c634a79](https://github.com/aws/aws-cdk/commit/c634a795de080df21b86fad191d05dfde884eb4e))
+
+
+### Bug Fixes
+
+* **custom-resource-handlers:** deterministic asset hashes for generated lambdas ([#37634](https://github.com/aws/aws-cdk/issues/37634)) ([6c3d5bc](https://github.com/aws/aws-cdk/commit/6c3d5bc36e19b8834319578fbd8525615a47a4b9)), closes [#34307](https://github.com/aws/aws-cdk/issues/34307)
+* **glue-alpha:** deprecate Ray Jobs ([#38055](https://github.com/aws/aws-cdk/issues/38055)) ([3fa428b](https://github.com/aws/aws-cdk/commit/3fa428b9b24d286841940cfff5200d16817196bf))
+* **glue-alpha:** restore notifyDelayAfter to PySpark and Scala Spark ETL jobs ([#37815](https://github.com/aws/aws-cdk/issues/37815)) ([05be88a](https://github.com/aws/aws-cdk/commit/05be88aa324635108076bdc648a4ee940d22a386)), closes [#33839](https://github.com/aws/aws-cdk/issues/33839)
+* **integ-tests-alpha:** assertion failures print too much unnecessary information ([#37974](https://github.com/aws/aws-cdk/issues/37974)) ([bc0de1d](https://github.com/aws/aws-cdk/commit/bc0de1dacc59b95a2e89f9c3ec96589e98b35ed2))
+* **mediapackagev2-alpha:** cdnAuth on OriginEndpoint now generates the required policy ([#38013](https://github.com/aws/aws-cdk/issues/38013)) ([1d56b46](https://github.com/aws/aws-cdk/commit/1d56b46abd477f188021d32d77551be1377765d0))
+
+## [2.257.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.256.1-alpha.0...v2.257.0-alpha.0) (2026-05-21)
+
+## [2.256.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.256.0-alpha.0...v2.256.1-alpha.0) (2026-05-20)
+
+## [2.256.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.255.0-alpha.0...v2.256.0-alpha.0) (2026-05-19)
+
+## [2.255.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.254.0-alpha.0...v2.255.0-alpha.0) (2026-05-18)
+
+### Features
+
+* **bedrock-agentcore-alpha:** Graduation of the library to stable. The **Policy** submodule is the only submodule that remains in alpha. All other constructs have graduated to stable in `aws-cdk-lib/aws-bedrockagentcore` and we recommend migrating to the stable versions  ([#37876](https://github.com/aws/aws-cdk/issues/37876)) ([00cf601](https://github.com/aws/aws-cdk/commit/00cf6015f30755653de7a541f79c944d4a68f423))
+
+
+## [2.254.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.1-alpha.0...v2.254.0-alpha.0) (2026-05-13)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add tags support to Evaluator and OnlineEvaluationConfig ([#37804](https://github.com/aws/aws-cdk/issues/37804)) ([adbf88f](https://github.com/aws/aws-cdk/commit/adbf88faeb4d2b762563389aea160cfda496f200))
+* **bedrock-agentcore-alpha:** add identity L2 constructs ([#37610](https://github.com/aws/aws-cdk/issues/37610)) ([67c3af2](https://github.com/aws/aws-cdk/commit/67c3af260cedb8e610dff36f829afb36114dd93a))
+* **mediapackagev2-alpha:** add OAC integration between CloudFront and MediaPackageV2 ([#37701](https://github.com/aws/aws-cdk/issues/37701)) ([654f59c](https://github.com/aws/aws-cdk/commit/654f59c559f6eb2b5240e7885372ac82ea05a996))
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** fix cedar policy bug ([#37782](https://github.com/aws/aws-cdk/issues/37782)) ([e678d5c](https://github.com/aws/aws-cdk/commit/e678d5cc251f00a0a67bc308b562a3fddca6a73c)), closes [#37828](https://github.com/aws/aws-cdk/issues/37828)
+* **custom-resource-handlers:** deployment fails when parameter already exists ([#37852](https://github.com/aws/aws-cdk/issues/37852)) ([025c38c](https://github.com/aws/aws-cdk/commit/025c38ca989a234189b411df011a560a003107b3))
+
+## [2.253.1-alpha.0](https://github.com/aws/aws-cdk/compare/v2.253.0-alpha.0...v2.253.1-alpha.0) (2026-05-08)
+
+## [2.253.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.252.0-alpha.0...v2.253.0-alpha.0) (2026-05-06)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add OnlineEvaluationConfig and Evaluator L2 constructs ([#37615](https://github.com/aws/aws-cdk/issues/37615)) ([c13de04](https://github.com/aws/aws-cdk/commit/c13de04223e32272b0c6c6dd4e2fca8e300fafa8)), closes [#37614](https://github.com/aws/aws-cdk/issues/37614)
+* **glue-alpha:** add extraPythonFiles support to PythonShellJob ([#37130](https://github.com/aws/aws-cdk/issues/37130)) ([c9c6f9c](https://github.com/aws/aws-cdk/commit/c9c6f9c1b7c12722d18a45bf8a02c09672f8720d)), closes [#34448](https://github.com/aws/aws-cdk/issues/34448)
+
+
+### Bug Fixes
+
+* **bedrock-agentcore-alpha:** self-managed memory strategy validation throws on unresolved tokens ([#37691](https://github.com/aws/aws-cdk/issues/37691)) ([7956537](https://github.com/aws/aws-cdk/commit/79565376cdb642d821625fe10ae5916e7d2e64fe)), closes [#37197](https://github.com/aws/aws-cdk/issues/37197)
+
+## [2.252.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.251.0-alpha.0...v2.252.0-alpha.0) (2026-04-29)
+
+## [2.251.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.250.0-alpha.0...v2.251.0-alpha.0) (2026-04-24)
+
+
+### Features
+
+* **bedrock-agentcore-alpha:** add L2 constructs for policy and policy engine  ([#37238](https://github.com/aws/aws-cdk/issues/37238)) ([1e89e7e](https://github.com/aws/aws-cdk/commit/1e89e7e921a9946cb9c23f967c6b7a33a6048de4))
+* **bedrock-agentcore-alpha:** add observability configuration for Runtime ([#36689](https://github.com/aws/aws-cdk/issues/36689)) ([34b43aa](https://github.com/aws/aws-cdk/commit/34b43aabe2c3a946ba286812b402ce946222d820)), closes [#36596](https://github.com/aws/aws-cdk/issues/36596)
+* **bedrock-agentcore-alpha:** support No Authorization for AgentCore Gateway ([#36610](https://github.com/aws/aws-cdk/issues/36610)) ([f20bd8e](https://github.com/aws/aws-cdk/commit/f20bd8e43700877f7166cdac3cd994876963bc67))
+* **dsql-alpha:** initial L2 construct ([#34599](https://github.com/aws/aws-cdk/issues/34599)) ([be1a458](https://github.com/aws/aws-cdk/commit/be1a45861a5138b6e397cf076e39dfe0a18d4e99)), closes [#34593](https://github.com/aws/aws-cdk/issues/34593)
+
+## [2.250.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.249.0-alpha.0...v2.250.0-alpha.0) (2026-04-14)
+
+## [2.249.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.248.0-alpha.0...v2.249.0-alpha.0) (2026-04-10)
+
+## [2.248.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.247.0-alpha.0...v2.248.0-alpha.0) (2026-04-02)
+
+## [2.247.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.246.0-alpha.0...v2.247.0-alpha.0) (2026-04-02)
+
+
+### Features
+
+* **mediapackagev2-alpha:** new L2 construct ([#37279](https://github.com/aws/aws-cdk/issues/37279)) ([7debfb9](https://github.com/aws/aws-cdk/commit/7debfb9c5e807fac5df6e9e0ea3097d72325ffbc))
+
+## [2.246.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.245.0-alpha.0...v2.246.0-alpha.0) (2026-03-31)
+
+## [2.245.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.244.0-alpha.0...v2.245.0-alpha.0) (2026-03-27)
+
+
+### Features
+
+* **s3tables-alpha:** add support for partition spec, sort order, and table properties ([#36811](https://github.com/aws/aws-cdk/issues/36811)) ([2696cd1](https://github.com/aws/aws-cdk/commit/2696cd16e8e2edc8d40f1443b9c87eb6171e5d1f))
+* **s3tables-alpha:** add metrics configuration support for TableBucket ([#37275](https://github.com/aws/aws-cdk/issues/37275)) ([e8786f5](https://github.com/aws/aws-cdk/commit/e8786f5d782d906971f933a2d6d432309d5384d7))
+* **s3tables-alpha:** implement ITaggableV2 on TableBucket and Table L2 constructs ([#37277](https://github.com/aws/aws-cdk/issues/37277)) ([69c8944](https://github.com/aws/aws-cdk/commit/69c8944ea3f4abf0f4218af2fc42c8e862e8cad3)), closes [#33054](https://github.com/aws/aws-cdk/issues/33054)
+
 ## [2.244.0-alpha.0](https://github.com/aws/aws-cdk/compare/v2.243.0-alpha.0...v2.244.0-alpha.0) (2026-03-19)
 
 

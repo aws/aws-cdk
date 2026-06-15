@@ -12,14 +12,17 @@ import { CfnReference } from './private/cfn-reference';
 import type { Reference } from './reference';
 import type { RemovalPolicyOptions } from './removal-policy';
 import { RemovalPolicy } from './removal-policy';
+import { traceProperty } from './stack-trace';
 import { TagManager } from './tag-manager';
 import { capitalizePropertyNames, ignoreEmpty, PostResolveToken } from './util';
 import { FeatureFlags } from './feature-flags';
 import type { ResolutionTypeHint } from './type-hints';
 import * as cxapi from '../../cx-api';
+import type { ReferenceStrength } from './cross-stack-reference-strength';
 import { ValidationError } from './errors';
 import { deepMerge } from './private/deep-merge';
 import type { ResourceEnvironment } from './environment';
+import { lit } from './private/literal-string';
 
 export interface CfnResourceProps {
   /**
@@ -75,7 +78,7 @@ export class CfnResource extends CfnRefElement {
   /**
    * An object to be merged on top of the entire resource definition.
    */
-  private readonly rawOverrides: any = {};
+  private readonly rawOverrides: any = Object.create(null); // Prevent prototype pollution
 
   /**
    * Logical IDs of dependencies.
@@ -83,6 +86,10 @@ export class CfnResource extends CfnRefElement {
    * Is filled during prepare().
    */
   private dependsOn: Set<CfnResource> | undefined;
+
+  private _crossStackReferenceStrength?: ReferenceStrength;
+
+  protected readonly cfnPropertyNames: Record<string, string> = {};
 
   /**
    * Creates a resource construct.
@@ -92,7 +99,7 @@ export class CfnResource extends CfnRefElement {
     super(scope, id);
 
     if (!props.type) {
-      throw new ValidationError('IsRequiredPropertyRequired', 'The `type` property is required', this);
+      throw new ValidationError(lit`IsRequiredPropertyRequired`, 'The `type` property is required', this);
     }
 
     this.cfnResourceType = props.type;
@@ -168,7 +175,7 @@ export class CfnResource extends CfnRefElement {
         const problematicSnapshotPolicy = !snapshottableResourceTypes.includes(this.cfnResourceType);
         if (problematicSnapshotPolicy) {
           if (FeatureFlags.of(this).isEnabled(cxapi.VALIDATE_SNAPSHOT_REMOVAL_POLICY) ) {
-            throw new ValidationError('SnapshotRemovalNotSupported', `${this.cfnResourceType} does not support snapshot removal policy`, this);
+            throw new ValidationError(lit`SnapshotRemovalNotSupported`, `${this.cfnResourceType} does not support snapshot removal policy`, this);
           } else {
             Annotations.of(this).addWarningV2(`@aws-cdk/core:${this.cfnResourceType}SnapshotRemovalPolicyIgnored`, `${this.cfnResourceType} does not support snapshot removal policy. This policy will be ignored.`);
           }
@@ -179,13 +186,32 @@ export class CfnResource extends CfnRefElement {
         break;
 
       default:
-        throw new ValidationError('InvalidRemovalPolicy', `Invalid removal policy: ${policy}`, this);
+        throw new ValidationError(lit`InvalidRemovalPolicy`, `Invalid removal policy: ${policy}`, this);
     }
 
     this.cfnOptions.deletionPolicy = deletionPolicy;
     if (options.applyToUpdateReplacePolicy !== false) {
       this.cfnOptions.updateReplacePolicy = updateReplacePolicy;
     }
+  }
+
+  /**
+   * Sets the cross-stack reference strength for this resource.
+   *
+   * When set, any cross-stack reference to this resource will use the specified
+   * strength instead of the global default from the consuming stack's context.
+   *
+   * @param strength - The reference strength to use for this resource.
+   */
+  public applyCrossStackReferenceStrength(strength: ReferenceStrength): void {
+    this._crossStackReferenceStrength = strength;
+  }
+
+  /**
+   * @internal
+   */
+  public get _crossStackReferenceStrengthOverride(): ReferenceStrength | undefined {
+    return this._crossStackReferenceStrength;
   }
 
   /**
@@ -257,7 +283,7 @@ export class CfnResource extends CfnRefElement {
       // object overwrite it with an object.
       const isObject = curr[key] != null && typeof(curr[key]) === 'object' && !Array.isArray(curr[key]);
       if (!isObject) {
-        curr[key] = {};
+        curr[key] = Object.create(null); // Prevent prototype pollution
       }
 
       curr = curr[key];
@@ -284,6 +310,8 @@ export class CfnResource extends CfnRefElement {
    * @param value The value
    */
   public addPropertyOverride(propertyPath: string, value: any) {
+    const parts = splitOnPeriods(propertyPath);
+    traceProperty(this.node, parts[0]);
     this.addOverride(`Properties.${propertyPath}`, value);
   }
 
@@ -293,6 +321,10 @@ export class CfnResource extends CfnRefElement {
    */
   public addPropertyDeletionOverride(propertyPath: string) {
     this.addPropertyOverride(propertyPath, undefined);
+  }
+
+  public cfnPropertyName(cdkPropertyName: string): string | undefined {
+    return this.cfnPropertyNames[cdkPropertyName];
   }
 
   /**
@@ -356,7 +388,7 @@ export class CfnResource extends CfnRefElement {
       this.removeDependency(target);
       this.addDependency(newTarget);
     } else {
-      throw new ValidationError('DoesDepend', `"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
+      throw new ValidationError(lit`DoesDepend`, `"${Node.of(this).path}" does not depend on "${Node.of(target).path}"`, this);
     }
   }
 

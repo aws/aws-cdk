@@ -64,7 +64,8 @@
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/inbound-auth/authorizer.ts": {
     "GatewayAuthorizerType": [
       "CUSTOM_JWT",
-      "AWS_IAM"
+      "AWS_IAM",
+      "NONE"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.ts": {
@@ -131,6 +132,35 @@
       "OPTIONS"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/identity/oauth2-credential-provider.ts": {
+    "OAuth2CredentialProviderVendor": [
+      "GoogleOauth2",
+      "GithubOauth2",
+      "SlackOauth2",
+      "SalesforceOauth2",
+      "MicrosoftOauth2",
+      "CustomOauth2",
+      "AtlassianOauth2",
+      "LinkedinOauth2",
+      "XOauth2",
+      "OktaOauth2",
+      "OneLoginOauth2",
+      "PingOneOauth2",
+      "FacebookOauth2",
+      "YandexOauth2",
+      "RedditOauth2",
+      "ZoomOauth2",
+      "TwitchOauth2",
+      "SpotifyOauth2",
+      "DropboxOauth2",
+      "NotionOauth2",
+      "HubspotOauth2",
+      "CyberArkOauth2",
+      "FusionAuthOauth2",
+      "Auth0Oauth2",
+      "CognitoOauth2"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/memory/memory-strategy.ts": {
     "MemoryStrategyType": [
       "SUMMARIZATION",
@@ -140,19 +170,41 @@
       "CUSTOM"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/policy/policy-statement.ts": {
+    "PolicyEffect": [
+      "permit",
+      "forbid"
+    ],
+    "PrincipalScope": [
+      "all",
+      "specific"
+    ],
+    "ActionScope": [
+      "all",
+      "specific"
+    ],
+    "ResourceScope": [
+      "all",
+      "type",
+      "specific"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/runtime-artifact.ts": {
     "AgentCoreRuntime": [
       "PYTHON_3_10",
       "PYTHON_3_11",
       "PYTHON_3_12",
-      "PYTHON_3_13"
+      "PYTHON_3_13",
+      "PYTHON_3_14",
+      "NODE_22"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/runtime/types.ts": {
     "ProtocolType": [
       "MCP",
       "HTTP",
-      "A2A"
+      "A2A",
+      "AGUI"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/tools/browser.ts": {
@@ -328,23 +380,6 @@
     "TransitGatewayFeatureStatus": [
       "enable",
       "disable"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/common.ts": {
-    "UserEngine": [
-      "valkey",
-      "redis"
-    ]
-  },
-  "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache-base.ts": {
-    "CacheEngine": [
-      "valkey",
-      "valkey_7",
-      "valkey_8",
-      "redis",
-      "redis_7",
-      "memcached",
-      "memcached_1.6"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-elasticache-alpha/lib/serverless-cache.ts": {
@@ -941,6 +976,164 @@
       "Here"
     ]
   },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/channel.ts": {
+    "InputType": [
+      "CMAF",
+      "HLS"
+    ],
+    "IngestEndpoint": [
+      1,
+      2
+    ]
+  },
+  "aws-cdk/packages/@aws-cdk/aws-mediapackagev2-alpha/lib/endpoint.ts": {
+    "AudioCodec": [
+      "AACL",
+      "AACH",
+      "AC-3",
+      "EC-3"
+    ],
+    "VideoCodec": [
+      "H264",
+      "H265",
+      "AV1"
+    ],
+    "VideoDynamicRange": [
+      "dv",
+      "hdr10",
+      "hlg",
+      "sdr"
+    ],
+    "TrickplayType": [
+      "iframe",
+      "image",
+      "none"
+    ],
+    "NumericFilterKey": [
+      "audio_channels",
+      "audio_sample_rate",
+      "trickplay_height",
+      "video_framerate",
+      "video_height"
+    ],
+    "TextFilterKey": [
+      "audio_language",
+      "subtitle_language"
+    ],
+    "BitrateFilterKey": [
+      "audio_bitrate",
+      "video_bitrate"
+    ],
+    "ContainerType": [
+      "TS",
+      "CMAF",
+      "ISM"
+    ],
+    "CmafEncryptionMethod": [
+      "CENC",
+      "CBCS"
+    ],
+    "TsEncryptionMethod": [
+      "AES_128",
+      "SAMPLE_AES"
+    ],
+    "PresetSpeke20Audio": [
+      "PRESET_AUDIO_1",
+      "PRESET_AUDIO_2",
+      "PRESET_AUDIO_3",
+      "SHARED",
+      "UNENCRYPTED"
+    ],
+    "PresetSpeke20Video": [
+      "PRESET_VIDEO_1",
+      "PRESET_VIDEO_2",
+      "PRESET_VIDEO_3",
+      "PRESET_VIDEO_4",
+      "PRESET_VIDEO_5",
+      "PRESET_VIDEO_6",
+      "PRESET_VIDEO_7",
+      "PRESET_VIDEO_8",
+      "SHARED",
+      "UNENCRYPTED"
+    ],
+    "EndpointErrorConfiguration": [
+      "STALE_MANIFEST",
+      "INCOMPLETE_MANIFEST",
+      "MISSING_DRM_KEY",
+      "SLATE_INPUT"
+    ],
+    "ScteMessageType": [
+      "SPLICE_INSERT",
+      "BREAK",
+      "PROVIDER_ADVERTISEMENT",
+      "DISTRIBUTOR_ADVERTISEMENT",
+      "PROVIDER_PLACEMENT_OPPORTUNITY",
+      "DISTRIBUTOR_PLACEMENT_OPPORTUNITY",
+      "PROVIDER_OVERLAY_PLACEMENT_OPPORTUNITY",
+      "DISTRIBUTOR_OVERLAY_PLACEMENT_OPPORTUNITY",
+      "PROGRAM"
+    ],
+    "ScteInSegments": [
+      "NONE",
+      "ALL"
+    ],
+    "DrmSettingsKey": [
+      "exclude_session_keys"
+    ],
+    "AdMarkerDash": [
+      "BINARY",
+      "XML"
+    ],
+    "AdMarkerHls": [
+      "DATERANGE",
+      "SCTE35_ENHANCED"
+    ],
+    "SegmentTemplateFormat": [
+      "NUMBER_WITH_TIMELINE"
+    ],
+    "DashUtcTimingMode": [
+      "HTTP_HEAD",
+      "HTTP_ISO",
+      "HTTP_XSDATE",
+      "UTC_DIRECT"
+    ],
+    "DashPeriodTriggers": [
+      "AVAILS",
+      "DRM_KEY_ROTATION",
+      "SOURCE_CHANGES",
+      "SOURCE_DISRUPTIONS",
+      "NONE"
+    ],
+    "DrmSignalling": [
+      "INDIVIDUAL",
+      "REFERENCED"
+    ],
+    "DashManifestCompactness": [
+      "STANDARD",
+      "NONE"
+    ],
+    "TtmlProfile": [
+      "IMSC_1",
+      "EBU_TT_D_101"
+    ],
+    "MssManifestLayout": [
+      "FULL",
+      "COMPACT"
+    ],
+    "CmafDrmSystem": [
+      "FAIRPLAY",
+      "PLAYREADY",
+      "WIDEVINE",
+      "IRDETO"
+    ],
+    "TsDrmSystem": [
+      "FAIRPLAY",
+      "CLEAR_KEY_AES_128"
+    ],
+    "IsmDrmSystem": [
+      "PLAYREADY"
+    ]
+  },
   "aws-cdk/packages/@aws-cdk/aws-msk-alpha/lib/cluster.ts": {
     "StorageMode": [
       "LOCAL",
@@ -1112,6 +1305,10 @@
       "Enabled",
       "Disabled"
     ],
+    "RequestMetricsStatus": [
+      "Enabled",
+      "Disabled"
+    ],
     "TableBucketEncryption": [
       "aws:kms",
       "AES256"
@@ -1124,6 +1321,14 @@
     "Status": [
       "enabled",
       "disabled"
+    ],
+    "SortDirection": [
+      "asc",
+      "desc"
+    ],
+    "NullOrder": [
+      "nulls-first",
+      "nulls-last"
     ]
   },
   "aws-cdk/packages/@aws-cdk/aws-sagemaker-alpha/lib/endpoint.ts": {
@@ -1735,6 +1940,10 @@
       "balanced-only",
       "balanced-best-effort"
     ],
+    "TerminateHookAbandonAction": [
+      "retain",
+      "terminate"
+    ],
     "UpdateType": [
       "None",
       "Replace",
@@ -1969,11 +2178,14 @@
     "EcsMachineImageType": [
       "ECS_AL2",
       "ECS_AL2023",
-      "ECS_AL2_NVIDIA"
+      "ECS_AL2_NVIDIA",
+      "ECS_AL2023_NVIDIA"
     ],
     "EksMachineImageType": [
       "EKS_AL2",
-      "EKS_AL2_NVIDIA"
+      "EKS_AL2_NVIDIA",
+      "EKS_AL2023",
+      "EKS_AL2023_NVIDIA"
     ],
     "AllocationStrategy": [
       "BEST_FIT",
@@ -1984,6 +2196,75 @@
     "DefaultInstanceClass": [
       "default_x86_64",
       "default_arm64"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/common/types.ts": {
+    "CustomClaimValueType": [
+      "STRING",
+      "STRING_ARRAY"
+    ],
+    "CustomClaimOperator": [
+      "EQUALS",
+      "CONTAINS",
+      "CONTAINS_ANY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/inbound-auth/authorizer.ts": {
+    "GatewayAuthorizerType": [
+      "CUSTOM_JWT",
+      "AWS_IAM",
+      "NONE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/interceptor.ts": {
+    "InterceptionPoint": [
+      "REQUEST",
+      "RESPONSE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/outbound-auth/api-key.ts": {
+    "ApiKeyCredentialLocationType": [
+      "HEADER",
+      "QUERY_PARAMETER"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/outbound-auth/credential-provider.ts": {
+    "CredentialProviderType": [
+      "API_KEY",
+      "OAUTH",
+      "GATEWAY_IAM_ROLE"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/protocol.ts": {
+    "GatewayProtocolType": [
+      "MCP"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/gateway/targets/target-base.ts": {
+    "GatewayTargetProtocolType": [
+      "MCP"
+    ],
+    "McpTargetType": [
+      "OPENAPI_SCHEMA",
+      "SMITHY_MODEL",
+      "LAMBDA",
+      "MCP_SERVER",
+      "API_GATEWAY"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/memory/memory-strategy.ts": {
+    "MemoryStrategyType": [
+      "SUMMARIZATION",
+      "SEMANTIC",
+      "USER_PREFERENCE",
+      "EPISODIC",
+      "CUSTOM"
+    ]
+  },
+  "aws-cdk/packages/aws-cdk-lib/aws-bedrockagentcore/lib/tools/browser.ts": {
+    "BrowserSigning": [
+      "ENABLED",
+      "DISABLED"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-certificatemanager/lib/certificate.ts": {
@@ -3050,6 +3331,8 @@
       "c8i-flex",
       "compute7-amd",
       "c7a",
+      "compute8-amd",
+      "c8a",
       "storage2",
       "d2",
       "storage3",
@@ -4091,6 +4374,10 @@
       "ROLLBACK_ON_ALARM",
       "FAIL_ON_ALARM"
     ],
+    "ServiceConnectAccessLogFormat": [
+      "TEXT",
+      "JSON"
+    ],
     "LaunchType": [
       "EC2",
       "FARGATE",
@@ -4718,6 +5005,7 @@
     ],
     "SslPolicy": [
       "ELBSecurityPolicy-TLS13-1-2-2021-06",
+      "ELBSecurityPolicy-TLS13-1-2-PQ-2025-09",
       "ELBSecurityPolicy-2016-08",
       "ELBSecurityPolicy-TLS13-1-2-Res-2021-06",
       "ELBSecurityPolicy-TLS13-1-2-Ext1-2021-06",
@@ -4725,6 +5013,11 @@
       "ELBSecurityPolicy-TLS13-1-0-2021-06",
       "ELBSecurityPolicy-TLS13-1-1-2021-06",
       "ELBSecurityPolicy-TLS13-1-3-2021-06",
+      "ELBSecurityPolicy-TLS13-1-3-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-PQ-2025-09",
       "ELBSecurityPolicy-TLS13-1-3-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-2-FIPS-2023-04",
@@ -4733,6 +5026,13 @@
       "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-1-FIPS-2023-04",
       "ELBSecurityPolicy-TLS13-1-0-FIPS-2023-04",
+      "ELBSecurityPolicy-TLS13-1-3-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Res-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext0-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext1-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-2-Ext2-FIPS-PQ-2025-09",
+      "ELBSecurityPolicy-TLS13-1-0-FIPS-PQ-2025-09",
       "ELBSecurityPolicy-FS-1-2-Res-2020-10",
       "ELBSecurityPolicy-FS-1-2-Res-2019-08",
       "ELBSecurityPolicy-FS-1-2-2019-08",
@@ -5491,6 +5791,10 @@
       "all_storage_classes_128K",
       "varies_by_storage_class"
     ],
+    "BucketNamespace": [
+      "global",
+      "account-regional"
+    ],
     "BucketEncryption": [
       "UNENCRYPTED",
       "KMS_MANAGED",
@@ -5643,6 +5947,11 @@
       "BOUNCES_AND_COMPLAINTS",
       "BOUNCES_ONLY",
       "COMPLAINTS_ONLY"
+    ],
+    "AutoValidationThreshold": [
+      "MEDIUM",
+      "HIGH",
+      "MANAGED"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/aws-ses/lib/dedicated-ip-pool.ts": {
@@ -6174,6 +6483,13 @@
       "NotTaggable"
     ]
   },
+  "aws-cdk/packages/aws-cdk-lib/core/lib/cross-stack-reference-strength.ts": {
+    "ReferenceStrength": [
+      "strong",
+      "weak",
+      "both"
+    ]
+  },
   "aws-cdk/packages/aws-cdk-lib/core/lib/custom-resource-provider/custom-resource-provider.ts": {
     "CustomResourceProviderRuntime": [
       "nodejs12.x",
@@ -6182,7 +6498,8 @@
       "nodejs16.x",
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/deps.ts": {
@@ -6253,6 +6570,10 @@
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/core/lib/validation/report.ts": {
+    "PolicyValidationReportStatus": [
+      "success",
+      "failure"
+    ],
     "PolicyValidationReportStatusBeta1": [
       "success",
       "failure"
@@ -6318,7 +6639,8 @@
     "Runtime": [
       "nodejs18.x",
       "nodejs20.x",
-      "nodejs22.x"
+      "nodejs22.x",
+      "nodejs24.x"
     ]
   },
   "aws-cdk/packages/aws-cdk-lib/triggers/lib/trigger.ts": {

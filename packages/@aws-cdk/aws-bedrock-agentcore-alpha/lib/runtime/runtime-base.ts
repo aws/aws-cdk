@@ -26,6 +26,7 @@ import {
 import type * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { ValidationError } from 'aws-cdk-lib/core/lib/errors';
+import { lit } from 'aws-cdk-lib/core/lib/helpers-internal';
 import type { Construct } from 'constructs';
 import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
 
@@ -35,6 +36,7 @@ import { RUNTIME_INVOKE_PERMS, RUNTIME_INVOKE_USER_PERMS } from './perms';
 
 /**
  * Interface for Agent Runtime resources
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.IConnectable, IRuntimeRef {
   /**
@@ -192,6 +194,7 @@ export interface IBedrockAgentRuntime extends IResource, iam.IGrantable, ec2.ICo
 
 /**
  * Base class for Agent Runtime
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export abstract class RuntimeBase extends Resource implements IBedrockAgentRuntime {
   // Abstract properties
@@ -221,7 +224,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
    */
   public get connections(): ec2.Connections {
     if (!this._connections) {
-      throw new ValidationError('VpcNotConfigured', 'Cannot manage network access without configuring a VPC', this);
+      throw new ValidationError(lit`VpcNotConfigured`, 'Cannot manage network access without configuring a VPC', this);
     }
     return this._connections;
   }
@@ -413,6 +416,7 @@ export abstract class RuntimeBase extends Resource implements IBedrockAgentRunti
 
 /**
  * Attributes for importing an existing Agent Runtime
+ * @deprecated Use the equivalent construct from `aws-cdk-lib/aws-bedrockagentcore` instead.
  */
 export interface AgentRuntimeAttributes {
   /**
