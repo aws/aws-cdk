@@ -43,10 +43,10 @@ describe('CloudFormationValidatePlugin', () => {
     expect(output).toContain('BogusProperty');
   });
 
-  test('does not run when feature flag is disabled', () => {
+  test('downgrades errors to warnings when flag is not explicitly enabled', () => {
     const app = new core.App({
       context: {
-        [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: false,
+        [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
     });
     const stack = new core.Stack(app, 'TestStack');
@@ -60,6 +60,9 @@ describe('CloudFormationValidatePlugin', () => {
     app.synth();
 
     expect(process.exitCode).toBeUndefined();
+    const output = consoleErrorMock.mock.calls.map((c: any[]) => c[0]).join('\n');
+    expect(output).toContain('CloudFormation Validate found issues');
+    expect(output).toContain(cxapi.VALIDATE_AGAINST_DEFAULT_RULES);
   });
 
   test('succeeds with valid template', () => {

@@ -1920,14 +1920,14 @@ export const FLAGS: Record<string, FlagInfo> = {
   //////////////////////////////////////////////////////////////////////
   [VALIDATE_AGAINST_DEFAULT_RULES]: {
     type: FlagType.VisibleContext,
-    summary: 'Validate synthesized templates against default CloudFormation rules',
+    summary: 'Treat CloudFormation Validate findings as errors',
     detailsMd: `
-      When enabled, the CDK will automatically validate all synthesized templates against
-      a default set of CloudFormation rules during synthesis. These rules include schema
-      validation, best-practice linting, and common misconfiguration detection. Violations
-      are reported through the policy validation report.
+      The CDK always validates synthesized templates against a default set of CloudFormation
+      rules during synthesis. These rules include schema validation, best-practice linting,
+      and common misconfiguration detection.
 
-      When disabled, only explicitly registered validation plugins are run.`,
+      When this flag is explicitly set to \`true\`, violations are treated as errors and will
+      fail synthesis. When unconfigured, violations are reported as warnings only.`,
     introducedIn: { v2: 'V2NEXT' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },

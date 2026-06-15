@@ -1,14 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as cx_api from 'aws-cdk-lib/cx-api';
 import { IntegTest } from '@aws-cdk/integ-tests-alpha';
 
-const app = new cdk.App({
-  context: {
-    [cx_api.VALIDATE_AGAINST_DEFAULT_RULES]: true,
-    [cx_api.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: false,
-  },
-});
+const app = new cdk.App();
 
 const stack = new cdk.Stack(app, 'CloudFormationValidatePluginStack');
 
