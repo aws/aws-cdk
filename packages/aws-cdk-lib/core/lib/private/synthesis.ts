@@ -23,7 +23,7 @@ import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
-import { DefaultValidationPlugin } from '../validation/default-validation-plugin';
+import { CloudFormationValidatePlugin } from '../validation/cloudformation-validate-plugin';
 import { ConstructTree } from '../validation/private/construct-tree';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
 import { PolicyValidationReportFormatter } from '../validation/private/report';
@@ -133,7 +133,7 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (FeatureFlags.of(root).isEnabled(cxapi.VALIDATE_AGAINST_DEFAULT_RULES)) {
     const defaultEnginePaths = assembly.stacksRecursively.map(s => s.templateFullPath);
     if (defaultEnginePaths.length > 0) {
-      plugins.push({ plugin: new DefaultValidationPlugin(), templatePaths: defaultEnginePaths });
+      plugins.push({ plugin: new CloudFormationValidatePlugin(), templatePaths: defaultEnginePaths });
     }
   }
 

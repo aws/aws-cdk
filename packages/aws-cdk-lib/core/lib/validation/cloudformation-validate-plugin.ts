@@ -28,9 +28,9 @@ export interface ValidationRuleSource {
 }
 
 /**
- * Properties for configuring the DefaultValidationPlugin.
+ * Properties for configuring the CloudFormationValidatePlugin.
  */
-export interface DefaultValidationPluginProps {
+export interface CloudFormationValidatePluginProps {
   /**
    * The name to use for this plugin instance in validation reports.
    *
@@ -57,15 +57,15 @@ export interface DefaultValidationPluginProps {
 }
 
 /**
- * Default validation plugin that uses the CloudFormation validation engine
+ * Validation plugin that uses the CloudFormation validation engine
  * to evaluate templates against built-in rules.
  */
-export class DefaultValidationPlugin implements IPolicyValidationPlugin {
+export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
   public readonly name: string;
 
   private readonly engine: Engine;
 
-  constructor(props: DefaultValidationPluginProps = {}) {
+  constructor(props: CloudFormationValidatePluginProps = {}) {
     this.name = props.name ?? 'Default Engine';
     const config: EngineConfig = {};
     if (props.customRules) {

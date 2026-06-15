@@ -20,7 +20,7 @@ afterAll(() => {
   jest.resetAllMocks();
 });
 
-describe('DefaultValidationPlugin', () => {
+describe('CloudFormationValidatePlugin', () => {
   test('reports schema violations for invalid properties', () => {
     const app = new core.App({
       context: {
@@ -80,7 +80,7 @@ describe('DefaultValidationPlugin', () => {
   });
 
   test('plugin can be instantiated directly with custom rules', () => {
-    const plugin = new core.DefaultValidationPlugin({
+    const plugin = new core.CloudFormationValidatePlugin({
       name: 'Custom Engine',
       customRules: [{ name: 'my-rule', content: 'package main' }],
     });
@@ -104,7 +104,7 @@ describe('DefaultValidationPlugin', () => {
       },
     }));
 
-    const plugin = new core.DefaultValidationPlugin();
+    const plugin = new core.CloudFormationValidatePlugin();
     const report = plugin.validate({ templatePaths: [templatePath], appConstruct: new Construct(undefined as any, '') });
 
     expect(report.success).toBe(false);

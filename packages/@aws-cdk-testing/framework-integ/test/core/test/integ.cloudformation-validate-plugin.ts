@@ -10,7 +10,7 @@ const app = new cdk.App({
   },
 });
 
-const stack = new cdk.Stack(app, 'DefaultValidationPluginStack');
+const stack = new cdk.Stack(app, 'CloudFormationValidatePluginStack');
 
 const bucket = new s3.Bucket(stack, 'MyBucket', {
   removalPolicy: cdk.RemovalPolicy.DESTROY,
@@ -20,6 +20,6 @@ const bucket = new s3.Bucket(stack, 'MyBucket', {
 const cfnBucket = bucket.node.defaultChild as s3.CfnBucket;
 cfnBucket.addPropertyOverride('BogusProperty', 'invalid-value');
 
-new IntegTest(app, 'DefaultValidationPluginTest', {
+new IntegTest(app, 'CloudFormationValidatePluginTest', {
   testCases: [stack],
 });
