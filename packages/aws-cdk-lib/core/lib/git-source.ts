@@ -97,7 +97,7 @@ function detectGitSource(): { repository: string; commit: string } {
     cwd: process.cwd(),
   };
 
-  const rawRepository = execSync('git ls-remote --get-url', opts).trim();
+  const rawRepository = execSync('git config --get remote.origin.url', opts).trim();
   const commit = execSync('git rev-parse HEAD', opts).trim();
 
   // Validate commit hash format (40 hex chars for SHA-1, 64 for SHA-256)
@@ -113,13 +113,13 @@ function detectGitSource(): { repository: string; commit: string } {
   const urlRegex = /^(https?:\/\/|git@|git:\/\/|ssh:\/\/)[^\s<>"|{}^`\[\]\\]+$/;
   if (!rawRepository || /[\x00-\x1F\x7F]/.test(rawRepository) || !urlRegex.test(rawRepository)) {
     throw new UnscopedValidationError(lit`InvalidRepositoryUrl`,
-      'git ls-remote --get-url returned a URL with unexpected content. '
+      'git config --get remote.origin.url returned a URL with unexpected content. '
       + `Got: ${JSON.stringify(rawRepository)}`,
     );
   }
 
   // Sanitize repository URL to remove embedded credentials (only in the authority portion)
-  const repository = rawRepository.replace(/^(https?:\/\/)[^/@]+@/, '$1');
+  const repository = rawRepository.replace(/^((?:https?|ssh|git):\/\/)[^/@]+@/, '$1');
 
   return { repository, commit };
 }

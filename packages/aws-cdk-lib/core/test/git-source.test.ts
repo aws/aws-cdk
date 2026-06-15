@@ -95,6 +95,30 @@ test('sanitizes credentials from repository URL', () => {
   expect(source?.repository).toBe('https://github.com/example/repo.git');
 });
 
+test('sanitizes credentials from repository URL (ssh)', () => {
+  mockExecSync
+    .mockReturnValueOnce('ssh://user:token@github.com/example/repo.git')
+    .mockReturnValueOnce('a'.repeat(40));
+
+  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const stack = new Stack(app, 'Stack');
+
+  const source = GitSource.of(stack);
+  expect(source?.repository).toBe('ssh://github.com/example/repo.git');
+});
+
+test('sanitizes credentials from repository URL (git)', () => {
+  mockExecSync
+    .mockReturnValueOnce('git://user:token@github.com/example/repo.git')
+    .mockReturnValueOnce('a'.repeat(40));
+
+  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const stack = new Stack(app, 'Stack');
+
+  const source = GitSource.of(stack);
+  expect(source?.repository).toBe('git://github.com/example/repo.git');
+});
+
 test('returns undefined for invalid commit hash', () => {
   mockExecSync
     .mockReturnValueOnce('https://github.com/example/repo.git')
