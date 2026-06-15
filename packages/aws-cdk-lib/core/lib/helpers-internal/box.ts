@@ -6,8 +6,8 @@ const BOX_SYM = Symbol.for('@aws-cdk/core.Box');
 
 export type MakeReadonly<A> = A extends Set<infer E> ? ReadonlySet<E> :
   A extends Map<infer K, infer E> ? ReadonlyMap<K, E> :
-  A extends Array<infer E> ? ReadonlyArray<E> :
-  A extends object ? Readonly<A> : A;
+    A extends Array<infer E> ? ReadonlyArray<E> :
+      A extends object ? Readonly<A> : A;
 
 /**
  * A read-only observable container that holds a value of type `A` and implements `IResolvable`.
