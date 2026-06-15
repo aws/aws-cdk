@@ -27,4 +27,4 @@ export const STANDARD_NODEJS_RUNTIME = Runtime.NODEJS_24_X;
  * the date we have to update the value again as much as possible
  * so we don't update this value frequently.
  */
-export const STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_22_X;
+export const STANDARD_CUSTOM_RESOURCE_PROVIDER_RUNTIME = CustomResourceProviderRuntime.NODEJS_24_X;
