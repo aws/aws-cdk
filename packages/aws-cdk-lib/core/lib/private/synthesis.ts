@@ -138,9 +138,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
 
   if (plugins.length === 0) return;
 
-  // eslint-disable-next-line no-console
-  console.error('Performing Policy Validations\n');
-
   // Snapshot pre-existing files so we can detect modifications while still
   // allowing plugins to create new files in the assembly directory.
   const preExistingFileHashes = snapshotFileHashes(outdir);
@@ -214,7 +211,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   if (reports.length > 0) {
     const tree = new ConstructTree(root);
     const formatter = new PolicyValidationReportFormatter(tree);
-    const failOnErrors = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
     const writeLegacyReport = getBooleanContext(root, cxapi.VALIDATION_REPORT_JSON_CONTEXT, false);
 
     const reportFile = path.join(assembly.directory, cxapi.VALIDATION_REPORT_FILE);
@@ -225,18 +221,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
       const legacyReportFile = path.join(assembly.directory, LEGACY_POLICY_VALIDATION_FILE_PATH);
       const legacyOutput = formatter.formatLegacyJson(reports);
       fs.writeFileSync(legacyReportFile, JSON.stringify(legacyOutput, undefined, 2));
-    }
-
-    if (failOnErrors) {
-      const output = formatter.formatPrettyPrinted(reports);
-      // eslint-disable-next-line no-console
-      console.error(output);
-      const failed = reports.some(r => !r.success);
-      if (failed) {
-        // eslint-disable-next-line no-console
-        console.error(`Validation failed. A copy of this report can be found in '${reportFile}'`);
-        process.exitCode = 1;
-      }
     }
   }
 }
