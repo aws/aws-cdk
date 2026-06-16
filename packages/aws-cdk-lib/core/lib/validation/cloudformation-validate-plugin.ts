@@ -51,6 +51,9 @@ export interface CloudFormationValidatePluginProps {
  * to evaluate templates against built-in rules.
  */
 export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
+  /**
+   * The default name of this plugin
+   */
   public static readonly PLUGIN_NAME = 'CloudFormation Validate';
   public readonly name = CloudFormationValidatePlugin.PLUGIN_NAME;
 
