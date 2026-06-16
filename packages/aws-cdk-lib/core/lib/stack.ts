@@ -595,7 +595,7 @@ export class Stack extends Construct implements ITaggable {
     if (GitSource.isEnabledFor(this)) {
       const gitSource = GitSource.of(this);
       if (gitSource) {
-        this.addMetadata('AWS::CloudFormation::Source', {
+        this.addMetadata('AWS::CDK::Source', {
           Repository: gitSource.repository,
           Commit: gitSource.commit,
         });

@@ -3297,7 +3297,7 @@ describe('regionalFact', () => {
 
     const assembly = app.synth();
     const template = assembly.getStackByName(stack.stackName).template;
-    expect(template?.Metadata?.['AWS::CloudFormation::Source']).toBeUndefined();
+    expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
   });
 
   test('git source metadata is included when enableGitSource context is true', () => {
@@ -3309,7 +3309,7 @@ describe('regionalFact', () => {
     const assembly = app.synth();
     const stackArtifact = assembly.getStackByName(stack.stackName);
     const template = stackArtifact.template;
-    const source = template?.Metadata?.['AWS::CloudFormation::Source'];
+    const source = template?.Metadata?.['AWS::CDK::Source'];
 
     expect(source).toBeDefined();
     expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
