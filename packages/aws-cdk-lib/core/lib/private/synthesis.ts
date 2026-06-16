@@ -17,7 +17,6 @@ import { Annotations } from '../annotations';
 import { App } from '../app';
 import { _aspectTreeRevisionReader, AspectApplication, AspectPriority, Aspects } from '../aspect';
 import { AssumptionError, UnscopedValidationError } from '../errors';
-import { FeatureFlags } from '../feature-flags';
 import { Stack } from '../stack';
 import type { ISynthesisSession } from '../stack-synthesizers/types';
 import type { StageSynthesisOptions } from '../stage';
@@ -129,11 +128,9 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
   }
 
   // 2. Construct annotations (as a plugin, only if there are annotations to report)
-  if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
-    const annotationReport = collectAnnotationReport(root, assembly.directory);
-    if (annotationReport) {
-      plugins.push({ plugin: new AnnotationPlugin(annotationReport), templatePaths: [] });
-    }
+  const annotationReport = collectAnnotationReport(root, assembly.directory);
+  if (annotationReport) {
+    plugins.push({ plugin: new AnnotationPlugin(annotationReport), templatePaths: [] });
   }
 
   if (plugins.length === 0) return;

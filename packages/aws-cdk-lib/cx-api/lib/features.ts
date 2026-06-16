@@ -155,7 +155,6 @@ export const ELB_USE_POST_QUANTUM_TLS_POLICY = '@aws-cdk/aws-elasticloadbalancin
 export const AUTOMATIC_L1_TRAITS = '@aws-cdk/core:automaticL1Traits';
 export const BATCH_DEFAULT_AL2023 = '@aws-cdk/aws-batch:defaultToAL2023';
 export const EKS_DEFAULT_AL2023 = '@aws-cdk/aws-eks:defaultToAL2023';
-export const ANNOTATIONS_IN_VALIDATION_REPORT = '@aws-cdk/core:annotationsInValidationReport';
 export const DEFAULT_CROSS_STACK_REFERENCES = '@aws-cdk/core:defaultCrossStackReferences';
 
 export const FLAGS: Record<string, FlagInfo> = {
@@ -1862,26 +1861,6 @@ export const FLAGS: Record<string, FlagInfo> = {
     compatibilityWithOldBehaviorMd: `Explicitly set \`amiType\` to the desired AL2 type (e.g., \`NodegroupAmiType.AL2_X86_64\`) in your nodegroup configuration.
 
 **Warning**: Enabling this flag on existing stacks will cause node group replacement, which terminates running pods. To migrate safely, first pin existing node groups to their current amiType explicitly, then enable the flag for new node groups.`,
-  },
-
-  //////////////////////////////////////////////////////////////////////
-  [ANNOTATIONS_IN_VALIDATION_REPORT]: {
-    type: FlagType.VisibleContext,
-    summary: 'Include construct annotations (warnings and errors) in the policy validation report',
-    detailsMd: `
-      When enabled, construct annotations added via \`Annotations.of()\` or \`Validations.of()\`
-      are collected post-synthesis and included in the policy validation report alongside
-      plugin violations. Annotations appear under a "Construct Annotations" source entry.
-
-      When disabled, annotations are only displayed through the CLI's standard metadata
-      output (e.g. \`[Warning at /path] message\`) and do not appear in the validation report.
-
-      Note: enabling this flag may cause annotations to appear twice — once in the CLI's
-      standard output and once in the validation report — until the CLI is updated to
-      consolidate both displays.`,
-    introducedIn: { v2: '2.253.0' },
-    recommendedValue: true,
-    unconfiguredBehavesLike: { v2: false },
   },
 
   //////////////////////////////////////////////////////////////////////
