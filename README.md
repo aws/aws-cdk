@@ -178,7 +178,7 @@ Or in your `cdk.json`:
 ```
 
 When enabled, the git remote URL and current commit hash are added as
-`AWS::CloudFormation::Source` metadata to each stack template.
+`AWS::CDK::Source` metadata to each stack template.
 
 ## More Resources
 
