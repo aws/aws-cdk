@@ -18,7 +18,7 @@ test('returns git source when context is enabled and git is available', () => {
     .mockReturnValueOnce('https://github.com/example/repo.git')
     .mockReturnValueOnce('a'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const source = GitSource.of(stack);
@@ -31,7 +31,7 @@ test('returns git source when context is enabled and git is available', () => {
 test('returns undefined when git is not available', () => {
   mockExecSync.mockImplementation(() => { throw new Error('not a git repo'); });
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   expect(GitSource.of(stack)).toBeUndefined();
@@ -42,7 +42,7 @@ test('caches result across multiple calls', () => {
     .mockReturnValueOnce('https://github.com/example/repo.git')
     .mockReturnValueOnce('a'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const first = GitSource.of(stack);
@@ -55,7 +55,7 @@ test('caches result across multiple calls', () => {
 test('caches undefined result', () => {
   mockExecSync.mockImplementation(() => { throw new Error('not a git repo'); });
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   expect(GitSource.of(stack)).toBeUndefined();
@@ -71,7 +71,7 @@ test('clearCache resets the cache', () => {
     .mockReturnValueOnce('https://github.com/example/repo2.git')
     .mockReturnValueOnce('b'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const first = GitSource.of(stack);
@@ -88,7 +88,7 @@ test('sanitizes credentials from repository URL', () => {
     .mockReturnValueOnce('https://user:token@github.com/example/repo.git')
     .mockReturnValueOnce('a'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const source = GitSource.of(stack);
@@ -100,7 +100,7 @@ test('sanitizes credentials from repository URL (ssh)', () => {
     .mockReturnValueOnce('ssh://user:token@github.com/example/repo.git')
     .mockReturnValueOnce('a'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const source = GitSource.of(stack);
@@ -112,7 +112,7 @@ test('sanitizes credentials from repository URL (git)', () => {
     .mockReturnValueOnce('git://user:token@github.com/example/repo.git')
     .mockReturnValueOnce('a'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const source = GitSource.of(stack);
@@ -124,7 +124,7 @@ test('returns undefined for invalid commit hash', () => {
     .mockReturnValueOnce('https://github.com/example/repo.git')
     .mockReturnValueOnce('not-a-valid-hash');
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   expect(GitSource.of(stack)).toBeUndefined();
@@ -135,7 +135,7 @@ test('returns undefined for invalid repository URL', () => {
     .mockReturnValueOnce('not a valid url')
     .mockReturnValueOnce('a'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   expect(GitSource.of(stack)).toBeUndefined();
@@ -146,7 +146,7 @@ test('accepts SHA-256 commit hashes (64 hex chars)', () => {
     .mockReturnValueOnce('https://github.com/example/repo.git')
     .mockReturnValueOnce('a'.repeat(64));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const source = GitSource.of(stack);
@@ -154,7 +154,7 @@ test('accepts SHA-256 commit hashes (64 hex chars)', () => {
 });
 
 test('isEnabledFor accepts string "true" from CLI context', () => {
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': 'true' } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': 'true' } });
   const stack = new Stack(app, 'Stack');
 
   expect(GitSource.isEnabledFor(stack)).toBe(true);
@@ -165,7 +165,7 @@ test('does not corrupt URLs with @ in path segment', () => {
     .mockReturnValueOnce('https://git.example.com/team@org/repo.git')
     .mockReturnValueOnce('a'.repeat(40));
 
-  const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+  const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
   const stack = new Stack(app, 'Stack');
 
   const source = GitSource.of(stack);

@@ -5,7 +5,7 @@ import { Annotations } from './annotations';
 import { UnscopedValidationError } from './errors';
 import { lit } from './private/literal-string';
 
-const ENABLE_GIT_SOURCE_CONTEXT = '@aws-cdk/core:enableGitSource';
+export const GIT_SOURCE_CONTEXT = '@aws-cdk/core:trackSourceCommit';
 
 let detectAttempted = false;
 let cached: GitSource | undefined;
@@ -15,7 +15,7 @@ let cached: GitSource | undefined;
  * for the current CDK application.
  *
  * The git source is detected automatically from the environment when the
- * `@aws-cdk/core:enableGitSource` context flag is enabled.
+ * `@aws-cdk/core:trackSourceCommit` context flag is enabled.
  *
  * @example
  *
@@ -30,10 +30,10 @@ export class GitSource {
   /**
    * Returns whether git source detection is enabled for the given scope.
    *
-   * This checks the `@aws-cdk/core:enableGitSource` context flag.
+   * This checks the `@aws-cdk/core:trackSourceCommit` context flag.
    */
   public static isEnabledFor(scope: IConstruct): boolean {
-    const value = scope.node.tryGetContext(ENABLE_GIT_SOURCE_CONTEXT);
+    const value = scope.node.tryGetContext(GIT_SOURCE_CONTEXT);
     return value === true || value === 'true';
   }
 
@@ -109,17 +109,42 @@ function detectGitSource(): { repository: string; commit: string } {
     );
   }
 
-  // Validate URL format and reject control characters
-  const urlRegex = /^(https?:\/\/|git@|git:\/\/|ssh:\/\/)[^\s<>"|{}^`\[\]\\]+$/;
-  if (!rawRepository || /[\x00-\x1F\x7F]/.test(rawRepository) || !urlRegex.test(rawRepository)) {
+  if (!rawRepository || /[\x00-\x1F\x7F]/.test(rawRepository)) {
     throw new UnscopedValidationError(lit`InvalidRepositoryUrl`,
       'git config --get remote.origin.url returned a URL with unexpected content. '
       + `Got: ${JSON.stringify(rawRepository)}`,
     );
   }
 
-  // Sanitize repository URL to remove embedded credentials (only in the authority portion)
-  const repository = rawRepository.replace(/^((?:https?|ssh|git):\/\/)[^/@]+@/, '$1');
+  const repository = sanitizeRepositoryUrl(rawRepository);
 
   return { repository, commit };
+}
+
+/**
+ * Validates and removes embedded credentials from a repository URL.
+ *
+ * For scheme-based URLs (https://, ssh://, git://), uses the URL class to
+ * strip username/password. For SCP-like URLs (git@host:path), returns as-is
+ * since they cannot contain embedded passwords.
+ */
+function sanitizeRepositoryUrl(raw: string): string {
+  // SCP-like syntax (e.g. git@github.com:org/repo.git) — no credentials to strip
+  if (/^[^/]+@[^:]+:/.test(raw) && !raw.includes('://')) {
+    return raw;
+  }
+
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new UnscopedValidationError(lit`InvalidRepositoryUrl`,
+      'git config --get remote.origin.url returned a URL with unexpected content. '
+      + `Got: ${JSON.stringify(raw)}`,
+    );
+  }
+
+  url.username = '';
+  url.password = '';
+  return url.toString();
 }

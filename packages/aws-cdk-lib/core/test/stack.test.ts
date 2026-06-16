@@ -3300,9 +3300,9 @@ describe('regionalFact', () => {
     expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
   });
 
-  test('git source metadata is included when enableGitSource context is true', () => {
+  test('git source metadata is included when trackSourceCommit context is true', () => {
     GitSource._clearCache();
-    const app = new App({ context: { '@aws-cdk/core:enableGitSource': true } });
+    const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
     const stack = new Stack(app, 'Stack');
     new CfnResource(stack, 'Resource', { type: 'MyResource' });
 
@@ -3314,6 +3314,33 @@ describe('regionalFact', () => {
     expect(source).toBeDefined();
     expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
     expect(source.Repository).toContain('github.com');
+    GitSource._clearCache();
+  });
+
+  test('git source metadata is included when trackSourceCommit is set on App props', () => {
+    GitSource._clearCache();
+    const app = new App({ trackSourceCommit: true });
+    const stack = new Stack(app, 'Stack');
+    new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    const source = template?.Metadata?.['AWS::CDK::Source'];
+
+    expect(source).toBeDefined();
+    expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
+    GitSource._clearCache();
+  });
+
+  test('stack-level trackSourceCommit overrides app-level setting', () => {
+    GitSource._clearCache();
+    const app = new App({ trackSourceCommit: true });
+    const stack = new Stack(app, 'Stack', { trackSourceCommit: false });
+    new CfnResource(stack, 'Resource', { type: 'MyResource' });
+
+    const assembly = app.synth();
+    const template = assembly.getStackByName(stack.stackName).template;
+    expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
     GitSource._clearCache();
   });
 });

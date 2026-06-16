@@ -156,29 +156,27 @@ this capability, please see the [developer guide](https://docs.aws.amazon.com/cd
 ## Git source metadata
 
 The CDK can record the git repository URL and commit hash in your synthesized CloudFormation
-templates. This is disabled by default. To enable it, set the `@aws-cdk/core:enableGitSource`
-context key to `true` in your CDK app:
+templates. This is disabled by default. To enable it, set `trackSourceCommit` in your
+CDK app:
 
 ```ts
 new App({
-  context: {
-    '@aws-cdk/core:enableGitSource': true,
-  },
+  trackSourceCommit: true,
 });
 ```
 
-Or in your `cdk.json`:
+Or use the `@aws-cdk/core:trackSourceCommit` context key in your `cdk.json`:
 
 ```json
 {
   "context": {
-    "@aws-cdk/core:enableGitSource": true
+    "@aws-cdk/core:trackSourceCommit": true
   }
 }
 ```
 
-When enabled, the git remote URL and current commit hash are added as
-`AWS::CDK::Source` metadata to each stack template.
+When enabled, the git remote URL and current commit hash are added as `AWS::CDK::Source` metadata to
+the template of each stack that has this feature enabled.
 
 ## More Resources
 
