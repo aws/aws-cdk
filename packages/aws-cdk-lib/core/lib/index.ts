@@ -39,7 +39,6 @@ export * from './duration';
 export * from './bitrate';
 export * from './expiration';
 export * from './size';
-export * from './stack-trace';
 export type { Element } from './deps';
 export * from './errors';
 
@@ -69,6 +68,7 @@ export * from './cfn-capabilities';
 export * from './cloudformation.generated';
 
 export * from './feature-flags';
+export * from './git-source';
 export * from './permissions-boundary';
 
 export * from './validation';
