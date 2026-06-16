@@ -1,5 +1,5 @@
 import { RegoEngine, TemplateFile, version } from '@aws/cloudformation-validate';
-import type { Engine, EngineConfig, ExternalRuleSource, RuleInfo, Severity } from '@aws/cloudformation-validate';
+import type { Engine, EngineConfig, RuleInfo, Severity } from '@aws/cloudformation-validate';
 import type { PolicyValidationPluginReport, PolicyViolatingResource } from './report';
 import type { IPolicyValidationPlugin, IPolicyValidationContext } from './validation';
 
@@ -36,7 +36,7 @@ export interface CloudFormationValidatePluginProps {
    *
    * @default - no custom rules
    */
-  readonly customRules?: ValidationRuleSource[];
+  readonly regoRules?: ValidationRuleSource[];
 
   /**
    * Custom Guard rules to evaluate in addition to built-in rules.
@@ -57,11 +57,11 @@ export class CloudFormationValidatePlugin implements IPolicyValidationPlugin {
 
   constructor(props: CloudFormationValidatePluginProps = {}) {
     const config: EngineConfig = {};
-    if (props.customRules) {
-      config.customRules = props.customRules as ExternalRuleSource[];
+    if (props.regoRules) {
+      config.customRules = props.regoRules;
     }
     if (props.guardRules) {
-      config.guardRules = props.guardRules as ExternalRuleSource[];
+      config.guardRules = props.guardRules;
     }
     this.engine = new RegoEngine(config);
   }

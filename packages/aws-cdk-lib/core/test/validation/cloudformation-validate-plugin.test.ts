@@ -84,7 +84,7 @@ describe('CloudFormationValidatePlugin', () => {
 
   test('plugin can be instantiated directly with custom rules', () => {
     const plugin = new core.CloudFormationValidatePlugin({
-      customRules: [{ name: 'my-rule', content: 'package main' }],
+      regoRules: [{ name: 'my-rule', content: 'package main' }],
     });
 
     expect(plugin.name).toBe('CloudFormation Validate');
@@ -94,12 +94,12 @@ describe('CloudFormationValidatePlugin', () => {
 
   test('user-registered instance replaces the auto-registered one', () => {
     const app = new core.App({
-      policyValidationBeta1: [new core.CloudFormationValidatePlugin()],
       context: {
         [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
     });
+    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
       type: 'AWS::S3::Bucket',
@@ -112,15 +112,14 @@ describe('CloudFormationValidatePlugin', () => {
 
   test('fails when registering more than one CloudFormationValidatePlugin', () => {
     const app = new core.App({
-      policyValidationBeta1: [
-        new core.CloudFormationValidatePlugin(),
-        new core.CloudFormationValidatePlugin(),
-      ],
       context: {
         [cxapi.VALIDATE_AGAINST_DEFAULT_RULES]: true,
         [cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT]: true,
       },
     });
+    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+    core.Validations.of(app).addPlugins(new core.CloudFormationValidatePlugin());
+
     const stack = new core.Stack(app, 'TestStack');
     new core.CfnResource(stack, 'MyBucket', {
       type: 'AWS::S3::Bucket',
