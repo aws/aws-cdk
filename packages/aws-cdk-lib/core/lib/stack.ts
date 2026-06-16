@@ -213,6 +213,18 @@ export interface StackProps {
   readonly suppressTemplateIndentation?: boolean;
 
   /**
+   * Include git source information (repository URL and commit hash) in the
+   * template metadata of this Stack.
+   *
+   * When enabled, the synthesized CloudFormation template will include an
+   * `AWS::CDK::Source` metadata entry with the repository and commit.
+   *
+   * @default - Value of `trackSourceCommit` on containing `App`, or
+   * value of `@aws-cdk/core:trackSourceCommit` context key
+   */
+  readonly trackSourceCommit?: boolean;
+
+  /**
    * A list of IPropertyInjector attached to this Stack.
    * @default - no PropertyInjectors
    */
@@ -229,7 +241,7 @@ export class Stack extends Construct implements ITaggable {
    * We do attribute detection since we can't reliably use 'instanceof'.
    */
   public static isStack(this: void, x: any): x is Stack {
-    return x !== null && typeof(x) === 'object' && STACK_SYMBOL in x;
+    return x !== null && typeof (x) === 'object' && STACK_SYMBOL in x;
   }
 
   /**
@@ -263,7 +275,7 @@ export class Stack extends Construct implements ITaggable {
         return c;
       }
 
-      const _scope = Node.of(c).scope;
+      const _scope = c.node.scope;
       if (Stage.isStage(c) || !_scope) {
         throw new ValidationError(lit`ShouldBeCreatedInStackScope`, `${construct.constructor?.name ?? 'Construct'} at '${Node.of(construct).path}' should be created in the scope of a Stack, but no Stack found`, c);
       }
@@ -504,8 +516,8 @@ export class Stack extends Construct implements ITaggable {
     }
 
     this._missingContext = new Array<cxschema.MissingContext>();
-    this._stackDependencies = { };
-    this.templateOptions = { };
+    this._stackDependencies = {};
+    this.templateOptions = {};
     this._crossRegionReferences = !!props.crossRegionReferences;
     this._suppressTemplateIndentation = props.suppressTemplateIndentation ?? this.node.tryGetContext(SUPPRESS_TEMPLATE_INDENTATION_CONTEXT) ?? false;
 
@@ -572,11 +584,11 @@ export class Stack extends Construct implements ITaggable {
 
     // Not for nested stacks
     this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
-      && !this.nestedStackParent;
+        && !this.nestedStackParent;
 
     const synthesizer = (props.synthesizer
-      ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
-      ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
+        ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
+        ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
 
     if (isReusableStackSynthesizer(synthesizer)) {
       // Produce a fresh instance for each stack (should have been the default behavior)
@@ -591,6 +603,20 @@ export class Stack extends Construct implements ITaggable {
 
     // add the permissions boundary aspect
     this.addPermissionsBoundaryAspect();
+
+    if (props.trackSourceCommit !== undefined) {
+      this.node.setContext(GIT_SOURCE_CONTEXT, props.trackSourceCommit);
+    }
+
+    if (GitSource.isEnabledFor(this)) {
+      const gitSource = GitSource.of(this);
+      if (gitSource) {
+        this.addMetadata('AWS::CDK::Source', {
+          Repository: gitSource.repository,
+          Commit: gitSource.commit,
+        });
+      }
+    }
   }
 
   /**
@@ -634,11 +660,11 @@ export class Stack extends Construct implements ITaggable {
     }
     if (arn &&
       (arn.includes('${Qualifier}')
-      || arn.includes('${AWS::AccountId}')
-      || arn.includes('${AWS::Region}')
-      || arn.includes('${AWS::Partition}'))) {
+        || arn.includes('${AWS::AccountId}')
+        || arn.includes('${AWS::Region}')
+        || arn.includes('${AWS::Partition}'))) {
       throw new ValidationError(lit`PermissionsBoundaryContainsPseudoParameter`, `The permissions boundary ${arn} includes a pseudo parameter, ` +
-      'which is not supported for environment agnostic stacks', this);
+        'which is not supported for environment agnostic stacks', this);
     }
     return arn;
   }
@@ -654,7 +680,7 @@ export class Stack extends Construct implements ITaggable {
         visit(node: IConstruct) {
           if (
             CfnResource.isCfnResource(node) &&
-              (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
+            (node.cfnResourceType == 'AWS::IAM::Role' || node.cfnResourceType == 'AWS::IAM::User')
           ) {
             node.addPropertyOverride('PermissionsBoundary', permissionsBoundaryArn);
           }
@@ -1111,7 +1137,7 @@ export class Stack extends Construct implements ITaggable {
    *
    * @internal
    */
-  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason={}) {
+  public _removeAssemblyDependency(target: Stack, reasonFilter: StackDependencyReason = {}) {
     // defensive: we should never get here for nested stacks
     if (this.nested || target.nested) {
       throw new ValidationError(lit`CannotRemoveAssemblyLevelDependencies`, 'There cannot be assembly-level dependencies for nested stacks', this);
@@ -1526,12 +1552,12 @@ export class Stack extends Construct implements ITaggable {
     // between producer and consumer anyway, so we can just assume that they are).
     const containingAssembly = Stage.of(this);
 
-    if (env.account && typeof(env.account) !== 'string') {
-      throw new ValidationError(lit`AccountIdMustBeString`, `Account id of stack environment must be a 'string' but received '${typeof(env.account)}'`, this);
+    if (env.account && typeof (env.account) !== 'string') {
+      throw new ValidationError(lit`AccountIdMustBeString`, `Account id of stack environment must be a 'string' but received '${typeof (env.account)}'`, this);
     }
 
-    if (env.region && typeof(env.region) !== 'string') {
-      throw new ValidationError(lit`RegionMustBeString`, `Region of stack environment must be a 'string' but received '${typeof(env.region)}'`, this);
+    if (env.region && typeof (env.region) !== 'string') {
+      throw new ValidationError(lit`RegionMustBeString`, `Region of stack environment must be a 'string' but received '${typeof (env.region)}'`, this);
     }
 
     const account = env.account ?? containingAssembly?.account ?? Aws.ACCOUNT_ID;
@@ -1619,7 +1645,7 @@ export class Stack extends Construct implements ITaggable {
   /**
    * Generate an ID with respect to the given container construct.
    */
-  private generateStackId(container: IConstruct | undefined, prefix: string='') {
+  private generateStackId(container: IConstruct | undefined, prefix: string = '') {
     const rootPath = rootPathTo(this, container);
     const ids = rootPath.map(c => Node.of(c).id);
 
@@ -1843,7 +1869,7 @@ export function rootPathTo(construct: IConstruct, ancestor?: IConstruct): IConst
  * has only one component. Otherwise we fall back to the regular "makeUniqueId"
  * behavior.
  */
-function makeStackName(components: string[], prefix: string='') {
+function makeStackName(components: string[], prefix: string = '') {
   if (components.length === 1) {
     const stack_name = prefix + components[0];
     if (stack_name.length <= 128) {
@@ -1955,7 +1981,8 @@ import { mutatingAspectPrio32333 } from './private/aspect-prio';
 import { AssumptionError, UnscopedValidationError, ValidationError } from './errors';
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
-import { captureStackTrace } from './stack-trace';
+import { captureStackTrace } from './private/stack-trace';
+import { GIT_SOURCE_CONTEXT, GitSource } from './git-source';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {

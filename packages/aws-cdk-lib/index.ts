@@ -241,6 +241,7 @@ export * as aws_redshiftserverless from './aws-redshiftserverless';
 export * as aws_refactorspaces from './aws-refactorspaces';
 export * as aws_rekognition from './aws-rekognition';
 export * as aws_resiliencehub from './aws-resiliencehub';
+export * as aws_resiliencehubv2 from './aws-resiliencehubv2';
 export * as aws_resourceexplorer2 from './aws-resourceexplorer2';
 export * as aws_resourcegroups from './aws-resourcegroups';
 export * as aws_robomaker from './aws-robomaker';
