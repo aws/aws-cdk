@@ -16,7 +16,7 @@
               "constructFqn": "aws-cdk-lib.aws_autoscaling.AutoScalingGroup",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:21:15)\nRun with '--debug' to include location info\nRun with '--debug' to include location info"
+                "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:21:15)\nRun with '--debug' to include location info\nRun with '--debug' to include location info"
               ]
             }
           ]
@@ -31,7 +31,7 @@
               "constructFqn": "aws-cdk-lib.aws_ecs.Ec2Service",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:21:15)\nRun with '--debug' to include location info\nRun with '--debug' to include location info"
+                "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:21:15)\nRun with '--debug' to include location info\nRun with '--debug' to include location info"
               ]
             }
           ]
@@ -46,7 +46,7 @@
               "constructFqn": "aws-cdk-lib.aws_ecs.Ec2Service",
               "libraryVersion": "0.0.0",
               "stackTraces": [
-                "<anonymous> (/workplace/abdlrmn/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:21:15)\nRun with '--debug' to include location info\nRun with '--debug' to include location info"
+                "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk-testing/framework-integ/test/aws-ecs-patterns/test/ec2/integ.tls-network-load-balanced-ecs-service.js:21:15)\nRun with '--debug' to include location info\nRun with '--debug' to include location info"
               ]
             }
           ]
