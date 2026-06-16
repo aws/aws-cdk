@@ -146,9 +146,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
 
   if (plugins.length === 0) return;
 
-  // eslint-disable-next-line no-console
-  console.error('Performing Policy Validations\n');
-
   // Snapshot pre-existing files so we can detect modifications while still
   // allowing plugins to create new files in the assembly directory.
   const preExistingFileHashes = snapshotFileHashes(outdir);
