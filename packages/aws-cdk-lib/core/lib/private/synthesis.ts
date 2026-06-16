@@ -136,8 +136,6 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
       plugins.push({ plugin: new CloudFormationValidatePlugin(), templatePaths: defaultEnginePaths });
     }
   }
-  const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
-
   // 3. Construct annotations (as a plugin, only if there are annotations to report)
   if (FeatureFlags.of(root).isEnabled(cxapi.ANNOTATIONS_IN_VALIDATION_REPORT)) {
     const annotationReport = collectAnnotationReport(root, assembly.directory);
@@ -221,15 +219,23 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
     }
   }
 
+  const validateFlagExplicitlyEnabled = root.node.tryGetContext(cxapi.VALIDATE_AGAINST_DEFAULT_RULES) === true;
+
   // When the default validation plugin is not explicitly opted-in, downgrade
   // its errors to warnings so synthesis does not fail.
+  let warningifiedAnyErrors = false;
   if (!validateFlagExplicitlyEnabled) {
-    for (let i = 0; i < reports.length; i++) {
-      if (reports[i].pluginName !== 'CloudFormation Validate') continue;
-      const downgraded = reports[i].violations.map(v =>
-        (v.severity === 'error' || v.severity === 'fatal') ? { ...v, severity: 'warning' } : v,
-      );
-      reports[i] = { ...reports[i], violations: downgraded, success: true };
+    for (const report of reports) {
+      if (report.pluginName !== CloudFormationValidatePlugin.PLUGIN_NAME) {
+        continue;
+      }
+      for (const v of report.violations) {
+        if (v.severity === 'error' || v.severity === 'fatal') {
+          mutable(v).severity = 'warning';
+          warningifiedAnyErrors = true;
+        }
+      }
+      mutable(report).success = true;
     }
   }
 
@@ -263,15 +269,12 @@ function invokeValidationPlugins(root: IConstruct, outdir: string, assembly: pri
 
     // When the default plugin found issues but the flag is not explicitly enabled,
     // nudge the user to opt in for stricter checking.
-    if (!validateFlagExplicitlyEnabled) {
-      const defaultPluginReport = reports.find(r => r.pluginName === 'CloudFormation Validate');
-      if (defaultPluginReport && defaultPluginReport.violations.length > 0) {
-        // eslint-disable-next-line no-console
-        console.error(
-          '\n[Warning] CloudFormation Validate found issues in your templates (reported as warnings).'
-          + `\nSet context key "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.\n`,
-        );
-      }
+    if (warningifiedAnyErrors) {
+      // eslint-disable-next-line no-console
+      console.error(
+        '\n[Warning] Template validation found issues in your templates (reported as warnings).'
+        + `\nSet feature flag "${cxapi.VALIDATE_AGAINST_DEFAULT_RULES}" to true to turn these into errors.`,
+      );
     }
   }
 }
@@ -677,4 +680,8 @@ function hasUserRegisteredCloudFormationValidatePlugin(root: IConstruct): boolea
     throw new UnscopedValidationError(lit`DuplicateCloudFormationValidatePlugin`, 'only one instance of CloudFormationValidatePlugin can be registered');
   }
   return count === 1;
+}
+
+function mutable<A extends object>(obj: A): { -readonly [P in keyof A]: A[P] } {
+  return obj as any;
 }
