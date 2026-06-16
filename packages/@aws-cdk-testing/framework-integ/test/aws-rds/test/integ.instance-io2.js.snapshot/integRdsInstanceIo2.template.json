@@ -440,7 +440,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -531,7 +531,7 @@
      "Ref": "InstanceSubnetGroupF2CBA54F"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.4.8",
+    "EngineVersion": "8.4.9",
     "Iops": 1000,
     "MasterUserPassword": {
      "Fn::Join": [

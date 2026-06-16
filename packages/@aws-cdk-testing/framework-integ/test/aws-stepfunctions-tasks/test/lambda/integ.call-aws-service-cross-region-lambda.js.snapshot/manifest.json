@@ -53,7 +53,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/fe59ecfb1dc29b8385e5e19479c610cace70087184c9ed6ea35a6adf2c066162.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/8a3305d4357d3887be5673713da7290cab552f08e2eef080a41c59377d5d70f6.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -89,7 +89,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-us-west-2",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-us-west-2",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/53fa162ec1653b92dcaba72540a3241b15652fc3ccba51bc3433c9f243db3a83.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-us-west-2/8e694c4b30fc096474a0d4223e8787d6ba498ed98197bcb5800586510f43b241.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -630,6 +630,13 @@
           "@aws-cdk/core:annotationsInValidationReport": {
             "recommendedValue": true,
             "explanation": "Include construct annotations (warnings and errors) in the policy validation report"
+          },
+          "@aws-cdk/core:defaultCrossStackReferences": {
+            "recommendedValue": "strong",
+            "explanation": "Controls whether cross-region stack references are strong, weak, or both",
+            "unconfiguredBehavesLike": {
+              "v2": "strong"
+            }
           }
         }
       }

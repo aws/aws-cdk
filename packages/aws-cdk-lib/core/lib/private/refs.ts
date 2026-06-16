@@ -49,6 +49,8 @@ function crossStackReferenceStrength(scope: IConstruct): ReferenceStrength | und
   );
 }
 
+const WEAK_REFS_WARNING_EMITTED = Symbol.for('@aws-cdk/core.WeakRefsWarningEmitted');
+
 const OVERRIDDEN_REFERENCE_SYMBOL = Symbol.for('@aws-cdk/core.CustomCoupledReference');
 
 /**
@@ -132,6 +134,27 @@ function resolveValue(consumer: Stack, reference: CfnReference, strengthOverride
   // produce and consumer stacks are the same, we can just return the value itself.
   if (producer === consumer) {
     return reference;
+  }
+
+  // Emit a once-per-app warning nudging users toward weak references
+  const appRoot = consumer.node.root;
+  if (!(appRoot as any)[WEAK_REFS_WARNING_EMITTED]) {
+    const contextStrength = crossStackReferenceStrength(consumer);
+    if (contextStrength === undefined) {
+      (appRoot as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossStackReferencesDefaultStrong',
+        `No cross-stack-reference strength configured, defaulting to "strong". We recommend you set feature flag "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" to "both", then deploy everywhere, then set it to "weak". Alternatively, set it to "strong" explicitly to lock in the current producer-protecting behavior. ` +
+        '(See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+      );
+    } else if (contextStrength === 'both') {
+      (appRoot as any)[WEAK_REFS_WARNING_EMITTED] = true;
+      Annotations.of(consumer).addWarningV2(
+        '@aws-cdk/core:crossStackReferencesBothTransitional',
+        `Feature flag "${cxapi.DEFAULT_CROSS_STACK_REFERENCES}" currently set to "both". This is a transitory state. After you have finished deploying this application everywhere, set it to "weak". ` +
+        '(See: https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/README.md#reference-strength)',
+      );
+    }
   }
 
   // unsupported: stacks from different apps
@@ -537,9 +560,13 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
 
   let output = scope.node.tryFindChild(outputId) as CfnOutput;
   if (output == null) {
-    output = new CfnOutput(scope, outputId, {
-      value: Token.asString(reference),
-    });
+    if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+      output = new CfnOutput(scope, outputId, { value: Fn.join(STRING_LIST_REFERENCE_DELIMITER, Token.asList(reference)) });
+    } else {
+      output = new CfnOutput(scope, outputId, {
+        value: Token.asString(reference),
+      });
+    }
   }
 
   let roleArn: string | undefined = undefined;
@@ -574,9 +601,13 @@ function createGetStackOutput(reference: Reference, options: GetStackOutputOptio
     }
   }
 
-  return Tokenization.reverseCompleteString(
-    Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn),
-  ) as Intrinsic;
+  const getStackOutput = Fn.getStackOutput(exportingStack.stackName, output.logicalId, exportingStack.region, roleArn);
+
+  if (reference.typeHint === ResolutionTypeHint.STRING_LIST) {
+    return Tokenization.reverseList(Fn.split(STRING_LIST_REFERENCE_DELIMITER, getStackOutput)) as Intrinsic;
+  }
+
+  return Tokenization.reverseCompleteString(getStackOutput) as Intrinsic;
 }
 
 export function getExportable(stack: Stack, reference: Reference): Intrinsic {

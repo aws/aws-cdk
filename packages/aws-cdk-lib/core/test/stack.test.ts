@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
-import { flattenMeta, toCloudFormation } from './util';
+import { flattenMeta, getWarnings, toCloudFormation } from './util';
 import * as cxapi from '../../cx-api';
 import { Fact, RegionInfo } from '../../region-info';
 import type { ITaggableV2 } from '../lib';
@@ -1074,6 +1074,82 @@ describe('stack', () => {
     expect(customResources2.length).toBeGreaterThan(0);
   });
 
+  test('emits a single warning per app when cross-stack reference flag is unset', () => {
+    // GIVEN - no context flag set, multiple consumer stacks
+    const app = new App();
+    const stack1 = new Stack(app, 'Stack1');
+    const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+    const resource2 = new CfnResource(stack1, 'Resource2', { type: 'AWS::SNS::Topic' });
+    const stack2 = new Stack(app, 'Stack2');
+    const stack3 = new Stack(app, 'Stack3');
+
+    // WHEN - cross-stack references from multiple consumers
+    new CfnResource(stack2, 'Consumer1', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop1: resource1.getAtt('Arn') },
+    });
+    new CfnResource(stack3, 'Consumer2', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop2: resource2.getAtt('Arn') },
+    });
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - only one warning in the entire app
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
+    );
+    expect(relevantWarnings).toHaveLength(1);
+  });
+
+  test('no warning when cross-stack reference flag is explicitly set', () => {
+    // GIVEN - context flag explicitly set to 'strong'
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
+    const stack1 = new Stack(app, 'Stack1');
+    const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN
+    new CfnResource(stack2, 'Consumer1', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop1: resource1.getAtt('Arn') },
+    });
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - no warning because the flag is explicitly set
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesDefaultStrong'),
+    );
+    expect(relevantWarnings).toHaveLength(0);
+  });
+
+  test('emits transitional warning when cross-stack reference flag is set to both', () => {
+    // GIVEN - context flag set to 'both'
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1');
+    const resource1 = new CfnResource(stack1, 'Resource1', { type: 'AWS::S3::Bucket' });
+    const stack2 = new Stack(app, 'Stack2');
+
+    // WHEN
+    new CfnResource(stack2, 'Consumer1', {
+      type: 'AWS::S3::Bucket',
+      properties: { Prop1: resource1.getAtt('Arn') },
+    });
+
+    const assembly = app.synth();
+    const warnings = getWarnings(assembly);
+
+    // THEN - transitional warning telling user to move to 'weak'
+    const relevantWarnings = warnings.filter(w =>
+      w.message.includes('@aws-cdk/core:crossStackReferencesBothTransitional'),
+    );
+    expect(relevantWarnings).toHaveLength(1);
+    expect(relevantWarnings[0].path).toContain('Stack2');
+  });
+
   test('cross-region strong references use ExportWriter/ExportReader', () => {
     // GIVEN - strength is explicitly 'strong'
     const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'strong' } });
@@ -1150,6 +1226,40 @@ describe('stack', () => {
       (r: any) => r.Type === 'Custom::CrossRegionExportReader',
     );
     expect(customResources2).toHaveLength(0);
+  });
+
+  test('cross-region weak references serialize STRING_LIST with Fn::Join and deserialize with Fn::Split', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1' }, crossRegionReferences: true });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    (exportResource as any).attrDnsEntries = ['entry1', 'entry2'];
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-2' }, crossRegionReferences: true });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('DnsEntries', ResolutionTypeHint.STRING_LIST) },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer output wraps list with Fn::Join
+    const outputKeys = Object.keys(template1.Outputs ?? {});
+    expect(outputKeys.length).toBeGreaterThan(0);
+    const output = template1.Outputs[outputKeys[0]];
+    expect(output.Value).toEqual({
+      'Fn::Join': ['||', { 'Fn::GetAtt': ['SomeResourceExport', 'DnsEntries'] }],
+    });
+
+    // THEN - consumer uses Fn::Split around Fn::GetStackOutput
+    expect(template2.Resources.SomeResource.Properties.Name).toEqual({
+      'Fn::Split': ['||', { 'Fn::GetStackOutput': expect.objectContaining({ OutputName: outputKeys[0] }) }],
+    });
   });
 
   test('cross-account strong references emit warning and use Fn::GetStackOutput', () => {
@@ -1332,6 +1442,86 @@ describe('stack', () => {
     // THEN - consumer uses Fn::GetStackOutput (weak side), NOT Fn::ImportValue
     expect(template2.Resources.SomeResource.Properties.Name).toHaveProperty('Fn::GetStackOutput');
     expect(template2.Resources.SomeResource.Properties.Name).not.toHaveProperty('Fn::ImportValue');
+  });
+
+  test('same-region weak references serialize STRING_LIST with Fn::Join and deserialize with Fn::Split', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'weak' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    (exportResource as any).attrDnsEntries = ['entry1', 'entry2'];
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('DnsEntries', ResolutionTypeHint.STRING_LIST) },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer output wraps list with Fn::Join
+    const outputKeys = Object.keys(template1.Outputs);
+    const output = template1.Outputs[outputKeys[0]];
+    expect(output.Value).toEqual({
+      'Fn::Join': ['||', { 'Fn::GetAtt': ['SomeResourceExport', 'DnsEntries'] }],
+    });
+    expect(output.Export).toBeUndefined();
+
+    // THEN - consumer uses Fn::Split around Fn::GetStackOutput
+    expect(template2.Resources.SomeResource.Properties.Name).toEqual({
+      'Fn::Split': ['||', { 'Fn::GetStackOutput': expect.objectContaining({ OutputName: outputKeys[0] }) }],
+    });
+  });
+
+  test('same-region both references serialize STRING_LIST with Fn::Join for publish output', () => {
+    // GIVEN
+    const app = new App({ context: { [cxapi.DEFAULT_CROSS_STACK_REFERENCES]: 'both' } });
+    const stack1 = new Stack(app, 'Stack1', { env: { region: 'us-east-1', account: '111111111111' } });
+    const exportResource = new CfnResource(stack1, 'SomeResourceExport', {
+      type: 'AWS::S3::Bucket',
+    });
+    (exportResource as any).attrDnsEntries = ['entry1', 'entry2'];
+    const stack2 = new Stack(app, 'Stack2', { env: { region: 'us-east-1', account: '111111111111' } });
+
+    // WHEN
+    new CfnResource(stack2, 'SomeResource', {
+      type: 'AWS::S3::Bucket',
+      properties: { Name: exportResource.getAtt('DnsEntries', ResolutionTypeHint.STRING_LIST) },
+    });
+
+    const assembly = app.synth();
+    const template1 = assembly.getStackByName(stack1.stackName).template;
+    const template2 = assembly.getStackByName(stack2.stackName).template;
+
+    // THEN - producer has a publish output (no Export) with Fn::Join
+    const publishOutputs = Object.entries(template1.Outputs ?? {}).filter(
+      ([_, o]: [string, any]) => o.Export === undefined,
+    );
+    expect(publishOutputs.length).toBeGreaterThan(0);
+    const [publishKey, publishOutput] = publishOutputs[0] as [string, any];
+    expect(publishOutput.Value).toEqual({
+      'Fn::Join': ['||', { 'Fn::GetAtt': ['SomeResourceExport', 'DnsEntries'] }],
+    });
+
+    // THEN - producer also has a strong export output with Fn::Join
+    const exportOutputs = Object.entries(template1.Outputs ?? {}).filter(
+      ([_, o]: [string, any]) => o.Export !== undefined,
+    );
+    expect(exportOutputs.length).toBeGreaterThan(0);
+    const exportOutput = exportOutputs[0][1] as any;
+    expect(exportOutput.Value).toEqual({
+      'Fn::Join': ['||', { 'Fn::GetAtt': ['SomeResourceExport', 'DnsEntries'] }],
+    });
+
+    // THEN - consumer uses Fn::Split around Fn::GetStackOutput (weak path)
+    expect(template2.Resources.SomeResource.Properties.Name).toEqual({
+      'Fn::Split': ['||', { 'Fn::GetStackOutput': expect.objectContaining({ OutputName: publishKey }) }],
+    });
   });
 
   test('invalid cross stack reference strength throws', () => {
