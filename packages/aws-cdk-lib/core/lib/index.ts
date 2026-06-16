@@ -68,6 +68,7 @@ export * from './cfn-capabilities';
 export * from './cloudformation.generated';
 
 export * from './feature-flags';
+export * from './git-source';
 export * from './permissions-boundary';
 
 export * from './validation';
