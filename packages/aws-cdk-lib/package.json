@@ -136,8 +136,7 @@
     "yaml": "1.10.3"
   },
   "devDependencies": {
-    "@aws-cdk/aws-custom-resource-sdk-adapter": "0.0.0",
-    "@aws-cdk/aws-service-spec": "0.1.184",
+    "@aws-cdk/aws-service-spec": "0.1.187",
     "@aws-cdk/cdk-build-tools": "0.0.0",
     "@aws-cdk/check-peer-dependencies": "0.0.0",
     "@aws-cdk/custom-resource-handlers": "0.0.0",
@@ -253,6 +252,7 @@
     "./aws-backup": "./aws-backup/index.js",
     "./aws-backupgateway": "./aws-backupgateway/index.js",
     "./aws-batch": "./aws-batch/index.js",
+    "./aws-bcm": "./aws-bcm/index.js",
     "./aws-bcmdataexports": "./aws-bcmdataexports/index.js",
     "./aws-bcmpricingcalculator": "./aws-bcmpricingcalculator/index.js",
     "./aws-bedrock": "./aws-bedrock/index.js",
@@ -463,6 +463,7 @@
     "./aws-refactorspaces": "./aws-refactorspaces/index.js",
     "./aws-rekognition": "./aws-rekognition/index.js",
     "./aws-resiliencehub": "./aws-resiliencehub/index.js",
+    "./aws-resiliencehubv2": "./aws-resiliencehubv2/index.js",
     "./aws-resourceexplorer2": "./aws-resourceexplorer2/index.js",
     "./aws-resourcegroups": "./aws-resourcegroups/index.js",
     "./aws-robomaker": "./aws-robomaker/index.js",
