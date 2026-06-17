@@ -1,5 +1,14 @@
 import * as os from 'os';
 import * as path from 'path';
+import type {
+  PluginReportJson,
+  PolicyValidationReportConclusion,
+  PolicyValidationReportJson,
+  PolicyViolationJson,
+  PolicyViolationSeverity,
+  SuppressedViolationJson,
+  ViolatingConstructJson,
+} from '@aws-cdk/cloud-assembly-schema';
 import { table } from 'table';
 import type { ConstructTree, ConstructTrace } from './construct-tree';
 import { ReportTrace } from './trace';
@@ -101,59 +110,6 @@ export interface NamedValidationPluginReport extends report.PolicyValidationPlug
    * The name of the plugin that created the report
    */
   readonly pluginName: string;
-}
-
-/**
- * JSON representation of the validation report, matching cloud-assembly-schema.
- */
-export interface PolicyValidationReportJson {
-  readonly version: string;
-  readonly title?: string;
-  readonly pluginReports: PluginReportJson[];
-}
-
-export interface PluginReportJson {
-  readonly pluginName: string;
-  readonly pluginVersion?: string;
-  readonly conclusion: PolicyValidationReportConclusion;
-  readonly metadata?: { readonly [key: string]: string };
-  readonly violations: PolicyViolationJson[];
-  readonly suppressedViolations?: SuppressedViolationJson[];
-}
-
-export type PolicyValidationReportConclusion = 'success' | 'failure';
-
-export interface PolicyViolationJson {
-  readonly ruleName: string;
-  readonly description: string;
-  readonly suggestedFix?: string;
-  readonly severity: PolicyViolationSeverity;
-  readonly customSeverity?: string;
-  readonly ruleMetadata?: { readonly [key: string]: string };
-  readonly violatingConstructs: ViolatingConstructJson[];
-}
-
-export type PolicyViolationSeverity = 'fatal' | 'error' | 'warning' | 'info' | 'custom';
-
-export interface ViolatingConstructJson {
-  readonly constructPath: string;
-  readonly constructFqn?: string;
-  readonly libraryVersion?: string;
-  readonly cloudFormationResource?: CloudFormationResourceJson;
-  readonly stackTraces?: string[];
-}
-
-export interface CloudFormationResourceJson {
-  readonly templatePath: string;
-  readonly logicalId: string;
-  readonly propertyPaths?: string[];
-}
-
-export interface SuppressedViolationJson extends PolicyViolationJson {
-  readonly acknowledgedId: string;
-  readonly reason?: string;
-  readonly acknowledgedAt?: string;
-  readonly acknowledgedStackTrace?: string;
 }
 
 /**
