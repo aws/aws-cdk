@@ -22,6 +22,13 @@ export abstract class RuleTargetInput {
    * The Rule Target input value will be a single string: the string you pass
    * here.  Do not use this method to pass a complex value like a JSON object to
    * a Rule Target.  Use `RuleTargetInput.fromObject()` instead.
+   *
+   * The target `Input` field must be valid JSON, so the text is JSON-encoded
+   * when the template is synthesized. As a result a plain string is wrapped in
+   * double quotes: `fromText('something')` renders as `Input: '"something"'`.
+   * EventBridge decodes that JSON before delivering the input, so the target
+   * receives the unquoted `something`. The quotes are part of the JSON encoding,
+   * not an extra value added by CDK, and cannot be removed.
    */
   public static fromText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Text);
@@ -35,6 +42,10 @@ export abstract class RuleTargetInput {
    *
    * May contain strings returned by `EventField.from()` to substitute in parts
    * of the matched event.
+   *
+   * As with `fromText`, each line is JSON-encoded, so every line is wrapped in
+   * double quotes in the synthesized template. EventBridge decodes the JSON
+   * before delivering the input.
    */
   public static fromMultilineText(text: string): RuleTargetInput {
     return new FieldAwareEventInput(text, InputType.Multiline);
