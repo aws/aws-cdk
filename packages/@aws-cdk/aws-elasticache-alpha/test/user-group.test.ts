@@ -293,7 +293,7 @@ describe('UserGroup', () => {
       });
 
       expect(userGroup.userGroupName).toBe('my-group');
-      expect(userGroup.engine).toBe('valkey');
+      expect(userGroup.engine?.engineType).toBe('valkey');
       expect(userGroup.users).toHaveLength(1);
       expect(userGroup.users![0].userId).toBe('test-user');
       expect(userGroup.userGroupArn).toBeDefined();
@@ -486,7 +486,7 @@ describe('UserGroup', () => {
 
       expect(userGroup.userGroupArn).toBe(arn);
       expect(userGroup.userGroupName).toBe('my-group');
-      expect(userGroup.engine).toBe('valkey');
+      expect(userGroup.engine?.engineType).toBe('valkey');
       expect(userGroup.users).toHaveLength(1);
       expect(userGroup.users![0].userId).toBe(user.userId);
     });
@@ -518,6 +518,45 @@ describe('UserGroup', () => {
       });
 
       expect(() => importedUserGroup.addUser(user)).toThrow('Cannot add users to an imported UserGroup. Only UserGroups created in this stack can be modified.');
+    });
+  });
+
+  describe('UserEngine class', () => {
+    test('of() returns an instance with the expected engineType', () => {
+      const engine = UserEngine.of('redis');
+      expect(engine.engineType).toBe('redis');
+    });
+
+    test('of() supports arbitrary engines', () => {
+      const engine = UserEngine.of('futureengine');
+      expect(engine.engineType).toBe('futureengine');
+    });
+
+    test('named static members expose the correct engineType', () => {
+      expect(UserEngine.VALKEY.engineType).toBe('valkey');
+      expect(UserEngine.REDIS.engineType).toBe('redis');
+    });
+
+    test('toString() returns the engineType', () => {
+      expect(UserEngine.VALKEY.toString()).toBe('valkey');
+      expect(UserEngine.REDIS.toString()).toBe('redis');
+    });
+
+    test('of() does not return the same instance as a named static member', () => {
+      expect(UserEngine.of('redis')).not.toBe(UserEngine.REDIS);
+      expect(UserEngine.of('valkey')).not.toBe(UserEngine.VALKEY);
+    });
+
+    test('fromUserGroupAttributes preserves engine when constructed via UserEngine.of()', () => {
+      const stack = new Stack();
+      const customEngine = UserEngine.of('redis');
+      const imported = UserGroup.fromUserGroupAttributes(stack, 'Imported', {
+        userGroupName: 'my-group',
+        engine: customEngine,
+      });
+
+      expect(imported.engine).toBe(customEngine);
+      expect(imported.engine?.engineType).toBe('redis');
     });
   });
 });

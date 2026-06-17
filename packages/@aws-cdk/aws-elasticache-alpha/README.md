@@ -49,6 +49,25 @@ declare const instance: ec2.Instance;
 serverlessCache.connections.allowDefaultPortFrom(instance);
 ```
 
+### Using a custom engine version
+
+The named `CacheEngine` and `UserEngine` static members cover the versions available
+at the time of the most recent CDK release. If ElastiCache releases a new engine
+version before it is added as a named member, use the `.of(...)` factory to target
+it without waiting for a CDK update:
+
+```ts
+declare const vpc: ec2.Vpc;
+
+new elasticache.ServerlessCache(this, 'ServerlessCache', {
+  // Use any engine/version combination supported by ElastiCache:
+  engine: elasticache.CacheEngine.of('valkey', '9'),
+  vpc,
+});
+```
+
+The same pattern applies to `UserEngine.of(engineType)` for users and user groups.
+
 ### Cache usage limits
 
 You can configure usage limits on both cache data storage and ECPU/second for your cache to control costs and ensure predictable performance.

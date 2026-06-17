@@ -1,0 +1,737 @@
+{
+  "/BedrockAgentCoreGatewayIntegTest": [
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:17:15)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestFunction": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "functionName": "*",
+        "runtime": "*",
+        "handler": "*",
+        "code": "*",
+        "description": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/GatewayId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "GatewayId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:135:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/LambdaTargetId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "LambdaTargetId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:139:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/SmithyTargetId": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "SmithyTargetId"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:143:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/RequestInterceptorArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestInterceptorArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:147:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptorArn": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResponseInterceptorArn"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:151:1)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/BootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "BootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:261:19)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:192:5)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/CheckBootstrapVersion": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "CheckBootstrapVersion"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:269:5)",
+        "DefaultStackSynthesizer.addBootstrapVersionRule (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/stack-synthesizer.js:161:9)",
+        "DefaultStackSynthesizer.synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stack-synthesizers/default-synthesizer.js:302:18)",
+        "/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410: (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:410:3)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:467:9)",
+        "visit (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:464:9)",
+        "synthesizeTree (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:403:5)",
+        "synthesize (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/private/synthesis.js:54:5)",
+        "App.synth (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/stage.js:179:96)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:192:5)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "description": "*"
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachInlinePolicy": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addToPrincipalPolicy": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "signInCaseSensitive": false
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGateway7394A071"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:337:31)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:24:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/LambdaTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/SmithyTarget": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestInterceptorBE1C44C8"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:29:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResponseInterceptor986DF12E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:52:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "assumedBy": {
+          "principalAccount": "*",
+          "assumeRoleAction": "*"
+        },
+        "managedPolicies": [
+          {
+            "managedPolicyArn": "*"
+          }
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestFunction/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunction22AD90FC"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:691:29)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:81:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestFunction/LogGroup": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "logGroupName": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewayServiceRole426CDA0F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createGatewayRole (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:538:26)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:310:44)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:24:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole/DefaultPolicy": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "attachToRole": [
+          "*"
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    },
+    {
+      "type": "aws:cdk:analytics:method",
+      "data": {
+        "addStatements": [
+          {}
+        ]
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewayUserPool545AA49A"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:535:30)",
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new UserPool (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.createDefaultCognitoAuthorizerConfig (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:625:30)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:319:49)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:24:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/ResourceServer": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "identifier": "*",
+        "scopes": "*"
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/DefaultClient": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "generateSecret": true,
+        "oAuth": {
+          "flows": {
+            "clientCredentials": true
+          },
+          "scopes": "*"
+        }
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/Domain": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": {
+        "userPool": "*",
+        "cognitoDomain": {
+          "domainPrefix": "*"
+        }
+      }
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/LambdaTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewayLambdaTargetBE2E7E0C"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new GatewayTarget (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target.js:378:35)",
+        "new GatewayTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "GatewayTarget.forLambda (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target.js:142:20)",
+        "WrappedClass.addLambdaTarget (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:400:51)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:115:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/SmithyTarget/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewaySmithyTarget2C1ACC84"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new GatewayTarget (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target.js:378:35)",
+        "new GatewayTarget (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "GatewayTarget.forSmithy (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/targets/target.js:197:20)",
+        "WrappedClass.addSmithyTarget (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:459:51)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:129:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestInterceptorServiceRoleD8815DF9"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:29:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/RequestInterceptor/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "RequestInterceptorLogGroup72E7DA80"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:29:30)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResponseInterceptorServiceRoleDC649E6F"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:52:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/ResponseInterceptor/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "ResponseInterceptorLogGroup1A3F0648"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:52:31)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestFunction/ServiceRole/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionServiceRole6ABD93C7"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:450:34)",
+        "new Role (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:606:39)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:81:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestFunction/LogGroup/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestFunctionLogGroupE7744A08"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-logs/lib/log-group.js:537:29)",
+        "new LogGroup (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function.js:773:34)",
+        "new Function (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:81:24)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/ServiceRole/DefaultPolicy/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewayServiceRoleDefaultPolicyCFEDA895"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/policy.js:158:30)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/no-box-stack-traces.js:43:17)",
+        "new Policy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addToPrincipalPolicy (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/role.js:511:42)",
+        "WrappedClass.<anonymous> (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/metadata-resource.js:67:35)",
+        "Grant.addToPrincipal (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:161:65)",
+        "Grant.addToPrincipalOrResource (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-iam/lib/grant.js:46:30)",
+        "WrappedClass.grant (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:483:35)",
+        "WrappedClass.grantInvoke (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-lambda/lib/function-base.js:287:26)",
+        "LambdaInterceptor.bind (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/interceptor.js:125:29)"
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/ResourceServer/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewayUserPoolResourceServer7A34B6B2"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new UserPoolResourceServer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-resource-server.js:150:30)",
+        "new UserPoolResourceServer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addResourceServer (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:328:16)",
+        "WrappedClass.createDefaultCognitoAuthorizerConfig (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:628:45)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:319:49)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:24:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/DefaultClient/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewayUserPoolDefaultClient3AC9C728"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new UserPoolClient (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-client.js:277:30)",
+        "new UserPoolClient (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addClient (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:316:16)",
+        "WrappedClass.createDefaultCognitoAuthorizerConfig (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:651:45)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:319:49)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:24:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/UserPool/Domain/Resource": [
+    {
+      "type": "aws:cdk:logicalId",
+      "data": "TestGatewayUserPoolDomainB64B616E"
+    },
+    {
+      "type": "aws:cdk:creationStack",
+      "data": [
+        "new UserPoolDomain (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool-domain.js:153:29)",
+        "new UserPoolDomain (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "WrappedClass.addDomain (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/aws-cognito/lib/user-pool.js:322:16)",
+        "WrappedClass.createDefaultCognitoAuthorizerConfig (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:666:45)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/lib/gateway/gateway.js:319:49)",
+        "new Gateway (/workplace/gudipatg/aws-cdk/packages/aws-cdk-lib/core/lib/prop-injectable.js:32:13)",
+        "<anonymous> (/workplace/gudipatg/aws-cdk/packages/@aws-cdk/aws-bedrock-agentcore-alpha/test/agentcore/gateway/integ.gateway.js:24:17)",
+        "...node internals..."
+      ]
+    }
+  ],
+  "/BedrockAgentCoreGatewayIntegTest/TestGateway/SmithyTarget/Schema9f25a7fe046e14038447216dc49f15da/AssetBucket": [
+    {
+      "type": "aws:cdk:analytics:construct",
+      "data": "*"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "testCases": {
     "ApplicationAssociatorTest/DefaultTest": {
       "stacks": [
@@ -9,5 +9,5 @@
       "assertionStackName": "ApplicationAssociatorTestDefaultTestDeployAssert2A5F2DB9"
     }
   },
-  "minimumCliVersion": "2.1107.0"
+  "minimumCliVersion": "2.1123.0"
 }

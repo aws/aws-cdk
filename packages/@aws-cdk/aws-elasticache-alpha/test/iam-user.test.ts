@@ -95,8 +95,8 @@ describe('IamUser', () => {
       });
 
       expect(user.userId).toBe('test-user-id');
-      expect(user.userName).toBe('test-user-id'); // Should always equal userId
-      expect(user.engine).toBe('valkey');
+      expect(user.userName).toBe('test-user-id');
+      expect(user.engine?.engineType).toBe('valkey');
       expect(user.accessString).toBe('on ~app:* +@read');
       expect(user.userArn).toBeDefined();
       expect(user.userStatus).toBeDefined();
@@ -110,8 +110,8 @@ describe('IamUser', () => {
         accessControl: AccessControl.fromAccessString('on ~* +@all'),
       });
 
-      expect(user.userName).toBe('my-user-id'); // Should equal userId
-      expect(user.engine).toBe('redis');
+      expect(user.userName).toBe('my-user-id');
+      expect(user.engine?.engineType).toBe('redis');
     });
   });
 
@@ -285,7 +285,7 @@ describe('IamUser', () => {
 
       expect(user.userArn).toBe(arn);
       expect(user.userId).toBe('my-user');
-      expect(user.engine).toBe('valkey');
+      expect(user.engine?.engineType).toBe('valkey');
       expect(user.userName).toBe('my-user');
     });
 

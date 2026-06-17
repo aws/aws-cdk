@@ -95,8 +95,8 @@ export class IamUser extends UserBase {
     this.accessString = props.accessControl.accessString;
 
     this.resource = new CfnUser(this, 'Resource', {
-      engine: this.engine,
-      userId: this.userId,
+      engine: this.engine.engineType,
+      userId: props.userId,
       userName: this.userName,
       accessString: this.accessString,
       authenticationMode: {
