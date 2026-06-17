@@ -2,7 +2,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Construct } from 'constructs';
 import { table } from 'table';
-import * as cxapi from '../../../cx-api';
 import * as core from '../../lib';
 
 let consoleErrorMock: jest.SpyInstance;
@@ -1007,10 +1006,8 @@ Policy Validation Report Summary
   });
 
   describe('annotation report integration', () => {
-    const annotationReportContext = { [cxapi.ANNOTATIONS_IN_VALIDATION_REPORT]: true };
-
     test('annotation warnings appear in validation report', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1032,7 +1029,7 @@ Policy Validation Report Summary
     });
 
     test('annotation errors cause validation failure', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1053,7 +1050,7 @@ Policy Validation Report Summary
     });
 
     test('acknowledged warnings are excluded from annotation report', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1072,7 +1069,7 @@ Policy Validation Report Summary
     });
 
     test('partial acknowledgment only excludes acknowledged warnings', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1094,7 +1091,6 @@ Policy Validation Report Summary
 
     test('annotation report works alongside plugin reports', () => {
       const app = new core.App({
-        context: annotationReportContext,
         policyValidationBeta1: [
           new FakePlugin('test-plugin', [{
             description: 'plugin violation',
@@ -1128,7 +1124,7 @@ Policy Validation Report Summary
     });
 
     test('annotation report with no plugins registered still produces output', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1148,7 +1144,7 @@ Policy Validation Report Summary
     });
 
     test('annotations on constructs without CfnResource use construct path', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'Orphan');
       // No CfnResource child
@@ -1170,7 +1166,7 @@ Policy Validation Report Summary
     });
 
     test('Validations.of().addWarning appears in annotation report', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1188,7 +1184,7 @@ Policy Validation Report Summary
     });
 
     test('Validations.of().addError appears in annotation report and fails', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1211,7 +1207,7 @@ Policy Validation Report Summary
       // This test verifies the coupling between the [ack: <id>] tag format
       // produced by Annotations.addWarningV2 and the regex in extractRuleName.
       // If the tag format in annotations.ts changes, this test should fail.
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
@@ -1232,7 +1228,7 @@ Policy Validation Report Summary
     });
 
     test('plugin violations can be suppressed via Validations.acknowledge()', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app);
       new core.CfnResource(stack, 'MyBucket', {
         type: 'AWS::S3::Bucket',
@@ -1264,7 +1260,6 @@ Policy Validation Report Summary
     test('suppressed violations appear in validation-report.json', () => {
       const app = new core.App({
         context: {
-          ...annotationReportContext,
           '@aws-cdk/core:failSynthOnValidationErrors': false,
         },
       });
@@ -1310,7 +1305,7 @@ Policy Validation Report Summary
     });
 
     test('fatal plugin violations cannot be suppressed', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app);
       new core.CfnResource(stack, 'Fake', {
         type: 'AWS::S3::Bucket',
@@ -1342,7 +1337,7 @@ Policy Validation Report Summary
     });
 
     test('plugin names with spaces use dashes in suppression IDs', () => {
-      const app = new core.App({ context: annotationReportContext });
+      const app = new core.App();
       const stack = new core.Stack(app);
       new core.CfnResource(stack, 'Fake', {
         type: 'AWS::S3::Bucket',
@@ -1372,9 +1367,7 @@ Policy Validation Report Summary
     });
 
     test('validation report JSON is always written to assembly directory', () => {
-      const app = new core.App({
-        context: annotationReportContext,
-      });
+      const app = new core.App();
       const stack = new core.Stack(app, 'MyStack');
       const construct = new Construct(stack, 'MyConstruct');
       new core.CfnResource(construct, 'Resource', {
