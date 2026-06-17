@@ -1,6 +1,4 @@
-import * as os from 'os';
 import * as path from 'path';
-import { table } from 'table';
 import type { ConstructTree, ConstructTrace } from './construct-tree';
 import { ReportTrace } from './trace';
 import * as report from '../report';
@@ -176,81 +174,6 @@ export class PolicyValidationReportFormatter {
     this.reportTrace = new ReportTrace(tree);
   }
 
-  public formatPrettyPrinted(reps: NamedValidationPluginReport[]): string {
-    const json = this.formatLegacyJson(reps);
-    const output = [json.title];
-    output.push('-'.repeat(json.title.length));
-
-    json.pluginReports.forEach(plugin => {
-      output.push('');
-      output.push(table([
-        [`Source: ${plugin.summary.pluginName}`],
-        [`Version: ${plugin.version ?? 'N/A'}`],
-        [`Status: ${plugin.summary.status}`],
-      ], {
-        header: { content: 'Validation Report' },
-        singleLine: true,
-        columns: [{
-          paddingLeft: 3,
-          paddingRight: 3,
-        }],
-      }));
-      if (plugin.summary.metadata) {
-        output.push('');
-        output.push(`Metadata: \n\t${Object.entries(plugin.summary.metadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
-      }
-
-      if (plugin.violations.length > 0) {
-        output.push('');
-        output.push('(Violations)');
-      }
-
-      plugin.violations.forEach((violation) => {
-        const constructs = violation.violatingConstructs;
-        const occurrences = constructs.length;
-        const title = reset(red(bright(`${violation.ruleName} (${occurrences} occurrences)`)));
-        output.push('');
-        output.push(title);
-        if (violation.severity) {
-          output.push(`Severity: ${violation.severity}`);
-        }
-        output.push('');
-        output.push('  Occurrences:');
-        for (const construct of constructs) {
-          output.push('');
-          output.push(`    - Construct Path: ${construct.constructPath ?? 'N/A'}`);
-          output.push(`    - Template Path: ${construct.templatePath ?? 'N/A'}`);
-          output.push(`    - Creation Stack:\n\t${this.reportTrace.formatPrettyPrinted(construct.constructPath)}`);
-          output.push(`    - Resource ID: ${construct.resourceLogicalId ?? 'N/A'}`);
-          if (construct.locations) {
-            output.push('    - Template Locations:');
-            for (const location of construct.locations) {
-              output.push(`      > ${location}`);
-            }
-          }
-        }
-        output.push('');
-        output.push(`  Description: ${violation.description }`);
-        if (violation.fix) {
-          output.push(`  How to fix: ${violation.fix}`);
-        }
-        if (violation.ruleMetadata) {
-          output.push(`  Rule Metadata: \n\t${Object.entries(violation.ruleMetadata).flatMap(([key, value]) => `${key}: ${value}`).join('\n\t')}`);
-        }
-      });
-    });
-
-    output.push('');
-    output.push('Policy Validation Report Summary');
-    output.push('');
-    output.push(table([
-      ['Source', 'Status'],
-      ...reps.map(rep => [rep.pluginName, rep.success ? 'success' : 'failure']),
-    ], { }));
-
-    return output.join(os.EOL);
-  }
-
   public formatLegacyJson(reps: NamedValidationPluginReport[]): LegacyPolicyValidationReportJson {
     return {
       title: 'Validation Report',
@@ -416,16 +339,4 @@ function normalizeSeverity(severity: string | undefined): { severity: PolicyViol
     return { severity: lower as PolicyViolationSeverity };
   }
   return { severity: 'custom', customSeverity: severity };
-}
-
-function reset(s: string) {
-  return `${s}\x1b[0m`;
-}
-
-function red(s: string) {
-  return `\x1b[31m${s}`;
-}
-
-function bright(s: string) {
-  return `\x1b[1m${s}`;
 }
