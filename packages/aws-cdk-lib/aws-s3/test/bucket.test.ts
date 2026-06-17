@@ -936,14 +936,52 @@ describe('bucket', () => {
     }).toThrow(/\'bucketName\' and \'bucketNamePrefix\' cannot be used together/);
   });
 
-  test('bucket with bucketName and bucketNamespace ACCOUNT_REGIONAL must end with \'-<accountId>-<region>-an\'', () => {
-    const stack = new cdk.Stack();
-    expect(() => {
-      new s3.Bucket(stack, 'MyBucket', {
-        bucketName: 'my-bucket',
-        bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
-      });
-    }).toThrow(/\'bucketName\' must end with \'-<accountId>-<region>-an\'/);
+  describe('bucket with bucketName and bucketNamespace ACCOUNT_REGIONAL must end with \'-<accountId>-<region>-an\'', () => {
+    test('When accountId & region are LITERALS, bucketName does NOT end with EXACT account-regional-suffix', () => {
+      const stack = new cdk.Stack( undefined, undefined, { env: { region: 'us-east-1', account: '111122223333' } } );
+      const expectedSuffix = `-${stack.account}-${stack.region}-an`;
+      expect(() => {
+        new s3.Bucket(stack, 'MyBucket', {
+          bucketName: 'my-bucket-111122223333-somewrongsuffix',
+          bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+        });
+      }).toThrow(`'bucketName' must end with '${expectedSuffix}'`);
+    });
+
+    test('allows when accountId & region are LITERALS, bucketName matches EXACTLY with account-regional-suffix', () => {
+      const stack = new cdk.Stack( undefined, undefined, { env: { region: 'us-east-1', account: '111122223333' } } );
+      expect(() => {
+        new s3.Bucket(stack, 'MyBucket', {
+          bucketName: 'my-bucket-111122223333-us-east-1-an',
+          bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+        });
+      }).not.toThrow();
+    });
+
+    test('When accountId & region are TOKENS, bucketName does NOT end with -an suffix', () => {
+      const stack = new cdk.Stack();
+      expect(cdk.Token.isUnresolved(stack.account)).toBe(true);
+      expect(cdk.Token.isUnresolved(stack.region)).toBe(true);
+      expect(() => {
+        new s3.Bucket(stack, 'MyBucket', {
+          bucketName: 'my-bucket',
+          bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+        });
+      }).toThrow(/\'bucketName\' must end with \'-<accountId>-<region>-an\'/);
+    });
+
+    test('allows when accountId & region are TOKENS, bucketName contain `-an` suffix', () => {
+      // As Stack's accountId & region are TOKENS , CDK allows if suffix ends with "-an" ===> CFN handles the rest
+      const stack = new cdk.Stack();
+      expect(cdk.Token.isUnresolved(stack.account)).toBe(true);
+      expect(cdk.Token.isUnresolved(stack.region)).toBe(true);
+      expect(() => {
+        new s3.Bucket(stack, 'MyBucket', {
+          bucketName: 'my-bucket-unknownaccount-unknownregion-an',
+          bucketNamespace: s3.BucketNamespace.ACCOUNT_REGIONAL,
+        });
+      }).not.toThrow();
+    });
   });
 
   test('bucket with bucketName and bucketNamespace GLOBAL is valid', () => {
