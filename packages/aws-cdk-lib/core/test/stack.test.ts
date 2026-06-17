@@ -3307,6 +3307,15 @@ describe('regionalFact', () => {
     ['context key', { context: { '@aws-cdk/core:trackSourceCommit': true } }],
     ['App props', { trackSourceCommit: true }],
   ])('git source metadata is included when trackSourceCommit is set via %s', (_label, appProps) => {
+    let gitAvailable: boolean;
+    try {
+      execSync('git --version', { stdio: 'pipe' });
+      gitAvailable = true;
+    } catch {
+      gitAvailable = false;
+    }
+    if (!gitAvailable) { return; }
+
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-git-test-'));
     try {
       execSync('git init && git remote add origin https://github.com/example/repo.git && git commit --allow-empty -m "init"', { cwd: tmpDir, stdio: 'pipe' });
