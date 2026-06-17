@@ -1,0 +1,20 @@
+{
+  "version": "54.0.0",
+  "files": {
+    "33a3d04400dace1dfdf9d50a58381ad7485546441f35f79e986fe06866202b9e": {
+      "displayName": "S3-Namespaces-TestStack Template",
+      "source": {
+        "path": "S3-Namespaces-TestStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "current_account-current_region-a1101080": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "33a3d04400dace1dfdf9d50a58381ad7485546441f35f79e986fe06866202b9e.json",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
