@@ -1,6 +1,7 @@
 import { performance } from 'perf_hooks';
 import type { Construct, IConstruct } from 'constructs';
 import * as fs from 'fs-extra';
+import { GIT_SOURCE_CONTEXT } from './git-source';
 import { readPerfCounters, TELEMETRY_FIELD } from './helpers-internal';
 import { PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER } from './private/private-context';
 import type { ICustomSynthesis } from './private/synthesis';
@@ -131,6 +132,17 @@ export interface AppProps {
   readonly postCliContext?: { [key: string]: any };
 
   /**
+   * Include git source information (repository URL and commit hash) in the
+   * template metadata of all Stacks in this App.
+   *
+   * When enabled, the synthesized CloudFormation template will include an
+   * `AWS::CDK::Source` metadata entry with the repository and commit.
+   *
+   * @default false
+   */
+  readonly trackSourceCommit?: boolean;
+
+  /**
    * Include construct tree metadata as part of the Cloud Assembly.
    *
    * @default true
@@ -244,6 +256,10 @@ export class App extends Stage {
 
     if (props.stackTraces === false) {
       this.node.setContext(cxapi.DISABLE_METADATA_STACK_TRACE, true);
+    }
+
+    if (props.trackSourceCommit !== undefined) {
+      this.node.setContext(GIT_SOURCE_CONTEXT, props.trackSourceCommit);
     }
 
     if (props.defaultStackSynthesizer) {

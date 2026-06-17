@@ -153,6 +153,31 @@ This solution collects anonymous operational metrics to help AWS improve the
 quality and features of the CDK. For more information, including how to disable
 this capability, please see the [developer guide](https://docs.aws.amazon.com/cdk/v2/guide/cdktelemetry.html).
 
+## Git source metadata
+
+The CDK can record the git repository URL and commit hash in your synthesized CloudFormation
+templates. This is disabled by default. To enable it, set `trackSourceCommit` in your
+CDK app:
+
+```ts
+new App({
+  trackSourceCommit: true,
+});
+```
+
+Or use the `@aws-cdk/core:trackSourceCommit` context key in your `cdk.json`:
+
+```json
+{
+  "context": {
+    "@aws-cdk/core:trackSourceCommit": true
+  }
+}
+```
+
+When enabled, the git remote URL and current commit hash are added as `AWS::CDK::Source` metadata to
+the template of each stack that has this feature enabled.
+
 ## More Resources
 
 * [AWS CDK Immersion Day Workshop](https://catalog.us-east-1.prod.workshops.aws/workshops/10141411-0192-4021-afa8-2436f3c66bd8/en-US)
