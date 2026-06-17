@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.260.0](https://github.com/aws/aws-cdk/compare/v2.259.0...v2.260.0) (2026-06-16)
+
+
+### Features
+
+* update L1 CloudFormation resource definitions ([#38151](https://github.com/aws/aws-cdk/issues/38151)) ([f266a47](https://github.com/aws/aws-cdk/commit/f266a47595832d6018b8a0d43dcae6afde511de6)), closes [/docs.aws.amazon.com/AmazonS3/latest/userguide/s3-files-prereq-policies.html#s3](https://github.com/aws//docs.aws.amazon.com/AmazonS3/latest/userguide/s3-files-prereq-policies.html/issues/s3)
+* **core:** add external traces to  ConstructError ([#38131](https://github.com/aws/aws-cdk/issues/38131)) ([e360dd9](https://github.com/aws/aws-cdk/commit/e360dd9b44d2111e28cd16ac683a813f33ed5793))
+* **core:** append external stack traces to metadata if available ([#38124](https://github.com/aws/aws-cdk/issues/38124)) ([c77a08c](https://github.com/aws/aws-cdk/commit/c77a08c19eb16a3734183f079e598b90383d28a3))
+
+
+### Bug Fixes
+
+* **bundling:** docker build can be skipped if already performed ([#38134](https://github.com/aws/aws-cdk/issues/38134)) ([2f9ae95](https://github.com/aws/aws-cdk/commit/2f9ae95d55cda7dc5011c8a04b66af7fca0c4f9d))
+* **core:** stack traces contain decorator paths ([#38130](https://github.com/aws/aws-cdk/issues/38130)) ([318f645](https://github.com/aws/aws-cdk/commit/318f645df3f0c903f64126975fb4a4a65c0a18d0))
+* **core:** weak cross-stack references fail for list attributes ([#37948](https://github.com/aws/aws-cdk/issues/37948)) ([6bb9d75](https://github.com/aws/aws-cdk/commit/6bb9d75f71c229d246e39942cdf37e7406dfd5cb)), closes [#37910](https://github.com/aws/aws-cdk/issues/37910)
+* **lambda-nodejs:** reuse posixShellEscape for Docker bundling file operations ([#38133](https://github.com/aws/aws-cdk/issues/38133)) ([baa9e1d](https://github.com/aws/aws-cdk/commit/baa9e1dff469306cc23b8f4bd232d703f98bf68a))
+
 ## [2.259.0](https://github.com/aws/aws-cdk/compare/v2.258.1...v2.259.0) (2026-06-11)
 
 ### ⚠ BREAKING CHANGES
