@@ -1,4 +1,7 @@
+import { execSync } from 'child_process';
 import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import { Construct, Node } from 'constructs';
 import { flattenMeta, getWarnings, toCloudFormation } from './util';
@@ -3300,41 +3303,17 @@ describe('regionalFact', () => {
     expect(template?.Metadata?.['AWS::CDK::Source']).toBeUndefined();
   });
 
-  test('git source metadata is included when trackSourceCommit context is true', () => {
-    GitSource._clearCache();
-    const spy = jest.spyOn(GitSource, 'of').mockReturnValue({
-      repository: 'https://github.com/example/repo.git',
-      commit: 'a'.repeat(40),
-    } as any);
-
+  test.each([
+    ['context key', { context: { '@aws-cdk/core:trackSourceCommit': true } }],
+    ['App props', { trackSourceCommit: true }],
+  ])('git source metadata is included when trackSourceCommit is set via %s', (_label, appProps) => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-git-test-'));
     try {
-      const app = new App({ context: { '@aws-cdk/core:trackSourceCommit': true } });
-      const stack = new Stack(app, 'Stack');
-      new CfnResource(stack, 'Resource', { type: 'MyResource' });
-
-      const assembly = app.synth();
-      const stackArtifact = assembly.getStackByName(stack.stackName);
-      const template = stackArtifact.template;
-      const source = template?.Metadata?.['AWS::CDK::Source'];
-
-      expect(source).toBeDefined();
-      expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
-      expect(source.Repository).toContain('github.com');
-    } finally {
-      spy.mockRestore();
+      execSync('git init && git remote add origin https://github.com/example/repo.git && git commit --allow-empty -m "init"', { cwd: tmpDir, stdio: 'pipe' });
+      const cwdSpy = jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
       GitSource._clearCache();
-    }
-  });
 
-  test('git source metadata is included when trackSourceCommit is set on App props', () => {
-    GitSource._clearCache();
-    const spy = jest.spyOn(GitSource, 'of').mockReturnValue({
-      repository: 'https://github.com/example/repo.git',
-      commit: 'b'.repeat(40),
-    } as any);
-
-    try {
-      const app = new App({ trackSourceCommit: true });
+      const app = new App(appProps);
       const stack = new Stack(app, 'Stack');
       new CfnResource(stack, 'Resource', { type: 'MyResource' });
 
@@ -3344,8 +3323,11 @@ describe('regionalFact', () => {
 
       expect(source).toBeDefined();
       expect(source.Commit).toMatch(/^[a-f0-9]{40}([a-f0-9]{24})?$/);
+      expect(source.Repository).toBe('https://github.com/example/repo.git');
+
+      cwdSpy.mockRestore();
     } finally {
-      spy.mockRestore();
+      fs.rmSync(tmpDir, { recursive: true, force: true });
       GitSource._clearCache();
     }
   });
