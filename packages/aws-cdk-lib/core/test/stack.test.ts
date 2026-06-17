@@ -3318,7 +3318,13 @@ describe('regionalFact', () => {
 
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cdk-git-test-'));
     try {
-      execSync('git init && git remote add origin https://github.com/example/repo.git && git commit --allow-empty -m "init"', { cwd: tmpDir, stdio: 'pipe' });
+      execSync([
+        'git init',
+        'git config user.email "test@test.com"',
+        'git config user.name "Test"',
+        'git remote add origin https://github.com/example/repo.git',
+        'git commit --allow-empty -m "init"',
+      ].join(' && '), { cwd: tmpDir, stdio: 'pipe' });
       const cwdSpy = jest.spyOn(process, 'cwd').mockReturnValue(tmpDir);
       GitSource._clearCache();
 
