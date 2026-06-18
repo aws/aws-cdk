@@ -213,18 +213,6 @@ export interface StackProps {
   readonly suppressTemplateIndentation?: boolean;
 
   /**
-   * Include git source information (repository URL and commit hash) in the
-   * template metadata of this Stack.
-   *
-   * When enabled, the synthesized CloudFormation template will include an
-   * `AWS::CDK::Source` metadata entry with the repository and commit.
-   *
-   * @default - Value of `trackSourceCommit` on containing `App`, or
-   * value of `@aws-cdk/core:trackSourceCommit` context key
-   */
-  readonly trackSourceCommit?: boolean;
-
-  /**
    * A list of IPropertyInjector attached to this Stack.
    * @default - no PropertyInjectors
    */
@@ -584,11 +572,11 @@ export class Stack extends Construct implements ITaggable {
 
     // Not for nested stacks
     this._versionReportingEnabled = (props.analyticsReporting ?? this.node.tryGetContext(cxapi.ANALYTICS_REPORTING_ENABLED_CONTEXT))
-        && !this.nestedStackParent;
+      && !this.nestedStackParent;
 
     const synthesizer = (props.synthesizer
-        ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
-        ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
+      ?? this.node.tryGetContext(PRIVATE_CONTEXT_DEFAULT_STACK_SYNTHESIZER)
+      ?? (newStyleSynthesisContext ? new DefaultStackSynthesizer() : new LegacyStackSynthesizer()));
 
     if (isReusableStackSynthesizer(synthesizer)) {
       // Produce a fresh instance for each stack (should have been the default behavior)
@@ -603,20 +591,6 @@ export class Stack extends Construct implements ITaggable {
 
     // add the permissions boundary aspect
     this.addPermissionsBoundaryAspect();
-
-    if (props.trackSourceCommit !== undefined) {
-      this.node.setContext(GIT_SOURCE_CONTEXT, props.trackSourceCommit);
-    }
-
-    if (GitSource.isEnabledFor(this)) {
-      const gitSource = GitSource.of(this);
-      if (gitSource) {
-        this.addMetadata('AWS::CDK::Source', {
-          Repository: gitSource.repository,
-          Commit: gitSource.commit,
-        });
-      }
-    }
   }
 
   /**
@@ -1982,7 +1956,6 @@ import { AssumptionError, UnscopedValidationError, ValidationError } from './err
 import { lit } from './private/literal-string';
 import { debugModeEnabled } from './debug';
 import { captureStackTrace } from './private/stack-trace';
-import { GIT_SOURCE_CONTEXT, GitSource } from './git-source';
 /* eslint-enable import/order */
 
 function makeCustomCoupledReference(value: any, strength: ReferenceStrength): CustomCoupledReference {
