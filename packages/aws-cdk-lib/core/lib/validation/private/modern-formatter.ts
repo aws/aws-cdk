@@ -3,8 +3,8 @@
  *
  * Same formatting is used for both the CLI and the CDK app.
  */
+import type { PluginReportJson, ViolatingConstructJson } from '@aws-cdk/cloud-assembly-schema';
 import { Colorize } from './color';
-import type { PluginReportJson, ViolatingConstructJson } from './report';
 import { topUserFrame } from '../../private/stack-trace';
 
 export function formatValidationReports(reports: PluginReportJson[]): string[] {
