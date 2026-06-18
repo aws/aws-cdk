@@ -2,8 +2,6 @@
  * Functions for colorized output
  */
 
-// TODO: bold, underline, red, orange(208/256), yellow, blue
-
 export abstract class Col {
   public static readonly RED = '31';
   public static readonly ORANGE = '38;5;208';

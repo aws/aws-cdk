@@ -78,10 +78,10 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
 
   if (isSuppressibleViolation(v)) {
     const ackId = `${sanitize(v.pluginName)}::${sanitize(v.ruleName)}`.replace(/ /g, '-');
-    lines.push(`   Acknowledge '${ackId}'`);
+    lines.push(`   ${Colorize.grey(`Acknowledge with '${ackId}'`)}`);
   } else {
     // If not acknowledgeable, we should still show the rule name for reference.
-    lines.push(`   Rule ${sanitize(v.ruleName)}`);
+    lines.push(`   ${Colorize.grey(`Rule ${sanitize(v.ruleName)}`)}`);
   }
 
   return lines.join('\n');
