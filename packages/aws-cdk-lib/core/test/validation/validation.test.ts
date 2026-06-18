@@ -927,6 +927,8 @@ describe('validations', () => {
 
       // Should not be acknowledgeable
       expect(output).not.toMatch(/acknowledge/i);
+      expect(output).toContain('Rule annotation::MyError');
+      expect(output).toMatchSnapshot();
     });
 
     test('extractRuleName regex matches addWarningV2 ack tag format', () => {

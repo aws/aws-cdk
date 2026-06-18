@@ -80,11 +80,8 @@ function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
     const ackId = `${sanitize(v.pluginName)}::${sanitize(v.ruleName)}`.replace(/ /g, '-');
     lines.push(`   Acknowledge '${ackId}'`);
   } else {
-    // If not acknowledgeable, we should still show the rule name for reference, except if it's
-    // an annotation error because the `ruleName` will be pointless there.
-    if (!v.ruleMetadata?.['cdk:annotation']) {
-      lines.push(`   Rule ${sanitize(v.ruleName)}`);
-    }
+    // If not acknowledgeable, we should still show the rule name for reference.
+    lines.push(`   Rule ${sanitize(v.ruleName)}`);
   }
 
   return lines.join('\n');

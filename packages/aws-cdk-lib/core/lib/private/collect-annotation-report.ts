@@ -23,7 +23,7 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
       }
 
       const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
-      const { message, ackTag } = splitDescriptionAndAckTag(String(entry.data));
+      const { message, ruleName } = splitDescriptionAndId(String(entry.data));
 
       let templatePath: string | undefined;
       try {
@@ -38,13 +38,13 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
         locations: [],
       };
 
-      const key = `${ackTag}|${severity}|${message}`;
+      const key = `${ruleName}|${severity}|${message}`;
       const existing = violationMap.get(key);
       if (existing) {
         existing.violatingResources.push(violatingResource);
       } else {
         violationMap.set(key, {
-          ruleName: ackTag ?? `${severity}-annotation`,
+          ruleName: ruleName ?? `${severity}-annotation`,
           description: message,
           severity,
           violatingResources: [violatingResource],
@@ -70,13 +70,23 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
 }
 
 /**
- * COUPLING NOTE: The `[ack: <id>]` format is produced by the `ackTag()` helper
- * in `annotations.ts`. If the tag format changes, this regex must be updated.
+ * Annotations have IDs in two places:
+ *
+ * - Warnings have `[ack:<id>]` in the message.
+ * - Errors have `(<namespace>::<id>)` in the message.
+ *
+ * Separate the rule name from the rest of the description.
  */
-function splitDescriptionAndAckTag(message: string): { message: string; ackTag?: string } {
+function splitDescriptionAndId(message: string): { message: string; ruleName?: string } {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
   if (ackMatch) {
-    return { message: message.replace(ackMatch[0], '').trim(), ackTag: ackMatch[1] };
+    return { message: message.replace(ackMatch[0], '').trim(), ruleName: ackMatch[1] };
   }
+
+  const idMatch = message.match(/\(([^)]+::[^)]+)\)$/);
+  if (idMatch) {
+    return { message: message.replace(idMatch[0], '').trim(), ruleName: idMatch[1] };
+  }
+
   return { message };
 }
