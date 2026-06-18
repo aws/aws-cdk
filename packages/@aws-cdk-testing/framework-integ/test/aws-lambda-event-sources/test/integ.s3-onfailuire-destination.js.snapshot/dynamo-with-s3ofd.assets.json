@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "files": {
     "57c04a15e2b713c19797cf909dd1b01966cdc5e989743a739b36f809e5201016": {
       "displayName": "dynamo-with-s3ofd Template",
