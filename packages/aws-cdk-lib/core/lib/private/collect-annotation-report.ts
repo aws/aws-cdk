@@ -83,7 +83,7 @@ function splitDescriptionAndId(message: string): { message: string; ruleName?: s
     return { message: message.replace(ackMatch[0], '').trim(), ruleName: ackMatch[1] };
   }
 
-  const idMatch = message.match(/\(([^)]+::[^)]+)\)$/);
+  const idMatch = message.match(/\(([^()]+::[^()]+)\)$/);
   if (idMatch) {
     return { message: message.replace(idMatch[0], '').trim(), ruleName: idMatch[1] };
   }
