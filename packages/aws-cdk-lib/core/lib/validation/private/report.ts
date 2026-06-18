@@ -200,23 +200,23 @@ export class PolicyValidationReportFormatter {
       customSeverity: severity.customSeverity,
       ruleMetadata: violation.ruleMetadata,
       violatingConstructs: violation.violatingResources.map(resource => {
-        const constructPath = resource.constructPath ?? (
-          resource.templatePath && resource.resourceLogicalId
-            ? this.tree.getConstructByLogicalId(
-              path.basename(resource.templatePath),
-              resource.resourceLogicalId,
-            )?.node.path
-            : undefined
-        );
-        const construct = constructPath
-          ? this.tree.getConstructByPath(constructPath)
-          : undefined;
-        const constructInfo = construct
-          ? this.tree.constructTraceLevelFromTreeNode(construct)
+        let constructPath = resource.constructPath;
+
+        // If the construct path is not reported, let's try to guess it from the template name and the logical ID
+        if (!constructPath && resource.templatePath && resource.resourceLogicalId) {
+          constructPath = this.tree.getConstructByLogicalId(
+            path.basename(resource.templatePath),
+            resource.resourceLogicalId,
+          )?.node.path;
+        }
+
+        const constructInfo = constructPath
+          ? this.tree.constructTraceLevelFromConstructPath(constructPath)
           : undefined;
 
         const result: ViolatingConstructJson = {
-          constructPath: constructPath ?? 'N/A',
+          // The constructPath is not optional in the output JSON, so put an empty string here if we don't have it.
+          constructPath: constructPath ?? '',
           constructFqn: constructInfo?.construct,
           libraryVersion: constructInfo?.libraryVersion,
           cloudFormationResource: resource.resourceLogicalId && resource.templatePath
@@ -258,7 +258,7 @@ export class PolicyValidationReportFormatter {
       results.push({
         pluginName: rep.pluginName,
         pluginVersion: rep.pluginVersion,
-        conclusion: (rep.success ? 'success' : 'failure') as PolicyValidationReportConclusion,
+        conclusion: (rep.success ? 'success' : 'failure') satisfies PolicyValidationReportConclusion,
         metadata: rep.metadata,
         violations: rep.violations.map(violation => this.formatViolationJson(violation)),
         suppressedViolations: suppressed
@@ -295,4 +295,27 @@ function normalizeSeverity(severity: string | undefined): { severity: PolicyViol
     return { severity: lower as PolicyViolationSeverity };
   }
   return { severity: 'custom', customSeverity: severity };
+}
+
+export function mkPluginFailure(plugin: { name: string; version?: string }, e: Error): NamedValidationPluginReport {
+  return {
+    success: false,
+    pluginName: plugin.name,
+    pluginVersion: plugin.version,
+    violations: [],
+    metadata: {
+      error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
+    },
+  };
+}
+
+/**
+ * Report whether it is possible to suppress this violation.
+ *
+ * Violations that are reported as "fatal", or that have been converted from annotations, cannot be suppressed.
+ */
+export function isSuppressibleViolation(violation: { severity?: string; ruleMetadata?: { [key: string]: string } }): boolean {
+  const isFatal = violation.severity?.toLowerCase() === 'fatal';
+  const isErrorAnnotation = violation.ruleMetadata?.['cdk:annotation'] && violation.severity?.toLowerCase() === 'error';
+  return !isFatal && !isErrorAnnotation;
 }

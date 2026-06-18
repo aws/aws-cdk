@@ -3,12 +3,17 @@
  *
  * Same formatting is used for both the CLI and the CDK app.
  */
-import type { PluginReportJson, ViolatingConstructJson } from '@aws-cdk/cloud-assembly-schema';
+import path from 'path';
+import type { PluginReportJson, PolicyViolationJson, ViolatingConstructJson } from '@aws-cdk/cloud-assembly-schema';
 import { Colorize } from './color';
+import { isSuppressibleViolation } from './report';
 import { topUserFrame } from '../../private/stack-trace';
 
-export function formatValidationReports(reports: PluginReportJson[]): string[] {
-  const violations = flattenViolations(reports);
+export function formatValidationReports(fileRoot: string, reports: PluginReportJson[]): string[] {
+  const successfullyExecutedPlugins = reports.filter((r) => isPluginFailure(r) === undefined);
+  const pluginFailures = reports.map(isPluginFailure).filter((e) => e !== undefined);
+
+  const violations = flattenViolations(successfullyExecutedPlugins);
 
   violations.sort((a, b) => {
     const aOrder = SEVERITY_ORDER[a.severity.toLowerCase()] ?? 4;
@@ -16,7 +21,10 @@ export function formatValidationReports(reports: PluginReportJson[]): string[] {
     return aOrder - bOrder;
   });
 
-  return violations.map((v) => formatViolationBlock(v));
+  return [
+    ...pluginFailures.map(formatPluginFailure),
+    ...violations.map((v) => formatViolationBlock(fileRoot, v)),
+  ];
 }
 
 function flattenViolations(reports: PluginReportJson[]): FlattenedViolation[] {
@@ -29,26 +37,28 @@ function flattenViolations(reports: PluginReportJson[]): FlattenedViolation[] {
         ruleName: violation.ruleName,
         pluginName,
         construct,
+        suggestedFix: violation.suggestedFix,
+        ruleMetadata: violation.ruleMetadata,
       }));
     });
   });
 }
 
 function normalizeSeverity(severity: string | undefined): string {
-  if (!severity) return 'Warning';
-  const lower = severity.toLowerCase();
-  if (lower === 'fatal') return 'Fatal';
-  if (lower === 'error') return 'Error';
-  if (lower === 'warning') return 'Warning';
-  if (lower === 'info') return 'Info';
-  const safe = sanitize(severity);
-  return safe.charAt(0).toUpperCase() + safe.slice(1);
+  switch (severity?.toLowerCase()) {
+    case 'fatal': return 'FATAL';
+    case 'error': return 'ERROR';
+    case 'warning': return 'WARNING';
+    case 'info': return 'INFO';
+  }
+  if (!severity) return 'WARNING';
+  return sanitize(severity);
 }
 
-function formatViolationBlock(v: FlattenedViolation): string {
+function formatViolationBlock(fileRoot: string, v: FlattenedViolation): string {
   const lines: string[] = [];
 
-  const location = sourceLocation(v.construct.stackTraces);
+  const location = sourceLocation(fileRoot, v.construct.stackTraces);
   if (location) {
     lines.push(Colorize.underline(sanitize(location)));
   }
@@ -56,15 +66,25 @@ function formatViolationBlock(v: FlattenedViolation): string {
   lines.push([
     Colorize.bold(getSeverityColor(v.severity)(sanitize(v.severity))),
     Colorize.bold(stripAckTag(sanitize(v.description))),
-    Colorize.grey(sanitize(v.pluginName)),
+    Colorize.grey(`(${sanitize(v.pluginName)})`),
   ].join(' '));
 
-  const constructInfo = formatConstructInfo(v.construct);
+  const constructInfo = formatConstructInfo(fileRoot, v.construct);
   lines.push(`   ${constructInfo}`);
 
-  if (v.severity.toLowerCase() !== 'fatal') {
+  if (v.suggestedFix) {
+    lines.push(`   Suggested fix: ${sanitize(v.suggestedFix).replace(/\n/g, '\n   ')}`);
+  }
+
+  if (isSuppressibleViolation(v)) {
     const ackId = `${sanitize(v.pluginName)}::${sanitize(v.ruleName)}`.replace(/ /g, '-');
     lines.push(`   Acknowledge '${ackId}'`);
+  } else {
+    // If not acknowledgeable, we should still show the rule name for reference, except if it's
+    // an annotation error because the `ruleName` will be pointless there.
+    if (!v.ruleMetadata?.['cdk:annotation']) {
+      lines.push(`   Rule ${sanitize(v.ruleName)}`);
+    }
   }
 
   return lines.join('\n');
@@ -79,15 +99,21 @@ function getSeverityColor(severity: string): (str: string) => string {
   }
 }
 
-function formatConstructInfo(construct: ViolatingConstructJson): string {
+function formatConstructInfo(fileRoot: string, construct: ViolatingConstructJson): string {
   const parts: string[] = [];
   const logicalId = sanitize(construct.cloudFormationResource?.logicalId);
 
   if (construct.constructPath) {
     const cPath = sanitize(construct.constructPath);
     parts.push(logicalId ? `${Colorize.bold(cPath)} (${logicalId})` : Colorize.bold(cPath));
-  } else if (logicalId) {
-    parts.push(Colorize.bold(logicalId));
+  } else {
+    // No construct information, show template path and logical ID
+    if (construct.cloudFormationResource?.templatePath) {
+      parts.push(humanFriendlyFilename(fileRoot, sanitize(construct.cloudFormationResource.templatePath)));
+    }
+    if (logicalId) {
+      parts.push(Colorize.bold(logicalId));
+    }
   }
 
   if (construct.constructFqn) {
@@ -101,14 +127,18 @@ function stripAckTag(description: string): string {
   return description.replace(/\s*\[ack:\s*[^\]]+\]\s*/g, '').trim();
 }
 
-function sourceLocation(stackTraces: string[] | undefined): string | undefined {
+function sourceLocation(fileRoot: string, stackTraces: string[] | undefined): string | undefined {
   for (const trace of stackTraces ?? []) {
     const frame = topUserFrame(trace.split('\n'));
-    if (frame) {
-      return `${frame.fileName}:${frame.sourceLocation}`;
+    if (frame && frame.fileName) {
+      return `${humanFriendlyFilename(fileRoot, frame.fileName)}:${frame.sourceLocation}`;
     }
   }
   return undefined;
+}
+
+function formatPluginFailure(f: PluginError): string {
+  return `${Colorize.orange('ERROR')} ${sanitize(f.error)}`;
 }
 
 // Matches C0 control chars (except \t and \n), DEL, and CSI (8-bit mode).
@@ -119,13 +149,10 @@ function sanitize(s: string | undefined): string {
   return (s ?? '').replace(CONTROL_CHARS, '�');
 }
 
-interface FlattenedViolation {
-  readonly severity: string;
-  readonly description: string;
-  readonly ruleName: string;
-  readonly pluginName: string;
-  readonly construct: ViolatingConstructJson;
-}
+export type FlattenedViolation =
+  & Pick<PluginReportJson, 'pluginName'>
+  & Pick<PolicyViolationJson, 'description' | 'ruleName' | 'suggestedFix' | 'ruleMetadata'>
+  & { severity: string; construct: ViolatingConstructJson };
 
 const SEVERITY_ORDER: Record<string, number> = {
   fatal: 0,
@@ -133,3 +160,20 @@ const SEVERITY_ORDER: Record<string, number> = {
   warning: 2,
   info: 3,
 };
+
+export function humanFriendlyFilename(root: string, filename: string): string {
+  const absPath = filename;
+  const relPath = path.relative(root, filename);
+  return relPath.length < absPath.length ? relPath : absPath;
+}
+
+interface PluginError {
+  readonly error: string;
+}
+
+function isPluginFailure(r: PluginReportJson): PluginError | undefined {
+  if (r.conclusion === 'success' || r.violations.length > 0 || !r.metadata?.error) {
+    return undefined;
+  }
+  return { error: r.metadata.error };
+}

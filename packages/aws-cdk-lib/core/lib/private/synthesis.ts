@@ -24,9 +24,9 @@ import type { StageSynthesisOptions } from '../stage';
 import { Stage } from '../stage';
 import type { IPolicyValidationPlugin } from '../validation';
 import { ConstructTree } from '../validation/private/construct-tree';
-import { formatValidationReports } from '../validation/private/modern-formatter';
+import { formatValidationReports, humanFriendlyFilename } from '../validation/private/modern-formatter';
 import type { NamedValidationPluginReport, SuppressedViolation } from '../validation/private/report';
-import { PolicyValidationReportFormatter } from '../validation/private/report';
+import { isSuppressibleViolation, mkPluginFailure, PolicyValidationReportFormatter } from '../validation/private/report';
 
 const LEGACY_POLICY_VALIDATION_FILE_PATH = 'policy-validation-report.json';
 
@@ -161,14 +161,15 @@ function validateTemplates(root: IConstruct, outdir: string, assembly: private_c
   // responsibility of printing the validation report and setting the exit code.
   const cdkAppHandlesValidationReporting = getBooleanContext(root, cxapi.FAIL_SYNTH_ON_VALIDATION_ERRORS_CONTEXT, true);
   if (cdkAppHandlesValidationReporting) {
-    const output = formatValidationReports(reportJson.pluginReports);
+    const output = formatValidationReports(process.cwd(), reportJson.pluginReports);
     // eslint-disable-next-line no-console
     console.error(output.join('\n\n'));
 
     const failed = reports.some(r => !r.success);
     if (failed) {
+      const reportPath = humanFriendlyFilename(process.cwd(), reportFile);
       // eslint-disable-next-line no-console
-      console.error(`Validation failed. A copy of this report can be found in '${path.relative(process.cwd(), reportFile)}'`);
+      console.error(`\nValidation failed. A copy of this report can be found in '${reportPath}'`);
       process.exitCode = 1;
     }
   }
@@ -210,7 +211,7 @@ function collectSuppressions(root: App, reports: NamedValidationPluginReport[]) 
       const active: typeof reports[0]['violations'] = [];
       const suppressed: SuppressedViolation[] = [];
       for (const v of reports[i].violations) {
-        if (v.severity === 'fatal') {
+        if (!isSuppressibleViolation(v)) {
           active.push(v);
           continue;
         }
@@ -254,15 +255,7 @@ function doInvokeValidationPlugins(outdir: string, plugins: PendingPluginInvocat
       const report = plugin.validate({ templatePaths, appConstruct: root });
       reports.push({ ...report, pluginName: plugin.name, pluginVersion: plugin.version });
     } catch (e: any) {
-      reports.push({
-        success: false,
-        pluginName: plugin.name,
-        pluginVersion: plugin.version,
-        violations: [],
-        metadata: {
-          error: `Validation plugin '${plugin.name}' failed: ${e.message}`,
-        },
-      });
+      reports.push(mkPluginFailure(plugin, e));
     }
     if (hasModifiedPreExistingFiles(preExistingFileHashes)) {
       throw new AssumptionError(lit`IllegalOperationValidationPlugin`, `Illegal operation: validation plugin '${plugin.name}' modified the cloud assembly`);

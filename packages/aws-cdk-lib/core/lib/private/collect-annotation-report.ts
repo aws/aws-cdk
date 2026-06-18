@@ -22,9 +22,8 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
         continue;
       }
 
-      const message = entry.data as string;
       const severity = entry.type === cxschema.ArtifactMetadataEntryType.ERROR ? 'error' : 'warning';
-      const ruleName = extractRuleName(message, severity);
+      const { message, ackTag } = splitDescriptionAndAckTag(String(entry.data));
 
       let templatePath: string | undefined;
       try {
@@ -39,16 +38,19 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
         locations: [],
       };
 
-      const key = `${ruleName}|${severity}|${message}`;
+      const key = `${ackTag}|${severity}|${message}`;
       const existing = violationMap.get(key);
       if (existing) {
         existing.violatingResources.push(violatingResource);
       } else {
         violationMap.set(key, {
-          ruleName,
+          ruleName: ackTag ?? `${severity}-annotation`,
           description: message,
           severity,
           violatingResources: [violatingResource],
+          ruleMetadata: {
+            'cdk:annotation': 'true',
+          },
         });
       }
     }
@@ -68,15 +70,13 @@ export function collectAnnotationReport(root: IConstruct, outdir: string): Named
 }
 
 /**
- * Extract a rule name from an annotation message.
- *
  * COUPLING NOTE: The `[ack: <id>]` format is produced by the `ackTag()` helper
  * in `annotations.ts`. If the tag format changes, this regex must be updated.
  */
-function extractRuleName(message: string, severity: string): string {
+function splitDescriptionAndAckTag(message: string): { message: string; ackTag?: string } {
   const ackMatch = message.match(/\[ack: ([^\]]+)\]/);
   if (ackMatch) {
-    return ackMatch[1];
+    return { message: message.replace(ackMatch[0], '').trim(), ackTag: ackMatch[1] };
   }
-  return `aws-cdk:${severity}`;
+  return { message };
 }
