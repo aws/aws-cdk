@@ -837,7 +837,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "379a97e43c3d01fdb08125fcff9c80a976a33da6287e25571deb51e72b5eeda9.zip"
+     "S3Key": "d1f0dc4bbd7f19a0c9d47ff23ed15d3972cdb7bd292c1c20c0f442d0021d9eb8.zip"
     },
     "Description": "onEvent handler for EKS kubectl resource provider",
     "Environment": {
@@ -923,7 +923,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "c82567645316e1499ecd064c937f1183bb4a74e95800ff64fab4d308451ba5f0.zip"
+     "S3Key": "e2659170a0721541efa761a8d5d04d5e36cbbf691c4b15a9053002b7c825055d.zip"
     },
     "Description": "/opt/awscli/aws",
     "CompatibleArchitectures": [
@@ -1046,7 +1046,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-us-east-1"
      },
-     "S3Key": "4ca2c8a263c5ac6ec1a067fe3cf77cd51e7190eda4e69f18591c506ede77323a.zip"
+     "S3Key": "d14e70c8c1d5d6c32025ea07c4b9ed67be449820cf578659c9deb07160688c0e.zip"
     },
     "Description": "AWS CDK resource provider framework - onEvent (aws-cdk-eks-v2-alpha-cluster-native-oidc/Cluster/KubectlProvider/Provider)",
     "Environment": {
@@ -1070,7 +1070,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -1251,7 +1251,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Description": "Lambda function for removing all inbound/outbound rules from the VPC default security group"
    },
    "DependsOn": [
@@ -1409,7 +1409,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"

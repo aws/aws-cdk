@@ -1007,7 +1007,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x",
+    "Runtime": "nodejs24.x",
     "Timeout": 900,
     "VpcConfig": {
      "SecurityGroupIds": [
@@ -1522,7 +1522,7 @@
       "Arn"
      ]
     },
-    "Runtime": "nodejs22.x"
+    "Runtime": "nodejs24.x"
    },
    "DependsOn": [
     "AWSCDKCfnUtilsProviderCustomResourceProviderRoleFE0EE867"
