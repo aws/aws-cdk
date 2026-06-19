@@ -1,5 +1,5 @@
 {
-  "version": "52.0.0",
+  "version": "53.0.0",
   "testCases": {
     "SfnSMTrainingJobImage/DefaultTest": {
       "stacks": [
@@ -12,5 +12,5 @@
       "assertionStackName": "SfnSMTrainingJobImageDefaultTestDeployAssert6629FD8C"
     }
   },
-  "minimumCliVersion": "2.1107.0"
+  "minimumCliVersion": "2.1123.0"
 }

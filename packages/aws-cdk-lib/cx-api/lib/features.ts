@@ -1874,7 +1874,7 @@ export const FLAGS: Record<string, FlagInfo> = {
       Amazon Linux 2 reached end of support on November 26, 2025. AL2023 is the AWS-recommended default.
 
       When disabled, the default AMI types remain AL2 for backward compatibility.`,
-    introducedIn: { v2: 'V2NEXT' },
+    introducedIn: { v2: '2.259.0' },
     recommendedValue: true,
     unconfiguredBehavesLike: { v2: false },
     compatibilityWithOldBehaviorMd: `Explicitly set \`amiType\` to the desired AL2 type (e.g., \`NodegroupAmiType.AL2_X86_64\`) in your nodegroup configuration.
