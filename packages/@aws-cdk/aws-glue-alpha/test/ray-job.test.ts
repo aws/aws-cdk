@@ -1,4 +1,5 @@
 
+import { testDeprecated } from '@aws-cdk/cdk-build-tools';
 import * as cdk from 'aws-cdk-lib';
 import { Template, Match } from 'aws-cdk-lib/assertions';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -25,7 +26,7 @@ describe('Job', () => {
       job = new glue.RayJob(stack, 'ImportedJob', { role, script });
     });
 
-    test('Test default attributes', () => {
+    testDeprecated('Test default attributes', () => {
       expect(job.jobArn).toEqual(stack.formatArn({
         service: 'glue',
         resource: 'job',
@@ -34,25 +35,25 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Default Glue Version should be 4.0', () => {
+    testDeprecated('Default Glue Version should be 4.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '4.0',
       });
     });
 
-    test('Default number of workers should be 3', () => {
+    testDeprecated('Default number of workers should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 3,
       });
     });
 
-    test('Default worker type should be Z.2X', () => {
+    testDeprecated('Default worker type should be Z.2X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: 'Z.2X',
       });
     });
 
-    test('Has Continuous Logging Enabled', () => {
+    testDeprecated('Has Continuous Logging Enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -62,7 +63,7 @@ describe('Job', () => {
       });
     });
 
-    test('Default job run queuing should be diabled', () => {
+    testDeprecated('Default job run queuing should be diabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         JobRunQueuingEnabled: false,
       });
@@ -87,7 +88,7 @@ describe('Job', () => {
       });
     });
 
-    test('Has Continuous Logging enabled with optional args', () => {
+    testDeprecated('Has Continuous Logging enabled with optional args', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -116,7 +117,7 @@ describe('Job', () => {
       });
     });
 
-    test('Has Continuous Logging Disabled', () => {
+    testDeprecated('Has Continuous Logging Disabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: {
           '--enable-metrics': '',
@@ -149,7 +150,7 @@ describe('Job', () => {
       });
     });
 
-    test('Test default attributes', () => {
+    testDeprecated('Test default attributes', () => {
       expect(job.jobArn).toEqual(stack.formatArn({
         service: 'glue',
         resource: 'job',
@@ -158,25 +159,25 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Cannot override Glue Version should be 4.0', () => {
+    testDeprecated('Cannot override Glue Version should be 4.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '4.0',
       });
     });
 
-    test('Overridden number of workers should be 5', () => {
+    testDeprecated('Overridden number of workers should be 5', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 5,
       });
     });
 
-    test('Cannot override worker type should be Z.2X', () => {
+    testDeprecated('Cannot override worker type should be Z.2X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: 'Z.2X',
       });
     });
 
-    test('Has Continuous Logging Enabled', () => {
+    testDeprecated('Has Continuous Logging Enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -186,14 +187,14 @@ describe('Job', () => {
       });
     });
 
-    test('Custom Job Name and Description', () => {
+    testDeprecated('Custom Job Name and Description', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Name: 'RayCustomJobName',
         Description: 'This is a description',
       });
     });
 
-    test('Verify Default Arguemnts', () => {
+    testDeprecated('Verify Default Arguemnts', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -202,13 +203,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden max retries should be 3', () => {
+    testDeprecated('Overridden max retries should be 3', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 3,
       });
     });
 
-    test('Overridden max concurrent runs should be 100', () => {
+    testDeprecated('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -216,13 +217,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden timeout should be 2 hours', () => {
+    testDeprecated('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overridden connections should be 100', () => {
+    testDeprecated('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -230,13 +231,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden security configuration should be set', () => {
+    testDeprecated('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
     });
 
-    test('Should have tags', () => {
+    testDeprecated('Should have tags', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Tags: {
           FirstTagName: 'FirstTagValue',
@@ -271,7 +272,7 @@ describe('Job', () => {
       });
     });
 
-    test('Test default attributes', () => {
+    testDeprecated('Test default attributes', () => {
       expect(job.jobArn).toEqual(stack.formatArn({
         service: 'glue',
         resource: 'job',
@@ -280,25 +281,25 @@ describe('Job', () => {
       expect(job.grantPrincipal).toEqual(role);
     });
 
-    test('Cannot override Glue Version should be 4.0', () => {
+    testDeprecated('Cannot override Glue Version should be 4.0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         GlueVersion: '4.0',
       });
     });
 
-    test('Overridden number of workers should be 5', () => {
+    testDeprecated('Overridden number of workers should be 5', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         NumberOfWorkers: 5,
       });
     });
 
-    test('Cannot override worker type should be Z.2X', () => {
+    testDeprecated('Cannot override worker type should be Z.2X', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         WorkerType: 'Z.2X',
       });
     });
 
-    test('Has Continuous Logging Enabled', () => {
+    testDeprecated('Has Continuous Logging Enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -308,14 +309,14 @@ describe('Job', () => {
       });
     });
 
-    test('Custom Job Name and Description', () => {
+    testDeprecated('Custom Job Name and Description', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Name: 'RayCustomJobName',
         Description: 'This is a description',
       });
     });
 
-    test('Verify Default Arguemnts', () => {
+    testDeprecated('Verify Default Arguemnts', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         DefaultArguments: Match.objectLike({
           '--enable-metrics': '',
@@ -324,19 +325,19 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden job run queuing should be enabled', () => {
+    testDeprecated('Overridden job run queuing should be enabled', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         JobRunQueuingEnabled: true,
       });
     });
 
-    test('Default max retries with job run queuing enabled should be 0', () => {
+    testDeprecated('Default max retries with job run queuing enabled should be 0', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         MaxRetries: 0,
       });
     });
 
-    test('Overridden max concurrent runs should be 100', () => {
+    testDeprecated('Overridden max concurrent runs should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         ExecutionProperty: {
           MaxConcurrentRuns: 100,
@@ -344,13 +345,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden timeout should be 2 hours', () => {
+    testDeprecated('Overridden timeout should be 2 hours', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Timeout: 120,
       });
     });
 
-    test('Overridden connections should be 100', () => {
+    testDeprecated('Overridden connections should be 100', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Connections: {
           Connections: ['connectionName'],
@@ -358,13 +359,13 @@ describe('Job', () => {
       });
     });
 
-    test('Overridden security configuration should be set', () => {
+    testDeprecated('Overridden security configuration should be set', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         SecurityConfiguration: 'securityConfigName',
       });
     });
 
-    test('Should have tags', () => {
+    testDeprecated('Should have tags', () => {
       Template.fromStack(stack).hasResourceProperties('AWS::Glue::Job', {
         Tags: {
           FirstTagName: 'FirstTagValue',
@@ -376,7 +377,7 @@ describe('Job', () => {
   });
 
   describe('Invalid overrides should cause errors', () => {
-    test('Create Ray Job overriding only workerType to cause an Error', () => {
+    testDeprecated('Create Ray Job overriding only workerType to cause an Error', () => {
       expect(() => {
         job = new glue.RayJob(stack, 'RayJob', {
           role,
@@ -388,7 +389,7 @@ describe('Job', () => {
   });
 
   describe('Create new Ray Job with metrics control', () => {
-    test('Default behavior should include metrics (backward compatibility)', () => {
+    testDeprecated('Default behavior should include metrics (backward compatibility)', () => {
       new glue.RayJob(stack, 'RayJob', {
         role,
         script,
@@ -402,7 +403,7 @@ describe('Job', () => {
       });
     });
 
-    test('Should exclude metrics when enableMetrics is false', () => {
+    testDeprecated('Should exclude metrics when enableMetrics is false', () => {
       new glue.RayJob(stack, 'RayJob', {
         role,
         script,
@@ -422,7 +423,7 @@ describe('Job', () => {
       expect(jobResource.Properties.DefaultArguments).not.toHaveProperty('--enable-metrics');
     });
 
-    test('Should exclude both metrics when both are disabled', () => {
+    testDeprecated('Should exclude both metrics when both are disabled', () => {
       new glue.RayJob(stack, 'RayJob', {
         role,
         script,

@@ -14,8 +14,8 @@ const fargateNlbService = new ecsPatterns.NetworkLoadBalancedFargateService(stac
   cluster,
   listenerPort: 2015,
   taskImageOptions: {
-    containerPort: 2015,
-    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+    containerPort: 80,
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
 });
 
@@ -23,13 +23,15 @@ const fargateAlbService = new ecsPatterns.ApplicationLoadBalancedFargateService(
   cluster,
   listenerPort: 2015,
   taskImageOptions: {
-    containerPort: 2015,
-    image: ecs.ContainerImage.fromRegistry('abiosoft/caddy'),
+    containerPort: 80,
+    image: ecs.ContainerImage.fromRegistry('amazon/amazon-ecs-sample'),
   },
 });
 
 new cdk.CfnOutput(stack, 'AlbDnsName', { value: fargateAlbService.loadBalancer.loadBalancerDnsName });
 new cdk.CfnOutput(stack, 'NlbDnsName', { value: fargateNlbService.loadBalancer.loadBalancerDnsName });
+
+fargateNlbService.service.connections.allowFrom(fargateNlbService.loadBalancer, ec2.Port.tcp(80));
 
 new integ.IntegTest(app, 'publicQueueProcessingFargateServiceTest', {
   testCases: [stack],

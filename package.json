@@ -19,28 +19,30 @@
   },
   "devDependencies": {
     "@nx/workspace": "^20",
-    "@types/node": "18.19.129",
+    "@types/node": "^20",
     "@types/prettier": "2.6.0",
     "@yarnpkg/lockfile": "^1.1.0",
     "aws-sdk-js-codemod": "^2.4.5",
-    "cdk-generate-synthetic-examples": "^0.2.43",
+    "cdk-generate-synthetic-examples": "^0.2.50",
     "conventional-changelog-cli": "^2.2.2",
     "fs-extra": "^9.1.0",
     "graceful-fs": "^4.2.11",
     "jest-junit": "^13.2.0",
-    "jsii-diff": "1.128.0",
-    "jsii-pacmak": "1.128.0",
-    "jsii-reflect": "1.128.0",
-    "jsii-rosetta": "~5.9.32",
+    "jsii-diff": "1.133.0",
+    "jsii-pacmak": "1.133.0",
+    "jsii-reflect": "1.133.0",
+    "jsii-rosetta": "~5.9.49",
     "lerna": "^8.2.4",
     "nx": "^20",
-    "semver": "^7.7.4",
+    "semver": "^7.8.1",
     "standard-version": "^9.5.0",
-    "ts-jest": "^29.4.6",
+    "ts-jest": "^29.4.11",
     "ts-node": "^10.9.2",
-    "typescript": "~5.5.4"
+    "typescript": "~5.9.3"
   },
   "resolutions": {
+    "array-includes": "3.1.8",
+    "es-abstract": "1.23.9",
     "colors": "1.4.0",
     "markdown-it": "^12.3.2",
     "string-width": "^4.2.3",
@@ -177,6 +179,7 @@
   },
   "dependencies": {
     "string-width": "^4.2.3",
-    "tar": "^7.5.7"
-  }
+    "tar": "^7.5.16"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

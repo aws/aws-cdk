@@ -412,7 +412,7 @@
      "Ref": "PostgresSourceSubnetGroupBEEB1740"
     },
     "Engine": "postgres",
-    "EngineVersion": "18.2",
+    "EngineVersion": "18.3",
     "MasterUserPassword": {
      "Fn::Join": [
       "",
@@ -613,7 +613,7 @@
      "Ref": "MysqlSourceSubnetGroup213E979B"
     },
     "Engine": "mysql",
-    "EngineVersion": "8.4.8",
+    "EngineVersion": "8.4.9",
     "MasterUserPassword": {
      "Fn::Join": [
       "",

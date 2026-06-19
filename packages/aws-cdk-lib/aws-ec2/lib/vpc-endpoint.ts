@@ -13,7 +13,10 @@ import * as iam from '../../aws-iam';
 import * as cxschema from '../../cloud-assembly-schema';
 import type { IResource } from '../../core';
 import { Aws, ContextProvider, Lazy, Resource, Stack, Token, ValidationError } from '../../core';
+import type { IBox } from '../../core/lib/helpers-internal';
+import { Box } from '../../core/lib/helpers-internal';
 import { addConstructMetadata } from '../../core/lib/metadata-resource';
+import { noBoxStackTraces } from '../../core/lib/no-box-stack-traces';
 import { lit } from '../../core/lib/private/literal-string';
 import { propertyInjectable } from '../../core/lib/prop-injectable';
 
@@ -31,7 +34,21 @@ export interface IVpcEndpoint extends IResource, IVPCEndpointRef {
 export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
   public abstract readonly vpcEndpointId: string;
 
-  protected policyDocument?: iam.PolicyDocument;
+  private readonly _policyDocument: IBox<iam.PolicyDocument | undefined> = Box.fromValue<iam.PolicyDocument | undefined>(undefined);
+
+  protected get policyDocument(): iam.PolicyDocument | undefined {
+    return this._policyDocument.get() as iam.PolicyDocument | undefined;
+  }
+  protected set policyDocument(value: iam.PolicyDocument | undefined) {
+    this._policyDocument.set(value);
+  }
+
+  /**
+   * @internal
+   */
+  protected _policyDocumentToken(): any {
+    return Token.asAny(this._policyDocument);
+  }
 
   public get vpcEndpointRef(): VPCEndpointReference {
     return {
@@ -53,11 +70,11 @@ export abstract class VpcEndpoint extends Resource implements IVpcEndpoint {
       throw new ValidationError(lit`Statement`, 'Statement must have a `Principal`.', this);
     }
 
-    if (!this.policyDocument) {
-      this.policyDocument = new iam.PolicyDocument();
-    }
-
-    this.policyDocument.addStatements(statement);
+    this._policyDocument.update(doc => {
+      const d = doc ?? new iam.PolicyDocument();
+      d.addStatements(statement);
+      return d;
+    });
   }
 }
 
@@ -252,6 +269,7 @@ export interface GatewayVpcEndpointProps extends GatewayVpcEndpointOptions {
  * @resource AWS::EC2::VPCEndpoint
  */
 @propertyInjectable
+@noBoxStackTraces
 export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoint {
   /** Uniquely identifies this class. */
   public static readonly PROPERTY_INJECTION_ID: string = 'aws-cdk-lib.aws-ec2.GatewayVpcEndpoint';
@@ -300,7 +318,7 @@ export class GatewayVpcEndpoint extends VpcEndpoint implements IGatewayVpcEndpoi
     }
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
-      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
+      policyDocument: this._policyDocumentToken(),
       routeTableIds,
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.GATEWAY,
@@ -809,16 +827,16 @@ export class InterfaceVpcEndpointAwsService implements IInterfaceVpcEndpointServ
     port?: number,
     props?: InterfaceVpcEndpointAwsServiceProps,
   ) {
-    const regionPrefix = props?.global ? '' : (Lazy.uncachedString({
+    const regionPrefix = props?.global ? '' : (Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => Stack.of(context.scope).region,
     }) + '.');
-    const defaultEndpointPrefix = Lazy.uncachedString({
+    const defaultEndpointPrefix = Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointPrefix(name, regionName);
       },
     });
-    const defaultEndpointSuffix = Lazy.uncachedString({
+    const defaultEndpointSuffix = Lazy.uncachedString({ // eslint-disable-line no-restricted-syntax
       produce: (context) => {
         const regionName = Stack.of(context.scope).region;
         return this.getDefaultEndpointSuffix(name, regionName);
@@ -1015,6 +1033,7 @@ export interface IInterfaceVpcEndpoint extends IVpcEndpoint, IConnectable {
  * @resource AWS::EC2::VPCEndpoint
  */
 @propertyInjectable
+@noBoxStackTraces
 export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEndpoint {
   /**
    * Uniquely identifies this class.
@@ -1124,7 +1143,7 @@ export class InterfaceVpcEndpoint extends VpcEndpoint implements IInterfaceVpcEn
 
     const endpoint = new CfnVPCEndpoint(this, 'Resource', {
       privateDnsEnabled: props.privateDnsEnabled ?? props.service.privateDnsDefault ?? true,
-      policyDocument: Lazy.any({ produce: () => this.policyDocument }),
+      policyDocument: this._policyDocumentToken(),
       securityGroupIds: securityGroups.map(s => s.securityGroupId),
       serviceName: props.service.name,
       vpcEndpointType: VpcEndpointType.INTERFACE,
