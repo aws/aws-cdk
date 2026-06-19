@@ -879,9 +879,7 @@ new rds.DatabaseInstance(this, 'Instance', {
 });
 ```
 
-**Note**: When `manageMasterUserPassword` is enabled, you cannot use other credential properties like `password`, `secret`, `secretName`, `excludeCharacters`, `replicaRegions`, or `usernameAsString`. Only `username` and `encryptionKey` are allowed.
-
-**Note**: When `manageMasterUserPassword` is enabled, the `secret` property exposes a read-only reference to the secret that RDS created, not a CDK-owned secret. `grantRead()` works as usual, but `addToResourcePolicy()` is a no-op because there is no CDK-managed resource policy to attach to. To give an application access to the password, use `secret.grantRead(grantee)`.
+**Note**: When `manageMasterUserPassword` is enabled, you cannot use other credential properties like `password`, `secret`, `secretName`, `excludeCharacters`, `replicaRegions`, or `usernameAsString`. Only `username` and `encryptionKey` are allowed. The `secret` property exposes a read-only reference to the secret that RDS created, not a CDK-owned secret — `addToResourcePolicy()` is a no-op, so use `secret.grantRead(grantee)` to grant access.
 
 ### Snapshot credentials
 
