@@ -881,6 +881,8 @@ new rds.DatabaseInstance(this, 'Instance', {
 
 **Note**: When `manageMasterUserPassword` is enabled, you cannot use other credential properties like `password`, `secret`, `secretName`, `excludeCharacters`, `replicaRegions`, or `usernameAsString`. Only `username` and `encryptionKey` are allowed.
 
+**Note**: When `manageMasterUserPassword` is enabled, the `secret` property exposes a read-only reference to the secret that RDS created, not a CDK-owned secret. `grantRead()` and `grantWrite()` work as usual, but `addToResourcePolicy()` is a no-op because there is no CDK-managed resource policy to attach to. To give an application access to the password, use `secret.grantRead(grantee)` (see [aws-cdk-lib/aws-secretsmanager](https://github.com/aws/aws-cdk/blob/main/packages/aws-cdk-lib/aws-secretsmanager/README.md#grant-permission-to-use-the-secret-to-a-role)).
+
 ### Snapshot credentials
 
 As noted above, Databases created with `DatabaseInstanceFromSnapshot` or `ServerlessClusterFromSnapshot` will not create user and auto-generated password by default because it's not possible to change the master username for a snapshot. Instead, they will use the existing username and password from the snapshot. You can still generate a new password - to generate a secret similarly to the other constructs, pass in credentials with `fromGeneratedSecret()` or `fromGeneratedPassword()`.

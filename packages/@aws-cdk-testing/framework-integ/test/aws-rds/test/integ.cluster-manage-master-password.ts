@@ -2,9 +2,11 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as kms from 'aws-cdk-lib/aws-kms';
 import * as cdk from 'aws-cdk-lib';
 import { AuroraMysqlEngineVersion, ClusterInstance, Credentials, DatabaseCluster, DatabaseClusterEngine } from 'aws-cdk-lib/aws-rds';
-import { IntegTest } from '@aws-cdk/integ-tests-alpha';
+import { ExpectedResult, IntegTest } from '@aws-cdk/integ-tests-alpha';
 
 class TestStack extends cdk.Stack {
+  public readonly clusterId: string;
+
   constructor(scope: cdk.App, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -16,7 +18,7 @@ class TestStack extends cdk.Stack {
     });
 
     // Create a database cluster with manageMasterUserPassword enabled
-    new DatabaseCluster(this, 'DatabaseCluster', {
+    const cluster = new DatabaseCluster(this, 'DatabaseCluster', {
       engine: DatabaseClusterEngine.auroraMysql({
         version: AuroraMysqlEngineVersion.VER_3_10_1,
       }),
@@ -30,11 +32,20 @@ class TestStack extends cdk.Stack {
         encryptionKey: kmsKey,
       }),
     });
+
+    this.clusterId = cluster.clusterIdentifier;
   }
 }
 
 const app = new cdk.App();
 const stack = new TestStack(app, 'aws-cdk-rds-cluster-manage-master-password-integ');
-new IntegTest(app, 'test-rds-cluster-manage-master-password', {
+const integ = new IntegTest(app, 'test-rds-cluster-manage-master-password', {
   testCases: [stack],
 });
+
+// Verify that RDS created and manages the master user secret
+integ.assertions.awsApiCall('RDS', 'describeDBClusters', {
+  DBClusterIdentifier: stack.clusterId,
+}).expect(ExpectedResult.objectLike({
+  DBClusters: [{ MasterUserSecret: { SecretStatus: 'active' } }],
+}));
